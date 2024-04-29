@@ -9,3 +9,4 @@ export { default as CTAStickyButtons } from './cta-sticky-buttons';
 export { useLiveProductMetric } from './use-live-product-metric';
 export { getGlobalSlot, getPageSlot } from './time';
 export { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
+export { reviews } from './data/reviews';
