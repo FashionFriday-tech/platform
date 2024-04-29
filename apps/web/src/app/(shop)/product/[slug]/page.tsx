@@ -1,7 +1,11 @@
+/* eslint-disable react/display-name */
 import { type Metadata } from 'next';
 
-import { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
-import ProductPageMaster, { EditorialError } from '@/features/product';
+import ProductPageMaster, {
+  EditorialError,
+  getProductBySlug,
+  getSimilarProducts,
+} from '@/features/product';
 
 interface Props {
   params: Promise<{ slug: string }>;
