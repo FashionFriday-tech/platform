@@ -8,3 +8,4 @@ export { default as ProductPerks } from './product-perks';
 export { default as CTAStickyButtons } from './cta-sticky-buttons';
 export { useLiveProductMetric } from './use-live-product-metric';
 export { getGlobalSlot, getPageSlot } from './time';
+export { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
