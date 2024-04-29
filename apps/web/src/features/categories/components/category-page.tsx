@@ -8,7 +8,7 @@ interface CategoryPageProps {
   category: string;
 }
 
-export async function CategoryPage({ gender, category }: CategoryPageProps) {
+export function CategoryPage({ gender, category }: CategoryPageProps) {
   const categoryMap: Record<string, string> = {
     watches: 'Watches',
     clothing: 'Clothing',
