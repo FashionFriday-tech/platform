@@ -7,9 +7,7 @@ import { Search, Heart, ShoppingBag } from "lucide-react";
 export function Header() {
   return (
     <header className="w-full flex flex-col font-sans px-1">
-      {/* --- PART 1: TOP UTILITY BAR (Gray) --- */}
       <div className="w-full py-2 flex items-center justify-between px-8 lg:px-12 text-[12px] font-medium text-gray-900 z-50">
-        {/* Left: Promo Text */}
         <div>
           <span className="cursor-default">Just Landed: The Treadly App. </span>
           <Link
@@ -20,7 +18,6 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Right: Account Links */}
         <div className="flex items-center gap-4">
           <Link href="/signin" className="hover:text-gray-600">
             Sign In
@@ -36,9 +33,7 @@ export function Header() {
         </div>
       </div>
 
-      {/* --- PART 2: MAIN NAVIGATION (White) --- */}
       <div className="w-full border-y-2 border-black bg-white flex items-center justify-between px-8 lg:px-12 relative transition-colors z-40">
-        {/* A. LOGO (Absolute Left) */}
        <div className="flex border-r-2 pr-10 h-full p-3">
          <Link href="/">
           <Image
@@ -52,8 +47,6 @@ export function Header() {
         </Link>
        </div>
 
-        {/* B. NAVIGATION (Absolute Center) */}
-        {/* We use absolute positioning to ensure it stays dead center regardless of logo/search width */}
         <nav className="hidden lg:flex w-full justify-center items-center gap-6">
           <NavLink href="/new">New Releases</NavLink>
           <NavLink href="/men">Men</NavLink>
@@ -63,10 +56,8 @@ export function Header() {
           <NavLink href="/collections">Collections</NavLink>
         </nav>
 
-        {/* C. ACTIONS (Right) */}
         <div className="flex items-center">
-          {/* Icons */}
-          <button className="p-4 hover:bg-gray-100 transition-colors border-r-2">
+          <button className="p-4 hover:bg-gray-100 transition-colors border-x-2">
             <Heart className="w-6 h-6 text-gray-900" />
           </button>
           <button className="p-4 hover:bg-gray-100 transition-colors border-r-2">
@@ -81,7 +72,6 @@ export function Header() {
   );
 }
 
-// --- Helper Component for Links ---
 function NavLink({
   href,
   children,
@@ -92,7 +82,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className="text-base font-medium text-gray-900 hover:scale-90 transition-all duration-300"
+      className="text-base font-medium text-gray-900 hover:scale-105 transition-all duration-300"
     >
       {children}
     </Link>
