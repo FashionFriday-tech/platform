@@ -25,13 +25,7 @@ export default function BrandScroll() {
   const duplicatedBrands = [...brands, ...brands];
 
   return (
-    <section className="w-full py-12 lg:py-16 bg-white border-b border-gray-100 overflow-hidden">
-      <div className="container mx-auto px-4 mb-8 text-center">
-        <p className="text-sm font-bold uppercase tracking-widest text-gray-400">
-          Our Brand Collections
-        </p>
-      </div>
-
+    <section className="w-full py-12 lg:py-16 bg-white  overflow-hidden">
       {/* 3. The Sliding Track */}
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
         <ScrollVelocityContainer className="w-full">
@@ -49,6 +43,11 @@ export default function BrandScroll() {
               />
             ))}
           </ScrollVelocityRow>
+          <div className="container mx-auto px-4 my-5 text-center">
+            <p className="text-sm font-bold uppercase tracking-widest text-gray-400">
+              Our Brand Collections
+            </p>
+          </div>
           <ScrollVelocityRow baseVelocity={0.5} direction={-1}>
             {BrandLogo.map(({ name, link }, idx) => (
               <img
