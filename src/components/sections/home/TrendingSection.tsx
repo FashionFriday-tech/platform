@@ -49,7 +49,7 @@ export default async function TrendingSection() {
     // Dark background wrapper matching the reference
     <section className="w-full py-20 bg-black text-white overflow-hidden">
       <div className="container mx-auto px-4 text-center mb-12">
-        <h2 className="text-4xl md:text-7xl font-extrabold tracking-tight">
+        <h2 className="text-4xl md:text-7xl font-extrabold tracking-tight uppercase">
           Trending Now
         </h2>
         <p className="text-white/60 mt-4 max-w-md mx-auto">
