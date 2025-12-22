@@ -6,6 +6,7 @@ import InfluencerCarousel from "@/components/sections/home/InfluencerCarousel";
 import NewArrivals from "@/components/sections/home/NewArrivals";
 import ShopByBrand from "@/components/sections/home/ShopByBrands";
 import TrendingSection from "@/components/sections/home/TrendingSection";
+import WhyChooseUs from "@/components/sections/home/WhyChooseUs";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <FreeShipping />
       <ShopByBrand />
       <InfluencerCarousel />
+      <WhyChooseUs />
     </div>
   );
 }
