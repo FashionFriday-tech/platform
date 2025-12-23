@@ -1,116 +1,224 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ShieldCheck, Truck, CreditCard, RefreshCcw, ArrowUpRight } from "lucide-react"
+import { motion } from "framer-motion";
+import { ShieldCheck, Truck, Users, RefreshCcw } from "lucide-react";
+import { CSSProperties } from "react";
 
-const points = [
+// --- Data ---
+
+const features = [
   {
+    id: "01",
     icon: ShieldCheck,
+    title: "100% Verified Sellers",
+    desc:
+      "Zero tolerance for fakes. We only onboard top-rated, authentic sellers to ensure legitimacy.",
+  },
+  {
+    id: "02",
+    icon: Users,
     title: "1000+ Happy Customers",
-    desc: "Secure checkout, verified products, and zero tolerance for low-quality sellers.",
+    desc:
+      "Join the movement. Thousands of satisfied customers across India trusting us for their daily fits.",
   },
   {
+    id: "03",
     icon: Truck,
-    title: "Fast Fulfillment",
-    desc: "Orders ship quickly with live tracking updates at every step of the journey.",
+    title: "Pan-India Shipping",
+    desc:
+      "From Mumbai to Manipur, we deliver everywhere. Fast, trackable shipping to every pin code.",
   },
+
   {
-    icon: CreditCard,
-    title: "Pay Your Way",
-    desc: "UPI, cards, wallets, net banking, and Cash on Delivery supported.",
-  },
-  {
+    id: "04",
     icon: RefreshCcw,
-    title: "No-Stress Returns",
-    desc: "Simple return flow designed to protect the customer, not the system.",
+    title: "Hassle-Free Returns",
+    desc:
+      "Shop with confidence. If the vibe isn't right, our easy return process has you covered.",
   },
-]
+];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+const reviewImages = [
+  "/images/reviews/1.jpg",
+  "/images/reviews/2.jpg",
+  "/images/reviews/3.jpg",
+  "/images/reviews/4.jpg",
+  "/images/reviews/5.jpg",
+  "/images/reviews/6.jpg",
+  "/images/reviews/7.jpg",
+  "/images/reviews/8.jpg",
+  "/images/reviews/9.jpg",
+  "/images/reviews/10.jpg",
+];
+
+// --- Interfaces ---
+
+interface InfiniteColumnProps {
+  images: string[];
+  duration: number;
+  reverse?: boolean;
 }
 
-const cardVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
-}
+// --- Components ---
 
-export default function WhyChooseUsGrid() {
+const InfiniteColumn = ({
+  images,
+  duration,
+  reverse = false,
+}: InfiniteColumnProps) => {
+  const loopImages = [...images, ...images, ...images];
+
   return (
-    <section className="relative py-24 bg-[#050505] text-white overflow-hidden font-sans">
-      
-      {/* Background Noise/Texture */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+    <>
+      <style jsx global>{`
+        @keyframes scrollUp {
+          0% {
+            transform: translateY(0);
+          }
+          100% {
+            transform: translateY(-50%);
+          }
+        }
+        @keyframes scrollDown {
+          0% {
+            transform: translateY(-50%);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
 
-      <div className="container mx-auto px-6 lg:px-12 relative z-10">
-        
-        {/* Section Header */}
-        <div className="mb-16 md:mb-24 max-w-2xl">
-          <motion.span 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-500 block mb-4"
-          >
-            Why Choose Us
-          </motion.span>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter uppercase leading-[0.95]"
-          >
-            Built for <span className="text-neutral-500">Trust.</span> <br />
-            Designed for <span className="text-white">Speed.</span>
-          </motion.h2>
-        </div>
+        .animate-scroll-up {
+          animation: scrollUp var(--duration) linear infinite;
+        }
 
-        {/* 2x2 Grid Layout (Matching Reference Image) */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
-        >
-          {points.map((item, idx) => (
+        .animate-scroll-down {
+          animation: scrollDown var(--duration) linear infinite;
+        }
+
+        /* The Important Fix: Force pause on hover */
+        .pause-on-hover:hover {
+          animation-play-state: paused !important;
+        }
+      `}</style>
+
+      <div
+        className={`flex flex-col gap-4 pause-on-hover cursor-pointer ${
+          reverse ? "animate-scroll-down" : "animate-scroll-up"
+        }`}
+        style={
+          {
+            "--duration": `${duration}s`,
+          } as CSSProperties
+        }
+      >
+        {loopImages.map((src, i) => (
+          <div
+            key={i}
+            className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/5 transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:shadow-2xl opacity-80 hover:opacity-100"
+          >
+            <img
+              src={src}
+              alt={`Customer Review ${i}`}
+              className="w-full h-auto object-cover block"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-linear-to-tr from-white/5 to-transparent pointer-events-none" />
+          </div>
+        ))}
+      </div>
+    </>
+  );
+};
+
+// --- Main Section ---
+export default function SplitFeatureSection() {
+  return (
+    <section className="relative bg-[#050505] text-white overflow-hidden font-sans ">
+      <div
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+          {/* LEFT SIDE */}
+          <div className="relative py-20 lg:py-32 flex flex-col justify-center lg:sticky lg:top-0 lg:h-screen z-10">
             <motion.div
-              key={idx}
-              variants={cardVariants}
-              className={`group relative overflow-hidden rounded-[2.5rem] p-8 flex flex-col justify-between bg-linear-to-br  backdrop-blur-sm transition-all duration-500 hover:scale-[1.02]`}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="mb-12"
             >
-              
-              {/* Content Top Left */}
-              <div className="relative z-20 max-w-[70%]">
-                <h3 className="text-2xl md:text-3xl font-bold leading-tight mb-4 text-white">
-                  {item.title}
-                </h3>
-                <p className="text-sm md:text-base text-white/60 font-medium leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-
-              {/* "Learn More" Link Bottom Left */}
-              <div className="relative z-20 mt-8">
-                <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/80 group-hover:text-white transition-colors">
-                  Learn More <ArrowUpRight className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className={`absolute -bottom-6 -right-6 md:-right-10 md:bottom--5 transition-transform duration-700 ease-out group-hover:scale-110 group-hover:-rotate-6`}>
-                 <div className="absolute inset-0 blur-[60px] opacity-40 bg-current scale-75" />
-                 <item.icon strokeWidth={1} className="w-48 h-48 md:w-64 md:h-64 opacity-100 drop-shadow-2xl" />
-              </div>
-
+              <h2 className="text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-[0.9] mb-6">
+                Defined by <br />
+                <span className="text-neutral-500">Trust.</span>
+              </h2>
+              <p className="text-lg text-white/80 max-w-md leading-relaxed">
+                Join over 1000+ happy customers across India. We don't just ship
+                products; we deliver verified quality to every pin code in the
+                country.
+              </p>
             </motion.div>
-          ))}
-        </motion.div>
 
+            <div className="space-y-8">
+              {features.map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="flex gap-6 group cursor-default"
+                >
+                  <div className="relative shrink-0 w-16 h-16 border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden transition-colors duration-300 group-hover:bg-white group-hover:border-white">
+                    <item.icon className="w-6 h-6 text-white transition-colors duration-300 group-hover:text-black z-10" />
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold uppercase tracking-wide mb-2 flex items-center gap-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-white/50 font-medium leading-relaxed max-w-sm transition-colors duration-300 group-hover:text-white/80">
+                      {item.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT SIDE */}
+          <div className="relative h-150 lg:h-screen w-full overflow-hidden bg-[#050505] lg:border-l border-white/5">
+            <div className="absolute top-0 left-0 right-0 h-32 bg-linear-to-b from-[#050505] via-[#050505]/80 to-transparent z-20 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-[#050505] via-[#050505]/80 to-transparent z-20 pointer-events-none" />
+
+            <div className="grid grid-cols-3 gap-3 p-4 lg:p-6 h-full">
+              <div className="h-full overflow-hidden relative">
+                <InfiniteColumn
+                  images={reviewImages.slice(0, 3)}
+                  duration={25}
+                />
+              </div>
+              <div className="h-full overflow-hidden relative pt-24">
+                <InfiniteColumn
+                  images={reviewImages.slice(3, 7)}
+                  duration={35}
+                  reverse={true}
+                />
+              </div>
+              <div className="h-full overflow-hidden relative pt-12">
+                <InfiniteColumn
+                  images={reviewImages.slice(7, 10)}
+                  duration={28}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
-  )
+  );
 }
