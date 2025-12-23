@@ -1,3 +1,4 @@
+import Footer from "@/components/layout/Footer";
 import BrandScroll from "@/components/sections/home/BrandScroll";
 import FeaturedCategories from "@/components/sections/home/FeaturedCatagories";
 import FreeShipping from "@/components/sections/home/FreeShipping";
@@ -22,6 +23,7 @@ export default function Home() {
       <InfluencerCarousel />
       <WhyChooseUs />
       <PWAInstallSection />
+      <Footer />
     </div>
   );
 }
