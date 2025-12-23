@@ -43,21 +43,21 @@ const categories = [
     href: "/shop/new",
   },
   {
-    id: 3,
+    id: 6,
     title: "Accessories",
     image: "/images/categories/accesories.png",
     count: "64 Products",
     href: "/shop/accessories",
   },
   {
-    id: 1,
+    id: 7,
     title: "Outerwear",
     image: "/images/categories/outfit.png",
     count: "42 Products",
     href: "/shop/outerwear",
   },
   {
-    id: 2,
+    id: 8,
     title: "Footwear",
     image: "/images/categories/footwear.png",
     count: "18 Products",
@@ -96,9 +96,9 @@ export default function CategoryCarousel() {
           style={{ x }}
           className="flex gap-4 lg:gap-6 px-4 lg:px-6 pb-12"
         >
-          {categories.map((cat) => (
+          {categories.map((cat, index) => (
             <div
-              key={cat.id}
+              key={`${cat.id}-${index}`}
               // EXACT SIZES PRESERVED
               className="relative shrink-0 w-[85vw] md:w-75 aspect-3/4 rounded-3xl overflow-hidden group cursor-pointer"
             >
