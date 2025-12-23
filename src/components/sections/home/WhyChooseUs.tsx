@@ -28,14 +28,6 @@ const features = [
     desc:
       "From Mumbai to Manipur, we deliver everywhere. Fast, trackable shipping to every pin code.",
   },
-
-  {
-    id: "04",
-    icon: RefreshCcw,
-    title: "Hassle-Free Returns",
-    desc:
-      "Shop with confidence. If the vibe isn't right, our easy return process has you covered.",
-  },
 ];
 
 const reviewImages = [
