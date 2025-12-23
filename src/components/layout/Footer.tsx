@@ -9,6 +9,7 @@ import {
   Youtube,
   Twitter,
   ChevronUp,
+  ArrowUpRight,
 } from "lucide-react";
 
 const FOOTER_SECTIONS = [
@@ -162,9 +163,14 @@ export default function Footer() {
                       <li key={link.name}>
                         <Link
                           href={link.href}
-                          className="text-gray-700 hover:text-black text-sm transition-colors"
+                          className="group flex gap-2 text-gray-700 hover:text-black text-sm transition-colors items-center"
                         >
                           {link.name}
+
+                          <ArrowUpRight
+                            size={16}
+                            className="text-white group-hover:text-black"
+                          />
                         </Link>
                       </li>
                     ))}
