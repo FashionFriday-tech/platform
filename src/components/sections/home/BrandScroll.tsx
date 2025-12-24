@@ -28,6 +28,11 @@ export default function BrandScroll() {
     <section className="w-full py-12 lg:py-16 bg-white  overflow-hidden">
       {/* 3. The Sliding Track */}
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
+        <div className="container mx-auto px-4 my-5 text-center">
+          <p className="text-sm font-bold uppercase tracking-widest text-gray-400">
+            Our Brand Collections
+          </p>
+        </div>
         <ScrollVelocityContainer className="w-full">
           <ScrollVelocityRow baseVelocity={0.5} direction={1}>
             {BrandLogo.map(({ name, link }, idx) => (
@@ -43,11 +48,6 @@ export default function BrandScroll() {
               />
             ))}
           </ScrollVelocityRow>
-          <div className="container mx-auto px-4 my-5 text-center">
-            <p className="text-sm font-bold uppercase tracking-widest text-gray-400">
-              Our Brand Collections
-            </p>
-          </div>
           <ScrollVelocityRow baseVelocity={0.5} direction={-1}>
             {BrandLogo.map(({ name, link }, idx) => (
               <img
