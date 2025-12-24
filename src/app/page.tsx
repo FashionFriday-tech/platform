@@ -1,4 +1,5 @@
 import Footer from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
 import BrandScroll from "@/components/sections/home/BrandScroll";
 import FeaturedCategories from "@/components/sections/home/FeaturedCatagories";
 import FreeShipping from "@/components/sections/home/FreeShipping";
@@ -13,6 +14,7 @@ import WhyChooseUs from "@/components/sections/home/WhyChooseUs";
 export default function Home() {
   return (
     <div>
+      <Header />
       <Hero />
       <BrandScroll />
       <FeaturedCategories />
