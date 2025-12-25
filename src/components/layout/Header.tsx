@@ -46,6 +46,12 @@ const navStructure = [
     subCategories: ["Shop All Sale", "Under ₹999", "Final Clearance"],
     isRed: true,
   },
+  {
+    label: "snkrs",
+    href: "/sneakers",
+    featuredImg: "/images/nav/women-edit.jpg",
+    subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"],
+  },
 ];
 
 export function Header() {
