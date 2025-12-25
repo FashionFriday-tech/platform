@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Heart,
   Home,
+  CircleUserRound,
 } from "lucide-react";
 
 // --- Data Configuration ---
@@ -122,7 +123,7 @@ export function Header() {
               onClick={() => setIsSearchOpen(true)}
               className="hidden lg:flex items-center gap-2 text-xs font-medium uppercase tracking-wider hover:opacity-60 transition-opacity"
             >
-              <Search className="w-4 h-4" />
+              <Search className="w-5 h-5" />
               <span>Search</span>
             </button>
 
@@ -132,15 +133,21 @@ export function Header() {
               href="/wishlist"
               className="hover:opacity-60 transition-opacity"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-6 h-6" />
             </Link>
 
             <button className="relative hover:opacity-60 transition-opacity">
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-6 h-6" />
               <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
                 2
               </span>
             </button>
+             <Link
+              href="/profile"
+              className="hover:opacity-60 transition-opacity"
+            >
+              <CircleUserRound className="w-6 h-6" />
+            </Link>
           </div>
         </div>
 
