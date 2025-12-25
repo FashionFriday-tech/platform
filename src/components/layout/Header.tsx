@@ -135,13 +135,15 @@ export function Header() {
             >
               <Heart className="w-6 h-6" />
             </Link>
-
-            <button className="relative hover:opacity-60 transition-opacity">
+            <Link
+              href="/bag"
+              className="hover:opacity-60 transition-opacity relative"
+            >
               <ShoppingBag className="w-6 h-6" />
               <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
                 2
               </span>
-            </button>
+            </Link>
              <Link
               href="/profile"
               className="hover:opacity-60 transition-opacity"
