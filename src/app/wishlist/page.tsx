@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import WishlistCard from "@/components/sections/wishlist/WishlistCard";
 import EmptyWishlist from "@/components/sections/wishlist/EmptyWishlist";
 import { Product } from "@/types/wishlist";
+import { Header } from "@/components/layout/Header";
 
 // SEO: Metadata Configuration
 export const metadata: Metadata = {
@@ -95,6 +96,7 @@ export default function WishlistPage() {
 
   return (
     <main className="min-h-screen bg-white pb-20 pt-10 sm:pt-20">
+      <Header />
       {/* Inject Structured Data */}
       <script
         type="application/ld+json"
