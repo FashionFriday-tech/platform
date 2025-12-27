@@ -45,7 +45,7 @@ export default function BrandGrid({
       <div className="container mx-auto px-4">
         <div
           onMouseLeave={() => setActiveId(null)}
-          className="relative grid grid-cols-2 md:grid-cols-4 gap-0.5 border-2 border-black bg-neutral-900"
+          className="relative grid grid-cols-3 md:grid-cols-4 gap-0.5 border-2 border-black bg-neutral-900"
         >
           {brands.map((brand) => {
             const isActive = activeId === brand.id;
@@ -55,7 +55,7 @@ export default function BrandGrid({
                 key={brand.id}
                 href={brand.href}
                 onMouseEnter={() => setActiveId(brand.id)}
-                className="relative isolate bg-white aspect-2/1 md:aspect-6/3 flex items-center justify-center p-8 overflow-hidden"
+                className="relative isolate bg-white aspect-2/2 md:aspect-6/3 flex items-center justify-center p-8 overflow-hidden"
               >
                 {/* FLOATING BLACK BOX */}
                 {isActive && (
