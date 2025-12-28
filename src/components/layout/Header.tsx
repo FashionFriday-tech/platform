@@ -295,8 +295,17 @@ export function Header() {
         <span className="font-semibold">HELLO, AJMAL</span>
         {/* <img src="logos/ff-full-logo.jpg" alt="" className="w-40 invert" /> */}
         <div className="flex items-center justify-center gap-4">
-          <Bell />
+
+          <Link
+            href="/notifications"
+            className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors relative"
+          >
+            <Bell className="w-6 h-6" />
+            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+          </Link>
+
           <Search />
+
           <Link
             href="/profile"
             className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
