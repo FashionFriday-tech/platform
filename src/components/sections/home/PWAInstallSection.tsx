@@ -11,39 +11,85 @@ import {
   Zap,
   ShieldCheck,
   Lock,
-  Star,
 } from "lucide-react";
 import { Iphone } from "@/components/ui/magicUi/iphone";
 
+/* ---------------- PWA Hook ---------------- */
+
 function usePWAInstall() {
-  const [promptInstall, setPromptInstall] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
-    setIsIOS(/iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase()));
+    const ua = navigator.userAgent.toLowerCase();
 
-    const handler = (e: any) => {
-      e.preventDefault();
-      setPromptInstall(e);
-    };
+    const ios =
+      /iphone|ipad|ipod/.test(ua) ||
+      (navigator.platform === "MacIntel" &&
+        (navigator as any).maxTouchPoints > 1);
 
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    setIsIOS(ios);
+
+    // Detect already installed
+    if (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (navigator as any).standalone === true
+    ) {
       setIsInstalled(true);
     }
 
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    const beforeInstallHandler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    const installedHandler = () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    };
+
+    window.addEventListener("beforeinstallprompt", beforeInstallHandler);
+    window.addEventListener("appinstalled", installedHandler);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        beforeInstallHandler
+      );
+      window.removeEventListener("appinstalled", installedHandler);
+    };
   }, []);
 
-  const install = () => {
-    if (promptInstall) promptInstall.prompt();
-    else setShowInstructions(true);
+  const install = async () => {
+    if (isInstalled) {
+      window.location.href = "/";
+      return;
+    }
+
+    // Android / Desktop
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      setDeferredPrompt(null);
+      return;
+    }
+
+    // iOS fallback
+    setShowInstructions(true);
   };
 
-  return { isInstalled, install, showInstructions, setShowInstructions, isIOS };
+  return {
+    isInstalled,
+    install,
+    showInstructions,
+    setShowInstructions,
+    isIOS,
+  };
 }
+
+/* ---------------- Animations ---------------- */
 
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },
@@ -58,9 +104,11 @@ const fadeInUp: Variants = {
   visible: {
     y: 0,
     opacity: 1,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
   },
 };
+
+/* ---------------- Component ---------------- */
 
 export default function PWAInstallSection() {
   const {
@@ -72,195 +120,136 @@ export default function PWAInstallSection() {
   } = usePWAInstall();
 
   return (
-    <section className="relative w-full text-neutral-900 overflow-hidden font-sans py-16 sm:py-20">
-      <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-12 md:gap-24">
-        {/* iPhone Mockup */}
+    <>
+    {isInstalled ? null : (
+      <section className="relative w-full overflow-hidden py-16 sm:py-20">
+      <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-16 md:gap-24">
+
+        {/* Phone */}
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
+          initial={{ opacity: 0, x: -40 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="order-1 flex justify-center md:justify-end w-full md:w-1/2"
+          transition={{ duration: 0.7 }}
+          className="w-full md:w-1/2 flex justify-center"
         >
           <Iphone
-            className="lg:w-70 shadow-2xl rounded-4xl"
-            src="images/model/ff-app.png"
+            className="w-56 lg:w-72 shadow-2xl rounded-4xl"
+            src="/images/model/ff-app.png"
           />
         </motion.div>
 
-        {/* Info Column */}
+        {/* Content */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="order-2 flex flex-col w-full md:w-1/2 text-left gap-6"
+          className="w-full md:w-1/2 flex flex-col gap-6"
         >
-          {/* Badge */}
           <motion.span
             variants={fadeInUp}
-            className="w-45 px-3 py-1 bg-neutral-100 border border-neutral-200 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase text-neutral-500 inline-block"
+            className="px-4 py-1 border rounded-full text-[10px] tracking-widest uppercase font-bold w-fit"
           >
             Progressive Web App
           </motion.span>
 
-          {/* Headline */}
           <motion.h1
             variants={fadeInUp}
-            className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tighter leading-[1.1]"
+            className="text-4xl md:text-5xl font-semibold leading-tight"
           >
             The Vault <br />
             <span className="text-neutral-400">On Your Homescreen.</span>
           </motion.h1>
 
-          {/* Description */}
           <motion.p
             variants={fadeInUp}
-            className="text-neutral-500 text-sm md:text-base font-medium leading-relaxed max-w-md"
+            className="text-neutral-500 max-w-md text-sm"
           >
-            Experience the store like a native app. Get instant notifications
-            for drops, smoother navigation, offline access, and exclusive "First
-            Copy" access.
+            Native-app experience. Faster loads, offline access, instant
+            notifications and exclusive drops.
           </motion.p>
 
-          {/* Feature Points */}
-          <motion.div variants={fadeInUp} className="grid grid-cols-1 gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center shrink-0">
-                <Zap className="w-5 h-5 text-black" />
+          {/* Features */}
+          <motion.div variants={fadeInUp} className="grid gap-4">
+            {[Zap, ShieldCheck, Lock].map((Icon, i) => (
+              <div key={i} className="flex gap-3">
+                <div className="w-10 h-10 rounded-full border flex items-center justify-center">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold uppercase">
+                    {i === 0
+                      ? "Zero Latency"
+                      : i === 1
+                      ? "Privacy & Security"
+                      : "Encrypted & Verified"}
+                  </h4>
+                  <p className="text-xs text-neutral-500">
+                    {i === 0
+                      ? "Instant loads and checkout."
+                      : i === 1
+                      ? "No app store. No tracking."
+                      : "Trusted by thousands."}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-bold text-sm uppercase tracking-wide">
-                  Zero Latency
-                </h4>
-                <p className="text-xs text-neutral-500 mt-1">
-                  Faster load times than browser. Instant checkout.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-5 h-5 text-black" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm uppercase tracking-wide">
-                  Privacy & Security
-                </h4>
-                <p className="text-xs text-neutral-500 mt-1">
-                  Direct install, no app store trace, fully secure transactions.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-neutral-50 border border-neutral-100 flex items-center justify-center shrink-0">
-                <Lock className="w-5 h-5 text-black" />
-              </div>
-              <div>
-                <h4 className="font-bold text-sm uppercase tracking-wide">
-                  Encrypted & Verified
-                </h4>
-                <p className="text-xs text-neutral-500 mt-1">
-                  All data encrypted. Trusted by thousands of customers.
-                </p>
-              </div>
-            </div>
+            ))}
           </motion.div>
 
-          {/* Action / Install */}
-          <motion.div variants={fadeInUp} className="mt-2 w-full max-w-sm">
+          {/* Install CTA */}
+          <motion.div variants={fadeInUp} className="max-w-sm">
             <AnimatePresence>
               {showInstructions && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10, height: 0 }}
-                  animate={{ opacity: 1, y: 0, height: "auto" }}
-                  exit={{ opacity: 0, y: 10, height: 0 }}
-                  className="overflow-hidden mb-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="mb-4 p-4 border rounded-xl text-sm relative"
                 >
-                  <div className="bg-neutral-50 border border-neutral-200 p-5 rounded-xl text-sm relative">
-                    <button
-                      onClick={() => setShowInstructions(false)}
-                      className="absolute top-3 right-3 text-neutral-400 hover:text-black"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                    <h5 className="font-bold mb-3 flex items-center gap-2">
-                      <Smartphone className="w-4 h-4" />{" "}
-                      {isIOS ? "iOS Installation" : "Android Installation"}
-                    </h5>
-                    {isIOS ? (
-                      <ol className="space-y-2 text-neutral-600 text-xs font-medium list-decimal pl-4">
-                        <li>
-                          Tap the <Share className="inline w-3 h-3 mx-1" />{" "}
-                          Share button.
-                        </li>
-                        <li>
-                          Select <b>"Add to Home Screen"</b>.
-                        </li>
-                        <li>
-                          Tap <b>Add</b> in the top right corner.
-                        </li>
-                      </ol>
-                    ) : (
-                      <ol className="space-y-2 text-neutral-600 text-xs font-medium list-decimal pl-4">
-                        <li>Tap the browser menu (three dots).</li>
-                        <li>
-                          Select <b>"Install App"</b> or{" "}
-                          <b>"Add to Home Screen"</b>.
-                        </li>
-                      </ol>
-                    )}
-                  </div>
+                  <button
+                    onClick={() => setShowInstructions(false)}
+                    className="absolute top-2 right-2"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  <h5 className="font-bold flex items-center gap-2 mb-2">
+                    <Smartphone className="w-4 h-4" />
+                    iOS Installation
+                  </h5>
+
+                  <ol className="list-decimal pl-4 text-xs space-y-1">
+                    <li>
+                      Tap <Share className="inline w-3 h-3" /> Share
+                    </li>
+                    <li>Select Add to Home Screen</li>
+                    <li>Tap Add</li>
+                  </ol>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <div>
-              <button
-                onClick={install}
-                disabled={isInstalled}
-                className="group w-full h-14 bg-black text-white rounded-full flex items-center justify-between px-4 pl-6 hover:bg-neutral-800 transition-all active:scale-[0.98] shadow-lg shadow-black/10"
-              >
-                <span className="text-sm font-bold tracking-wide">
-                  {isInstalled ? "OPEN APP" : "ADD TO HOME SCREEN"}
-                </span>
-                <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center transition-transform">
-                  {isInstalled ? (
-                    <Check className="w-5 h-5" />
-                  ) : (
-                    <Download className="w-5 h-5" />
-                  )}
-                </div>
-              </button>
-              <div className="mt-3 text-center flex flex-col sm:flex-row items-center justify-center gap-3 text-[10px] text-neutral-400 font-medium uppercase tracking-widest">
-                <span>10k+ Downloads</span>
-
-                <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-neutral-300" />
-
-                <span className="flex items-center gap-1">
-                  <span>4.5/5</span>
-                  <span className="flex gap-0.5">
-                    <Star className="w-3 h-3 text-yellow-400" />
-                    <Star className="w-3 h-3 text-yellow-400" />
-                    <Star className="w-3 h-3 text-yellow-400" />
-                    <Star className="w-3 h-3 text-yellow-400" />
-                    <Star className="w-3 h-3 text-yellow-400/50" />{" "}
-                  </span>
-                </span>
+            <button
+              onClick={install}
+              className="w-full h-14 bg-black text-white rounded-full flex items-center justify-between px-6 active:scale-[0.98]"
+            >
+              <span className="text-sm font-bold">
+                {isInstalled ? "OPEN APP" : "ADD TO HOME SCREEN"}
+              </span>
+              <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center">
+                {isInstalled ? (
+                  <Check className="w-5 h-5" />
+                ) : (
+                  <Download className="w-5 h-5" />
+                )}
               </div>
-            </div>
-
-            {!isInstalled && (
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-[10px] text-neutral-400 font-medium uppercase tracking-widest mt-2">
-                <span>Powered by PWA</span>
-                <span className="w-1 h-1 rounded-full bg-neutral-300 hidden sm:inline-block" />
-                <span>2MB Size</span>
-              </div>
-            )}
+            </button>
           </motion.div>
         </motion.div>
       </div>
-    </section>
+    </section> 
+    )}
+    </>
   );
 }
