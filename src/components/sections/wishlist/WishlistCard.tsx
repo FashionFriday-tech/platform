@@ -88,8 +88,8 @@ export default function WishlistCard({ product }: WishlistCardProps) {
         </div>
 
         {/* Stock Status & Mobile Actions */}
-        <div className="w-full border rounded-full mt-2 py-1 flex items-center justify-center sm:hidden">
-          <button className="text-sm font-semibold underline decoration-gray-300 underline-offset-4">
+        <div className="w-full bg-black text-white border rounded-full mt-2 py-1 flex items-center justify-center sm:hidden">
+          <button className="text-sm font-semibold py-2.5 decoration-gray-300 underline-offset-4">
             Move to Bag
           </button>
         </div>

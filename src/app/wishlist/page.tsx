@@ -95,7 +95,7 @@ export default function WishlistPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white pb-20 pt-10 sm:pt-20">
+    <main className="min-h-screen bg-white pb-20 sm:pt-20">
       <Header />
       {/* Inject Structured Data */}
       <script
@@ -105,28 +105,28 @@ export default function WishlistPage() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="mb-10 flex mt-6 flex-col items-center justify-between gap-4 border-b border-gray-100 pb-6 sm:flex-row">
+        <div className="sm:mb-10 flex flex-col sm:mt-6 items-center justify-between gap-4 sm:border-b border-gray-100 pb-6 sm:flex-row">
           <h1 className="text-3xl font-bold tracking-wide text-gray-900 sm:text-4xl lg:text-5xl uppercase">
             Favorites
           </h1>
 
           {/* Optional: Sort/Filter Controls could go here */}
           {hasItems && (
-            <div>
+            <div className="w-full flex items-center justify-between">
+              <p className="sm:mt-2 text-gray-500">
+                {wishlistItems.length}{" "}
+                {wishlistItems.length === 1 ? "item" : "items"} saved 
+              </p>
               <button className="text-sm font-medium text-gray-900 hover:text-gray-600">
                 Remove all items
               </button>
-              <p className="mt-2 text-gray-500">
-                {wishlistItems.length}{" "}
-                {wishlistItems.length === 1 ? "item" : "items"} saved for later
-              </p>
             </div>
           )}
         </div>
 
         {/* Content Section */}
         {hasItems ? (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+          <div className="grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
             {wishlistItems.map((item) => (
               <WishlistCard key={item.id} product={item} />
             ))}
