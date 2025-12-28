@@ -140,7 +140,7 @@ export default function TrendingCoverflowPage() {
 
   return (
     <section className="w-full py-24 bg-white text-black overflow-hidden">
-      <div className="container mx-auto px-4 text-center mb-16">
+      <div className="container mx-auto px-4 text-center sm:mb-16">
         <h2 className="text-4xl md:text-7xl font-extrabold uppercase tracking-tight">
           Content Partners
         </h2>
@@ -149,7 +149,7 @@ export default function TrendingCoverflowPage() {
         </p>
       </div>
 
-      <div className="relative w-full h-[500px] flex items-center justify-center my-10">
+      <div className="relative w-full h-[500px] flex items-center justify-center sm:my-10">
         <div 
           className="relative w-full max-w-6xl h-full flex items-center justify-center"
           style={{ perspective: "1000px" }}
