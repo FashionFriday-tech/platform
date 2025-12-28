@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link"; // Imported for navigation
 import {
   Camera,
   User,
@@ -9,10 +10,12 @@ import {
   Save,
   Loader2,
   ShieldCheck,
-  CheckCircle2, // Added for verified state
+  CheckCircle2,
   AlertCircle,
+  MapPin, // Imported
+  ChevronRight, // Imported
 } from "lucide-react";
-import Image from "next/image"; // Recommended for the header image fix
+import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 
 // Types
@@ -59,17 +62,11 @@ export default function EcommerceProfile() {
     }
   };
 
-  // Simulation for OTP Verification / Saving Individual Field
   const handleVerifyField = async (field: "phone" | "email") => {
     setVerifyingField(field);
-    
-    // Simulate API call (OTP Trigger)
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    
     setVerifiedStatus((prev) => ({ ...prev, [field]: true }));
     setVerifyingField(null);
-    
-    // Optional: Trigger a toast notification here
     alert(`OTP sent to your ${field} successfully!`);
   };
 
@@ -90,7 +87,7 @@ export default function EcommerceProfile() {
           {/* LEFT SIDEBAR */}
           <aside className="md:col-span-4 space-y-6">
             <div className="bg-white rounded-4xl p-6 border border-gray-100 shadow-sm text-center relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-24 bg-linear-to-b from-gray-50 to-white z-0" />
+              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-gray-50 to-white z-0" />
 
               <div className="relative z-10">
                 <div
@@ -98,7 +95,6 @@ export default function EcommerceProfile() {
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <div className="w-full h-full rounded-full overflow-hidden relative">
-                    {/* Fixed Image component */}
                     <Image
                       src={formData.avatarUrl}
                       alt="Profile"
@@ -142,6 +138,23 @@ export default function EcommerceProfile() {
                     ></div>
                   </div>
                 </div>
+
+                {/* --- NEW: Manage Addresses Button --- */}
+                <Link href="/profile/addresses" className="block mt-4 group">
+                    <div className="flex items-center justify-between p-3 px-4 rounded-3xl border border-gray-100 bg-white shadow-sm group-hover:border-black group-hover:shadow-md transition-all duration-300">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-gray-50 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                                <MapPin size={18} />
+                            </div>
+                            <div className="text-left">
+                                <h4 className="font-bold text-sm text-gray-900">My Addresses</h4>
+                                <p className="text-[10px] text-gray-500">Manage delivery locations</p>
+                            </div>
+                        </div>
+                        <ChevronRight size={16} className="text-gray-400 group-hover:text-black transition-colors" />
+                    </div>
+                </Link>
+
               </div>
               <input
                 type="file"
@@ -176,28 +189,24 @@ export default function EcommerceProfile() {
                   placeholder="Your Name"
                 />
 
-                {/* Phone with Verification */}
                 <ModernInput
                   label="Phone Number"
                   value={formData.phone}
                   onChange={(v: string) => setFormData({ ...formData, phone: v })}
                   type="tel"
                   placeholder="Mobile Number"
-                  // Verification Props
                   actionLabel="Verify"
                   onAction={() => handleVerifyField("phone")}
                   isLoading={verifyingField === "phone"}
                   isVerified={verifiedStatus.phone}
                 />
 
-                {/* Email with Verification */}
                 <ModernInput
                   label="Email Address"
                   value={formData.email}
                   onChange={(v: string) => setFormData({ ...formData, email: v })}
                   type="email"
                   placeholder="email@domain.com"
-                  // Verification Props
                   actionLabel="Verify"
                   onAction={() => handleVerifyField("email")}
                   isLoading={verifyingField === "email"}
@@ -221,7 +230,6 @@ export default function EcommerceProfile() {
               </div>
 
               <div className="p-6 space-y-6">
-                {/* Visual Selector for Gender */}
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">
                     I shop for
@@ -245,7 +253,6 @@ export default function EcommerceProfile() {
                   </div>
                 </div>
 
-                {/* Visual Selector for Style */}
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">
                     My Style Vibe
@@ -339,10 +346,10 @@ interface ModernInputProps {
   type?: string;
   placeholder?: string;
   icon?: React.ReactNode;
-  actionLabel?: string;     // Text for the button (e.g., "Verify")
-  onAction?: () => void;    // Function to run when clicked
-  isLoading?: boolean;      // Loading state for the specific input
-  isVerified?: boolean;     // If true, shows green checkmark
+  actionLabel?: string;
+  onAction?: () => void;
+  isLoading?: boolean;
+  isVerified?: boolean;
 }
 
 const ModernInput = ({
@@ -362,7 +369,6 @@ const ModernInput = ({
       <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
         {label}
       </label>
-      {/* Show Verified Status in Label Area */}
       {isVerified && (
         <div className="flex items-center gap-1 text-[10px] font-bold text-black  px-2 rounded-full">
           <CheckCircle2 size={12} /> VERIFIED
@@ -376,8 +382,7 @@ const ModernInput = ({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        disabled={isVerified} // Optional: Lock field if verified
-        // Add padding-right (pr-24) to prevent text from going under the button
+        disabled={isVerified}
         className={`w-full border border-gray-200 text-gray-900 text-sm rounded-4xl pl-4 py-3.5 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black transition-all placeholder:text-gray-400
           ${actionLabel ? "pr-28" : "pr-4"} 
           ${isVerified && "border-black text-black"}
@@ -385,19 +390,17 @@ const ModernInput = ({
         placeholder={placeholder}
       />
 
-      {/* ACTION BUTTON INSIDE INPUT */}
       {onAction && !isVerified && (
         <button
           type="button"
           onClick={onAction}
-          disabled={isLoading || !value} // Disable if empty or loading
+          disabled={isLoading || !value}
           className="absolute right-1.5 top-1.5 bottom-1.5 bg-black text-white text-xs font-bold px-4 rounded-3xl hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center min-w-20"
         >
           {isLoading ? <Loader2 className="animate-spin" size={14} /> : actionLabel}
         </button>
       )}
 
-      {/* VERIFIED INDICATOR INSIDE INPUT */}
       {isVerified && (
         <div className="absolute right-4 top-1/2 -translate-y-1/2 text-black">
            <CheckCircle2 size={20}  />
