@@ -29,7 +29,7 @@ export default function FeatureRail({
   const [activeId, setActiveId] = useState<number>(collections[0]?.id ?? 0);
 
   return (
-    <section className="w-full py-16 lg:py-24 bg-white">
+    <section className="w-full pb-20 sm:py-16 lg:py-24 bg-white">
       <div className="container mx-auto px-4 lg:px-6 mb-12 flex items-end justify-between">
         <div>
           <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">
