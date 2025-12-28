@@ -6,8 +6,8 @@ import ImageCarousel from "@/components/ui/sections/ImageCarousel";
 export default function Hero() {
   return (
     // OUTER SECTION: Padding around the grid
-    <section className="w-full p-4 lg:p-6 bg-black">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[80vh] mt-18 lg:h-[85vh]">
+    <section className="w-full p-2 pb-6 lg:p-6 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[80vh] SM:mt-18 lg:h-[85vh]">
         
 
         <div className="lg:col-span-6 relative h-125 lg:h-full rounded-3xl group w-full">
