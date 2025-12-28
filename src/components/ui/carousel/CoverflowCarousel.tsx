@@ -63,7 +63,7 @@ const getVariant = (index: number) => {
       rotateY: `${dir * -40}deg`,
       zIndex: 40,
       opacity: 0.75,
-      filter: "brightness(0.6) blur(1px)",
+      filter: "brightness(0.8) blur(1px)",
     };
   }
 
@@ -109,7 +109,7 @@ const getVariant = (index: number) => {
                 animate={variant}
                 initial={variant}
                 transition={transitionSpec}
-                className="absolute w-70 md:w-[320px] aspect-3/4 rounded-3xl overflow-hidden cursor-pointer border border-white/10 shadow-2xl bg-zinc-900"
+                className="absolute w-60 md:w-[320px] aspect-3/4 rounded-4xl overflow-hidden cursor-pointer border shadow-xl"
                 style={{ transformStyle: "preserve-3d" }}
                 onClick={() => setActiveIndex(index)}
               >
@@ -121,12 +121,9 @@ const getVariant = (index: number) => {
                     fill
                     sizes="(max-width: 768px) 300px, 400px"
                     className="object-cover"
-                    priority={isActive} // Critical for LCP
+                    priority={isActive} 
                   />
                   
-                  {/* DARK GRADIENT OVERLAY */}
-                  {/* <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/0 to-transparent" /> */}
-
                   {/* TEXT CONTENT (Only visible on center card usually, but kept for style) */}
                   <div className="absolute inset-0 p-6 flex flex-col justify-between">
                     {/* Top Tag */}
