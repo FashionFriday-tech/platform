@@ -291,7 +291,7 @@ export function Header() {
         </Link>
       </nav>
 
-      <div className="sticky top-0 right-0 lg:hidden w-full p-5 z-40 bg-white shadow-sm text-black flex justify-between">
+      <div className="sticky top-0 right-0 lg:hidden w-full p-5 z-40 bg-white text-black flex justify-between">
         <span className="font-semibold">HELLO, AJMAL</span>
         {/* <img src="logos/ff-full-logo.jpg" alt="" className="w-40 invert" /> */}
         <div className="flex items-center justify-center gap-4">
