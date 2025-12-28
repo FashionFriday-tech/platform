@@ -1,31 +1,19 @@
 {
-  "name": "Fashion Friday",
-  "short_name": "FF",
-  "id": "/",
+  "name": "FASHION FRIDAY",
+  "short_name": "FASHION FRIDAY",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#ffffff",
   "description": "Fashion Friday – premium fashion & sneakers first copy, delivered.",
   "orientation": "portrait",
   "lang": "en-IN",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "/logos/ff-app-white-icon.png",
       "sizes": "192x192",
       "type": "image/png"
-    },
-    {
-      "src": "/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512x512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }
