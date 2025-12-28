@@ -14,18 +14,18 @@ export default function Hero() {
          <ImageCarousel />
         </div>
         <div className="lg:col-span-6 flex flex-col gap-4 h-full">
-          <div className="grow p-8 lg:p-12 bg-white rounded-3xl flex flex-col justify-center relative overflow-hidden">
+          <div className="grow p-8 lg:p-12 bg-black text-white rounded-3xl flex flex-col justify-center relative overflow-hidden">
             <div className="z-10 relative flex justify-between gap-10 items-center">
-              <h1 className="text-4xl lg:text-5xl font-black uppercase leading-[0.9] tracking-tight text-black">
+              <h1 className="text-4xl lg:text-5xl font-black uppercase leading-[0.9] tracking-tight ">
                 <div className="flex gap-4">
-                  For <ArrowRight className="w-10 h-10 stroke-[1.5px] text-black" />
+                  For <ArrowRight className="w-10 h-10 stroke-[1.5px]" />
                 </div>
                  Everyone
                 <br /> But Not
                 <br /> Anyone
               </h1>
 
-              <p className="text-sm lg:text-lg font-medium text-black max-w-sm leading-relaxed hidden lg:block">
+              <p className="text-sm lg:text-lg font-medium  max-w-sm leading-relaxed hidden lg:block">
                 We establish personal relationships with our boutiques to make
                 sure each is vetted for a stress-free shopping experience.
               </p>
