@@ -6,12 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   ShoppingBag,
-  Menu,
   X,
   ArrowRight,
   Heart,
   Home,
-  CircleUserRound,
+  TextSearch,
+  UserRound,
+  Bell,
+  Store,
 } from "lucide-react";
 
 // --- Data Configuration ---
@@ -79,14 +81,9 @@ export function Header() {
       ------------------------------------------------ */}
       <header
         onMouseLeave={() => setActiveMenu(null)}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500
-        ${
-          isScrolled || activeMenu
-            ? "bg-white backdrop-blur-xl text-black"
-            : "bg-transparent text-black"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500`}
       >
-        <div className="mx-auto bg-black text-white border-y-2 px-6 lg:px-12 flex items-center justify-between z-50 relative">
+        <div className="relative hidden sm:flex items-center justify-between z-50 mx-auto bg-black text-white border-y-2 px-6 lg:px-12">
           {/* Logo */}
           <Link href="/" className="z-50 relative group invert">
             <img
@@ -144,11 +141,11 @@ export function Header() {
                 2
               </span>
             </Link>
-             <Link
+            <Link
               href="/profile"
               className="hover:opacity-60 transition-opacity"
             >
-              <CircleUserRound className="w-6 h-6" />
+              <UserRound className="w-6 h-6" />
             </Link>
           </div>
         </div>
@@ -156,7 +153,7 @@ export function Header() {
         {/* ------------------------------------------------
             SCROLLING MARQUEE BANNER
         ------------------------------------------------ */}
-        <div className="bg-black text-white border-b border-white/10 overflow-hidden py-2 relative z-40">
+        <div className="hidden sm:block bg-black text-white border-b border-white/10 overflow-hidden py-2 relative z-40">
           <div className="flex whitespace-nowrap animate-marquee">
             {/* Render content twice to create seamless loop */}
             <div className="flex gap-10 px-5">
@@ -258,46 +255,63 @@ export function Header() {
       {/* ------------------------------------------------
           3. MOBILE APP-BAR (Bottom Navigation)
       ------------------------------------------------ */}
-      <nav className="lg:hidden fixed bottom-6 left-4 right-4 z-50 bg-black/90 backdrop-blur-xl text-white rounded-2xl shadow-2xl border border-white/10 px-6 py-4 flex items-center justify-between">
-        <Link
-          href="/"
-          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors"
-        >
-          <Home className="w-5 h-5" />
-        </Link>
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white backdrop-blur-xl text-black shadow-2xl  px-6 py-4 flex items-center justify-between">
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors"
+          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
-          <Search className="w-5 h-5" />
+          <TextSearch className="w-6 h-6" />
         </button>
 
-        <button
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="bg-white text-black p-3 rounded-full -mt-8 shadow-lg shadow-white/20 border-4 border-[#050505]"
+        <Link
+          href="/"
+          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
-          <Menu className="w-6 h-6" />
-        </button>
+          <Store />
+        </Link>
+        <Link
+          href="/"
+          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
+        >
+          <img src="logos/ff-logo.png" alt="home" className="w-10 " />
+        </Link>
 
         <Link
           href="/wishlist"
-          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors"
+          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
-          <Heart className="w-5 h-5" />
+          <Heart className="w-6 h-6" />
         </Link>
         <Link
-          href="/cart"
-          className="flex flex-col items-center gap-1 text-white/50 hover:text-white transition-colors relative"
+          href="/bag"
+          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors relative"
         >
-          <ShoppingBag className="w-5 h-5" />
+          <ShoppingBag className="w-6 h-6" />
           <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-red-500 rounded-full" />
         </Link>
       </nav>
 
-      <div className="lg:hidden fixed top-0 w-full p-6 z-40 bg-linear-to-b from-white/80 to-transparent pointer-events-none">
-        <span className="font-black text-xl tracking-tighter uppercase text-black">
-          FF.
-        </span>
+      <div className="sticky top-0 right-0 lg:hidden w-full p-5 z-40 bg-white shadow-sm text-black flex justify-between">
+        <span className="font-semibold">HELLO, AJMAL</span>
+        {/* <img src="logos/ff-full-logo.jpg" alt="" className="w-40 invert" /> */}
+        <div className="flex items-center justify-center gap-4">
+          <Bell />
+          <Search />
+          <Link
+            href="/profile"
+            className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
+          >
+            <UserRound className="w-6 h-6" />
+          </Link>
+        </div>
+
+        {/* <div className="w-full flex items-center gap-3 px-4 py-3 border border-white text-white rounded-full backdrop-blur-sm">
+          <input
+            type="search"
+            placeholder="Search products"
+            className="w-full bg-transparent text-white placeholder-white/60 text-sm focus:outline-none"
+          />
+        </div> */}
       </div>
 
       {/* ------------------------------------------------
