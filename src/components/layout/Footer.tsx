@@ -73,7 +73,7 @@ export default function Footer() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <footer className="w-full flex flex-col">
+    <footer className="w-full flex flex-col mb-14 sm:mb-0">
       <div className="relative w-full h-80 flex flex-col items-center justify-center text-center px-4 overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <Image
