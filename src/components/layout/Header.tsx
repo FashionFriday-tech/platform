@@ -264,7 +264,7 @@ export function Header() {
         </button>
 
         <Link
-          href="/"
+          href="/store"
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
           <Store />
