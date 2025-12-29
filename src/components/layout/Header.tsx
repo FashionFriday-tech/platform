@@ -87,7 +87,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="z-50 relative group invert">
             <img
-              src="logos/ff-full-logo.jpg"
+              src="/logos/ff-full-logo.jpg"
               alt="fashion friday"
               className="w-50"
             />
@@ -220,7 +220,7 @@ export function Header() {
                     <div className="absolute inset-0 bg-neutral-200 flex items-center justify-center text-neutral-400">
                       <span className="text-xs uppercase tracking-widest">
                         <img
-                          src="images/model/aj.png"
+                          src="/images/model/aj.png"
                           alt="model"
                           className="object-cover object-top"
                         />
@@ -273,7 +273,7 @@ export function Header() {
           href="/"
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
-          <img src="logos/ff-logo.png" alt="home" className="w-10 " />
+          <img src="/logos/ff-logo.png" alt="home" className="w-10 " />
         </Link>
 
         <Link
