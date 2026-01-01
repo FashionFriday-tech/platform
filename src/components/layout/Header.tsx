@@ -15,6 +15,9 @@ import {
   Bell,
   Store,
 } from "lucide-react";
+import { BsBagHeart } from "react-icons/bs";
+import { RiStoreLine } from "react-icons/ri";
+import { TbListSearch } from "react-icons/tb";
 
 // --- Data Configuration ---
 const navStructure = [
@@ -256,19 +259,20 @@ export function Header() {
           3. MOBILE APP-BAR (Bottom Navigation)
       ------------------------------------------------ */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white backdrop-blur-xl text-black shadow-2xl  px-6 py-4 flex items-center justify-between">
+        <Link
+          href="/shop"
+          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
+        >
+          <RiStoreLine className="w-6 h-6" />
+        </Link>
+
         <button
           onClick={() => setIsSearchOpen(true)}
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
-          <TextSearch className="w-6 h-6" />
+          <TbListSearch className="w-6 h-6" />
         </button>
 
-        <Link
-          href="/store"
-          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
-        >
-          <Store />
-        </Link>
         <Link
           href="/"
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
@@ -277,17 +281,18 @@ export function Header() {
         </Link>
 
         <Link
-          href="/wishlist"
-          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
-        >
-          <Heart className="w-6 h-6" />
-        </Link>
-        <Link
           href="/bag"
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors relative"
         >
-          <ShoppingBag className="w-6 h-6" />
+          <BsBagHeart className="w-6 h-6" />
           <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-red-500 rounded-full" />
+        </Link>
+
+        <Link
+          href="/profile"
+          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
+        >
+          <UserRound className="w-6 h-6" />
         </Link>
       </nav>
 
@@ -295,22 +300,13 @@ export function Header() {
         <span className="font-semibold">HELLO, AJMAL</span>
         {/* <img src="logos/ff-full-logo.jpg" alt="" className="w-40 invert" /> */}
         <div className="flex items-center justify-center gap-4">
-
+          <Search />
           <Link
             href="/notifications"
             className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors relative"
           >
             <Bell className="w-6 h-6" />
             <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
-          </Link>
-
-          <Search />
-
-          <Link
-            href="/profile"
-            className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
-          >
-            <UserRound className="w-6 h-6" />
           </Link>
         </div>
 
