@@ -2,11 +2,11 @@ import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 
 const categories = [
-  { name: "Sneakers", slug: "sneakers", imageBg: "/images/store/sneakers.png" },
-  { name: "Watches", slug: "watches", imageBg: "/images/store/watches.png" },
-  { name: "Cloths", slug: "cloths", imageBg: "/images/store/cloths.png" },
-  { name: "Slippers", slug: "slippers", imageBg: "/images/store/slippers.png" },
-  { name: "Accessories", slug: "accessories", imageBg: "/images/store/accessories.png" },
+  { name: "Sneakers", category: "sneakers", imageBg: "/images/store/sneakers.png" },
+  { name: "Watches", category: "watches", imageBg: "/images/store/watches.png" },
+  { name: "Cloths", category: "cloths", imageBg: "/images/store/cloths.png" },
+  { name: "Slippers", category: "slippers", imageBg: "/images/store/slippers.png" },
+  { name: "Accessories", category: "accessories", imageBg: "/images/store/accessories.png" },
 ];
 
 export default function StoreLandingPage() {
@@ -18,8 +18,8 @@ export default function StoreLandingPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
           {categories.map((category, index) => (
             <Link
-              key={category.slug}
-              href={`/store/${category.slug}`}
+              key={category.category}
+              href={`/shop/${category.category}`}
               className={`group relative flex
           ${
             index % 2 === 0
