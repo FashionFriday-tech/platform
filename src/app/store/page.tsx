@@ -5,7 +5,7 @@ const categories = [
   { name: "Sneakers", slug: "sneakers", imageBg: "/images/store/sneakers.png" },
   { name: "Watches", slug: "watches", imageBg: "/images/store/watches.png" },
   { name: "Cloths", slug: "cloths", imageBg: "/images/store/cloths.png" },
-  { name: "Sandals", slug: "sandals", imageBg: "/images/store/slippers.png" },
+  { name: "Slippers", slug: "slippers", imageBg: "/images/store/slippers.png" },
   { name: "Accessories", slug: "accessories", imageBg: "/images/store/accessories.png" },
 ];
 
