@@ -163,7 +163,7 @@ export default function CategoryPage() {
           </div>
         </div>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto mb-20 px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-start gap-x-8">
             {/* Sidebar Filters - Desktop */}
             <aside className="hidden lg:block w-64 shrink-0 sticky top-24">
