@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { IoIosArrowBack } from "react-icons/io";
 
 // --- Utility for Tailwind classes ---
 function cn(...inputs: ClassValue[]) {
@@ -82,12 +83,12 @@ const MOCK_NOTIFICATIONS: Notification[] = [
 const NotificationIcon = ({ type }: { type: NotificationType }) => {
   switch (type) {
     case 'order':
-      return <ShoppingBag className="w-5 h-5 text-black" />;
+      return <ShoppingBag className="w-5 h-5 text-white" />;
     case 'promo':
-      return <Tag className="w-5 h-5 text-black" />;
+      return <Tag className="w-5 h-5 text-white" />;
     case 'system':
     default:
-      return <Info className="w-5 h-5 text-black" />;
+      return <Info className="w-5 h-5 text-white" />;
   }
 };
 
@@ -110,8 +111,8 @@ const NotificationItem = ({
       <div className={cn(
         "shrink-0 w-12 h-12 flex items-center justify-center rounded-full border transition-colors",
         !notification.isRead 
-          ? "border-black bg-white" 
-          : "border-neutral-200 bg-neutral-50"
+          ? "border-black bg-black" 
+          : "border-black bg-black"
       )}>
         <NotificationIcon type={notification.type} />
       </div>
@@ -179,6 +180,7 @@ export default function NotificationsPage() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
              {/* Simple Back button could go here */}
+             <IoIosArrowBack className='text-2xl'/>
             <h1 className="text-xl font-bold tracking-tight">Notifications</h1>
             {unreadCount > 0 && (
               <span className="bg-black text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
