@@ -1,7 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+
+  images: {
+    domains: [
+      "fashionfriday.in",
+      "cdn.fashionfriday.in",
+      "images.unsplash.com",
+    ],
+  },
+
+  experimental: {
+    optimizeCss: true,
+  },
 };
 
 export default nextConfig;
