@@ -130,13 +130,13 @@ export function Header() {
             <div className="h-4 bg-white/20 hidden lg:block" />
 
             <Link
-              href="/wishlist"
+              href="/account/wishlist"
               className="hover:opacity-60 transition-opacity"
             >
               <Heart className="w-6 h-6" />
             </Link>
             <Link
-              href="/bag"
+              href="/checkout/cart"
               className="hover:opacity-60 transition-opacity relative"
             >
               <ShoppingBag className="w-6 h-6" />
@@ -145,7 +145,7 @@ export function Header() {
               </span>
             </Link>
             <Link
-              href="/profile"
+              href="/account/profile"
               className="hover:opacity-60 transition-opacity"
             >
               <UserRound className="w-6 h-6" />
@@ -260,7 +260,7 @@ export function Header() {
       ------------------------------------------------ */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white backdrop-blur-xl text-black shadow-2xl  px-6 py-4 flex items-center justify-between">
         <Link
-          href="/shop"
+          href="/categories"
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
           <RiStoreLine className="w-6 h-6" />
@@ -277,11 +277,11 @@ export function Header() {
           href="/"
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
-          <img src="/logos/ff-logo.png" alt="home" className="w-10 " />
+          <img src="/images/logos/ff-logo.png" alt="home" className="w-10 " />
         </Link>
 
         <Link
-          href="/bag"
+          href="/checkout/cart"
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors relative"
         >
           <BsBagHeart className="w-6 h-6" />
@@ -289,7 +289,7 @@ export function Header() {
         </Link>
 
         <Link
-          href="/profile"
+          href="/account/profile"
           className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
         >
           <UserRound className="w-6 h-6" />
@@ -302,7 +302,7 @@ export function Header() {
         <div className="flex items-center justify-center gap-4">
           <Search />
           <Link
-            href="/notifications"
+            href="/account/notifications"
             className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors relative"
           >
             <Bell className="w-6 h-6" />
