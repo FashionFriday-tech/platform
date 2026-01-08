@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import { Header } from "@/components/layout/Header";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white text-black`}
       >
         <ServiceWorkerRegister />
+        <Header />
         {children}
       </body>
     </html>
