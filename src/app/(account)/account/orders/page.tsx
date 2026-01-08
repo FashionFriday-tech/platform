@@ -56,9 +56,7 @@ const TabButton = ({
 
 const OrderCard = ({ order }: { order: Order }) => {
   return (
-    <article className="group bg-white rounded-3xl p-5 sm:p-7 border border-zinc-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] transition-shadow hover:shadow-[0_10px_30px_rgb(0,0,0,0.06)]">
-      <Header />
-      {/* Header: ID, Date, Status */}
+    <article className="group bg-white rounded-3xl p-5 sm:p-7 border border-zinc-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)] transition-shadow hover:shadow-[0_10px_30px_rgb(0,0,0,0.06)]">      {/* Header: ID, Date, Status */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider mb-1">Order ID</p>

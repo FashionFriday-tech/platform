@@ -94,7 +94,6 @@ export default function Client({ category }: CategoryClientProps) {
 
   return (
     <>
-      <Header />
       <div className="bg-white min-h-screen">
         <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-neutral-200 px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
           <h1 className="text-2xl font-black uppercase tracking-tighter">

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Header } from "@/components/layout/Header";
 
 const categories = [
   { name: "Sneakers", category: "sneakers", imageBg: "/images/store/sneakers.png" },
@@ -12,9 +11,7 @@ const categories = [
 export default function StoreLandingPage() {
   return (
     <>
-      <Header />
-
-      <div className="min-h-screen pb-20 sm:py-20 sm:px-6 lg:px-8">
+      <div className="min-h-screen pb-20 sm:py-20 sm:px-6 lg:px-8 bg-black">
         <div className="max-w-7xl mx-auto grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
           {categories.map((category, index) => (
             <Link

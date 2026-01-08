@@ -78,9 +78,7 @@ export default function EcommerceProfile() {
   };
 
   return (
-    <div className="min-h-screen py-20">
-      <Header />
-
+    <div className="min-h-screen pb-20">
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           

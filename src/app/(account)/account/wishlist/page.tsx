@@ -96,7 +96,6 @@ export default function WishlistPage() {
 
   return (
     <main className="min-h-screen bg-white pb-20 sm:pt-20">
-      <Header />
       {/* Inject Structured Data */}
       <script
         type="application/ld+json"

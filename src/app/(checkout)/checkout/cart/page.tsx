@@ -25,7 +25,6 @@ export default function CartPage() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-zinc-50/50 font-sans">
-      <Header />
       <style>{globalStyles}</style>
 
       <main className="flex-1 w-full h-full overflow-y-auto hide-scrollbar">

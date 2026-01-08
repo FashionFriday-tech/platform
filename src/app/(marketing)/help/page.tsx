@@ -53,8 +53,6 @@ export default function HelpCenterPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900">
-      <Header />
-
       <main className="max-w-7xl mx-auto px-4 py-20 pb-24 md:pt-28">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">

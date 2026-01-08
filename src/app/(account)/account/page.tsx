@@ -1,14 +1,11 @@
-// app/profile/page.tsx
-import { Header } from "@/components/layout/Header";
 import ProfileHero from "@/components/sections/profile/ProfileHero";
 import QuickLinksGrid from "@/components/sections/profile/QuickLinksGrid";
 
 export default function ProfileOverviewPage() {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-zinc-50/50 font-sans px-2 sm:px-10">
-      <Header />
       <main className="flex-1 w-full h-full overflow-y-auto hide-scrollbar">
-        <div className="sm:py-24">
+        <div className="">
           <ProfileHero />
           <QuickLinksGrid />
 

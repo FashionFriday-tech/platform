@@ -150,8 +150,6 @@ export default function RewardsPage() {
 
   return (
     <div className="min-h-screen bg-black font-sans text-white selection:bg-white selection:text-black">
-      <Header />
-
       <main className="max-w-6xl mx-auto px-4 py-20 pb-32">
         
         {/* --- HERO SECTION: WALLET CARD --- */}
