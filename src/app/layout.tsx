@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Header } from "@/components/layout/Header";
+import { ThemeProviders } from "./providers/theme-provider";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -46,13 +47,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white text-black`}
-      >
+    <body
+      className={`
+        ${geistSans.variable}
+        ${geistMono.variable}
+        antialiased
+        min-h-screen
+        bg-primary
+        text-text
+      `}
+    >
+      <ThemeProviders>
         <ServiceWorkerRegister />
         <Header />
         {children}
-      </body>
-    </html>
+      </ThemeProviders>
+    </body>
+  </html>
   );
 }
