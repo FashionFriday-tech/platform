@@ -2,23 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  ShoppingBag,
-  X,
-  ArrowRight,
-  Heart,
-  Home,
-  TextSearch,
-  UserRound,
-  Bell,
-  Store,
-} from "lucide-react";
-import { BsBagHeart } from "react-icons/bs";
-import { RiStoreLine } from "react-icons/ri";
 import { TbListSearch } from "react-icons/tb";
-
+import { GrFavorite } from "react-icons/gr";
+import { PiShoppingBagOpen } from "react-icons/pi";
+import { TbCategoryPlus } from "react-icons/tb";
+import { FiSearch } from "react-icons/fi";
+import { BiUser } from "react-icons/bi";
+import { IoIosArrowForward } from "react-icons/io";
+import { FiBell } from "react-icons/fi";
+import { TfiClose } from "react-icons/tfi";
 // --- Data Configuration ---
 const navStructure = [
   {
@@ -90,7 +84,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="z-50 relative group invert">
             <img
-              src="/logos/ff-full-logo.jpg"
+              src="/images/logos/ff-full-logo.jpg"
               alt="fashion friday"
               className="w-50"
             />
@@ -123,7 +117,7 @@ export function Header() {
               onClick={() => setIsSearchOpen(true)}
               className="hidden lg:flex items-center gap-2 text-xs font-medium uppercase tracking-wider hover:opacity-60 transition-opacity"
             >
-              <Search className="w-5 h-5" />
+              <FiSearch className="w-5 h-5" />
               <span>Search</span>
             </button>
 
@@ -133,22 +127,22 @@ export function Header() {
               href="/account/wishlist"
               className="hover:opacity-60 transition-opacity"
             >
-              <Heart className="w-6 h-6" />
+              <GrFavorite className="text-2xl" />
             </Link>
             <Link
               href="/checkout/cart"
               className="hover:opacity-60 transition-opacity relative"
             >
-              <ShoppingBag className="w-6 h-6" />
+              <PiShoppingBagOpen className="text-2xl" />
               <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
                 2
               </span>
             </Link>
             <Link
-              href="/account/profile"
+              href="/account"
               className="hover:opacity-60 transition-opacity"
             >
-              <UserRound className="w-6 h-6" />
+              <BiUser className="text-2xl" />
             </Link>
           </div>
         </div>
@@ -211,7 +205,7 @@ export function Header() {
                               className="text-2xl font-black uppercase tracking-tight hover:text-neutral-500 transition-colors flex items-center gap-4 group"
                             >
                               {sub}
-                              <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-neutral-400" />
+                              <IoIosArrowForward className="text-2xl opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-neutral-400" />
                             </Link>
                           </li>
                         ))}
@@ -258,55 +252,74 @@ export function Header() {
       {/* ------------------------------------------------
           3. MOBILE APP-BAR (Bottom Navigation)
       ------------------------------------------------ */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white backdrop-blur-xl text-black shadow-2xl  px-6 py-4 flex items-center justify-between">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-black backdrop-blur-xl text-white shadow-2xl  px-6 py-4 flex items-center justify-between">
         <Link
           href="/categories"
-          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
+          className="flex flex-col items-center gap-1 transition-colors"
         >
-          <RiStoreLine className="w-6 h-6" />
+          <TbCategoryPlus className="text-2xl" />
         </Link>
 
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
+          className="flex flex-col items-center gap-1 transition-colors"
         >
-          <TbListSearch className="w-6 h-6" />
+          <TbListSearch className="text-2xl" />
         </button>
 
         <Link
           href="/"
-          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
+          className="flex flex-col items-center gap-1 transition-colors"
         >
-          <img src="/images/logos/ff-logo.png" alt="home" className="w-10 " />
+          <img
+            src="/images/logos/ff-logo.png"
+            alt="home"
+            className="w-10 invert"
+          />
         </Link>
 
         <Link
           href="/checkout/cart"
-          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors relative"
+          className="flex flex-col items-center gap-1 transition-colors relative"
         >
-          <BsBagHeart className="w-6 h-6" />
+          <PiShoppingBagOpen className="text-2xl" />
           <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-red-500 rounded-full" />
         </Link>
 
         <Link
-          href="/account/profile"
-          className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors"
+          href="/account"
+          className="flex flex-col items-center gap-1 transition-colors"
         >
-          <UserRound className="w-6 h-6" />
+          <BiUser className="text-2xl" />
         </Link>
       </nav>
 
-      <div className="sticky top-0 right-0 lg:hidden w-full p-5 z-40 bg-white text-black flex justify-between">
-        <span className="font-semibold">HELLO, AJMAL</span>
+      <div className="sticky top-0 right-0 lg:hidden w-full p-5 z-40 bg-black text-white flex justify-between ">
+        <Link href="/account" className="flex items-center gap-4">
+          <Image
+            src="/images/model/aj.png"
+            width={50}
+            height={50}
+            alt="Ajmal"
+            className="w-10 h-10 rounded-full object-cover object-top border-2 border-white"
+          />
+          <span className="font-semibold">HELLO, AJMAL</span>
+        </Link>
         {/* <img src="logos/ff-full-logo.jpg" alt="" className="w-40 invert" /> */}
         <div className="flex items-center justify-center gap-4">
-          <Search />
+          <FiSearch className="text-2xl" />
           <Link
             href="/account/notifications"
-            className="flex flex-col items-center gap-1 text-black hover:text-black transition-colors relative"
+            className="flex flex-col items-center gap-1 transition-colors relative"
           >
-            <Bell className="w-6 h-6" />
+            <FiBell className="text-2xl" />
             <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+          </Link>
+          <Link
+            href="/account/wishlist"
+            className="flex flex-col items-center gap-1 transition-colors"
+          >
+            <GrFavorite className="text-2xl" />
           </Link>
         </div>
 
@@ -334,7 +347,7 @@ export function Header() {
               onClick={() => setIsSearchOpen(false)}
               className="absolute top-8 right-8 p-2 hover:bg-neutral-100 rounded-full"
             >
-              <X className="w-8 h-8 text-black" />
+              <TfiClose className="w-8 h-8 text-black" />
             </button>
 
             <div className="w-full max-w-4xl mx-auto">
@@ -365,7 +378,7 @@ export function Header() {
             <div className="flex justify-between items-center mb-10">
               <span className="font-black text-2xl uppercase">Menu</span>
               <button onClick={() => setIsMobileMenuOpen(false)}>
-                <X className="w-8 h-8" />
+                <TfiClose className="w-8 h-8" />
               </button>
             </div>
             <div className="space-y-6">
