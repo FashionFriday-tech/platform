@@ -46,23 +46,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-    <body
-      className={`
-        ${geistSans.variable}
-        ${geistMono.variable}
-        antialiased
-        min-h-screen
-        bg-primary
-        text-text
-      `}
-    >
-      <ThemeProviders>
-        <ServiceWorkerRegister />
-        <Header />
-        {children}
-      </ThemeProviders>
-    </body>
-  </html>
+  <html lang="en" suppressHydrationWarning>
+  <body
+    className={`
+      ${geistSans.variable}
+      ${geistMono.variable}
+      antialiased
+      min-h-screen
+      bg-primary
+      text-primary
+    `}
+  >
+    <ThemeProviders>
+      <ServiceWorkerRegister />
+      <Header />
+      {children}
+    </ThemeProviders>
+  </body>
+</html>
+
+
   );
 }
