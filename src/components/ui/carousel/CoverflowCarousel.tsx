@@ -62,7 +62,7 @@ const getVariant = (index: number) => {
       scale: 0.82,
       rotateY: `${dir * -40}deg`,
       zIndex: 40,
-      opacity: 0.75,
+      opacity: 0.8,
       filter: "brightness(0.8) blur(1px)",
     };
   }
@@ -75,7 +75,7 @@ const getVariant = (index: number) => {
       scale: 0.65,
       rotateY: `${dir * -55}deg`,
       zIndex: 30,
-      opacity: 0.4,
+      opacity: 0.6,
       filter: "brightness(0.35) blur(3px)",
     };
   }
@@ -94,10 +94,10 @@ const getVariant = (index: number) => {
 
   
   return (
-    <div className="relative w-full h-150 flex flex-col items-center justify-center">
+    <div className="relative w-full h- flex flex-col items-center justify-center">
       
       {/* 3D STAGE CONTAINER */}
-      <div className="relative w-full max-w-6xl h-112.5 flex items-center justify-center perspective-distant">
+      <div className="relative w-full max-w-6xl h-112 flex items-center justify-center perspective-distant">
         <AnimatePresence mode="popLayout">
           {products.map((product, index) => {
             const variant = getVariant(index);
@@ -109,7 +109,7 @@ const getVariant = (index: number) => {
                 animate={variant}
                 initial={variant}
                 transition={transitionSpec}
-                className="absolute w-60 md:w-[320px] aspect-3/4 rounded-4xl overflow-hidden cursor-pointer border shadow-xl"
+                className="absolute w-60 md:w-[320px] aspect-3/4 rounded-4xl overflow-hidden cursor-pointer shadow-xl"
                 style={{ transformStyle: "preserve-3d" }}
                 onClick={() => setActiveIndex(index)}
               >
@@ -128,7 +128,7 @@ const getVariant = (index: number) => {
                   <div className="absolute inset-0 p-6 flex flex-col justify-between">
                     {/* Top Tag */}
                     <div className="self-start">
-                      <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-widest text-white border border-white/10">
+                      <span className="px-3 py-1 rounded-full backdrop-blur-md text-[10px] font-bold uppercase tracking-widest text-white border border-white/10">
                         {product.tag}
                       </span>
                     </div>
@@ -151,7 +151,7 @@ const getVariant = (index: number) => {
       </div>
 
       {/* CONTROLS (Bottom Center) */}
-      <div className="flex gap-4 mt-8 z-50">
+      <div className="flex gap-4 sm:mt-10 z-40">
         <button
           onClick={handlePrev}
           className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-95"

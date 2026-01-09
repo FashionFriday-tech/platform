@@ -39,6 +39,12 @@ async function getTrendingProducts(): Promise<Product[]> {
       tag: "Necklaces",
       image: "/images/trending/7.png",
     },
+    {
+      id: 7,
+      title: "Chubby Gold Hoops",
+      tag: "Hoops",
+      image: "/images/trending/5.png",
+    },
   ];
 }
 
@@ -47,12 +53,12 @@ export default async function TrendingSection() {
 
   return (
     // Dark background wrapper matching the reference
-    <section className="w-full sm:py-20 bg-white text-black overflow-hidden">
-      <div className="container mx-auto px-4 text-center sm:mb-12">
+    <section className="w-full py-10 sm:py-20 overflow-hidden">
+      <div className="container mx-auto px-4 text-center sm:mb-10">
         <h2 className="text-4xl md:text-7xl font-extrabold tracking-tight uppercase">
           Trending Now
         </h2>
-        <p className="text-black/60 mt-4 max-w-md mx-auto">
+        <p className="text-primary mt-4 max-w-md mx-auto">
             Discover the pieces everyone is talking about this season.
         </p>
       </div>
