@@ -14,7 +14,7 @@ export default function Hero() {
         <div className="lg:col-span-6 flex flex-col gap-4 h-full">
           <div className="min-h-50 grow p-8 lg:p-12 rounded-4xl flex flex-col justify-center relative overflow-hidden">
             <Image
-                src="/hero/hero-grid1.png"
+                src="/images/hero/hero-grid1.png"
                 alt="Accessories Collection"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -23,7 +23,7 @@ export default function Hero() {
           <div className="grid grid-cols-2 gap-4  h-50 lg:h-[50%] shrink-0">
             <div className="relative rounded-4xl overflow-hidden group w-full h-full">
               <Image
-                src="/hero/hero-grid1.png"
+                src="/images/hero/hero-grid1.png"
                 alt="Accessories Collection"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -32,7 +32,7 @@ export default function Hero() {
 
             <div className="relative rounded-4xl overflow-hidden group w-full h-full">
               <Image
-                src="/hero/hero-grid2.png"
+                src="/images/hero/hero-grid2.png"
                 alt="Insulated Gear"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
