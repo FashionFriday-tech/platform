@@ -6,9 +6,9 @@ import {
 function FreeShipping() {
   return (
     <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
-      <ScrollVelocityContainer className="text-4xl font-black tracking-[-0.02em] md:text-9xl md:leading-20 uppercase">
+      <ScrollVelocityContainer className="text-5xl font-black tracking-[-0.02em] md:text-9xl md:leading-20 uppercase">
         <ScrollVelocityRow baseVelocity={6} direction={1}>
-         <span>Free Shipping On Pre-Pay</span> <img src="/logos/ff-logo.png" alt="fashion friday" width={200}/> <span>COD Avilable With +200 Advance</span> <img src="/logos/ff-logo.png" alt="fashion friday" width={200}/>
+         <span>Free Shipping On Pre-Pay</span> <img src="/images/logos/ff-logo.png" alt="fashion friday" width={100} className="invert-0 dark:invert w-20 md:w-40 mx-6"/> <span>COD Avilable With +200 Advance</span> <img src="/images/logos/ff-logo.png" alt="fashion friday" width={100} className="invert dark:invert w-20 md:w-40 mx-6"/>
         </ScrollVelocityRow>
       </ScrollVelocityContainer>
       <div className="from-background pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-linear-to-r"></div>
