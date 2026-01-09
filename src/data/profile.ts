@@ -7,6 +7,7 @@ import {
     Gift,
     HeartHandshake,
     Share2,
+    Settings,
 } from "lucide-react";
 
 
@@ -14,54 +15,61 @@ export const quickLinks = [
     {
         label: "Profile",
         description: "Update your personal details",
-        href: "/profile/edit",
+        href: "/account/profile/edit",
         icon: User
     },
     {
         label: "Orders",
         description: "Track and manage your purchases",
         icon: Package,
-        href: "/orders"
+        href: "/account/orders"
     },
     {
         label: "Wishlist",
         description: "Save items for later access",
         icon: Heart,
-        href: "/wishlist"
+        href: "/account/wishlist"
     },
     {
         label: "Addresses",
         description: "Manage shipping details",
         icon: MapPin,
-        href: "/profile/addresses"
+        href: "/account/profile/addresses"
     },
 
     {
         label: "Gift Cards",
         description: "View and redeem your gift cards",
         icon: Gift,
-        href: "/gift-cards"
+        href: "/account/gift-cards"
     },
 
     {
         label: "Wallet",
         description: "Check refund status and history",
         icon: Wallet,
-        href: "/profile/refunds"
+        href: "/account/profile/refunds"
     },
 
     {
         label: "Referrals",
         description: "Invite friends and earn rewards",
         icon: Share2,
-        href: "/profile/referrals"
+        href: "/account/profile/referrals"
     },
 
     {
         label: "Legal & Help",
         description: "Access legal information and get help",
         icon: HeartHandshake,
-        href: "/legal-help",
+        href: "/account/legal-help",
+    },
+
+    {
+        label: "Settings",
+        description: "Manage your account settings",
+        icon: Settings,
+        href: "/account/settings",
     },
 ];
 
