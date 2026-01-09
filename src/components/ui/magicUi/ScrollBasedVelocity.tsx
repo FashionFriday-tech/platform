@@ -48,7 +48,7 @@ export function ScrollVelocityContainer({
 
   return (
     <ScrollVelocityContext.Provider value={velocityFactor}>
-      <div className={cn("relative w-full", className)} {...props}>
+      <div className={cn("relative w-full flex flex-col gap-6", className)} {...props}>
         {children}
       </div>
     </ScrollVelocityContext.Provider>

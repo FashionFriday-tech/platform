@@ -25,11 +25,11 @@ export default function BrandScroll() {
   const duplicatedBrands = [...brands, ...brands];
 
   return (
-    <section className="w-full py-12 lg:py-16 bg-white  overflow-hidden">
+    <section className="w-full py-12 overflow-hidden">
       {/* 3. The Sliding Track */}
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
         <div className="container mx-auto px-4 my-5 text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-gray-400">
+          <p className="text-sm font-bold uppercase tracking-widest text-primary">
             Our Brand Collections
           </p>
         </div>
@@ -44,7 +44,7 @@ export default function BrandScroll() {
                 height={160}
                 loading="lazy"
                 decoding="async"
-                className="mx-10 inline-block h-full w-30 rounded-lg object-cover"
+                className="mx-10 inline-block h-full w-16 lg:w-25 rounded-lg object-cover invert-0 dark:invert"
               />
             ))}
           </ScrollVelocityRow>
@@ -58,7 +58,7 @@ export default function BrandScroll() {
                 height={160}
                 loading="lazy"
                 decoding="async"
-                className="mx-10 inline-block h-full w-30 rounded-lg object-cover"
+                className="mx-10 inline-block h-full w-16 lg:w-25 rounded-lg object-cover invert-0 dark:invert"
               />
             ))}
           </ScrollVelocityRow>
