@@ -57,10 +57,10 @@ export default function CategoryCarousel() {
       <div className="md:sticky md:top-0 md:h-screen md:flex md:flex-col md:justify-center md:overflow-hidden py-12">
         {/* Header */}
         <div className="container mx-auto px-4 lg:px-6 md:mt-20 mb-10">
-          <span className="text-xs font-bold text-primary uppercase tracking-widest mb-2 block">
+          <span className="text-xs font-bold uppercase tracking-widest mb-2 block">
             Collections
           </span>
-          <h2 className="text-4xl lg:text-7xl font-black uppercase tracking-tighter text-primary">
+          <h2 className="text-4xl lg:text-7xl font-black uppercase tracking-tighter">
             Shop by Category
           </h2>
         </div>
