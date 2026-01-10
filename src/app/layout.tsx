@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Header } from "@/components/layout/Header";
-import { ThemeProviders } from "./providers/theme-provider";
+import { ThemeProvider } from "./providers/theme-provider";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -46,25 +46,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-  <html lang="en" suppressHydrationWarning>
-  <body
-    className={`
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`
       ${geistSans.variable}
       ${geistMono.variable}
       antialiased
       min-h-screen
-      bg-primary
-      text-primary
+      bg-background 
+      text-foreground
     `}
-  >
-    <ThemeProviders>
-      <ServiceWorkerRegister />
-      <Header />
-      {children}
-    </ThemeProviders>
-  </body>
-</html>
-
-
+      >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ServiceWorkerRegister />
+          <Header />
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }
