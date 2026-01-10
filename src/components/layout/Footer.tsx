@@ -74,43 +74,9 @@ export default function Footer() {
 
   return (
     <footer className="w-full flex flex-col mb-14 sm:mb-0">
-      <div className="relative w-full h-80 flex flex-col items-center justify-center text-center px-4 overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src="/images/model/aj.png"
-            alt="Background"
-            fill
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
-
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-          Sign Up to Our Newsletter
-        </h2>
-        <p className="text-gray-200 text-sm md:text-base max-w-2xl mb-8">
-          Get the Latest Beauty Secrets and Trends, Sign Up for Our Newsletter
-          and Stay Informed About All Things Beauty
-        </p>
-
-        <form className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
-          <input
-            type="email"
-            placeholder="Your Email"
-            className="flex-1 bg-white/10 backdrop-blur-sm border border-white/30 rounded-full px-6 py-3 text-white placeholder-gray-300 focus:outline-none focus:border-white transition-colors"
-          />
-          <button
-            type="submit"
-            className="bg-white text-black font-semibold rounded-full px-8 py-3 hover:bg-gray-100 transition-colors"
-          >
-            Submit
-          </button>
-        </form>
-      </div>
-
       <button
         type="button"
-        className="flex mt-0.5 py-4 justify-center items-center gap-2 bg-black text-white w-full transition-colors"
+        className="flex mt-0.5 py-4 justify-center items-center gap-2 bg-background text-forground w-full transition-colors border-y border-foreground"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
@@ -127,13 +93,13 @@ export default function Footer() {
           <div className="flex flex-col xl:flex-row mb-16 gap-12 xl:gap-20">
             <div className="flex flex-col items-center text-center xl:items-start xl:text-start shrink-0">
               <Image
-                src="/logos/ff-logo2.png"
+                src="/images/logos/ff-logo2.png"
                 alt="Fashion Friday"
                 width={144}
                 height={40}
-                className="w-36 mb-8 invert"
+                className="w-36 mb-8 invert dark:invert-0"
               />
-              <p className="text-gray-700 text-sm leading-relaxed max-w-sm">
+              <p className="text-foreground-muted text-sm leading-relaxed max-w-sm">
                 Experience the Great Outdoors in Style with Fashion Friday. Shop
                 now and gear up for adventure in Fashion Friday!
               </p>
@@ -144,7 +110,7 @@ export default function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-white hover:bg-black text-black hover:text-white border p-2 rounded-full transition-colors"
+                    className="bg-blackground hover:bg-forground text-foreground hover:text-background border p-2 rounded-full transition-colors"
                   >
                     <social.icon size={18} />
                   </Link>
@@ -154,7 +120,7 @@ export default function Footer() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 w-full gap-8 md:gap-4">
               {FOOTER_SECTIONS.map((section) => (
-                <div key={section.title} className="flex flex-col">
+                <div key={section.title} className="flex flex-col text-foreground">
                   <h3 className="font-semibold text-lg mb-6">
                     {section.title}
                   </h3>
@@ -163,13 +129,13 @@ export default function Footer() {
                       <li key={link.name}>
                         <Link
                           href={link.href}
-                          className="group flex gap-2 text-gray-700 hover:text-black text-sm transition-colors items-center"
+                          className="group flex gap-2 text-sm text-foreground-muted transition-colors items-center"
                         >
                           {link.name}
 
                           <ArrowUpRight
                             size={16}
-                            className="text-white group-hover:text-black"
+                            className="text-background group-hover:text-foreground transition-colors"
                           />
                         </Link>
                       </li>
@@ -180,18 +146,18 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200 gap-6">
-            <div className="text-gray-500 text-sm">
-              &copy; {new Date().getFullYear()} Fashion Friday, Inc - All Rights
+          <div className="text-foreground-muted flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200 gap-2">
+            <div className="text-sm">
+              &copy; {new Date().getFullYear()} Fashion Friday - All Rights
               Reserved
             </div>
-            <div className="text-gray-500 text-sm hover:text-black transition-colors">
+            <div className="transition-colors">
               <a
                 href="https://unity11solutions.com"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Design & Development by Unity11
+                Design & Development by <span className="underline">Unity11</span>
               </a>
             </div>
           </div>
