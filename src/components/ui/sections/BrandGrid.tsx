@@ -30,8 +30,8 @@ export default function BrandGrid({
     <section className="w-full py-16 lg:py-24 transition-colors duration-300">
       {/* HEADER */}
       <div className="container mx-auto px-4 mb-8 flex justify-between items-end">
-        <h2 className="text-3xl lg:text-4xl font-black uppercase tracking-tighter">
-          Shop by <br /> brands
+        <h2 className="text-4xl lg:text-4xl font-black uppercase tracking-tighter">
+          Shop by brands
         </h2>
 
         <Link
