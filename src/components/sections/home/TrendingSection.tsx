@@ -58,7 +58,7 @@ export default async function TrendingSection() {
         <h2 className="text-4xl md:text-7xl font-extrabold tracking-tight uppercase">
           Trending Now
         </h2>
-        <p className="text-primary mt-4 max-w-md mx-auto">
+        <p className="etxt-foreground-muted mt-4 max-w-md mx-auto">
             Discover the pieces everyone is talking about this season.
         </p>
       </div>
