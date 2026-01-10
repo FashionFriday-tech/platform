@@ -9,6 +9,7 @@ import PWAInstallSection from "@/components/sections/home/PWAInstallSection";
 import ShopByBrand from "@/components/sections/home/ShopByBrands";
 import TrendingSection from "@/components/sections/home/TrendingSection";
 import WhyChooseUs from "@/components/sections/home/WhyChooseUs";
+import Request from "@/components/ui/sections/Request";
 
 export default function Home() {
   return (
@@ -23,6 +24,7 @@ export default function Home() {
       <InfluencerCarousel />
       <WhyChooseUs />
       <PWAInstallSection />
+      <Request />
       <Footer />
     </div>
   );
