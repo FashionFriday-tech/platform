@@ -36,7 +36,7 @@ export default function FeatureRail({
           <span className="text-xs font-bold uppercase tracking-widest mb-2 block opacity-60 text-zinc-500">
             {subheading}
           </span>
-          <h2 className="text-4xl lg:text-7xl font-black uppercase tracking-tighter text-black dark:text-white">
+          <h2 className="text-4xl lg:text-7xl font-black uppercase tracking-tighter">
             {heading}
           </h2>
         </div>
