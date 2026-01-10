@@ -29,7 +29,7 @@ export default function BrandScroll() {
       {/* 3. The Sliding Track */}
       <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
         <div className="container mx-auto px-4 my-5 text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-primary">
+          <p className="text-sm font-bold uppercase tracking-widest text-foreground-muted">
             Our Brand Collections
           </p>
         </div>
