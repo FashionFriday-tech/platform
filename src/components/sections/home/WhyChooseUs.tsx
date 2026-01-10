@@ -125,7 +125,7 @@ const InfiniteColumn = ({
 // --- Main Section ---
 export default function SplitFeatureSection() {
   return (
-    <section className="relative bg-white text-black overflow-hidden font-sans ">
+    <section className="relative overflow-hidden font-sans ">
       {/* <div
         className="absolute inset-0 opacity-[0.07] pointer-events-none"
         style={{
@@ -145,9 +145,9 @@ export default function SplitFeatureSection() {
             >
               <h2 className="text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-[0.9] mb-6">
                 Defined by <br />
-                <span className="text-neutral-500">Trust.</span>
+                <span className="text-foreground-muted">Trust.</span>
               </h2>
-              <p className="text-lg text-white/80 max-w-md leading-relaxed">
+              <p className="text-lg text-foreground-muted max-w-md leading-relaxed">
                 Join over 1000+ happy customers across India. We don't just ship
                 products; we deliver verified quality to every pin code in the
                 country.
@@ -164,15 +164,15 @@ export default function SplitFeatureSection() {
                   transition={{ delay: idx * 0.1 }}
                   className="flex gap-6 group cursor-default"
                 >
-                  <div className="relative shrink-0 w-16 h-16 border border-black/50 rounded-2xl flex items-center justify-center overflow-hidden transition-colors duration-300 group-hover:bg-white group-hover:border-white">
-                    <item.icon className="w-6 h-6 text-black transition-colors duration-300 group-hover:text-black z-10" />
-                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
+                  <div className="relative shrink-0 w-16 h-16 border border-forground rounded-2xl flex items-center justify-center overflow-hidden transition-colors duration-300">
+                    <item.icon className="w-6 h-6 text-forground transition-colors duration-300 z-10" />
+                    <div className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 blur-xl" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold uppercase tracking-wide mb-2 flex items-center gap-2">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-black/50 font-medium leading-relaxed max-w-sm transition-colors duration-300 group-hover:text-white/80">
+                    <p className="text-sm text-foreground-muted leading-relaxed max-w-sm transition-colors duration-300">
                       {item.desc}
                     </p>
                   </div>
@@ -182,9 +182,9 @@ export default function SplitFeatureSection() {
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="relative h-150 lg:h-screen w-full overflow-hidden bg-white lg:border-l border-white/5">
-            <div className="absolute top-0 left-0 right-0 h-24 bg-linear-to-b from-white via-white to-transparent z-20 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-white via-white to-transparent z-20 pointer-events-none" />
+          <div className="relative h-150 lg:h-screen w-full overflow-hidden  lg:border-l border-white/5">
+            <div className="absolute top-0 left-0 right-0 h-24 bg-linear-to-b from-background via-blackground to-transparent z-20 pointer-events-none" />
+            <div className="absolute -bottom-6 left-0 right-0 h-24 bg-linear-to-t from-blackground via-background to-transparent z-20 pointer-events-none" />
 
             <div className="grid grid-cols-3 gap-3 p-4 lg:p-6 h-full">
               <div className="h-full overflow-hidden relative">
