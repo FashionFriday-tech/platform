@@ -1,7 +1,7 @@
 // app/notifications/page.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   ShoppingBag, 
   Tag, 
@@ -30,65 +30,25 @@ interface Notification {
   message: string;
   timestamp: string;
   isRead: boolean;
-  image?: string; // Optional: specific product image
   actionUrl?: string;
 }
 
-// --- Mock Data ---
 const MOCK_NOTIFICATIONS: Notification[] = [
-  {
-    id: '1',
-    type: 'order',
-    title: 'Order Shipped',
-    message: 'Your order #FF-2025 has been shipped. Track your shipment now.',
-    timestamp: '2 mins ago',
-    isRead: false,
-  },
-  {
-    id: '2',
-    type: 'promo',
-    title: 'Flash Sale Alert',
-    message: 'The Monochrome Collection is now 40% off. Limited time only.',
-    timestamp: '1 hour ago',
-    isRead: false,
-  },
-  {
-    id: '3',
-    type: 'system',
-    title: 'Password Updated',
-    message: 'Your account security details were successfully updated.',
-    timestamp: 'Yesterday',
-    isRead: true,
-  },
-  {
-    id: '4',
-    type: 'order',
-    title: 'Order Delivered',
-    message: 'Order #FF-2023 has been delivered at your doorstep.',
-    timestamp: '2 days ago',
-    isRead: true,
-  },
-  {
-    id: '5',
-    type: 'promo',
-    title: 'Back in Stock',
-    message: 'The Oversized Linen Shirt (White) you liked is back in stock.',
-    timestamp: '3 days ago',
-    isRead: true,
-  }
+  { id: '1', type: 'order', title: 'Order Shipped', message: 'Your order #FF-2025 has been shipped. Track your shipment now.', timestamp: '2 mins ago', isRead: false },
+  { id: '2', type: 'promo', title: 'Flash Sale Alert', message: 'The Monochrome Collection is now 40% off. Limited time only.', timestamp: '1 hour ago', isRead: false },
+  { id: '3', type: 'system', title: 'Password Updated', message: 'Your account security details were successfully updated.', timestamp: 'Yesterday', isRead: true },
+  { id: '4', type: 'order', title: 'Order Delivered', message: 'Order #FF-2023 has been delivered at your doorstep.', timestamp: '2 days ago', isRead: true },
+  { id: '5', type: 'promo', title: 'Back in Stock', message: 'The Oversized Linen Shirt (White) you liked is back in stock.', timestamp: '3 days ago', isRead: true }
 ];
 
-// --- Components ---
+// --- Sub-Components ---
 
 const NotificationIcon = ({ type }: { type: NotificationType }) => {
+  const iconProps = "w-5 h-5 text-brand-foreground";
   switch (type) {
-    case 'order':
-      return <ShoppingBag className="w-5 h-5 text-white" />;
-    case 'promo':
-      return <Tag className="w-5 h-5 text-white" />;
-    case 'system':
-    default:
-      return <Info className="w-5 h-5 text-white" />;
+    case 'order': return <ShoppingBag className={iconProps} />;
+    case 'promo': return <Tag className={iconProps} />;
+    default: return <Info className={iconProps} />;
   }
 };
 
@@ -103,17 +63,13 @@ const NotificationItem = ({
     <div 
       onClick={() => onRead(notification.id)}
       className={cn(
-        "group flex gap-4 p-5 border-b border-neutral-100 transition-all duration-300 hover:bg-neutral-50 cursor-pointer",
-        !notification.isRead && "bg-neutral-50/50"
+        "group flex gap-4 p-5 border-b border-border transition-all duration-default ease-default cursor-pointer",
+        "hover:bg-background-muted",
+        !notification.isRead && "bg-background-muted/40"
       )}
     >
-      {/* Icon Wrapper */}
-      <div className={cn(
-        "shrink-0 w-12 h-12 flex items-center justify-center rounded-full border transition-colors",
-        !notification.isRead 
-          ? "border-black bg-black" 
-          : "border-black bg-black"
-      )}>
+      {/* Icon Wrapper - Uses Brand Colors */}
+      <div className="shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-brand">
         <NotificationIcon type={notification.type} />
       </div>
 
@@ -121,69 +77,65 @@ const NotificationItem = ({
       <div className="flex-1 space-y-1">
         <div className="flex justify-between items-start">
           <h3 className={cn(
-            "text-sm font-medium leading-none",
-            !notification.isRead ? "text-black font-semibold" : "text-neutral-600"
+            "text-sm font-medium leading-none transition-colors",
+            !notification.isRead ? "text-foreground font-bold" : "text-foreground-muted"
           )}>
             {notification.title}
           </h3>
-          <span className="text-xs text-neutral-400 flex items-center gap-1">
+          <span className="text-xs text-foreground-subtle flex items-center gap-1">
             <Clock className="w-3 h-3" />
             {notification.timestamp}
           </span>
         </div>
-        <p className="text-sm text-neutral-500 leading-relaxed pr-8">
+        <p className="text-sm text-foreground-muted leading-relaxed pr-8">
           {notification.message}
         </p>
         
-        {/* Optional Action Hint */}
         {notification.type === 'order' && (
-          <div className="pt-2 flex items-center text-xs font-semibold text-black uppercase tracking-wider group-hover:underline">
+          <div className="pt-2 flex items-center text-xs font-semibold text-brand uppercase tracking-wider group-hover:underline">
             View Details <ChevronRight className="w-3 h-3 ml-1" />
           </div>
         )}
       </div>
 
-      {/* Unread Dot */}
+      {/* Unread Dot - Uses Accent color */}
       {!notification.isRead && (
-        <div className="w-2 h-2 rounded-full bg-black mt-1.5 shrink-0 animate-pulse" />
+        <div className="w-2.5 h-2.5 rounded-full bg-accent mt-1.5 shrink-0 animate-pulse" />
       )}
     </div>
   );
 };
 
+// --- Main Page ---
+
 export default function NotificationsPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'orders' | 'promotions'>('all');
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
 
-  const markAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-  };
+  const unreadCount = useMemo(() => notifications.filter(n => !n.isRead).length, [notifications]);
 
-  const markOneRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
-  };
+  const markAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  const markOneRead = (id: string) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
 
-  // Filter Logic
   const filteredNotifications = notifications.filter(n => {
     if (activeTab === 'orders') return n.type === 'order';
     if (activeTab === 'promotions') return n.type === 'promo';
     return true;
   });
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
-
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-default md:mt-20">
       
       {/* Header Section */}
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-neutral-100">
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             {/* Simple Back button could go here */}
-             <IoIosArrowBack className='text-2xl'/>
+            <button className="p-1 -ml-1 hover:bg-background-muted rounded-full transition-colors">
+                <IoIosArrowBack className='text-2xl text-foreground'/>
+            </button>
             <h1 className="text-xl font-bold tracking-tight">Notifications</h1>
             {unreadCount > 0 && (
-              <span className="bg-black text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+              <span className="bg-brand text-brand-foreground text-[10px] font-bold px-3 py-1 rounded-full">
                 {unreadCount} NEW
               </span>
             )}
@@ -192,7 +144,7 @@ export default function NotificationsPage() {
           <button 
             onClick={markAllRead}
             disabled={unreadCount === 0}
-            className="text-xs font-medium text-neutral-500 hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5"
+            className="text-xs font-medium text-foreground-subtle hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1.5"
           >
             <Check className="w-3.5 h-3.5" />
             Mark all read
@@ -202,22 +154,18 @@ export default function NotificationsPage() {
         {/* Tabs */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <nav className="w-full flex justify-between gap-6 overflow-x-auto no-scrollbar">
-            {[
-              { id: 'all', label: 'All' },
-              { id: 'orders', label: 'Orders' },
-              { id: 'promotions', label: 'Promotions' }
-            ].map((tab) => (
+            {(['all', 'orders', 'promotions'] as const).map((id) => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                key={id}
+                onClick={() => setActiveTab(id)}
                 className={cn(
-                  "w-full pb-3 text-sm text-center font-medium border-b-2 transition-colors whitespace-nowrap",
-                  activeTab === tab.id 
-                    ? "border-black text-black" 
-                    : "border-transparent text-neutral-400 hover:text-neutral-600"
+                  "w-full pb-3 text-sm text-center font-medium border-b-2 transition-all capitalize",
+                  activeTab === id 
+                    ? "border-brand text-foreground" 
+                    : "border-transparent text-foreground-subtle hover:text-foreground-muted"
                 )}
               >
-                {tab.label}
+                {id}
               </button>
             ))}
           </nav>
@@ -227,17 +175,17 @@ export default function NotificationsPage() {
       {/* Main Content */}
       <main className="max-w-3xl mx-auto pb-20">
         {filteredNotifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center mb-4">
-              <Bell className="w-6 h-6 text-neutral-300" />
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="w-16 h-16 bg-background-muted rounded-full flex items-center justify-center mb-4">
+              <Bell className="w-6 h-6 text-foreground-subtle" />
             </div>
-            <h3 className="text-base font-semibold text-black">No notifications yet</h3>
-            <p className="text-sm text-neutral-500 mt-1 max-w-xs">
+            <h3 className="text-base font-semibold text-foreground">No notifications yet</h3>
+            <p className="text-sm text-foreground-subtle mt-1 max-w-xs">
               We'll notify you when your orders are shipped or when we have special offers for you.
             </p>
           </div>
         ) : (
-          <div className="bg-white">
+          <div className="divide-y divide-border">
             {filteredNotifications.map((notification) => (
               <NotificationItem 
                 key={notification.id} 
