@@ -1,9 +1,9 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import { ShoppingBag, AlertCircle, HeartMinus } from "lucide-react";
+import { ShoppingBag, AlertCircle, HeartMinus, Bell } from "lucide-react";
 import { Product } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
-
 interface WishlistCardProps {
   product: Product;
 }
@@ -16,81 +16,88 @@ export default function WishlistCard({ product }: WishlistCardProps) {
     : 0;
 
   return (
-    <article className="group relative flex flex-col gap-4 border-b border-gray-100 pb-6 sm:border-none sm:pb-0">
-      {/* Image Container */}
-      <div className="relative aspect-3/3.5 overflow-hidden rounded-4xl bg-gray-100">
-        <Link href={`/product/${product.slug}`}>
+    <article className="group relative flex justify-center w-full items-center gap-4 border-y rounded-4xl py-6 border-border ">
+      {/* 1. Left Side: Image Container */}
+      <div className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl bg-background-muted sm:w-32 md:w-40">
+        <Link href={`/product/${product.slug}`} className="block h-full w-full">
           <img
             src={product.image}
-            alt={`View details of ${product.name}`}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            //   width={100}
-            //   height={100}
+            alt={product.name}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         </Link>
 
-        {/* Stock Error State */}
+        {/* Out of Stock Overlay */}
         {!product.inStock && (
-          <div className="absolute w-full h-full flex justify-center items-center top-0 right-0 mt-1 gap-1 text-xs font-medium text-black bg-white/50 ">
-            <div className="flex justify-center items-center gap-2 text-xl uppercase border px-2 backdrop-blur-sm rounded-full font-semibold">
-              <AlertCircle size={18} />
-              Out of Stock
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/40 backdrop-blur-[1px]">
+            <div className="rounded-full bg-background/80 px-2 py-1 text-[8px] font-bold uppercase tracking-tighter text-foreground sm:text-[10px]">
+              Sold Out
             </div>
           </div>
         )}
 
-        {/* Remove Button - Top Right */}
-        <button
-          className="absolute right-3 top-3 rounded-full bg-white/90 p-2 text-gray-500 shadow-sm backdrop-blur-sm transition-colors hover:bg-red-50 hover:text-red-500"
-          aria-label="Remove from favorites"
-        >
-          <HeartMinus size={18} />
-        </button>
-
         {/* Discount Badge */}
         {discount > 0 && (
-          <span className="absolute left-3 top-3 rounded-md bg-black px-2 py-1 text-xs font-semibold text-white">
-            -{discount}%
-          </span>
-        )}
-
-        {/* Quick Add (Desktop Hover) */}
-        {product.inStock && (
-          <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hidden sm:block">
-            <button className="flex w-full items-center justify-center gap-2 rounded-full bg-white py-3 text-sm font-semibold text-black shadow-lg hover:bg-black hover:text-white">
-              <ShoppingBag size={16} />
-              Add to Bag
-            </button>
+          <div className="absolute left-2 top-2">
+            <span className="rounded-full bg-background px-2 py-0.5 text-[8px] font-bold text-foreground uppercase tracking-tighter sm:text-[10px]">
+              -{discount}%
+            </span>
           </div>
         )}
       </div>
 
-      {/* Content */}
-      <div className="flex flex-col gap-1">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="text-lg font-medium text-gray-900 group-hover:text-gray-600 transition-colors">
+      {/* 2. Right Side: Product Details */}
+      <div className="flex flex-1 flex-col justify-between self-stretch py-1">
+        <div className="flex justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-medium uppercase tracking-widest text-foreground-subtle">
+              {product.category}
+            </p>
+            <h3 className="mt-1 text-sm font-semibold leading-tight text-foreground transition-colors group-hover:text-foreground-muted sm:text-base">
               <Link href={`/product/${product.slug}`}>{product.name}</Link>
             </h3>
-            <p className="text-sm text-gray-500">
-              {product.category} • {product.color}
+            <p className="mt-1 text-xs text-foreground-subtle">
+              {product.color} • {product.size}
             </p>
-          </div>
-          <div className="text-right">
-            <p className="font-semibold text-gray-900">${product.price}</p>
-            {product.originalPrice && (
-              <p className="text-sm text-gray-400 line-through">
-                ${product.originalPrice}
-              </p>
-            )}
+
+            <div className="flex gap-4 justify-start items-center mt-4">
+              <span className="font-bold text-foreground ">
+                ${product.price}
+              </span>
+              {product.originalPrice && (
+                <span className="text-foreground-subtle line-through">
+                  ${product.originalPrice}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Stock Status & Mobile Actions */}
-        <div className="w-full bg-black text-white border rounded-full mt-2 py-1 flex items-center justify-center sm:hidden">
-          <button className="text-sm font-semibold py-2.5 decoration-gray-300 underline-offset-4">
-            Move to Bag
+        {/* Price and Actions Row */}
+        <div className="mt-auto flex items-center justify-between gap-2 w-full pr-2">
+          {/* Remove Button */}
+          <button
+            className="flex justify-center items-center shrink-0 rounded-full border border-border h-10 w-10 p-2 text-foreground-subtle transition-all hover:bg-destructive hover:text-destructive-foreground active:scale-90"
+            aria-label="Remove from favorites"
+          >
+            <HeartMinus size={16} />
+          </button>
+          {/* Move to Bag Button */}
+          <button
+            disabled={!product.inStock}
+            className="w-full flex justify-center items-center gap-2 rounded-full py-2.5 text-[10px] font-bold uppercase tracking-widest transition-transform active:scale-95 sm:px-6 sm:py-2.5 sm:text-xs shadow-sm bg-foreground text-background"
+          >
+            {product.inStock ? (
+              <>
+                <ShoppingBag size={14} />
+                Move to Bag
+              </>
+            ) : (
+              <>
+                <Bell size={14} />
+                Notify Me
+              </>
+            )}
           </button>
         </div>
       </div>
