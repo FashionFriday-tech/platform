@@ -84,7 +84,7 @@ export default function EcommerceProfile() {
           
           {/* LEFT SIDEBAR */}
           <aside className="md:col-span-4 space-y-6">
-            <div className="bg-white rounded-4xl p-6 border border-gray-100 shadow-sm text-center relative overflow-hidden">
+            <div className="rounded-4xl p-6 border border-gray-100 shadow-sm text-center relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-24 bg-linear-to-b from-gray-50 to-white z-0" />
 
               <div className="relative z-10">
