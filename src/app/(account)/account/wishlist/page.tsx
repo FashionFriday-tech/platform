@@ -1,19 +1,12 @@
-// app/wishlist/page.tsx
-import { Metadata } from "next";
+"use client";
+
+import { motion, AnimatePresence } from "framer-motion";
 import WishlistCard from "@/components/sections/wishlist/WishlistCard";
 import EmptyWishlist from "@/components/sections/wishlist/EmptyWishlist";
 import { Product } from "@/types/wishlist";
-import { Header } from "@/components/layout/Header";
+import { Trash2 } from "lucide-react";
 
-// SEO: Metadata Configuration
-export const metadata: Metadata = {
-  title: "My Wishlist | Fashion Brand",
-  description:
-    "View your saved favorite fashion items. Keep track of price drops and availability.",
-  robots: "noindex, nofollow", // Usually wishlists are private/user-specific, so we don't index them.
-};
-
-// MOCK DATA (In production, fetch this from DB/API)
+// MOCK DATA (In production, fetch this from your store/API)
 const wishlistItems: Product[] = [
   {
     id: "1",
@@ -54,16 +47,16 @@ const wishlistItems: Product[] = [
   },
   {
     id: "4",
-    name: "Oversized Wool Blazer",
+    name: "Technical Windbreaker",
     category: "Outerwear",
-    price: 189,
-    originalPrice: 250,
+    price: 145,
+    originalPrice: 190,
     image:
       "https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/fc86b60b-1be1-4db2-9ca0-901b1889ba45/W+NIKE+AIR+MAX+MOTO+2K.png",
-    color: "Charcoal Grey",
-    size: "M",
+    color: "Deep Navy",
+    size: "L",
     inStock: true,
-    slug: "oversized-wool-blazer",
+    slug: "technical-windbreaker",
   },
 ];
 
@@ -71,7 +64,6 @@ export default function WishlistPage() {
   const hasItems = wishlistItems.length > 0;
 
   // SEO: Structured Data (ItemList Schema)
-  // Even if page is noindex, structured data helps search engines understand the context if you choose to make public wishlists.
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -95,44 +87,56 @@ export default function WishlistPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white pb-20 sm:pt-20">
-      {/* Inject Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <div className="sm:mb-10 flex flex-col sm:mt-6 items-center justify-between gap-4 sm:border-b border-gray-100 pb-6 sm:flex-row">
-          <h1 className="text-3xl font-bold tracking-wide text-gray-900 sm:text-4xl lg:text-5xl uppercase">
-            Favorites
-          </h1>
-
-          {/* Optional: Sort/Filter Controls could go here */}
-          {hasItems && (
-            <div className="w-full flex items-center justify-between">
-              <p className="sm:mt-2 text-gray-500">
-                {wishlistItems.length}{" "}
-                {wishlistItems.length === 1 ? "item" : "items"} saved 
-              </p>
-              <button className="text-sm font-medium text-gray-900 hover:text-gray-600">
-                Remove all items
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Content Section */}
-        {hasItems ? (
-          <div className="grid grid-cols-1 gap-x-4 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-            {wishlistItems.map((item) => (
-              <WishlistCard key={item.id} product={item} />
-            ))}
+    <main className="min-h-screen bg-background text-foreground md:pt-20">
+      {/* Header Section */}
+      <header className="left-0 right-0 z-40 border-b rounded-4xl px-2 border-foreground/10 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto max-w-md px-4 h-14 flex items-center justify-between">
+          {/* Left: Title + Count */}
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg  uppercase">
+              Wishlist
+            </h1>
           </div>
-        ) : (
-          <EmptyWishlist />
-        )}
+
+          {/* Right: Favorite Icon */}
+           <span className="text-3xl px-2 py-0.5">
+              {wishlistItems.length} <span className="text-sm">Items</span>
+            </span> 
+        </div>
+      </header>
+      <div className="mx-auto px-4 pt-8 pb-24 sm:px-8 sm:pt-16">
+        {/* Content Section */}
+        <AnimatePresence mode="wait">
+          {hasItems ? (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                visible: { transition: { staggerChildren: 0.05 } },
+              }}
+              className="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2 lg:grid-cols-3 xl:gap-x-10"
+            >
+              {wishlistItems.map((item) => (
+                <motion.div
+                  key={item.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                >
+                  <WishlistCard product={item} />
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <EmptyWishlist />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </main>
   );
