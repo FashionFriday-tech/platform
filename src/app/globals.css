@@ -116,19 +116,24 @@
   }
 }
 
-/* =================================================
-   UTILITIES
-================================================= */
-@layer utilities {
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+/* Hide scrollbar globally but keep scrolling functional */
 
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
+
+/* Firefox */
+* {
+  scrollbar-width: none;
+}
+
+/* IE & old Edge (because history exists) */
+* {
+  -ms-overflow-style: none;
+}
+
 
 /* =================================================
    VIEW TRANSITION API SAFETY
