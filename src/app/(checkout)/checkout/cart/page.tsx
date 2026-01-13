@@ -7,6 +7,7 @@ import { Truck, ShoppingBag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import CheckoutStages from "../../_components/CheckoutProgress";
 
 export default function CartPage() {
   const freeShippingThreshold = 5000;
@@ -15,8 +16,9 @@ export default function CartPage() {
   const remaining = freeShippingThreshold - currentTotal;
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <main className="mx-auto max-w-8xl px-2 lg:p-16">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 px-2 md:px-6 lg:py-20">
+      <CheckoutStages currentStage={1} />
+      <main className="mx-auto max-w-8xl">
         <div className="w-full">
           <div className="flex flex-col lg:flex-row gap-12 lg:items-start">
             {/* Left Column: Items & Shipping */}
