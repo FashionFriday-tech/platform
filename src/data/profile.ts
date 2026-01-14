@@ -15,7 +15,7 @@ export const quickLinks = [
     {
         label: "Profile",
         description: "Update your personal details",
-        href: "/account/profile/edit",
+        href: "/account/profile",
         icon: User
     },
     {
