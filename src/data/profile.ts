@@ -41,7 +41,7 @@ export const quickLinks = [
         label: "Gift Cards",
         description: "View and redeem your gift cards",
         icon: Gift,
-        href: "/account/gift-cards"
+        href: "/gift-cards"
     },
 
     {
