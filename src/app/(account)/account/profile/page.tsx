@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link"; // Imported for navigation
+import Link from "next/link";
 import {
   Camera,
   User,
@@ -11,38 +11,41 @@ import {
   Loader2,
   ShieldCheck,
   CheckCircle2,
-  AlertCircle,
-  MapPin, // Imported
-  ChevronRight, // Imported
+  MapPin,
+  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
-import { Header } from "@/components/layout/Header";
 
-// Types
-interface UserProfile {
-  name: string;
-  phone: string;
-  email: string;
-  dob: string;
-  anniversary: string;
-  gender: string;
-  stylePreference: string[];
-  avatarUrl: string;
-}
+// --- Sub-Components (DRY Optimization) ---
+
+const ProfileSection = ({ title, icon: Icon, children, badge }: any) => (
+  <section className="bg-background-elevated rounded-4xl border border-border shadow-sm overflow-hidden">
+    <div className="bg-background-muted px-6 py-4 border-b border-border flex items-center justify-between gap-2">
+      <div className="flex gap-2 items-center">
+        {Icon && <Icon size={18} className="text-foreground" />}
+        <h3 className="font-bold text-foreground">{title}</h3>
+      </div>
+      {badge && (
+        <div className="flex items-center gap-1 text-xs font-medium text-foreground border border-foreground/20 px-3 py-1 rounded-full">
+          {badge}
+        </div>
+      )}
+    </div>
+    <div className="p-6">{children}</div>
+  </section>
+);
 
 export default function EcommerceProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [completion, setCompletion] = useState(75);
-
-  // State for individual field verification
   const [verifyingField, setVerifyingField] = useState<string | null>(null);
   const [verifiedStatus, setVerifiedStatus] = useState({
     phone: false,
     email: false,
   });
 
-  const [formData, setFormData] = useState<UserProfile>({
+  const [formData, setFormData] = useState({
     name: "Ajmal",
     phone: "7558969093",
     email: "ajmal@gmail.com",
@@ -53,43 +56,26 @@ export default function EcommerceProfile() {
     avatarUrl: "/images/model/aj.png",
   });
 
-  // --- Handlers ---
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData({ ...formData, avatarUrl: URL.createObjectURL(file) });
-    }
-  };
-
   const handleVerifyField = async (field: "phone" | "email") => {
     setVerifyingField(field);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setVerifiedStatus((prev) => ({ ...prev, [field]: true }));
+    await new Promise((r) => setTimeout(r, 2000));
+    setVerifiedStatus((p) => ({ ...p, [field]: true }));
     setVerifyingField(null);
-    alert(`OTP sent to your ${field} successfully!`);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen bg-background text-foreground pb-10 lg:pt-20 transition-colors">
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          
           {/* LEFT SIDEBAR */}
           <aside className="md:col-span-4 space-y-6">
-            <div className="rounded-4xl p-6 border border-gray-100 shadow-sm text-center relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-24 bg-linear-to-b from-gray-50 to-white z-0" />
+            <div className="bg-background-elevated rounded-4xl p-6 border border-border shadow-sm text-center relative overflow-hidden">
+              {/* Decorative Header */}
+              <div className="absolute top-0 left-0 w-full h-24 bg-linear-to-b from-background-muted to-transparent z-0" />
 
               <div className="relative z-10">
                 <div
-                  className="relative mx-auto w-28 h-28 rounded-full p-1 border-2 border-dashed border-black cursor-pointer group"
+                  className="relative mx-auto w-28 h-28 rounded-full p-1 border-2 border-dashed border-brand cursor-pointer group"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <div className="w-full h-full rounded-full overflow-hidden relative">
@@ -98,138 +84,125 @@ export default function EcommerceProfile() {
                       alt="Profile"
                       width={112}
                       height={112}
-                      className="w-full h-full object-cover"
+                      className="object-cover w-full h-full"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <Camera className="text-white" size={24} />
                     </div>
                   </div>
-                  <div className="absolute bottom-0 right-0 bg-black text-white p-1.5 rounded-full border-2 border-white">
+                  <div className="absolute bottom-0 right-0 bg-brand text-brand-foreground p-1.5 rounded-full border-2 border-background">
                     <Camera size={14} />
                   </div>
                 </div>
 
-                <h2 className="mt-4 font-bold text-gray-900 text-lg">
-                  {formData.name}
-                </h2>
-                <p className="text-gray-500 text-sm mb-4">Gold Member</p>
+                <h2 className="mt-4 font-bold text-lg">{formData.name}</h2>
+                <p className="text-foreground-muted text-sm mb-4">
+                  Gold Member
+                </p>
 
                 {/* Progress Bar */}
-                <div className="bg-gray-50 rounded-4xl p-4 text-left">
+                <div className="bg-background-muted rounded-4xl p-4 text-left">
                   <div className="flex justify-between items-end mb-2">
-                    <div>
-                      <span className="text-xs font-bold text-gray-900 uppercase">
-                        Profile Strength
-                      </span>
-                      <p className="text-[10px] text-gray-500 leading-tight mt-0.5">
-                        Complete to earn 50 pts
-                      </p>
-                    </div>
-                    <span className="text-sm font-bold text-black">
-                      {completion}%
+                    <span className="text-xs font-bold uppercase tracking-tighter">
+                      Profile Strength
                     </span>
+                    <span className="text-sm font-bold">{completion}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="w-full bg-border rounded-full h-1.5">
                     <div
-                      className="bg-black h-1.5 rounded-full transition-all duration-500"
+                      className="bg-brand h-1.5 rounded-full transition-all duration-500"
                       style={{ width: `${completion}%` }}
-                    ></div>
+                    />
                   </div>
                 </div>
 
-                {/* --- NEW: Manage Addresses Button --- */}
+                {/* Address Link */}
                 <Link href="/profile/addresses" className="block mt-4 group">
-                    <div className="flex items-center justify-between p-3 px-4 rounded-3xl border border-gray-100 bg-white shadow-sm group-hover:border-black group-hover:shadow-md transition-all duration-300">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-gray-50 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
-                                <MapPin size={18} />
-                            </div>
-                            <div className="text-left">
-                                <h4 className="font-bold text-sm text-gray-900">My Addresses</h4>
-                                <p className="text-[10px] text-gray-500">Manage delivery locations</p>
-                            </div>
-                        </div>
-                        <ChevronRight size={16} className="text-gray-400 group-hover:text-black transition-colors" />
+                  <div className="flex items-center justify-between p-3 px-4 rounded-3xl border border-border bg-background hover:border-brand hover:shadow-md transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-background-muted rounded-full group-hover:bg-brand group-hover:text-brand-foreground transition-colors">
+                        <MapPin size={18} />
+                      </div>
+                      <div className="text-left">
+                        <h4 className="font-bold text-sm">My Addresses</h4>
+                        <p className="text-[10px] text-foreground-subtle">
+                          Manage delivery locations
+                        </p>
+                      </div>
                     </div>
+                    <ChevronRight
+                      size={16}
+                      className="text-foreground-subtle group-hover:text-brand"
+                    />
+                  </div>
                 </Link>
-
               </div>
               <input
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
-                onChange={handleImageUpload}
+                onChange={(e) => {
+                  /* logic */
+                }}
               />
             </div>
           </aside>
 
           {/* MAIN FORM */}
-          <form onSubmit={handleSubmit} className="md:col-span-8 space-y-6">
-            
-            {/* Section A: Identity with Verification Buttons */}
-            <section className="bg-white rounded-4xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-2">
-                <div className="flex gap-2 justify-center items-center">
-                  <User size={18} className="text-black" />
-                  <h3 className="font-bold text-gray-900">Identity Details</h3>
-                </div>
-                <div className="flex items-center gap-1 text-xs font-medium text-black  border border-black/20 px-3 py-1 rounded-full">
-                  <ShieldCheck size={14} />
-                  Secure Connection
-                </div>
-              </div>
-
-              <div className="p-6 grid grid-cols-1 gap-6">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="md:col-span-8 space-y-6"
+          >
+            <ProfileSection
+              title="Identity Details"
+              icon={User}
+              badge={
+                <>
+                  <ShieldCheck size={14} /> Secure
+                </>
+              }
+            >
+              <div className="grid grid-cols-1 gap-6">
                 <ModernInput
                   label="Full Name"
                   value={formData.name}
-                  onChange={(v: string) => setFormData({ ...formData, name: v })}
-                  placeholder="Your Name"
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, name: v })
+                  }
                 />
-
                 <ModernInput
                   label="Phone Number"
                   value={formData.phone}
-                  onChange={(v: string) => setFormData({ ...formData, phone: v })}
-                  type="tel"
-                  placeholder="Mobile Number"
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, phone: v })
+                  }
                   actionLabel="Verify"
                   onAction={() => handleVerifyField("phone")}
                   isLoading={verifyingField === "phone"}
                   isVerified={verifiedStatus.phone}
                 />
-
                 <ModernInput
                   label="Email Address"
                   value={formData.email}
-                  onChange={(v: string) => setFormData({ ...formData, email: v })}
-                  type="email"
-                  placeholder="email@domain.com"
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, email: v })
+                  }
                   actionLabel="Verify"
                   onAction={() => handleVerifyField("email")}
                   isLoading={verifyingField === "email"}
                   isVerified={verifiedStatus.email}
                 />
               </div>
-            </section>
+            </ProfileSection>
 
-            {/* Section B: Personalization */}
-            <section className="bg-white rounded-4xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Sparkles size={18} className="text-black" />
-                  <h3 className="font-bold text-gray-900">
-                    Personalize Your Feed
-                  </h3>
-                </div>
-                <span className="text-[10px] font-bold bg-white border text-black px-2 py-0.5 rounded-full uppercase tracking-wide">
-                  Improves Recommendations
-                </span>
-              </div>
-
-              <div className="p-6 space-y-6">
+            <ProfileSection
+              title="Personalize Your Feed"
+              icon={Sparkles}
+              badge="Recommendations"
+            >
+              <div className="space-y-6">
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">
+                  <label className="text-xs font-bold text-foreground-subtle uppercase tracking-wider mb-3 block">
                     I shop for
                   </label>
                   <div className="grid grid-cols-3 gap-3">
@@ -238,12 +211,11 @@ export default function EcommerceProfile() {
                         key={g}
                         type="button"
                         onClick={() => setFormData({ ...formData, gender: g })}
-                        className={`py-3 px-4 rounded-4xl text-sm font-medium border transition-all duration-200 flex items-center justify-center gap-2
-                          ${
-                            formData.gender === g
-                              ? "bg-black text-white border-black shadow-md transform scale-[1.02]"
-                              : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                          }`}
+                        className={`py-3 rounded-4xl text-sm font-medium border transition-all ${
+                          formData.gender === g
+                            ? "bg-brand text-brand-foreground border-brand scale-[1.02]"
+                            : "bg-background border-border text-foreground-muted hover:border-foreground-subtle"
+                        }`}
                       >
                         {g}
                       </button>
@@ -252,32 +224,29 @@ export default function EcommerceProfile() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 block">
+                  <label className="text-xs font-bold text-foreground-subtle uppercase tracking-wider mb-3 block">
                     My Style Vibe
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {[
-                      "Casual", "Formal", "Streetwear", "Minimalist", "Vintage", "Bohemian",
+                      "Casual",
+                      "Formal",
+                      "Streetwear",
+                      "Minimalist",
+                      "Vintage",
                     ].map((style) => {
-                      const isSelected = formData.stylePreference?.includes(style);
-                      const toggleStyle = () => {
-                        const currentStyles = formData.stylePreference || [];
-                        const newStyles = isSelected
-                          ? currentStyles.filter((s) => s !== style)
-                          : [...currentStyles, style];
-                        setFormData({ ...formData, stylePreference: newStyles });
-                      };
-
+                      const isSelected = formData.stylePreference.includes(
+                        style
+                      );
                       return (
                         <button
                           key={style}
                           type="button"
-                          onClick={toggleStyle}
-                          className={`py-2 px-4 rounded-full text-sm font-medium border-2 transition-all
-                            ${isSelected
-                              ? " bg-black text-white ring-black"
-                              : " text-gray-600 border-gray-200 hover:border-black"
-                            }`}
+                          className={`py-2 px-4 rounded-full text-sm font-medium border-2 transition-all ${
+                            isSelected
+                              ? "bg-brand text-brand-foreground border-brand"
+                              : "text-foreground-muted border-border hover:border-brand"
+                          }`}
                         >
                           {style}
                         </button>
@@ -286,38 +255,41 @@ export default function EcommerceProfile() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <ModernInput
                     label="Date of Birth"
-                    value={formData.dob}
-                    onChange={(v: string) => setFormData({ ...formData, dob: v })}
                     type="date"
-                    icon={<Gift size={16} className="text-black" />}
+                    value={formData.dob}
+                    onChange={(v: string) =>
+                      setFormData({ ...formData, dob: v })
+                    }
+                    icon={<Gift size={16} />}
                   />
                   <ModernInput
                     label="Anniversary"
-                    value={formData.anniversary}
-                    onChange={(v: string) => setFormData({ ...formData, anniversary: v })}
                     type="date"
+                    value={formData.anniversary}
+                    onChange={(v: string) =>
+                      setFormData({ ...formData, anniversary: v })
+                    }
                   />
                 </div>
               </div>
-            </section>
+            </ProfileSection>
 
-            {/* Action Bar */}
-            <div className="flex w-full items-center justify-center gap-4 pt-4 sticky bottom-4 z-20">
-              <div className="backdrop-blur-xl bg-white/80 p-2 rounded-4xl shadow-xl border border-gray-200/50 flex gap-3">
+            {/* Sticky Action Bar */}
+            <div className="flex w-full items-center justify-center pt-4 sticky bottom-16 md:bottom-4 z-20">
+              <div className="backdrop-blur-xl bg-foreground p-2 rounded-4xl shadow-xl flex gap-3">
                 <button
                   type="button"
-                  className="px-6 py-3 rounded-4xl font-medium text-gray-600 hover:bg-gray-100 transition-colors"
-                  onClick={() => window.history.back()}
+                  className="px-6 py-3 rounded-4xl font-medium text-background hover:bg-background transition-colors"
                 >
                   Discard
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-8 py-3 rounded-4xl bg-black text-white font-semibold hover:bg-gray-800 transition-all shadow-lg shadow-black/20 flex items-center gap-2 active:scale-95"
+                  className="px-8 py-3 rounded-4xl bg-background text-foreground font-semibold hover:opacity-90 transition-all flex items-center gap-2"
                 >
                   {loading ? (
                     <Loader2 className="animate-spin" size={18} />
@@ -336,73 +308,58 @@ export default function EcommerceProfile() {
   );
 }
 
-// --- UPDATED SPECIALIZED INPUT COMPONENT ---
-interface ModernInputProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: string;
-  placeholder?: string;
-  icon?: React.ReactNode;
-  actionLabel?: string;
-  onAction?: () => void;
-  isLoading?: boolean;
-  isVerified?: boolean;
-}
-
+// --- REFACTORED INPUT ---
 const ModernInput = ({
   label,
   value,
   onChange,
   type = "text",
-  placeholder,
-  icon,
   actionLabel,
   onAction,
-  isLoading = false,
-  isVerified = false,
-}: ModernInputProps) => (
+  isLoading,
+  isVerified,
+  icon,
+}: any) => (
   <div className="space-y-1.5 w-full">
     <div className="flex justify-between">
-      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+      <label className="text-xs font-bold text-foreground-subtle uppercase tracking-wider">
         {label}
       </label>
       {isVerified && (
-        <div className="flex items-center gap-1 text-[10px] font-bold text-black  px-2 rounded-full">
+        <span className="text-[10px] font-bold text-brand flex items-center gap-1">
           <CheckCircle2 size={12} /> VERIFIED
-        </div>
+        </span>
       )}
-      {icon && !isVerified && <div className="text-xs">{icon}</div>}
     </div>
-
     <div className="relative group">
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={isVerified}
-        className={`w-full border border-gray-200 text-gray-900 text-sm rounded-4xl pl-4 py-3.5 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black transition-all placeholder:text-gray-400
-          ${actionLabel ? "pr-28" : "pr-4"} 
-          ${isVerified && "border-black text-black"}
-        `}
-        placeholder={placeholder}
+        className={`w-full bg-background border border-border text-foreground text-sm rounded-4xl pl-4 py-3.5 outline-none focus:ring-1 focus:ring-ring focus:border-brand transition-all
+          ${actionLabel ? "pr-28" : "pr-4"} ${
+          isVerified && "border-brand opacity-80"
+        }`}
       />
-
       {onAction && !isVerified && (
         <button
-          type="button"
           onClick={onAction}
           disabled={isLoading || !value}
-          className="absolute right-1.5 top-1.5 bottom-1.5 bg-black text-white text-xs font-bold px-4 rounded-3xl hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center min-w-20"
+          className="absolute right-1.5 top-1.5 bottom-1.5 bg-brand text-brand-foreground text-xs font-bold px-4 rounded-3xl hover:opacity-90 disabled:opacity-30 transition-all min-w-20"
         >
-          {isLoading ? <Loader2 className="animate-spin" size={14} /> : actionLabel}
+          {isLoading ? (
+            <Loader2 className="animate-spin" size={14} />
+          ) : (
+            actionLabel
+          )}
         </button>
       )}
-
       {isVerified && (
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-black">
-           <CheckCircle2 size={20}  />
-        </div>
+        <CheckCircle2
+          size={20}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-brand"
+        />
       )}
     </div>
   </div>
