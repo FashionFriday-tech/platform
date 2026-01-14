@@ -48,7 +48,7 @@ export const quickLinks = [
         label: "Wallet",
         description: "Check refund status and history",
         icon: Wallet,
-        href: "/account/profile/refunds"
+        href: "/account/refunds"
     },
 
     {
