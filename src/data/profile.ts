@@ -34,7 +34,7 @@ export const quickLinks = [
         label: "Addresses",
         description: "Manage shipping details",
         icon: MapPin,
-        href: "/account/profile/addresses"
+        href: "/account/addresses"
     },
 
     {
