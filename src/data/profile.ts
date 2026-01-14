@@ -62,7 +62,7 @@ export const quickLinks = [
         label: "Legal & Help",
         description: "Access legal information and get help",
         icon: HeartHandshake,
-        href: "/account/legal-help",
+        href: "/help",
     },
 
     {
