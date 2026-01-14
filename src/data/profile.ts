@@ -55,7 +55,7 @@ export const quickLinks = [
         label: "Referrals",
         description: "Invite friends and earn rewards",
         icon: Share2,
-        href: "/account/profile/referrals"
+        href: "/account/referrals"
     },
 
     {
