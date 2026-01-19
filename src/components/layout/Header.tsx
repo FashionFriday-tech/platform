@@ -4,90 +4,43 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { TbListSearch } from "react-icons/tb";
+import { TbListSearch, TbCategoryPlus } from "react-icons/tb";
 import { GrFavorite } from "react-icons/gr";
 import { PiShoppingBagOpen } from "react-icons/pi";
-import { TbCategoryPlus } from "react-icons/tb";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiBell } from "react-icons/fi";
 import { BiUser } from "react-icons/bi";
 import { IoIosArrowForward } from "react-icons/io";
-import { FiBell } from "react-icons/fi";
 import { TfiClose } from "react-icons/tfi";
+
 // --- Data Configuration ---
 const navStructure = [
-  {
-    label: "New Arrivals",
-    href: "/new",
-    featuredImg: "/images/nav/new-drop.jpg",
-    subCategories: ["Just In", "Best Sellers", "Back in Stock", "Trending Now"],
-  },
-  {
-    label: "Men",
-    href: "/men",
-    featuredImg: "/images/nav/men-street.jpg",
-    subCategories: [
-      "T-Shirts",
-      "Hoodies & Sweatshirts",
-      "Outerwear",
-      "Bottoms",
-      "Footwear",
-    ],
-  },
-  {
-    label: "Women",
-    href: "/women",
-    featuredImg: "/images/nav/women-edit.jpg",
-    subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"],
-  },
-  {
-    label: "Sale",
-    href: "/sale",
-    featuredImg: "/images/nav/sale-banner.jpg",
-    subCategories: ["Shop All Sale", "Under ₹999", "Final Clearance"],
-    isRed: true,
-  },
-  {
-    label: "snkrs",
-    href: "/sneakers",
-    featuredImg: "/images/nav/women-edit.jpg",
-    subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"],
-  },
+  { label: "New Arrivals", href: "/new", subCategories: ["Just In", "Best Sellers", "Back in Stock", "Trending Now"] },
+  { label: "Men", href: "/men", subCategories: ["T-Shirts", "Hoodies & Sweatshirts", "Outerwear", "Bottoms", "Footwear"] },
+  { label: "Women", href: "/women", subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"] },
+  { label: "Sale", href: "/sale", subCategories: ["Shop All Sale", "Under ₹999", "Final Clearance"], isRed: true },
+  { label: "snkrs", href: "/sneakers", subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"] },
 ];
 
 export function Header() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Scroll Listener for Glass Effect
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Marquee Content - Repeating for smooth loop
-  const marqueeText = "FREE SHIPPING ON PRE PAY • COD avilable +200 advance";
-  const marqueeContent = Array(10).fill(marqueeText); // Repeat 10 times
+  // Marquee Content
+  const marqueeText = "FREE SHIPPING ON PRE PAY • COD available +200 advance";
+  const marqueeContent = Array(10).fill(marqueeText);
 
   return (
     <>
-      {/* ------------------------------------------------
-          1. DESKTOP HEADER (The "Glass Sheet")
-      ------------------------------------------------ */}
+      {/* 1. DESKTOP HEADER */}
       <header
         onMouseLeave={() => setActiveMenu(null)}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500`}
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-background"
       >
-        <div className="relative hidden sm:flex items-center justify-between z-50 mx-auto bg-black text-white border-y-2 px-6 lg:px-12">
-          {/* Logo */}
-          <Link href="/" className="z-50 relative group invert">
-            <img
-              src="/images/logos/ff-full-logo.jpg"
-              alt="fashion friday"
-              className="w-50"
-            />
+        <div className="relative hidden sm:flex items-center justify-between z-50 mx-auto text-foreground px-6 lg:px-12 h-16">
+          {/* Logo - Uses brand-primary via filter or just standard rendering */}
+          <Link href="/" className="z-50 relative h-8 flex items-center">
+             <span className="text-xl font-black tracking-tighter uppercase italic">Fashion Friday</span>
           </Link>
 
           {/* Desktop Nav Links */}
@@ -100,12 +53,12 @@ export function Header() {
               >
                 <Link
                   href={item.href}
-                  className={`relative px-2 py-4 text-[14px] font-bold uppercase tracking-[0.15em] transition-colors group
-                    ${item.isRed ? "text-red-500" : "hover:text-neutral-300"}
+                  className={`relative px-2 py-4 text-[14px] font-bold uppercase tracking-widest transition-colors group
+                    ${item.isRed ? "text-destructive" : "text-foreground"}
                   `}
                 >
                   {item.label}
-                  <span className="absolute bottom-2 left-0 w-0  bg-current transition-all duration-300 group-hover:w-full" />
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand transition-all duration-300 group-hover:w-full" />
                 </Link>
               </div>
             ))}
@@ -115,132 +68,64 @@ export function Header() {
           <div className="flex items-center gap-5 z-50">
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="hidden lg:flex items-center gap-2 text-xs font-medium uppercase tracking-wider hover:opacity-60 transition-opacity"
+              className="hidden lg:flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground transition-colors"
             >
-              <FiSearch className="w-5 h-5" />
+              <FiSearch className="text-lg" />
               <span>Search</span>
             </button>
 
-            <div className="h-4 bg-white/20 hidden lg:block" />
+            <div className="h-4 w-px bg-border hidden lg:block" />
 
-            <Link
-              href="/account/wishlist"
-              className="hover:opacity-60 transition-opacity"
-            >
-              <GrFavorite className="text-2xl" />
-            </Link>
-            <Link
-              href="/checkout/cart"
-              className="hover:opacity-60 transition-opacity relative"
-            >
-              <PiShoppingBagOpen className="text-2xl" />
-              <span className="absolute -top-1.5 -right-1.5 bg-white text-black text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
-                2
-              </span>
-            </Link>
-            <Link
-              href="/account"
-              className="hover:opacity-60 transition-opacity"
-            >
-              <BiUser className="text-2xl" />
-            </Link>
+            <div className="flex items-center gap-4 text-foreground">
+               <Link href="/account/wishlist" className="transition-colors"><GrFavorite className="text-xl" /></Link>
+               <Link href="/checkout/cart" className="relative transition-colors">
+                  <PiShoppingBagOpen className="text-2xl" />
+                  <span className="absolute -top-1.5 -right-1.5 bg-brand text-brand-foreground text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">2</span>
+               </Link>
+               <Link href="/account" className="hover:text-foreground transition-colors"><BiUser className="text-2xl" /></Link>
+            </div>
           </div>
         </div>
 
-        {/* ------------------------------------------------
-            SCROLLING MARQUEE BANNER
-        ------------------------------------------------ */}
-        <div className="hidden sm:block bg-black text-white border-b border-white/10 overflow-hidden py-2 relative z-40">
+        {/* MARQUEE BANNER */}
+        <div className="hidden sm:block bg-foreground text-background  py-1.5 relative z-40">
           <div className="flex whitespace-nowrap animate-marquee">
-            {/* Render content twice to create seamless loop */}
-            <div className="flex gap-10 px-5">
-              {marqueeContent.map((text, i) => (
-                <span
-                  key={`a-${i}`}
-                  className="text-[10px] font-bold uppercase tracking-[0.2em]"
-                >
-                  {text}
-                </span>
-              ))}
-            </div>
-            <div className="flex gap-10 px-5">
-              {marqueeContent.map((text, i) => (
-                <span
-                  key={`b-${i}`}
-                  className="text-[10px] font-bold uppercase tracking-[0.2em]"
-                >
-                  {text}
-                </span>
-              ))}
-            </div>
+            {[0, 1].map((set) => (
+              <div key={set} className="flex gap-10 px-5">
+                {marqueeContent.map((text, i) => (
+                  <span key={i} className="text-[9px] font-black uppercase tracking-[0.2em]">{text}</span>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* ------------------------------------------------
-            2. THE VISUAL MEGA MENU
-        ------------------------------------------------ */}
+        {/* MEGA MENU */}
         <AnimatePresence>
           {activeMenu && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="absolute top-full left-0 w-full bg-white border-t border-black/5 shadow-xl overflow-hidden text-black z-30"
+              className="absolute top-full left-0 w-full bg-background-elevated border-t border-border shadow-2xl text-foreground z-30"
             >
-              <div className="container mx-auto px-12 py-12">
+              <div className="container mx-auto px-12 py-10">
                 <div className="grid grid-cols-12 gap-12">
-                  {/* Left: Categories */}
-                  <div className="col-span-4 border-r border-black/5">
-                    <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-6">
-                      Explore {activeMenu}
-                    </h3>
-                    <ul className="space-y-4">
-                      {navStructure
-                        .find((n) => n.label === activeMenu)
-                        ?.subCategories.map((sub) => (
-                          <li key={sub}>
-                            <Link
-                              href="#"
-                              className="text-2xl font-black uppercase tracking-tight hover:text-neutral-500 transition-colors flex items-center gap-4 group"
-                            >
-                              {sub}
-                              <IoIosArrowForward className="text-2xl opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-neutral-400" />
-                            </Link>
-                          </li>
-                        ))}
+                  <div className="col-span-4">
+                    <h3 className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest mb-6">Explore {activeMenu}</h3>
+                    <ul className="space-y-3">
+                      {navStructure.find((n) => n.label === activeMenu)?.subCategories.map((sub) => (
+                        <li key={sub}>
+                          <Link href="#" className="text-2xl font-black uppercase tracking-tighter hover:text-brand transition-colors flex items-center justify-between group">
+                            {sub}
+                            <IoIosArrowForward className="opacity-0 group-hover:opacity-100 transition-all text-brand" />
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
                   </div>
-
-                  {/* Middle: Editorial Image */}
-                  <div className="col-span-5 relative h-80 bg-neutral-100 group overflow-hidden rounded-4xl">
-                    <div className="absolute inset-0 bg-neutral-200 flex items-center justify-center text-neutral-400">
-                      <span className="text-xs uppercase tracking-widest">
-                        <img
-                          src="/images/model/aj.png"
-                          alt="model"
-                          className="object-cover object-top"
-                        />
-                      </span>
-                    </div>
-                    <span className="absolute bottom-6 left-6 bg-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-black">
-                      New Season
-                    </span>
-                  </div>
-
-                  {/* Right: Quick Links */}
-                  <div className="col-span-3 flex flex-col justify-end pb-2">
-                    <div className="bg-black text-white p-6 rounded-3xl">
-                      <p className="text-lg font-bold leading-tight mb-4">
-                        COD Avilable Rs200+ Advance.
-                      </p>
-                      <Link
-                        href="/shipping"
-                        className="text-xs underline underline-offset-4 uppercase tracking-widest hover:text-neutral-300"
-                      >
-                        Learn More
-                      </Link>
-                    </div>
+                  <div className="col-span-8 bg-background-muted rounded-3xl h-64 overflow-hidden relative">
+                     <div className="absolute inset-0 flex items-center justify-center text-foreground-subtle uppercase text-[10px] font-black tracking-widest">Featured Editorial</div>
                   </div>
                 </div>
               </div>
@@ -249,115 +134,53 @@ export function Header() {
         </AnimatePresence>
       </header>
 
-      {/* ------------------------------------------------
-          3. MOBILE APP-BAR (Bottom Navigation)
-      ------------------------------------------------ */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-black backdrop-blur-xl text-white shadow-2xl  px-6 py-4 flex items-center justify-between">
-        <Link
-          href="/categories"
-          className="flex flex-col items-center gap-1 transition-colors"
-        >
-          <TbCategoryPlus className="text-2xl" />
-        </Link>
-
-        <button
-          onClick={() => setIsSearchOpen(true)}
-          className="flex flex-col items-center gap-1 transition-colors"
-        >
-          <TbListSearch className="text-2xl" />
-        </button>
-
-        <Link
-          href="/"
-          className="flex flex-col items-center gap-1 transition-colors"
-        >
-          <img
-            src="/images/logos/ff-logo.png"
-            alt="home"
-            className="w-10 invert"
-          />
-        </Link>
-
-        <Link
-          href="/checkout/cart"
-          className="flex flex-col items-center gap-1 transition-colors relative"
-        >
-          <PiShoppingBagOpen className="text-2xl" />
-          <span className="absolute top-0 right-0 w-1.5 h-1.5 bg-red-500 rounded-full" />
-        </Link>
-
-        <Link
-          href="/account"
-          className="flex flex-col items-center gap-1 transition-colors"
-        >
-          <BiUser className="text-2xl" />
-        </Link>
-      </nav>
-
-      <div className="sticky top-0 right-0 lg:hidden w-full p-5 z-40 bg-black text-white flex justify-between ">
-        <Link href="/account" className="flex items-center gap-4">
+      {/* 2. MOBILE TOP BAR */}
+      <div className="sticky top-0 lg:hidden w-full px-4 py-3 z-50 bg-background text-foreground flex justify-between items-center">
+       <Link href="/account" className="flex items-center gap-4">
           <Image
             src="/images/model/aj.png"
             width={50}
             height={50}
             alt="Ajmal"
-            className="w-10 h-10 rounded-full object-cover object-top border-2 border-white"
+            className="w-10 h-10 rounded-full object-cover object-top border-2 border-foreground"
           />
           <span className="font-semibold">HELLO, AJMAL</span>
         </Link>
-        {/* <img src="logos/ff-full-logo.jpg" alt="" className="w-40 invert" /> */}
-        <div className="flex items-center justify-center gap-4">
-          <FiSearch className="text-2xl" />
-          <Link
-            href="/account/notifications"
-            className="flex flex-col items-center gap-1 transition-colors relative"
-          >
-            <FiBell className="text-2xl" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+        <div className="flex items-center gap-4">
+          <FiSearch className="text-xl text-foreground" onClick={() => setIsSearchOpen(true)} />
+          <Link href="/account/notifications" className="relative text-foreground">
+            <FiBell className="text-xl" />
+            <span className="absolute top-0 right-0 w-2 h-2 bg-destructive rounded-full" />
           </Link>
-          <Link
-            href="/account/wishlist"
-            className="flex flex-col items-center gap-1 transition-colors"
-          >
-            <GrFavorite className="text-2xl" />
-          </Link>
+          <Link href="/account/wishlist" className="text-foreground"><GrFavorite className="text-xl" /></Link>
         </div>
-
-        {/* <div className="w-full flex items-center gap-3 px-4 py-3 border border-white text-white rounded-full backdrop-blur-sm">
-          <input
-            type="search"
-            placeholder="Search products"
-            className="w-full bg-transparent text-white placeholder-white/60 text-sm focus:outline-none"
-          />
-        </div> */}
       </div>
 
-      {/* ------------------------------------------------
-          4. FULL SCREEN SEARCH OVERLAY
-      ------------------------------------------------ */}
+      {/* 3. MOBILE BOTTOM NAV */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background text-foreground px-6 py-3 flex items-center justify-between">
+        <Link href="/categories" className="text-foreground hover:text-brand transition-colors"><TbCategoryPlus className="text-[25px]" /></Link>
+        <button onClick={() => setIsSearchOpen(true)} className="text-foreground hover:text-brand transition-colors"><TbListSearch className="text-[25px]" /></button>
+        <Link href="/" className="scale-110"><Image src="/images/logos/ff-logo.png" width={32} height={32} alt="logo" className="dark:invert transition-all" /></Link>
+        <Link href="/checkout/cart" className="relative text-foreground hover:text-brand transition-colors">
+          <PiShoppingBagOpen className="text-[25px]" />
+          <span className="absolute top-0 right-0 w-2 h-2 bg-brand rounded-full border-2 border-background" />
+        </Link>
+        <Link href="/account" className="text-foreground hover:text-brand transition-colors"><BiUser className="text-[25px]" /></Link>
+      </nav>
+
+      {/* 4. SEARCH OVERLAY */}
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-60 bg-white/95 backdrop-blur-xl flex flex-col pt-32 px-6 lg:px-32"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-xl flex flex-col pt-32 px-6"
           >
-            <button
-              onClick={() => setIsSearchOpen(false)}
-              className="absolute top-8 right-8 p-2 hover:bg-neutral-100 rounded-full"
-            >
-              <TfiClose className="w-8 h-8 text-black" />
-            </button>
-
+            <button onClick={() => setIsSearchOpen(false)} className="absolute top-8 right-8 p-3 hover:bg-background-muted rounded-full transition-colors"><TfiClose className="text-2xl text-foreground" /></button>
             <div className="w-full max-w-4xl mx-auto">
-              <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-4 block">
-                Type to search
-              </span>
+              <span className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest mb-4 block">Search Collection</span>
               <input
-                type="text"
-                placeholder="E.g. Oversized Hoodie"
-                className="w-full text-4xl md:text-6xl font-black uppercase tracking-tighter border-b-2 border-black/10 focus:border-black bg-transparent py-4 outline-none placeholder:text-neutral-200"
+                type="text" placeholder="Start typing..."
+                className="w-full text-4xl md:text-7xl font-black uppercase tracking-tighter border-b-4 border-border focus:border-brand bg-transparent py-4 outline-none transition-colors placeholder:text-foreground-subtle/20"
                 autoFocus
               />
             </div>
@@ -365,60 +188,11 @@ export function Header() {
         )}
       </AnimatePresence>
 
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "tween", duration: 0.3 }}
-            className="fixed inset-0 z-60 bg-[#050505] text-white flex flex-col p-8 lg:hidden"
-          >
-            <div className="flex justify-between items-center mb-10">
-              <span className="font-black text-2xl uppercase">Menu</span>
-              <button onClick={() => setIsMobileMenuOpen(false)}>
-                <TfiClose className="w-8 h-8" />
-              </button>
-            </div>
-            <div className="space-y-6">
-              {navStructure.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-4xl font-black uppercase tracking-tighter text-transparent stroke-text hover:text-white transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Global CSS for Animations */}
       <style jsx global>{`
-        /* Marquee Animation */
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-marquee {
-          animation: marquee 20s linear infinite;
-        }
-
-        /* Stroke Text Effect */
-        .stroke-text {
-          -webkit-text-stroke: 1px rgba(255, 255, 255, 0.8);
-        }
-        .stroke-text:hover {
-          -webkit-text-stroke: 0px transparent;
-        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .animate-marquee { animation: marquee 30s linear infinite; }
+        .stroke-text { -webkit-text-stroke: 1px var(--text-muted); color: transparent; }
+        .stroke-text:hover { -webkit-text-stroke: 0px transparent; color: var(--text-primary); }
       `}</style>
     </>
   );
