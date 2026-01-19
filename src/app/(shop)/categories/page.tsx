@@ -17,7 +17,7 @@ export default function StoreLandingPage() {
         {categories.map((category, index) => (
           <Link
             key={category.category}
-            href={`/shop/${category.category}`}
+            href={`/categories/${category.category}`}
             className={`group relative flex transition-transform duration-500 active:scale-95 ${
               index % 2 === 0 ? "justify-start" : "justify-end"
             } sm:justify-normal`}
