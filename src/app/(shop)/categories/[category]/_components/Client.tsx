@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CategorySlug,
@@ -9,7 +9,14 @@ import {
   filterProducts,
 } from "@/data/store-data";
 import brandLogos from "@/data/brandLogos";
-import { ChevronDown, SlidersHorizontal, ArrowUpDown, Check } from "lucide-react";
+import { 
+  ChevronDown, 
+  SlidersHorizontal, 
+  ArrowUpDown, 
+  Check, 
+  Play, 
+  Square 
+} from "lucide-react";
 
 const SORT_OPTIONS = [
   { label: "Newest Arrivals", value: "newest" },
@@ -21,15 +28,17 @@ const SORT_OPTIONS = [
 ];
 
 const COLOR_MAP: Record<string, string> = {
-  Black: "#000000", White: "#ffffff", Blue: "#1d4ed8", Grey: "#71717a", Red: "#dc2626", Green: "#15803d", Gold: "#fbbf24",
+  Black: "#000000", White: "#ffffff", Blue: "#1d4ed8", 
+  Grey: "#71717a", Red: "#dc2626", Green: "#15803d", Gold: "#fbbf24",
 };
 
-function FilterSection({ section, selectedOptions, onChange, isOpen, onToggle }: any) {
+// --- SUB-COMPONENT: FILTER SECTION ---
+function FilterSection({ section, selectedOptions, onChange, isOpen, onToggle, maxPriceLimit }: any) {
   const isBrandSection = section.id === "brand";
   const isPriceSection = section.id === "priceRange";
   const isColorSection = section.id === "color";
   
-  const currentRange = isPriceSection ? (selectedOptions[0] || "0-10000").split("-") : [0, 10000];
+  const currentRange = isPriceSection ? (selectedOptions[0] || `0-${maxPriceLimit}`).split("-") : [0, maxPriceLimit];
   const maxVal = currentRange[1];
 
   return (
@@ -53,25 +62,23 @@ function FilterSection({ section, selectedOptions, onChange, isOpen, onToggle }:
             className="overflow-hidden"
           >
             <div className="pt-4 pb-4">
-              {/* BUDGET RANGE SLIDER */}
               {isPriceSection && (
                 <div className="px-2">
                   <div className="flex justify-between mb-4">
                     <span className="text-[10px] font-black text-foreground-subtle">₹0</span>
-                    <span className="text-[10px] font-black text-brand bg-brand/10 px-2 py-1 rounded-full">
-                      UNDER ₹{Number(maxVal).toLocaleString()}
+                    <span className="text-[10px] font-black text-brand bg-brand/10 px-2 py-1 rounded-full uppercase">
+                      Under ₹{Number(maxVal).toLocaleString()}
                     </span>
                   </div>
                   <input
-                    type="range" min="0" max="10000" step="500" value={maxVal}
+                    type="range" min="0" max={maxPriceLimit} step="100" value={maxVal}
                     onChange={(e) => onChange(section.id, `0-${e.target.value}`, true)}
                     className="w-full h-1 bg-background-muted rounded-full appearance-none cursor-pointer accent-brand"
-                    style={{ background: `linear-gradient(to right, var(--brand-primary) 0%, var(--brand-primary) ${Number(maxVal) / 100}%, var(--surface-muted) ${Number(maxVal) / 100}%, var(--surface-muted) 100%)` }}
+                    style={{ background: `linear-gradient(to right, var(--brand-primary) 0%, var(--brand-primary) ${(Number(maxVal) / maxPriceLimit) * 100}%, var(--surface-muted) ${(Number(maxVal) / maxPriceLimit) * 100}%, var(--surface-muted) 100%)` }}
                   />
                 </div>
               )}
 
-              {/* COLOR CHIPS (Circle Type) */}
               {isColorSection && (
                 <div className="flex flex-wrap gap-3">
                   {section.options.map((color: string) => (
@@ -84,14 +91,11 @@ function FilterSection({ section, selectedOptions, onChange, isOpen, onToggle }:
                 </div>
               )}
 
-              {/* CAPSULE TYPE FILTERS (Brand, Size, Quality) */}
               {!isPriceSection && !isColorSection && (
                 <div className="flex flex-wrap gap-2">
                   {section.options.map((option: string) => {
                     const isChecked = selectedOptions.includes(option);
-                    // Match brand logo by finding the object in brandLogos array
                     const brandObj = isBrandSection ? brandLogos.find(b => b.name.toLowerCase() === option.toLowerCase()) : null;
-                    
                     return (
                       <button
                         key={option}
@@ -103,11 +107,7 @@ function FilterSection({ section, selectedOptions, onChange, isOpen, onToggle }:
                         }`}
                       >
                         {isBrandSection && brandObj && (
-                          <img 
-                            src={brandObj.link} 
-                            alt="" 
-                            className={`w-5 object-contain transition-all scale-125 ${isChecked ? "brightness-0 invert-0" : "dark:invert"}`} 
-                          />
+                          <img src={brandObj.link} alt="" className={`w-5 object-contain transition-all scale-125 ${isChecked ? "brightness-0 invert-0" : "dark:invert"}`} />
                         )}
                         {option}
                       </button>
@@ -123,34 +123,95 @@ function FilterSection({ section, selectedOptions, onChange, isOpen, onToggle }:
   );
 }
 
+// --- MAIN PAGE COMPONENT ---
 export default function CategoryClient({ category }: { category: CategorySlug }) {
+  // 1. DYNAMIC DATA PREPARATION
+  const products = useMemo(() => {
+    // Filter by category and Remove duplicates by ID
+    const raw = MOCK_PRODUCTS.filter((p) => p.category === category);
+    return Array.from(new Map(raw.map(item => [item.id, item])).values());
+  }, [category]);
+
+  // Find the absolute highest price in this category to set the slider limit
+  const maxPriceLimit = useMemo(() => {
+    if (products.length === 0) return 10000;
+    return Math.ceil(Math.max(...products.map(p => p.price)) / 1000) * 1000;
+  }, [products]);
+
   const [activeDrawer, setActiveDrawer] = useState<"filter" | "sort" | null>(null);
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({ priceRange: ["0-10000"] });
-  const [stagedFilters, setStagedFilters] = useState<Record<string, string[]>>({ priceRange: ["0-10000"] });
+  
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({ 
+    priceRange: [`0-${maxPriceLimit}`] 
+  });
+  const [stagedFilters, setStagedFilters] = useState<Record<string, string[]>>({ 
+    priceRange: [`0-${maxPriceLimit}`] 
+  });
   const [sortBy, setSortBy] = useState("newest");
 
-  // Lock Body Scroll
-  useEffect(() => {
-    document.body.style.overflow = activeDrawer ? "hidden" : "unset";
-    return () => { document.body.style.overflow = "unset"; };
-  }, [activeDrawer]);
+  // Auto Scroll Engine
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const scrollRef = useRef<number | null>(null);
 
-  // Sync staged filters when drawer opens
-  useEffect(() => {
-    if (activeDrawer === "filter") setStagedFilters(activeFilters);
-  }, [activeDrawer, activeFilters]);
-
-  const products = useMemo(() => MOCK_PRODUCTS.filter((p) => p.category === category), [category]);
   const availableFilters = CATEGORY_FILTERS[category] || [];
-  const allFilters = useMemo(() => [{ id: "priceRange", label: "Price Range", options: [] }, ...availableFilters.filter(f => f.id !== "gender")], [category, availableFilters]);
+  const allFilters = useMemo(() => [
+    { id: "priceRange", label: "Budget Range", options: [] },
+    ...availableFilters.filter(f => f.id !== "gender")
+  ], [category, availableFilters]);
 
+  // 2. FILTERING & SORTING EXECUTION
   const filteredAndSortedProducts = useMemo(() => {
     let result = filterProducts(products, activeFilters);
-    if (sortBy === "price-asc") result.sort((a, b) => a.price - b.price);
-    if (sortBy === "price-desc") result.sort((a, b) => b.price - a.price);
-    return result;
+    const sorted = [...result];
+
+    if (sortBy === "price-asc") sorted.sort((a, b) => a.price - b.price);
+    else if (sortBy === "price-desc") sorted.sort((a, b) => b.price - a.price);
+    else if (sortBy === "most-sold") sorted.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
+    else if (sortBy === "most-liked") sorted.sort((a, b) => (b.popularityScore || 0) - (a.popularityScore || 0));
+    else if (sortBy === "most-offered") sorted.sort((a, b) => (b.discount || 0) - (a.discount || 0));
+    
+    return sorted;
   }, [products, activeFilters, sortBy]);
+
+  // 3. AUTO SCROLL SYSTEM
+  const startAutoScroll = () => {
+    if (isAutoScrolling) {
+      setIsAutoScrolling(false);
+      if (scrollRef.current) cancelAnimationFrame(scrollRef.current);
+    } else {
+      setIsAutoScrolling(true);
+      const scroll = () => {
+        window.scrollBy(0, 3);
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 2) {
+          setIsAutoScrolling(false);
+          return;
+        }
+        scrollRef.current = requestAnimationFrame(scroll);
+      };
+      scrollRef.current = requestAnimationFrame(scroll);
+    }
+  };
+
+  useEffect(() => {
+    const handleTouch = () => {
+      if (isAutoScrolling) {
+        setIsAutoScrolling(false);
+        if (scrollRef.current) cancelAnimationFrame(scrollRef.current);
+      }
+    };
+    window.addEventListener("touchstart", handleTouch);
+    return () => window.removeEventListener("touchstart", handleTouch);
+  }, [isAutoScrolling]);
+
+  useEffect(() => {
+    document.body.style.overflow = activeDrawer ? "hidden" : "unset";
+  }, [activeDrawer]);
+
+  // Update default range if category changes
+  useEffect(() => {
+    setActiveFilters({ priceRange: [`0-${maxPriceLimit}`] });
+    setStagedFilters({ priceRange: [`0-${maxPriceLimit}`] });
+  }, [maxPriceLimit]);
 
   return (
     <div className="bg-background min-h-screen text-foreground transition-colors duration-500 pb-24">
@@ -158,28 +219,37 @@ export default function CategoryClient({ category }: { category: CategorySlug })
       {/* ACTION BAR */}
       <div className="sticky top-16 z-30 bg-background border-y border-border">
         <div className="max-w-7xl mx-auto flex h-12">
-          <button onClick={() => setActiveDrawer("filter")} className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-r border-border hover:bg-background-muted transition-all">
+          <button onClick={() => setActiveDrawer("filter")} className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-r border-border hover:bg-background-muted transition-all outline-none">
             <SlidersHorizontal size={13} /> Filter
           </button>
-          <button onClick={() => setActiveDrawer("sort")} className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest hover:bg-background-muted transition-all">
+          
+          <button onClick={startAutoScroll} className={`flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-r border-border transition-all outline-none ${isAutoScrolling ? 'text-brand animate-pulse' : ''}`}>
+            {isAutoScrolling ? <Square size={12} fill="currentColor"/> : <Play size={12} fill="currentColor"/>}
+            {isAutoScrolling ? "Scrolling" : "Auto Scroll"}
+          </button>
+
+          <button onClick={() => setActiveDrawer("sort")} className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest hover:bg-background-muted transition-all outline-none">
             <ArrowUpDown size={13} /> Sort
           </button>
         </div>
       </div>
 
-      {/* GRID */}
+      {/* PRODUCT GRID */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <motion.div layout className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-8">
           <AnimatePresence mode="popLayout">
             {filteredAndSortedProducts.map((product) => (
-              <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key={product.id} className="group">
-                <div className="aspect-4/5 overflow-hidden rounded-4xl bg-background-muted border border-border/50 relative">
+              <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key={product.id} className="group cursor-pointer">
+                <div className="aspect-4/5 overflow-hidden rounded-4xl bg-background-muted border border-border/50 relative shadow-sm">
                   <img src={product.image || "/images/placeholder.png"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  {product.isSale && (
+                    <span className="absolute top-3 left-3 bg-brand text-brand-foreground text-[8px] font-black px-2 py-1 rounded-full uppercase">Sale</span>
+                  )}
                 </div>
                 <div className="mt-4 px-1 space-y-1">
                   <div className="flex justify-between items-center mb-0.5">
                     <p className="text-[8px] font-black text-foreground-subtle uppercase tracking-widest">{product.brand}</p>
-                    <span className="text-[7px] font-bold border border-border px-1.5 py-0.5 rounded-full text-foreground-subtle uppercase tracking-tighter">{product.quality}</span>
+                    <span className="text-[7px] font-bold border border-border px-1.5 py-0.5 rounded-full text-foreground-subtle uppercase">{product.quality}</span>
                   </div>
                   <h2 className="text-[11px] font-bold uppercase truncate tracking-tight text-foreground">{product.name}</h2>
                   <p className="text-[10px] font-black text-foreground">₹{product.price.toLocaleString()}</p>
@@ -187,7 +257,12 @@ export default function CategoryClient({ category }: { category: CategorySlug })
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
+        {filteredAndSortedProducts.length === 0 && (
+          <div className="py-24 text-center">
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">No items match your criteria</p>
+          </div>
+        )}
       </main>
 
       {/* DRAWER SYSTEM */}
@@ -201,17 +276,16 @@ export default function CategoryClient({ category }: { category: CategorySlug })
               transition={{ type: "tween", duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
               drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.8 }}
               onDragEnd={(_, info) => {
-                // SENSITIVE SWIPE DISMISS: 50px offset or high velocity
-                if (info.offset.y > 50 || info.velocity.y > 300) setActiveDrawer(null);
+                if (info.offset.y > 50 || info.velocity.y > 400) setActiveDrawer(null);
               }}
-              className="fixed bottom-0 left-0 right-0 z-[70] bg-background-elevated border-t border-border rounded-t-[3rem] max-h-[85vh] flex flex-col shadow-2xl touch-none"
+              className="fixed bottom-0 left-0 right-0 z-[70] bg-background-elevated border-t border-border rounded-t-[2.5rem] max-h-[85vh] flex flex-col shadow-2xl touch-none"
             >
               <div className="w-full flex justify-center py-5 shrink-0 cursor-grab active:cursor-grabbing">
                 <div className="w-12 h-1 bg-border rounded-full opacity-30" />
               </div>
 
               <div className="px-8 pb-10 overflow-y-auto no-scrollbar touch-auto">
-                <h3 className="text-[10px] font-black uppercase italic tracking-[0.2em] mb-6 sticky top-0 bg-background-elevated py-4 z-10 text-foreground-subtle">
+                <h3 className="text-[10px] font-black uppercase italic tracking-[0.2em] mb-6 sticky top-0 bg-background-elevated py-4 z-10 text-foreground-subtle border-b border-border/10">
                    {activeDrawer === "filter" ? "REFINE COLLECTION" : "SORT SELECTION"}
                 </h3>
 
@@ -219,8 +293,8 @@ export default function CategoryClient({ category }: { category: CategorySlug })
                   <div className="space-y-1">
                     {SORT_OPTIONS.map((opt) => (
                       <div key={opt.value} onClick={() => { setSortBy(opt.value); setActiveDrawer(null); }} className="w-full flex items-center justify-between py-5 border-b border-border last:border-none cursor-pointer group">
-                        <span className={`text-[11px] uppercase tracking-widest transition-all ${sortBy === opt.value ? 'font-black text-brand' : 'font-bold text-foreground-subtle'}`}>{opt.label}</span>
-                        {sortBy === opt.value && <div className="w-2.5 h-2.5 bg-brand rounded-full shadow-lg" />}
+                        <span className={`text-[11px] uppercase tracking-widest transition-all ${sortBy === opt.value ? 'font-black text-brand' : 'font-bold text-foreground-subtle group-hover:text-foreground'}`}>{opt.label}</span>
+                        {sortBy === opt.value && <div className="w-2 h-2 bg-brand rounded-full shadow-lg shadow-brand/20" />}
                       </div>
                     ))}
                   </div>
@@ -231,6 +305,7 @@ export default function CategoryClient({ category }: { category: CategorySlug })
                         <FilterSection
                           key={section.id}
                           section={section}
+                          maxPriceLimit={maxPriceLimit}
                           isOpen={openSectionId === section.id}
                           onToggle={() => setOpenSectionId(openSectionId === section.id ? null : section.id)}
                           selectedOptions={stagedFilters[section.id] || []}
@@ -243,7 +318,7 @@ export default function CategoryClient({ category }: { category: CategorySlug })
                       ))}
                     </div>
                     <div className="mt-10 grid grid-cols-2 gap-4 sticky bottom-0 bg-background-elevated pt-6 border-t border-border/10">
-                      <button onClick={() => { setStagedFilters({ priceRange: ["0-10000"] }); setOpenSectionId(null); }} className="py-4 text-[10px] font-black uppercase tracking-widest text-foreground-subtle">Reset All</button>
+                      <button onClick={() => { setStagedFilters({ priceRange: [`0-${maxPriceLimit}`] }); setOpenSectionId(null); }} className="py-4 text-[10px] font-black uppercase tracking-widest text-foreground-subtle">Reset All</button>
                       <button onClick={() => { setActiveFilters(stagedFilters); setActiveDrawer(null); }} className="py-4 bg-brand text-brand-foreground rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">Apply Changes</button>
                     </div>
                   </>
