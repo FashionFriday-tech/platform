@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import CategoryClient from "./Client"; // Ensure this matches your Client Component file name
+import CategoryClient from "./_components/Client"; // Ensure this matches your Client Component file name
 import { CategorySlug } from "@/data/store-data";
 
 // 1. Define Props with Promise
