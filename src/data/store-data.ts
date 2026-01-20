@@ -253,7 +253,25 @@ export const CATEGORY_FILTERS: Record<CategorySlug, FilterDefinition[]> = {
         { id: 'color', label: 'Color', options: ['Black', 'White', 'Blue', 'Grey', 'Green', 'Red'] },
     ],
     slippers: [
-        { id: 'brand', label: 'Brand', options: ['Nike', 'Adidas', 'Puma', 'Yeezy', 'Crocs', 'Birkenstock'] },
+        {
+            id: 'brand', label: 'Brand', options: [
+                "Nike",
+                "Adidas",
+                "Puma",
+                "Yeezy",
+                "Crocs",
+                "Birkenstock",
+                "Fila",
+                "Skechers",
+                "H&M",
+                "Zara",
+                "Gucci",
+                "Louis Vuitton",
+                "Prada",
+                "Balenciaga",
+                "Versace"
+            ]
+        },
         { id: 'quality', label: 'Quality Grade', options: ['UA', '7A', 'Standard'] },
         { id: 'color', label: 'Color', options: ['Black', 'White', 'Blue', 'Brown'] },
     ],
