@@ -495,7 +495,7 @@ export default function CategoryClient({
               <div className="w-full flex justify-center py-5 shrink-0">
                 <div className="w-12 h-1 bg-border rounded-full opacity-30" />
               </div>
-              <div className="px-8 pb-10 overflow-y-auto no-scrollbar">
+              <div className="px-8 overflow-y-auto no-scrollbar">
                 <h3 className="text-[10px] font-black uppercase tracking-[0.2em] mb-6 sticky top-0 bg-background-elevated py-4 z-10 text-foreground-subtle border-b border-border/10">
                   {activeDrawer === "filter" ? "REFINE" : "SORT"}
                 </h3>
@@ -571,7 +571,7 @@ export default function CategoryClient({
                         </div>
                       ))}
                     </div>
-                    <div className="mt-10 grid grid-cols-2 gap-4 sticky bottom-0 bg-background-elevated pt-6 border-t border-border/10">
+                    <div className="grid grid-cols-2 gap-4 sticky bottom-0 pb-4 bg-background-elevated pt-6 border-t border-border/10">
                       <button
                         onClick={() =>
                           setStagedFilters({
