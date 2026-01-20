@@ -186,7 +186,31 @@ export const CATEGORY_FILTERS: Record<CategorySlug, FilterDefinition[]> = {
         { id: 'color', label: 'Color', options: ['Black', 'White', 'Blue', 'Red', 'Grey'] },
     ],
     watches: [
-        { id: 'brand', label: 'Brand', options: ['Rolex', 'Seiko', 'Casio', 'Patek Philippe', 'Hublot', 'Titan', 'Tissot', 'G-SHOCK'] },
+        {
+            id: 'brand', label: 'Brand', options: [
+                "Rolex",
+                "Seiko",
+                "Casio",
+                "G-SHOCK",
+                "Tissot",
+                "Titan",
+                "Fastrack",
+                "Fossil",
+                "Citizen",
+                "Rado",
+                "Omega",
+                "Tag Heuer",
+                "Hublot",
+                "Patek Philippe",
+                "Audemars Piguet",
+                "Vacheron Constantin",
+                "Cartier",
+                "Emporio Armani",
+                "Giorgio Armani",
+                "Armani Exchange",
+                "Montblanc"
+            ]
+        },
         { id: 'quality', label: 'Quality Grade', options: ['7AA', '10A', '7A', '5A', 'Master Copy'] },
         { id: 'material', label: 'Material', options: ['Steel', 'Leather', 'Resin', 'Silicone'] },
         { id: 'color', label: 'Color', options: ['Gold', 'Silver', 'Black', 'Grey'] },
