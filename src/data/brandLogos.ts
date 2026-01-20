@@ -73,7 +73,7 @@ const brandLogos = [
   { name: "Apple", link: "/images/brand-logos/apple.png" },
   { name: "Amiri Logo", link: "/images/brand-logos/amirilogo.png" },
   { name: "Amiri", link: "/images/brand-logos/amiri.png" },
-  { name: "Air Jordan", link: "/images/brand-logos/airjordan.png" },
+  { name: "Jordan", link: "/images/brand-logos/airjordan.png" },
   { name: "Adidas", link: "/images/brand-logos/adidas.png" }
 ];
 
