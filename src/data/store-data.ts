@@ -29,21 +29,6 @@ export interface FilterDefinition {
     options: string[];
 }
 
-// --- BRAND LOGO MAPPING ---
-export const BRAND_LOGOS: Record<string, string> = {
-    'Nike': '/images/brand-logos/nike.png',
-    'Adidas': '/images/brand-logos/adidas.png',
-    'Puma': '/images/brand-logos/puma.png',
-    'Jordan': '/images/brand-logos/airjordan.png',
-    'Seiko': '/images/brand-logos/seiko.png',
-    'Casio': '/images/brand-logos/casio.png',
-    'Titan': '/images/brand-logos/titan.png',
-    'Rolex': '/images/brand-logos/rolex.png',
-    'Zara': '/images/brand-logos/zara.png',
-    'H&M': '/images/brand-logos/hm.png',
-    'Ray-Ban': '/images/brand-logos/rayban.png',
-    'Fossil': '/images/brand-logos/fossil.png',
-};
 
 // --- MOCK DATA ---
 export const MOCK_PRODUCTS: Product[] = [
@@ -172,7 +157,7 @@ export const MOCK_PRODUCTS: Product[] = [
 // --- CATEGORY-SPECIFIC FILTERS ---
 export const CATEGORY_FILTERS: Record<CategorySlug, FilterDefinition[]> = {
     sneakers: [
-        { id: 'brand', label: 'Brand', options: ['Nike', 'Adidas', 'Puma', 'Jordan', 'Yeezy', 'New Balance', 'Vans'] },
+        { id: 'brand', label: 'Brand', options: ['Nike', 'Adidas', 'Puma', 'Jordan', 'Yeezy', 'New Balance', 'Vans', 'Asics',] },
         { id: 'quality', label: 'Quality Grade', options: ['UA', 'Semi UA', 'Master Copy', '7A', 'Standard'] },
         { id: 'size', label: 'Size', options: ['EU 38', 'EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44', 'EU 45'] },
         { id: 'color', label: 'Color', options: ['Black', 'White', 'Blue', 'Red', 'Grey'] },
