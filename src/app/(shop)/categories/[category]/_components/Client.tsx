@@ -327,7 +327,7 @@ export default function CategoryClient({
       <main className="container mx-auto flex gap-12">
         {/* DESKTOP SIDEBAR */}
         <aside className="hidden lg:block w-76 shrink-0 sticky top-26 h-[calc(100vh-100px)] overflow-y-auto no-scrollbar border-r border-border pr-6">
-          <div className="sticky top-0 flex justify-between items-center mb-8 bg-background pb-2">
+          <div className="sticky top-0 z-100 flex justify-between items-center mb-8 bg-background pb-2">
             <h2 className="text-xl font-black uppercase italic tracking-tighter">
               Refine
             </h2>
@@ -344,7 +344,7 @@ export default function CategoryClient({
           <div className="space-y-2">
             <button
               onClick={toggleAutoScroll}
-              className={`w-full py-3.5 rounded-2xl flex items-center justify-center gap-3 transition-all duration-500 border ${
+              className={`w-full py-3.5 rounded-4xl flex items-center justify-center gap-3 transition-all duration-500 border ${
                 isAutoScrolling
                   ? "bg-brand text-brand-foreground border-brand"
                   : "bg-background border-border"
