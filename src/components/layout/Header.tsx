@@ -10,15 +10,42 @@ import { PiShoppingBagOpen } from "react-icons/pi";
 import { FiSearch, FiBell } from "react-icons/fi";
 import { BiUser } from "react-icons/bi";
 import { IoIosArrowForward } from "react-icons/io";
-import { TfiClose } from "react-icons/tfi";
+import { SearchOverlay } from "./SearchOverlay/SearchOverlay";
 
 // --- Data Configuration ---
 const navStructure = [
-  { label: "New Arrivals", href: "/new", subCategories: ["Just In", "Best Sellers", "Back in Stock", "Trending Now"] },
-  { label: "Men", href: "/men", subCategories: ["T-Shirts", "Hoodies & Sweatshirts", "Outerwear", "Bottoms", "Footwear"] },
-  { label: "Women", href: "/women", subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"] },
-  { label: "Sale", href: "/sale", subCategories: ["Shop All Sale", "Under ₹999", "Final Clearance"], isRed: true },
-  { label: "snkrs", href: "/sneakers", subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"] },
+  {
+    label: "New Arrivals",
+    href: "/new",
+    subCategories: ["Just In", "Best Sellers", "Back in Stock", "Trending Now"],
+  },
+  {
+    label: "Men",
+    href: "/men",
+    subCategories: [
+      "T-Shirts",
+      "Hoodies & Sweatshirts",
+      "Outerwear",
+      "Bottoms",
+      "Footwear",
+    ],
+  },
+  {
+    label: "Women",
+    href: "/women",
+    subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"],
+  },
+  {
+    label: "Sale",
+    href: "/sale",
+    subCategories: ["Shop All Sale", "Under ₹999", "Final Clearance"],
+    isRed: true,
+  },
+  {
+    label: "snkrs",
+    href: "/sneakers",
+    subCategories: ["Dresses", "Tops", "Activewear", "Denim", "Jewelry"],
+  },
 ];
 
 export function Header() {
@@ -40,7 +67,9 @@ export function Header() {
         <div className="relative hidden sm:flex items-center justify-between z-50 mx-auto text-foreground px-6 lg:px-12 h-16">
           {/* Logo - Uses brand-primary via filter or just standard rendering */}
           <Link href="/" className="z-50 relative h-8 flex items-center">
-             <span className="text-xl font-black tracking-tighter uppercase italic">Fashion Friday</span>
+            <span className="text-xl font-black tracking-tighter uppercase italic">
+              Fashion Friday
+            </span>
           </Link>
 
           {/* Desktop Nav Links */}
@@ -77,12 +106,24 @@ export function Header() {
             <div className="h-4 w-px bg-border hidden lg:block" />
 
             <div className="flex items-center gap-4 text-foreground">
-               <Link href="/account/wishlist" className="transition-colors"><GrFavorite className="text-xl" /></Link>
-               <Link href="/checkout/cart" className="relative transition-colors">
-                  <PiShoppingBagOpen className="text-2xl" />
-                  <span className="absolute -top-1.5 -right-1.5 bg-brand text-brand-foreground text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">2</span>
-               </Link>
-               <Link href="/account" className="hover:text-foreground transition-colors"><BiUser className="text-2xl" /></Link>
+              <Link href="/account/wishlist" className="transition-colors">
+                <GrFavorite className="text-xl" />
+              </Link>
+              <Link
+                href="/checkout/cart"
+                className="relative transition-colors"
+              >
+                <PiShoppingBagOpen className="text-2xl" />
+                <span className="absolute -top-1.5 -right-1.5 bg-brand text-brand-foreground text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">
+                  2
+                </span>
+              </Link>
+              <Link
+                href="/account"
+                className="hover:text-foreground transition-colors"
+              >
+                <BiUser className="text-2xl" />
+              </Link>
             </div>
           </div>
         </div>
@@ -93,7 +134,12 @@ export function Header() {
             {[0, 1].map((set) => (
               <div key={set} className="flex gap-10 px-5">
                 {marqueeContent.map((text, i) => (
-                  <span key={i} className="text-[9px] font-black uppercase tracking-[0.2em]">{text}</span>
+                  <span
+                    key={i}
+                    className="text-[9px] font-black uppercase tracking-[0.2em]"
+                  >
+                    {text}
+                  </span>
                 ))}
               </div>
             ))}
@@ -112,20 +158,29 @@ export function Header() {
               <div className="container mx-auto px-12 py-10">
                 <div className="grid grid-cols-12 gap-12">
                   <div className="col-span-4">
-                    <h3 className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest mb-6">Explore {activeMenu}</h3>
+                    <h3 className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest mb-6">
+                      Explore {activeMenu}
+                    </h3>
                     <ul className="space-y-3">
-                      {navStructure.find((n) => n.label === activeMenu)?.subCategories.map((sub) => (
-                        <li key={sub}>
-                          <Link href="#" className="text-2xl font-black uppercase tracking-tighter hover:text-brand transition-colors flex items-center justify-between group">
-                            {sub}
-                            <IoIosArrowForward className="opacity-0 group-hover:opacity-100 transition-all text-brand" />
-                          </Link>
-                        </li>
-                      ))}
+                      {navStructure
+                        .find((n) => n.label === activeMenu)
+                        ?.subCategories.map((sub) => (
+                          <li key={sub}>
+                            <Link
+                              href="#"
+                              className="text-2xl font-black uppercase tracking-tighter hover:text-brand transition-colors flex items-center justify-between group"
+                            >
+                              {sub}
+                              <IoIosArrowForward className="opacity-0 group-hover:opacity-100 transition-all text-brand" />
+                            </Link>
+                          </li>
+                        ))}
                     </ul>
                   </div>
                   <div className="col-span-8 bg-background-muted rounded-3xl h-64 overflow-hidden relative">
-                     <div className="absolute inset-0 flex items-center justify-center text-foreground-subtle uppercase text-[10px] font-black tracking-widest">Featured Editorial</div>
+                    <div className="absolute inset-0 flex items-center justify-center text-foreground-subtle uppercase text-[10px] font-black tracking-widest">
+                      Featured Editorial
+                    </div>
                   </div>
                 </div>
               </div>
@@ -136,7 +191,7 @@ export function Header() {
 
       {/* 2. MOBILE TOP BAR */}
       <div className="sticky top-0 lg:hidden w-full px-4 py-3 z-50 bg-background text-foreground flex justify-between items-center">
-       <Link href="/account" className="flex items-center gap-4">
+        <Link href="/account" className="flex items-center gap-4">
           <Image
             src="/images/model/aj.png"
             width={50}
@@ -147,52 +202,91 @@ export function Header() {
           <span className="font-semibold">HELLO, AJMAL</span>
         </Link>
         <div className="flex items-center gap-4">
-          <FiSearch className="text-xl text-foreground" onClick={() => setIsSearchOpen(true)} />
-          <Link href="/account/notifications" className="relative text-foreground">
+          <FiSearch
+            className="text-xl text-foreground"
+            onClick={() => setIsSearchOpen(true)}
+          />
+          <Link
+            href="/account/notifications"
+            className="relative text-foreground"
+          >
             <FiBell className="text-xl" />
             <span className="absolute top-0 right-0 w-2 h-2 bg-destructive rounded-full" />
           </Link>
-          <Link href="/account/wishlist" className="text-foreground"><GrFavorite className="text-xl" /></Link>
+          <Link href="/account/wishlist" className="text-foreground">
+            <GrFavorite className="text-xl" />
+          </Link>
         </div>
       </div>
 
       {/* 3. MOBILE BOTTOM NAV */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background text-foreground px-6 py-3 flex items-center justify-between">
-        <Link href="/categories" className="text-foreground hover:text-brand transition-colors"><TbCategoryPlus className="text-[25px]" /></Link>
-        <button onClick={() => setIsSearchOpen(true)} className="text-foreground hover:text-brand transition-colors"><TbListSearch className="text-[25px]" /></button>
-        <Link href="/" className="scale-110"><Image src="/images/logos/ff-logo.png" width={32} height={32} alt="logo" className="dark:invert transition-all" /></Link>
-        <Link href="/checkout/cart" className="relative text-foreground hover:text-brand transition-colors">
+        <Link
+          href="/categories"
+          className="text-foreground hover:text-brand transition-colors"
+        >
+          <TbCategoryPlus className="text-[25px]" />
+        </Link>
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="text-foreground hover:text-brand transition-colors"
+        >
+          <TbListSearch className="text-[25px]" />
+        </button>
+        <Link href="/" className="scale-110">
+          <Image
+            src="/images/logos/ff-logo.png"
+            width={32}
+            height={32}
+            alt="logo"
+            className="dark:invert transition-all"
+          />
+        </Link>
+        <Link
+          href="/checkout/cart"
+          className="relative text-foreground hover:text-brand transition-colors"
+        >
           <PiShoppingBagOpen className="text-[25px]" />
           <span className="absolute top-0 right-0 w-2 h-2 bg-brand rounded-full border-2 border-background" />
         </Link>
-        <Link href="/account" className="text-foreground hover:text-brand transition-colors"><BiUser className="text-[25px]" /></Link>
+        <Link
+          href="/account"
+          className="text-foreground hover:text-brand transition-colors"
+        >
+          <BiUser className="text-[25px]" />
+        </Link>
       </nav>
 
       {/* 4. SEARCH OVERLAY */}
       <AnimatePresence>
         {isSearchOpen && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-xl flex flex-col pt-32 px-6"
-          >
-            <button onClick={() => setIsSearchOpen(false)} className="absolute top-8 right-8 p-3 hover:bg-background-muted rounded-full transition-colors"><TfiClose className="text-2xl text-foreground" /></button>
-            <div className="w-full max-w-4xl mx-auto">
-              <span className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest mb-4 block">Search Collection</span>
-              <input
-                type="text" placeholder="Start typing..."
-                className="w-full text-4xl md:text-7xl font-black uppercase tracking-tighter border-b-4 border-border focus:border-brand bg-transparent py-4 outline-none transition-colors placeholder:text-foreground-subtle/20"
-                autoFocus
-              />
-            </div>
-          </motion.div>
+          <SearchOverlay
+            isSearchOpen={isSearchOpen}
+            setIsSearchOpen={setIsSearchOpen}
+          />
         )}
       </AnimatePresence>
 
       <style jsx global>{`
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .animate-marquee { animation: marquee 30s linear infinite; }
-        .stroke-text { -webkit-text-stroke: 1px var(--text-muted); color: transparent; }
-        .stroke-text:hover { -webkit-text-stroke: 0px transparent; color: var(--text-primary); }
+        @keyframes marquee {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .animate-marquee {
+          animation: marquee 30s linear infinite;
+        }
+        .stroke-text {
+          -webkit-text-stroke: 1px var(--text-muted);
+          color: transparent;
+        }
+        .stroke-text:hover {
+          -webkit-text-stroke: 0px transparent;
+          color: var(--text-primary);
+        }
       `}</style>
     </>
   );
