@@ -2,6 +2,9 @@
 export type CategorySlug = 'sneakers' | 'watches' | 'cloths' | 'slippers' | 'accessories';
 export type Gender = 'men' | 'women' | 'unisex';
 
+// Quality Grades for replica products
+export type Quality = 'UA' | 'Semi UA' | 'Master Copy' | '7A' | '5A' | '7AA' | '10A' | 'Standard';
+
 export interface Product {
     id: string;
     name: string;
@@ -9,10 +12,15 @@ export interface Product {
     category: CategorySlug;
     brand: string;
     gender: Gender;
+    quality: Quality; // Added Quality Grade
     size?: string;
     color?: string;
     material?: string;
     image: string;
+    isSale?: boolean;
+    popularityScore: number; // For "Most Popular" sorting
+    salesCount: number;      // For "Best Sellers" sorting
+    discount: number;        // For "Highest Discount" sorting
 }
 
 export interface FilterDefinition {
@@ -23,102 +31,313 @@ export interface FilterDefinition {
 
 
 // --- MOCK DATA ---
-
 export const MOCK_PRODUCTS: Product[] = [
-    // Sneakers
-    { id: 's1', name: 'Minimalist Low Top', price: 1500, category: 'sneakers', brand: 'Common Projects', gender: 'unisex', size: 'EU 42', color: 'White', image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/fbeaf128-4abc-44ff-8fae-08a6dd8b1852/KOBE+III+PROTRO.png' },
-    { id: 's2', name: 'Runner Tech', price: 2200, category: 'sneakers', brand: 'Nike', gender: 'men', size: 'EU 44', color: 'Black', image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/0fec9279-d839-45b4-a848-1d94cff031a7/NIKE+SB+DUNK+LOW+PRO.png' },
-    { id: 's3', name: 'Retro Court', price: 950, category: 'sneakers', brand: 'Adidas', gender: 'women', size: 'EU 38', color: 'White/Black', image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/9ba72e85-7bb7-4bf4-b18a-baa97254c06a/SABRINA+3+MVM+EP.png' },
-    { id: 's3', name: 'Retro Court', price: 950, category: 'sneakers', brand: 'Adidas', gender: 'women', size: 'EU 38', color: 'White/Black', image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/ba7b0d9f-c266-48bf-9021-f75682197506/NIKE+GATO.png' },
-    { id: 's3', name: 'Retro Court', price: 950, category: 'sneakers', brand: 'Adidas', gender: 'women', size: 'EU 38', color: 'White/Black', image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/2be76228-ff51-4c87-b120-e7be37db4d2e/AIR+FORCE+1+LOW+QS.png' },
-    { id: 's3', name: 'Retro Court', price: 950, category: 'sneakers', brand: 'Adidas', gender: 'women', size: 'EU 38', color: 'White/Black', image: '' },
+    // SNEAKERS
+    {
+        id: 's1', name: 'Kobe III Protro', price: 8500, category: 'sneakers', brand: 'Nike',
+        gender: 'unisex', size: 'EU 42', color: 'White', quality: 'UA',
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/fbeaf128-4abc-44ff-8fae-08a6dd8b1852/KOBE+III+PROTRO.png',
+        popularityScore: 95, salesCount: 120, discount: 10
+    },
+    {
+        id: 's2', name: 'SB Dunk Low Pro', price: 9200, category: 'sneakers', brand: 'Nike',
+        gender: 'men', size: 'EU 44', color: 'Black', quality: 'Semi UA',
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/0fec9279-d839-45b4-a848-1d94cff031a7/NIKE+SB+DUNK+LOW+PRO.png',
+        popularityScore: 88, salesCount: 200, discount: 5
+    },
+    {
+        id: 's3', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/2be76228-ff51-4c87-b120-e7be37db4d2e/AIR+FORCE+1+LOW+QS.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's4', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/85f69d4c-7a54-4e31-be57-d8896a73f341/W+ZOOM+GP+CHALLENGE+1.5+HC+PRM.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's5', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/401cfc12-9de2-41ff-9084-1f99f68e9b03/W+ZOOM+GP+CHALLENGE+PRO+HC.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's6', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/0fcbdc68-279b-4e41-bd31-ea3879164798/W+AIR+FORCE+1+%2707+MINI+JEWEL.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's7', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/fc4622c4-2769-4665-aa6e-42c974a7705e/AIR+FORCE+1+%2707.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's8', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d217b510-81ac-429c-9881-8103c306e210/W+AIR+FORCE+1+%2707+PRM.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
 
-    { id: 'w1', name: 'Classic Automatic', price: 450, category: 'watches', brand: 'Seiko', gender: 'men', size: '40mm', material: 'Steel', image: 'https://www.swisstimehouse.com/199560-home_default/titan-90217sl02.jpg' },
-    { id: 'w2', name: 'Minimalist Leather', price: 120, category: 'watches', brand: 'Daniel Wellington', gender: 'women', size: '32mm', material: 'Leather', image: "https://www.swisstimehouse.com/199552-home_default/titan-90217ql01.jpg" },
-    { id: 'w1', name: 'Classic Automatic', price: 450, category: 'watches', brand: 'Seiko', gender: 'men', size: '40mm', material: 'Steel', image: '' },
-    { id: 'w2', name: 'Minimalist Leather', price: 120, category: 'watches', brand: 'Daniel Wellington', gender: 'women', size: '32mm', material: 'Leather', image: "" },
+    {
+        id: 's9', name: 'Kobe III Protro', price: 8500, category: 'sneakers', brand: 'Nike',
+        gender: 'unisex', size: 'EU 42', color: 'White', quality: 'UA',
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/fbeaf128-4abc-44ff-8fae-08a6dd8b1852/KOBE+III+PROTRO.png',
+        popularityScore: 95, salesCount: 120, discount: 10
+    },
+    {
+        id: 's10', name: 'SB Dunk Low Pro', price: 9200, category: 'sneakers', brand: 'Nike',
+        gender: 'men', size: 'EU 44', color: 'Black', quality: 'Semi UA',
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/0fec9279-d839-45b4-a848-1d94cff031a7/NIKE+SB+DUNK+LOW+PRO.png',
+        popularityScore: 88, salesCount: 200, discount: 5
+    },
+    {
+        id: 's11', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/2be76228-ff51-4c87-b120-e7be37db4d2e/AIR+FORCE+1+LOW+QS.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's12', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/85f69d4c-7a54-4e31-be57-d8896a73f341/W+ZOOM+GP+CHALLENGE+1.5+HC+PRM.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's15', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/401cfc12-9de2-41ff-9084-1f99f68e9b03/W+ZOOM+GP+CHALLENGE+PRO+HC.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's16', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/0fcbdc68-279b-4e41-bd31-ea3879164798/W+AIR+FORCE+1+%2707+MINI+JEWEL.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's17', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/fc4622c4-2769-4665-aa6e-42c974a7705e/AIR+FORCE+1+%2707.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
+    {
+        id: 's18', name: 'Air Jordan 1 Low', price: 9999, category: 'sneakers', brand: 'Jordan',
+        gender: 'men', size: 'EU 42', color: 'Red', quality: 'UA', isSale: true,
+        image: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/d217b510-81ac-429c-9881-8103c306e210/W+AIR+FORCE+1+%2707+PRM.png',
+        popularityScore: 99, salesCount: 350, discount: 25
+    },
 
-    { id: 'a1', name: 'Slim Cardholder', price: 850, category: 'slippers', brand: 'Bellroy', gender: 'unisex', material: 'Leather', color: 'Black', image: 'https://img.tatacliq.com/images/i24//437Wx649H/MP000000026707839_437Wx649H_202505221146041.jpeg' },
-    { id: 'a2', name: 'Geometric Sunglasses', price: 1800, category: 'slippers', brand: 'Ray-Ban', gender: 'unisex', material: 'Acetate', color: 'Black', image: 'https://cdn.pixelbin.io/v2/falling-surf-7c8bb8/fyprod/t.resize(w:700,dpr:1)/products/pictures/item/free/original/superdry/MF310134A02A/0/6YZW7sq5Rz-410277749008_1.jpg'},
+    // WATCHES
+    {
+        id: 'w1', name: 'Automatic Diver', price: 9500, category: 'watches', brand: 'Seiko',
+        gender: 'men', size: '40mm', material: 'Steel', color: 'Silver', quality: '7AA',
+        image: 'https://www.swisstimehouse.com/199560-home_default/titan-90217sl02.jpg',
+        popularityScore: 75, salesCount: 45, discount: 15
+    },
+    {
+        id: 'w2', name: 'G-Shock Carbon', price: 6800, category: 'watches', brand: 'Casio',
+        gender: 'unisex', size: '42mm', material: 'Resin', color: 'Black', quality: '10A',
+        image: "https://www.swisstimehouse.com/199552-home_default/titan-90217ql01.jpg",
+        popularityScore: 92, salesCount: 150, discount: 0
+    },
 
-    { id: 'c1', name: 'Slim Cardholder', price: 850, category: 'cloths', brand: 'Bellroy', gender: 'unisex', material: 'Leather', color: 'Black', image: 'https://assets-jiocdn.ajio.com/medias/sys_master/root/20240313/pglM/65f0d70f05ac7d77bbaf22ed/-473Wx593H-467162483-multi-MODEL.jpg' },
-    { id: 'c2', name: 'Geometric Sunglasses', price: 1800, category: 'cloths', brand: 'Ray-Ban', gender: 'unisex', material: 'Acetate', color: 'Black', image: 'https://assets-jiocdn.ajio.com/medias/sys_master/root/20250320/HTna/67dbbd0055340d4b4f7ab106/-473Wx593H-700319495-black-MODEL.jpg' },
-    { id: 'c3', name: 'Slim Cardholder', price: 850, category: 'cloths', brand: 'Bellroy', gender: 'unisex', material: 'Leather', color: 'Black', image: 'https://assets-jiocdn.ajio.com/medias/sys_master/root/20241219/E650/67643ce9c148fa1b304e7ea6/-473Wx593H-700951356-black-MODEL.jpg' },
-    { id: 'c4', name: 'Slim Cardholder', price: 850, category: 'cloths', brand: 'Bellroy', gender: 'unisex', material: 'Leather', color: 'Black', image: 'https://assets-jiocdn.ajio.com/medias/sys_master/root/20250226/Xhyf/67be97fe59f8353980f81687/-473Wx593H-701268892-blue-MODEL.jpg' },
-    { id: 'c5', name: 'Slim Cardholder', price: 850, category: 'cloths', brand: 'Bellroy', gender: 'unisex', material: 'Leather', color: 'Black', image: 'https://assets-jiocdn.ajio.com/medias/sys_master/root/20250226/6qCz/67be980459f8353980f81752/-473Wx593H-701268892-black-MODEL.jpg' },
-    { id: 'c6', name: 'Slim Cardholder', price: 850, category: 'cloths', brand: 'Bellroy', gender: 'unisex', material: 'Leather', color: 'Black', image: '' },
-
-
-    // Accessories
-    { id: 'a1', name: 'Slim Cardholder', price: 850, category: 'accessories', brand: 'Bellroy', gender: 'unisex', material: 'Leather', color: 'Black', image: 'https://image.hm.com/assets/hm/cc/06/cc06a265e6ee89897c59ddaedc471ada6533d4ac.jpg?imwidth=2160' },
-    { id: 'a2', name: 'Geometric Sunglasses', price: 1800, category: 'accessories', brand: 'Ray-Ban', gender: 'unisex', material: 'Acetate', color: 'Black', image: 'https://image.hm.com/assets/hm/3d/59/3d59317d5c9b9dfe5e659202c6a886733d5e79dc.jpg?imwidth=2160' },
-    { id: 'a3', name: 'Retro Court', price: 950, category: 'accessories', brand: 'Adidas', gender: 'women', size: 'EU 38', color: 'White/Black', image: 'https://image.hm.com/assets/hm/f5/24/f52437e0575e0ab96ef1c88d2ec5023fee613e77.jpg?imwidth=2160' },
-    { id: 'a4', name: 'Retro Court', price: 950, category: 'accessories', brand: 'Adidas', gender: 'women', size: 'EU 38', color: 'White/Black', image: 'https://image.hm.com/assets/hm/83/29/832977cb18b910b53930690813a274588c2e8aa5.jpg?imwidth=2160' },
-    { id: 'a5', name: 'Retro Court', price: 950, category: 'accessories', brand: 'Adidas', gender: 'women', size: 'EU 38', color: 'White/Black', image: 'https://image.hm.com/assets/hm/29/26/29267626b430b82687ee9f2002084dded0992dab.jpg?imwidth=2160' },
-    { id: 'a6', name: 'Retro Court', price: 950, category: 'accessories', brand: 'Adidas', gender: 'women', size: 'EU 38', color: 'White/Black', image: '' },
-
-
+    // CLOTHES
+    {
+        id: 'c1', name: 'Oversized Cotton Tee', price: 1200, category: 'cloths', brand: 'Zara',
+        gender: 'unisex', material: 'Cotton', color: 'White', quality: 'Standard',
+        image: 'https://assets-jiocdn.ajio.com/medias/sys_master/root/20240313/pglM/65f0d70f05ac7d77bbaf22ed/-473Wx593H-467162483-multi-MODEL.jpg',
+        popularityScore: 80, salesCount: 500, discount: 20
+    }
 ];
 
-
-// --- DYNAMIC FILTER DEFINITIONS ---
-
-const commonFilters: FilterDefinition[] = [
-    { id: 'gender', label: 'Gender', options: ['Men', 'Women', 'Unisex'] },
-    { id: 'priceRange', label: 'Price', options: ['Under $100', '$100 - $200', '$200+'] },
-];
-
+// --- CATEGORY-SPECIFIC FILTERS ---
 export const CATEGORY_FILTERS: Record<CategorySlug, FilterDefinition[]> = {
     sneakers: [
-        ...commonFilters,
-        { id: 'brand', label: 'Brand', options: ['Common Projects', 'Nike', 'Adidas'] },
-        { id: 'size', label: 'Size', options: ['EU 38', 'EU 42', 'EU 44'] },
-        { id: 'color', label: 'Color', options: ['White', 'Black', 'White/Black'] },
+        {
+            id: 'brand', label: 'Brand', options: [
+                "Nike",
+                "Adidas",
+                "Puma",
+                "Jordan",
+                "Yeezy",
+                "New Balance",
+                "Vans",
+                "Asics",
+                "Converse",
+                "Reebok",
+                "Fila",
+                "Skechers",
+                "Onitsuka Tiger",
+                "Balenciaga",
+                "Gucci",
+                "Louis Vuitton",
+                "Off-White",
+                "Palm Angels",
+                "Birkenstock",
+                "Crocs"
+            ]
+        },
+        { id: 'quality', label: 'Quality Grade', options: ['UA', 'Semi UA', 'Master Copy', '7A', 'Standard'] },
+        { id: 'size', label: 'Size', options: ['EU 38', 'EU 39', 'EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44', 'EU 45'] },
+        { id: 'color', label: 'Color', options: ['Black', 'White', 'Blue', 'Red', 'Grey'] },
     ],
     watches: [
-        ...commonFilters,
-        { id: 'brand', label: 'Brand', options: ['Seiko', 'Daniel Wellington'] },
-        { id: 'size', label: 'Case Size', options: ['32mm', '40mm'] }, // Note: different sizes than shoes
-        { id: 'material', label: 'Band Material', options: ['Steel', 'Leather'] },
+        {
+            id: 'brand', label: 'Brand', options: [
+                "Rolex",
+                "Seiko",
+                "Casio",
+                "G-SHOCK",
+                "Tissot",
+                "Titan",
+                "Fastrack",
+                "Fossil",
+                "Citizen",
+                "Rado",
+                "Omega",
+                "Tag Heuer",
+                "Hublot",
+                "Patek Philippe",
+                "Audemars Piguet",
+                "Vacheron Constantin",
+                "Cartier",
+                "Emporio Armani",
+                "Giorgio Armani",
+                "Armani Exchange",
+                "Montblanc"
+            ]
+        },
+        { id: 'quality', label: 'Quality Grade', options: ['7AA', '10A', '7A', '5A', 'Master Copy'] },
+        { id: 'material', label: 'Material', options: ['Steel', 'Leather', 'Resin', 'Silicone'] },
+        { id: 'color', label: 'Color', options: ['Gold', 'Silver', 'Black', 'Grey'] },
     ],
     cloths: [
-        ...commonFilters,
-        { id: 'brand', label: 'Brand', options: ['Common Projects', 'Nike', 'Adidas'] },
-        { id: 'size', label: 'Size', options: ['EU 38', 'EU 42', 'EU 44'] },
-        { id: 'color', label: 'Color', options: ['White', 'Black', 'White/Black'] },
+        {
+            id: 'brand', label: 'Brand', options: [
+                "Zara",
+                "H&M",
+                "Louis Vuitton",
+                "Gucci",
+                "Prada",
+                "Palm Angels",
+                "Balenciaga",
+                "Burberry",
+                "Calvin Klein",
+                "Dolce & Gabbana",
+                "Emporio Armani",
+                "Giorgio Armani",
+                "Armani Exchange",
+                "Givenchy",
+                "Fendi",
+                "Versace",
+                "Hermès",
+                "Off-White",
+                "Amiri",
+                "Balmain",
+                "Ralph Lauren",
+                "Tom Ford",
+                "Supreme",
+                "Stüssy",
+                "Nike",
+                "Adidas",
+                "Puma",
+                "Fila"
+            ]
+        },
+        { id: 'quality', label: 'Quality Grade', options: ['Master Copy', '7A', 'Standard'] },
+        { id: 'size', label: 'Size', options: ['S', 'M', 'L', 'XL', 'XXL'] },
+        { id: 'color', label: 'Color', options: ['Black', 'White', 'Blue', 'Grey', 'Green', 'Red'] },
     ],
     slippers: [
-        ...commonFilters,
-        { id: 'brand', label: 'Brand', options: ['Common Projects', 'Nike', 'Adidas'] },
-        { id: 'size', label: 'Size', options: ['EU 38', 'EU 42', 'EU 44'] },
-        { id: 'color', label: 'Color', options: ['White', 'Black', 'White/Black'] },
+        {
+            id: 'brand', label: 'Brand', options: [
+                "Nike",
+                "Adidas",
+                "Puma",
+                "Yeezy",
+                "Crocs",
+                "Birkenstock",
+                "Fila",
+                "Skechers",
+                "H&M",
+                "Zara",
+                "Gucci",
+                "Louis Vuitton",
+                "Prada",
+                "Balenciaga",
+                "Versace"
+            ]
+        },
+        { id: 'quality', label: 'Quality Grade', options: ['UA', '7A', 'Standard'] },
+        { id: 'color', label: 'Color', options: ['Black', 'White', 'Blue', 'Brown'] },
     ],
     accessories: [
-        ...commonFilters,
-        { id: 'brand', label: 'Brand', options: ['Bellroy', 'Ray-Ban'] },
-        { id: 'material', label: 'Material', options: ['Leather', 'Acetate'] },
-    ]
+        {
+            id: 'brand', label: 'Brand', options: [
+                "Ray-Ban",
+                "Oakley",
+                "Gucci",
+                "Fossil",
+                "Casio",
+                "Apple",
+                "Louis Vuitton",
+                "Prada",
+                "Hermès",
+                "Burberry",
+                "Calvin Klein",
+                "Emporio Armani",
+                "Armani Exchange",
+                "Montblanc",
+                "Versace",
+                "Dior",
+                "Chanel",
+                "Balenciaga",
+                "Off-White",
+                "Supreme",
+                "G-SHOCK",
+                "Samsung",
+                "Bose",
+                "Marshall"
+            ]
+        },
+        { id: 'quality', label: 'Quality Grade', options: ['Master Copy', '7A', 'Standard'] },
+        { id: 'color', label: 'Color', options: ['Black', 'Gold', 'Silver', 'Brown'] },
+    ],
 };
 
+// --- UPDATED FILTER LOGIC ---
 export function filterProducts(products: Product[], activeFilters: Record<string, string[]>) {
     return products.filter(product => {
         for (const [filterKey, selectedOptions] of Object.entries(activeFilters)) {
-            if (selectedOptions.length === 0) continue;
+            // If no filter selected for this key, skip to next filter
+            if (!selectedOptions || selectedOptions.length === 0) continue;
 
+            // 1. Handle Price Range Slider (format: "0-10000")
             if (filterKey === 'priceRange') {
-                const price = product.price;
-                const matchesPrice = selectedOptions.some(option => {
-                    if (option === 'Under 1000') return price < 100;
-                    if (option === '₹1000 - 2000') return price >= 100 && price <= 200;
-                    if (option === '₹2000+') return price > 200;
-                    return false;
-                });
-                if (!matchesPrice) return false;
+                const rangeString = selectedOptions[0];
+                if (!rangeString) continue;
+
+                const [min, max] = rangeString.split('-').map(Number);
+                if (product.price < min || product.price > max) return false;
                 continue;
             }
 
-            const productValue = (product as any)[filterKey]?.toString().toLowerCase();
-            const matches = selectedOptions.some(option => option.toLowerCase() === productValue);
+            // 2. Handle Attribute Filters (Brand, Size, Color, Quality, Material)
+            const productValue = (product as any)[filterKey];
+
+            // Hide product if it doesn't have the attribute the user is filtering for
+            if (productValue === undefined || productValue === null) return false;
+
+            const normalizedProductValue = productValue.toString().toLowerCase();
+
+            // Check if product attribute matches any of the selected options (case-insensitive)
+            const matches = selectedOptions.some(
+                option => option.toLowerCase() === normalizedProductValue
+            );
 
             if (!matches) return false;
         }

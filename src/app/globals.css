@@ -1,17 +1,152 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark *));
 
+/* =================================================
+   TAILWIND THEME MAPPING (semantic only)
+   These are the ONLY tokens used in JSX
+================================================= */
+@theme {
+  /* Surfaces */
+  --color-background: var(--surface-base);
+  --color-background-muted: var(--surface-muted);
+  --color-background-elevated: var(--surface-elevated);
 
-/* Hide scrollbar for Chrome, Safari and Edge */
-*::-webkit-scrollbar {
-  display: none;
+  /* Text */
+  --color-foreground: var(--text-primary);
+  --color-foreground-muted: var(--text-secondary);
+  --color-foreground-subtle: var(--text-muted);
+
+  /* Borders & focus */
+  --color-border: var(--border-default);
+  --color-ring: var(--ring-default);
+
+  /* Brand & states */
+  --color-brand: var(--brand-primary);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-accent: var(--accent-primary);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* Motion */
+  --default-transition-duration: 250ms;
+  --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Hide scrollbar for Firefox */
+/* =================================================
+   RAW DESIGN TOKENS (never used in JSX)
+================================================= */
+@layer base {
+  :root {
+    /* Surfaces */
+    --surface-base: #ffffff;
+    --surface-muted: #f5f5f5;
+    --surface-elevated: #ffffff;
+
+    /* Text */
+    --text-primary: #000000;
+    --text-secondary: #525252;
+    --text-muted: #8a8a8a;
+
+    /* UI */
+    --border-default: #e5e5e5;
+    --ring-default: #000000;
+
+    /* Brand */
+    --brand-primary: #000000;
+    --brand-foreground: #ffffff;
+
+    /* States */
+    --accent-primary: #000000;
+    --accent-foreground: #ffffff;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+
+    color-scheme: light;
+  }
+
+  .dark {
+    /* Surfaces */
+    --surface-base: #000000;
+    --surface-muted: #111111;
+    --surface-elevated: #0a0a0a;
+
+    /* Text */
+    --text-primary: #ffffff;
+    --text-secondary: #b5b5b5;
+    --text-muted: #7a7a7a;
+
+    /* UI */
+    --border-default: #262626;
+    --ring-default: #ffffff;
+
+    /* Brand */
+    --brand-primary: #ffffff;
+    --brand-foreground: #000000;
+
+    /* States */
+    --accent-primary: #ffffff;
+    --accent-foreground: #000000;
+    --destructive: #ef4444;
+    --destructive-foreground: #000000;
+
+    color-scheme: dark;
+  }
+
+  /* Base app styling */
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+/* =================================================
+   PERFORMANCE-SAFE THEME TRANSITIONS
+================================================= */
+@layer base {
+  html {
+    transition-property: background-color, color;
+    transition-duration: var(--default-transition-duration);
+    transition-timing-function: var(--default-transition-timing-function);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      transition: none;
+    }
+  }
+}
+
+/* Hide scrollbar globally but keep scrolling functional */
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
 * {
   scrollbar-width: none;
 }
 
-/* Hide scrollbar for IE, Edge (legacy) */
+/* IE & old Edge (because history exists) */
 * {
   -ms-overflow-style: none;
+}
+
+
+/* =================================================
+   VIEW TRANSITION API SAFETY
+================================================= */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
 }

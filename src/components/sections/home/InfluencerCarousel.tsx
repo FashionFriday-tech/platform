@@ -139,17 +139,17 @@ export default function TrendingCoverflowPage() {
   const visibleRange = [-3, -2, -1, 0, 1, 2, 3]
 
   return (
-    <section className="w-full py-24 bg-white text-black overflow-hidden">
+    <section className="w-full py-24 bg overflow-hidden">
       <div className="container mx-auto px-4 text-center sm:mb-16">
         <h2 className="text-4xl md:text-7xl font-extrabold uppercase tracking-tight">
           Content Partners
         </h2>
-        <p className="text-black/60 mt-4 max-w-md mx-auto">
+        <p className="text-foreground-muted mt-4 max-w-md mx-auto">
           Creators and pages who promote our products across social media.
         </p>
       </div>
 
-      <div className="relative w-full h-[500px] flex items-center justify-center sm:my-10">
+      <div className="relative w-full h-125 flex items-center justify-center sm:my-10">
         <div 
           className="relative w-full max-w-6xl h-full flex items-center justify-center"
           style={{ perspective: "1000px" }}
@@ -173,7 +173,7 @@ export default function TrendingCoverflowPage() {
                 initial={variant}
                 transition={{ type: "spring", stiffness: 100, damping: 20 }}
                 onClick={() => handleCardClick(virtualIndex, product.link)}
-                className="absolute w-[280px] md:w-[350px] aspect-[3/5] rounded-3xl bg-zinc-900 shadow-2xl cursor-pointer overflow-hidden "
+                className="group absolute w-70 md:w-87 aspect-3/5 rounded-3xl bg-zinc-900 shadow-2xl cursor-pointer overflow-hidden "
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <div className="relative w-full h-full">
@@ -189,28 +189,12 @@ export default function TrendingCoverflowPage() {
                   <div className="absolute inset-0 flex items-center justify-center z-20">
                     <div
                       className={`
-                        w-16 h-16 rounded-full flex items-center justify-center text-white backdrop-blur-md border border-white/30
-                        transition-all duration-500 ease-out shadow-lg
-                        ${isActive
-                          ? "bg-white/30 opacity-100 scale-110 hover:bg-white hover:text-black hover:scale-125"
-                          : "bg-black/20 opacity-60 scale-90"
-                        }
-                      `}
+                        w-16 h-16 rounded-full flex items-center justify-center text-white backdrop-blur-xs border-2 border-white
+                        transition-all duration-500 ease-out shadow-lg opacity-100 scale-110 group-hover:bg-white group-hover:text-black hover:scale-125`}
                     >
                       <Play className="w-6 h-6 fill-current ml-1" />
                     </div>
-                  </div>
-
-                  {/* Gradient & Text */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 pointer-events-none" />
-                  
-                  <motion.div
-                    className="absolute bottom-8 left-0 right-0 text-center z-30 text-white px-4 pointer-events-none"
-                    animate={{ opacity: isActive ? 1 : 0.5, y: isActive ? 0 : 10 }}
-                  >
-                    <h3 className="text-xl font-bold md:text-2xl drop-shadow-md">{product.title}</h3>
-                    <p className="text-sm text-white/80 uppercase tracking-wider mt-1 drop-shadow-md">{product.tag}</p>
-                  </motion.div>
+                  </div>                  
                 </div>
               </motion.div>
             )
@@ -218,16 +202,16 @@ export default function TrendingCoverflowPage() {
         </div>
       </div>
 
-      <div className="mt-4 flex justify-center gap-4">
+      <div className="mt-4 flex justify-center gap-10">
         <button
           onClick={handlePrev}
-          className="w-12 h-12 rounded-full border border-black/20 flex items-center justify-center hover:bg-black hover:text-white transition active:scale-95"
+          className="w-12 h-12 rounded-full border border-forground-muted flex items-center justify-center hover:scale-95 transition active:scale-95"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <button
           onClick={handleNext}
-          className="w-12 h-12 rounded-full border border-black/20 flex items-center justify-center hover:bg-black hover:text-white transition active:scale-95"
+          className="w-12 h-12 rounded-full border border-forground-muted flex items-center justify-center hover:scale-95 transition active:scale-95"
         >
           <ArrowRight className="w-5 h-5" />
         </button>
