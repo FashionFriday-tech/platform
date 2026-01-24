@@ -34,4 +34,16 @@ export const bagItems: BagItem[] = [
     quantity: 2,
     inStock: true,
   },
+    {
+    id: "3",
+    name: "Oversized Graphic Tee",
+    price: 2499,
+    originalPrice: 7999,
+    size: "42",
+    color: "Black",
+    image: 
+      "https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/fc4622c4-2769-4665-aa6e-42c974a7705e/AIR+FORCE+1+%2707.png",
+    quantity: 1,
+    inStock: true,
+  }, 
 ];
