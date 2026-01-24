@@ -86,9 +86,9 @@ export default function OrderSummary() {
                <span className="text-[10px] opacity-70 uppercase font-black tracking-widest">Total</span>
                <span className="text-xl font-bold leading-none">₹{total.toLocaleString()}</span>
             </div>
-            <button className="bg-background text-foreground h-12 px-6 rounded-full font-black uppercase tracking-widest flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
+            <a href="/checkout/review" className="bg-background text-foreground h-12 px-6 rounded-full font-black uppercase tracking-widest flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
                Checkout Now <ArrowRight size={16} />
-            </button>
+            </a>
          </div>
       </div>
     </section>
