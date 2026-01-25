@@ -24,7 +24,7 @@ export default function SettingsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [notifications, setNotifications] = useState({
     orders: true,
-    promos: false,
+    promos: true,
   });
 
   const speedLabels = ["Static", "Relaxed", "Standard", "Aggressive", "Turbo"];
