@@ -189,7 +189,7 @@ export default function FinalReviewPage() {
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center">
         <motion.div
           onClick={() => setIsExpanded(!isExpanded)}
-          className="px-16 bg-background border-t border-x border-border rounded-t-full py-2 font-bold text-[10px] tracking-[0.3em] cursor-pointer shadow-lg z-10"
+          className="px-16 bg-background border-t border-x border-border rounded-t-full py-2 font-bold text-[10px] tracking-[0.3em] cursor-pointer z-10"
         >
           YOU SAVED ₹{pricing.discount} 🎉
         </motion.div>
