@@ -46,7 +46,7 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
                   <div
                     className={`
                       absolute inset-0 rounded-full transition-all duration-500 ease-in-out border-2 z-10
-                      ${isActive ? "border-brand bg-background scale-110 shadow-[0_0_20px_rgba(var(--color-brand),0.3)]" : ""}
+                      ${isActive ? "border-brand bg-foreground scale-110 shadow-[0_0_20px_rgba(var(--color-brand),0.3)]" : ""}
                       ${isCompleted ? "bg-brand border-brand" : "bg-background border-border"}
                     `}
                   />
@@ -55,8 +55,7 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
                   <span
                     className={`
                       relative z-20 text-xs font-black transition-colors duration-300
-                      ${isActive ? "text-brand" : ""}
-                      ${isCompleted ? "text-brand-foreground" : "text-foreground-subtle"}
+                      ${isCompleted ? "text-brand-foreground" : isActive ? "text-background" : "text-foreground-subtle"}
                     `}
                   >
                     {isCompleted ? <Check size={14} strokeWidth={3} /> : stage.id}
