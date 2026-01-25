@@ -4,6 +4,7 @@ import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Header } from "@/components/layout/Header";
 import { ThemeProvider } from "./providers/theme-provider";
+import { SettingsProvider } from "@/context/SettingsContext";
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -57,11 +58,13 @@ export default function RootLayout({
       text-foreground
     `}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <ServiceWorkerRegister />
-          <Header />
-          {children}
-        </ThemeProvider>
+        <SettingsProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <ServiceWorkerRegister />
+            <Header />
+            {children}
+          </ThemeProvider>
+        </SettingsProvider>
       </body>
     </html>
   );
