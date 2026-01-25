@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSettings } from "@/context/SettingsContext";
+
 import {
   Bell,
   MousePointer2,
@@ -20,12 +22,14 @@ import {
 import { AnimatedThemeToggler } from "@/components/ui/magicUi/animated-theme-toggler";
 
 export default function SettingsPage() {
-  const [scrollLevel, setScrollLevel] = useState(3); // Default to Stage 3
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [notifications, setNotifications] = useState({
     orders: true,
     promos: true,
   });
+
+  const { settings, updateSettings } = useSettings();
+  const scrollLevel = settings.autoScrollLevel;
 
   const speedLabels = ["Static", "Relaxed", "Standard", "Aggressive", "Turbo"];
 
@@ -94,7 +98,11 @@ export default function SettingsPage() {
                   max="5"
                   step="1"
                   value={scrollLevel}
-                  onChange={(e) => setScrollLevel(parseInt(e.target.value))}
+                  onChange={(e) =>
+                    updateSettings({
+                      autoScrollLevel: Number(e.target.value),
+                    })
+                  }
                   className="w-full h-1 bg-foreground/10 rounded-full appearance-none cursor-pointer accent-foreground"
                 />
                 <div className="flex justify-between px-1">
