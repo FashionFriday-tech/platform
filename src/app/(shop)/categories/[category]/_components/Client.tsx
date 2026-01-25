@@ -20,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import { MdStars } from "react-icons/md";
+import { useSettings } from "@/context/SettingsContext";
 
 const SORT_OPTIONS = [
   { label: "Newest Arrivals", value: "newest" },
@@ -196,33 +197,41 @@ export default function CategoryClient({
   );
 
   // 3. AUTO SCROLL ENGINE
+  const { settings } = useSettings();
+
+  // Extract speed safely using the correct property name: 'autoScrollLevel'
+  const currentScrollSpeed = useMemo(() => {
+    // We use settings?.autoScrollLevel and provide a fallback (3) to avoid indexing errors
+    const scrollSpeed = settings?.autoScrollLevel ?? 3;
+    return scrollSpeed;
+  }, [settings?.autoScrollLevel]);
+
+  const stopAutoScroll = useCallback(() => {
+    setIsAutoScrolling(false);
+    if (scrollRef.current) {
+      cancelAnimationFrame(scrollRef.current);
+      scrollRef.current = null;
+    }
+  }, []);
+
   const toggleAutoScroll = useCallback(() => {
     if (isAutoScrolling) {
-      setIsAutoScrolling(false);
-      if (scrollRef.current) cancelAnimationFrame(scrollRef.current);
-      scrollRef.current = null;
+      stopAutoScroll();
       return;
     }
 
     setIsAutoScrolling(true);
 
     const scrollStep = () => {
-      const vw = window.innerWidth;
-
-      let scrollSpeed = 3;
-      if (vw >= 640) scrollSpeed = 2;
-      if (vw >= 1024) scrollSpeed = 1;
-      if (vw >= 1440) scrollSpeed = 1;
-
-      window.scrollBy({ top: scrollSpeed, behavior: "auto" });
+      // Smoothly scroll by the mapped factor
+      window.scrollBy({ top: currentScrollSpeed, behavior: "auto" });
 
       const isAtBottom =
         window.innerHeight + window.scrollY >=
         document.documentElement.scrollHeight - 10;
 
       if (isAtBottom) {
-        setIsAutoScrolling(false);
-        scrollRef.current = null;
+        stopAutoScroll();
         return;
       }
 
@@ -230,7 +239,7 @@ export default function CategoryClient({
     };
 
     scrollRef.current = requestAnimationFrame(scrollStep);
-  }, [isAutoScrolling]);
+  }, [isAutoScrolling, currentScrollSpeed, stopAutoScroll]);
 
   // Emergency stop on manual interaction
   useEffect(() => {
