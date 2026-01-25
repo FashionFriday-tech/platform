@@ -42,7 +42,7 @@ export default function SettingsPage() {
               Ajmal Faris
             </h2>
             <p className="text-[10px] font-bold uppercase tracking-widest text-foreground-subtle mt-2 opacity-60">
-              Captain @ Unity11
+              ajmalfaris@gmail.com
             </p>
           </div>
           <ChevronRight size={20} className="text-foreground-subtle/30" />
@@ -75,7 +75,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="flex-1">
                     <span className="text-sm font-black uppercase tracking-tight italic">
-                      Auto-Browse Level
+                      Auto-Scroll Level
                     </span>
                     <p className="text-[9px] font-bold uppercase tracking-widest text-foreground-subtle mt-1">
                       Mechanical speed calibration
@@ -128,7 +128,7 @@ export default function SettingsPage() {
         {/* Notification Settings */}
         <div className="space-y-3">
           <p className="px-6 text-[10px] font-black uppercase tracking-[0.3em] text-foreground-subtle opacity-60">
-            Notification Settings
+            Notification
           </p>
           <div className="bg-background rounded-[2rem] overflow-hidden border border-border/40 shadow-sm divide-y divide-border/20">
             <SettingToggle
@@ -164,7 +164,7 @@ export default function SettingsPage() {
           <div className="bg-background rounded-[2rem] overflow-hidden border border-border/40 shadow-sm divide-y divide-border/20">
             <SettingLink
               icon={<MapPin size={20} />}
-              label="Shipping Directories"
+              label="Shipping Addresses"
             />
             <SettingLink
               icon={<CreditCard size={20} />}
@@ -179,13 +179,13 @@ export default function SettingsPage() {
 
         {/* Destructive Options */}
         <div className="pt-4 space-y-4">
-          <button className="w-full p-6 rounded-[2rem] bg-background border border-border flex items-center justify-between group active:scale-[0.98] transition-all">
+          <button className="w-full p-4 rounded-[2rem] bg-background border border-border flex items-center justify-between group active:scale-[0.98] transition-all">
             <div className="flex items-center gap-4 text-left">
               <div className="p-3 rounded-2xl bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background transition-all">
                 <LogOut size={20} />
               </div>
               <span className="text-sm font-black uppercase tracking-tight italic">
-                Sign Out of Session
+                Log Out
               </span>
             </div>
             <ChevronRight size={18} className="opacity-20" />
@@ -197,7 +197,7 @@ export default function SettingsPage() {
           >
             <Trash2 size={18} />
             <span className="text-[10px] font-black uppercase tracking-widest">
-              Wipe Account Data
+              Delete Account
             </span>
           </button>
         </div>
