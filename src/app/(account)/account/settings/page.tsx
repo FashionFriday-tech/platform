@@ -215,9 +215,9 @@ export default function SettingsPage() {
           <p className="text-[9px] font-black uppercase tracking-[0.5em] italic">
             Fashion Friday v1.0
           </p>
-          <p className="text-[8px] font-bold uppercase tracking-widest">
+          <a href="https://unity11-solutions.com" className="text-[8px] font-bold uppercase tracking-widest">
             Engineered by Unity11
-          </p>
+          </a>
         </div>
       </main>
 
