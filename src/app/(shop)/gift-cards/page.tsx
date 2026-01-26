@@ -70,7 +70,7 @@ const initialSocialTasks: SocialTask[] = [
     actionLabel: "Follow us",
     placeholder: "Your X Handle",
     // X / Twitter Dark Blue
-    cardStyle: "bg-gradient-to-tr from-blue-600 to-black",
+    cardStyle: "bg-gradient-to-tr from-blue-600 to-blue-400",
   },
   {
     id: "soc-3",
@@ -149,14 +149,14 @@ export default function RewardsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black font-sans text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-background selection:text-foreground">
       <main className="max-w-6xl mx-auto px-4 py-20 pb-32">
         
         {/* --- HERO SECTION: WALLET CARD --- */}
         <div className="flex flex-col md:flex-row items-center justify-between mb-16 md:mb-24 pt-10">
           
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-6xl font-semibold tracking-tighter mb-4 bg-linear-to-b from-white to-zinc-500 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-6xl font-semibold tracking-tighter mb-4 bg-linear-to-b from-foreground to-zinc-400 bg-clip-text text-transparent">
               MEMBERS CLUB
             </h1>
             <p className="text-zinc-500 text-sm md:text-base max-w-md mx-auto">
@@ -165,19 +165,19 @@ export default function RewardsPage() {
           </div>
 
           {/* The Hero Wallet Card */}
-          <div className="relative w-full max-w-md aspect-[1.58/1] bg-zinc-900 rounded-4xl p-6 md:p-8 text-white shadow-[0_0_50px_rgba(255,255,255,0.1)] overflow-hidden flex flex-col justify-between group border border-white/10 transition-transform hover:scale-[1.02] duration-500">
+          <div className="relative w-full max-w-md aspect-[1.58/1] bg-background rounded-4xl p-6 md:p-8 text-foreground shadow-[0_0_50px_rgba(255,255,255,0.1)] overflow-hidden flex flex-col justify-between group border border-foreground/10 transition-transform hover:scale-[1.02] duration-500">
              
              {/* Textures */}
              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30 mix-blend-overlay" />
-             <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-linear-to-br from-transparent via-white/5 to-transparent rotate-45 pointer-events-none" />
+             <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-linear-to-br from-transparent via-foreground/5 to-transparent rotate-45 pointer-events-none" />
 
              {/* Card Top */}
              <div className="relative z-10 flex justify-between items-start">
                 <div className="flex items-center gap-2">
-                   <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-black shadow-[0_0_15px_white]">
+                   <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-foreground shadow-[0_0_15px_foreground]">
                       <Sparkles size={16} />
                    </div>
-                   <span className="font-bold text-sm tracking-[0.2em] opacity-90">BLACK CARD</span>
+                   <span className="font-bold text-sm tracking-[0.2em] opacity-90">background CARD</span>
                 </div>
                 <CreditCard className="opacity-50" />
              </div>
@@ -185,7 +185,7 @@ export default function RewardsPage() {
              {/* Card Middle */}
              <div className="relative z-10">
                 <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider mb-2">Available Credits</p>
-                <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-white drop-shadow-lg">
+                <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground drop-shadow-lg">
                    ₹{walletBalance}
                 </h2>
              </div>
@@ -217,7 +217,7 @@ export default function RewardsPage() {
                 {socials.map((task) => (
                   <div 
                     key={task.id} 
-                    className={`relative w-full aspect-[1.58/1] rounded-4xl p-6 shadow-2xl text-white flex flex-col justify-between overflow-hidden group 
+                    className={`relative w-full aspect-[1.58/1] rounded-4xl p-6 text-white flex flex-col justify-between overflow-hidden group 
                     ${task.cardStyle} 
                     ${task.status === "approved" ? "grayscale opacity-50" : "hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)]"} transition-all duration-500`}
                   >
@@ -281,7 +281,7 @@ export default function RewardsPage() {
             {/* 2. SHOPPING MILESTONES */}
             <section>
               <div className="flex items-center gap-3 mb-8 px-2">
-                <div className="p-2 bg-white rounded-full text-black">
+                <div className="p-2 bg-foreground rounded-full text-background">
                    <Trophy size={20} />
                 </div>
                 <h2 className="text-2xl font-bold">Shopping Milestones</h2>
@@ -293,7 +293,7 @@ export default function RewardsPage() {
                   const isUnlocked = progress >= 100;
                   
                   return (
-                    <div key={milestone.id} className="relative w-full aspect-[1.58/1] rounded-4xl overflow-hidden shadow-2xl border border-white/10 group">
+                    <div key={milestone.id} className="relative w-full aspect-[1.58/1] rounded-4xl overflow-hidden border border-foreground/10 group">
                        
                        {/* Background Image */}
                        <img 
@@ -302,15 +302,15 @@ export default function RewardsPage() {
                          className="absolute inset-0 w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-700"
                        />
                        {/* Dark Overlay Gradient */}
-                       <div className="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent" />
+                       <div className="absolute inset-0 bg-linear-to-t from-background/80 via-foregroiund/50 to-transparent" />
 
                        {/* Card Content */}
-                       <div className="absolute inset-0 p-6 flex flex-col justify-between text-white">
+                       <div className="absolute inset-0 p-6 flex flex-col justify-between text-foreground">
                           
                           {/* Top */}
                           <div className="flex justify-between items-start">
                              <div className={`px-3 py-1 rounded-md text-[10px] font-bold tracking-widest uppercase border backdrop-blur-md
-                                ${isUnlocked ? "bg-white text-black border-white" : "bg-black/50 text-white border-white/20"}`}>
+                                ${isUnlocked ? "bg-foreground text-background border-foreground" : "bg-background/50 text-foreground border-foreground/20"}`}>
                                 {isUnlocked ? "UNLOCKED" : "LOCKED"}
                              </div>
                              <div className="text-right">
@@ -333,9 +333,9 @@ export default function RewardsPage() {
                              </div>
                              
                              {/* The Progress Bar */}
-                             <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden backdrop-blur-sm">
+                             <div className="w-full bg-foreground/20 h-2 rounded-full overflow-hidden backdrop-blur-sm">
                                 <div 
-                                   className="bg-white h-full shadow-[0_0_15px_white]"
+                                   className="bg-foreground h-full shadow-[0_0_15px_foreground]"
                                    style={{ width: `${progress}%` }}
                                 />
                              </div>
@@ -357,7 +357,6 @@ export default function RewardsPage() {
                 })}
               </div>
             </section>
-
         </div>
       </main>
 
@@ -366,24 +365,24 @@ export default function RewardsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
            {/* Backdrop */}
            <div 
-             className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity animate-in fade-in"
+             className="absolute inset-0 bg-background/30 backdrop-blur-sm transition-opacity animate-in fade-in"
              onClick={() => setSelectedTask(null)}
            />
 
            {/* Modal Content */}
-           <div className="relative w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-3xl shadow-2xl p-8 animate-in zoom-in-95 duration-200 text-white">
+           <div className="relative w-full max-w-sm bg-background rounded-3xl shadow-2xl p-8 animate-in zoom-in-95 duration-200 text-foreground">
               <button 
                  onClick={() => setSelectedTask(null)}
-                 className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white transition-colors"
+                 className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-foreground transition-colors"
               >
                  <X size={20} />
               </button>
 
               <div className="text-center mb-6">
-                 <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-white shadow-[0_0_30px_rgba(255,255,255,0.1)] mb-4 ${selectedTask.cardStyle}`}>
+                 <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-background shadow-[0_0_30px_rgba(255,255,255,0.1)] mb-4 ${selectedTask.cardStyle}`}>
                     {selectedTask.icon}
                  </div>
-                 <h3 className="text-xl font-bold">Claim ₹{selectedTask.rewardAmount}</h3>
+                 <h3 className="text-xl font-bold text-foreground">Claim ₹{selectedTask.rewardAmount}</h3>
                  <p className="text-zinc-400 text-xs mt-2 leading-relaxed">
                     Enter your username. We will verify that you followed our profile.
                  </p>
@@ -397,7 +396,7 @@ export default function RewardsPage() {
                        value={usernameInput}
                        onChange={(e) => setUsernameInput(e.target.value)}
                        placeholder={selectedTask.placeholder}
-                       className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-4 outline-none focus:ring-1 focus:ring-white focus:border-white transition-all font-medium text-sm text-white placeholder:text-zinc-700"
+                       className="w-full bg-background border border-zinc-800 rounded-xl px-4 py-4 outline-none focus:ring-1 focus:ring-foreground focus:border-foreground transition-all font-medium text-sm text-foreground placeholder:text-zinc-700"
                        autoFocus
                     />
                  </div>
@@ -405,7 +404,7 @@ export default function RewardsPage() {
                  <button 
                     type="submit"
                     disabled={isSubmitting || !usernameInput.trim()}
-                    className="w-full py-4 bg-white text-black rounded-xl font-bold text-sm hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-4 bg-foreground text-background rounded-xl font-bold text-sm hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                     {isSubmitting ? (
                        <><Loader2 size={16} className="animate-spin" /> Verifying...</>
