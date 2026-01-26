@@ -34,8 +34,7 @@ export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
   const scrollLevel = settings.autoScrollLevel;
 
-  const speedLabels = ["Static", "Relaxed", "Standard", "Aggressive", "Turbo"];
-
+const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
   return (
     <div className="min-h-screen bg-[#F9F9F9] dark:bg-black text-foreground transition-colors duration-500 pb-20">
       <main className="mx-auto max-w-2xl px-4 pt-12 space-y-10">
@@ -92,9 +91,6 @@ export default function SettingsPage() {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-black italic uppercase tracking-widest px-4 py-1.5 bg-foreground text-background rounded-full">
-                  Lvl {scrollLevel}
-                </span>
               </div>
 
               <div className="px-2 space-y-4">
@@ -117,13 +113,6 @@ export default function SettingsPage() {
                       key={label}
                       className="flex flex-col items-center gap-2"
                     >
-                      <div
-                        className={`w-1 h-1 rounded-full ${
-                          scrollLevel === i + 1
-                            ? "bg-foreground"
-                            : "bg-foreground/20"
-                        }`}
-                      />
                       <span
                         className={`text-[7px] font-black uppercase tracking-widest transition-opacity ${
                           scrollLevel === i + 1 ? "opacity-100" : "opacity-20"
