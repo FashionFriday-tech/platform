@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSettings } from "@/context/SettingsContext";
+import { useRouter } from "next/navigation";
 
 import {
   Bell,
@@ -22,6 +23,8 @@ import {
 import { AnimatedThemeToggler } from "@/components/ui/magicUi/animated-theme-toggler";
 
 export default function SettingsPage() {
+  const router = useRouter();
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [notifications, setNotifications] = useState({
     orders: true,
@@ -37,7 +40,10 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-[#F9F9F9] dark:bg-black text-foreground transition-colors duration-500 pb-20">
       <main className="mx-auto max-w-2xl px-4 pt-12 space-y-10">
         {/* Profile Identity */}
-        <section className="bg-background rounded-[2.5rem] p-8 flex items-center gap-5 shadow-sm border border-border/40">
+        <section
+          onClick={() => router.push("/account/profile")}
+          className="bg-background rounded-[2.5rem] p-8 flex items-center gap-5 shadow-sm border border-border/40"
+        >
           <div className="w-20 h-20 rounded-full bg-foreground flex items-center justify-center text-background text-3xl font-black italic uppercase">
             AF
           </div>
@@ -215,7 +221,10 @@ export default function SettingsPage() {
           <p className="text-[9px] font-black uppercase tracking-[0.5em] italic">
             Fashion Friday v1.0
           </p>
-          <a href="https://unity11-solutions.com" className="text-[8px] font-bold uppercase tracking-widest">
+          <a
+            href="https://unity11-solutions.com"
+            className="text-[8px] font-bold uppercase tracking-widest"
+          >
             Engineered by Unity11
           </a>
         </div>
