@@ -153,7 +153,7 @@ export default function RewardsPage() {
       <main className="max-w-6xl mx-auto px-4 py-20 pb-32">
         
         {/* --- HERO SECTION: WALLET CARD --- */}
-        <div className="flex items-center justify-between mb-16 md:mb-24 pt-10">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-16 md:mb-24 pt-10">
           
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-6xl font-semibold tracking-tighter mb-4 bg-linear-to-b from-white to-zinc-500 bg-clip-text text-transparent">
