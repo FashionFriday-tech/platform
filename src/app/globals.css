@@ -145,8 +145,36 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none !important;
   }
+}
+
+@keyframes placeholder-slide {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  20% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+
+  80% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+.animate-placeholder {
+  display: inline-block;
+  animation: placeholder-slide 3s infinite;
 }
