@@ -53,16 +53,23 @@ export default function SizeGuidePage() {
   return (
     <div className="bg-background text-foreground min-h-screen pb-32 selection:bg-brand selection:text-white relative">
       {/* 1. HEADER SECTION */}
-      <header className="pt-10 md:pt-26 pb-12 px-6 max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center gap-3 text-brand">
-          <div className="h-0.5 w-12 bg-brand" />
-          <span className="text-[10px] font-black uppercase tracking-[0.6em]">
-            System Architecture
+      <header className="pt-16 md:pt-28 pb-16 px-6 max-w-7xl mx-auto space-y-8">
+        <div className="flex items-center gap-4 text-brand">
+          <div className="h-px w-16 bg-brand" />
+          <span className="text-[9px] font-black uppercase tracking-[0.5em]">
+            Precision Sizing System
           </span>
         </div>
-        <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter leading-[0.75]">
-          Fit <br /> <span className="opacity-50">Engine</span>
+
+        <h1 className="text-8xl md:text-[8.5rem] font-black uppercase tracking-tighter italic leading-[0.72]">
+          Size <br />
+          <span className="opacity-40">Guide</span>
         </h1>
+
+        <p className="max-w-xl text-xs md:text-sm font-bold uppercase leading-relaxed tracking-wide opacity-60">
+          Cross-brand sizing reference built on global measurement standards.
+          Convert, compare, and verify your exact fit with zero guesswork.
+        </p>
       </header>
 
       {/* 2. CATEGORY SWITCHER */}
