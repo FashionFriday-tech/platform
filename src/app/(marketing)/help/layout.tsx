@@ -83,7 +83,7 @@ export default function HelpLayout({
                 key={item.id}
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className={`flex items-center justify-between p-10 rounded-4xl transition-all border border-border text-2xl ${
+                className={`flex items-center justify-between p-8 rounded-4xl transition-all border border-border text-xl ${
                   pathname === item.href
                     ? "bg-foreground text-background"
                     : "hover:bg-background-muted "
@@ -91,7 +91,7 @@ export default function HelpLayout({
               >
                 <div className="flex items-center gap-6">
                   {item.icon}
-                  <span className="font-bold uppercase tracking-tighter">
+                  <span className="uppercase tracking-tighter">
                     {item.label}
                   </span>
                 </div>
