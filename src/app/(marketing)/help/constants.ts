@@ -19,6 +19,6 @@ export const helpSections: HelpSection[] = [
   { id: "size-guide", label: "Size Guide", href: "/help/size-guide", icon: React.createElement(Ruler, { size: 22 }), tagline: "Find your perfect fit." },
   { id: "quality-guide", label: "Quality Guide", href: "/help/quality-guide", icon: React.createElement(RiShieldStarFill, { size: 22 }), tagline: "Understand product authenticity." },
   { id: "refund-policy", label: "Refund Policy", href: "/help/refund-policy", icon: React.createElement(Shield, { size: 22 }), tagline: "Money-back terms." },
-  { id: "privacy-policy", label: "Privacy", href: "/help/privacy-policy", icon: React.createElement(Shield, { size: 22 }), tagline: "Data protection." },
+  { id: "privacy-policy", label: "Privacy Policy", href: "/help/privacy-policy", icon: React.createElement(Shield, { size: 22 }), tagline: "Data protection." },
   { id: "terms", label: "Terms", href: "/help/terms", icon: React.createElement(FileText, { size: 22 }), tagline: "Legal agreement." },
 ];
