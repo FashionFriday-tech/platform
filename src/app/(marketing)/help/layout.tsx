@@ -90,7 +90,7 @@ export default function HelpLayout({
                 }`}
               >
                 <div className="flex items-center gap-6">
-                  {item.icon}
+                  <item.icon />
                   <span className="uppercase tracking-tighter">
                     {item.label}
                   </span>
