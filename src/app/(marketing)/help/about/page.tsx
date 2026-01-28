@@ -18,15 +18,15 @@ export default function AboutPage() {
       {/* 1. HERO: THE CINEMATIC STATEMENT */}
       <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-fixed bg-center bg-no-repeat transition-transform duration-[3000ms] scale-110 hover:scale-100"
+          className="absolute inset-0 bg-cover bg-fixed bg-center bg-no-repeat transition-transform duration-3000 scale-110 hover:scale-100"
           style={{
             backgroundImage: `url('https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=2000&auto=format&fit=crop')`,
             filter: "brightness(0.3) grayscale(0.5)",
           }}
         />
 
-        {/* Abstract Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-[#0a0a0a]" />
+        {/* Abstract linear Overlay */}
+        <div className="absolute inset-0 bg-linear-to-b from-transparent via-black/40 to-[#0a0a0a]" />
 
         <div className="relative z-10 text-center px-4 max-w-6xl">
           <div className="inline-flex items-center gap-2 mb-8 px-4 py-1.5 border border-white/20 rounded-full bg-white/5 backdrop-blur-md">
@@ -41,7 +41,7 @@ export default function AboutPage() {
 
           <h1 className="text-7xl md:text-[12vw] font-black uppercase tracking-tighter leading-[0.85] text-white drop-shadow-2xl">
             Style <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand via-white to-brand-muted">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-brand via-white to-brand-muted">
               Without Borders.
             </span>
           </h1>
@@ -61,7 +61,7 @@ export default function AboutPage() {
           <p className="text-[10px] uppercase tracking-[0.5em] vertical-text">
             Scroll
           </p>
-          <div className="w-px h-12 bg-gradient-to-b from-brand to-transparent" />
+          <div className="w-px h-12 bg-linear-to-b from-brand to-transparent" />
         </div>
       </section>
 
@@ -100,13 +100,13 @@ export default function AboutPage() {
           </div>
 
           <div className="lg:col-span-5 relative">
-            <div className="aspect-[4/5] rounded-4xl overflow-hidden border border-white/10 relative group">
+            <div className="aspect-4/5 rounded-4xl overflow-hidden border border-white/10 relative group">
               <img
                 src="/images/model/aj.png"
                 className="w-full h-full object-cover grayscale transition-all duration-700 scale-125"
                 alt="Founder Vision"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute bottom-8 left-8 right-8">
                 <p className="text-brand font-black text-sm uppercase tracking-widest mb-2 italic">
                   Est. 2020

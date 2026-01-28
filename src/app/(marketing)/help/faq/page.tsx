@@ -111,7 +111,7 @@ export default function FAQPage() {
                   <button
                     key={cat}
                     onClick={() => setFilter(cat)}
-                    className={`whitespace-nowrap px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all flex-shrink-0 ${
+                    className={`whitespace-nowrap px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all shrink-0 ${
                       filter === cat
                         ? "bg-brand text-brand-foreground border-brand"
                         : "bg-transparent border-border hover:border-brand"

@@ -51,7 +51,7 @@ export default function HelpLayout({
 
       {/* --- SIDEBAR OVERLAY --- */}
       <div
-        className={`fixed inset-0 z-[60] transition-all duration-500 ${
+        className={`fixed inset-0 z-60 transition-all duration-500 ${
           isMenuOpen
             ? "opacity-100 visible"
             : "opacity-0 invisible pointer-events-none"
