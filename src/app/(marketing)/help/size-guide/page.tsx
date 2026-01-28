@@ -91,7 +91,7 @@ export default function SizeGuidePage() {
 
       <section className="max-w-5xl mx-auto px-6 relative">
         {/* 3. THE FIXED STICKY HUD */}
-        <div className="sticky top-20 z-50 mb-20" ref={pickerRef}>
+        <div className="sticky top-20 z-40 mb-20" ref={pickerRef}>
           <div className="bg-foreground text-background rounded-[2.5rem] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.7)]">
             <div className="flex items-center relative">
               {/* FROM BUTTON */}
@@ -222,34 +222,27 @@ export default function SizeGuidePage() {
         </div>
 
         {/* 5. FOOTER PROTOCOL */}
-        <div className="mt-32 p-12 md:p-20 rounded-[3.5rem] bg-foreground text-background relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:scale-110 transition-transform duration-700">
-            <Ruler size={300} strokeWidth={1} />
-          </div>
-          <div className="relative z-10 max-w-2xl space-y-8">
-            <h2 className="text-5xl md:text-7xl font-black uppercase leading-[0.8] tracking-tighter">
-              Fit <br /> Intelligence.
-            </h2>
-            <p className="text-sm font-medium uppercase leading-relaxed opacity-60 max-w-md">
-              Standards vary across manufacturers. Our algorithm
-              cross-references international metrics (ISO 19407) to suggest the
-              optimal fit for your anatomy.
-            </p>
-            <div className="flex flex-wrap gap-8 pt-6">
-              <div className="space-y-1">
-                <p className="text-[8px] font-black uppercase tracking-[0.3em] opacity-30">
-                  Accuracy
-                </p>
-                <p className="text-xl font-bold tracking-tighter">
-                  99.8% Verified
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[8px] font-black uppercase tracking-[0.3em] opacity-30">
-                  Updated
-                </p>
-                <p className="text-xl font-bold tracking-tighter">Jan 2026</p>
-              </div>
+        <div className="mt-8 mb-16 max-w-4xl mx-auto">
+          <div className="bg-muted/5 border border-border/40 rounded-3xl flex flex-col md:flex-row items-center gap-6 group hover:border-brand/50 transition-colors duration-500">
+            <div className="h-12 w-12 rounded-full bg-foreground/5 flex items-center justify-center shrink-0 group-hover:bg-brand/10 transition-colors">
+              <Info
+                size={20}
+                className="text-foreground group-hover:text-brand transition-colors"
+              />
+            </div>
+
+            <div className="space-y-1 text-center md:text-left">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">
+                Manufacturing Variance
+              </h4>
+              <p className="text-xs md:text-sm font-bold uppercase italic leading-relaxed tracking-tight">
+                Please note: Global standard sizing is a baseline. Dimensions
+                may slightly vary across different{" "}
+                <span className="text-brand underline underline-offset-4 decoration-brand/30">
+                  brands and manufacturers
+                </span>{" "}
+                based on specific silhouettes and materials used.
+              </p>
             </div>
           </div>
         </div>
@@ -261,6 +254,123 @@ export default function SizeGuidePage() {
           className="fixed inset-0 z-40 bg-black/40 transition-all duration-500"
           onClick={() => setActivePicker(null)}
         />
+      )}
+
+      {/* 6. ANATOMICAL CALIBRATION (THE GUIDE) */}
+      {activeCat === "footwear" && (
+        <section id="manual-size-mesure" className="mt-32 px-6">
+          <div className="flex flex-col md:flex-row gap-16 items-start">
+            {/* LEFT: THE MANIFESTO */}
+            <div className="md:w-1/3 md:sticky top-32">
+              <div className="space-y-6">
+                <div className="relative flex items-center gap-3 text-brand">
+                  <div className="h-[1px] w-8 bg-brand" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em]">
+                    Manual Checking Method
+                  </span>
+
+                  <div className="absolute top-0 right-0  opacity-6 group-hover:scale-110 transition-transform duration-700">
+                    <Ruler size={150} strokeWidth={1} />
+                  </div>
+                </div>
+                <h2 className="text-5xl font-black uppercase italic tracking-tighter leading-none">
+                  Don't Know <br />{" "}
+                  <span className="text-foreground/30">Your Size ?</span>
+                </h2>
+                <p className="text-[11px] font-bold uppercase leading-relaxed opacity-60">
+                  Socks lie. Branding varies. Centimeters are the only objective
+                  truth in the universe. Follow the protocol to find your true
+                  Size.
+                </p>
+
+                <div className="pt-8 space-y-4">
+                  <div className="p-6 border border-border rounded-3xl bg-muted/5">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest mb-4 opacity-40">
+                      Required Things
+                    </h4>
+                    <ul className="grid grid-cols-2 gap-3 text-[10px] font-black uppercase italic">
+                      <li>• A4 Paper</li>
+                      <li>• Precision Pen</li>
+                      <li>• Vertical Wall</li>
+                      <li>• measurement tape</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT: THE STEPS */}
+            <div className="md:w-2/3 space-y-4">
+              {[
+                {
+                  step: "01",
+                  title: "The Foundation",
+                  desc:
+                    "Place a sheet of paper on a flat floor, flush against a straight wall. No carpet. Surface must be rigid.",
+                },
+                {
+                  step: "02",
+                  title: "Alignment",
+                  desc:
+                    "Stand on the paper with your heel firmly touching the wall. Distribute your weight equally across both feet.",
+                },
+                {
+                  step: "03",
+                  title: "The Mark",
+                  desc:
+                    "Keep the pen vertical. Mark the exact tip of your longest toe. Don't pull back; trust the measurement.",
+                },
+                {
+                  step: "04",
+                  title: "Metric Capture",
+                  desc:
+                    "Measure from the paper's edge (the wall side) to your mark in Millimeters/Centimeters.",
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="group relative bg-muted/10 border border-border p-8 rounded-[2.5rem] hover:bg-foreground hover:text-background transition-all duration-500 overflow-hidden"
+                >
+                  <span className="absolute -right-4 -bottom-6 text-9xl font-black italic opacity-[0.03] group-hover:opacity-10 transition-opacity">
+                    {item.step}
+                  </span>
+                  <div className="relative z-10 flex gap-8 items-start">
+                    <span className="text-brand font-black italic text-xl">
+                      {item.step}
+                    </span>
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-black uppercase italic tracking-tighter">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm font-medium leading-relaxed opacity-70 group-hover:opacity-90">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* FINAL ADVICE CARD */}
+              <div className="mt-8 p-10 bg-foreground text-background rounded-[2.5rem]">
+                <div className="flex items-start gap-6">
+                  <div className="p-3 bg-foreground text-background rounded-full">
+                    <Info size={20} />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-black uppercase italic tracking-tighter">
+                      The Asymmetry Rule
+                    </h3>
+                    <p className="text-xs font-bold uppercase leading-tight opacity-80">
+                      Humans are asymmetrical disasters. Always measure both
+                      feet and use the larger result. If you land between sizes,
+                      size up. Tight shoes ruin lives.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );
