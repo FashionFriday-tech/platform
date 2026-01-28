@@ -251,7 +251,7 @@ export default function SizeGuidePage() {
       {/* Backdrop for closing */}
       {activePicker && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 transition-all duration-500"
+          className="fixed inset-0 z-30 bg-black/40 transition-all duration-500"
           onClick={() => setActivePicker(null)}
         />
       )}
