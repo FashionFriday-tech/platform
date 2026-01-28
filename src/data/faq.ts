@@ -24,8 +24,8 @@ export const faqData: FAQItem[] = [
         question: "How do I know the fit of a specific drop?",
         answer:
             "We use an Architectural Fit scale. Check the Fit Details section on the product page for exact measurements and model references.",
-        href: "/size-guide",
-        linkText: "Open size guide",
+        href: "/help/size-guide",
+        linkText: "size guide",
     },
     {
         id: "3",
@@ -98,5 +98,32 @@ export const faqData: FAQItem[] = [
             "If an item arrives damaged, contact us within 24 hours with unboxing proof.",
         href: "/returns",
         linkText: "Report a damaged item",
+    },
+    {
+        id: "24",
+        category: "Sizing",
+        question: "How do I ensure I'm choosing the correct size?",
+        answer:
+            "Standard sizing is a baseline, but anatomy is unique. Use our Fit Architect protocol: measure your foot in CM from heel to toe for the most objective result.",
+        href: "/help/size-guide",
+        linkText: "Open Fit Architect",
+    },
+    {
+        id: "25",
+        category: "Sizing",
+        question: "How do I Mesure my size manual?",
+        answer:
+            "Place your heel against a wall on a sheet of paper. Mark the tip of your longest toe and measure the distance in CM.",
+        href: "/help/size-guide#manual-size-mesure",
+        linkText: "Mesure my foot",
+    },
+    {
+        id: "26",
+        category: "Sizing",
+        question: "Why do sizes vary between different brands?",
+        answer:
+            "Manufacturers use different 'lasts' (foot molds) and materials. While our chart provides global standards, always refer to the specific brand variance notes for a precision fit.",
+        href: "/help/size-guide#variance-note",
+        linkText: "Check Size Variance",
     },
 ];
