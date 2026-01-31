@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { MdStars } from "react-icons/md";
 import { useSettings } from "@/context/SettingsContext";
+import Link from "next/link";
 
 const SORT_OPTIONS = [
   { label: "Newest Arrivals", value: "newest" },
@@ -422,13 +423,15 @@ export default function CategoryClient({
                   key={product.id}
                   className="group cursor-pointer"
                 >
+                  <Link href={`/product/${product.slug}`} className="block cursor-pointer">
                   <div className="aspect-4/5 overflow-hidden rounded-4xl lg:rounded-[2.5rem] bg-background-muted relative">
                     <img
-                      src={product.image || "/images/placeholder.png"}
+                      src={product.promoImage || "/images/placeholder.png"}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   </div>
+                  </Link>
                   <div className="mt-4 px-1 space-y-1">
                     <div className="flex justify-between items-center mb-0.5 text-[8px] md:text-[10px]">
                       <p className="font-black text-foreground-subtle uppercase tracking-widest">
