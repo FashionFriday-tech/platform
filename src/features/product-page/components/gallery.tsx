@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Image as ImageIcon } from "lucide-react";
+import { Play, Image as ImageIcon, Pause } from "lucide-react";
 
 export default function MediaStage({
   images,
@@ -139,14 +139,18 @@ export default function MediaStage({
             }}
             className={`flex items-center gap-1 p-1 rounded-full transition-all ${
               activeMode === "video"
-                ? "bg-white text-gray-400"
+                ? "bg-white"
                 : "text-white opacity-60 hover:opacity-100"
             }`}
           >
-            <Play
-              size={14}
-              fill={activeMode === "video" ? "black" : "currentColor"}
-            />
+            {activeMode !== "video" ? (
+              <Play size={14} />
+            ) : (
+              <Pause
+                size={14}
+                fill={activeMode === "video" ? "black" : "currentColor"}
+              />
+            )}
           </button>
         </div>
       </div>
