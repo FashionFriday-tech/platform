@@ -46,7 +46,7 @@ export default function MediaStage({
     <div className="relative w-full group select-none touch-none">
       {/* --- MEDIA VIEWPORT --- */}
       <div
-        className="relative aspect-3/4 rounded-[2.5rem] overflow-hidden cursor-crosshair bg-white"
+        className="relative aspect-4/5 rounded-[2.5rem] overflow-hidden cursor-crosshair bg-white"
         onPointerDown={handleInteraction}
       >
         <AnimatePresence mode="wait">
