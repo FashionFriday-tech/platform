@@ -142,8 +142,16 @@ export default function ReviewSection() {
                   </div>
                   <div className="flex-1 flex flex-col items-start gap-2 pr-2">
                     <div className="flex justify-start items-center gap-2">
-                      <div className="p-0.5 border rounded-full border-dashed border-black">
-                        <span className="w-10 h-10 bg-black text-white text-[12px] font-black rounded-full flex justify-center items-center uppercase">
+                      <div
+                        className={`p-0.5 border-2 rounded-full border-dashed border-black ${
+                          rev.membership === "silver"
+                            ? "border-y-gray-600 border-x-gray-400"
+                            : rev.membership === "gold"
+                            ? "border-y-yellow-600 border-x-yellow-400"
+                            : "border-y-rose-600 border-x-rose-400"
+                        }`}
+                      >
+                        <span className="w-10 h-10 bg-black text-white text-[14px] font-black rounded-full flex justify-center items-center uppercase italic">
                           {rev.initials}
                         </span>
                       </div>
@@ -156,11 +164,11 @@ export default function ReviewSection() {
                                 ? "text-gray-400"
                                 : rev.membership === "gold"
                                 ? "text-yellow-500"
-                                : "text-blue-400"
+                                : "text-rose-600"
                             }`}
                           />
                         </span>
-                        <div className="flex gap-0.5">
+                        <div className="flex gap-0.5 mt-0.5">
                           {[...Array(5)].map((_, starIndex) => (
                             <Star
                               key={starIndex}
