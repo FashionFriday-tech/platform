@@ -31,6 +31,7 @@ export default function ReviewSection() {
       image:
         "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800",
       rating: 5,
+      membership: "silver",
     },
     {
       name: "Sasha R.",
@@ -40,6 +41,7 @@ export default function ReviewSection() {
       image:
         "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?w=800",
       rating: 4,
+      membership: "gold",
     },
     {
       name: "Leo K.",
@@ -48,6 +50,7 @@ export default function ReviewSection() {
         "The perfect staple. Color is richer in person. Highly recommend for daily wear.",
       image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800",
       rating: 5,
+      membership: "platinum",
     },
   ];
 
@@ -74,9 +77,24 @@ export default function ReviewSection() {
     <div className="bg-[#050505] text-white py-12 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-10 max-w-3xl mx-auto">
-          <h2 className="text-[14px] font-black uppercase tracking-[0.3em] italic">
-            Reviews
-          </h2>
+          <div>
+            <h2 className="text-[14px] font-black uppercase tracking-[0.3em] italic">
+              Reviews
+            </h2>
+            <div className="flex gap-0.5">
+              {[...Array(5)].map((_, starIndex) => (
+                <Star
+                  key={starIndex}
+                  size={10}
+                  className={
+                    starIndex < 4
+                      ? "fill-foreground text-foreground"
+                      : "text-foreground"
+                  }
+                />
+              ))}
+            </div>
+          </div>
           <button
             onClick={() => setIsFormOpen(true)}
             className="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-xl"
@@ -124,31 +142,42 @@ export default function ReviewSection() {
                   <div className="flex-1 flex flex-col items-start gap-2 pr-2">
                     <div className="flex justify-start items-center gap-2">
                       <div className="p-0.5 border rounded-full border-dashed border-black">
-                        <span className="w-8 h-8 bg-black text-white text-[10px] font-black rounded-full flex justify-center items-center uppercase">
+                        <span className="w-10 h-10 bg-black text-white text-[12px] font-black rounded-full flex justify-center items-center uppercase">
                           {rev.initials}
                         </span>
                       </div>
-                      <span className="text-[14px] font-black uppercase flex items-center leading-none">
-                        {rev.name}
-                        <RiVerifiedBadgeFill className="w-5 text-blue-400 ml-0.5" />
-                      </span>
+                      <div className="flex flex-col ">
+                        <span className="text-[14px] font-black uppercase flex items-center leading-none">
+                          {rev.name}
+                          <RiVerifiedBadgeFill
+                            className={`w-5 ml-1 mb-0.5 ${
+                              rev.membership === "silver"
+                                ? "text-gray-400"
+                                : rev.membership === "gold"
+                                ? "text-yellow-500"
+                                : "text-blue-400"
+                            }`}
+                          />
+                        </span>
+                        <div className="flex gap-0.5">
+                          {[...Array(5)].map((_, starIndex) => (
+                            <Star
+                              key={starIndex}
+                              size={10}
+                              className={
+                                starIndex < rev.rating
+                                  ? "fill-yellow-500 text-yellow-500"
+                                  : "text-yellow-500"
+                              }
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
+
                     <p className="text-sm font-medium leading-snug opacity-80 line-clamp-3 italic">
                       "{rev.comment}"
                     </p>
-                    <div className="flex gap-0.5">
-                      {[...Array(5)].map((_, starIndex) => (
-                        <Star
-                          key={starIndex}
-                          size={12}
-                          className={
-                            starIndex < rev.rating
-                              ? "fill-black text-black"
-                              : "opacity-10"
-                          }
-                        />
-                      ))}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -250,31 +279,6 @@ export default function ReviewSection() {
                   >
                     <X size={20} />
                   </button>
-                </div>
-
-                {/* Star Selection */}
-                <div className="flex flex-col items-center gap-3">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/20">
-                    Select Rating
-                  </label>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        onClick={() => setNewRating(star)}
-                        className="transition-transform active:scale-90"
-                      >
-                        <Star
-                          size={32}
-                          className={`${
-                            star <= newRating
-                              ? "fill-white text-white"
-                              : "text-white/10"
-                          } transition-colors`}
-                        />
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Comment with Countdown */}
