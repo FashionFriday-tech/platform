@@ -22,6 +22,7 @@ import Gallery from "./components/gallery";
 import { Product } from "@/data/store-data";
 import Link from "next/link";
 import ReviewSection from "./components/ReviewSection";
+import RelatedProducts from "./components/RelatedProducts";
 
 export default function ProductPageMaster({
   product,
@@ -69,16 +70,13 @@ export default function ProductPageMaster({
           <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-8">
             {/* 1. Brand & Actions */}
             <div className="flex flex-col justify-between items-start">
-              <div className="flex justify-between items-center w-full mb-2">
-                <div className="flex justify-center items-center gap-4 text-[10px] font-black uppercase  text-foreground-muted">
-                  <span className="flex justify-center items-center gap-2">
-                    <img
-                      src="/images/brand-logos/nike.png"
-                      alt={product.brand}
-                      className="w-8 invert"
-                    />
-                    {product.brand}
-                  </span>{" "}
+              <div className="flex justify-between items-center w-full">
+                <div className="flex justify-center items-center gap-4 text-[10px] font-black uppercase  text-foreground-muted mb-2">
+                  <img
+                    src="/images/brand-logos/nike.png"
+                    alt={product.brand}
+                    className="w-10 invert"
+                  />
                   <span className="flex justify-center items-center gap-1">
                     <RiShieldStarFill className="inline-block text-green-500 mb-0.5" />{" "}
                     {product.quality}
@@ -93,7 +91,7 @@ export default function ProductPageMaster({
                   </span>
                 </div>
               </div>
-              <div className="w-full flex justify-between items-center gap-2">
+              <div className="w-full flex justify-between items-center">
                 <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tighter leading-[0.5]">
                   {product.name}
                 </h1>
@@ -195,10 +193,10 @@ export default function ProductPageMaster({
                   onClick={() => setIsWishlisted((prev) => !prev)}
                   aria-label="Toggle wishlist"
                   className={`h-14 w-14 shrink-0 flex items-center justify-center
-                rounded-full border-2 transition-all duration-300 ${
+                rounded-full transition-all duration-300 ${
                   isWishlisted
-                    ? "bg-background text-foreground scale-95"
-                    : "text-background hover:bg-background/10 border-transparent"
+                    ? "bg-background text-foreground scale-100"
+                    : "text-background hover:bg-background/10 animate-pulse scale-125"
                 }`}
                 >
                   {isWishlisted ? (
@@ -264,6 +262,7 @@ export default function ProductPageMaster({
 
       {/* --- REVIEWS HIGHLIGHT --- */}
       <ReviewSection />
+      <RelatedProducts products={similarProducts} />
     </div>
   );
 }
