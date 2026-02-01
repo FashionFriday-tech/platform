@@ -10,6 +10,7 @@ import {
   wrap,
 } from "framer-motion";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
+import { FaInfoCircle } from "react-icons/fa";
 
 export default function ReviewSection() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -99,7 +100,7 @@ export default function ReviewSection() {
             onClick={() => setIsFormOpen(true)}
             className="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-xl"
           >
-            <Plus size={16} />
+            <FaInfoCircle size={16} />
           </button>
         </div>
 
@@ -185,7 +186,21 @@ export default function ReviewSection() {
           </motion.div>
         </div>
       </div>
-
+      {/*Add Review Section*/}
+      <div className="flex w-full justify-center items-center gap-2 mt-10">
+        {[...Array(5)].map((_, starIndex) => (
+          <Star
+            key={starIndex}
+            size={42}
+            strokeWidth={0.5}
+            onClick={() => {
+              setNewRating(starIndex + 1);
+              setIsFormOpen(true);
+            }}
+            className={`cursor-pointer transition-colors text-white`}
+          />
+        ))}
+      </div>
       {/* --- MODAL (Full View) --- */}
       <AnimatePresence>
         {isModalOpen && (
@@ -307,6 +322,26 @@ export default function ReviewSection() {
                         : "border-white/10 focus:border-white/40"
                     }`}
                   />
+                </div>
+
+                <div className="flex w-full justify-center items-center gap-4">
+                  {[...Array(5)].map((_, starIndex) => (
+                    <motion.button
+                      key={starIndex}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setNewRating(starIndex + 1)}
+                      type="button"
+                    >
+                      <Star
+                        size={28}
+                        className={
+                          starIndex < newRating
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-yellow-400"
+                        }
+                      />
+                    </motion.button>
+                  ))}
                 </div>
 
                 <div className="flex gap-4">
