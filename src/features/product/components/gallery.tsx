@@ -153,7 +153,7 @@ export default function MediaStage({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="w-full h-full bg-black overflow-hidden flex justify-center items-center scale-125"
+                className="w-full h-full bg-black overflow-hidden flex justify-center items-center scale-125 lg:scale-150"
               >
                 <iframe
                   width={353}
