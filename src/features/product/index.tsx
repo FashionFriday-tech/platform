@@ -55,10 +55,10 @@ export default function ProductPageMaster({
   return (
     <div className="bg-background text-foreground min-h-screen pb-32 transition-colors">
       {/* --- MAIN PRODUCT GRID --- */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 pt-6 lg:pt-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <section className="max-w- mx-auto px-4 md:px-8 pt-6 lg:pt-26">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12  items-start">
           {/* LEFT: Gallery */}
-          <div className="lg:col-span-7">
+          <div className="lg:col-span-6">
             <Gallery
               images={[product.promoImage, ...product.liveImages]}
               videoUrl={product.videoUrl}
@@ -66,7 +66,7 @@ export default function ProductPageMaster({
           </div>
 
           {/* RIGHT: Info & Purchase */}
-          <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-8">
+          <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-8">
             {/* 1. Brand & Actions */}
             <div className="flex flex-col justify-between items-start">
               <div className="flex justify-between items-center w-full mb-2">
@@ -168,13 +168,15 @@ export default function ProductPageMaster({
             )}
 
             {/* 5. CTA Buttons */}
-            <section className="flex flex-col gap-4">
-              <div className="w-full">
+            {/* Changed flex-col to lg:flex-row and added items-stretch for equal height */}
+            <section className="flex flex-col lg:flex-row items-stretch gap-4">
+              {/* Buy Now / Notify Me Container */}
+              <div className="w-full lg:flex-1">
                 {product.stock > 0 ? (
                   <div
-                    className="w-full py-4 flex justify-center items-center text-xl font-black uppercase
-                              border border-white rounded-full bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)]
-                              bg-[length:400%_100%] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]"
+                    className="w-full h-full py-4 flex justify-center items-center text-xl font-black uppercase
+                  border border-white rounded-full bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)]
+                  bg-[length:400%_100%] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]"
                   >
                     Buy Now
                   </div>
@@ -186,17 +188,18 @@ export default function ProductPageMaster({
                 )}
               </div>
 
-              <div className="flex items-center gap-1 bg-foreground text-background rounded-full p-1 shadow-2xl">
+              {/* Wishlist and Add to Cart Container */}
+              <div className="flex items-center gap-1 bg-foreground text-background rounded-full p-1 shadow-2xl lg:flex-1">
                 {/* Wishlist */}
                 <button
                   onClick={() => setIsWishlisted((prev) => !prev)}
                   aria-label="Toggle wishlist"
                   className={`h-14 w-14 shrink-0 flex items-center justify-center
-                            rounded-full border-2 transition-all duration-300 ${
-                              isWishlisted
-                                ? "bg-background text-foreground scale-95"
-                                : "text-background hover:bg-background/10"
-                            }`}
+                rounded-full border-2 transition-all duration-300 ${
+                  isWishlisted
+                    ? "bg-background text-foreground scale-95"
+                    : "text-background hover:bg-background/10 border-transparent"
+                }`}
                 >
                   {isWishlisted ? (
                     <Heart size={20} fill="currentColor" />
@@ -207,7 +210,7 @@ export default function ProductPageMaster({
 
                 {/* Add to Cart */}
                 <button
-                  className={`py-4 flex-1 rounded-full font-bold uppercase flex items-center justify-center gap-3 transition-all border-2 border-background bg-background text-foreground hover:scale-[1.02] active:scale-95`}
+                  className={`py-4 h-14 flex-1 rounded-full font-bold uppercase flex items-center justify-center gap-3 transition-all border-2 border-background bg-background text-foreground hover:scale-[1.02] active:scale-95`}
                 >
                   <ShoppingBag size={16} />
                   Add to Cart
