@@ -1,16 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Star,
-  X,
-  ArrowLeft,
-  ArrowRight,
-  Camera,
-  ShieldCheck,
-  AlertTriangle,
-  ShoppingBag,
-} from "lucide-react";
+import { useState, useRef, ChangeEvent } from "react";
+import { Star, X, ArrowLeft, ArrowRight, Camera, Trash2 } from "lucide-react";
 import {
   motion,
   AnimatePresence,
@@ -20,18 +11,32 @@ import {
 } from "framer-motion";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { FaInfoCircle } from "react-icons/fa";
+import { ShieldCheck, AlertTriangle, ShoppingBag } from "lucide-react";
 
 export default function ReviewSection() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isInfoOpen, setIsInfoOpen] = useState(false); // Added State
   const [selectedReview, setSelectedReview] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   // Form States
   const [newComment, setNewComment] = useState("");
   const [newRating, setNewRating] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const CHARACTER_LIMIT = 100;
+
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const reviews = [
     {
@@ -93,12 +98,12 @@ export default function ReviewSection() {
               Reviews
             </h2>
             <div className="flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
+              {[...Array(5)].map((_, starIndex) => (
                 <Star
-                  key={i}
+                  key={starIndex}
                   size={10}
                   className={
-                    i < 4
+                    starIndex < 4
                       ? "fill-foreground text-foreground"
                       : "text-foreground"
                   }
@@ -108,13 +113,12 @@ export default function ReviewSection() {
           </div>
           <button
             onClick={() => setIsInfoOpen(true)}
-            className="bg-white text-black w-8 h-8 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-xl"
+            className="text-foreground rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-xl"
           >
-            <FaInfoCircle size={16} />
+            <FaInfoCircle size={20} />
           </button>
         </div>
 
-        {/* --- THE SCROLLING TRACK --- */}
         <div
           className="relative w-full overflow-visible"
           onMouseEnter={() => setIsPaused(true)}
@@ -127,8 +131,9 @@ export default function ReviewSection() {
             onDragEnd={() => setIsPaused(false)}
             onUpdate={(latest) => {
               const latestX = latest.x as number;
-              if (latestX <= -TOTAL_SET_WIDTH || latestX >= 0)
+              if (latestX <= -TOTAL_SET_WIDTH || latestX >= 0) {
                 x.set(wrap(-TOTAL_SET_WIDTH, 0, latestX));
+              }
             }}
             className="flex gap-4 w-max cursor-grab active:cursor-grabbing"
           >
@@ -139,7 +144,7 @@ export default function ReviewSection() {
                   setSelectedReview(i % reviews.length);
                   setIsModalOpen(true);
                 }}
-                className="flex flex-col items-start gap-4 rounded-4xl p-1 bg-white text-black w-[400px] shrink-0 pointer-events-auto shadow-2xl transition-shadow hover:shadow-white/5"
+                className="flex flex-col items-start gap-4 rounded-4xl p-1 border border-transparent bg-white text-black w-[400px] shrink-0 pointer-events-auto shadow-2xl transition-shadow hover:shadow-white/5"
               >
                 <div className="flex gap-3 justify-between items-center w-full">
                   <div className="w-40 aspect-square shrink-0 rounded-4xl overflow-hidden bg-zinc-800 pointer-events-none">
@@ -152,7 +157,7 @@ export default function ReviewSection() {
                   <div className="flex-1 flex flex-col items-start gap-2 pr-2">
                     <div className="flex justify-start items-center gap-2">
                       <div
-                        className={`p-0.5 border-2 rounded-full border-dashed ${
+                        className={`p-0.5 border-2 rounded-full border-dashed border-black ${
                           rev.membership === "silver"
                             ? "border-y-gray-600 border-x-gray-400"
                             : rev.membership === "gold"
@@ -178,12 +183,12 @@ export default function ReviewSection() {
                           />
                         </span>
                         <div className="flex gap-0.5 mt-0.5">
-                          {[...Array(5)].map((_, si) => (
+                          {[...Array(5)].map((_, starIndex) => (
                             <Star
-                              key={si}
+                              key={starIndex}
                               size={10}
                               className={
-                                si < rev.rating
+                                starIndex < rev.rating
                                   ? "fill-yellow-500 text-yellow-500"
                                   : "text-yellow-500"
                               }
@@ -203,20 +208,28 @@ export default function ReviewSection() {
         </div>
       </div>
 
-      {/* --- ADD REVIEW SECTION --- */}
-      <div className="flex w-full justify-center items-center gap-2 mt-10">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            size={42}
-            strokeWidth={0.5}
-            onClick={() => {
-              setNewRating(i + 1);
-              setIsFormOpen(true);
-            }}
-            className="cursor-pointer transition-colors text-white hover:fill-white"
-          />
-        ))}
+      <div className="flex flex-col justify-center items-center gap-2">
+        <div className="flex w-full justify-center items-end gap-2 mt-10">
+          {[...Array(5)].map((_, starIndex) => (
+            <Star
+              key={starIndex}
+              size={42}
+              strokeWidth={0.5}
+              onClick={() => {
+                setNewRating(starIndex + 1);
+                setIsFormOpen(true);
+              }}
+              className={`cursor-pointer transition-colors text-white`}
+            />
+          ))}
+        </div>
+        <p
+          className="flex justify-center items-center text-[8px] font-black uppercase tracking-[0.5em]
+                  bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)]
+                  bg-[length:400%_100%] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]"
+        >
+          Drop Your Review
+        </p>
       </div>
 
       {/* --- INFO BOX MODAL --- */}
@@ -247,29 +260,27 @@ export default function ReviewSection() {
                 <h3 className="text-2xl font-black uppercase italic tracking-tighter">
                   Review Integrity
                 </h3>
-
                 <div className="space-y-4 text-sm text-white/70 leading-relaxed">
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 text-left">
                     <ShoppingBag className="shrink-0 text-white" size={18} />
                     <p>
                       <span className="text-white font-bold">
                         Verified Buyers Only:
                       </span>{" "}
-                      To maintain absolute authenticity, only customers with a
-                      confirmed purchase history can submit reviews.
+                      Only customers with a confirmed purchase can submit
+                      reviews.
                     </p>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 text-left">
                     <ShieldCheck className="shrink-0 text-white" size={18} />
                     <p>
                       <span className="text-white font-bold">
                         Zero Fake Reviews:
                       </span>{" "}
-                      Our system cross-references every submission with order
-                      IDs to prevent automated or fraudulent feedback.
+                      Every submission is cross-referenced with order IDs.
                     </p>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 text-left">
                     <AlertTriangle
                       className="shrink-0 text-rose-500"
                       size={18}
@@ -278,12 +289,11 @@ export default function ReviewSection() {
                       <span className="text-white font-bold">
                         Community Conduct:
                       </span>{" "}
-                      We enforce a zero-tolerance policy for abusive language or
-                      harassment. Such comments will be permanently removed.
+                      No abusive language. Harassment results in permanent
+                      removal.
                     </p>
                   </div>
                 </div>
-
                 <button
                   onClick={() => setIsInfoOpen(false)}
                   className="w-full py-4 bg-white text-black font-black uppercase text-xs tracking-widest rounded-full mt-4"
@@ -296,7 +306,6 @@ export default function ReviewSection() {
         )}
       </AnimatePresence>
 
-      {/* --- REVIEW VIEW MODAL --- */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -307,31 +316,31 @@ export default function ReviewSection() {
           >
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-8 right-8 text-white opacity-50 hover:opacity-100"
+              className="absolute top-8 right-8 text-white opacity-50 hover:opacity-100 transition-opacity"
             >
               <X size={32} />
             </button>
             <motion.div
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
-              onDragEnd={(_, info) => {
+              onDragEnd={(e, info) => {
                 if (info.offset.x < -100) nextModal();
                 if (info.offset.x > 100) prevModal();
               }}
-              className="w-full max-w-5xl flex flex-col md:flex-row gap-12 items-center"
+              className="w-full max-w-5xl flex flex-col md:flex-row gap-12 items-center text-left"
             >
               <div className="w-full md:w-1/2 aspect-square rounded-[3rem] overflow-hidden">
                 <motion.img
                   key={selectedReview}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   src={reviews[selectedReview].image}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="space-y-6 md:w-1/2 text-left">
+              <div className="space-y-6 md:w-1/2">
                 <div className="flex items-center gap-4">
-                  <span className="w-14 h-14 bg-black font-black rounded-full flex items-center justify-center text-xl">
+                  <span className="w-14 h-14 bg-white text-black font-black rounded-full flex items-center justify-center text-xl">
                     {reviews[selectedReview].initials}
                   </span>
                   <h2 className="text-4xl font-black uppercase italic tracking-tighter leading-none">
@@ -344,13 +353,13 @@ export default function ReviewSection() {
                 <div className="flex gap-4 pt-8">
                   <button
                     onClick={prevModal}
-                    className="p-4 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all"
+                    className="p-4 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all duration-300"
                   >
                     <ArrowLeft />
                   </button>
                   <button
                     onClick={nextModal}
-                    className="p-4 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all"
+                    className="p-4 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all duration-300"
                   >
                     <ArrowRight />
                   </button>
@@ -361,7 +370,6 @@ export default function ReviewSection() {
         )}
       </AnimatePresence>
 
-      {/* --- ADD REVIEW FORM DRAWER --- */}
       <AnimatePresence>
         {isFormOpen && (
           <>
@@ -370,30 +378,31 @@ export default function ReviewSection() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsFormOpen(false)}
-              className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-background/90"
             />
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              className="fixed bottom-0 left-0 right-0 z-50 p-10 rounded-t-[3rem] bg-[#0A0A0A] border-t border-white/10"
+              className="fixed bottom-0 left-0 right-0 z-50 p-10 rounded-t-[3rem] bg-background border-t border-foreground shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
             >
               <div className="max-w-md mx-auto space-y-8">
-                <div className="flex justify-between items-center text-white">
+                <div className="flex justify-between items-center text-foreground">
                   <h3 className="font-black uppercase text-[10px] tracking-[0.3em]">
                     Drop your Review
                   </h3>
                   <button
                     onClick={() => setIsFormOpen(false)}
-                    className="hover:text-white/50 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     <X size={20} />
                   </button>
                 </div>
+
                 <div className="space-y-3 relative">
                   <div className="flex justify-between items-end">
                     <label className="text-[10px] font-black uppercase tracking-widest text-white/20">
-                      Experience
+                      Experience & Media
                     </label>
                     <span
                       className={`text-[10px] font-black tracking-widest ${
@@ -405,29 +414,53 @@ export default function ReviewSection() {
                       {CHARACTER_LIMIT - newComment.length}
                     </span>
                   </div>
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="The cut, the feel, the vibe..."
-                    className={`w-full bg-white/5 text-white border rounded-2xl p-5 h-32 outline-none text-sm transition-colors ${
-                      CHARACTER_LIMIT - newComment.length < 0
-                        ? "border-red-500/50"
-                        : "border-white/10 focus:border-white/40"
-                    }`}
-                  />
+
+                  <div className="flex gap-4">
+                    {selectedImage && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="relative w-32 h-32 shrink-0 rounded-2xl overflow-hidden border border-white/20 bg-white/5"
+                      >
+                        <img
+                          src={selectedImage}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          onClick={() => setSelectedImage(null)}
+                          className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:bg-black transition-colors"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </motion.div>
+                    )}
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="The cut, the feel, the vibe..."
+                      className={`flex-1 bg-white/5 text-white border rounded-2xl p-5 h-32 outline-none text-sm transition-colors ${
+                        CHARACTER_LIMIT - newComment.length < 0
+                          ? "border-red-500/50"
+                          : "border-white/10 focus:border-white/40"
+                      }`}
+                    />
+                  </div>
                 </div>
+
                 <div className="flex w-full justify-center items-center gap-4">
-                  {[...Array(5)].map((_, i) => (
+                  {[...Array(5)].map((_, starIndex) => (
                     <motion.button
-                      key={i}
+                      key={starIndex}
                       whileTap={{ scale: 0.9 }}
-                      onClick={() => setNewRating(i + 1)}
+                      onClick={() => setNewRating(starIndex + 1)}
                       type="button"
                     >
                       <Star
                         size={28}
                         className={
-                          i < newRating
+                          starIndex < newRating
                             ? "fill-yellow-400 text-yellow-400"
                             : "text-yellow-400"
                         }
@@ -435,14 +468,29 @@ export default function ReviewSection() {
                     </motion.button>
                   ))}
                 </div>
+
                 <div className="flex gap-4">
                   <button
-                    className="flex-1 py-4 rounded-full bg-white text-black font-black uppercase text-xs tracking-widest active:scale-95 disabled:opacity-50"
+                    className="flex-1 py-4 rounded-full bg-white text-black font-black uppercase text-xs tracking-widest active:scale-95 transition-all disabled:opacity-50"
                     disabled={newComment.length === 0 || newRating === 0}
                   >
                     Publish Review
                   </button>
-                  <button className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-white/40 border border-white/10 hover:text-white">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${
+                      selectedImage
+                        ? "bg-yellow-400 border-yellow-400 text-black"
+                        : "bg-white/5 text-white/40 border-white/10 hover:text-white"
+                    }`}
+                  >
                     <Camera size={20} />
                   </button>
                 </div>
