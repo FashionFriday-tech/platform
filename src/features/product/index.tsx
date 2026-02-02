@@ -23,6 +23,7 @@ import { Product } from "@/data/store-data";
 import Link from "next/link";
 import ReviewSection from "./components/ReviewSection";
 import RelatedProducts from "./components/RelatedProducts";
+import ProductVariantPage from "./components/VariantDropdown";
 
 export default function ProductPageMaster({
   product,
@@ -127,6 +128,8 @@ export default function ProductPageMaster({
                 <ShoppingCart size={12} className="inline-block" />
               </p>
             </div>
+
+            <ProductVariantPage />
 
             {/* 4. Size Selection */}
             {product.category === "sneakers" && (
