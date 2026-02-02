@@ -54,9 +54,9 @@ export default function ProductPageMaster({
   const liveMetric = useLiveProductMetric(product.staticNumber);
 
   return (
-    <div className="bg-background text-foreground min-h-screen pb-32 transition-colors">
+    <div className="bg-background text-foreground min-h-screen pb-10 transition-colors">
       {/* --- MAIN PRODUCT GRID --- */}
-      <section className="max-w- mx-auto px-4 md:px-8 pt-6 lg:pt-26">
+      <section className="max-w- mx-auto px-4 md:px-8 pt-2 lg:pt-26">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12  items-start">
           {/* LEFT: Gallery */}
           <div className="lg:col-span-6">
