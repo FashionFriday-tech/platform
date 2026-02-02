@@ -166,17 +166,13 @@ export default function ProductPageMaster({
             )}
 
             {/* 5. CTA Buttons */}
-            {/* Changed flex-col to lg:flex-row and added items-stretch for equal height */}
             <section className="flex flex-col lg:flex-row items-stretch gap-4">
-              {/* Buy Now / Notify Me Container */}
               <div className="w-full lg:flex-1">
                 {product.stock > 0 ? (
-                  <div
-                    className="w-full h-full py-4 flex justify-center items-center text-xl font-black uppercase
-                  border border-white rounded-full bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)]
-                  bg-[length:400%_100%] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]"
-                  >
-                    Buy Now
+                  <div className="w-full py-4 flex justify-center items-center text-xl font-black uppercase border border-white rounded-full">
+                    <span className="bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-[length:400%_100%] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]">
+                      Buy Now
+                    </span>
                   </div>
                 ) : (
                   <button className="w-full h-16 border-2 border-destructive text-destructive font-black uppercase tracking-[0.2em] rounded-full flex items-center justify-center gap-3">
@@ -186,7 +182,6 @@ export default function ProductPageMaster({
                 )}
               </div>
 
-              {/* Wishlist and Add to Cart Container */}
               <div className="flex items-center gap-1 bg-foreground text-background rounded-full p-1 shadow-2xl lg:flex-1">
                 {/* Wishlist */}
                 <button
