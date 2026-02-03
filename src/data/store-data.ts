@@ -209,3 +209,42 @@ export function filterProducts(products: Product[], activeFilters: Record<string
         return true;
     });
 }
+
+export const filterProductsByBrand = (
+  products: Product[],
+  brandSlug: string, // e.g., "nike"
+  activeFilters: Record<string, string[]>
+) => {
+  return products.filter((product) => {
+    // 1. Mandatory Brand Match (Normalized)
+    if (product.brand.toLowerCase() !== brandSlug.toLowerCase()) {
+      return false;
+    }
+
+    // 2. Loop through dynamic filters (Category, Color, Price, etc.)
+    for (const [filterKey, selectedOptions] of Object.entries(activeFilters)) {
+      if (!selectedOptions || selectedOptions.length === 0) continue;
+
+      // Handle Price Range
+      if (filterKey === "priceRange") {
+        const [min, max] = selectedOptions[0].split("-").map(Number);
+        if (product.price < min || product.price > max) return false;
+        continue;
+      }
+
+      // Handle Other Attributes (Color, Quality, Category)
+      const productValue = (product as any)[filterKey];
+      if (productValue === undefined || productValue === null) return false;
+
+      // Normalize both for comparison
+      const normalizedProductValue = productValue.toString().toLowerCase();
+      const matches = selectedOptions.some(
+        (opt) => opt.toLowerCase() === normalizedProductValue
+      );
+
+      if (!matches) return false;
+    }
+
+    return true;
+  });
+};
