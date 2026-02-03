@@ -10,6 +10,7 @@ import {
 } from "@/data/store-data";
 import brandLogos from "@/data/brandLogos";
 import { RiShieldStarFill } from "react-icons/ri";
+import { StoreProductCard } from "@/components/ui/cards/StoreProductCard";
 import {
   ChevronDown,
   SlidersHorizontal,
@@ -133,7 +134,7 @@ function FilterContent({
               >
                 {isBrandSection && brandObj && (
                   <img
-                    src={brandObj.link}
+                    src={brandObj.logo}
                     alt=""
                     className={`w-5 object-contain transition-all scale-125 ${
                       isChecked ? "brightness-0 invert-0" : "dark:invert"
@@ -412,64 +413,17 @@ export default function CategoryClient({
 
         {/* PRODUCTS */}
         <div className="flex-1 px-4 pt-8 pb-20">
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 sm:gap-x-8 lg:pt-20">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 sm:gap-x-8 lg:pt-20">
             <AnimatePresence mode="popLayout">
               {filteredAndSortedProducts.map((product) => (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  key={product.id}
-                  className="group cursor-pointer"
-                >
-                  <Link href={`/product/${product.slug}`} className="block cursor-pointer">
-                  <div className="aspect-4/5 overflow-hidden rounded-4xl lg:rounded-[2.5rem] bg-background-muted relative">
-                    <img
-                      src={product.promoImage || "/images/placeholder.png"}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                  </div>
-                  </Link>
-                  <div className="mt-4 px-1 space-y-1">
-                    <div className="flex justify-between items-center mb-0.5 text-[8px] md:text-[10px]">
-                      <p className="font-black text-foreground-subtle uppercase tracking-widest">
-                        {product.brand}
-                      </p>
-                      <span className="flex gap-1 justify-center items-center font-bold border border-border px-1.5 py-0.5 rounded-full text-foreground-subtle uppercase">
-                        <RiShieldStarFill /> {product.quality}
-                      </span>
-                    </div>
-                    <h2 className="text-[14px] font-bold uppercase truncate tracking-tight text-foreground">
-                      {product.name}
-                    </h2>
-                    <div className="flex items-center gap-2 text-[11px]">
-                      {/* Actual / MRP price */}
-                      <div className="flex justify-between items-center w-full">
-                        <span className="flex items-center gap-2">
-                          <p className=" font-medium text-foreground/60 line-through">
-                            ₹14999
-                          </p>
-
-                          {/* Selling price */}
-                          <p className="font-black text-foreground">
-                            ₹{product.price.toLocaleString()}
-                          </p>
-                        </span>
-                        <span className="flex items-center gap-1 text-foreground-muted text-[10px]">
-                          <MdStars /> 4.5
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
+                <StoreProductCard key={product.id} product={product} />
               ))}
             </AnimatePresence>
           </div>
+
           {filteredAndSortedProducts.length === 0 && (
             <div className="py-24 text-center w-full opacity-40 text-[10px] font-black uppercase tracking-widest">
-              No matching items
+              No matching items found
             </div>
           )}
         </div>
