@@ -172,13 +172,13 @@ export default function ProductPageMaster({
             <section className="flex flex-col lg:flex-row items-stretch gap-4">
               <div className="w-full lg:flex-1">
                 {product.stock > 0 ? (
-                  <div className="w-full py-4 flex justify-center items-center text-xl font-black uppercase border border-white rounded-full">
-                    <span className="bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-[length:400%_100%] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]">
+                  <div className="w-full bg-foreground py-3.5 flex justify-center items-center text-2xl font-black uppercase rounded-full">
+                    <span className="light:bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#656565,#ffffff)] bg-[length:400%_100%] dark:bg-[linear-gradient(90deg,#000000,#9ca3af,#000000,#9ca3af,#000000)] bg-[length:400%_100%] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]">
                       Buy Now
                     </span>
                   </div>
                 ) : (
-                  <button className="w-full h-16 border-2 border-destructive text-destructive font-black uppercase tracking-[0.2em] rounded-full flex items-center justify-center gap-3">
+                  <button className="w-full h-16 border-2 border-destructive text-destructive font-black uppercase tracking-[0.2em] rounded-full flex items-center justify-center gap-3 bg-[#656565]">
                     <Bell size={20} />
                     Notify Me
                   </button>
