@@ -136,6 +136,7 @@ const ColorTray = ({
             <div className="flex overflow-x-auto gap-3 pt-4">
               {options.map((opt) => (
                 <div
+                key={opt.label}
                   className={`rounded-full flex justify-center items-center p-1 ${
                     selectedValue === opt.value ? "border" : ""
                   }`}
