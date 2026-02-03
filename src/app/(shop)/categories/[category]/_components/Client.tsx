@@ -412,7 +412,7 @@ export default function CategoryClient({
         </aside>
 
         {/* PRODUCTS */}
-        <div className="flex-1 px-4 pt-8 pb-20">
+        <div className="flex-1 px-4 pt-4 pb-20">
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 sm:gap-x-8 lg:pt-20">
             <AnimatePresence mode="popLayout">
               {filteredAndSortedProducts.map((product) => (
