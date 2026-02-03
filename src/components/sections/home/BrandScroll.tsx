@@ -35,10 +35,10 @@ export default function BrandScroll() {
         </div>
         <ScrollVelocityContainer className="w-full">
           <ScrollVelocityRow baseVelocity={0.5} direction={1}>
-            {BrandLogo.map(({ name, link }, idx) => (
+            {BrandLogo.map(({ name, logo }, idx) => (
               <img
                 key={idx}
-                src={link}
+                src={logo}
                 alt={name}
                 width={240}
                 height={160}
@@ -49,10 +49,10 @@ export default function BrandScroll() {
             ))}
           </ScrollVelocityRow>
           <ScrollVelocityRow baseVelocity={0.5} direction={-1}>
-            {BrandLogo.map(({ name, link }, idx) => (
+            {BrandLogo.map(({ name, logo }, idx) => (
               <img
                 key={idx}
-                src={link}
+                src={logo}
                 alt={name}
                 width={240}
                 height={160}
