@@ -1,68 +1,124 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { Product, filterProducts } from "@/data/store-data";
+import { useSettings } from "@/context/SettingsContext";
 
 interface UseCatalogueProps {
-    initialProducts: Product[];
-    initialFilters?: Record<string, string[]>;
+  initialProducts: Product[];
+  initialFilters?: Record<string, string[]>;
 }
 
 export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalogueProps) => {
-    // 1. State for Filtering & Sorting
-    const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters);
-    const [sortBy, setSortBy] = useState<string>("newest");
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters);
+  const [sortBy, setSortBy] = useState<string>("newest");
 
-    // 2. The Engine: Filter and Sort logic
-    const filteredAndSortedProducts = useMemo(() => {
-        // Apply the universal filter engine from store-data
-        let result = filterProducts(initialProducts, activeFilters);
+  // --- AUTO-SCROLL ENGINE ---
+  const { settings } = useSettings();
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const scrollRef = useRef<number | null>(null);
+  
+  // Use a ref for the speed so the animation loop always has the latest value
+  const speedRef = useRef(settings?.autoScrollLevel ?? 3);
+  
+  useEffect(() => {
+    speedRef.current = settings?.autoScrollLevel ?? 3;
+  }, [settings?.autoScrollLevel]);
 
-        // Apply Sorting
-        const sorted = [...result];
-        switch (sortBy) {
-            case "price-asc":
-                sorted.sort((a, b) => a.defaultPrice - b.defaultPrice);
-                break;
-            case "price-desc":
-                sorted.sort((a, b) => b.defaultPrice - a.defaultPrice);
-                break;
-            case "most-sold":
-                sorted.sort((a, b) => b.salesCount - a.salesCount);
-                break;
-            case "popularity":
-                sorted.sort((a, b) => b.popularityScore - a.popularityScore);
-                break;
-            default: // newest
-                sorted.sort((a, b) => b.staticNumber - a.staticNumber);
-        }
-        return sorted;
-    }, [initialProducts, activeFilters, sortBy]);
+  // STOPS THE SCROLL: Immediately cancels the frame and resets state
+  const stopAutoScroll = useCallback(() => {
+    if (scrollRef.current !== null) {
+      cancelAnimationFrame(scrollRef.current);
+      scrollRef.current = null;
+    }
+    setIsAutoScrolling(false);
+  }, []);
 
-    // 3. Handlers
-    const handleFilterChange = (key: string, value: string, isSingleSelect: boolean = false) => {
-        setActiveFilters((prev) => {
-            const currentValues = prev[key] || [];
+  // START/TOGGLE LOGIC
+  const toggleAutoScroll = useCallback(() => {
+    if (isAutoScrolling) {
+      stopAutoScroll();
+      return;
+    }
 
-            if (isSingleSelect) {
-                return { ...prev, [key]: [value] };
-            }
+    setIsAutoScrolling(true);
 
-            const newValues = currentValues.includes(value)
-                ? currentValues.filter((v) => v !== value)
-                : [...currentValues, value];
+    const scrollStep = () => {
+      // If the state was set to false, do not schedule next frame
+      if (scrollRef.current === null) return;
 
-            return { ...prev, [key]: newValues };
-        });
+      window.scrollBy({ top: speedRef.current, behavior: "auto" });
+
+      const isAtBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 10;
+
+      if (isAtBottom) {
+        stopAutoScroll();
+      } else {
+        scrollRef.current = requestAnimationFrame(scrollStep);
+      }
     };
 
-    const clearFilters = () => setActiveFilters({});
+    // Initialize the first frame
+    scrollRef.current = requestAnimationFrame(scrollStep);
+  }, [isAutoScrolling, stopAutoScroll]);
 
-    return {
-        products: filteredAndSortedProducts,
-        activeFilters,
-        handleFilterChange,
-        clearFilters,
-        sortBy,
-        setSortBy,
-        totalResults: filteredAndSortedProducts.length,
+  // FIX: Detect any user interaction to kill the scroll immediately
+  useEffect(() => {
+    const handleInteraction = () => {
+      // Check if a frame is currently scheduled
+      if (scrollRef.current !== null) {
+        stopAutoScroll();
+      }
     };
+
+    // Capture phase listeners (true) ensure we catch the event before other logic
+    window.addEventListener("wheel", handleInteraction, { passive: true, capture: true });
+    window.addEventListener("touchstart", handleInteraction, { passive: true, capture: true });
+    window.addEventListener("mousedown", handleInteraction, { passive: true, capture: true });
+    window.addEventListener("keydown", handleInteraction, { passive: true, capture: true });
+
+    return () => {
+      window.removeEventListener("wheel", handleInteraction, true);
+      window.removeEventListener("touchstart", handleInteraction, true);
+      window.removeEventListener("mousedown", handleInteraction, true);
+      window.removeEventListener("keydown", handleInteraction, true);
+      if (scrollRef.current) cancelAnimationFrame(scrollRef.current);
+    };
+  }, [stopAutoScroll]);
+
+  // --- FILTER & SORT LOGIC ---
+  const filteredAndSortedProducts = useMemo(() => {
+    let result = filterProducts(initialProducts, activeFilters);
+    const sorted = [...result];
+    switch (sortBy) {
+      case "price-asc": sorted.sort((a, b) => a.defaultPrice - b.defaultPrice); break;
+      case "price-desc": sorted.sort((a, b) => b.defaultPrice - a.defaultPrice); break;
+      case "most-sold": sorted.sort((a, b) => b.salesCount - a.salesCount); break;
+      case "popularity": sorted.sort((a, b) => b.popularityScore - a.popularityScore); break;
+      default: sorted.sort((a, b) => b.staticNumber - a.staticNumber);
+    }
+    return sorted;
+  }, [initialProducts, activeFilters, sortBy]);
+
+  const handleFilterChange = (key: string, value: string, isSingleSelect: boolean = false) => {
+    setActiveFilters((prev) => {
+      const currentValues = prev[key] || [];
+      if (isSingleSelect) return { ...prev, [key]: [value] };
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter((v) => v !== value)
+        : [...currentValues, value];
+      return { ...prev, [key]: newValues };
+    });
+  };
+
+  return {
+    products: filteredAndSortedProducts,
+    activeFilters,
+    handleFilterChange,
+    sortBy,
+    setSortBy,
+    totalResults: filteredAndSortedProducts.length,
+    isAutoScrolling,
+    toggleAutoScroll,
+  };
 };
