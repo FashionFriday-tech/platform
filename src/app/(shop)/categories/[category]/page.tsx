@@ -1,50 +1,35 @@
-import { Metadata } from "next";
+import { MOCK_PRODUCTS, CategorySlug } from "@/data/store-data";
+import CatalogueClient from "@/features/catalogue";
 import { notFound } from "next/navigation";
-import CategoryClient from "./_components/Client"; // Ensure this matches your Client Component file name
-import { CategorySlug } from "@/data/store-data";
 
-// 1. Define Props with Promise
-type Props = {
+// Define the shape of params based on your folder name [category]
+interface Props {
   params: Promise<{ category: string }>;
-};
-
-// 2. Fix generateMetadata (Must await params)
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category } = await params; // <--- AWAIT HERE
-
-  if (!category) return { title: "Category Not Found" };
-
-  const title = category.charAt(0).toUpperCase() + category.slice(1);
-
-  return {
-    title: `Shop Best ${title} Online at Fashion Friday`,
-    description: `Discover our exclusive collection of ${category}. Top brands, best prices, and wide variety of styles available now.`,
-    // Open Graph for Social Media Sharing
-    openGraph: {
-      title: `Shop ${title} | Fashion Friday`,
-      description: `Explore the best collection of ${category} at Fashion Friday.`,
-      type: "website",
-    },
-  };
 }
 
-// 3. Fix Page Component (Must await params)
 export default async function CategoryPage({ params }: Props) {
-  const { category } = await params; // <--- AWAIT HERE
+  // 1. Await params to access the dynamic segment
+  const resolvedParams = await params;
+  const categoryName = resolvedParams.category;
 
-  const validCategories: CategorySlug[] = [
-    "sneakers",
-    "watches",
-    "cloths",
-    "slippers",
-    "accessories",
-  ];
+  // 2. Filter products belonging to this specific category
+  const categoryProducts = MOCK_PRODUCTS.filter(
+    (p) => p.category === categoryName
+  );
 
-  // Case-insensitive check
-  if (!validCategories.includes(category.toLowerCase() as CategorySlug)) {
-    notFound();
+  // 3. Security check: If category doesn't exist in our data enum
+  const validCategories = ['sneakers', 'watches', 'cloths', 'slippers', 'accessories'];
+  
+  if (!validCategories.includes(categoryName)) {
+    return notFound();
   }
 
-  // Pass the raw string to client, let client handle specific types if needed
-  return <CategoryClient category={category as CategorySlug} />;
+  return (
+    <CatalogueClient 
+      type="category"
+      title={categoryName}
+      categorySlug={categoryName as CategorySlug}
+      initialProducts={categoryProducts}
+    />
+  );
 }
