@@ -10,9 +10,9 @@ interface Product {
   slug: string;
   name: string;
   brand: string;
-  price: number;
+  defaultPrice: number;
   promoImage: string;
-  quality: string;
+  quality:string;
 }
 
 interface RelatedProductsProps {
@@ -71,7 +71,7 @@ export default function RelatedProducts({
                       className="w-10 invert"
                     />
 
-                    <span className="flex gap-1 items-center font-bold border border-border px-1.5 py-0.5 rounded-full text-green-500 uppercase">
+                    <span className="flex gap-1 items-center font-bold border border-border px-1.5 py-0.5 rounded-full text-blue-500 uppercase">
                       <RiShieldStarFill /> {product.quality}
                     </span>
                   </div>
@@ -88,12 +88,12 @@ export default function RelatedProducts({
                         <p className="font-medium text-foreground/40 line-through">
                           ₹14,999
                         </p>
-                        <p className="font-black text-foreground">
-                          ₹{product.price.toLocaleString()}
+                        <p className="font-black text-green-500">
+                          ₹{product.defaultPrice.toLocaleString()}
                         </p>
                       </span>
 
-                      <span className="flex items-center gap-1 text-blue-500 text-[14px]">
+                      <span className="flex items-center gap-1 text-yellow-500 text-[14px]">
                         <MdStars /> 4.5
                       </span>
                     </div>
