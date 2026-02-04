@@ -40,6 +40,7 @@ export const ProductSchema = z.object({
     description: z.string(),
     promoImage: z.string(),
     videoUrl: z.string(),
+    quality: QualityEnum,
     staticNumber: z.number(),
     popularityScore: z.number(),
     salesCount: z.number(),
@@ -66,6 +67,7 @@ export const MOCK_PRODUCTS: Product[] = [
         description: 'The Kobe III Protro scales back the weight while maintaining the iconic silhouette.',
         promoImage: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/fbeaf128-4abc-44ff-8fae-08a6dd8b1852/KOBE+III+PROTRO.png',
         videoUrl: 'nsWzL9PFB8k',
+        quality: "UA",
         staticNumber: 3,
         popularityScore: 95,
         salesCount: 120,
@@ -74,7 +76,7 @@ export const MOCK_PRODUCTS: Product[] = [
         reviews: [{ userName: "Arjun S.", userImage: "https://i.pravatar.cc/150?u=1", rating: 5, comment: "Insane quality.", date: "2 days ago" }],
         attributes: [{ key: "Cushioning", value: "Zoom Air" }],
         variants: [{
-            id: 'v1-s1', color: 'White', quality: 'UA', price: 2499, ogPrice: 9999, stock: 15, sizes: ['EU 42', 'EU 43'],
+            id: 'v1-s1', color: 'White', quality: 'UA', price: 2499, ogPrice: 9999, stock: 15, sizes: ['36', '37', '38', '39',],
             images: [
                 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTyPiwCw81Am4QRb1ErRMSIok8zWovJPXd6H7HtCZCvmCXutALe4Y4SOKA9izLJ4EcFWkQ7Raw5lXWlMISpQNT5PGLhK_qLgyyj3BXT406EjOC-6h4TwlPFXAQ',
                 'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQOMtpWEr9ToxBB8gyiEr9IH3oI5dSFVgmY7TNdiuYxc-kO7-78-5ku3NqP67XHudhGF47w41Lx3WX4sXQQdJpjg7SLned6FZObzxYiMiZLQ4ICJLaPsyytcQ'
@@ -91,13 +93,14 @@ export const MOCK_PRODUCTS: Product[] = [
         description: 'Classic skating silhouette in a stealthy black finish.',
         promoImage: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/0fec9279-d839-45b4-a848-1d94cff031a7/NIKE+SB+DUNK+LOW+PRO.png',
         videoUrl: 'qi7IM5UshIo',
+        quality: "10A",
         staticNumber: 2,
         popularityScore: 88,
         salesCount: 200,
         discount: 5,
         defaultPrice: 9200,
         reviews: [],
-        variants: [{ id: 'v1-s2', color: 'Black', quality: 'Semi UA', price: 9200, ogPrice: 9999, stock: 8, sizes: ['EU 44'], images: ['https://images.unsplash.com/photo-1584735175315-9d5df23860e6?auto=format&fit=crop&w=800'] }]
+        variants: [{ id: 'v1-s2', color: 'Black', quality: 'Semi UA', price: 9200, ogPrice: 9999, stock: 8, sizes: ['44'], images: ['https://images.unsplash.com/photo-1584735175315-9d5df23860e6?auto=format&fit=crop&w=800'] }]
     },
     {
         id: 's3',
@@ -109,6 +112,7 @@ export const MOCK_PRODUCTS: Product[] = [
         description: 'The classic AJ1 silhouette in a low-cut profile.',
         promoImage: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/2be76228-ff51-4c87-b120-e7be37db4d2e/AIR+FORCE+1+LOW+QS.png',
         videoUrl: 'dQw4w9WgXcQ',
+        quality: "7A",
         staticNumber: 4,
         popularityScore: 99,
         salesCount: 350,
@@ -120,51 +124,58 @@ export const MOCK_PRODUCTS: Product[] = [
     {
         id: 's4', slug: 'zoom-gp-challenge-prm', name: 'Zoom GP Challenge 1.5', brand: 'Jordan', category: 'sneakers', gender: 'men',
         description: 'Premium sports performance.', promoImage: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/85f69d4c-7a54-4e31-be57-d8896a73f341/W+ZOOM+GP+CHALLENGE+1.5+HC+PRM.png',
-        videoUrl: 'dQw4w9WgXcQ', staticNumber: 3, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
+        videoUrl: 'dQw4w9WgXcQ', quality: "UA", staticNumber: 3, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
         variants: [{ id: 'v1-s4', color: 'Red', quality: 'UA', price: 9999, ogPrice: 9999, stock: 10, images: [] }]
     },
     {
         id: 's5', slug: 'zoom-gp-challenge-pro', name: 'Zoom GP Challenge Pro', brand: 'Jordan', category: 'sneakers', gender: 'men',
         description: 'Pro level court control.', promoImage: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/401cfc12-9de2-41ff-9084-1f99f68e9b03/W+ZOOM+GP+CHALLENGE+PRO+HC.png',
-        videoUrl: 'dQw4w9WgXcQ', staticNumber: 2, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
+        videoUrl: 'dQw4w9WgXcQ', quality: "UA",
+        staticNumber: 2, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
         variants: [{ id: 'v1-s5', color: 'Red', quality: 'UA', price: 9999, ogPrice: 9999, stock: 10, images: [] }]
     },
     {
         id: 's6', slug: 'air-force-1-mini-jewel', name: 'AF1 Mini Jewel', brand: 'Jordan', category: 'sneakers', gender: 'men',
         description: 'Elegant mini jewel detailing.', promoImage: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/0fcbdc68-279b-4e41-bd31-ea3879164798/W+AIR+FORCE+1+%2707+MINI+JEWEL.png',
-        videoUrl: 'dQw4w9WgXcQ', staticNumber: 5, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
+        videoUrl: 'dQw4w9WgXcQ', quality: "UA",
+        staticNumber: 5, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
         variants: [{ id: 'v1-s6', color: 'Red', quality: 'UA', price: 9999, ogPrice: 9999, stock: 10, images: [] }]
     },
     {
         id: 's7', slug: 'air-force-1-07-classic', name: 'Air Force 1 \'07', brand: 'Jordan', category: 'sneakers', gender: 'men',
         description: 'The original 1982 classic.', promoImage: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/fc4622c4-2769-4665-aa6e-42c974a7705e/AIR+FORCE+1+%2707.png',
-        videoUrl: 'dQw4w9WgXcQ', staticNumber: 7, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
+        videoUrl: 'dQw4w9WgXcQ', quality: "UA",
+        staticNumber: 7, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
         variants: [{ id: 'v1-s7', color: 'Red', quality: 'UA', price: 9999, ogPrice: 9999, stock: 10, images: [] }]
     },
     {
         id: 's8', slug: 'air-force-1-07-prm', name: 'Air Force 1 \'07 PRM', brand: 'Jordan', category: 'sneakers', gender: 'men',
         description: 'Premium material construction.', promoImage: 'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/d217b510-81ac-429c-9881-8103c306e210/W+AIR+FORCE+1+%2707+PRM.png',
-        videoUrl: 'dQw4w9WgXcQ', staticNumber: 4, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
+        videoUrl: 'dQw4w9WgXcQ', quality: "UA",
+        staticNumber: 4, popularityScore: 99, salesCount: 350, discount: 25, defaultPrice: 9999, reviews: [],
         variants: [{ id: 'v1-s8', color: 'Red', quality: 'UA', price: 9999, ogPrice: 9999, stock: 10, images: [] }]
     },
     {
         id: 'w1', slug: 'automatic-diver-silver', name: 'Automatic Diver', brand: 'Seiko', category: 'watches', gender: 'men',
         description: '7AA Grade automatic movement.', promoImage: 'https://www.swisstimehouse.com/199560-home_default/titan-90217sl02.jpg',
-        videoUrl: 'M7lc1UVf-VE', staticNumber: 3, popularityScore: 75, salesCount: 45, discount: 15, defaultPrice: 9500, reviews: [],
+        videoUrl: 'M7lc1UVf-VE', quality: "7A",
+        staticNumber: 3, popularityScore: 75, salesCount: 45, discount: 15, defaultPrice: 9500, reviews: [],
         attributes: [{ key: "Movement", value: "Automatic" }],
         variants: [{ id: 'v1-w1', color: 'Silver', quality: '7AA', price: 9500, ogPrice: 9999, stock: 5, images: [] }]
     },
     {
         id: 'w2', slug: 'g-shock-carbon-black', name: 'G-Shock Carbon', brand: 'Casio', category: 'watches', gender: 'unisex',
         description: 'Indestructible G-Shock technology.', promoImage: "https://www.swisstimehouse.com/199552-home_default/titan-90217ql01.jpg",
-        videoUrl: 'dQw4w9WgXcQ', staticNumber: 5, popularityScore: 92, salesCount: 150, discount: 0, defaultPrice: 6800, reviews: [],
+        videoUrl: 'dQw4w9WgXcQ', quality: "5A",
+        staticNumber: 5, popularityScore: 92, salesCount: 150, discount: 0, defaultPrice: 6800, reviews: [],
         attributes: [{ key: "Material", value: "Resin" }],
         variants: [{ id: 'v1-w2', color: 'Black', quality: '10A', price: 6800, ogPrice: 9999, stock: 20, images: [] }]
     },
     {
         id: 'c1', slug: 'zara-oversized-cotton-tee', name: 'Oversized Cotton Tee', brand: 'Zara', category: 'cloths', gender: 'unisex',
         description: 'Premium heavyweight cotton tee.', promoImage: 'https://assets-jiocdn.ajio.com/medias/sys_master/root/20240313/pglM/65f0d70f05ac7d77bbaf22ed/-473Wx593H-467162483-multi-MODEL.jpg',
-        videoUrl: 'dQw4w9WgXcQ', staticNumber: 7, popularityScore: 80, salesCount: 500, discount: 20, defaultPrice: 1200, reviews: [],
+        videoUrl: 'dQw4w9WgXcQ', quality: "Semi UA",
+        staticNumber: 7, popularityScore: 80, salesCount: 500, discount: 20, defaultPrice: 1200, reviews: [],
         attributes: [{ key: "GSM", value: "240" }, { key: "Fabric", value: "Cotton" }],
         variants: [{ id: 'v1-c1', color: 'White', quality: 'Standard', price: 1200, ogPrice: 9999, stock: 50, images: [] }]
     }
@@ -212,21 +223,34 @@ export function filterProducts(products: Product[], activeFilters: Record<string
 
 
 export const CATEGORY_FILTERS: Record<string, { id: string; label: string; options: string[] }[]> = {
-  sneakers: [
-    { id: 'brand', label: 'Brand', options: ["Nike", "Adidas", "Jordan", "Puma", "Yeezy"] },
-    { id: 'quality', label: 'Quality Grade', options: ['UA', 'Semi UA', '7A', 'Standard'] },
-    { id: 'color', label: 'Color', options: ['Black', 'White', 'Red', 'Blue', 'Grey'] },
-    { id: 'size', label: 'Size', options: ['EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'] },
-  ],
-  watches: [
-    { id: 'brand', label: 'Brand', options: ["Seiko", "Casio", "Rolex", "G-Shock"] },
-    { id: 'quality', label: 'Quality Grade', options: ['7AA', '10A', '5A'] },
-    { id: 'Material', label: 'Material', options: ['Steel', 'Resin', 'Leather'] },
-  ],
-  cloths: [
-    { id: 'brand', label: 'Brand', options: ["Zara", "H&M", "Louis Vuitton"] },
-    { id: 'quality', label: 'Quality Grade', options: ['Master Copy', 'Standard'] },
-    { id: 'GSM', label: 'GSM', options: ['180', '200', '240'] },
-  ],
-  // Add slippers and accessories as needed
+    sneakers: [
+        { id: 'brand', label: 'Brand', options: ["Nike", "Adidas", "Jordan", "Puma", "Yeezy"] },
+        { id: 'quality', label: 'Quality Grade', options: ['UA', 'Semi UA', '7A', 'Standard'] },
+        { id: 'color', label: 'Color', options: ['Black', 'White', 'Red', 'Blue', 'Grey'] },
+        { id: 'size', label: 'Size', options: ['40', '41', '42', '43', '44'] },
+    ],
+    watches: [
+        { id: 'brand', label: 'Brand', options: ["Seiko", "Casio", "Rolex", "G-Shock"] },
+        { id: 'quality', label: 'Quality Grade', options: ['7AA', '10A', '5A'] },
+        { id: 'Material', label: 'Material', options: ['Steel', 'Resin', 'Leather'] },
+    ],
+    cloths: [
+        { id: 'brand', label: 'Brand', options: ["Zara", "H&M", "Louis Vuitton"] },
+        { id: 'quality', label: 'Quality Grade', options: ['Master Copy', 'Standard'] },
+        { id: 'GSM', label: 'GSM', options: ['180', '200', '240'] },
+    ],
+    // Add slippers and accessories as needed
 };
+
+
+export async function getProductBySlug(slug: string): Promise<Product | undefined> {
+    // Simulating network delay for future-proofing
+    return MOCK_PRODUCTS.find((p) => p.slug === slug);
+}
+
+export async function getSimilarProducts(category: CategorySlug): Promise<Product[]> {
+    // Returns products in the same category, limiting to 4 for the UI
+    return MOCK_PRODUCTS.filter((p) => p.category === category).slice(0, 4);
+}
+
+export type Variant = z.infer<typeof VariantSchema>;
