@@ -1,39 +1,35 @@
-import { Metadata } from "next";
+import { MOCK_PRODUCTS, CategorySlug } from "@/data/store-data";
+import CatalogueClient from "@/features/catalogue";
 import { notFound } from "next/navigation";
-import BrandClient from "./_components/Client";
-import brandLogos from "@/data/brandLogos";
 
-type Props = {
-  params: Promise<{ brand: string }>;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { brand } = await params;
-
-  const brandData = brandLogos.find(
-    (b) => b.slug.toLowerCase() === brand.toLowerCase()
-  );
-
-  if (!brandData) {
-    return { title: "Brand Not Found" };
-  }
-
-  return {
-    title: `Buy ${brandData.name} Gear | Fashion Friday`,
-    description: `Shop the latest collection of ${brandData.name}. High quality products with fast delivery.`,
-  };
+// Next.js 15+ logic: params is a Promise
+interface Props {
+  params: Promise<{ brand: string }>; 
 }
 
 export default async function BrandPage({ params }: Props) {
-  const { brand } = await params;
+  // 1. Await the params to get the brand name safely
+  const resolvedParams = await params;
+  
+  // Folder [brand] ആണെങ്കിൽ resolvedParams.brand എന്ന് ഉപയോഗിക്കുക
+  const brandName = resolvedParams.brand;
 
-  const brandExists = brandLogos.some(
-    (b) => b.slug.toLowerCase() === brand.toLowerCase()
+  if (!brandName) return notFound();
+
+  // 2. Filter products with safety checks
+  const brandProducts = MOCK_PRODUCTS.filter(
+    (p) => p.brand?.toLowerCase() === brandName.toLowerCase()
   );
 
-  if (!brandExists) {
-    notFound();
-  }
+  // 3. Determine initial sidebar context
+  const contextCategory = brandProducts[0]?.category || "sneakers";
 
-  return <BrandClient brand={brand} />;
+  return (
+    <CatalogueClient
+      type="brand"
+      title={brandName}
+      categorySlug={contextCategory as CategorySlug}
+      initialProducts={brandProducts}
+    />
+  );
 }
