@@ -208,3 +208,25 @@ export function filterProducts(products: Product[], activeFilters: Record<string
         return true;
     });
 }
+
+
+
+export const CATEGORY_FILTERS: Record<string, { id: string; label: string; options: string[] }[]> = {
+  sneakers: [
+    { id: 'brand', label: 'Brand', options: ["Nike", "Adidas", "Jordan", "Puma", "Yeezy"] },
+    { id: 'quality', label: 'Quality Grade', options: ['UA', 'Semi UA', '7A', 'Standard'] },
+    { id: 'color', label: 'Color', options: ['Black', 'White', 'Red', 'Blue', 'Grey'] },
+    { id: 'size', label: 'Size', options: ['EU 40', 'EU 41', 'EU 42', 'EU 43', 'EU 44'] },
+  ],
+  watches: [
+    { id: 'brand', label: 'Brand', options: ["Seiko", "Casio", "Rolex", "G-Shock"] },
+    { id: 'quality', label: 'Quality Grade', options: ['7AA', '10A', '5A'] },
+    { id: 'Material', label: 'Material', options: ['Steel', 'Resin', 'Leather'] },
+  ],
+  cloths: [
+    { id: 'brand', label: 'Brand', options: ["Zara", "H&M", "Louis Vuitton"] },
+    { id: 'quality', label: 'Quality Grade', options: ['Master Copy', 'Standard'] },
+    { id: 'GSM', label: 'GSM', options: ['180', '200', '240'] },
+  ],
+  // Add slippers and accessories as needed
+};
