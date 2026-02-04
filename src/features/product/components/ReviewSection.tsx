@@ -78,7 +78,7 @@ export default function ReviewSection() {
 
   useAnimationFrame((t, delta) => {
     if (isPaused || isModalOpen || isFormOpen || isInfoOpen) return;
-    const moveBy = -0.8;
+    const moveBy = -2;
     let currentX = x.get();
     let newX = currentX + moveBy;
     x.set(wrap(-TOTAL_SET_WIDTH, 0, newX));
