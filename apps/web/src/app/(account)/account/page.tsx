@@ -3,7 +3,7 @@
 import ProfileHero from "@/components/sections/profile/ProfileHero";
 import QuickLinksGrid from "@/components/sections/profile/QuickLinksGrid";
 import { motion } from "framer-motion";
-import { History, Star, Heart, ShieldCheck } from "lucide-react";
+import { HistoryIcon, StarIcon, HeartIcon, ShieldCheckIcon  } from "@ff/ui";
 
 export default function ProfileOverviewPage() {
   return (
@@ -32,7 +32,7 @@ export default function ProfileOverviewPage() {
                 </p>
               </div>
               <button className="hidden sm:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-foreground hover:text-brand transition-colors">
-                <History size={14} />
+                <HistoryIcon size={14} />
                 Full History
               </button>
             </header>
@@ -40,19 +40,19 @@ export default function ProfileOverviewPage() {
             {/* Activity List */}
             <div className="flex flex-col">
               <ActivityItem
-                icon={<Star size={16} className="text-brand" />}
+                icon={<StarIcon size={16} className="text-brand" />}
                 title="Earned 500 Loyalty Points"
                 desc="Bonus points for completing your style profile."
                 time="2 hours ago"
               />
               <ActivityItem
-                icon={<Heart size={16} />}
+                icon={<HeartIcon size={16} />}
                 title="Added to Favorites"
                 desc="Oversized Wool Blazer added to your wishlist."
                 time="Yesterday"
               />
               <ActivityItem
-                icon={<ShieldCheck size={16} />}
+                icon={<ShieldCheckIcon size={16} />}
                 title="Security Update"
                 desc="Two-factor authentication successfully enabled."
                 time="Jan 08, 2026"
