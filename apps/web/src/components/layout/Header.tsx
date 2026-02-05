@@ -10,7 +10,7 @@ import {
   BellIcon, 
   UserIcon, 
   WishlistIcon, 
-  CartIcon, 
+  ShoppingBagIcon, 
   SearchListIcon, 
   CategoryIcon,
   ChevronRightIcon 
@@ -119,7 +119,7 @@ export function Header() {
                 href="/checkout/cart"
                 className="relative transition-colors"
               >
-                <CartIcon className="text-2xl" />
+                <ShoppingBagIcon className="text-2xl" />
                 <span className="absolute -top-1.5 -right-1.5 bg-brand text-brand-foreground text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">
                   2
                 </span>
@@ -237,7 +237,7 @@ export function Header() {
           onClick={() => setIsSearchOpen(true)}
           className="text-foreground hover:text-brand transition-colors"
         >
-          <SearchIcon className="text-[25px]" />
+          <SearchListIcon className="text-[25px]" />
         </button>
         <Link href="/" className="scale-110">
           <Image
@@ -252,14 +252,14 @@ export function Header() {
           href="/checkout/cart"
           className="relative text-foreground hover:text-brand transition-colors"
         >
-          <CartIcon className="text-[25px]" />
+          <ShoppingBagIcon className="text-[25px]" />
           <span className="absolute top-0 right-0 w-2 h-2 bg-brand rounded-full border-2 border-background" />
         </Link>
         <Link
           href="/account"
           className="text-foreground hover:text-brand transition-colors"
         >
-          <BellIcon className="text-[25px]" />
+          <UserIcon className="text-[25px]" />
         </Link>
       </nav>
 
