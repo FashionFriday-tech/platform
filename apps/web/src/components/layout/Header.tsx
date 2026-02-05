@@ -4,12 +4,18 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { TbListSearch, TbCategoryPlus } from "react-icons/tb";
-import { GrFavorite } from "react-icons/gr";
-import { PiShoppingBagOpen } from "react-icons/pi";
-import { FiSearch, FiBell } from "react-icons/fi";
-import { BiUser } from "react-icons/bi";
-import { IoIosArrowForward } from "react-icons/io";
+
+import { 
+  SearchIcon, 
+  BellIcon, 
+  UserIcon, 
+  WishlistIcon, 
+  CartIcon, 
+  SearchListIcon, 
+  CategoryIcon,
+  ChevronRightIcon 
+} from "@ff/ui";
+
 import { SearchOverlay } from "./SearchOverlay/SearchOverlay";
 
 // --- Data Configuration ---
@@ -99,7 +105,7 @@ export function Header() {
               onClick={() => setIsSearchOpen(true)}
               className="hidden lg:flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground transition-colors"
             >
-              <FiSearch className="text-lg" />
+              <SearchIcon className="text-lg" />
               <span>Search</span>
             </button>
 
@@ -107,13 +113,13 @@ export function Header() {
 
             <div className="flex items-center gap-4 text-foreground">
               <Link href="/account/wishlist" className="transition-colors">
-                <GrFavorite className="text-xl" />
+                <WishlistIcon className="text-xl" />
               </Link>
               <Link
                 href="/checkout/cart"
                 className="relative transition-colors"
               >
-                <PiShoppingBagOpen className="text-2xl" />
+                <CartIcon className="text-2xl" />
                 <span className="absolute -top-1.5 -right-1.5 bg-brand text-brand-foreground text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">
                   2
                 </span>
@@ -122,7 +128,7 @@ export function Header() {
                 href="/account"
                 className="hover:text-foreground transition-colors"
               >
-                <BiUser className="text-2xl" />
+                <UserIcon className="text-2xl" />
               </Link>
             </div>
           </div>
@@ -171,7 +177,7 @@ export function Header() {
                               className="text-2xl font-black uppercase tracking-tighter hover:text-brand transition-colors flex items-center justify-between group"
                             >
                               {sub}
-                              <IoIosArrowForward className="opacity-0 group-hover:opacity-100 transition-all text-brand" />
+                              <ChevronRightIcon className="opacity-0 group-hover:opacity-100 transition-all text-brand" />
                             </Link>
                           </li>
                         ))}
@@ -202,7 +208,7 @@ export function Header() {
           <span className="font-semibold">HELLO, AJMAL</span>
         </Link>
         <div className="flex items-center gap-4">
-          <FiSearch
+          <SearchIcon
             className="text-xl text-foreground"
             onClick={() => setIsSearchOpen(true)}
           />
@@ -210,11 +216,11 @@ export function Header() {
             href="/account/notifications"
             className="relative text-foreground"
           >
-            <FiBell className="text-xl" />
+            <BellIcon className="text-xl" />
             <span className="absolute top-0 right-0 w-2 h-2 bg-destructive rounded-full" />
           </Link>
           <Link href="/account/wishlist" className="text-foreground">
-            <GrFavorite className="text-xl" />
+            <WishlistIcon className="text-xl" />
           </Link>
         </div>
       </div>
@@ -225,13 +231,13 @@ export function Header() {
           href="/categories"
           className="text-foreground hover:text-brand transition-colors"
         >
-          <TbCategoryPlus className="text-[25px]" />
+          <CategoryIcon className="text-[25px]" />
         </Link>
         <button
           onClick={() => setIsSearchOpen(true)}
           className="text-foreground hover:text-brand transition-colors"
         >
-          <TbListSearch className="text-[25px]" />
+          <SearchIcon className="text-[25px]" />
         </button>
         <Link href="/" className="scale-110">
           <Image
@@ -246,14 +252,14 @@ export function Header() {
           href="/checkout/cart"
           className="relative text-foreground hover:text-brand transition-colors"
         >
-          <PiShoppingBagOpen className="text-[25px]" />
+          <CartIcon className="text-[25px]" />
           <span className="absolute top-0 right-0 w-2 h-2 bg-brand rounded-full border-2 border-background" />
         </Link>
         <Link
           href="/account"
           className="text-foreground hover:text-brand transition-colors"
         >
-          <BiUser className="text-[25px]" />
+          <BellIcon className="text-[25px]" />
         </Link>
       </nav>
 
