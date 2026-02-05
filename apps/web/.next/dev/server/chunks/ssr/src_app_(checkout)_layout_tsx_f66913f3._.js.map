@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Business/fashion-friday/web/frontent/src/app/%28checkout%29/layout.tsx"],"sourcesContent":["import { ReactNode } from \"react\";\r\n\r\nexport const metadata = {\r\n  title: \"Checkout | Fashion Friday\",\r\n  description:\r\n    \"Complete your order quickly and securely at Fashion Friday. Enter shipping details, choose payment, and confirm your purchase.\",\r\n  openGraph: {\r\n    title: \"Checkout | Fashion Friday\",\r\n    description:\r\n      \"Fast, secure, and simple checkout process for Fashion Friday customers.\",\r\n    type: \"website\",\r\n    url: \"https://www.fashionfriday.in/checkout\",\r\n  },\r\n};\r\n\r\nexport default function CheckoutLayout({ children }: { children: ReactNode }) {\r\n  return <main>{children}</main>;\r\n}\r\n"],"names":[],"mappings":";;;;;;;;AAEO,MAAM,WAAW;IACtB,OAAO;IACP,aACE;IACF,WAAW;QACT,OAAO;QACP,aACE;QACF,MAAM;QACN,KAAK;IACP;AACF;AAEe,SAAS,eAAe,EAAE,QAAQ,EAA2B;IAC1E,qBAAO,6VAAC;kBAAM;;;;;;AAChB"}}]
+}

@@ -1,0 +1,12 @@
+{
+  "/(account)/account/page": "app/(account)/account/page.js",
+  "/(account)/account/settings/page": "app/(account)/account/settings/page.js",
+  "/(checkout)/checkout/cart/page": "app/(checkout)/checkout/cart/page.js",
+  "/(shop)/brands/[brand]/page": "app/(shop)/brands/[brand]/page.js",
+  "/(shop)/brands/page": "app/(shop)/brands/page.js",
+  "/(shop)/categories/[category]/page": "app/(shop)/categories/[category]/page.js",
+  "/(shop)/categories/page": "app/(shop)/categories/page.js",
+  "/(shop)/product/[slug]/page": "app/(shop)/product/[slug]/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js"
+}

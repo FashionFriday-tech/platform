@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Business/fashion-friday/web/frontent/src/app/%28account%29/layout.tsx"],"sourcesContent":["import { ReactNode } from \"react\";\r\nexport const metadata = {\r\n  title: \"My Account | Fashion Friday\",\r\n  description:\r\n    \"Manage your profile, orders, and account settings on Fashion Friday.\",\r\n  openGraph: {\r\n    title: \"My Account | Fashion Friday\",\r\n    description:\r\n      \"Access your profile, order history, and settings easily on Fashion Friday.\",\r\n    type: \"website\",\r\n    url: \"https://www.fashionfriday.in/account\",\r\n  },\r\n};\r\n\r\nexport default function AccountLayout({ children }: { children: ReactNode }) {\r\n  return <main>{children}</main>;\r\n}\r\n"],"names":[],"mappings":";;;;;;;;AACO,MAAM,WAAW;IACtB,OAAO;IACP,aACE;IACF,WAAW;QACT,OAAO;QACP,aACE;QACF,MAAM;QACN,KAAK;IACP;AACF;AAEe,SAAS,cAAc,EAAE,QAAQ,EAA2B;IACzE,qBAAO,6VAAC;kBAAM;;;;;;AAChB"}}]
+}
