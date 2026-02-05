@@ -10,7 +10,7 @@ import {
 } from "@/data/store-data";
 import brandLogos from "@/data/brandLogos";
 import { RiShieldStarFill } from "react-icons/ri";
-import { StoreProductCard } from "@/components/ui/cards/StoreProductCard";
+import { CatalogueProductCard } from "@/components/ui/cards/catlogue-product-card";
 import {
   ChevronDown,
   SlidersHorizontal,
@@ -165,7 +165,7 @@ export default function CategoryClient({
 
   const maxPriceLimit = useMemo(() => {
     if (products.length === 0) return 10000;
-    return Math.ceil(Math.max(...products.map((p) => p.price)) / 1000) * 1000;
+    return Math.ceil(Math.max(...products.map((p) => p.defaultPrice)) / 1000) * 1000;
   }, [products]);
 
   // 2. STATE
@@ -280,8 +280,8 @@ export default function CategoryClient({
   const filteredAndSortedProducts = useMemo(() => {
     let result = filterProducts(products, activeFilters);
     const sorted = [...result];
-    if (sortBy === "price-asc") sorted.sort((a, b) => a.price - b.price);
-    else if (sortBy === "price-desc") sorted.sort((a, b) => b.price - a.price);
+    if (sortBy === "price-asc") sorted.sort((a, b) => a.defaultPrice - b.defaultPrice);
+    else if (sortBy === "price-desc") sorted.sort((a, b) => b.defaultPrice - a.defaultPrice);
     else if (sortBy === "most-sold")
       sorted.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
     else if (sortBy === "most-liked")
@@ -416,7 +416,7 @@ export default function CategoryClient({
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-8 sm:gap-x-8 lg:pt-20">
             <AnimatePresence mode="popLayout">
               {filteredAndSortedProducts.map((product) => (
-                <StoreProductCard key={product.id} product={product} />
+                <CatalogueProductCard key={product.id} product={product} />
               ))}
             </AnimatePresence>
           </div>
