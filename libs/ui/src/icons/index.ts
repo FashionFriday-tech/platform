@@ -35,6 +35,14 @@ import {
   FiBellOff,
 } from "react-icons/fi";
 import { BsTags } from "react-icons/bs";
+import { 
+  MdHistory, 
+  MdOutlineStarBorder, 
+} from "react-icons/md";
+import { LuShieldCheck } from "react-icons/lu";
+import { 
+  IoHeartOutline 
+} from "react-icons/io5";
 
 // Exporting with semantic names
 export const FilterIcon = HiOutlineAdjustmentsHorizontal;
@@ -57,3 +65,8 @@ export const CategoryIcon = TbCategoryPlus;
 export const MenuOutlineIcon = TiThMenuOutline;
 export const PromoIcon = BsTags;
 export const BellOffIcon = FiBellOff;
+
+export const HistoryIcon = MdHistory;
+export const StarIcon = MdOutlineStarBorder;
+export const HeartIcon = IoHeartOutline;
+export const ShieldCheckIcon = LuShieldCheck;
