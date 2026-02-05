@@ -44,6 +44,20 @@ import {
   IoHeartOutline 
 } from "react-icons/io5";
 
+import { 
+  MdClose, 
+  MdOutlineDeleteOutline, 
+  MdOutlinePhone, 
+  MdOutlineModeEditOutline, 
+  MdCheck, 
+  MdOutlineAdd, 
+  MdOutlineHome, 
+  MdOutlineWorkOutline, 
+  MdOutlineErrorOutline, 
+  MdOutlineLocationOn 
+} from "react-icons/md";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+
 // Exporting with semantic names
 export const FilterIcon = HiOutlineAdjustmentsHorizontal;
 export const SortIcon = HiOutlineArrowsUpDown;
@@ -70,3 +84,15 @@ export const HistoryIcon = MdHistory;
 export const StarIcon = MdOutlineStarBorder;
 export const HeartIcon = IoHeartOutline;
 export const ShieldCheckIcon = LuShieldCheck;
+
+export const CloseIcon = MdClose;
+export const TrashIcon = MdOutlineDeleteOutline;
+export const PhoneIcon = MdOutlinePhone;
+export const EditIcon = MdOutlineModeEditOutline;
+export const CheckIcon = MdCheck;
+export const PlusIcon = MdOutlineAdd;
+export const HomeIcon = MdOutlineHome;
+export const BriefcaseIcon = MdOutlineWorkOutline;
+export const AlertIcon = MdOutlineErrorOutline;
+export const MapPinIcon = MdOutlineLocationOn;
+export const LoaderIcon = AiOutlineLoading3Quarters;
