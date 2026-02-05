@@ -1,20 +1,20 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import {
-  X,
-  Trash2,
-  Phone,
-  Star,
-  Edit2,
-  Check,
-  Loader2,
-  Plus,
-  Home,
-  Briefcase,
-  AlertCircle,
-  MapPin,
-} from "lucide-react";
+import { 
+  CloseIcon,
+  TrashIcon,
+  PhoneIcon,
+  StarIcon,
+  EditIcon,
+  CheckIcon,
+  LoaderIcon,
+  PlusIcon,
+  HomeIcon,
+  BriefcaseIcon,
+  AlertIcon,
+  MapPinIcon 
+} from "@ff/ui";
 
 interface Address {
   id: string;
@@ -81,15 +81,15 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
       <div className="flex flex-wrap gap-2">
         <span className="px-3 py-1 bg-background-muted text-foreground-muted rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1">
           {address.type === "Home" ? (
-            <Home size={10} />
+            <HomeIcon size={10} />
           ) : (
-            <Briefcase size={10} />
+            <BriefcaseIcon size={10} />
           )}{" "}
           {address.type}
         </span>
         {address.isDefault ? (
           <span className="px-3 py-1 bg-brand text-brand-foreground rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1">
-            <Star size={10} fill="currentColor" /> Default
+            <StarIcon size={10} fill="currentColor" /> Default
           </span>
         ) : (
           <button
@@ -105,13 +105,13 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
           onClick={() => onEdit(address)}
           className="p-2 hover:bg-background-muted rounded-full text-foreground-subtle hover:text-foreground transition-colors"
         >
-          <Edit2 size={14} />
+          <EditIcon size={14} />
         </button>
         <button
           onClick={() => onDelete(address.id)}
           className="p-2 hover:bg-destructive/10 rounded-full text-foreground-subtle hover:text-destructive transition-colors"
         >
-          <Trash2 size={14} />
+          <TrashIcon size={14} />
         </button>
       </div>
     </div>
@@ -138,12 +138,12 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
 
       <div className="pt-3 flex flex-wrap gap-2">
         <div className="flex items-center gap-2 text-[10px] font-black text-foreground bg-background-muted px-3 py-1.5 rounded-lg border border-border">
-          <Phone size={12} className="text-brand" />{" "}
+          <PhoneIcon size={12} className="text-brand" />{" "}
           <span>+91 {address.phone}</span>
         </div>
         {address.altPhone && (
           <div className="flex items-center gap-2 text-[10px] font-black text-foreground-subtle bg-background-muted/50 px-3 py-1.5 rounded-lg border border-border border-dashed">
-            <Phone size={12} /> <span>+91 {address.altPhone}</span>
+            <PhoneIcon size={12} /> <span>+91 {address.altPhone}</span>
           </div>
         )}
       </div>
@@ -231,7 +231,7 @@ const AddressFormModal = ({
             onClick={onClose}
             className="p-2 hover:bg-background-muted rounded-full transition-colors"
           >
-            <X size={20} />
+            <CloseIcon size={20} />
           </button>
         </div>
 
@@ -251,7 +251,7 @@ const AddressFormModal = ({
                 }
               />
               {loading && (
-                <Loader2
+                <LoaderIcon
                   className="absolute right-3 bottom-2.5 animate-spin text-brand"
                   size={16}
                 />
@@ -361,9 +361,9 @@ const AddressFormModal = ({
                   }`}
                 >
                   {t === "Home" ? (
-                    <Home size={10} className="inline mr-1" />
+                    <HomeIcon size={10} className="inline mr-1" />
                   ) : (
-                    <Briefcase size={10} className="inline mr-1" />
+                    <BriefcaseIcon size={10} className="inline mr-1" />
                   )}
                   {t}
                 </button>
@@ -380,7 +380,7 @@ const AddressFormModal = ({
                   }`}
                 >
                   {formData.isDefault && (
-                    <Check size={12} className="text-brand-foreground" />
+                    <CheckIcon size={12} className="text-brand-foreground" />
                   )}
                 </div>
                 <input
@@ -402,7 +402,7 @@ const AddressFormModal = ({
         <div className="px-6 py-5 border-t border-border bg-background-muted flex flex-col gap-2 rounded-b-4xl">
           {!isFormValid && (
             <p className="text-[10px] text-destructive font-bold text-center flex items-center justify-center gap-1 uppercase tracking-tight">
-              <AlertCircle size={12} /> Fill all required fields
+              <AlertIcon size={12} /> Fill all required fields
             </p>
           )}
           <button
@@ -487,13 +487,13 @@ export default function AddressPage() {
             }}
             className="bg-brand text-brand-foreground px-6 py-3 rounded-4xl font-bold shadow-lg flex items-center gap-2 hover:opacity-90 active:scale-95"
           >
-            <Plus size={18} /> Add New
+            <PlusIcon size={18} /> Add New
           </button>
         </div>
 
         {sortedAddresses.length === 0 ? (
           <div className="py-24 border-2 border-dashed border-border rounded-4xl flex flex-col items-center justify-center text-foreground-subtle bg-background-elevated/50">
-            <MapPin size={48} className="mb-4 opacity-10" />
+            <MapPinIcon size={48} className="mb-4 opacity-10" />
             <p className="font-black uppercase text-xs tracking-widest">
               No addresses saved
             </p>
