@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":["file:///C:/Business/fashion-friday/web/frontent/src/lib/time.ts"],"sourcesContent":["export function getUtcMetric(interval = 5) {\r\n  const now = Date.now(); // server time\r\n  const seconds = Math.floor(now / 1000);\r\n  return seconds - (seconds % interval);\r\n}\r\n"],"names":[],"mappings":";;;;AAAO,SAAS,aAAa,WAAW,CAAC;IACvC,MAAM,MAAM,KAAK,GAAG,IAAI,cAAc;IACtC,MAAM,UAAU,KAAK,KAAK,CAAC,MAAM;IACjC,OAAO,UAAW,UAAU;AAC9B"}},
-    {"offset": {"line": 59, "column": 0}, "map": {"version":3,"sources":["file:///C:/Business/fashion-friday/web/frontent/src/app/api/utc-metric/route.ts"],"sourcesContent":["import { NextResponse } from \"next/server\";\r\nimport { getUtcMetric } from \"@/lib/time\";\r\n\r\nexport const runtime = \"nodejs\"; // important\r\n\r\nexport async function GET() {\r\n  const value = getUtcMetric(5);\r\n  return NextResponse.json({ value });\r\n}\r\n"],"names":[],"mappings":";;;;;;AAAA;AACA;;;AAEO,MAAM,UAAU,UAAU,YAAY;AAEtC,eAAe;IACpB,MAAM,QAAQ,IAAA,oIAAY,EAAC;IAC3B,OAAO,+PAAY,CAAC,IAAI,CAAC;QAAE;IAAM;AACnC"}}]
-}

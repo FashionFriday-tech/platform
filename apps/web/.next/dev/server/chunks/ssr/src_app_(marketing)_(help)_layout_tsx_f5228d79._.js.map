@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Business/fashion-friday/web/frontent/src/app/%28marketing%29/%28help%29/layout.tsx"],"sourcesContent":["import type { Metadata } from \"next\";\r\nimport \"@/app/globals.css\";\r\n\r\nexport const metadata: Metadata = {\r\n  title: {\r\n    default: \"Fashion Friday | Trendy Footwear & Fashion\",\r\n    template: \"%s | Fashion Friday\",\r\n  },\r\n  description:\r\n    \"Fashion Friday offers trendy footwear and fashion accessories at affordable prices across India.\",\r\n  openGraph: {\r\n    siteName: \"Fashion Friday\",\r\n    type: \"website\",\r\n  },\r\n  alternates: {\r\n    canonical: \"https://fashionfriday.in\",\r\n  },\r\n};\r\n\r\nexport default function MarketingLayout({\r\n  children,\r\n}: {\r\n  children: React.ReactNode;\r\n}) {\r\n  return (\r\n    <>\r\n      <main>{children}</main>\r\n    </>\r\n  );\r\n}\r\n"],"names":[],"mappings":";;;;;;;;;AAGO,MAAM,WAAqB;IAChC,OAAO;QACL,SAAS;QACT,UAAU;IACZ;IACA,aACE;IACF,WAAW;QACT,UAAU;QACV,MAAM;IACR;IACA,YAAY;QACV,WAAW;IACb;AACF;AAEe,SAAS,gBAAgB,EACtC,QAAQ,EAGT;IACC,qBACE;kBACE,cAAA,6VAAC;sBAAM;;;;;;;AAGb"}}]
-}
