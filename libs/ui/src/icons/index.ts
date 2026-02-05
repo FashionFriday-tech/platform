@@ -1,30 +1,40 @@
-import { 
-  HiOutlineAdjustmentsHorizontal, 
-  HiOutlineArrowsUpDown 
+import {
+  HiOutlineAdjustmentsHorizontal,
+  HiOutlineArrowsUpDown
 } from "react-icons/hi2";
-import { 
-  IoPlaySharp, 
-  IoSquareSharp, 
+import {
+  IoPlaySharp,
+  IoSquareSharp,
   IoChevronDownOutline,
-  IoChevronForwardOutline 
+  IoChevronForwardOutline
 } from "react-icons/io5";
-import { 
-  FiSearch, 
-  FiBell 
+import {
+  FiSearch,
+  FiBell
 } from "react-icons/fi";
-import { 
-  BiUser 
+import {
+  BiUser
 } from "react-icons/bi";
-import { 
-  TbListSearch, 
-  TbCategoryPlus 
+import {
+  TbListSearch,
+  TbCategoryPlus
 } from "react-icons/tb";
-import { 
-  GrFavorite 
+import {
+  GrFavorite
 } from "react-icons/gr";
-import { 
-  PiShoppingBagOpen 
+import {
+  PiShoppingBagOpen
 } from "react-icons/pi";
+import {
+  TiThMenuOutline,
+} from "react-icons/ti";
+import {
+  MdOutlineLocalOffer,
+} from "react-icons/md";
+import {
+  FiBellOff,
+} from "react-icons/fi";
+import { BsTags } from "react-icons/bs";
 
 // Exporting with semantic names
 export const FilterIcon = HiOutlineAdjustmentsHorizontal;
@@ -39,6 +49,11 @@ export const SearchIcon = FiSearch;
 export const BellIcon = FiBell;
 export const UserIcon = BiUser;
 export const WishlistIcon = GrFavorite;
-export const CartIcon = PiShoppingBagOpen;
+export const ShoppingBagIcon = PiShoppingBagOpen;
 export const SearchListIcon = TbListSearch;
 export const CategoryIcon = TbCategoryPlus;
+
+// Notifications & Navigation Icons
+export const MenuOutlineIcon = TiThMenuOutline;
+export const PromoIcon = BsTags;
+export const BellOffIcon = FiBellOff;
