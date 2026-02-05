@@ -10,11 +10,12 @@ import {
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-import { TiThMenuOutline } from "react-icons/ti";
-import { MdOutlineLocalOffer } from "react-icons/md";
-import { BiSolidOffer } from "react-icons/bi";
-import { PiShoppingBagOpen } from "react-icons/pi";
-import { FiBellOff } from "react-icons/fi";
+import { 
+  MenuOutlineIcon, 
+  PromoIcon, 
+  BellOffIcon, 
+  ShoppingBagIcon
+} from "@ff/ui";
 
 const TABS = ["all", "orders", "promo"] as const;
 type TabType = typeof TABS[number];
@@ -88,9 +89,9 @@ export default function NotificationsPage() {
                   activeIndex === i ? "text-foreground" : "text-foreground/40"
                 )}
               >
-                {tab == "all" ? <TiThMenuOutline className="w-4"/> 
-                : tab =="orders" ? <PiShoppingBagOpen className="w-4"/> 
-                : <MdOutlineLocalOffer className="w-4"/> }
+                {tab == "all" ? <MenuOutlineIcon className="w-4"/> 
+                : tab =="orders" ? <ShoppingBagIcon className="w-4"/> 
+                : <PromoIcon className="w-4"/> }
                {tab}
               </button>
             ))}
@@ -159,7 +160,7 @@ function NotificationList({ type }: { type: TabType }) {
   if (notifications.length === 0) {
     return (
       <div className="py-32 text-center text-foreground/30">
-        <FiBellOff className="mx-auto mb-4 opacity-10" size={48} />
+        <BellOffIcon className="mx-auto mb-4 opacity-10" size={48} />
         <p className="text-sm">No {type} notifications</p>
       </div>
     );
@@ -170,7 +171,7 @@ function NotificationList({ type }: { type: TabType }) {
       {notifications.map((n) => (
         <div key={n.id} className="flex gap-4 p-5">
           <div className="shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-foreground text-background">
-            {n.type === "order" ? <PiShoppingBagOpen size={25} /> : <MdOutlineLocalOffer size={25} />}
+            {n.type === "order" ? <ShoppingBagIcon size={25} /> : <PromoIcon size={25} />}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-baseline gap-2">
