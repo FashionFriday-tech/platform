@@ -35,28 +35,33 @@ import {
   FiBellOff,
 } from "react-icons/fi";
 import { BsTags } from "react-icons/bs";
-import { 
-  MdHistory, 
-  MdOutlineStarBorder, 
+import {
+  MdHistory,
+  MdOutlineStarBorder,
 } from "react-icons/md";
 import { LuShieldCheck } from "react-icons/lu";
-import { 
-  IoHeartOutline 
+import {
+  IoHeartOutline
 } from "react-icons/io5";
 
-import { 
-  MdClose, 
-  MdOutlineDeleteOutline, 
-  MdOutlinePhone, 
-  MdOutlineModeEditOutline, 
-  MdCheck, 
-  MdOutlineAdd, 
-  MdOutlineHome, 
-  MdOutlineWorkOutline, 
-  MdOutlineErrorOutline, 
-  MdOutlineLocationOn 
+import {
+  MdClose,
+  MdOutlineDeleteOutline,
+  MdOutlinePhone,
+  MdOutlineModeEditOutline,
+  MdCheck,
+  MdOutlineAdd,
+  MdOutlineHome,
+  MdOutlineWorkOutline,
+  MdOutlineErrorOutline,
+  MdOutlineLocationOn,
+  MdOutlineLocalShipping,
+  MdOutlineInventory2,
+  MdOutlineCalendarMonth,
+  MdChevronRight,
 } from "react-icons/md";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+
 
 // Exporting with semantic names
 export const FilterIcon = HiOutlineAdjustmentsHorizontal;
@@ -96,3 +101,7 @@ export const BriefcaseIcon = MdOutlineWorkOutline;
 export const AlertIcon = MdOutlineErrorOutline;
 export const MapPinIcon = MdOutlineLocationOn;
 export const LoaderIcon = AiOutlineLoading3Quarters;
+
+export const TruckIcon = MdOutlineLocalShipping;
+export const PackageIcon = MdOutlineInventory2;
+export const CalendarIcon = MdOutlineCalendarMonth;
