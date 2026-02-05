@@ -4,10 +4,19 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
 
   images: {
-    domains: [
-      "fashionfriday.in",
-      "cdn.fashionfriday.in",
-      "images.unsplash.com",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "fashionfriday.in",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.fashionfriday.in",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
   },
 
