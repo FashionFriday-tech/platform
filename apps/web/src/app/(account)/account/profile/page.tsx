@@ -3,17 +3,17 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import {
-  Camera,
-  User,
-  Gift,
-  Sparkles,
-  Save,
-  Loader2,
-  ShieldCheck,
-  CheckCircle2,
-  MapPin,
-  ChevronRight,
-} from "lucide-react";
+  CameraIcon,
+  UserIcon,
+  GiftIcon,
+  SparklesIcon,
+  SaveIcon,
+  LoaderIcon,
+  ShieldCheckIcon,
+  CheckCircleIcon,
+  MapPinIcon,
+  ChevronRightIcon,
+} from "@ff/ui";
 import Image from "next/image";
 
 // --- Sub-Components (DRY Optimization) ---
@@ -87,11 +87,11 @@ export default function EcommerceProfile() {
                       className="object-cover w-full h-full"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Camera className="text-white" size={24} />
+                      <CameraIcon className="text-white" size={24} />
                     </div>
                   </div>
                   <div className="absolute bottom-0 right-0 bg-brand text-brand-foreground p-1.5 rounded-full border-2 border-background">
-                    <Camera size={14} />
+                    <CameraIcon size={14} />
                   </div>
                 </div>
 
@@ -121,7 +121,7 @@ export default function EcommerceProfile() {
                   <div className="flex items-center justify-between p-3 px-4 rounded-3xl border border-border bg-background hover:border-brand hover:shadow-md transition-all">
                     <div className="flex items-center gap-3">
                       <div className="p-2.5 bg-background-muted rounded-full group-hover:bg-brand group-hover:text-brand-foreground transition-colors">
-                        <MapPin size={18} />
+                        <MapPinIcon size={18} />
                       </div>
                       <div className="text-left">
                         <h4 className="font-bold text-sm">My Addresses</h4>
@@ -130,7 +130,7 @@ export default function EcommerceProfile() {
                         </p>
                       </div>
                     </div>
-                    <ChevronRight
+                    <ChevronRightIcon
                       size={16}
                       className="text-foreground-subtle group-hover:text-brand"
                     />
@@ -155,10 +155,10 @@ export default function EcommerceProfile() {
           >
             <ProfileSection
               title="Identity Details"
-              icon={User}
+              icon={UserIcon}
               badge={
                 <>
-                  <ShieldCheck size={14} /> Secure
+                  <ShieldCheckIcon size={14} /> Secure
                 </>
               }
             >
@@ -197,7 +197,7 @@ export default function EcommerceProfile() {
 
             <ProfileSection
               title="Personalize Your Feed"
-              icon={Sparkles}
+              icon={SparklesIcon}
               badge="Recommendations"
             >
               <div className="space-y-6">
@@ -263,7 +263,7 @@ export default function EcommerceProfile() {
                     onChange={(v: string) =>
                       setFormData({ ...formData, dob: v })
                     }
-                    icon={<Gift size={16} />}
+                    icon={<GiftIcon size={16} />}
                   />
                   <ModernInput
                     label="Anniversary"
@@ -292,10 +292,10 @@ export default function EcommerceProfile() {
                   className="px-8 py-3 rounded-4xl bg-background text-foreground font-semibold hover:opacity-90 transition-all flex items-center gap-2"
                 >
                   {loading ? (
-                    <Loader2 className="animate-spin" size={18} />
+                    <LoaderIcon className="animate-spin" size={18} />
                   ) : (
                     <>
-                      <Save size={18} /> Save All
+                      <SaveIcon size={18} /> Save All
                     </>
                   )}
                 </button>
@@ -327,7 +327,7 @@ const ModernInput = ({
       </label>
       {isVerified && (
         <span className="text-[10px] font-bold text-brand flex items-center gap-1">
-          <CheckCircle2 size={12} /> VERIFIED
+          <CheckCircleIcon size={12} /> VERIFIED
         </span>
       )}
     </div>
@@ -349,14 +349,14 @@ const ModernInput = ({
           className="absolute right-1.5 top-1.5 bottom-1.5 bg-brand text-brand-foreground text-xs font-bold px-4 rounded-3xl hover:opacity-90 disabled:opacity-30 transition-all min-w-20"
         >
           {isLoading ? (
-            <Loader2 className="animate-spin" size={14} />
+            <LoaderIcon className="animate-spin" size={14} />
           ) : (
             actionLabel
           )}
         </button>
       )}
       {isVerified && (
-        <CheckCircle2
+        <CheckCircleIcon
           size={20}
           className="absolute right-4 top-1/2 -translate-y-1/2 text-brand"
         />
