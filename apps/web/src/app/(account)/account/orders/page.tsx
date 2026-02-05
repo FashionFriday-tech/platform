@@ -1,8 +1,15 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Truck, MapPin, ChevronRight, Package, Calendar } from "lucide-react";
 import { orders, Order, OrderStatus } from "@/data/order";
+
+import { 
+  TruckIcon, 
+  MapPinIcon, 
+  ChevronRightIcon, 
+  PackageIcon, 
+  CalendarIcon 
+} from "@ff/ui";
 
 // --- Sub-Components ---
 
@@ -61,7 +68,7 @@ const OrderCard = ({ order, item }: { order: Order; item: any }) => (
           ID: {order.id}
         </p>
         <div className="flex items-center gap-2 text-foreground-muted">
-          <Calendar size={14} />
+          <CalendarIcon size={14} />
           <span className="text-xs font-bold">{order.date}</span>
         </div>
       </div>
@@ -73,7 +80,7 @@ const OrderCard = ({ order, item }: { order: Order; item: any }) => (
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-background border border-border flex items-center justify-center">
-            <Truck size={16} className="text-brand" />
+            <TruckIcon size={16} className="text-brand" />
           </div>
           <div className="hidden xs:block">
             <p className="text-[9px] text-foreground-subtle uppercase font-bold">
@@ -97,7 +104,7 @@ const OrderCard = ({ order, item }: { order: Order; item: any }) => (
             </p>
           </div>
           <div className="w-9 h-9 rounded-full bg-background border border-border flex items-center justify-center">
-            <MapPin size={16} className="text-foreground-muted" />
+            <MapPinIcon size={16} className="text-foreground-muted" />
           </div>
         </div>
       </div>
@@ -139,7 +146,7 @@ const OrderCard = ({ order, item }: { order: Order; item: any }) => (
         <p className="text-xl font-black">₹{item.price.toLocaleString()}</p>
       </div>
       <button className="bg-brand text-brand-foreground py-2 px-6 rounded-full font-bold text-sm flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-brand/10">
-        Track <ChevronRight size={16} />
+        Track <ChevronRightIcon size={16} />
       </button>
     </div>
   </article>
@@ -209,7 +216,7 @@ export default function OrdersPage() {
           </div>
         ) : (
           <div className="text-center py-20 bg-background-elevated rounded-4xl border border-dashed border-border opacity-60">
-            <Package
+            <PackageIcon
               className="mx-auto mb-4 text-foreground-subtle"
               size={40}
             />
