@@ -35,6 +35,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@ff/ui':
+        specifier: workspace:*
+        version: link:../../libs/ui
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

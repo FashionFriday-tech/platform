@@ -20,9 +20,12 @@ const nextConfig: NextConfig = {
     ],
   },
 
+
   experimental: {
     optimizeCss: true,
   },
+
+  transpilePackages: ["@ff/ui"],
 };
 
 export default nextConfig;

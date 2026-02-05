@@ -16,13 +16,10 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@ff/ui": ["libs/ui/src/index.tsx"]
+      "@/*": ["./apps/web/src/*"],
+      "@ff/ui": ["libs/ui/src/index.tsx"],
+      "@ff/ui/*": ["libs/ui/src/*"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    ".next"
-  ]
+  "exclude": ["node_modules", "dist", "build", ".next"]
 }
