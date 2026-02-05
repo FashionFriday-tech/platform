@@ -58,7 +58,13 @@ import {
   MdOutlineLocalShipping,
   MdOutlineInventory2,
   MdOutlineCalendarMonth,
-  MdChevronRight,
+} from "react-icons/md";
+import { 
+  MdOutlinePhotoCamera,
+  MdOutlineCardGiftcard,
+  MdOutlineAutoAwesome,
+  MdOutlineSave,
+  MdOutlineCheckCircle
 } from "react-icons/md";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
@@ -105,3 +111,9 @@ export const LoaderIcon = AiOutlineLoading3Quarters;
 export const TruckIcon = MdOutlineLocalShipping;
 export const PackageIcon = MdOutlineInventory2;
 export const CalendarIcon = MdOutlineCalendarMonth;
+
+export const CameraIcon = MdOutlinePhotoCamera;
+export const GiftIcon = MdOutlineCardGiftcard;
+export const SparklesIcon = MdOutlineAutoAwesome;
+export const SaveIcon = MdOutlineSave;
+export const CheckCircleIcon = MdOutlineCheckCircle;
