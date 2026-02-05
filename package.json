@@ -9,9 +9,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "turbo": "latest",
-    "typescript": "^5",
+    "baseline-browser-mapping": "^2.9.19",
     "eslint": "^9",
-    "prettier": "^3"
+    "prettier": "^3",
+    "turbo": "latest",
+    "typescript": "^5"
   }
 }
