@@ -9,7 +9,6 @@ import {
   BellIcon,
   MousePointerIcon,
   MoonIcon,
-  UserIcon,
   ShieldCheckIcon,
   LogOutIcon,
   ChevronRightIcon,
@@ -191,7 +190,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
                 Log Out
               </span>
             </div>
-            <ChevronRight size={18} className="opacity-20" />
+            <ChevronRightIcon size={18} className="opacity-20" />
           </button>
 
           <button
@@ -244,7 +243,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
                   onClick={() => setShowDeleteModal(false)}
                   className="p-2 hover:bg-muted rounded-full transition-colors"
                 >
-                  <X size={24} />
+                  <CloseIcon size={24} />
                 </button>
               </div>
 
@@ -338,7 +337,7 @@ function SettingLink({ icon, label }: any) {
           {label}
         </span>
       </div>
-      <ChevronRight size={18} className="text-foreground-subtle/30" />
+      <ChevronRightIcon size={18} className="text-foreground-subtle/30" />
     </div>
   );
 }
