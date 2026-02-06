@@ -21,7 +21,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@ff/ui": ["../../packages/ui/src/index.tsx"],
+      "@ff/ui": ["../../packages/ui/src"],
       "@ff/ui/*": ["../../packages/ui/src/*"]
     }
   },
