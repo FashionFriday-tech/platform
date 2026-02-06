@@ -62,7 +62,7 @@ export default function BrandsPage() {
             onClose={() => setActiveDropdown(null)}
           />
           <div className="flex gap-4 items-center">
-            <SlidersHorizontal
+            <SlidersIcon
               size={14}
               className="text-muted-foreground ml-2"
             />
