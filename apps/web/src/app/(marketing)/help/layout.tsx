@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { X } from "lucide-react";
+import {
+  CloseIcon,
+  ArrowBackIconIOS,
+  HamburgerMenuIcon,
+  ArrowForwardIconIOS,
+} from "@ff/ui";
 import { helpSections, HelpSection } from "./constants";
-import { IoIosArrowBack } from "react-icons/io";
-import { RxHamburgerMenu } from "react-icons/rx";
-import { IoIosArrowForward } from "react-icons/io";
 
 export default function HelpLayout({
   children,
@@ -28,7 +30,7 @@ export default function HelpLayout({
       <header className="fixed top-0 z-50 w-full transition-all duration-300 h-20 bg-background">
         <div className="max-w-screen-2xl mx-auto h-full px-6 flex items-center justify-between">
           <button onClick={() => router.back()} aria-label="Go back">
-            <IoIosArrowBack className="text-2xl" />
+            <ArrowBackIconIOS className="text-2xl" />
           </button>
 
           <div className="text-center flex flex-col">
@@ -44,7 +46,7 @@ export default function HelpLayout({
             onClick={() => setIsMenuOpen(true)}
             className="text-foreground"
           >
-            <RxHamburgerMenu size={20} />
+            <HamburgerMenuIcon size={20} />
           </button>
         </div>
       </header>
@@ -73,7 +75,7 @@ export default function HelpLayout({
               Navigation
             </p>
             <button onClick={() => setIsMenuOpen(false)}>
-              <X size={24} />
+              <CloseIcon size={24} />
             </button>
           </div>
 
@@ -95,7 +97,7 @@ export default function HelpLayout({
                     {item.label}
                   </span>
                 </div>
-                <IoIosArrowForward />
+                <ArrowForwardIconIOS />
               </Link>
             ))}
           </div>

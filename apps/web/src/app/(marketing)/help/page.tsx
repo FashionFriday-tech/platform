@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import { helpSections } from "./constants";
-import { ArrowUpRight, MessageCircle, Phone, Mail } from "lucide-react";
-import { IoIosArrowDown } from "react-icons/io";
+import {
+  ArrowUpRightIcon,
+  MessageIcon,
+  PhoneIcon,
+  MailIcon,
+  ArrowDownIconIOS,
+} from "@ff/ui";
 
 export default function HelpHub() {
   const handleEmailClick = () => {
@@ -41,7 +46,7 @@ export default function HelpHub() {
         </div>
 
         <div className="absolute bottom-30 md:bottom-20 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <IoIosArrowDown size={32} className="text-foreground-muted" />
+          <ArrowDownIconIOS size={32} className="text-foreground-muted" />
         </div>
       </section>
 
@@ -53,7 +58,7 @@ export default function HelpHub() {
         >
           <div className="flex items-center gap-6">
             <div className="p-4 bg-background-muted rounded-full group-hover:bg-white/20">
-              <MessageCircle className="group-hover:text-white" size={32} />
+              <MessageIcon className="group-hover:text-white" size={32} />
             </div>
             <div>
               <h3 className="text-3xl font-black uppercase group-hover:text-white">
@@ -64,7 +69,7 @@ export default function HelpHub() {
               </p>
             </div>
           </div>
-          <ArrowUpRight className="group-hover:text-white" size={32} />
+          <ArrowUpRightIcon className="group-hover:text-white" size={32} />
         </a>
         <a
           href="tel:+91 7558969093"
@@ -73,7 +78,7 @@ export default function HelpHub() {
           {" "}
           <div className="flex items-center gap-6">
             <div className="p-4 bg-background-muted rounded-full group-hover:bg-white/20">
-              <Phone className="group-hover:text-white" size={32} />
+              <PhoneIcon className="group-hover:text-white" size={32} />
             </div>
             <div className="text-start">
               <h3 className="text-3xl font-black uppercase group-hover:text-white">
@@ -84,7 +89,7 @@ export default function HelpHub() {
               </p>
             </div>
           </div>
-          <ArrowUpRight className="group-hover:text-white" size={32} />
+          <ArrowUpRightIcon className="group-hover:text-white" size={32} />
         </a>
         <button
           onClick={handleEmailClick}
@@ -92,7 +97,7 @@ export default function HelpHub() {
         >
           <div className="flex items-center gap-6">
             <div className="p-4 bg-background-muted rounded-full group-hover:bg-white/20">
-              <Mail className="group-hover:text-white" size={32} />
+              <MailIcon className="group-hover:text-white" size={32} />
             </div>
             <div>
               <h3 className="text-3xl font-black uppercase group-hover:text-white">
@@ -103,7 +108,7 @@ export default function HelpHub() {
               </p>
             </div>
           </div>
-          <ArrowUpRight className="group-hover:text-white" size={32} />
+          <ArrowUpRightIcon className="group-hover:text-white" size={32} />
         </button>
       </section>
 
@@ -120,7 +125,7 @@ export default function HelpHub() {
               <div className="p-4 bg-background-muted rounded-2xl group-hover:bg-background group-hover:text-foreground">
                 {item.icon}
               </div>
-              <ArrowUpRight className="md:opacity-0 group-hover:opacity-100 transition-all text-foreground md:text-background" />
+              <ArrowUpRightIcon className="md:opacity-0 group-hover:opacity-100 transition-all text-foreground md:text-background" />
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-brand mb-2 italic">

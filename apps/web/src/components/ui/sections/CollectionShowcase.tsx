@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Tag } from "lucide-react";
+import { ArrowUpRightIcon, TagIcon } from "@ff/ui";
 
 export interface Product {
   id: string;
@@ -97,7 +97,7 @@ export default function CollectionShowcase({ products }: { products: Product[] }
                       ₹{product.price}
                     </span>
                     <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-                      <ArrowUpRight className="w-5 h-5" />
+                      <ArrowUpRightIcon className="w-5 h-5" />
                     </div>
                   </div>
                 </div>

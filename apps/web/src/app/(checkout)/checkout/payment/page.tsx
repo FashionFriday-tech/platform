@@ -3,15 +3,15 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Truck,
-  Info,
-  ChevronRight,
-  ChevronUp,
-  ShieldCheck,
-  Zap,
-  X,
-  CreditCard,
-} from "lucide-react";
+  TruckIcon,
+  InfoIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+  ShieldCheckIcon,
+  ZapIcon,
+  CloseIcon,
+  CreditCardIcon,
+} from "@ff/ui";
 import CheckoutStages from "../../_components/CheckoutProgress";
 
 export default function PaymentPage() {
@@ -42,7 +42,7 @@ export default function PaymentPage() {
               onClick={() => setShowInfo(true)}
               className="text-[9px] font-black uppercase tracking-widest flex items-center gap-2 hover:text-foreground-subtle transition-colors"
             >
-              Payment Policy <Info size={14} />
+              Payment Policy <InfoIcon size={14} />
             </button>
           </div>
 
@@ -65,7 +65,7 @@ export default function PaymentPage() {
                       : "bg-background-muted"
                   }`}
                 >
-                  <CreditCard size={20} />
+                  <CreditCardIcon size={20} />
                 </div>
                 <div>
                   <h3 className="text-sm font-black uppercase tracking-tight italic">
@@ -95,7 +95,7 @@ export default function PaymentPage() {
                       : "bg-background-muted"
                   }`}
                 >
-                  <Truck size={20} />
+                  <TruckIcon size={20} />
                 </div>
                 <div>
                   <h3 className="text-sm font-black uppercase tracking-tight italic">
@@ -120,7 +120,7 @@ export default function PaymentPage() {
                 className="relative p-6 rounded-3xl bg-orange-500/5 border border-orange-500/20 flex items-center gap-5"
               >
                 <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white shrink-0">
-                  <ShieldCheck size={20} />
+                  <ShieldCheckIcon size={20} />
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest">
@@ -148,7 +148,7 @@ export default function PaymentPage() {
                 className="relative p-6 rounded-3xl bg-emerald-500/5 border border-emerald-500/20 flex items-center gap-5"
               >
                 <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shrink-0">
-                  <Zap size={20} />
+                  <ZapIcon size={20} />
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
@@ -210,7 +210,7 @@ export default function PaymentPage() {
                 <p className="text-[8px] font-black uppercase tracking-widest text-background/40 flex items-center gap-2 mb-0.5 text-nowrap">
                   Final Payable{" "}
                   <motion.span animate={{ rotate: isExpanded ? 180 : 0 }}>
-                    <ChevronUp size={10} />
+                    <ChevronUpIcon size={10} />
                   </motion.span>
                 </p>
                 <p className="text-2xl font-black text-background italic">
@@ -221,7 +221,7 @@ export default function PaymentPage() {
                 {paymentMethod === "cod"
                   ? `Pay ₹${codServiceFee} Now`
                   : "Pay Now"}
-                <ChevronRight size={18} strokeWidth={3} />
+                <ChevronRightIcon size={18} />
               </button>
             </div>
           </div>
@@ -252,7 +252,7 @@ export default function PaymentPage() {
                   onClick={() => setShowInfo(false)}
                   className="p-2 bg-background-muted rounded-full"
                 >
-                  <X size={16} strokeWidth={3} />
+                  <CloseIcon size={16} />
                 </button>
               </div>
               <div className="space-y-6 text-[9px] font-bold uppercase tracking-widest text-foreground-muted leading-loose">

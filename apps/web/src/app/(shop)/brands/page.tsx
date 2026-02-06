@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { ChevronDownIcon, SlidersIcon } from "@ff/ui";
 import { BrandCard } from "@/features/brand/components/BrandCard";
 import brandsData from "@/data/brandLogos";
 import type { Brand, BrandCategory } from "@/features/brand/types/brand";
@@ -149,7 +149,7 @@ function FilterDropdown({
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown size={14} />
+          <ChevronDownIcon size={14} />
         </motion.span>
       </button>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ShieldCheck, Truck, Users, RefreshCcw } from "lucide-react";
+import { ShieldCheckIcon, TruckIcon, UsersIcon, RefreshCcwIcon } from "@ff/ui";
 import { CSSProperties } from "react";
 
 // --- Data ---
@@ -9,21 +9,21 @@ import { CSSProperties } from "react";
 const features = [
   {
     id: "01",
-    icon: ShieldCheck,
+    icon: ShieldCheckIcon,
     title: "100% Verified Sellers",
     desc:
       "Zero tolerance for fakes. We only onboard top-rated, authentic sellers to ensure legitimacy.",
   },
   {
     id: "02",
-    icon: Users,
+    icon: UsersIcon,
     title: "1000+ Happy Customers",
     desc:
       "Join the movement. Thousands of satisfied customers across India trusting us for their daily fits.",
   },
   {
     id: "03",
-    icon: Truck,
+    icon: TruckIcon,
     title: "Pan-India Shipping",
     desc:
       "From Mumbai to Manipur, we deliver everywhere. Fast, trackable shipping to every pin code.",

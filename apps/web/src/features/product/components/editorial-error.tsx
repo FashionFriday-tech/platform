@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftIcon } from "@ff/ui";
 
 export default function EditorialError({ slug }: { slug: string }) {
   return (
@@ -30,7 +30,7 @@ export default function EditorialError({ slug }: { slug: string }) {
           href="/"
           className="group inline-flex items-center gap-4 px-12 py-5 border border-border text-[10px] font-black uppercase tracking-widest hover:bg-foreground hover:text-background transition-all duration-500"
         >
-          <ArrowLeft
+          <ArrowLeftIcon
             size={14}
             className="group-hover:-translate-x-2 transition-transform"
           />

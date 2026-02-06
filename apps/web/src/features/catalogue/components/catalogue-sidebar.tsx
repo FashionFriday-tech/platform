@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDownIcon } from "@ff/ui";
 import { useState } from "react";
 import { CategorySlug, CATEGORY_FILTERS } from "@/data/store-data";
 
@@ -49,7 +49,7 @@ export const CatalogueSidebar = ({
           className="flex w-full items-center justify-between text-[11px] font-black uppercase tracking-widest py-2"
         >
           Budget Range
-          <ChevronDown
+          <ChevronDownIcon
             className={`w-4 h-4 transition-transform ${
               openSections.priceRange ? "rotate-180" : ""
             }`}
@@ -102,7 +102,7 @@ export const CatalogueSidebar = ({
             className="flex w-full items-center justify-between text-[11px] font-black uppercase tracking-widest py-2"
           >
             {section.label}
-            <ChevronDown
+            <ChevronDownIcon
               className={`w-4 h-4 transition-transform ${
                 openSections[section.id] ? "rotate-180" : ""
               }`}

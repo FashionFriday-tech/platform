@@ -6,20 +6,20 @@ import { useSettings } from "@/context/SettingsContext";
 import { useRouter } from "next/navigation";
 
 import {
-  Bell,
-  MousePointer2,
-  Moon,
-  User,
-  ShieldCheck,
-  LogOut,
-  ChevronRight,
-  CreditCard,
-  MapPin,
-  Settings2,
-  Trash2,
-  AlertTriangle,
-  X,
-} from "lucide-react";
+  BellIcon,
+  MousePointerIcon,
+  MoonIcon,
+  UserIcon,
+  ShieldCheckIcon,
+  LogOutIcon,
+  ChevronRightIcon,
+  CreditCardIcon,
+  MapPinIcon,
+  Settings2Icon,
+  TrashIcon,
+  AlertTriangleIcon,
+  CloseIcon,
+} from "@ff/ui";
 import { AnimatedThemeToggler } from "@/components/ui/magicUi/animated-theme-toggler";
 
 export default function SettingsPage() {
@@ -54,7 +54,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
               ajmalfaris@gmail.com
             </p>
           </div>
-          <ChevronRight size={20} className="text-foreground-subtle/30" />
+          <ChevronRightIcon size={20} className="text-foreground-subtle/30" />
         </section>
 
         {/* Interaction Group */}
@@ -66,7 +66,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
             <div className="p-6 flex items-center justify-between">
               <div className="flex items-center gap-4 text-left">
                 <div className="p-3 rounded-2xl bg-foreground text-background">
-                  <Moon size={20} />
+                  <MoonIcon size={20} />
                 </div>
                 <span className="text-sm font-black uppercase tracking-tight italic">
                   Dark Mode
@@ -80,7 +80,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 text-left">
                   <div className="p-3 rounded-2xl bg-foreground text-background">
-                    <MousePointer2 size={20} />
+                    <MousePointerIcon size={20} />
                   </div>
                   <div className="flex-1">
                     <span className="text-sm font-black uppercase tracking-tight italic">
@@ -135,7 +135,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
           </p>
           <div className="bg-background rounded-[2rem] overflow-hidden border border-border/40 shadow-sm divide-y divide-border/20">
             <SettingToggle
-              icon={<Bell size={20} />}
+              icon={<BellIcon size={20} />}
               label="Order Logistics"
               active={notifications.orders}
               onToggle={() =>
@@ -146,7 +146,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
               }
             />
             <SettingToggle
-              icon={<Settings2 size={20} />}
+              icon={<Settings2Icon size={20} />}
               label="Exclusive Drops"
               active={notifications.promos}
               onToggle={() =>
@@ -166,15 +166,15 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
           </p>
           <div className="bg-background rounded-[2rem] overflow-hidden border border-border/40 shadow-sm divide-y divide-border/20">
             <SettingLink
-              icon={<MapPin size={20} />}
+              icon={<MapPinIcon size={20} />}
               label="Shipping Addresses"
             />
             <SettingLink
-              icon={<CreditCard size={20} />}
+              icon={<CreditCardIcon size={20} />}
               label="Stored Payment Assets"
             />
             <SettingLink
-              icon={<ShieldCheck size={20} />}
+              icon={<ShieldCheckIcon size={20} />}
               label="Identity Verification"
             />
           </div>
@@ -185,7 +185,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
           <button className="w-full p-4 rounded-[2rem] bg-background border border-border flex items-center justify-between group active:scale-[0.98] transition-all">
             <div className="flex items-center gap-4 text-left">
               <div className="p-3 rounded-2xl bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background transition-all">
-                <LogOut size={20} />
+                <LogOutIcon size={20} />
               </div>
               <span className="text-sm font-black uppercase tracking-tight italic">
                 Log Out
@@ -198,7 +198,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
             onClick={() => setShowDeleteModal(true)}
             className="w-full p-6 rounded-[2rem] bg-red-500/5 border border-red-500/20 text-red-600 flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
           >
-            <Trash2 size={18} />
+            <TrashIcon size={18} />
             <span className="text-[10px] font-black uppercase tracking-widest">
               Delete Account
             </span>
@@ -238,7 +238,7 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
             >
               <div className="flex justify-between items-start mb-8">
                 <div className="p-4 bg-red-600 text-white rounded-3xl shadow-xl shadow-red-600/20">
-                  <AlertTriangle size={32} />
+                  <AlertTriangleIcon size={32} />
                 </div>
                 <button
                   onClick={() => setShowDeleteModal(false)}

@@ -1,22 +1,22 @@
 "use client";
 import React from "react";
 import {
-  Scale,
-  ShieldCheck,
-  Camera,
-  Truck,
-  AlertTriangle,
-  UserCheck,
-  CreditCard,
-  Box,
-  Gavel,
-  Globe,
-  Lock,
-  RefreshCw,
-  Eye,
-  MessageSquare,
-  Info,
-} from "lucide-react";
+  ScaleIcon,
+  ShieldCheckIcon,
+  CameraIcon,
+  TruckIcon,
+  AlertTriangleIcon,
+  UserCheckIcon,
+  CreditCardIcon,
+  BoxIcon,
+  GavelIcon,
+  GlobeIcon,
+  LockIcon,
+  RefreshCcwIcon,
+  EyeIcon,
+  MessageSquareIcon,
+  InfoIcon,
+} from "@ff/ui";
 
 import { termsData } from "@/data/terms";
 
@@ -26,7 +26,7 @@ export default function MasterTermsPage() {
       {/* 1. HEADER */}
       <header className="pt-24 pb-20 px-6 max-w-7xl mx-auto border-b border-white/5">
         <div className="flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-brand/10 border border-brand/20 w-fit">
-          <Scale size={12} className="text-brand" />
+          <ScaleIcon size={12} className="text-brand" />
           <span className="text-[9px] font-black uppercase tracking-[0.5em] text-brand">
             Legal Framework
           </span>
@@ -66,7 +66,7 @@ export default function MasterTermsPage() {
           <div className="space-y-12">
             <div>
               <h4 className="text-xs font-black uppercase tracking-widest text-brand mb-4 flex items-center gap-2">
-                <Lock size={14} /> 10. Intellectual Property
+                <LockIcon size={14} /> 10. Intellectual Property
               </h4>
               <p className="text-[10px] opacity-40 font-bold uppercase leading-relaxed">
                 All images, branding, and Fit Architect logic belong to us. No
@@ -75,7 +75,7 @@ export default function MasterTermsPage() {
             </div>
             <div>
               <h4 className="text-xs font-black uppercase tracking-widest text-brand mb-4 flex items-center gap-2">
-                <Eye size={14} /> 11. Liability & Indemnity
+                <EyeIcon size={14} /> 11. Liability & Indemnity
               </h4>
               <p className="text-[10px] opacity-40 font-bold uppercase leading-relaxed">
                 Liability is capped to order value. You agree to indemnify us
@@ -84,7 +84,7 @@ export default function MasterTermsPage() {
             </div>
             <div>
               <h4 className="text-xs font-black uppercase tracking-widest text-brand mb-4 flex items-center gap-2">
-                <Globe size={14} /> 12. Jurisdiction & Law
+                <GlobeIcon size={14} /> 12. Jurisdiction & Law
               </h4>
               <p className="text-[10px] opacity-40 font-bold uppercase leading-relaxed">
                 Governed by the laws of India. Any disputes will be settled in
@@ -113,7 +113,7 @@ export default function MasterTermsPage() {
       {/* 4. CONTACT INFO (16) */}
       <footer className="mt-24 px-6 max-w-7xl mx-auto text-center border-t border-white/5 pt-16">
         <div className="flex flex-col items-center gap-6">
-          <MessageSquare size={32} className="text-brand opacity-50" />
+          <MessageSquareIcon size={32} className="text-brand opacity-50" />
           <div className="space-y-2">
             <h5 className="text-xs font-black uppercase tracking-widest">
               16. Contact Protocol

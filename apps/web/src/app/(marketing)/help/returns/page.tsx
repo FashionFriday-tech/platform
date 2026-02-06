@@ -1,14 +1,14 @@
 "use client";
 import React from "react";
 import {
-  Navigation,
-  Camera,
-  AlertTriangle,
-  ArrowRight,
-  History,
-  Info,
-  ExternalLink,
-} from "lucide-react";
+  NavigationIcon,
+  CameraIcon,
+  AlertTriangleIcon,
+  ArrowRightIcon,
+  HistoryIcon,
+  InfoIcon,
+  ExternalLinkIcon,
+} from "@ff/ui";
 import { returnsData } from "@/data/returns";
 
 export default function ReturnsRefundsPage() {
@@ -17,7 +17,7 @@ export default function ReturnsRefundsPage() {
       {/* 1. HEADER & TRUST STATEMENT */}
       <header className="pt-32 pb-20 px-6 max-w-7xl mx-auto border-b border-white/5">
         <div className="flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full bg-brand/10 border border-brand/20 w-fit">
-          <Navigation size={12} className="text-brand" />
+          <NavigationIcon size={12} className="text-brand" />
           <span className="text-[10px] font-black tracking-[0.4em] text-brand">
             Support / Settlement Protocol
           </span>
@@ -91,7 +91,7 @@ export default function ReturnsRefundsPage() {
                 <div className="space-y-4 mt-auto">
                   {section.points.map((point: string, idx: any) => (
                     <div key={idx} className="flex items-start gap-3">
-                      <ArrowRight
+                      <ArrowRightIcon
                         size={14}
                         className="text-brand shrink-0 mt-0.5"
                       />
@@ -111,7 +111,7 @@ export default function ReturnsRefundsPage() {
       <section className="max-w-7xl mx-auto px-6 mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-brand p-12 rounded-[4rem] text-black">
           <div className="flex items-center gap-4 mb-6">
-            <Camera size={32} />
+            <CameraIcon size={32} />
             <h3 className="text-4xl font-black italic tracking-tighter">
               The Unboxing Mandate
             </h3>
@@ -133,7 +133,7 @@ export default function ReturnsRefundsPage() {
         </div>
 
         <div className="bg-[#111] border border-white/10 p-12 rounded-[4rem] flex flex-col justify-between">
-          <History size={32} className="text-brand opacity-50" />
+          <HistoryIcon size={32} className="text-brand opacity-50" />
           <div>
             <h4 className="text-2xl font-black italic tracking-tighter mb-4 uppercase">
               Anti-Abuse Control
@@ -152,7 +152,7 @@ export default function ReturnsRefundsPage() {
         <div className="bg-white/5 border border-white/5 p-12 rounded-[4rem]">
           <div className="flex flex-col md:flex-row gap-12 items-center">
             <div className="p-8 bg-white/5 rounded-full shrink-0">
-              <Info size={40} className="text-brand" />
+              <InfoIcon size={40} className="text-brand" />
             </div>
             <div>
               <h3 className="text-3xl font-black italic tracking-tighter mb-4 uppercase">

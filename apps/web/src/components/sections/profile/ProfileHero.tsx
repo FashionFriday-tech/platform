@@ -1,6 +1,6 @@
 "use client";
 
-import { Crown, Zap, Smartphone, ArrowUpRight, Sparkles } from "lucide-react";
+import { CrownIcon, ZapIcon, SmartphoneIcon, ArrowUpRightIcon, SparklesIcon } from "@ff/ui";
 import { userData } from "@/data/profile";
 import { motion } from "framer-motion";
 
@@ -46,7 +46,7 @@ export default function ProfileHero() {
               <div className="w-14 h-10 rounded-lg bg-linear-to-br from-background/40 to-background/10 border border-background/20" />
               <div className="flex items-center gap-2 text-xs font-black tracking-widest uppercase">
                 {userData.tierName}
-                <Crown size={18} />
+                <CrownIcon size={18} />
               </div>
             </div>
 
@@ -111,10 +111,10 @@ export default function ProfileHero() {
 
           {/* Benefits */}
           <div className="grid grid-cols-2 gap-4">
-            <BenefitCard icon={<Zap size={18} />} title="Instant Cashback" />
-            <BenefitCard icon={<Smartphone size={18} />} title="Priority Access" />
-            <BenefitCard icon={<ArrowUpRight size={18} />} title="Tier Perks" />
-            <BenefitCard icon={<Sparkles size={18} />} title="Exclusive Drops" />
+            <BenefitCard icon={<ZapIcon size={18} />} title="Instant Cashback" />
+            <BenefitCard icon={<SmartphoneIcon size={18} />} title="Priority Access" />
+            <BenefitCard icon={<ArrowUpRightIcon size={18} />} title="Tier Perks" />
+            <BenefitCard icon={<SparklesIcon size={18} />} title="Exclusive Drops" />
           </div>
 
           {/* CTA */}
@@ -122,7 +122,7 @@ export default function ProfileHero() {
             bg-foreground text-background font-bold uppercase tracking-widest text-xs
             hover:opacity-90 transition">
             View All Benefits
-            <ArrowUpRight size={16} />
+            <ArrowUpRightIcon size={16} />
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { MoonIcon, SunIcon } from "@ff/ui";
 import { useTheme } from "next-themes";
 import { flushSync } from "react-dom";
 import { cn } from "@/lib/utils";
@@ -73,9 +73,9 @@ export const AnimatedThemeToggler = ({
       {...props}
     >
       {resolvedTheme === "dark" ? (
-        <Sun className="w-5 h-5 text-text-primary" />
+        <SunIcon className="w-5 h-5 text-text-primary" />
       ) : (
-        <Moon className="w-5 h-5 text-text-primary" />
+        <MoonIcon className="w-5 h-5 text-text-primary" />
       )}
       <span className="sr-only">Toggle theme</span>
     </button>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRightIcon } from "@ff/ui";
 import { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -38,7 +38,7 @@ export default function BrandGrid({
           href={viewAllHref}
           className="hidden md:flex items-center gap-2 text-sm font-bold uppercase tracking-widest border-b-2 border-black dark:border-white pb-1"
         >
-          View All Brands <ArrowUpRight className="w-4 h-4" />
+          View All Brands <ArrowUpRightIcon className="w-4 h-4" />
         </Link>
       </div>
 

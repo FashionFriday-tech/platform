@@ -1,21 +1,20 @@
 import {
-    Package,
-    Clock,
-    Truck,
-    MapPin,
-    ShieldCheck,
-    Camera,
-    AlertCircle,
-    HelpCircle,
-    CreditCard, // Added
-    RotateCcw,  // Added
-    LucideIcon
-} from "lucide-react";
+    PackageIcon,
+    ClockIcon,
+    TruckIcon,
+    MapPinIcon,
+    CameraIcon,
+    AlertCircleIcon,
+    CreditCardIcon,
+    RefreshCcwIcon,
+    IconComponent,
+} from "@ff/ui";
+
 
 export interface ShippingSection {
     id: string;
     title: string;
-    icon: LucideIcon;
+    icon: IconComponent;
     description: string;
     details: string[];
 }
@@ -24,7 +23,7 @@ export const shippingData: ShippingSection[] = [
     {
         id: "processing",
         title: "Order Processing",
-        icon: Clock,
+        icon: ClockIcon,
         description: "The time it takes to prepare your order for dispatch.",
         details: [
             "24–48 hours standard processing time",
@@ -35,7 +34,7 @@ export const shippingData: ShippingSection[] = [
     {
         id: "timelines",
         title: "Delivery Timelines",
-        icon: Truck,
+        icon: TruckIcon,
         description: "Transit times provided by our tier-1 courier partners.",
         details: [
             "Metros: 2–4 Business Days",
@@ -46,7 +45,7 @@ export const shippingData: ShippingSection[] = [
     {
         id: "methods",
         title: "Shipping Methods",
-        icon: CreditCard,
+        icon: CreditCardIcon,
         description: "How your payment choice affects logistics.",
         details: [
             "Prepaid: Free shipping over ₹1,999",
@@ -57,7 +56,7 @@ export const shippingData: ShippingSection[] = [
     {
         id: "tracking",
         title: "Live Tracking",
-        icon: MapPin,
+        icon: MapPinIcon,
         description: "Stay updated on your package's movement in real-time.",
         details: [
             "ID generated within 24 hours of order",
@@ -68,7 +67,7 @@ export const shippingData: ShippingSection[] = [
     {
         id: "exceptions",
         title: "Delivery Exceptions",
-        icon: AlertCircle,
+        icon: AlertCircleIcon,
         description: "External factors that may shift your delivery date.",
         details: [
             "Weather delays or courier strikes",
@@ -79,7 +78,7 @@ export const shippingData: ShippingSection[] = [
     {
         id: "rto",
         title: "Failed Delivery (RTO)",
-        icon: RotateCcw,
+        icon: RefreshCcwIcon,
         description: "What happens when a package cannot be delivered.",
         details: [
             "3 Delivery attempts before return",
@@ -90,7 +89,7 @@ export const shippingData: ShippingSection[] = [
     {
         id: "protection",
         title: "Transit Protection",
-        icon: Camera,
+        icon: CameraIcon,
         description: "Mandatory protocols for a secure delivery experience.",
         details: [
             "Uncut 360° unboxing video required",

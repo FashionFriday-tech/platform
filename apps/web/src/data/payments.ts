@@ -1,18 +1,16 @@
 import {
-    CreditCard,
-    Smartphone,
-    Banknote,
-    ShieldCheck,
-    AlertCircle,
-    RefreshCw,
-    Zap,
-    LucideIcon
-} from "lucide-react";
+    CreditCardIcon,
+    BanknoteIcon,
+    AlertCircleIcon,
+    RefreshCcwIcon,
+    IconComponent,
+} from "@ff/ui";
+
 
 export interface PaymentSection {
     id: string;
     title: string;
-    icon: LucideIcon;
+    icon: IconComponent;
     description: string;
     details: string[];
 }
@@ -21,7 +19,7 @@ export const paymentData: PaymentSection[] = [
     {
         id: "methods",
         title: "Accepted Gateways",
-        icon: CreditCard,
+        icon: CreditCardIcon,
         description: "Secure, encrypted processing via PCI-DSS compliant partners.",
         details: [
             "UPI: GPay, PhonePe, Paytm (Instant)",
@@ -32,7 +30,7 @@ export const paymentData: PaymentSection[] = [
     {
         id: "cod-security",
         title: "COD Service Fee",
-        icon: Banknote,
+        icon: BanknoteIcon,
         description: "Logistics risk mitigation for Cash on Delivery orders.",
         details: [
             "₹200 Non-refundable service charge",
@@ -43,7 +41,7 @@ export const paymentData: PaymentSection[] = [
     {
         id: "failure-protocol",
         title: "Transaction Failures",
-        icon: AlertCircle,
+        icon: AlertCircleIcon,
         description: "Standard procedure for debited but failed payments.",
         details: [
             "Auto-refund initiated within 24 hours",
@@ -54,7 +52,7 @@ export const paymentData: PaymentSection[] = [
     {
         id: "settlements",
         title: "Refund Settlement",
-        icon: RefreshCw,
+        icon: RefreshCcwIcon,
         description: "How balance is returned to the user.",
         details: [
             "Preferred: Instant Wallet Credit (100%)",

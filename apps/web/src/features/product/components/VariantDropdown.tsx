@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { IoIosArrowDown } from "react-icons/io";
+import { ArrowDownIconIOS } from "@ff/ui";
 import Link from "next/link";
 import { div } from "framer-motion/client";
 
@@ -46,7 +46,7 @@ const QualityTray = ({
           <span className="text-xs">Quality Options</span>
         </div>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
-          <IoIosArrowDown />
+          <ArrowDownIconIOS />
         </motion.span>
       </button>
 
@@ -121,7 +121,7 @@ const ColorTray = ({
           <span className="text-xs">Color Options</span>
         </div>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
-          <IoIosArrowDown />
+          <ArrowDownIconIOS />
         </motion.span>
       </button>
 

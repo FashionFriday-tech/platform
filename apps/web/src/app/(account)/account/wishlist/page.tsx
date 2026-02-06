@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import WishlistCard from "@/components/sections/wishlist/WishlistCard";
 import EmptyWishlist from "@/components/sections/wishlist/EmptyWishlist";
 import { Product } from "@/types/wishlist";
-import { Trash2 } from "lucide-react";
 
 // MOCK DATA (In production, fetch this from your store/API)
 const wishlistItems: Product[] = [

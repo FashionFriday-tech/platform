@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronRight, Package, Tag } from "lucide-react";
+import { PackageIcon, TagIcon } from "@ff/ui";
 import Image from "next/image";
 
 export default function SourcingSection() {
@@ -90,7 +90,7 @@ export default function SourcingSection() {
                     : "border-foreground-subtle focus-within:border-foreground"
                 }`}
               >
-                <Package size={18} className="text-foreground-muted" />
+                <PackageIcon size={18} className="text-foreground-muted" />
                 <input
                   type="text"
                   placeholder="e.g. Jordan 1 High"
@@ -123,7 +123,7 @@ export default function SourcingSection() {
                     : "border-foreground-subtle focus-within:border-foreground"
                 }`}
               >
-                <Tag size={18} className="text-foreground-muted" />
+                <TagIcon size={18} className="text-foreground-muted" />
                 <select
                   className="w-full bg-transparent text-foreground outline-none cursor-pointer text-sm appearance-none"
                   value={formData.category}

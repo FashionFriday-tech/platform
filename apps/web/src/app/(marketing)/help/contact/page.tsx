@@ -1,16 +1,16 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Users,
-  Sparkles,
-  Store,
-  Handshake,
-  SendHorizontal,
-  ArrowUpRight,
-  Instagram,
-  ChevronRight,
-  ChevronDown,
-} from "lucide-react";
+  UsersIcon,
+  SparklesIcon,
+  StoreIcon,
+  HandshakeIcon,
+  SendIcon,
+  ArrowUpRightIcon,
+  InstagramIcon,
+  ChevronRightIcon,
+  ChevronDownIcon,
+} from "@ff/ui";
 
 interface InteractionCardProps {
   icon: React.ReactNode;
@@ -56,7 +56,7 @@ const CustomSelect = ({
         <span className="uppercase font-black tracking-widest text-[11px] select-none">
           {selected}
         </span>
-        <ChevronDown
+        <ChevronDownIcon
           size={16}
           className={`transition-transform duration-300 ${
             isOpen ? "rotate-180" : ""
@@ -129,25 +129,25 @@ export default function ContactPage() {
       {/* 2. THE CURVED INTERACTION TILES */}
       <section className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-32">
         <InteractionCard
-          icon={<Sparkles size={24} />}
+          icon={<SparklesIcon size={24} />}
           title="Influencer"
           desc="Join our Ambassador Program"
           tag="Creators"
         />
         <InteractionCard
-          icon={<Store size={24} />}
+          icon={<StoreIcon size={24} />}
           title="Seller"
           desc="List your brand on our platform"
           tag="B2B"
         />
         <InteractionCard
-          icon={<Handshake size={24} />}
+          icon={<HandshakeIcon size={24} />}
           title="Partner"
           desc="Collaborations & Marketing"
           tag="Strategic"
         />
         <InteractionCard
-          icon={<Users size={24} />}
+          icon={<UsersIcon size={24} />}
           title="Support"
           desc="Order & Sizing Assistance"
           tag="Client"
@@ -173,7 +173,7 @@ export default function ContactPage() {
               <div className="space-y-8">
                 <div className="flex items-center gap-6 group cursor-pointer">
                   <div className="p-4 bg-background rounded-full border border-border group-hover:scale-110 transition-transform">
-                    <Instagram size={20} />
+                    <InstagramIcon size={20} />
                   </div>
                   <span className="text-sm font-black uppercase tracking-widest italic border-b border-brand">
                     @fashionfriday.in
@@ -181,7 +181,7 @@ export default function ContactPage() {
                 </div>
                 <div className="flex items-center gap-6 group cursor-pointer">
                   <div className="p-4 bg-background rounded-full border border-border group-hover:scale-110 transition-transform">
-                    <ArrowUpRight size={20} />
+                    <ArrowUpRightIcon size={20} />
                   </div>
                   <span className="text-sm font-black uppercase tracking-widest italic border-b border-brand">
                     career@fashionfriday.com
@@ -231,7 +231,7 @@ export default function ContactPage() {
                 />
 
                 <button className="w-full bg-brand text-brand-foreground py-6 rounded-full font-black uppercase tracking-[0.4em] text-[11px] hover:scale-[0.98] active:scale-[0.96] transition-all flex items-center justify-center gap-4">
-                  Send Transmission <SendHorizontal size={16} />
+                  Send Transmission <SendIcon size={16} />
                 </button>
               </form>
             </div>
@@ -262,7 +262,7 @@ function InteractionCard({ icon, title, desc, tag }: InteractionCardProps) {
         <div className="space-y-2">
           <h3 className="text-2xl font-black uppercase tracking-tighter italic flex items-center gap-2">
             {title}{" "}
-            <ChevronRight
+            <ChevronRightIcon
               size={20}
               className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all"
             />

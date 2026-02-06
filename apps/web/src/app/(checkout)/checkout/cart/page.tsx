@@ -3,10 +3,9 @@
 import CartItemCard from "@/components/sections/bag/BagItemCard";
 import OrderSummary from "@/components/sections/bag/OrderSummary";
 import { bagItems } from "@/data/bagItems";
-import { Truck, ShoppingBag, ArrowRight } from "lucide-react";
+import { ShoppingBagIcon, ChevronDownIcon } from "@ff/ui";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
 import CheckoutStages from "../../_components/CheckoutProgress";
 
 export default function CartPage() {
@@ -32,7 +31,7 @@ export default function CartPage() {
                 ) : (
                   <div className="py-24 text-center">
                     <div className="w-20 h-20 rounded-full bg-background-muted mx-auto flex items-center justify-center mb-6 text-foreground-subtle">
-                      <ShoppingBag size={32} strokeWidth={1} />
+                      <ShoppingBagIcon size={32} />
                     </div>
                     <h2 className="text-2xl font-black uppercase tracking-tighter mb-2">
                       Your bag is empty
@@ -62,7 +61,7 @@ export default function CartPage() {
                   </div>
 
                   <div className="flex items-center justify-center w-8 h-8 rounded-full bg-foreground text-background transition-transform group-hover:translate-y-0.5">
-                    <ChevronDown size={16} strokeWidth={3} />
+                    <ChevronDownIcon size={16} />
                   </div>
                 </a>
               </div>

@@ -3,17 +3,17 @@
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Wallet,
-  ArrowUpRight,
-  ArrowDownLeft,
-  History,
-  RefreshCcw,
-  ShieldCheck,
-  TicketPercent,
-  Plus,
-  ChevronRight,
-  TrendingUp,
-} from "lucide-react";
+  WalletIcon,
+  ArrowUpRightIcon,
+  ArrowDownLeftIcon,
+  HistoryIcon,
+  RefreshCcwIcon,
+  ShieldCheckIcon,
+  TicketPercentIcon,
+  PlusIcon,
+  ChevronRightIcon,
+  TrendingUpIcon,
+} from "@ff/ui";
 import { cn } from "@/lib/utils";
 
 // --- Types ---
@@ -136,7 +136,7 @@ export default function WalletPage() {
                   <div className="relative">
                     <div className="absolute inset-0 rounded-xl bg-foreground/40 blur-lg animate-pulse" />
                     <div className="relative rounded-xl bg-backgroiund/40 border border-white/20 p-3 text-white">
-                      <ShieldCheck size={22} />
+                      <ShieldCheckIcon size={22} />
                     </div>
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function WalletPage() {
           <SubWalletCard
             label="Refund Wallet"
             value={`₹${totals.refundBalance}`}
-            icon={<RefreshCcw size={20} />}
+            icon={<RefreshCcwIcon size={20} />}
             description="Verified returns. Fully usable for your next order."
             action="Details"
             color="emerald-400"
@@ -212,7 +212,7 @@ export default function WalletPage() {
           <SubWalletCard
             label="Reward Wallet"
             value={`₹${totals.rewardWallet}`}
-            icon={<TicketPercent size={20} />}
+            icon={<TicketPercentIcon size={20} />}
             description="Referrals & Giftcards. Auto-applies 5% on orders."
             action="Details"
             color="red-400"
@@ -223,7 +223,7 @@ export default function WalletPage() {
         <div className="space-y-6 pb-20">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 border border-border rounded-4xl p-3 bg-background-muted/20">
             <div className="flex items-center gap-3 px-4">
-              <History size={16} className="opacity-30" />
+              <HistoryIcon size={16} className="opacity-30" />
               <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground-subtle">
                 Activity History
               </h3>
@@ -266,9 +266,9 @@ export default function WalletPage() {
                       )}
                     >
                       {tx.amount > 0 ? (
-                        <ArrowDownLeft size={22} />
+                        <ArrowDownLeftIcon size={22} />
                       ) : (
-                        <ArrowUpRight size={22} />
+                        <ArrowUpRightIcon size={22} />
                       )}
                     </div>
                     <div>
@@ -352,7 +352,7 @@ function SubWalletCard({
             {label}
           </p>
           <div className="p-4">
-            <ChevronRight
+            <ChevronRightIcon
               size={18}
               className="group-hover:translate-x-1 transition-transform"
             />

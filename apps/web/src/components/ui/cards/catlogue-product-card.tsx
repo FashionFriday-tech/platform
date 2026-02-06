@@ -3,8 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { RiShieldStarFill } from "react-icons/ri";
-import { MdStars } from "react-icons/md";
+import { StarBadgeIcon, StarsIcon } from "@ff/ui";
 import brandLogos from "@/data/brandLogos";
 import { Product } from "@/data/store-data";
 
@@ -55,7 +54,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
             className="w-8 invert-0 dark:invert"
           />
           <span className="flex gap-1 px-2 py-0.5 justify-center items-center font-bold border border-border rounded-full uppercase text-blue-500">
-            <RiShieldStarFill /> {displayQuality}
+            <StarBadgeIcon /> {displayQuality}
           </span>
         </div>
 
@@ -74,7 +73,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
               </p>
             </span>
             <span className="flex items-center gap-1 text-foreground-muted text-[10px]">
-              <MdStars className="text-yellow-500" /> 4.5
+              <StarsIcon className="text-yellow-500" /> 4.5
             </span>
           </div>
         </div>

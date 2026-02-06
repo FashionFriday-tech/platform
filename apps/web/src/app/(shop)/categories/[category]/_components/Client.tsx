@@ -9,18 +9,15 @@ import {
   filterProducts,
 } from "@/data/store-data";
 import brandLogos from "@/data/brandLogos";
-import { RiShieldStarFill } from "react-icons/ri";
-import { CatalogueProductCard } from "@/components/ui/cards/catlogue-product-card";
 import {
-  ChevronDown,
-  SlidersHorizontal,
-  ArrowUpDown,
-  Check,
-  Play,
-  Square,
-  Zap,
-} from "lucide-react";
-import { MdStars } from "react-icons/md";
+  ChevronDownIcon,
+  SlidersIcon,
+  ArrowUpDownIcon,
+  CheckIcon,
+  PlayIcon,
+  StopIcon,
+} from "@ff/ui";
+import { CatalogueProductCard } from "@/components/ui/cards/catlogue-product-card";
 import { useSettings } from "@/context/SettingsContext";
 import Link from "next/link";
 
@@ -103,7 +100,7 @@ function FilterContent({
               style={{ backgroundColor: COLOR_MAP[color] || "#ccc" }}
             >
               {selectedOptions.includes(color) && (
-                <Check
+                <CheckIcon
                   size={16}
                   className={color === "White" ? "text-black" : "text-white"}
                 />
@@ -309,7 +306,7 @@ export default function CategoryClient({
             }}
             className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-r border-border hover:bg-background-muted transition-all outline-none"
           >
-            <SlidersHorizontal size={13} /> Filter
+            <SlidersIcon size={13} /> Filter
           </button>
 
           <button
@@ -319,9 +316,9 @@ export default function CategoryClient({
             }`}
           >
             {isAutoScrolling ? (
-              <Square size={12} className="fill-current" />
+              <StopIcon size={12} className="fill-current" />
             ) : (
-              <Play size={12} className="fill-current" />
+              <PlayIcon size={12} className="fill-current" />
             )}
             {isAutoScrolling ? "Scrolling" : "Auto Scroll"}
           </button>
@@ -330,7 +327,7 @@ export default function CategoryClient({
             onClick={() => setActiveDrawer("sort")}
             className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest hover:bg-background-muted transition-all outline-none"
           >
-            <ArrowUpDown size={13} /> Sort
+            <ArrowUpDownIcon size={13} /> Sort
           </button>
         </div>
       </div>
@@ -362,9 +359,9 @@ export default function CategoryClient({
               }`}
             >
               {isAutoScrolling ? (
-                <Square size={14} fill="currentColor" />
+                <StopIcon size={14} fill="currentColor" />
               ) : (
-                <Play size={14} fill="currentColor" />
+                <PlayIcon size={14} fill="currentColor" />
               )}
               <span className="text-[11px] font-black uppercase tracking-widest">
                 {isAutoScrolling ? "Stop" : "Start Auto-Scroll"}
@@ -383,7 +380,7 @@ export default function CategoryClient({
                   className="flex w-full items-center justify-between text-[11px] font-black uppercase tracking-[0.2em] py-2"
                 >
                   <span>{section.label}</span>
-                  <ChevronDown
+                  <ChevronDownIcon
                     className={`w-4 h-4 transition-transform duration-500 ${
                       openSections[section.id] ? "rotate-180" : ""
                     }`}
@@ -509,7 +506,7 @@ export default function CategoryClient({
                             className="flex w-full items-center justify-between text-[11px] font-black uppercase tracking-[0.15em] py-2"
                           >
                             <span>{section.label}</span>
-                            <ChevronDown
+                            <ChevronDownIcon
                               className={`w-3.5 h-3.5 transition-transform ${
                                 openSectionId === section.id ? "rotate-180" : ""
                               }`}

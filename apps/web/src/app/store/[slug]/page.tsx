@@ -9,7 +9,7 @@ import {
   filterProducts,
   FilterDefinition,
 } from "@/data/store-data";
-import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { ChevronDownIcon, SlidersIcon, CloseIcon } from "@ff/ui";
 import { Header } from "@/components/layout/Header";
 
 // --- Filter Accordion Component ---
@@ -31,7 +31,7 @@ function FilterSection({
         className="flex w-full items-center justify-between text-sm font-bold text-black uppercase tracking-wider"
       >
         {section.label}
-        <ChevronDown
+        <ChevronDownIcon
           className={`w-4 h-4 transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
@@ -157,7 +157,7 @@ export default function CategoryPage() {
               onClick={() => setIsMobileFilterOpen(true)}
               className="lg:hidden flex items-center gap-2 text-sm font-bold uppercase border-2 border-black px-4 py-2 rounded-4xl"
             >
-              <SlidersHorizontal className="w-4 h-4" /> Filters{" "}
+              <SlidersIcon className="w-4 h-4" /> Filters{" "}
               {activeFilterCount > 0 && `(${activeFilterCount})`}
             </button>
           </div>
@@ -247,7 +247,7 @@ export default function CategoryPage() {
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-lg font-bold uppercase">Filters</h3>
                 <button onClick={() => setIsMobileFilterOpen(false)}>
-                  <X className="w-6 h-6" />
+                  <CloseIcon className="w-6 h-6" />
                 </button>
               </div>
               {availableFilters.map((section) => (

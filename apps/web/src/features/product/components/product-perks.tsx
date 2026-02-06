@@ -1,11 +1,11 @@
-import { Truck, RotateCcw, ShieldCheck, CreditCard } from "lucide-react";
+import { TruckIcon, RefreshCcwIcon, ShieldCheckIcon, CreditCardIcon } from "@ff/ui";
 
 export default function ProductPerks() {
   const perks = [
-    { icon: <Truck size={18} />, title: "Express Delivery", desc: "Arrives in 2-3 days" },
-    { icon: <RotateCcw size={18} />, title: "Easy Returns", desc: "7-day window" },
-    { icon: <CreditCard size={18} />, title: "COD Available", desc: "Cash on delivery" },
-    { icon: <ShieldCheck size={18} />, title: "Original Product", desc: "100% Authentic" },
+    { icon: <TruckIcon size={18} />, title: "Express Delivery", desc: "Arrives in 2-3 days" },
+    { icon: <RefreshCcwIcon size={18} />, title: "Easy Returns", desc: "7-day window" },
+    { icon: <CreditCardIcon size={18} />, title: "COD Available", desc: "Cash on delivery" },
+    { icon: <ShieldCheckIcon size={18} />, title: "Original Product", desc: "100% Authentic" },
   ];
 
   return (

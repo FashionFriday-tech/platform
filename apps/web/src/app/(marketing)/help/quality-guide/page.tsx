@@ -1,17 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import {
-  ShieldCheck,
-  Cpu,
-  Layers,
-  Zap,
-  Info,
-  Activity,
-  Watch,
-  Footprints,
-  Shirt,
-} from "lucide-react";
-import { IoIosArrowDown } from "react-icons/io";
+  ShieldCheckIcon,
+  CpuIcon,
+  LayersIcon,
+  ZapIcon,
+  InfoIcon,
+  ActivityIcon,
+  WatchIcon,
+  FootprintsIcon,
+  ShirtIcon,
+  ArrowDownIconIOS,
+} from "@ff/ui";
 import { ProductQuality } from "@/data/quality";
 
 export default function QualityProtocolPage() {
@@ -25,7 +25,7 @@ export default function QualityProtocolPage() {
       <header className="h-screen flex flex-col justify-center items-center pb-20 px-6 max-w-7xl mx-auto text-center">
         {/* Eyebrow */}
         <div className="flex items-center gap-2 mb-10 px-5 py-2 rounded-full bg-brand/10 border border-brand/20">
-          <Activity size={12} className="text-brand" />
+          <ActivityIcon size={12} className="text-brand" />
           <span className="text-[9px] font-black uppercase tracking-[0.4em] text-brand">
             Quality Classification System
           </span>
@@ -46,7 +46,7 @@ export default function QualityProtocolPage() {
           No marketing lies. Just manufacturing truth.
         </p>
         <div className="absolute bottom-30 md:bottom-20 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <IoIosArrowDown size={32} className="text-foreground-muted" />
+          <ArrowDownIconIOS size={32} className="text-foreground-muted" />
         </div>
       </header>
 
@@ -64,9 +64,9 @@ export default function QualityProtocolPage() {
               }`}
             >
               <div className="flex items-center gap-2">
-                {cat === "footwear" && <Footprints size={14} />}
-                {cat === "watches" && <Watch size={14} />}
-                {cat === "Apparel" && <Watch size={14} />}
+                {cat === "footwear" && <FootprintsIcon size={14} />}
+                {cat === "watches" && <WatchIcon size={14} />}
+                {cat === "Apparel" && <WatchIcon size={14} />}
                 {cat}
               </div>
             </button>
@@ -159,7 +159,7 @@ export default function QualityProtocolPage() {
       <section className="max-w-6xl mx-auto px-6 mt-24">
         <div className="bg-foreground text-background rounded-[3.5rem] p-8 md:p-20 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-10 opacity-5">
-            <ShieldCheck size={350} />
+            <ShieldCheckIcon size={350} />
           </div>
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
             <h2 className="text-6xl md:text-8xl font-black uppercase italic tracking-tighter leading-[0.8]">

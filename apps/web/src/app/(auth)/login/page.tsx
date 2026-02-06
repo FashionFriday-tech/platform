@@ -2,8 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight, ArrowLeft } from "lucide-react";
-import { MdVerifiedUser } from "react-icons/md";
+import { ChevronRightIcon, ArrowLeftIcon, VerifiedUserIcon } from "@ff/ui";
 import Link from "next/link";
 
 export default function AuthPage() {
@@ -134,7 +133,7 @@ export default function AuthPage() {
           }}
           className="mb-8 flex items-center text-[10px] font-bold text-zinc-500 uppercase tracking-widest hover:text-white transition-colors"
         >
-          <ArrowLeft size={14} className="mr-2" />
+          <ArrowLeftIcon size={14} className="mr-2" />
           {step === "OTP" ? "Change Number" : "Back to OTP"}
         </button>
       )}
@@ -291,7 +290,7 @@ export default function AuthPage() {
               </div>
               <div className="w-full flex items-center justify-between border-2 border-zinc-800 rounded-full px-8 py-4 text-white">
                 {phoneNumber}{" "}
-                <MdVerifiedUser className="text-green-400 text-xl" />
+                <VerifiedUserIcon className="text-green-400 text-xl" />
               </div>
             </div>
           </div>
@@ -303,7 +302,7 @@ export default function AuthPage() {
           className="w-full bg-white text-black font-black py-5 rounded-full flex items-center justify-center uppercase text-sm tracking-widest group hover:bg-zinc-200 transition-all disabled:opacity-50 mt-2"
         >
           {loading ? "Processing..." : step === "PROFILE" ? "Start Shopping!" : "Continue"}
-          {!loading && <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />}
+          {!loading && <ChevronRightIcon className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />}
         </button>
 
         {step !== "OTP" && (

@@ -1,15 +1,16 @@
 import {
-    Wallet,
-    ShieldAlert,
-    FileCheck,
-    Truck,
-    LucideIcon
-} from "lucide-react";
+    WalletIcon,
+    ShieldAlertIcon,
+    FileCheckIcon,
+    TruckIcon,
+    IconComponent,
+} from "@ff/ui";
+
 
 export interface PolicySection {
     id: string;
     title: string;
-    icon: LucideIcon;
+    icon: IconComponent;
     description: string;
     points: string[];
 }
@@ -18,7 +19,7 @@ export const returnsData: PolicySection[] = [
     {
         id: "eligibility",
         title: "Return Eligibility",
-        icon: FileCheck,
+        icon: FileCheckIcon,
         description: "Standard criteria for a successful return request.",
         points: [
             "Window: 48-72 hours from the delivery timestamp",
@@ -29,7 +30,7 @@ export const returnsData: PolicySection[] = [
     {
         id: "refund-wallet",
         title: "Wallet-First Refunds",
-        icon: Wallet,
+        icon: WalletIcon,
         description: "Our streamlined settlement process via Store Credits.",
         points: [
             "100% of the product value is credited to your Architect Wallet",
@@ -40,7 +41,7 @@ export const returnsData: PolicySection[] = [
     {
         id: "cod-protocol",
         title: "COD Fee Policy",
-        icon: ShieldAlert,
+        icon: ShieldAlertIcon,
         description: "Transparency regarding Cash on Delivery logistics.",
         points: [
             "The COD fee is a non-refundable service charge for courier handling",
@@ -51,7 +52,7 @@ export const returnsData: PolicySection[] = [
     {
         id: "logistics-cost",
         title: "Shipping Responsibility",
-        icon: Truck,
+        icon: TruckIcon,
         description: "Clarity on who bears the transit costs.",
         points: [
             "Customer Side: Shipping costs are deducted for cancellations/RTOs",

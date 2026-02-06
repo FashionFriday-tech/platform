@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { ArrowUpRightIcon } from "@ff/ui";
 
 export interface CollectionItem {
   id: number;
@@ -44,7 +44,7 @@ export default function FeatureRail({
           href="/shop/new"
           className="hidden md:flex items-center gap-2 font-bold uppercase tracking-wider text-sm hover:opacity-70 transition-opacity text-black dark:text-white"
         >
-          View All <ArrowUpRight className="w-4 h-4" />
+          View All <ArrowUpRightIcon className="w-4 h-4" />
         </Link>
       </div>
 

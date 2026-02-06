@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Tag, ShieldCheck, ChevronUp } from "lucide-react";
+import { ArrowRightIcon, TagIcon, ShieldCheckIcon, ChevronUpIcon } from "@ff/ui";
 
 export default function OrderSummary() {
   const subtotal = 3798;
@@ -53,7 +53,7 @@ export default function OrderSummary() {
         {/* 2. Promo Code - Optimized for Mobile spacing */}
         <div className="relative mt-10 mb-8">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-background-subtle">
-            <Tag size={16} strokeWidth={1.5} />
+            <TagIcon size={16} />
           </div>
           <input 
             type="text" 
@@ -68,12 +68,12 @@ export default function OrderSummary() {
         {/* 3. Main Checkout Button */}
         <button className="hidden lg:flex w-full group bg-background text-foreground py-4 rounded-full font-bold items-center justify-center gap-3 hover:opacity-95 transition-all active:scale-[0.98] cursor-pointer shadow-xl shadow-brand/10">
           Checkout Now
-          <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+          <ArrowRightIcon size={20} className="transition-transform group-hover:translate-x-1" />
         </button>
 
         {/* 4. Trust Badge */}
         <div className="mt-8 pt-6 border-t border-border/50 flex items-center justify-center gap-3 text-[10px] text-background uppercase tracking-[0.2em] font-bold">
-          <ShieldCheck size={16}/>
+          <ShieldCheckIcon size={16}/>
           <span>Secure Checkout SSL</span>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function OrderSummary() {
                <span className="text-xl font-bold leading-none">₹{total.toLocaleString()}</span>
             </div>
             <a href="/checkout/review" className="bg-background text-foreground h-12 px-6 rounded-full font-black uppercase tracking-widest flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
-               Checkout Now <ArrowRight size={16} />
+               Checkout Now <ArrowRightIcon size={16} />
             </a>
          </div>
       </div>

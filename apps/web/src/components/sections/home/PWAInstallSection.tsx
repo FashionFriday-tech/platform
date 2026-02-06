@@ -3,38 +3,35 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
-  Download,
-  Check,
-  X,
-  Share,
-  Smartphone,
-  Zap,
-  ShieldCheck,
-  Lock,
-} from "lucide-react";
+  CloseIcon,
+  ShareIcon,
+  ZapIcon,
+  ShieldIcon,
+  LockIcon,
+  DownloadIcon,
+  AppleLogoIcon,
+  DownloadIconIOS,
+} from "@ff/ui";
 import { Iphone } from "@/components/ui/magicUi/iphone";
-import { FiZap, FiShield, FiLock, FiDownload } from "react-icons/fi";
-import { IoLogoApple, IoIosDownload } from "react-icons/io";
-import { MdOutlineDownloading } from "react-icons/md";
 
 const FEATURES = [
   {
-    icon: FiDownload,
+    icon: DownloadIcon,
     title: "Fast Download",
     desc: "Optimized assets for quick installs.",
   },
   {
-    icon: FiZap,
+    icon: ZapIcon,
     title: "Zero Latency",
     desc: "Instant loads and checkout.",
   },
   {
-    icon: FiShield,
+    icon: ShieldIcon,
     title: "Privacy & Security",
     desc: "No app store. No tracking.",
   },
   {
-    icon: FiLock,
+    icon: LockIcon,
     title: "Encrypted & Verified",
     desc: "Trusted by thousands.",
   },
@@ -170,7 +167,7 @@ export default function PWAInstallSection() {
                 variants={fadeInUp}
                 className="px-4 py-1 border rounded-full text-[10px] tracking-widest uppercase font-bold w-fit flex justify-center items-center"
               >
-                <MdOutlineDownloading className="mr-2 text-xl" /> Install our Web App
+                <DownloadIcon className="mr-2 text-xl" /> Install our Web App
               </motion.span>
 
               <motion.h1
@@ -219,17 +216,17 @@ export default function PWAInstallSection() {
                         onClick={() => setShowInstructions(false)}
                         className="absolute top-2 right-2"
                       >
-                        <X className="w-4 h-4" />
+                        <CloseIcon className="w-4 h-4" />
                       </button>
 
                       <h5 className="font-bold flex items-center gap-2 mb-2">
-                        <IoLogoApple className="w-4 h-4" />
+                        <AppleLogoIcon className="w-4 h-4" />
                         iOS Installation
                       </h5>
 
                       <ol className="list-decimal pl-4 text-xs space-y-1">
                         <li>
-                          Tap <Share className="inline w-3 h-3" /> Share
+                          Tap <ShareIcon className="inline w-3 h-3" /> Share
                         </li>
                         <li>Select Add to Home Screen</li>
                         <li>Tap Add</li>
@@ -253,7 +250,7 @@ export default function PWAInstallSection() {
                     {isInstalled ? (
                       <span>Open</span>
                     ) : (
-                      <span className="flex gap-2 justify-center items-center">Install<IoIosDownload/></span>
+                      <span className="flex gap-2 justify-center items-center">Install<DownloadIconIOS/></span>
                     )}
                   </div>
                 </button>

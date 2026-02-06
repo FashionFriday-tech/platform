@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Image as ImageIcon, Pause } from "lucide-react";
+import { PlayIcon, ImageIcon, PauseIcon } from "@ff/ui";
 
 export default function MediaStage({
   images,
@@ -84,7 +84,7 @@ export default function MediaStage({
             }`}
           >
             <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
-              <Play size={24} fill="white" className="text-white" />
+              <PlayIcon size={24} fill="white" className="text-white" />
             </div>
             <img
               src={images[0]}
@@ -197,9 +197,9 @@ export default function MediaStage({
                 }`}
               >
                 {activeMode !== "video" ? (
-                  <Play size={14} />
+                  <PlayIcon size={14} />
                 ) : (
-                  <Pause
+                  <PauseIcon
                     size={14}
                     fill={activeMode === "video" ? "black" : "currentColor"}
                   />

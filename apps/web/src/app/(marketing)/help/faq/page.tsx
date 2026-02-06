@@ -1,15 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import {
-  Search,
-  SendHorizontal,
-  Mail,
-  ChevronRight,
-  MessageSquare,
-  ArrowUpRight,
-  Instagram,
-  ArrowRight,
-} from "lucide-react";
+  SearchIcon,
+  SendIcon,
+  MailIcon,
+  ChevronRightIcon,
+  ArrowUpRightIcon,
+} from "@ff/ui";
 import Link from "next/link";
 import { faqData } from "@/data/faq";
 
@@ -80,7 +77,7 @@ export default function FAQPage() {
           <div className="w-full max-w-3xl flex flex-col items-center space-y-8">
             {/* SEARCH BOX */}
             <div className="relative group w-full overflow-hidden rounded-full border border-border focus-within:border-brand transition-all shadow-sm">
-              <Search
+              <SearchIcon
                 className="absolute left-6 top-1/2 -translate-y-1/2 opacity-30 z-10"
                 size={18}
               />
@@ -150,7 +147,7 @@ export default function FAQPage() {
                       : ""
                   }`}
                 >
-                  <ChevronRight size={18} />
+                  <ChevronRightIcon size={18} />
                 </div>
               </button>
 
@@ -165,7 +162,7 @@ export default function FAQPage() {
                         href={faq.href}
                         className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-brand transition-all hover:tracking-[0.1rem]"
                       >
-                        {faq.linkText} <ArrowUpRight size={14} />
+                        {faq.linkText} <ArrowUpRightIcon size={14} />
                       </Link>
                     )}
                   </div>
@@ -182,7 +179,7 @@ export default function FAQPage() {
           <div className="max-w-3xl mx-auto text-center space-y-12">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-background border border-border mx-auto">
-                <Mail className="text-brand" size={14} />
+                <MailIcon className="text-brand" size={14} />
                 <span className="text-[9px] font-black uppercase tracking-widest">
                   Support Node
                 </span>
@@ -215,7 +212,7 @@ export default function FAQPage() {
                     type="submit"
                     className="bg-brand text-brand-foreground px-8 py-4 rounded-full font-black uppercase tracking-[0.2em] text-[10px] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-xl"
                   >
-                    Send on Gmail <SendHorizontal size={14} />
+                    Send on Gmail <SendIcon size={14} />
                   </button>
                 </div>
               </form>

@@ -3,13 +3,12 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MapPin,
-  ChevronRight,
-  Plus,
-  X,
-  ChevronUp,
-  ShieldCheck,
-} from "lucide-react";
+  MapPinIcon,
+  ChevronRightIcon,
+  PlusIcon,
+  CloseIcon,
+  ChevronUpIcon,
+} from "@ff/ui";
 import { bagItems } from "@/data/bagItems";
 import CheckoutStages from "../../_components/CheckoutProgress";
 import { useRouter } from "next/navigation";
@@ -60,7 +59,7 @@ export default function FinalReviewPage() {
                   >
                     <div className="flex gap-6">
                       <div className="w-12 h-12 rounded-2xl bg-foreground flex items-center justify-center text-background shrink-0">
-                        <MapPin size={20} />
+                        <MapPinIcon size={20} />
                       </div>
                       <div>
                         <p className="font-black uppercase text-sm tracking-tight">
@@ -89,7 +88,7 @@ export default function FinalReviewPage() {
                     className="w-full p-6 rounded-4xl border-2 border-dashed border-border hover:border-foreground transition-all flex flex-col items-center gap-2 bg-background-muted/10 group"
                   >
                     <div className="p-2 border rounded-full bg-background flex items-center justify-center group-hover:bg-foreground group-hover:text-background transition-colors">
-                      <Plus size={24} />
+                      <PlusIcon size={24} />
                     </div>
                     <span className="text-xs font-black uppercase tracking-widest">
                       Add Shipping Address
@@ -175,7 +174,7 @@ export default function FinalReviewPage() {
                     ? "Pay Now"
                     : "Verify & Continue"
                   : "Add Address"}
-                <ChevronRight size={18} />
+                <ChevronRightIcon size={18} />
               </button>
             </div>
             <p className="text-center text-[8px] font-bold uppercase tracking-widest text-foreground-subtle opacity-50">
@@ -226,7 +225,7 @@ export default function FinalReviewPage() {
                 <p className="text-[8px] font-black uppercase tracking-widest text-foreground-subtle flex items-center gap-2 mb-1 text-nowrap">
                   Total Payable{" "}
                   <motion.span animate={{ rotate: isExpanded ? 180 : 0 }}>
-                    <ChevronUp size={10} />
+                    <ChevronUpIcon size={10} />
                   </motion.span>
                 </p>
                 <p className="text-2xl font-black text-background">
@@ -245,7 +244,7 @@ export default function FinalReviewPage() {
                     ? "Pay Now"
                     : "Verify & Continue"
                   : "Add Address"}
-                <ChevronRight size={18} />
+                <ChevronRightIcon size={18} />
               </button>
             </div>
           </div>
@@ -330,7 +329,7 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
                 onClick={onClose}
                 className="p-3 bg-background-muted rounded-full"
               >
-                <X size={20} />
+                <CloseIcon size={20} />
               </button>
             </div>
 

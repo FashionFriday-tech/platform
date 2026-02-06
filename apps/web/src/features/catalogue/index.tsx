@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  SlidersHorizontal,
-  ArrowUpDown,
-  Play,
-  Square,
-  ChevronDown,
-} from "lucide-react";
+  SlidersIcon,
+  ArrowUpDownIcon,
+  PlayIcon,
+  StopIcon,
+} from "@ff/ui";
 
 // Data & Hook Imports
 import { CategorySlug, Product } from "@/data/store-data";
@@ -84,7 +83,7 @@ export default function CatalogueClient({
             onClick={() => setActiveDrawer("filter")}
             className="flex-1 flex lg:hidden items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-r border-border hover:bg-background-muted transition-all outline-none"
           >
-            <SlidersHorizontal size={13} /> Filter
+            <SlidersIcon size={13} /> Filter
           </button>
 
           {/* Auto Scroll Toggle (Uses Hook Logic) */}
@@ -95,9 +94,9 @@ export default function CatalogueClient({
             }`}
           >
             {isAutoScrolling ? (
-              <Square size={12} className="fill-current" />
+              <StopIcon size={12} className="fill-current" />
             ) : (
-              <Play size={12} className="fill-current" />
+              <PlayIcon size={12} className="fill-current" />
             )}
             {isAutoScrolling ? "Scrolling" : "Auto Scroll"}
           </button>
@@ -108,7 +107,7 @@ export default function CatalogueClient({
               onClick={() => setActiveDrawer("sort")}
               className="lg:hidden flex items-center gap-2 text-[10px] font-black uppercase tracking-widest outline-none"
             >
-              <ArrowUpDown size={13} /> Sort
+              <ArrowUpDownIcon size={13} /> Sort
             </button>
 
             {/* Desktop-only Sort Select */}

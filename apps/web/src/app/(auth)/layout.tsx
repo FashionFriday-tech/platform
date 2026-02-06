@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
 import ImageCarousel from "@/components/ui/sections/ImageCarousel";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 

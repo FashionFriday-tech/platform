@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronRightIcon } from "@ff/ui";
 
 const GENDERS = ["Men", "Women"] as const;
 type Gender = (typeof GENDERS)[number];
@@ -133,7 +133,7 @@ export default function StoreLandingPage() {
 
                     <div className="pr-3">
                       <div className="w-8 h-8 rounded-full border border-border/60 flex items-center justify-center group-hover:bg-foreground group-hover:text-background transition-all duration-300">
-                        <ChevronRight size={14} />
+                        <ChevronRightIcon size={14} />
                       </div>
                     </div>
                   </div>

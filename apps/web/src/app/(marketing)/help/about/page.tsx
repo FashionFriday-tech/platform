@@ -1,13 +1,12 @@
 import React from "react";
 import {
-  MoveRight,
-  MapPin,
-  Globe,
-  ShieldCheck,
-  Zap,
-  Star,
-  ArrowUpRight,
-} from "lucide-react";
+  MoveRightIcon,
+  ShieldCheckIcon,
+  ZapIcon,
+  StarIcon,
+  ArrowUpRightIcon,
+  GlobeIcon,
+} from "@ff/ui";
 
 // Note: Ensure you have framer-motion installed for the smoothest experience
 // npm install framer-motion
@@ -125,7 +124,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="space-y-4">
-              <ShieldCheck size={40} className="text-brand-dark" />
+              <ShieldCheckIcon size={40} className="text-brand-dark" />
               <h4 className="text-xl font-black uppercase tracking-tighter">
                 Uncompromised Quality
               </h4>
@@ -135,7 +134,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="space-y-4">
-              <Globe size={40} className="text-brand-dark" />
+              <GlobeIcon size={40} className="text-brand-dark" />
               <h4 className="text-xl font-black uppercase tracking-tighter">
                 Global Trends
               </h4>
@@ -145,7 +144,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="space-y-4">
-              <Star size={40} className="text-brand-dark" />
+              <StarIcon size={40} className="text-brand-dark" />
               <h4 className="text-xl font-black uppercase tracking-tighter">
                 10k+ Community
               </h4>
@@ -155,7 +154,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="space-y-4">
-              <Zap size={40} className="text-brand-dark" />
+              <ZapIcon size={40} className="text-brand-dark" />
               <h4 className="text-xl font-black uppercase tracking-tighter">
                 Fastest Shipping
               </h4>
@@ -210,7 +209,7 @@ export default function AboutPage() {
             <button className="group relative overflow-hidden bg-white text-black px-12 py-8 rounded-2xl font-black uppercase tracking-widest text-xl transition-all hover:pr-16">
               <span className="relative z-10 flex items-center justify-between">
                 Explore The Drop{" "}
-                <ArrowUpRight className="group-hover:rotate-45 transition-transform" />
+                <ArrowUpRightIcon className="group-hover:rotate-45 transition-transform" />
               </span>
               <div className="absolute inset-0 bg-brand translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
             </button>
@@ -218,7 +217,7 @@ export default function AboutPage() {
             <button className="group border border-white/20 backdrop-blur-sm text-white px-12 py-8 rounded-2xl font-black uppercase tracking-widest text-xl hover:bg-white/10 transition-all">
               <span className="flex items-center justify-between">
                 Join the Community{" "}
-                <MoveRight className="group-hover:translate-x-2 transition-transform" />
+                <MoveRightIcon className="group-hover:translate-x-2 transition-transform" />
               </span>
             </button>
           </div>

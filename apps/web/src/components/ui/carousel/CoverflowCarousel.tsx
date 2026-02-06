@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon } from "@ff/ui";
 
 // --- TYPES ---
 export interface Product {
@@ -157,14 +157,14 @@ const getVariant = (index: number) => {
           className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-95"
           aria-label="Previous"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeftIcon className="w-5 h-5" />
         </button>
         <button
           onClick={handleNext}
           className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-95"
           aria-label="Next"
         >
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRightIcon className="w-5 h-5" />
         </button>
       </div>
     </div>

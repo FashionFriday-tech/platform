@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, Users, Wallet, Clock, Share2, Gift } from "lucide-react";
+import { CopyIcon, CheckIcon, UsersIcon, WalletIcon, ClockIcon, ShareIcon, GiftIcon } from "@ff/ui";
 
 export default function ReferralsPage() {
   const [copied, setCopied] = useState(false);
@@ -18,19 +18,19 @@ export default function ReferralsPage() {
     {
       label: "Activated",
       value: "₹1,200",
-      icon: <Wallet size={16} />,
+      icon: <WalletIcon size={16} />,
       color: "text-emerald-500",
     },
     {
       label: "Inactive",
       value: "₹300",
-      icon: <Clock size={16} />,
+      icon: <ClockIcon size={16} />,
       color: "text-orange-500",
     },
     {
       label: "Network",
       value: "15 Users",
-      icon: <Users size={16} />,
+      icon: <UsersIcon size={16} />,
       color: "text-foreground",
     },
   ];
@@ -222,7 +222,7 @@ export default function ReferralsPage() {
             {/* HERO HEADER */}
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
               <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
-                <Gift size={24} className="text-white" />
+                <GiftIcon size={24} className="text-white" />
               </div>
 
               <div className="flex-1">
@@ -249,14 +249,14 @@ export default function ReferralsPage() {
                 >
                   {copied ? (
                     <>
-                      <Check size={14} className="text-emerald-400" />
+                      <CheckIcon size={14} className="text-emerald-400" />
                       <span className="text-[10px] font-bold uppercase">
                         Copied
                       </span>
                     </>
                   ) : (
                     <>
-                      <Copy size={14} />
+                      <CopyIcon size={14} />
                       <span className="text-[10px] font-bold uppercase">
                         Copy
                       </span>
@@ -269,7 +269,7 @@ export default function ReferralsPage() {
                 onClick={handleShare}
                 className="bg-white text-black h-12 px-8 rounded-xl font-black uppercase text-[11px] tracking-widest flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xl"
               >
-                <Share2 size={16} />
+                <ShareIcon size={16} />
                 Share Invite
               </button>
             </div>

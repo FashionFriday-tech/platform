@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowDown, Mail } from "lucide-react";
 import ImageCarousel from "@/components/ui/sections/ImageCarousel";
 
 export default function Hero() {

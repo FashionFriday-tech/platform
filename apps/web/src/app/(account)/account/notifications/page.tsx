@@ -11,8 +11,8 @@ import {
 import { cn } from "@/lib/utils";
 
 import { 
-  MenuOutlineIcon, 
-  PromoIcon, 
+  MenuIcon, 
+  TagIcon, 
   BellOffIcon, 
   ShoppingBagIcon
 } from "@ff/ui";
@@ -89,9 +89,9 @@ export default function NotificationsPage() {
                   activeIndex === i ? "text-foreground" : "text-foreground/40"
                 )}
               >
-                {tab == "all" ? <MenuOutlineIcon className="w-4"/> 
+                {tab == "all" ? <MenuIcon className="w-4"/> 
                 : tab =="orders" ? <ShoppingBagIcon className="w-4"/> 
-                : <PromoIcon className="w-4"/> }
+                : <TagIcon className="w-4"/> }
                {tab}
               </button>
             ))}
@@ -171,7 +171,7 @@ function NotificationList({ type }: { type: TabType }) {
       {notifications.map((n) => (
         <div key={n.id} className="flex gap-4 p-5">
           <div className="shrink-0 w-11 h-11 flex items-center justify-center rounded-full bg-foreground text-background">
-            {n.type === "order" ? <ShoppingBagIcon size={25} /> : <PromoIcon size={25} />}
+            {n.type === "order" ? <ShoppingBagIcon size={25} /> : <TagIcon size={25} />}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-baseline gap-2">

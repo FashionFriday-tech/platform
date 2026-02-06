@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { RiShieldStarFill } from "react-icons/ri";
-import { MdStars } from "react-icons/md";
+import { StarBadgeIcon, StarsIcon } from "@ff/ui";
 
 interface Product {
   id: string | number;
@@ -44,7 +43,7 @@ export default function ProductCard({ product }: { product: Product }) {
           />
 
           <span className="flex gap-1 justify-center items-center font-bold border border-border px-1.5 py-0.5 rounded-full text-green-500 uppercase">
-            <RiShieldStarFill /> {product.quality}
+            <StarBadgeIcon /> {product.quality}
           </span>
         </div>
 
@@ -65,7 +64,7 @@ export default function ProductCard({ product }: { product: Product }) {
               </p>
             </span>
             <span className="flex items-center gap-1 text-blue-500 text-[14px]">
-              <MdStars /> 4.5
+              <StarsIcon /> 4.5
             </span>
           </div>
         </div>

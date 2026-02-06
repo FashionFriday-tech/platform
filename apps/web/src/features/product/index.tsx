@@ -3,19 +3,18 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ShoppingBag,
-  Bell,
-  Heart,
-  Share2,
-  Star,
-  ShieldCheck,
-  Truck,
-  RotateCcw,
-  HeartPlus,
-  Eye,
-  ShoppingCart,
-} from "lucide-react";
-import { RiShieldStarFill } from "react-icons/ri";
+  ShoppingBagIcon,
+  BellIcon,
+  HeartIcon,
+  ShareIcon,
+  StarIcon,
+  ShieldCheckIcon,
+  TruckIcon,
+  RefreshCcwIcon,
+  EyeIcon,
+  ShoppingCartIcon,
+  StarBadgeIcon,
+} from "@ff/ui";
 import { useLiveProductMetric } from "@/features/product/hooks/useLiveProductMetric";
 
 import Gallery from "./components/gallery";
@@ -93,18 +92,18 @@ export default function ProductPageMaster({
                     className="w-10 invert"
                   />
                   <span className="flex justify-center items-center gap-1">
-                    <RiShieldStarFill className="inline-block text-blue-500 mb-0.5" />
+                    <StarBadgeIcon className="inline-block text-blue-500 mb-0.5" />
                     {product.quality}
                   </span>
                   <span className="flex justify-center items-center gap-1">
-                    <Star
+                    <StarIcon
                       size={11}
                       className="text-yellow-400 mb-0.5 fill-yellow-400"
                     />
                     4.5
                   </span>
                   <span className="flex justify-center items-center gap-1">
-                    <Eye size={11} className="text-red-500 mb-0.5" />
+                    <EyeIcon size={11} className="text-red-500 mb-0.5" />
                     {liveMetric}+
                   </span>
                 </div>
@@ -117,7 +116,7 @@ export default function ProductPageMaster({
                   onClick={handleShare}
                   className="p-2 mr-4 rounded-full border border-border hover:bg-background-muted transition-all"
                 >
-                  <Share2 size={18} />
+                  <ShareIcon size={18} />
                 </button>
               </div>
             </div>
@@ -144,7 +143,7 @@ export default function ProductPageMaster({
               <p className="text-[10px] text-foreground-subtle border rounded-full pl-4 pr-2 py-0.5 uppercase text-end">
                 <span className="text-foreground font-semibold">45+ </span>{" "}
                 purchases in the last hour{" "}
-                <ShoppingCart size={12} className="inline-block" />
+                <ShoppingCartIcon size={12} className="inline-block" />
               </p>
             </div>
 
@@ -198,7 +197,7 @@ export default function ProductPageMaster({
                   </div>
                 ) : (
                   <button className="w-full h-16 border-2 border-destructive text-destructive font-black uppercase tracking-[0.2em] rounded-full flex items-center justify-center gap-3">
-                    <Bell size={20} />
+                    <BellIcon size={20} />
                     Notify Me
                   </button>
                 )}
@@ -217,9 +216,9 @@ export default function ProductPageMaster({
                 }`}
                 >
                   {isWishlisted ? (
-                    <Heart size={20} fill="currentColor" />
+                    <HeartIcon size={20} fill="currentColor" />
                   ) : (
-                    <HeartPlus size={20} />
+                    <HeartIcon size={20} />
                   )}
                 </button>
 
@@ -227,7 +226,7 @@ export default function ProductPageMaster({
                 <button
                   className={`py-4 h-14 flex-1 rounded-full font-bold uppercase flex items-center justify-center gap-3 transition-all border-2 border-background bg-background text-foreground hover:scale-[1.02] active:scale-95`}
                 >
-                  <ShoppingBag size={16} />
+                  <ShoppingBagIcon size={16} />
                   Add to Cart
                 </button>
               </div>
@@ -237,22 +236,22 @@ export default function ProductPageMaster({
             <div className="grid grid-cols-2 gap-3 pt-4">
               {[
                 {
-                  icon: <Truck size={18} />,
+                  icon: <TruckIcon size={18} />,
                   label: "Fast Delivery",
                   sub: "2-4 Business Days",
                 },
                 {
-                  icon: <RotateCcw size={18} />,
+                  icon: <RefreshCcwIcon size={18} />,
                   label: "7 Day Returns",
                   sub: "Hassle-free policy",
                 },
                 {
-                  icon: <ShieldCheck size={18} />,
+                  icon: <ShieldCheckIcon size={18} />,
                   label: "Authentic Quality",
                   sub: `${activeVariant.quality} Grade`, // Data from Variant
                 },
                 {
-                  icon: <Star size={18} />,
+                  icon: <StarIcon size={18} />,
                   label: "Top Rated",
                   sub: "Trusted by 5k+ users",
                 },

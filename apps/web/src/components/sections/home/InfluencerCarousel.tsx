@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
-import { ArrowLeft, ArrowRight, Play } from "lucide-react"
+import { ArrowLeftIcon, ArrowRightIcon, PlayIcon } from "@ff/ui"
 import { useRouter } from "next/navigation"
 
 /* ---------------- TYPES ---------------- */
@@ -192,7 +192,7 @@ export default function TrendingCoverflowPage() {
                         w-16 h-16 rounded-full flex items-center justify-center text-white backdrop-blur-xs border-2 border-white
                         transition-all duration-500 ease-out shadow-lg opacity-100 scale-110 group-hover:bg-white group-hover:text-black hover:scale-125`}
                     >
-                      <Play className="w-6 h-6 fill-current ml-1" />
+                      <PlayIcon className="w-6 h-6 fill-current ml-1" />
                     </div>
                   </div>                  
                 </div>
@@ -207,13 +207,13 @@ export default function TrendingCoverflowPage() {
           onClick={handlePrev}
           className="w-12 h-12 rounded-full border border-forground-muted flex items-center justify-center hover:scale-95 transition active:scale-95"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeftIcon className="w-5 h-5" />
         </button>
         <button
           onClick={handleNext}
           className="w-12 h-12 rounded-full border border-forground-muted flex items-center justify-center hover:scale-95 transition active:scale-95"
         >
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRightIcon className="w-5 h-5" />
         </button>
       </div>
     </section>

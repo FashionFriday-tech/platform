@@ -2,24 +2,24 @@
 
 import { useState } from "react";
 import {
-  Instagram,
-  Twitter,
-  Youtube,
-  Gift,
-  CheckCircle2,
-  Sparkles,
-  Trophy,
-  CreditCard,
-  Clock,
-  X,
-  Loader2,
-  Send,
-  Lock,
-  ExternalLink,
-  ChevronRight,
-  Wallet,
-  Facebook,
-} from "lucide-react";
+  InstagramIcon,
+  TwitterIcon,
+  YoutubeIcon,
+  GiftIcon,
+  CheckCircleIcon,
+  SparklesIcon,
+  TrophyIcon,
+  CreditCardIcon,
+  ClockIcon,
+  CloseIcon,
+  LoaderIcon,
+  SendIcon,
+  LockIcon,
+  ExternalLinkIcon,
+  ChevronRightIcon,
+  WalletIcon,
+  FacebookIcon,
+} from "@ff/ui";
 import { Header } from "@/components/layout/Header";
 
 // --- Types ---
@@ -52,7 +52,7 @@ const initialSocialTasks: SocialTask[] = [
     id: "soc-1",
     platform: "Instagram",
     profileUrl: "https://instagram.com",
-    icon: <Instagram size={32} />,
+    icon: <InstagramIcon size={32} />,
     rewardAmount: 50,
     status: "idle",
     actionLabel: "Follow us",
@@ -64,7 +64,7 @@ const initialSocialTasks: SocialTask[] = [
     id: "soc-2",
     platform: "Twitter",
     profileUrl: "https://twitter.com",
-    icon: <Twitter size={32} />,
+    icon: <TwitterIcon size={32} />,
     rewardAmount: 50,
     status: "idle",
     actionLabel: "Follow us",
@@ -76,7 +76,7 @@ const initialSocialTasks: SocialTask[] = [
     id: "soc-3",
     platform: "YouTube",
     profileUrl: "https://youtube.com",
-    icon: <Youtube size={32} />,
+    icon: <YoutubeIcon size={32} />,
     rewardAmount: 100,
     status: "idle",
     actionLabel: "Subscribe",
@@ -88,7 +88,7 @@ const initialSocialTasks: SocialTask[] = [
   id: "soc-4",
   platform: "Facebook",
   profileUrl: "https://facebook.com",
-  icon: <Facebook size={32} />,
+  icon: <FacebookIcon size={32} />,
   rewardAmount: 50,
   status: "idle",
   actionLabel: "Follow us",
@@ -175,11 +175,11 @@ export default function RewardsPage() {
              <div className="relative z-10 flex justify-between items-start">
                 <div className="flex items-center gap-2">
                    <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-foreground shadow-[0_0_15px_foreground]">
-                      <Sparkles size={16} />
+                      <SparklesIcon size={16} />
                    </div>
                    <span className="font-bold text-sm tracking-[0.2em] opacity-90">background CARD</span>
                 </div>
-                <CreditCard className="opacity-50" />
+                <CreditCardIcon className="opacity-50" />
              </div>
 
              {/* Card Middle */}
@@ -208,7 +208,7 @@ export default function RewardsPage() {
             <section>
               <div className="flex items-center gap-3 mb-8 px-2">
                 <div className="p-2 bg-white rounded-full text-black">
-                   <Gift size={20} />
+                   <GiftIcon size={20} />
                 </div>
                 <h2 className="text-2xl font-bold">Social Gift Cards</h2>
               </div>
@@ -240,12 +240,12 @@ export default function RewardsPage() {
                        {/* STATUS BADGES */}
                        {task.status === "pending" && (
                           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 text-yellow-200 text-xs font-bold rounded-lg backdrop-blur-md border border-yellow-500/30">
-                             <Clock size={12} className="animate-pulse" /> Pending
+                             <ClockIcon size={12} className="animate-pulse" /> Pending
                           </div>
                        )}
                        {task.status === "approved" && (
                           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/40 text-white text-xs font-bold rounded-lg backdrop-blur-md border border-white/20">
-                             <CheckCircle2 size={12} /> Claimed
+                             <CheckCircleIcon size={12} /> Claimed
                           </div>
                        )}
 
@@ -260,7 +260,7 @@ export default function RewardsPage() {
                               className="p-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-colors border border-white/10 text-white"
                               title="Go to Profile"
                             >
-                               <ExternalLink size={16} />
+                               <ExternalLinkIcon size={16} />
                             </a>
 
                             {/* 2. Claim Button */}
@@ -268,7 +268,7 @@ export default function RewardsPage() {
                               onClick={() => openClaimModal(task)}
                               className="flex-1 py-2.5 bg-white text-black text-xs font-bold rounded-full hover:bg-zinc-200 transition-colors shadow-lg flex items-center justify-center gap-1"
                             >
-                               Claim <ChevronRight size={12} />
+                               Claim <ChevronRightIcon size={12} />
                             </button>
                          </div>
                        )}
@@ -282,7 +282,7 @@ export default function RewardsPage() {
             <section>
               <div className="flex items-center gap-3 mb-8 px-2">
                 <div className="p-2 bg-foreground rounded-full text-background">
-                   <Trophy size={20} />
+                   <TrophyIcon size={20} />
                 </div>
                 <h2 className="text-2xl font-bold">Shopping Milestones</h2>
               </div>
@@ -321,7 +321,7 @@ export default function RewardsPage() {
 
                           {/* Middle */}
                           <div className="text-center transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                             {!isUnlocked && <Lock className="mx-auto mb-2 opacity-50" size={24} />}
+                             {!isUnlocked && <LockIcon className="mx-auto mb-2 opacity-50" size={24} />}
                              <h3 className="font-bold text-xl tracking-tight">{milestone.title}</h3>
                           </div>
 
@@ -346,7 +346,7 @@ export default function RewardsPage() {
                                 </p>
                                 {isUnlocked && (
                                    <span className="text-[10px] font-bold text-green-400 flex items-center gap-1">
-                                      Active <CheckCircle2 size={10} />
+                                      Active <CheckCircleIcon size={10} />
                                    </span>
                                 )}
                              </div>
@@ -375,7 +375,7 @@ export default function RewardsPage() {
                  onClick={() => setSelectedTask(null)}
                  className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-foreground transition-colors"
               >
-                 <X size={20} />
+                 <CloseIcon size={20} />
               </button>
 
               <div className="text-center mb-6">
@@ -407,9 +407,9 @@ export default function RewardsPage() {
                     className="w-full py-4 bg-foreground text-background rounded-xl font-bold text-sm hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                     {isSubmitting ? (
-                       <><Loader2 size={16} className="animate-spin" /> Verifying...</>
+                       <><LoaderIcon size={16} className="animate-spin" /> Verifying...</>
                     ) : (
-                       <><Send size={16} /> Submit Request</>
+                       <><SendIcon size={16} /> Submit Request</>
                     )}
                  </button>
               </form>

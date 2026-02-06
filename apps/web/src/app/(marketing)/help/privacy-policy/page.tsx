@@ -1,41 +1,41 @@
 "use client";
 import React from "react";
 import {
-  ShieldCheck,
-  Lock,
-  EyeOff,
-  Database,
-  Globe,
-  UserCheck,
-  Trash2,
-  FileSearch,
-  RefreshCw,
-} from "lucide-react";
+  ShieldCheckIcon,
+  LockIcon,
+  EyeOffIcon,
+  DatabaseIcon,
+  GlobeIcon,
+  UserCheckIcon,
+  TrashIcon,
+  FileSearchIcon,
+  RefreshCcwIcon,
+} from "@ff/ui";
 
 const policyData = [
   {
     title: "01. Data Acquisition [The Input]",
     content:
       "We collect information necessary to calibrate your shopping experience. This includes Personal Identifiers (Name, Email, Shipping Protocol), Anatomical Data (Body/Foot measurements for the Fit Architect), and Technical Identifiers (IP Address, Browser Metadata, Cookie ID).",
-    icon: <Database size={20} className="text-brand" />,
+    icon: <DatabaseIcon size={20} className="text-brand" />,
   },
   {
     title: "02. Logic Processing [Usage]",
     content:
       "Your data is utilized to: (A) Process transactions and logistics. (B) Calibrate size recommendations via our Neural Engine. (C) Execute security protocols to prevent fraudulent acquisitions. (D) Communicate system updates and drop alerts.",
-    icon: <RefreshCw size={20} className="text-brand" />,
+    icon: <RefreshCcwIcon size={20} className="text-brand" />,
   },
   {
     title: "03. Encryption Standards [Security]",
     content:
       "All data exists behind a 256-bit AES encryption layer. Payment information is tokenized via Tier-1 PCI-DSS compliant gateways. We never store raw credit card digits on our internal servers.",
-    icon: <Lock size={20} className="text-brand" />,
+    icon: <LockIcon size={20} className="text-brand" />,
   },
   {
     title: "04. Third-Party Transmission",
     content:
       "Data is only transmitted to essential logistical partners (e.g., DHL, FedEx) and payment processors. We do not sell anatomical or behavioral data to third-party marketing aggregates.",
-    icon: <Globe size={20} className="text-brand" />,
+    icon: <GlobeIcon size={20} className="text-brand" />,
   },
 ];
 
@@ -45,7 +45,7 @@ export default function PrivacyPolicyPage() {
       {/* 1. PROTOCOL HEADER */}
       <header className="pt-24 pb-16 px-6 max-w-7xl mx-auto text-center md:text-left">
         <div className="flex items-center gap-2 mb-6 px-4 py-1.5 rounded-full bg-brand/10 border border-brand/20 w-fit mx-auto md:mx-0">
-          <ShieldCheck size={12} className="text-brand" />
+          <ShieldCheckIcon size={12} className="text-brand" />
           <span className="text-[9px] font-black uppercase tracking-[0.5em] text-brand">
             Security Standard v4.0.26
           </span>
@@ -101,25 +101,25 @@ export default function PrivacyPolicyPage() {
                   label: "Right to Erasure",
                   desc:
                     "Request absolute deletion of your neural/anatomical data.",
-                  icon: <Trash2 size={16} />,
+                  icon: <TrashIcon size={16} />,
                 },
                 {
                   label: "Right to Portability",
                   desc:
                     "Download a structured dump of your stored information.",
-                  icon: <FileSearch size={16} />,
+                  icon: <FileSearchIcon size={16} />,
                 },
                 {
                   label: "Right to Rectification",
                   desc:
                     "Update inaccurate identifiers or measurement profiles.",
-                  icon: <UserCheck size={16} />,
+                  icon: <UserCheckIcon size={16} />,
                 },
                 {
                   label: "Right to Object",
                   desc:
                     "Withdraw consent for specific automated processing logic.",
-                  icon: <EyeOff size={16} />,
+                  icon: <EyeOffIcon size={16} />,
                 },
               ].map((right, i) => (
                 <div

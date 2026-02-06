@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
+import { HeartIcon } from '@ff/ui';
 
 export default function EmptyWishlist() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
       <div className="mb-6 rounded-full bg-gray-50 p-6">
-        <Heart size={48} className="text-gray-300" />
+        <HeartIcon size={48} className="text-gray-300" />
       </div>
       <h2 className="text-2xl font-bold tracking-tight text-gray-900">Your wishlist is empty</h2>
       <p className="mt-2 max-w-sm text-gray-500">

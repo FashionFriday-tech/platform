@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Heart, HeartPlus, ShoppingBag } from "lucide-react";
+import { HeartIcon, HeartPlusIcon, ShoppingBagIcon } from "@ff/ui";
 
 interface CTAStickyButtonsProps {
   isWishlisted: boolean;
@@ -26,9 +26,9 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
           className={`h-12 w-12 shrink-0 flex items-center justify-center rounded-full transition-all duration-300 border border-white/50`}
         >
           {isWishlisted ? (
-            <Heart size={20} fill="currentColor" />
+            <HeartIcon size={20} fill="currentColor" />
           ) : (
-            <HeartPlus size={20} className="animate-pulse" />
+            <HeartPlusIcon size={20} className="animate-pulse" />
           )}
         </button>
 
@@ -48,7 +48,7 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
           aria-label="View Cart"
           className="h-12 w-12 shrink-0 flex items-center justify-center rounded-full border border-white/50 text-white hover:bg-white/10 transition-all active:scale-90"
         >
-          <ShoppingBag size={18} />
+          <ShoppingBagIcon size={18} />
         </button>
       </div>
     </>

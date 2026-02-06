@@ -4,7 +4,6 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 const categories = [
   { id: 1, title: "Outerwear", image: "/images/categories/outfit.png", count: "42 Products", href: "/shop/outerwear" },

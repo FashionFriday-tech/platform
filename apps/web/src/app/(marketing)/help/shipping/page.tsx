@@ -2,15 +2,11 @@
 import React from "react";
 import { shippingData } from "@/data/shipping";
 import {
-  ArrowRight,
-  CheckCircle2,
-  Navigation,
-  Info,
-  ExternalLink,
-  LifeBuoy,
-  AlertTriangle,
-  Camera,
-} from "lucide-react";
+  NavigationIcon,
+  LifeBuoyIcon,
+  AlertTriangleIcon,
+  CameraIcon,
+} from "@ff/ui";
 
 export default function ShippingDeliveryPage() {
   return (
@@ -18,7 +14,7 @@ export default function ShippingDeliveryPage() {
       {/* 1. MINIMALIST HEADER */}
       <header className="pt-32 pb-20 px-6 max-w-7xl mx-auto border-b border-white/5">
         <div className="flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full bg-brand/10 border border-brand/20 w-fit">
-          <Navigation size={12} className="text-brand" />
+          <NavigationIcon size={12} className="text-brand" />
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand">
             Support / Logistics Protocol
           </span>
@@ -99,7 +95,7 @@ export default function ShippingDeliveryPage() {
         {/* RTO Card */}
         <div className="bg-[#0f0f0f] border border-white/10 rounded-[3rem] p-12">
           <div className="flex items-center gap-4 mb-8">
-            <AlertTriangle className="text-brand" size={28} />
+            <AlertTriangleIcon className="text-brand" size={28} />
             <h3 className="text-3xl font-black italic tracking-tighter">
               Failed Delivery (RTO)
             </h3>
@@ -123,7 +119,7 @@ export default function ShippingDeliveryPage() {
         {/* Protection Card */}
         <div className="bg-brand rounded-[3rem] p-12 text-black flex flex-col justify-between">
           <div className="flex items-center gap-4 mb-8">
-            <Camera size={28} />
+            <CameraIcon size={28} />
             <h3 className="text-3xl font-black italic tracking-tighter">
               Damaged Packages
             </h3>
@@ -147,7 +143,7 @@ export default function ShippingDeliveryPage() {
       {/* ESCALATION HELP */}
       <section className="max-w-7xl mx-auto px-6 mt-20">
         <div className="border border-white/5 rounded-[4rem] p-12 md:p-20 flex flex-col items-center text-center">
-          <LifeBuoy size={48} className="text-brand mb-8 opacity-50" />
+          <LifeBuoyIcon size={48} className="text-brand mb-8 opacity-50" />
           <h2 className="text-5xl font-black italic tracking-tighter mb-6">
             Need Escalation?
           </h2>

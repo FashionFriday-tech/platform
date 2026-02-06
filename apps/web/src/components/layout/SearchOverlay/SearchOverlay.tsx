@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TfiClose } from "react-icons/tfi";
+import { CloseIcon } from "@ff/ui";
 import { useSearchData } from "./SearchOverlay.hooks";
 
 // Sub-components
@@ -65,7 +65,7 @@ export const SearchOverlay: React.FC<{
             onClick={() => setIsSearchOpen(false)}
             className="absolute top-4 right-4 z-[10001] p-3 text-foreground hover:bg-white/5 rounded-full transition-colors"
           >
-            <TfiClose className="text-2xl" />
+            <CloseIcon className="text-2xl" />
           </button>
 
           <div className="w-full max-w-5xl mx-auto px-6 h-full flex flex-col">

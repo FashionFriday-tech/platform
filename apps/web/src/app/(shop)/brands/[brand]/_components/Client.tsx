@@ -10,13 +10,13 @@ import {
 import brandLogos from "@/data/brandLogos";
 import { StoreProductCard } from "@/components/ui/cards/StoreProductCard";
 import {
-  ChevronDown,
-  SlidersHorizontal,
-  ArrowUpDown,
-  Check,
-  Play,
-  Square,
-} from "lucide-react";
+  ChevronDownIcon,
+  SlidersIcon,
+  ArrowUpDownIcon,
+  CheckIcon,
+  PlayIcon,
+  StopIcon,
+} from "@ff/ui";
 import { useSettings } from "@/context/SettingsContext";
 
 const SORT_OPTIONS = [
@@ -85,7 +85,7 @@ function FilterContent({
               style={{ backgroundColor: COLOR_MAP[color] || "#ccc" }}
             >
               {selectedOptions.includes(color) && (
-                <Check
+                <CheckIcon
                   size={16}
                   className={color === "White" ? "text-black" : "text-white"}
                 />
@@ -267,7 +267,7 @@ export default function BrandClient({ brand }: { brand: string }) {
           }}
           className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase border-r border-border"
         >
-          <SlidersHorizontal size={13} /> Filter
+          <SlidersIcon size={13} /> Filter
         </button>
         <button
           onClick={toggleAutoScroll}
@@ -276,9 +276,9 @@ export default function BrandClient({ brand }: { brand: string }) {
           }`}
         >
           {isAutoScrolling ? (
-            <Square size={12} fill="currentColor" />
+            <StopIcon size={12} fill="currentColor" />
           ) : (
-            <Play size={12} fill="currentColor" />
+            <PlayIcon size={12} fill="currentColor" />
           )}{" "}
           Scroll
         </button>
@@ -286,7 +286,7 @@ export default function BrandClient({ brand }: { brand: string }) {
           onClick={() => setActiveDrawer("sort")}
           className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase"
         >
-          <ArrowUpDown size={13} /> Sort
+          <ArrowUpDownIcon size={13} /> Sort
         </button>
       </div>
 
@@ -316,9 +316,9 @@ export default function BrandClient({ brand }: { brand: string }) {
             }`}
           >
             {isAutoScrolling ? (
-              <Square size={12} fill="currentColor" />
+              <StopIcon size={12} fill="currentColor" />
             ) : (
-              <Play size={12} fill="currentColor" />
+              <PlayIcon size={12} fill="currentColor" />
             )}
             <span className="text-[11px] font-black uppercase tracking-widest">
               Auto Scroll
@@ -337,7 +337,7 @@ export default function BrandClient({ brand }: { brand: string }) {
                 className="flex w-full items-center justify-between text-[11px] font-black uppercase tracking-widest py-2"
               >
                 {section.label}{" "}
-                <ChevronDown
+                <ChevronDownIcon
                   className={`w-4 h-4 transition-transform ${
                     openSections[section.id] ? "rotate-180" : ""
                   }`}

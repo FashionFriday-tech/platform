@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { CheckIcon } from "@ff/ui";
 
 interface CheckoutStagesProps {
   currentStage: number; // 1: Cart, 2: Review, 3: Payment
@@ -58,7 +58,7 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
                       ${isCompleted ? "text-brand-foreground" : isActive ? "text-background" : "text-foreground-subtle"}
                     `}
                   >
-                    {isCompleted ? <Check size={14} strokeWidth={3} /> : stage.id}
+                    {isCompleted ? <CheckIcon size={14} /> : stage.id}
                   </span>
                 </div>
 

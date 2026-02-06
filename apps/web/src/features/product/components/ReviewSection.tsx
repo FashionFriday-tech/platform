@@ -1,7 +1,19 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
-import { Star, X, ArrowLeft, ArrowRight, Camera, Trash2 } from "lucide-react";
+import {
+  StarIcon,
+  CloseIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CameraIcon,
+  TrashIcon,
+  ShieldCheckIcon,
+  AlertTriangleIcon,
+  ShoppingBagIcon,
+  VerifiedIcon,
+  InfoCircleIcon,
+} from "@ff/ui";
 import {
   motion,
   AnimatePresence,
@@ -9,9 +21,6 @@ import {
   useMotionValue,
   wrap,
 } from "framer-motion";
-import { RiVerifiedBadgeFill } from "react-icons/ri";
-import { FaInfoCircle } from "react-icons/fa";
-import { ShieldCheck, AlertTriangle, ShoppingBag } from "lucide-react";
 
 export default function ReviewSection() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -99,7 +108,7 @@ export default function ReviewSection() {
             </h2>
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, starIndex) => (
-                <Star
+                <StarIcon
                   key={starIndex}
                   size={10}
                   className={
@@ -115,7 +124,7 @@ export default function ReviewSection() {
             onClick={() => setIsInfoOpen(true)}
             className="text-foreground rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-xl"
           >
-            <FaInfoCircle size={20} />
+            <InfoCircleIcon size={20} />
           </button>
         </div>
 
@@ -172,7 +181,7 @@ export default function ReviewSection() {
                       <div className="flex flex-col">
                         <span className="text-[14px] font-black uppercase flex items-center leading-none">
                           {rev.name}
-                          <RiVerifiedBadgeFill
+                          <VerifiedIcon
                             className={`w-5 ml-1 mb-0.5 ${
                               rev.membership === "silver"
                                 ? "text-gray-400"
@@ -184,7 +193,7 @@ export default function ReviewSection() {
                         </span>
                         <div className="flex gap-0.5 mt-0.5">
                           {[...Array(5)].map((_, starIndex) => (
-                            <Star
+                            <StarIcon
                               key={starIndex}
                               size={10}
                               className={
@@ -211,10 +220,9 @@ export default function ReviewSection() {
       <div className="flex flex-col justify-center items-center gap-2">
         <div className="flex w-full justify-center items-end gap-2 mt-10">
           {[...Array(5)].map((_, starIndex) => (
-            <Star
+            <StarIcon
               key={starIndex}
               size={42}
-              strokeWidth={0.5}
               onClick={() => {
                 setNewRating(starIndex + 1);
                 setIsFormOpen(true);
@@ -251,18 +259,18 @@ export default function ReviewSection() {
                 onClick={() => setIsInfoOpen(false)}
                 className="absolute top-6 right-6 text-white/40 hover:text-white"
               >
-                <X size={24} />
+                <CloseIcon size={24} />
               </button>
               <div className="space-y-6">
                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-black mb-4">
-                  <ShieldCheck size={28} />
+                  <ShieldCheckIcon size={28} />
                 </div>
                 <h3 className="text-2xl font-black uppercase italic tracking-tighter">
                   Review Integrity
                 </h3>
                 <div className="space-y-4 text-sm text-white/70 leading-relaxed">
                   <div className="flex gap-3 text-left">
-                    <ShoppingBag className="shrink-0 text-white" size={18} />
+                    <ShoppingBagIcon className="shrink-0 text-white" size={18} />
                     <p>
                       <span className="text-white font-bold">
                         Verified Buyers Only:
@@ -272,7 +280,7 @@ export default function ReviewSection() {
                     </p>
                   </div>
                   <div className="flex gap-3 text-left">
-                    <ShieldCheck className="shrink-0 text-white" size={18} />
+                    <ShieldCheckIcon className="shrink-0 text-white" size={18} />
                     <p>
                       <span className="text-white font-bold">
                         Zero Fake Reviews:
@@ -281,7 +289,7 @@ export default function ReviewSection() {
                     </p>
                   </div>
                   <div className="flex gap-3 text-left">
-                    <AlertTriangle
+                    <AlertTriangleIcon
                       className="shrink-0 text-rose-500"
                       size={18}
                     />
@@ -318,7 +326,7 @@ export default function ReviewSection() {
               onClick={() => setIsModalOpen(false)}
               className="absolute top-8 right-8 text-white opacity-50 hover:opacity-100 transition-opacity"
             >
-              <X size={32} />
+              <CloseIcon size={32} />
             </button>
             <motion.div
               drag="x"
@@ -355,13 +363,13 @@ export default function ReviewSection() {
                     onClick={prevModal}
                     className="p-4 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all duration-300"
                   >
-                    <ArrowLeft />
+                    <ArrowLeftIcon />
                   </button>
                   <button
                     onClick={nextModal}
                     className="p-4 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all duration-300"
                   >
-                    <ArrowRight />
+                    <ArrowRightIcon />
                   </button>
                 </div>
               </div>
@@ -395,7 +403,7 @@ export default function ReviewSection() {
                     onClick={() => setIsFormOpen(false)}
                     className="hover:text-white transition-colors"
                   >
-                    <X size={20} />
+                    <CloseIcon size={20} />
                   </button>
                 </div>
 
@@ -432,7 +440,7 @@ export default function ReviewSection() {
                           onClick={() => setSelectedImage(null)}
                           className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:bg-black transition-colors"
                         >
-                          <Trash2 size={14} />
+                          <TrashIcon size={14} />
                         </button>
                       </motion.div>
                     )}
@@ -457,7 +465,7 @@ export default function ReviewSection() {
                       onClick={() => setNewRating(starIndex + 1)}
                       type="button"
                     >
-                      <Star
+                      <StarIcon
                         size={28}
                         className={
                           starIndex < newRating
@@ -491,7 +499,7 @@ export default function ReviewSection() {
                         : "bg-white/5 text-white/40 border-white/10 hover:text-white"
                     }`}
                   >
-                    <Camera size={20} />
+                    <CameraIcon size={20} />
                   </button>
                 </div>
               </div>

@@ -2,17 +2,15 @@
 import React from "react";
 import { paymentData } from "@/data/payments";
 import {
-  ShieldCheck,
-  Lock,
-  ArrowRight,
-  Info,
-  Navigation,
-  CheckCircle2,
-  AlertOctagon,
-  Globe,
-  Zap,
-  ExternalLink,
-} from "lucide-react";
+  ShieldCheckIcon,
+  LockIcon,
+  ArrowRightIcon,
+  InfoIcon,
+  AlertTriangleIcon,
+  GlobeIcon,
+  ZapIcon,
+  ExternalLinkIcon,
+} from "@ff/ui";
 
 export default function PaymentsBillingPage() {
   return (
@@ -21,13 +19,13 @@ export default function PaymentsBillingPage() {
       <header className="pt-32 pb-20 px-6 max-w-7xl mx-auto border-b border-white/5">
         <div className="flex flex-wrap items-center gap-4 mb-8">
           <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand/10 border border-brand/20 w-fit">
-            <Lock size={12} className="text-brand" />
+            <LockIcon size={12} className="text-brand" />
             <span className="text-[10px] font-black tracking-[0.4em] text-brand uppercase">
               Encrypted Terminal v4.0
             </span>
           </div>
           <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 w-fit">
-            <ShieldCheck size={12} className="text-zinc-500" />
+            <ShieldCheckIcon size={12} className="text-zinc-500" />
             <span className="text-[10px] font-black tracking-[0.4em] text-zinc-500 uppercase">
               PCI-DSS Compliant
             </span>
@@ -93,7 +91,7 @@ export default function PaymentsBillingPage() {
                 <div className="space-y-4 mt-auto">
                   {section.details.map((detail, idx) => (
                     <div key={idx} className="flex items-center gap-3">
-                      <ArrowRight size={12} className="text-brand shrink-0" />
+                      <ArrowRightIcon size={12} className="text-brand shrink-0" />
                       <span className="text-[10px] font-black tracking-widest opacity-70 italic">
                         {detail}
                       </span>
@@ -110,13 +108,13 @@ export default function PaymentsBillingPage() {
       <section className="max-w-7xl mx-auto px-6 mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Anti-Fraud */}
         <div className="lg:col-span-2 bg-[#0f0f0f] border border-white/10 rounded-[3rem] p-12 relative overflow-hidden">
-          <Globe
+          <GlobeIcon
             className="absolute -right-10 -bottom-10 opacity-[0.03] rotate-12"
             size={300}
           />
           <div className="relative z-10 space-y-8">
             <div className="flex items-center gap-4">
-              <AlertOctagon className="text-brand" size={32} />
+              <AlertTriangleIcon className="text-brand" size={32} />
               <h3 className="text-4xl font-black italic tracking-tighter">
                 Fraud & Abuse Control
               </h3>
@@ -140,7 +138,7 @@ export default function PaymentsBillingPage() {
 
         {/* COD Security Info */}
         <div className="bg-brand rounded-[3rem] p-12 text-black flex flex-col justify-between">
-          <Zap size={40} fill="currentColor" />
+          <ZapIcon size={40} fill="currentColor" />
           <div>
             <h3 className="text-3xl font-black italic tracking-tighter mb-4">
               Advance COD Fee
@@ -162,7 +160,7 @@ export default function PaymentsBillingPage() {
       <section className="max-w-7xl mx-auto px-6 mt-6 text-center lg:text-left">
         <div className="bg-white/5 border border-white/5 rounded-[2.5rem] p-8 md:px-12 md:py-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <Info size={20} className="text-zinc-600" />
+            <InfoIcon size={20} className="text-zinc-600" />
             <p className="text-[9px] font-bold opacity-40 max-w-2xl uppercase tracking-widest">
               Pricing is inclusive of all taxes unless stated otherwise. Billing
               disputes must be initiated within 7 days of the transaction date
@@ -170,7 +168,7 @@ export default function PaymentsBillingPage() {
             </p>
           </div>
           <button className="whitespace-nowrap flex items-center gap-2 text-[10px] font-black tracking-widest hover:text-brand transition-colors">
-            View T&C <ExternalLink size={12} />
+            View T&C <ExternalLinkIcon size={12} />
           </button>
         </div>
       </section>

@@ -4,13 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import {
-  Facebook,
-  Instagram,
-  Youtube,
-  Twitter,
-  ChevronUp,
-  ArrowUpRight,
-} from "lucide-react";
+  FacebookIcon,
+  InstagramIcon,
+  YoutubeIcon,
+  TwitterIcon,
+  ChevronUpIcon,
+  ArrowUpRightIcon,
+} from "@ff/ui";
 
 const FOOTER_SECTIONS = [
   {
@@ -63,10 +63,10 @@ const FOOTER_SECTIONS = [
 ];
 
 const SOCIAL_LINKS = [
-  { icon: Facebook, href: "https://fashionfriday.in" },
-  { icon: Instagram, href: "https://instagram.com/fashionfriday.in" },
-  { icon: Youtube, href: "https://Youtube.com/fashionfriday.store" },
-  { icon: Twitter, href: "https://x.com/fashionfriday.in" },
+  { icon: FacebookIcon, href: "https://fashionfriday.in" },
+  { icon: InstagramIcon, href: "https://instagram.com/fashionfriday.in" },
+  { icon: YoutubeIcon, href: "https://Youtube.com/fashionfriday.store" },
+  { icon: TwitterIcon, href: "https://x.com/fashionfriday.in" },
 ];
 
 export default function Footer() {
@@ -81,7 +81,7 @@ export default function Footer() {
         aria-expanded={isOpen}
       >
         <span>More about Online Shopping at Fashion Friday</span>
-        <ChevronUp
+        <ChevronUpIcon
           className={`transition-transform duration-500 ${
             isOpen ? "rotate-0" : "rotate-180"
           }`}
@@ -133,7 +133,7 @@ export default function Footer() {
                         >
                           {link.name}
 
-                          <ArrowUpRight
+                          <ArrowUpRightIcon
                             size={16}
                             className="text-background group-hover:text-foreground transition-colors"
                           />

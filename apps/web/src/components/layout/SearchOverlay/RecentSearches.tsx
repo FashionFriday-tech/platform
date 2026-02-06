@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { IoMdClose } from "react-icons/io";
-import { GoArrowUpRight } from "react-icons/go";
+import { CloseIcon, ArrowUpRightIcon } from "@ff/ui";
 import { HighlightText } from "./HighlightText";
 
 export const RecentSearches = ({ items, query, setQuery, onRemove }: any) => {
@@ -25,9 +24,9 @@ export const RecentSearches = ({ items, query, setQuery, onRemove }: any) => {
             </button>
             <button className="p-2 text-foreground/20 text-xl">
               {query.length > 0 ? (
-                <GoArrowUpRight onClick={() => setQuery(item)} />
+                <ArrowUpRightIcon onClick={() => setQuery(item)} />
               ) : (
-                <IoMdClose
+                <CloseIcon
                   onClick={() => onRemove(item)}
                   className="hover:text-red-500 transition-colors"
                 />

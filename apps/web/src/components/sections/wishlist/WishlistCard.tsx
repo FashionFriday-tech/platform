@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBag, AlertCircle, HeartMinus, Bell } from "lucide-react";
+import { ShoppingBagIcon, AlertCircleIcon, HeartMinusIcon, BellIcon } from "@ff/ui";
 import { Product } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
 interface WishlistCardProps {
@@ -80,7 +80,7 @@ export default function WishlistCard({ product }: WishlistCardProps) {
             className="flex justify-center items-center shrink-0 rounded-full border border-border h-10 w-10 p-2 text-foreground-subtle transition-all hover:bg-destructive hover:text-destructive-foreground active:scale-90"
             aria-label="Remove from favorites"
           >
-            <HeartMinus size={16} />
+            <HeartMinusIcon size={16} />
           </button>
           {/* Move to Bag Button */}
           <button
@@ -89,12 +89,12 @@ export default function WishlistCard({ product }: WishlistCardProps) {
           >
             {product.inStock ? (
               <>
-                <ShoppingBag size={14} />
+                <ShoppingBagIcon size={14} />
                 Move to Bag
               </>
             ) : (
               <>
-                <Bell size={14} />
+                <BellIcon size={14} />
                 Notify Me
               </>
             )}

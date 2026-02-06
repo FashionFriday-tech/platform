@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Minus, Plus, X, Heart, Trash2 } from "lucide-react";
+import { MinusIcon, PlusIcon, CloseIcon, HeartIcon, TrashIcon } from "@ff/ui";
 import { BagItem } from "@/data/bagItems";
 
 interface BagItemCardProps {
@@ -80,9 +80,8 @@ export default function BagItemCard({ item }: BagItemCardProps) {
               className="flex items-center justify-center h-11 w-11 rounded-full border border-border text-foreground-subtle hover:text-destructive hover:border-destructive transition-all duration-300 cursor-pointer group/del"
               aria-label="Remove item"
             >
-              <X
+              <CloseIcon
                 size={18}
-                strokeWidth={1.5}
                 className="group-hover/del:scale-110 transition-transform"
               />
             </button>
@@ -93,7 +92,7 @@ export default function BagItemCard({ item }: BagItemCardProps) {
                 disabled={!item.inStock || item.quantity <= 1}
                 className="p-2 text-foreground-muted hover:text-foreground disabled:opacity-20 transition-all cursor-pointer"
               >
-                <Minus size={14} />
+                <MinusIcon size={14} />
               </button>
               <span className="px-4 text-sm font-bold tabular-nums text-center min-w-16">
                 {item.quantity}
@@ -102,7 +101,7 @@ export default function BagItemCard({ item }: BagItemCardProps) {
                 disabled={!item.inStock}
                 className="p-2 text-foreground-muted hover:text-foreground disabled:opacity-20 transition-all cursor-pointer"
               >
-                <Plus size={14} />
+                <PlusIcon size={14} />
               </button>
             </div>
           </div>

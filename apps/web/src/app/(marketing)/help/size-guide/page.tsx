@@ -1,18 +1,16 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Ruler,
-  ArrowRight,
-  Shirt,
-  Footprints,
-  Info,
-  ChevronDown,
-  ArrowLeftRight,
-  Check,
-  X,
-} from "lucide-react";
+  RulerIcon,
+  ArrowRightIcon,
+  ShirtIcon,
+  FootprintsIcon,
+  InfoIcon,
+  ChevronDownIcon,
+  ArrowLeftRightIcon,
+  CloseIcon,
+} from "@ff/ui";
 import { sizeData } from "@/data/sizes";
-import { SlArrowRight } from "react-icons/sl";
 
 export default function SizeGuidePage() {
   const [activeCat, setActiveCat] = useState<keyof typeof sizeData>("footwear");
@@ -86,9 +84,9 @@ export default function SizeGuidePage() {
               }`}
             >
               {id === "footwear" ? (
-                <Footprints size={14} />
+                <FootprintsIcon size={14} />
               ) : (
-                <Shirt size={14} />
+                <ShirtIcon size={14} />
               )}
               {id}
             </button>
@@ -115,7 +113,7 @@ export default function SizeGuidePage() {
                   <span className="text-sm md:text-lg font-black uppercase tracking-tighter text-nowrap">
                     {baseUnit}
                   </span>
-                  <ChevronDown
+                  <ChevronDownIcon
                     size={14}
                     className={`opacity-40 transition-transform ${
                       activePicker === "base" ? "rotate-180" : ""
@@ -129,7 +127,7 @@ export default function SizeGuidePage() {
                 onClick={handleSwap}
                 className="h-10 w-10 md:h-12 md:w-12 rounded-full bg-brand flex items-center justify-center hover:scale-110 active:scale-95 transition-all shrink-0 z-10"
               >
-                <ArrowLeftRight size={18} className="text-background" />
+                <ArrowLeftRightIcon size={18} className="text-background" />
               </button>
 
               {/* TO BUTTON */}
@@ -143,7 +141,7 @@ export default function SizeGuidePage() {
                   Conversion
                 </span>
                 <div className="flex items-center gap-2 mr-4">
-                  <ChevronDown
+                  <ChevronDownIcon
                     size={14}
                     className={`opacity-40 transition-transform ${
                       activePicker === "target" ? "rotate-180" : ""
@@ -166,7 +164,7 @@ export default function SizeGuidePage() {
                       onClick={() => setActivePicker(null)}
                       className="text-background/20 hover:text-brand"
                     >
-                      <X size={16} />
+                      <CloseIcon size={16} />
                     </button>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -213,7 +211,7 @@ export default function SizeGuidePage() {
               </div>
 
               <div className="flex flex-col items-center gap-2 opacity-20 group-hover:opacity-100 group-hover:text-brand transition-all duration-500">
-                <SlArrowRight size={20} />
+                <ArrowRightIcon size={20} />
               </div>
 
               <div className="flex flex-col items-center min-w-28 md:min-w-44 text-right">
@@ -232,7 +230,7 @@ export default function SizeGuidePage() {
         <div className="mt-8 mb-16 max-w-4xl mx-auto">
           <div className="bg-muted/5 border border-border/40 rounded-3xl flex flex-col md:flex-row items-center gap-6 group hover:border-brand/50 transition-colors duration-500">
             <div className="h-12 w-12 rounded-full bg-foreground/5 flex items-center justify-center shrink-0 group-hover:bg-brand/10 transition-colors">
-              <Info
+              <InfoIcon
                 size={20}
                 className="text-foreground group-hover:text-brand transition-colors"
               />
@@ -277,7 +275,7 @@ export default function SizeGuidePage() {
                   </span>
 
                   <div className="absolute top-0 right-0  opacity-6 group-hover:scale-110 transition-transform duration-700">
-                    <Ruler size={150} strokeWidth={1} />
+                    <RulerIcon size={150} />
                   </div>
                 </div>
                 <h2 className="text-5xl font-black uppercase italic tracking-tighter leading-none">
@@ -361,7 +359,7 @@ export default function SizeGuidePage() {
               <div className="mt-8 p-10 bg-foreground text-background rounded-[2.5rem]">
                 <div className="flex items-start gap-6">
                   <div className="p-3 bg-foreground text-background rounded-full">
-                    <Info size={20} />
+                    <InfoIcon size={20} />
                   </div>
                   <div className="space-y-3">
                     <h3 className="text-xl font-black uppercase italic tracking-tighter">
