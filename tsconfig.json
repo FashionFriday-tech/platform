@@ -17,8 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./apps/web/src/*"],
-      "@ff/ui": ["libs/ui/src/index.tsx"],
-      "@ff/ui/*": ["libs/ui/src/*"]
+      "@ff/ui": ["packages/ui/src/index.tsx"],
+      "@ff/ui/*": ["packages/ui/src/*"]
     }
   },
   "exclude": ["node_modules", "dist", "build", ".next"]
