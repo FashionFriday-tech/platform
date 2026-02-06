@@ -123,7 +123,7 @@ export default function HelpHub() {
           >
             <div className="flex justify-between items-start">
               <div className="p-4 bg-background-muted rounded-2xl group-hover:bg-background group-hover:text-foreground">
-                {item.icon}
+                <item.icon />
               </div>
               <ArrowUpRightIcon className="md:opacity-0 group-hover:opacity-100 transition-all text-foreground md:text-background" />
             </div>
