@@ -2,7 +2,7 @@
 
 import React from "react"; // Fix: Explicitly import React to resolve UMD global error
 import { motion, AnimatePresence } from "framer-motion";
-import { Product } from "@/data/store-data";
+import { Product } from "@ff/types";
 import { CatalogueProductCard } from "@/components/ui/cards/catlogue-product-card";
 
 interface GridProps {
