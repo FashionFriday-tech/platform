@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const ProductStatus = z.enum(["Pending", "Draft", "Published", "Rejected", "Archived"]);
-export const ProductCategory = z.enum(["Watches", "Shoes", "Clothing", "Accessories"]);
+export const ProductCategory = z.enum(["Watches", "Sneakers", "Clothing", "Accessories"]);
 
 export const GenderEnum = z.enum(['men', 'women', 'unisex']);
 export const QualityEnum = z.enum(['UA', 'Semi UA', '10A', '7A', '7AA', 'Standard', 'Premium', 'Luxury']);
