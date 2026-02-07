@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { StarBadgeIcon, StarsIcon } from "@ff/ui";
 import brandLogos from "@/data/brandLogos";
-import { Product } from "@/data/store-data";
+import { Product } from "@ff/types";
 
 interface StoreProductCardProps {
   // Use the concrete Product type instead of 'any' to catch errors early
@@ -23,10 +23,10 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
   };
 
   // Helper to get quality from the first variant since it's removed from top-level
-  const displayQuality = product.variants?.[0]?.quality || "Standard";
+  const displayQuality = product.attributes.quality;
   
   // Helper to handle original price calculation safely
-  const originalPrice = product.variants?.[0]?.ogPrice || (product.defaultPrice * 1.5);
+  const originalPrice = product.price.ogPrice || (product.price.sellingPrice * 3);
 
   return (
     <motion.div
@@ -39,7 +39,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
       <Link href={`/product/${product.slug}`} className="block cursor-pointer">
         <div className="aspect-4/5 overflow-hidden rounded-4xl lg:rounded-[2.5rem] bg-background-muted relative">
           <img
-            src={product.promoImage || "/images/placeholder.png"}
+            src={product.media.mainImage || "/images/placeholder.png"}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
@@ -49,8 +49,8 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
       <div className="mt-2 px-1 space-y-1">
         <div className="flex justify-between items-center text-[8px] md:text-[10px]">
           <img
-            src={getBrandLogoByName(product.brand)}
-            alt={product.brand}
+            src={getBrandLogoByName(product.brand[0])}
+            alt={product.brand[0]}
             className="w-8 invert-0 dark:invert"
           />
           <span className="flex gap-1 px-2 py-0.5 justify-center items-center font-bold border border-border rounded-full uppercase text-blue-500">
@@ -69,7 +69,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
                 ₹{originalPrice.toLocaleString()}
               </p>
               <p className="font-black text-green-500">
-                ₹{product.defaultPrice?.toLocaleString() ?? "N/A"}
+                ₹{product.price.sellingPrice?.toLocaleString() ?? "N/A"}
               </p>
             </span>
             <span className="flex items-center gap-1 text-foreground-muted text-[10px]">
