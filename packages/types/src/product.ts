@@ -39,8 +39,9 @@ export const ProductSchema = z.object({
     // Media & Gallery
     media: z.object({
         mainImage: z.string().url(),
-        gallery: z.array(z.string().url()),
-        youtubeId: z.string().optional(), // For embedded videos
+        promoImage: z.string().url().optional(),
+        liveImages: z.array(z.string().url()),
+        youtubeId: z.string().optional(),
     }),
 
     // Product Specifics & Attributes
@@ -60,9 +61,9 @@ export const ProductSchema = z.object({
     }),
 
     // Social Proof (Obfuscated for Frontend)
-    socialProof: z.object({
-        ProductWatching: z.number().int(), // e.g., 1000
-        displaySold: z.number().int(),     // e.g., "50"
+    liveMatrix: z.object({
+        liveWatching: z.number().int(), 
+        liveSold: z.number().int(), 
     }),
 
     // Marketing & Growth
@@ -70,11 +71,11 @@ export const ProductSchema = z.object({
         collections: z.array(z.string()), // ["Summer Special", "Winter 2026"]
         isFeatured: z.boolean().default(false),
         seoTitle: z.string().max(70).optional(),
-        seoDescription: z.string().max(160).optional(),
+        seoDescription: z.string().optional(),
     }),
 
-    ratingSummary: z.object({
-        averageRating: z.number().default(0),
+    rating: z.object({
+        averageRating: z.number().default(4),
         totalReviews: z.number().int().default(0),
     }),
 
