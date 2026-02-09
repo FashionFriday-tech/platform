@@ -42,6 +42,8 @@ export default function ProductPageMaster({
     displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2
   );
 
+  const [showWatchingPopup, setShowWatchingPopup] = useState(false);
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -108,7 +110,10 @@ export default function ProductPageMaster({
                       </span>
                     </Link>
 
-                    <span className="flex justify-center items-center gap-1">
+                    <span
+                      onClick={() => setShowWatchingPopup(true)}
+                      className="flex justify-center items-center gap-1"
+                    >
                       <EyeIcon size={11} className="text-red-500 mb-0.5" />
                       {liveMetric}+
                     </span>
@@ -288,6 +293,77 @@ export default function ProductPageMaster({
           </div>
         </div>
       </section>
+      {showWatchingPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-2xl transition-all p-6">
+          <div className="relative w-full max-w-[360px]">
+            <div className="flex flex-col justify-center items-center text-center bg-black text-white rounded-[40px] p-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/5">
+              {/* Simple Status Badge */}
+              <div className="flex items-center gap-2 mb-8">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">
+                  Live
+                </span>
+              </div>
+
+              {/* Massive Number with Arrows */}
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <h2 className="text-6xl font-black tracking-tighter leading-none italic">
+                  {liveMetric}
+                </h2>
+                <div className="flex flex-col text-red-500 animate-bounce transition-all duration-1000">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="m18 15-6-6-6 6" />
+                  </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="opacity-20"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Simplified Copy */}
+              <div className="space-y-2 mb-10">
+                {/* <p className="text-lg font-bold tracking-tight text-white">
+                  Demand is rising.
+                </p> */}
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  {liveMetric}+ peoples are watching the <span className="text-foreground font-semibold">"{product.name.toUpperCase()}"</span> right
+                  now.
+                  <span className="underline">Secure yours before the item sold out.</span>
+                </p>
+              </div>
+
+              {/* Clean Action Button */}
+              <button
+                onClick={() => setShowWatchingPopup(false)}
+                className="w-full rounded-full bg-white py-4 text-black text-sm font-black uppercase tracking-wide hover:bg-zinc-200 transition-colors active:scale-95"
+              >
+                View the drop
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* --- REVIEWS HIGHLIGHT --- */}
       <ReviewSection />
