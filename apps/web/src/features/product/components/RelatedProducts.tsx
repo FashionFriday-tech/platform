@@ -3,32 +3,23 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { StarBadgeIcon, StarsIcon } from "@ff/ui";
+import { Product } from "@ff/types";
 
-interface Product {
-  id: string | number;
-  slug: string;
-  name: string;
-  brand: string;
-  defaultPrice: number;
-  promoImage: string;
-  quality:string;
-}
+
 
 interface RelatedProductsProps {
   products?: Product[];
-  title?: string;
 }
 
 export default function RelatedProducts({
   products,
-  title = "Related Drops",
 }: RelatedProductsProps) {
   return (
     <section className="w-full py-6 lg:py-20">
       {/* Header */}
       <div className="px-4 lg:px-8 mb-8 flex items-end justify-between">
         <h2 className="text-3xl lg:text-4xl font-black uppercase italic tracking-tighter">
-          {title}
+         Similer Drops
         </h2>
       </div>
 
@@ -54,7 +45,7 @@ export default function RelatedProducts({
                 >
                   <div className="w-full aspect-4/5 overflow-hidden rounded-[2.5rem] bg-foreground/5 relative">
                     <img
-                      src={product.promoImage || "/images/placeholder.png"}
+                      src={product.media.mainImage || "/images/placeholder.png"}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
@@ -71,7 +62,7 @@ export default function RelatedProducts({
                     />
 
                     <span className="flex gap-1 items-center font-bold border border-border px-1.5 py-0.5 rounded-full text-blue-500 uppercase">
-                      <StarBadgeIcon /> {product.quality}
+                      <StarBadgeIcon /> {product.attributes.quality}
                     </span>
                   </div>
 
@@ -85,10 +76,10 @@ export default function RelatedProducts({
                     <div className="flex justify-between items-center w-full">
                       <span className="flex items-center gap-2">
                         <p className="font-medium text-foreground/40 line-through">
-                          ₹14,999
+                          ₹{product.price.ogPrice}
                         </p>
                         <p className="font-black text-green-500">
-                          ₹{product.defaultPrice.toLocaleString()}
+                          ₹{product.price.sellingPrice}
                         </p>
                       </span>
 
