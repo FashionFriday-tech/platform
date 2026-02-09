@@ -75,7 +75,7 @@ export const getProductBySlug = async (slug: string): Promise<Product | undefine
 export const getSimilarProducts = async (category: string, currentProductId?: string): Promise<Product[]> => {
   return DUMMY_PRODUCTS
     .filter((p) => p.category === category && p.id !== currentProductId)
-    .slice(0, 4);
+    .slice(0, 10);
 };
 
 // C. Find variants sharing a StyleID (e.g., same shoe, different color/quality)
