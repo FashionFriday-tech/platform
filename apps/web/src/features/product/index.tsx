@@ -55,7 +55,7 @@ export default function ProductPageMaster({
     }
   };
 
-  const liveMetric = useLiveProductMetric(product.socialProof.ProductWatching);
+  const liveMetric = useLiveProductMetric(product.liveMatrix.liveWatching);
 
   return (
     <div className="bg-background text-foreground min-h-screen pb-10 transition-colors">
@@ -65,7 +65,7 @@ export default function ProductPageMaster({
           {/* LEFT: Gallery */}
           <div className="lg:col-span-6">
             <Gallery
-              images={[product.media.mainImage, ...product.media.gallery].filter(Boolean)}
+              images={[product.media.mainImage, ...product.media.liveImages].filter(Boolean)}
               videoUrl={product.media.youtubeId}
             />
           </div>
@@ -90,7 +90,7 @@ export default function ProductPageMaster({
                       size={11}
                       className="text-yellow-400 mb-0.5 fill-yellow-400"
                     />
-                    4.5
+                    {product.rating.averageRating}
                   </span>
                   <span className="flex justify-center items-center gap-1">
                     <EyeIcon size={11} className="text-red-500 mb-0.5" />
@@ -131,8 +131,8 @@ export default function ProductPageMaster({
                 )}
               </div>
               <p className="text-[10px] text-foreground-subtle border rounded-full pl-4 pr-2 py-0.5 uppercase text-end">
-                <span className="text-foreground font-semibold">{product.socialProof.displaySold} + </span>{" "}
-                purchases in the last hour{" "}
+                <span className="text-foreground font-semibold">{product.liveMatrix.liveSold} + </span>{" "}
+                sold today{" "}
                 <ShoppingCartIcon size={12} className="inline-block" />
               </p>
             </div>
