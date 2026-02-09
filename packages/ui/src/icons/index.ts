@@ -119,6 +119,8 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { PiBriefcaseFill } from "react-icons/pi";
 import { GoHomeFill } from "react-icons/go";
+import { RxStarFilled } from "react-icons/rx";
+import { RxStar } from "react-icons/rx";
 
 // NAVIGATION & ARROWS
 export const ArrowLeftIcon = IoChevronBackOutline;
@@ -147,7 +149,8 @@ export const HeartIcon = FiHeart;
 export const HeartFilledIcon = IoHeart;
 export const HeartPlusIcon = TbHeartPlus;
 export const HeartMinusIcon = TbHeartMinus;
-export const StarIcon = MdOutlineStarBorder;
+export const StarIcon = RxStar;
+export const FilledStarIcon = RxStarFilled;
 export const StarFilledIcon = MdStar;
 export const StarsIcon = MdStars;
 export const WishlistIcon = GrFavorite;
