@@ -80,22 +80,33 @@ export default function ProductPageMaster({
               <div className="flex flex-col justify-between items-start">
                 <div className="flex justify-between items-center w-full">
                   <div className="flex justify-center items-center gap-4 text-[10px] font-black uppercase text-foreground-muted mb-2">
-                    <img
-                      src="/images/brand-logos/nike.png"
-                      alt={product.brand[0]}
-                      className="w-10 invert"
-                    />
-                    <span className="flex justify-center items-center gap-1">
-                      <StarBadgeIcon className="inline-block text-blue-500 mb-0.5" />
-                      {product.attributes.quality}
-                    </span>
-                    <span className="flex justify-center items-center gap-1">
-                      <StarIcon
-                        size={11}
-                        className="text-yellow-400 mb-0.5 fill-yellow-400"
+                    <Link
+                      href={`/brands/${String(product.brand).toLowerCase()}`}
+                    >
+                      <img
+                        src="/images/brand-logos/nike.png"
+                        alt={product.brand[0]}
+                        className="w-10 invert"
                       />
-                      {product.rating.averageRating}
-                    </span>
+                    </Link>
+
+                    <Link href="/help/quality-guide">
+                      <span className="flex justify-center items-center gap-1">
+                        <StarBadgeIcon className="inline-block text-blue-500 mb-0.5" />
+                        {product.attributes.quality}
+                      </span>
+                    </Link>
+
+                    <Link href={`/product/${product.slug}#review-section`}>
+                      <span className="flex justify-center items-center gap-1">
+                        <StarIcon
+                          size={11}
+                          className="text-yellow-400 mb-0.5 fill-yellow-400"
+                        />
+                        {product.rating.averageRating}
+                      </span>
+                    </Link>
+
                     <span className="flex justify-center items-center gap-1">
                       <EyeIcon size={11} className="text-red-500 mb-0.5" />
                       {liveMetric}+
