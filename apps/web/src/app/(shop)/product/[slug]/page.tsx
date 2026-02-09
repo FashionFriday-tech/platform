@@ -46,7 +46,7 @@ export default async function Page({
   }
 
   // 3. Data Fetching with exclusion logic (Fixes TS Error 2554)
-  const similarProducts = await getSimilarProducts(product.category);
+  const similarProducts = await getSimilarProducts(product.category, product.id);
 
   return (
     <ProductPageMaster product={product} similarProducts={similarProducts} />
