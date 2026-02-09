@@ -61,7 +61,7 @@ export default function RelatedProducts({
                       className="w-10 invert"
                     />
 
-                    <span className="flex gap-1 items-center font-bold border border-border px-1.5 py-0.5 rounded-full text-blue-500 uppercase">
+                    <span className="flex gap-1 items-center font-bold border border-border px-2 py-0.5 rounded-full text-blue-500 uppercase">
                       <StarBadgeIcon /> {product.attributes.quality}
                     </span>
                   </div>
