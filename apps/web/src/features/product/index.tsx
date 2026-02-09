@@ -65,58 +65,61 @@ export default function ProductPageMaster({
           {/* LEFT: Gallery */}
           <div className="lg:col-span-6">
             <Gallery
-              images={[product.media.mainImage, ...product.media.liveImages].filter(Boolean)}
+              images={[
+                product.media.mainImage,
+                ...product.media.liveImages,
+              ].filter(Boolean)}
               videoUrl={product.media.youtubeId}
             />
           </div>
 
           {/* RIGHT: Info & Purchase */}
           <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-6">
-           <div>
-             {/* 1. Brand & Actions */}
-            <div className="flex flex-col justify-between items-start">
-              <div className="flex justify-between items-center w-full">
-                <div className="flex justify-center items-center gap-4 text-[10px] font-black uppercase text-foreground-muted mb-2">
-                  <img
-                    src="/images/brand-logos/nike.png"
-                    alt={product.brand[0]}
-                    className="w-10 invert"
-                  />
-                  <span className="flex justify-center items-center gap-1">
-                    <StarBadgeIcon className="inline-block text-blue-500 mb-0.5" />
-                    {product.attributes.quality}
-                  </span>
-                  <span className="flex justify-center items-center gap-1">
-                    <StarIcon
-                      size={11}
-                      className="text-yellow-400 mb-0.5 fill-yellow-400"
+            <div>
+              {/* 1. Brand & Actions */}
+              <div className="flex flex-col justify-between items-start">
+                <div className="flex justify-between items-center w-full">
+                  <div className="flex justify-center items-center gap-4 text-[10px] font-black uppercase text-foreground-muted mb-2">
+                    <img
+                      src="/images/brand-logos/nike.png"
+                      alt={product.brand[0]}
+                      className="w-10 invert"
                     />
-                    {product.rating.averageRating}
-                  </span>
-                  <span className="flex justify-center items-center gap-1">
-                    <EyeIcon size={11} className="text-red-500 mb-0.5" />
-                    {liveMetric}+
-                  </span>
+                    <span className="flex justify-center items-center gap-1">
+                      <StarBadgeIcon className="inline-block text-blue-500 mb-0.5" />
+                      {product.attributes.quality}
+                    </span>
+                    <span className="flex justify-center items-center gap-1">
+                      <StarIcon
+                        size={11}
+                        className="text-yellow-400 mb-0.5 fill-yellow-400"
+                      />
+                      {product.rating.averageRating}
+                    </span>
+                    <span className="flex justify-center items-center gap-1">
+                      <EyeIcon size={11} className="text-red-500 mb-0.5" />
+                      {liveMetric}+
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full flex justify-between items-start">
+                  <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tighter leading-8 italic">
+                    {product.name}
+                  </h1>
+                  <button
+                    onClick={handleShare}
+                    className="p-2 md:mt-2 mr-4 rounded-full border border-border hover:bg-background-muted transition-all"
+                  >
+                    <ShareIcon size={18} />
+                  </button>
                 </div>
               </div>
-              <div className="w-full flex justify-between items-start">
-                <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tighter leading-8 italic">
-                  {product.name}
-                </h1>
-                <button
-                  onClick={handleShare}
-                  className="p-2 md:mt-2 mr-4 rounded-full border border-border hover:bg-background-muted transition-all"
-                >
-                  <ShareIcon size={18} />
-                </button>
-              </div>
-            </div>
 
-            {/* 3. Description */}
-            <p className="mt-2 text-xs capitalize text-foreground/80 leading-4 tracking-wider italic">
-              {product.description}
-            </p>
-           </div>
+              {/* 3. Description */}
+              <p className="mt-2 text-xs capitalize text-foreground/80 leading-4 tracking-wider italic">
+                {product.description}
+              </p>
+            </div>
 
             {/* 2. Pricing & Rating */}
             <div className="flex items-center justify-between border-border">
@@ -132,10 +135,17 @@ export default function ProductPageMaster({
                   </span>
                 )}
               </div>
-              <p className="text-[10px] text-foreground-subtle border rounded-full pl-4 pr-2 py-0.5 uppercase text-end">
-                <span className="text-foreground font-semibold">{product.liveMatrix.liveSold} + </span>{" "}
-                sold today{" "}
-                <ShoppingCartIcon size={12} className="inline-block" />
+              <p className="relative flex justify-center items-center text-[10px] text-foreground-muted border rounded-full pr-2 text-end overflow-hidden gap-2">
+                <span className="bg-foreground h-full rounded-full px-1.5">
+                  <ShoppingCartIcon
+                  size={12}
+                  className="inline-block scale-x-[-1] text-background"
+                />
+                <span className="text-background font-semibold">
+                  {product.liveMatrix.liveSold}+
+                </span>
+                </span>
+               <span> sold in last 24h</span>
               </p>
             </div>
 
@@ -181,7 +191,7 @@ export default function ProductPageMaster({
             {/* 5. CTA Buttons */}
             <section className="flex flex-col lg:flex-row items-stretch gap-4">
               <div className="w-full lg:flex-1">
-                {product.inventory.totalStock  > 0 ? ( // Data from Variant
+                {product.inventory.totalStock > 0 ? ( // Data from Variant
                   <div className="w-full bg-foreground py-3.5 flex justify-center items-center text-2xl font-black uppercase rounded-full cursor-pointer">
                     <span className="light:bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#656565,#ffffff)] bg-size-[400%_100%] dark:bg-[linear-gradient(90deg,#000000,#9ca3af,#000000,#9ca3af,#000000)] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]">
                       Buy Now
