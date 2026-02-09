@@ -100,7 +100,7 @@ export default function ReviewSection() {
     setSelectedReview((prev) => (prev - 1 + reviews.length) % reviews.length);
 
   return (
-    <div id="review-section" className="bg-[#050505] text-white py-12 px-6 overflow-hidden">
+    <div id="review-section" className="bg-[#050505] text-white py-12 px-6 overflow-hidden scroll-mt-60">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-10 max-w-3xl mx-auto">
           <div>

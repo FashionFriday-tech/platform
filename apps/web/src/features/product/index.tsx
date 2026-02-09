@@ -102,7 +102,7 @@ export default function ProductPageMaster({
                       <span className="flex justify-center items-center gap-1">
                         <FilledStarIcon
                           size={11}
-                          className="text-yellow-400 mb-0.5 fill-yellow-400"
+                          className="text-yellow-400 mb-0.5"
                         />
                         {product.rating.averageRating}
                       </span>
