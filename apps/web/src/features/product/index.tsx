@@ -46,7 +46,7 @@ export default function ProductPageMaster({
       try {
         await navigator.share({
           title: product.name,
-          text: `Check out the ${product.name} on Fashion Friday!`,
+          text: `Check out the ${product.name} ${product.attributes.quality} Quality on Fashion Friday! \n\n`,
           url: window.location.href,
         });
       } catch (err) {
@@ -72,7 +72,8 @@ export default function ProductPageMaster({
 
           {/* RIGHT: Info & Purchase */}
           <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-6">
-            {/* 1. Brand & Actions */}
+           <div>
+             {/* 1. Brand & Actions */}
             <div className="flex flex-col justify-between items-start">
               <div className="flex justify-between items-center w-full">
                 <div className="flex justify-center items-center gap-4 text-[10px] font-black uppercase text-foreground-muted mb-2">
@@ -99,7 +100,7 @@ export default function ProductPageMaster({
                 </div>
               </div>
               <div className="w-full flex justify-between items-start">
-                <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tighter leading-10">
+                <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tighter leading-8 italic">
                   {product.name}
                 </h1>
                 <button
@@ -112,9 +113,10 @@ export default function ProductPageMaster({
             </div>
 
             {/* 3. Description */}
-            <p className="text-sm text-foreground leading-relaxed">
-              {product.marketing.seoDescription}
+            <p className="mt-2 text-xs capitalize text-foreground/80 leading-4 tracking-wider italic">
+              {product.description}
             </p>
+           </div>
 
             {/* 2. Pricing & Rating */}
             <div className="flex items-center justify-between border-border">
