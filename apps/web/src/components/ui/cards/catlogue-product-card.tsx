@@ -66,10 +66,10 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
           <div className="flex justify-between items-center w-full">
             <span className="flex items-center gap-2">
               <p className="font-medium text-foreground/50 line-through">
-                ₹{originalPrice.toLocaleString()}
+                ₹{originalPrice}
               </p>
               <p className="font-black text-green-500">
-                ₹{product.price.sellingPrice?.toLocaleString() ?? "N/A"}
+                ₹{product.price.sellingPrice}
               </p>
             </span>
             <span className="flex items-center gap-1 text-foreground-muted text-[10px]">

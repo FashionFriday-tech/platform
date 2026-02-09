@@ -14,7 +14,7 @@ const CATEGORIES_DATA = {
     list: [
       { name: "Sneakers", slug: "sneakers", img: "/images/categories/men/sneaker.png", items: "124 Items" },
       { name: "Watches", slug: "watches", img: "/images/categories/men/watches.png", items: "86 Items" },
-      { name: "Clothes", slug: "cloths", img: "/images/categories/men/cloths.png", items: "210 Items" },
+      { name: "Clothing", slug: "clothing", img: "/images/categories/men/cloths.png", items: "210 Items" },
       { name: "Slippers", slug: "slippers", img: "/images/categories/men/slippers.png", items: "45 Items" },
       { name: "Accessories", slug: "accessories", img: "/images/categories/men/accessories.png", items: "92 Items" },
     ]
@@ -24,7 +24,7 @@ const CATEGORIES_DATA = {
     list: [
       { name: "Sneakers", slug: "sneakers", img: "/images/categories/women/sneaker.png", items: "110 Items" },
       { name: "Watches", slug: "watches", img: "/images/categories/women/watches.png", items: "95 Items" },
-      { name: "Clothes", slug: "cloths", img: "/images/categories/women/cloth.png", items: "340 Items" },
+      { name: "Clothing", slug: "clothing", img: "/images/categories/women/cloth.png", items: "340 Items" },
       { name: "Slippers", slug: "slippers", img: "/images/categories/women/slippers.png", items: "52 Items" },
       { name: "Accessories", slug: "accessories", img: "/images/categories/women/accessories.png", items: "120 Items" },
     ]

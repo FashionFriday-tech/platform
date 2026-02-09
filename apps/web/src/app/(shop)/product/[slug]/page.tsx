@@ -1,6 +1,6 @@
 // src/app/product/[slug]/page.tsx
 import { Metadata } from "next";
-import { getProductBySlug, getSimilarProducts } from "@/data/store-data";
+import { getProductBySlug, getSimilarProducts } from "@/data/filter-engine";
 import ProductPageMaster from "@/features/product";
 import EditorialError from "@/features/product/components/editorial-error";
 
@@ -19,12 +19,12 @@ export async function generateMetadata({
   if (!product) return { title: "Product Not Found" };
 
   return {
-    title: `${product.name} | Premium ${product.quality} Store`,
-    description: product.description,
+    title: `${product.name} | Premium ${product.attributes.quality} Store`,
+    description: product.marketing.seoDescription,
     openGraph: {
       title: product.name,
-      description: product.description,
-      images: [{ url: product.promoImage }],
+      description: product.marketing.seoDescription,
+      images: [{ url: product.media.mainImage }],
     },
     alternates: {
       canonical: `https://fashionfriday.in/product/${slug}`,

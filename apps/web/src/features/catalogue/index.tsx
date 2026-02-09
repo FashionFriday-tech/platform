@@ -10,7 +10,7 @@ import {
 } from "@ff/ui";
 
 // Data & Hook Imports
-import { CategorySlug, Product } from "@/data/store-data";
+import { Product } from "@ff/types";
 import { useCatalogue } from "./hooks/use-catalogue";
 
 // Sub-component Imports
@@ -27,15 +27,12 @@ const SORT_OPTIONS = [
 ];
 
 interface CatalogueClientProps {
-  type: "category" | "brand" | "search";
-  title: string;
+
   initialProducts: Product[];
-  categorySlug: CategorySlug;
+  categorySlug: string;
 }
 
 export default function CatalogueClient({
-  type,
-  title,
   initialProducts,
   categorySlug,
 }: CatalogueClientProps) {
@@ -59,7 +56,7 @@ export default function CatalogueClient({
 
   // Calculate max price for the budget slider
   const maxPrice = Math.max(
-    ...initialProducts.map((p) => p.defaultPrice),
+    ...initialProducts.map((p) => p.price.sellingPrice),
     10000
   );
 

@@ -9,7 +9,7 @@ export default function MediaStage({
   videoUrl,
 }: {
   images: string[];
-  videoUrl: string;
+  videoUrl?: string;
 }) {
   const [index, setIndex] = useState(0);
   const [activeMode, setActiveMode] = useState<"image" | "video">("image");

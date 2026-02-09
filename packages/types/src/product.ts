@@ -21,6 +21,7 @@ export const ProductSchema = z.object({
     id: z.string().uuid(),
     name: z.string().min(1),
     slug: z.string(), // e.g., "nike-air-force-1-blue"
+    description: z.string(),
     brand: z.array(z.string()), // Handles collabs like ["Nike", "Stussy"]
     status: ProductStatus,
     category: ProductCategory,

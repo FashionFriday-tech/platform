@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  ShoppingBagIcon,
   BellIcon,
   HeartIcon,
   ShareIcon,
@@ -18,7 +16,7 @@ import {
 import { useLiveProductMetric } from "@/features/product/hooks/useLiveProductMetric";
 
 import Gallery from "./components/gallery";
-import { Product } from "@/data/store-data";
+import { Product } from "@ff/types";
 import Link from "next/link";
 import ReviewSection from "./components/ReviewSection";
 import RelatedProducts from "./components/RelatedProducts";
@@ -32,21 +30,13 @@ export default function ProductPageMaster({
   similarProducts: Product[];
 }) {
   // 1. Map the first variant as the active data source to maintain your design
-  const activeVariant = product.variants[0];
+  // const activeVariant = product.variants[0];
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isWishlisted, setIsWishlisted] = useState(true);
 
   // Use sizes from the variant if they exist, otherwise fallback to your hardcoded list
-  const displaySizes = activeVariant.sizes || [
-    "38",
-    "39",
-    "40",
-    "41",
-    "42",
-    "43",
-    "44",
-    "45",
-  ];
+  const displaySizes = product.attributes.sizes;
+
   const cols = Math.ceil(
     displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2
   );
@@ -65,7 +55,7 @@ export default function ProductPageMaster({
     }
   };
 
-  const liveMetric = useLiveProductMetric(product.staticNumber);
+  const liveMetric = useLiveProductMetric(product.socialProof.ProductWatching);
 
   return (
     <div className="bg-background text-foreground min-h-screen pb-10 transition-colors">
@@ -75,25 +65,25 @@ export default function ProductPageMaster({
           {/* LEFT: Gallery */}
           <div className="lg:col-span-6">
             <Gallery
-              images={[product.promoImage, ...activeVariant.images].filter(Boolean)}
-              videoUrl={product.videoUrl}
+              images={[product.media.mainImage, ...product.media.gallery].filter(Boolean)}
+              videoUrl={product.media.youtubeId}
             />
           </div>
 
           {/* RIGHT: Info & Purchase */}
-          <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-8">
+          <div className="lg:col-span-6 lg:sticky lg:top-24 space-y-6">
             {/* 1. Brand & Actions */}
             <div className="flex flex-col justify-between items-start">
               <div className="flex justify-between items-center w-full">
                 <div className="flex justify-center items-center gap-4 text-[10px] font-black uppercase text-foreground-muted mb-2">
                   <img
                     src="/images/brand-logos/nike.png"
-                    alt={product.brand}
+                    alt={product.brand[0]}
                     className="w-10 invert"
                   />
                   <span className="flex justify-center items-center gap-1">
                     <StarBadgeIcon className="inline-block text-blue-500 mb-0.5" />
-                    {product.quality}
+                    {product.attributes.quality}
                   </span>
                   <span className="flex justify-center items-center gap-1">
                     <StarIcon
@@ -108,13 +98,13 @@ export default function ProductPageMaster({
                   </span>
                 </div>
               </div>
-              <div className="w-full flex justify-between items-center">
-                <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tighter leading-8">
+              <div className="w-full flex justify-between items-start">
+                <h1 className="text-3xl md:text-5xl font-bold uppercase tracking-tighter leading-10">
                   {product.name}
                 </h1>
                 <button
                   onClick={handleShare}
-                  className="p-2 mr-4 rounded-full border border-border hover:bg-background-muted transition-all"
+                  className="p-2 md:mt-2 mr-4 rounded-full border border-border hover:bg-background-muted transition-all"
                 >
                   <ShareIcon size={18} />
                 </button>
@@ -123,25 +113,25 @@ export default function ProductPageMaster({
 
             {/* 3. Description */}
             <p className="text-sm text-foreground leading-relaxed">
-              {product.description}
+              {product.marketing.seoDescription}
             </p>
 
             {/* 2. Pricing & Rating */}
             <div className="flex items-center justify-between border-border">
               <div className="flex items-center gap-4">
-                <span className="text-2xl font-bold text-foreground">
-                  ₹{activeVariant.price.toLocaleString()}{" "}
+                <span className="text-xl font-bold text-green-500">
+                  ₹{product.price.sellingPrice.toLocaleString()}{" "}
                   {/* Data from Variant */}
                 </span>
-                {activeVariant.ogPrice > activeVariant.price && (
+                {product.price.ogPrice > product.price.sellingPrice && (
                   <span className="text-lg line-through text-foreground-muted">
-                    ₹{activeVariant.ogPrice.toLocaleString()}{" "}
+                    ₹{product.price.ogPrice.toLocaleString()}{" "}
                     {/* Data from Variant */}
                   </span>
                 )}
               </div>
               <p className="text-[10px] text-foreground-subtle border rounded-full pl-4 pr-2 py-0.5 uppercase text-end">
-                <span className="text-foreground font-semibold">45+ </span>{" "}
+                <span className="text-foreground font-semibold">{product.socialProof.displaySold} + </span>{" "}
                 purchases in the last hour{" "}
                 <ShoppingCartIcon size={12} className="inline-block" />
               </p>
@@ -150,7 +140,7 @@ export default function ProductPageMaster({
             <ProductVariantPage />
 
             {/* 4. Size Selection */}
-            {product.category === "sneakers" && (
+            {product.category === "Sneakers" && (
               <div className="space-y-4">
                 <div className="flex justify-between items-end">
                   <label className="text-[10px] font-black uppercase tracking-widest">
@@ -189,7 +179,7 @@ export default function ProductPageMaster({
             {/* 5. CTA Buttons */}
             <section className="flex flex-col lg:flex-row items-stretch gap-4">
               <div className="w-full lg:flex-1">
-                {activeVariant.stock > 0 ? ( // Data from Variant
+                {product.inventory.totalStock  > 0 ? ( // Data from Variant
                   <div className="w-full bg-foreground py-3.5 flex justify-center items-center text-2xl font-black uppercase rounded-full cursor-pointer">
                     <span className="light:bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#656565,#ffffff)] bg-size-[400%_100%] dark:bg-[linear-gradient(90deg,#000000,#9ca3af,#000000,#9ca3af,#000000)] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]">
                       Buy Now
@@ -226,7 +216,6 @@ export default function ProductPageMaster({
                 <button
                   className={`py-4 h-14 flex-1 rounded-full font-bold uppercase flex items-center justify-center gap-3 transition-all border-2 border-background bg-background text-foreground hover:scale-[1.02] active:scale-95`}
                 >
-                  <ShoppingBagIcon size={16} />
                   Add to Cart
                 </button>
               </div>
@@ -248,7 +237,7 @@ export default function ProductPageMaster({
                 {
                   icon: <ShieldCheckIcon size={18} />,
                   label: "Authentic Quality",
-                  sub: `${activeVariant.quality} Grade`, // Data from Variant
+                  sub: `${product.attributes.quality} Grade`, // Data from Variant
                 },
                 {
                   icon: <StarIcon size={18} />,
@@ -278,7 +267,7 @@ export default function ProductPageMaster({
 
       {/* --- REVIEWS HIGHLIGHT --- */}
       <ReviewSection />
-      <RelatedProducts products={similarProducts} />
+      {/* <RelatedProducts products={similarProducts} /> */}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { Product, filterProducts } from "@/data/store-data";
+import { Product} from "@ff/types";
+import { filterProducts } from "@/data/filter-engine";
 import { useSettings } from "@/context/SettingsContext";
 
 interface UseCatalogueProps {
@@ -91,11 +92,11 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
     let result = filterProducts(initialProducts, activeFilters);
     const sorted = [...result];
     switch (sortBy) {
-      case "price-asc": sorted.sort((a, b) => a.defaultPrice - b.defaultPrice); break;
-      case "price-desc": sorted.sort((a, b) => b.defaultPrice - a.defaultPrice); break;
-      case "most-sold": sorted.sort((a, b) => b.salesCount - a.salesCount); break;
-      case "popularity": sorted.sort((a, b) => b.popularityScore - a.popularityScore); break;
-      default: sorted.sort((a, b) => b.staticNumber - a.staticNumber);
+      case "price-asc": sorted.sort((a, b) => a.price.sellingPrice - b.price.sellingPrice); break;
+      case "price-desc": sorted.sort((a, b) => b.price.sellingPrice - a.price.sellingPrice); break;
+      // case "most-sold": sorted.sort((a, b) => b.salesCount - a.salesCount); break;
+      // case "popularity": sorted.sort((a, b) => b.popularityScore - a.popularityScore); break;
+      // default: sorted.sort((a, b) => b.staticNumber - a.staticNumber);
     }
     return sorted;
   }, [initialProducts, activeFilters, sortBy]);

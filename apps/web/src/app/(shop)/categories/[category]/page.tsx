@@ -1,35 +1,34 @@
-import { MOCK_PRODUCTS, CategorySlug } from "@/data/store-data";
+import { DUMMY_PRODUCTS } from "@/data/products";
 import CatalogueClient from "@/features/catalogue";
 import { notFound } from "next/navigation";
 
-// Define the shape of params based on your folder name [category]
 interface Props {
   params: Promise<{ category: string }>;
 }
 
 export default async function CategoryPage({ params }: Props) {
-  // 1. Await params to access the dynamic segment
-  const resolvedParams = await params;
-  const categoryName = resolvedParams.category;
+  const { category } = await params;
 
-  // 2. Filter products belonging to this specific category
-  const categoryProducts = MOCK_PRODUCTS.filter(
-    (p) => p.category === categoryName
-  );
+  // Map URL slugs to your exact Data Categories
+  const categoryMap: Record<string, string> = {
+    watches: "Watches",
+    clothing: "Clothing",
+    accessories: "Accessories",
+    sneakers: "Sneakers", 
+  };
 
-  // 3. Security check: If category doesn't exist in our data enum
-  const validCategories = ['sneakers', 'watches', 'cloths', 'slippers', 'accessories'];
+  const formattedCategory = categoryMap[category.toLowerCase()];
   
-  if (!validCategories.includes(categoryName)) {
-    return notFound();
-  }
+  if (!formattedCategory) return notFound();
+
+  const initialProducts = DUMMY_PRODUCTS.filter(
+    (p) => p.category === formattedCategory
+  );
 
   return (
     <CatalogueClient 
-      type="category"
-      title={categoryName}
-      categorySlug={categoryName as CategorySlug}
-      initialProducts={categoryProducts}
+      categorySlug={formattedCategory}
+      initialProducts={initialProducts}
     />
   );
 }

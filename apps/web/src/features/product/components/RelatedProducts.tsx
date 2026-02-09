@@ -15,7 +15,7 @@ interface Product {
 }
 
 interface RelatedProductsProps {
-  products: Product[];
+  products?: Product[];
   title?: string;
 }
 
@@ -35,7 +35,7 @@ export default function RelatedProducts({
       {/* Scroll Container */}
       <div className="relative">
         <div className="flex gap-4 lg:gap-8 overflow-x-auto no-scrollbar px-4 lg:px-8 pb-8">
-          {products.map((product) => (
+          {products?.map((product) => (
             <div
               key={product.id}
               className="w-[70vw] md:w-[300px] lg:w-[360px] shrink-0 snap-start"
