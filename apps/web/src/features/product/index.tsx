@@ -12,6 +12,7 @@ import {
   EyeIcon,
   ShoppingCartIcon,
   StarBadgeIcon,
+  FilledStarIcon,
 } from "@ff/ui";
 import { useLiveProductMetric } from "@/features/product/hooks/useLiveProductMetric";
 
@@ -99,7 +100,7 @@ export default function ProductPageMaster({
 
                     <Link href={`/product/${product.slug}#review-section`}>
                       <span className="flex justify-center items-center gap-1">
-                        <StarIcon
+                        <FilledStarIcon
                           size={11}
                           className="text-yellow-400 mb-0.5 fill-yellow-400"
                         />
