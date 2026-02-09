@@ -138,14 +138,14 @@ export default function ProductPageMaster({
               <p className="relative flex justify-center items-center text-[10px] text-foreground-muted border rounded-full pr-2 text-end overflow-hidden gap-2">
                 <span className="bg-foreground h-full rounded-full px-1.5">
                   <ShoppingCartIcon
-                  size={12}
-                  className="inline-block scale-x-[-1] text-background"
-                />
-                <span className="text-background font-semibold">
-                  {product.liveMatrix.liveSold}+
+                    size={12}
+                    className="inline-block scale-x-[-1] text-background"
+                  />
+                  <span className="text-background font-semibold">
+                    {product.liveMatrix.liveSold}+
+                  </span>
                 </span>
-                </span>
-               <span> sold in last 24h</span>
+                <span> sold in last 24h</span>
               </p>
             </div>
 
@@ -279,7 +279,7 @@ export default function ProductPageMaster({
 
       {/* --- REVIEWS HIGHLIGHT --- */}
       <ReviewSection />
-      {/* <RelatedProducts products={similarProducts} /> */}
+      <RelatedProducts products={similarProducts} />
     </div>
   );
 }
