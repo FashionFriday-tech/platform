@@ -13,6 +13,7 @@ import {
   ShoppingBagIcon,
   VerifiedIcon,
   InfoCircleIcon,
+  FilledStarIcon,
 } from "@ff/ui";
 import {
   motion,
@@ -74,7 +75,7 @@ export default function ReviewSection() {
       comment:
         "The perfect staple. Color is richer in person. Highly recommend for daily wear.",
       image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800",
-      rating: 5,
+      rating: 3,
       membership: "platinum",
     },
   ];
@@ -108,7 +109,7 @@ export default function ReviewSection() {
             </h2>
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, starIndex) => (
-                <StarIcon
+                <FilledStarIcon
                   key={starIndex}
                   size={10}
                   className={
@@ -192,17 +193,16 @@ export default function ReviewSection() {
                           />
                         </span>
                         <div className="flex gap-0.5 mt-0.5">
-                          {[...Array(5)].map((_, starIndex) => (
-                            <StarIcon
-                              key={starIndex}
-                              size={10}
-                              className={
-                                starIndex < rev.rating
-                                  ? "fill-yellow-500 text-yellow-500"
-                                  : "text-yellow-500"
-                              }
-                            />
-                          ))}
+                          {[...Array(5)].map((_, starIndex) =>
+                            starIndex < rev.rating ? (
+                              <FilledStarIcon
+                                key={starIndex}
+                                size={10}
+                                className="text-yellow-500" />
+                            ) : (
+                              <StarIcon key={starIndex} size={10} className="text-yellow-500"/>
+                            )
+                          )}
                         </div>
                       </div>
                     </div>
@@ -270,7 +270,10 @@ export default function ReviewSection() {
                 </h3>
                 <div className="space-y-4 text-sm text-white/70 leading-relaxed">
                   <div className="flex gap-3 text-left">
-                    <ShoppingBagIcon className="shrink-0 text-white" size={18} />
+                    <ShoppingBagIcon
+                      className="shrink-0 text-white"
+                      size={18}
+                    />
                     <p>
                       <span className="text-white font-bold">
                         Verified Buyers Only:
@@ -280,7 +283,10 @@ export default function ReviewSection() {
                     </p>
                   </div>
                   <div className="flex gap-3 text-left">
-                    <ShieldCheckIcon className="shrink-0 text-white" size={18} />
+                    <ShieldCheckIcon
+                      className="shrink-0 text-white"
+                      size={18}
+                    />
                     <p>
                       <span className="text-white font-bold">
                         Zero Fake Reviews:
