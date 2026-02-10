@@ -4,8 +4,8 @@ import {
   HiOutlineArrowUpRight,
   HiOutlineArrowDownLeft,
 } from "react-icons/hi2";
-import { RiArrowUpDownLine } from "react-icons/ri";
-import { PiArrowsLeftRightLight, PiMapPin } from "react-icons/pi";
+import { RiArrowUpDownLine, RiMenuSearchLine } from "react-icons/ri";
+import { PiArrowsLeftRightLight, PiMapPin, PiShoppingBag } from "react-icons/pi";
 import {
   IoPlaySharp,
   IoSquareSharp,
@@ -106,11 +106,11 @@ import {
 } from "react-icons/md";
 import { GiLifeBuoy } from "react-icons/gi";
 import { FiActivity } from "react-icons/fi";
-import { TbListSearch, TbCategoryPlus, TbHeartMinus, TbHeartPlus, TbMapPin } from "react-icons/tb";
+import { TbHeartMinus, TbHeartPlus, TbMapPin } from "react-icons/tb";
 import { RiShieldStarFill, RiVerifiedBadgeFill } from "react-icons/ri";
 import { FaInfoCircle } from "react-icons/fa";
 import { SiInstagram, SiX , SiYoutube, SiFacebook } from "react-icons/si";
-import { BiUser } from "react-icons/bi";
+import { BiCategoryAlt, BiUser } from "react-icons/bi";
 import { GrFavorite } from "react-icons/gr";
 import { PiShoppingBagOpen } from "react-icons/pi";
 import { TiThMenuOutline } from "react-icons/ti";
@@ -121,6 +121,7 @@ import { PiBriefcaseFill } from "react-icons/pi";
 import { GoHomeFill } from "react-icons/go";
 import { RxStarFilled } from "react-icons/rx";
 import { RxStar } from "react-icons/rx";
+import { CiShop } from "react-icons/ci";
 
 // NAVIGATION & ARROWS
 export const ArrowLeftIcon = IoChevronBackOutline;
@@ -137,7 +138,7 @@ export const ChevronUpIcon = IoChevronUpOutline;
 export const ChevronDownIcon = IoChevronDownOutline;
 
 // SHOPPING & COMMERCE
-export const ShoppingBagIcon = PiShoppingBagOpen;
+export const ShoppingBagIcon = PiShoppingBag ;
 export const ShoppingCartIcon = MdShoppingCart;
 export const PackageIcon = MdOutlineInventory2;
 export const TruckIcon = MdOutlineLocalShipping;
@@ -265,8 +266,8 @@ export const LayersIcon = MdLayers;
 export const CpuIcon = MdMemory;
 export const DatabaseIcon = MdStorage;
 export const FileSearchIcon = MdFindInPage;
-export const SearchListIcon = TbListSearch;
-export const CategoryIcon = TbCategoryPlus;
+export const SearchListIcon = RiMenuSearchLine;
+export const CategoryIcon = BiCategoryAlt;
 
 // CLOTHING
 export const ShirtIcon = MdCheckroom;
