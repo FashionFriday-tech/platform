@@ -151,7 +151,7 @@ const getVariant = (index: number) => {
       </div>
 
       {/* CONTROLS (Bottom Center) */}
-      <div className="flex gap-4 sm:mt-10 z-40">
+      <div className="flex gap-10 sm:mt-10 z-40">
         <button
           onClick={handlePrev}
           className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-95"
