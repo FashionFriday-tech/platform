@@ -17,7 +17,7 @@ import { useCatalogue } from "./hooks/use-catalogue";
 import { CatalogueSidebar } from "./components/catalogue-sidebar";
 import { CatalogueGrid } from "./components/catalogue-grid";
 
-// Sort Options for both Desktop Select and Mobile Drawer
+// Sort Options
 const SORT_OPTIONS = [
   { label: "Newest Arrivals", value: "newest" },
   { label: "Price: Low to High", value: "price-asc" },
@@ -26,18 +26,20 @@ const SORT_OPTIONS = [
   { label: "Best Sellers", value: "most-sold" },
 ];
 
+// --- UPDATED INTERFACE ---
 interface CatalogueClientProps {
-
+  gender: string;          // Added: required gender string (men/women/snkrs)
   initialProducts: Product[];
   categorySlug: string;
 }
 
+// --- UPDATED FUNCTION PARAMS ---
 export default function CatalogueClient({
+  gender,                  // Destructured gender
   initialProducts,
   categorySlug,
 }: CatalogueClientProps) {
-  // 1. EXTRACT LOGIC FROM HOOK
-  // All filtering, sorting, and auto-scroll logic is centralized here
+  
   const {
     products,
     activeFilters,
@@ -49,12 +51,8 @@ export default function CatalogueClient({
     toggleAutoScroll,
   } = useCatalogue({ initialProducts });
 
-  // 2. UI STATE
-  const [activeDrawer, setActiveDrawer] = useState<"filter" | "sort" | null>(
-    null
-  );
+  const [activeDrawer, setActiveDrawer] = useState<"filter" | "sort" | null>(null);
 
-  // Calculate max price for the budget slider
   const maxPrice = Math.max(
     ...initialProducts.map((p) => p.price.sellingPrice),
     10000
@@ -62,28 +60,18 @@ export default function CatalogueClient({
 
   return (
     <div className="bg-background min-h-screen text-foreground transition-colors duration-500">
-      {/* --- HEADER SECTION --- */}
-      {/* <header className="pt-24 pb-12 px-4 text-center">
-        <h1 className="text-5xl md:text-7xl font-black italic tracking-tighter uppercase leading-none">
-          {title}<span className="text-brand">.</span>
-        </h1>
-        <p className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] opacity-40">
-          Showing {totalResults} items optimized for your lifestyle
-        </p>
-      </header> */}
 
-      {/* --- MOBILE TOOLBAR (Refine, Scroll, Sort) --- */}
+
+      {/* --- MOBILE TOOLBAR --- */}
       <div className="sticky md:hidden top-16 z-30 bg-background border-y border-border">
         <div className="mx-auto flex h-12">
-          {/* Mobile Filter Toggle */}
           <button
             onClick={() => setActiveDrawer("filter")}
-            className="flex-1 flex lg:hidden items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-r border-border hover:bg-background-muted transition-all outline-none"
+            className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-r border-border hover:bg-background-muted transition-all outline-none"
           >
             <SlidersIcon size={13} /> Filter
           </button>
 
-          {/* Auto Scroll Toggle (Uses Hook Logic) */}
           <button
             onClick={toggleAutoScroll}
             className={`flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest border-r border-border transition-all outline-none ${
@@ -98,7 +86,6 @@ export default function CatalogueClient({
             {isAutoScrolling ? "Scrolling" : "Auto Scroll"}
           </button>
 
-          {/* Sort Logic */}
           <div className="flex-1 flex items-center justify-center">
             <button
               onClick={() => setActiveDrawer("sort")}
@@ -107,20 +94,15 @@ export default function CatalogueClient({
               <ArrowUpDownIcon size={13} /> Sort
             </button>
 
-            {/* Desktop-only Sort Select */}
             <div className="hidden lg:flex items-center gap-3">
-              <span className="text-[10px] font-black uppercase opacity-40">
-                Sort By:
-              </span>
+              <span className="text-[10px] font-black uppercase opacity-40">Sort By:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-transparent text-[10px] font-black uppercase tracking-widest outline-none cursor-pointer"
               >
                 {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
             </div>
@@ -129,8 +111,7 @@ export default function CatalogueClient({
       </div>
 
       {/* --- MAIN GRID AREA --- */}
-      <main className="container mx-auto flex flex-col lg:flex-row  pb-20 px-4">
-        {/* DESKTOP SIDEBAR */}
+      <main className="container mx-auto flex flex-col lg:flex-row pb-20 px-4">
         <div className="hidden lg:block w-76 shrink-0">
           <CatalogueSidebar
             category={categorySlug}
@@ -140,15 +121,13 @@ export default function CatalogueClient({
           />
         </div>
 
-        {/* DYNAMIC PRODUCT GRID */}
         <CatalogueGrid products={products} />
       </main>
 
-      {/* --- MOBILE DRAWERS (Framer Motion) --- */}
+      {/* --- MOBILE DRAWERS --- */}
       <AnimatePresence>
         {activeDrawer && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -157,7 +136,6 @@ export default function CatalogueClient({
               className="fixed inset-0 z-60 bg-background/60 backdrop-blur-sm"
             />
 
-            {/* Drawer Content */}
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -185,28 +163,24 @@ export default function CatalogueClient({
                         }}
                         className="w-full flex items-center justify-between py-5 border-b border-border last:border-none"
                       >
-                        <span
-                          className={`text-[11px] uppercase tracking-widest ${
-                            sortBy === opt.value
-                              ? "font-black text-brand"
-                              : "font-bold opacity-60"
-                          }`}
-                        >
+                        <span className={`text-[11px] uppercase tracking-widest ${
+                            sortBy === opt.value ? "font-black text-brand" : "font-bold opacity-60"
+                        }`}>
                           {opt.label}
                         </span>
-                        {sortBy === opt.value && (
-                          <div className="w-2 h-2 bg-brand rounded-full" />
-                        )}
+                        {sortBy === opt.value && <div className="w-2 h-2 bg-brand rounded-full" />}
                       </button>
                     ))}
                   </div>
                 ) : (
-                  /* Mobile Filter Context */
                   <div className="space-y-6">
-                    <p className="text-[10px] font-bold opacity-40 italic">
-                      Mobile filtering is currently simplified. Use desktop for
-                      full budget range and color refinements.
-                    </p>
+                    {/* Re-use Sidebar content or add simplified mobile filters here */}
+                    <CatalogueSidebar
+                      category={categorySlug}
+                      activeFilters={activeFilters}
+                      onFilterChange={handleFilterChange}
+                      maxPrice={maxPrice}
+                    />
                     <button
                       onClick={() => setActiveDrawer(null)}
                       className="w-full py-4 bg-foreground text-background rounded-full font-black uppercase text-[11px] tracking-widest"
