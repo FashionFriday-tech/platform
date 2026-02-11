@@ -121,7 +121,6 @@ import { PiBriefcaseFill } from "react-icons/pi";
 import { GoHomeFill } from "react-icons/go";
 import { RxStarFilled } from "react-icons/rx";
 import { RxStar } from "react-icons/rx";
-import { CiShop } from "react-icons/ci";
 
 // NAVIGATION & ARROWS
 export const ArrowLeftIcon = IoChevronBackOutline;
