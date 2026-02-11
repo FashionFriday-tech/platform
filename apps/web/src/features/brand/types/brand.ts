@@ -14,5 +14,6 @@ export interface Brand {
   slug: string;
   color: string; 
   logo: string;
+  poster?: string;
   categories: BrandCategory[];
 }
