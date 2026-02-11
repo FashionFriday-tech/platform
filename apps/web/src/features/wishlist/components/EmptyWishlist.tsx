@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { HeartIcon } from '@ff/ui';
 
-export default function EmptyWishlist() {
+export function EmptyWishlist() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
       <div className="mb-6 rounded-full bg-gray-50 p-6">

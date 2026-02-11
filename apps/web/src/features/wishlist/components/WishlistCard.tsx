@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingBagIcon, AlertCircleIcon, HeartMinusIcon, BellIcon } from "@ff/ui";
+import { ShoppingBagIcon, HeartMinusIcon, BellIcon } from "@ff/ui";
 import { Product } from "@/types/wishlist";
 import { cn } from "@/lib/utils";
 interface WishlistCardProps {
   product: Product;
 }
 
-export default function WishlistCard({ product }: WishlistCardProps) {
+export function WishlistCard({ product }: WishlistCardProps) {
   const discount = product.originalPrice
     ? Math.round(
         ((product.originalPrice - product.price) / product.originalPrice) * 100

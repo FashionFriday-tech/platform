@@ -1,8 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import WishlistCard from "@/components/sections/wishlist/WishlistCard";
-import EmptyWishlist from "@/components/sections/wishlist/EmptyWishlist";
+import { WishlistCard, EmptyWishlist } from "@/features/wishlist";
 import { Product } from "@/types/wishlist";
 
 // MOCK DATA (In production, fetch this from your store/API)
