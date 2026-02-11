@@ -1,31 +1,30 @@
 import Footer from "@/components/layout/Footer";
-import BrandScroll from "@/components/sections/home/BrandScroll";
-import FeaturedCategories from "@/components/sections/home/FeaturedCatagories";
-import FreeShipping from "@/components/sections/home/FreeShipping";
-import Hero from "@/components/sections/home/Hero";
-import InfluencerCarousel from "@/components/sections/home/InfluencerCarousel";
-import NewArrivals from "@/components/sections/home/NewArrivals";
-import PWAInstallSection from "@/components/sections/home/PWAInstallSection";
-import ShopByBrand from "@/components/sections/home/ShopByBrands";
-import TrendingSection from "@/components/sections/home/TrendingSection";
-import WhyChooseUs from "@/components/sections/home/WhyChooseUs";
 import Request from "@/components/ui/sections/Request";
 
-export default function Home() {
+import {
+  Hero,
+  BrandScroll,
+  CaegoriesSection,
+  TrendingSection,
+  ShopByBrand,
+  InfluencerCarousel,
+  WhyChooseUs,
+  PWAInstallSection,
+} from "@/features/home";
+
+export default function HomePage() {
   return (
-    <div>
+    <main>
       <Hero />
       <BrandScroll />
-      <FeaturedCategories />
+      <CaegoriesSection />
       <TrendingSection />
-      <NewArrivals />
-      <FreeShipping />
       <ShopByBrand />
       <InfluencerCarousel />
       <WhyChooseUs />
       <PWAInstallSection />
       <Request />
       <Footer />
-    </div>
+    </main>
   );
 }
