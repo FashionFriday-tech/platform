@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowRightIcon, TagIcon, ShieldCheckIcon, ChevronUpIcon } from "@ff/ui";
+import { ArrowRightIcon, TagIcon, ShieldCheckIcon } from "@ff/ui";
 
-export default function OrderSummary() {
+export function OrderSummary() {
   const subtotal = 3798;
   const discount = 500;
   const shipping = 0;

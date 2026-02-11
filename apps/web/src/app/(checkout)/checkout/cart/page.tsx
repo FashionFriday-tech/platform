@@ -1,7 +1,5 @@
 "use client";
-
-import CartItemCard from "@/components/sections/bag/BagItemCard";
-import OrderSummary from "@/components/sections/bag/OrderSummary";
+import { CartItemsCard, OrderSummary } from "@/features/cart";
 import { bagItems } from "@/data/bagItems";
 import { ShoppingBagIcon, ChevronDownIcon } from "@ff/ui";
 import Link from "next/link";
@@ -26,7 +24,7 @@ export default function CartPage() {
               <div>
                 {bagItems.length > 0 ? (
                   bagItems.map((item) => (
-                    <CartItemCard key={item.id} item={item} />
+                    <CartItemsCard key={item.id} item={item} />
                   ))
                 ) : (
                   <div className="py-24 text-center">

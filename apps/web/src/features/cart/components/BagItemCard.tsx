@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { MinusIcon, PlusIcon, CloseIcon, HeartIcon, TrashIcon } from "@ff/ui";
+import { MinusIcon, PlusIcon, CloseIcon} from "@ff/ui";
 import { BagItem } from "@/data/bagItems";
 
 interface BagItemCardProps {
   item: BagItem;
 }
 
-export default function BagItemCard({ item }: BagItemCardProps) {
+export function CartItemsCard({ item }: BagItemCardProps) {
   const [isConfirming, setIsConfirming] = useState(false);
 
   return (
