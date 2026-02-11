@@ -6,7 +6,7 @@ export const BrandCard = ({ brand }: { brand: any }) => {
   return (
     <Link href={`/brands/${brand.slug}`} className="group">
       <div
-        className="group relative aspect-square overflow-hidden rounded-[3rem] flex justify-center items-center hover:scale-95 duration-500"
+        className="md:w-[250px] group relative aspect-3/4 overflow-hidden rounded-[2rem] flex justify-center items-center hover:scale-95 duration-500"
         style={{
           backgroundColor:
             brand.color === "#000000" ? "var(--color-foreground)" : brand.color,
@@ -21,11 +21,6 @@ export const BrandCard = ({ brand }: { brand: any }) => {
           }`}
         />
       </div>
-      <div className="mt-3 px-1">
-        <h3 className="text-foreground text-center font-bold text-sm truncate uppercase tracking-tight">
-          {brand.name}
-        </h3>
-      </div>
-    </Link>
+          </Link>
   );
 };
