@@ -4,7 +4,7 @@ import { CrownIcon, ZapIcon, SmartphoneIcon, ArrowUpRightIcon, SparklesIcon } fr
 import { userData } from "@/data/profile";
 import { motion } from "framer-motion";
 
-export default function ProfileHero() {
+export function ProfileHero() {
   const progressPercentage =
     (userData.loyaltyPoints / userData.pointsToNextTier) * 100;
 

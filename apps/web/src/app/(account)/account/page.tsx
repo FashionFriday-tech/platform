@@ -1,9 +1,7 @@
 "use client";
 
-import ProfileHero from "@/components/sections/profile/ProfileHero";
-import QuickLinksGrid from "@/components/sections/profile/QuickLinksGrid";
-import { motion } from "framer-motion";
-import { HistoryIcon, StarIcon, HeartIcon, ShieldCheckIcon  } from "@ff/ui";
+import { ProfileHero, QuickLinksGrid } from "@/features/profile";
+import { HistoryIcon, StarIcon, HeartIcon, ShieldCheckIcon } from "@ff/ui";
 
 export default function ProfileOverviewPage() {
   return (
