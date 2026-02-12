@@ -10,7 +10,7 @@ import {
 } from "@ff/ui";
 
 // Data & Hook Imports
-import { Product } from "@ff/types";
+import { Product } from "@ff/schemas";
 import { useCatalogue } from "./hooks/use-catalogue";
 
 // Sub-component Imports

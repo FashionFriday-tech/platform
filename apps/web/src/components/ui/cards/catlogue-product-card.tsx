@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { StarBadgeIcon, StarsIcon } from "@ff/ui";
 import brandLogos from "@/data/brandLogos";
-import { Product } from "@ff/types";
+import { Product } from "@ff/schemas";
 
 interface StoreProductCardProps {
   // Use the concrete Product type instead of 'any' to catch errors early

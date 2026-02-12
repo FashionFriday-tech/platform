@@ -19,7 +19,7 @@
       "@/*": ["./apps/web/src/*"],
       "@ff/ui": ["packages/ui/src/index.tsx"],
       "@ff/ui/*": ["packages/ui/src/*"],
-      "@ff/types": ["../../packages/types/src/index.ts"]
+      "@ff/schemas": ["../../packages/types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "dist", "build", ".next"]

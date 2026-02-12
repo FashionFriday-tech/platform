@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { StarBadgeIcon, StarsIcon } from "@ff/ui";
-import { Product } from "@ff/types";
+import { Product } from "@ff/schemas";
 
 
 

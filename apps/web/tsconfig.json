@@ -23,7 +23,7 @@
       "@/*": ["./src/*"],
       "@ff/ui": ["../../packages/ui/src"],
       "@ff/ui/*": ["../../packages/ui/src/*"],
-      "@ff/types": ["../../packages/types/src/index.ts"]
+      "@ff/schemas": ["../../packages/types/src/index.ts"]
     }
   },
   "include": [

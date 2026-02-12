@@ -17,7 +17,7 @@ import {
 import { useLiveProductMetric } from "@/features/product/hooks/useLiveProductMetric";
 
 import Gallery from "./components/gallery";
-import { Product } from "@ff/types";
+import { Product } from "@ff/schemas";
 import Link from "next/link";
 import ReviewSection from "./components/ReviewSection";
 import RelatedProducts from "./components/RelatedProducts";

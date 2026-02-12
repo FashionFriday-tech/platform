@@ -35,9 +35,9 @@ importers:
 
   apps/web:
     dependencies:
-      '@ff/types':
+      '@ff/schemas':
         specifier: workspace:*
-        version: link:../../packages/types
+        version: link:../../packages/schemas
       '@ff/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -97,7 +97,7 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
 
-  packages/types:
+  packages/schemas:
     dependencies:
       zod:
         specifier: latest

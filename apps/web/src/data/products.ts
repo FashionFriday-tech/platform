@@ -1,4 +1,4 @@
-import { Product } from "@ff/types";
+import { Product } from "@ff/schemas";
 import { v4 as uuidv4 } from 'uuid';
 
 export const DUMMY_PRODUCTS: Product[] = [
