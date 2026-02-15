@@ -1,0 +1,49 @@
+# ==================================================
+# EditorConfig - Industrial Standard Configuration
+# Applies to entire monorepo
+# ==================================================
+
+root = true
+
+# --------------------------------------------------
+# Global Settings (All Files)
+# --------------------------------------------------
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# --------------------------------------------------
+# Markdown Files
+# (Do not trim trailing whitespace — needed for line breaks)
+# --------------------------------------------------
+[*.md]
+trim_trailing_whitespace = false
+
+# --------------------------------------------------
+# YAML Files
+# --------------------------------------------------
+[*.{yml,yaml}]
+indent_size = 2
+
+# --------------------------------------------------
+# JSON Files
+# --------------------------------------------------
+[*.json]
+indent_size = 2
+
+# --------------------------------------------------
+# TypeScript / JavaScript
+# --------------------------------------------------
+[*.{js,jsx,ts,tsx,mjs,cjs}]
+indent_size = 2
+
+# --------------------------------------------------
+# Config & Environment Files
+# --------------------------------------------------
+[*.{env,env.*}]
+indent_style = space
+indent_size = 2
