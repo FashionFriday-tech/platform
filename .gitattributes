@@ -1,0 +1,46 @@
+# ==================================================
+# Enforce LF line endings for all text files
+# ==================================================
+* text=auto eol=lf
+
+# ==================================================
+# JavaScript / TypeScript
+# ==================================================
+*.js  text eol=lf
+*.jsx text eol=lf
+*.ts  text eol=lf
+*.tsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+
+# ==================================================
+# Config Files
+# ==================================================
+*.json text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.md   text eol=lf
+*.css  text eol=lf
+*.scss text eol=lf
+
+# ==================================================
+# Shell Scripts
+# ==================================================
+*.sh text eol=lf
+
+# ==================================================
+# Windows Scripts (Keep CRLF)
+# ==================================================
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# ==================================================
+# Binary Files (Do NOT modify)
+# ==================================================
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.pdf  binary
