@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -6,26 +6,25 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "fashionfriday.in",
+        protocol: 'https',
+        hostname: 'fashionfriday.in',
       },
       {
-        protocol: "https",
-        hostname: "cdn.fashionfriday.in",
+        protocol: 'https',
+        hostname: 'cdn.fashionfriday.in',
       },
       {
-        protocol: "https",
-        hostname: "images.unsplash.com",
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
   },
-
 
   experimental: {
     optimizeCss: true,
   },
 
-  transpilePackages: ["@ff/ui"],
+  transpilePackages: ['@ff/ui'],
 };
 
 export default nextConfig;

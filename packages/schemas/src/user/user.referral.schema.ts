@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { ReferralRewardStatusEnum } from "./user.enums";
+import { z } from 'zod';
+import { ReferralRewardStatusEnum } from './user.enums';
 
 /**
  * Referral (per user)
@@ -9,11 +9,7 @@ export const ReferralSchema = z.object({
 
   userId: z.string().uuid(),
 
-  referralCode: z
-    .string()
-    .min(4)
-    .max(20)
-    .trim(),
+  referralCode: z.string().min(4).max(20).trim(),
 
   referredBy: z.string().uuid().nullable(),
 

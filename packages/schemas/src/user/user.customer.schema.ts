@@ -1,13 +1,13 @@
-import { z } from "zod";
-import { UserBaseSchema } from "./user.base.schema";
-import { UserRoleEnum } from "./user.enums";
+import { z } from 'zod';
+import { UserBaseSchema } from './user.base.schema';
+import { UserRoleEnum } from './user.enums';
 
 /**
  * Allowed customer roles
  */
 const CustomerRoleSchema = UserRoleEnum.refine(
-  (role) => role === "CUSTOMER" || role === "INFLUENCER",
-  { message: "Invalid customer role" }
+  (role) => role === 'CUSTOMER' || role === 'INFLUENCER',
+  { message: 'Invalid customer role' },
 );
 
 /**

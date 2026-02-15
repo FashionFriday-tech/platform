@@ -1,36 +1,31 @@
-import { z } from "zod";
-import {
-    ProductStatusEnum,
-    ProductCategoryEnum,
-    GenderEnum,
-    QualityEnum,
-} from "./product.enums";
+import { z } from 'zod';
+import { ProductStatusEnum, ProductCategoryEnum, GenderEnum, QualityEnum } from './product.enums';
 
 export const ProductBaseSchema = z.object({
-    id: z.string().uuid(),
+  id: z.string().uuid(),
 
-    name: z.string().min(3).max(200).trim(),
+  name: z.string().min(3).max(200).trim(),
 
-    slug: z.string().regex(/^[a-z0-9-]+$/),
+  slug: z.string().regex(/^[a-z0-9-]+$/),
 
-    description: z.string().min(10),
+  description: z.string().min(10),
 
-    brand: z.array(z.string()).min(1),
+  brand: z.array(z.string()).min(1),
 
-    status: ProductStatusEnum,
+  status: ProductStatusEnum,
 
-    category: ProductCategoryEnum,
+  category: ProductCategoryEnum,
 
-    gender: GenderEnum,
+  gender: GenderEnum,
 
-    attributes: z.object({
-        colors: z.array(z.string()).min(1),
-        quality: QualityEnum,
-        sizes: z.array(z.string()).min(1),
-        materials: z.array(z.string()).optional(),
-        specs: z.record(z.string(), z.string()).optional(),
-    }),
+  attributes: z.object({
+    colors: z.array(z.string()).min(1),
+    quality: QualityEnum,
+    sizes: z.array(z.string()).min(1),
+    materials: z.array(z.string()).optional(),
+    specs: z.record(z.string(), z.string()).optional(),
+  }),
 
-    createdAt: z.coerce.date(),
-    updatedAt: z.coerce.date(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });

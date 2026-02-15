@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { DEFAULT_SETTINGS } from "@/config/defaultSettings";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { DEFAULT_SETTINGS } from '@/config/defaultSettings';
 
-const STORAGE_KEY = "app_settings";
+const STORAGE_KEY = 'app_settings';
 
 type Settings = typeof DEFAULT_SETTINGS;
 
@@ -44,7 +44,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 export function useSettings() {
   const ctx = useContext(SettingsContext);
   if (!ctx) {
-    throw new Error("useSettings must be used inside SettingsProvider");
+    throw new Error('useSettings must be used inside SettingsProvider');
   }
   return ctx;
 }

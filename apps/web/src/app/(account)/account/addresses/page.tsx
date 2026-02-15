@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useMemo } from "react";
-import { 
+import { useState, useEffect, useRef, useMemo } from 'react';
+import {
   CloseIcon,
   TrashIcon,
   PhoneIcon,
@@ -13,8 +13,8 @@ import {
   HomeIcon,
   BriefcaseIcon,
   AlertIcon,
-  MapPinIcon 
-} from "@ff/ui";
+  MapPinIcon,
+} from '@ff/ui';
 
 interface Address {
   id: string;
@@ -28,39 +28,29 @@ interface Address {
   city: string;
   district: string;
   state: string;
-  type: "Home" | "Work";
+  type: 'Home' | 'Work';
   isDefault: boolean;
 }
 
 // --- REUSABLE COMPONENTS ---
 
-const FormInput = ({
-  label,
-  value,
-  onChange,
-  prefix,
-  placeholder,
-  inputRef,
-  required,
-}: any) => (
-  <div className="space-y-1 w-full">
-    <label className="text-[9px] font-black uppercase tracking-widest text-foreground-subtle ml-1 flex justify-between">
+const FormInput = ({ label, value, onChange, prefix, placeholder, inputRef, required }: any) => (
+  <div className="w-full space-y-1">
+    <label className="text-foreground-subtle ml-1 flex justify-between text-[9px] font-black tracking-widest uppercase">
       {label}
-      {required && (
-        <span className="text-brand opacity-60 text-[8px]">Required</span>
-      )}
+      {required && <span className="text-brand text-[8px] opacity-60">Required</span>}
     </label>
     <div className="relative">
       {prefix && (
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-subtle text-xs font-bold">
+        <span className="text-foreground-subtle absolute top-1/2 left-3 -translate-y-1/2 text-xs font-bold">
           {prefix}
         </span>
       )}
       <input
         ref={inputRef}
-        className={`w-full bg-background border border-border rounded-xl py-2.5 text-xs font-bold outline-none focus:border-brand transition-all placeholder:text-foreground-subtle/50 ${
-          prefix ? "pl-10" : "px-3"
-        } ${required && !value ? "border-dashed" : ""}`}
+        className={`bg-background border-border focus:border-brand placeholder:text-foreground-subtle/50 w-full rounded-xl border py-2.5 text-xs font-bold transition-all outline-none ${
+          prefix ? 'pl-10' : 'px-3'
+        } ${required && !value ? 'border-dashed' : ''}`}
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
@@ -71,30 +61,26 @@ const FormInput = ({
 
 const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
   <div
-    className={`p-6 rounded-4xl border bg-background-elevated flex flex-col transition-all duration-300  ${
+    className={`bg-background-elevated flex flex-col rounded-4xl border p-6 transition-all duration-300 ${
       address.isDefault
-        ? "border-brand ring-1 ring-brand shadow-xl"
-        : "border-border shadow-sm hover:border-foreground/20"
+        ? 'border-brand ring-brand shadow-xl ring-1'
+        : 'border-border hover:border-foreground/20 shadow-sm'
     }`}
   >
-    <div className="flex justify-between items-start mb-6">
+    <div className="mb-6 flex items-start justify-between">
       <div className="flex flex-wrap gap-2">
-        <span className="px-3 py-1 bg-background-muted text-foreground-muted rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1">
-          {address.type === "Home" ? (
-            <HomeIcon size={10} />
-          ) : (
-            <BriefcaseIcon size={10} />
-          )}{" "}
+        <span className="bg-background-muted text-foreground-muted flex items-center gap-1 rounded-full px-3 py-1 text-[9px] font-black tracking-widest uppercase">
+          {address.type === 'Home' ? <HomeIcon size={10} /> : <BriefcaseIcon size={10} />}{' '}
           {address.type}
         </span>
         {address.isDefault ? (
-          <span className="px-3 py-1 bg-brand text-brand-foreground rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1">
+          <span className="bg-brand text-brand-foreground flex items-center gap-1 rounded-full px-3 py-1 text-[9px] font-black tracking-widest uppercase">
             <StarIcon size={10} fill="currentColor" /> Default
           </span>
         ) : (
           <button
             onClick={() => onSetDefault(address.id)}
-            className="px-3 py-1 border border-border hover:border-brand hover:text-brand rounded-full text-[9px] font-black uppercase tracking-widest transition-colors"
+            className="border-border hover:border-brand hover:text-brand rounded-full border px-3 py-1 text-[9px] font-black tracking-widest uppercase transition-colors"
           >
             Set Default
           </button>
@@ -103,13 +89,13 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
       <div className="flex gap-1">
         <button
           onClick={() => onEdit(address)}
-          className="p-2 hover:bg-background-muted rounded-full text-foreground-subtle hover:text-foreground transition-colors"
+          className="hover:bg-background-muted text-foreground-subtle hover:text-foreground rounded-full p-2 transition-colors"
         >
           <EditIcon size={14} />
         </button>
         <button
           onClick={() => onDelete(address.id)}
-          className="p-2 hover:bg-destructive/10 rounded-full text-foreground-subtle hover:text-destructive transition-colors"
+          className="hover:bg-destructive/10 text-foreground-subtle hover:text-destructive rounded-full p-2 transition-colors"
         >
           <TrashIcon size={14} />
         </button>
@@ -117,32 +103,29 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
     </div>
 
     <div className="grow space-y-2">
-      <h3 className="font-black text-lg leading-tight truncate">
-        {address.name}
-      </h3>
-      <p className="text-foreground-muted text-xs leading-relaxed line-clamp-2">
-        {address.addressLine1}, {address.addressLine2}{" "}
+      <h3 className="truncate text-lg leading-tight font-black">{address.name}</h3>
+      <p className="text-foreground-muted line-clamp-2 text-xs leading-relaxed">
+        {address.addressLine1}, {address.addressLine2}{' '}
         {address.landmark && (
-          <span className="italic text-foreground-subtle text-[10px]">
-            {" "}
+          <span className="text-foreground-subtle text-[10px] italic">
+            {' '}
             (Near {address.landmark})
           </span>
         )}
       </p>
-      <p className="text-foreground font-bold text-[11px] uppercase tracking-tight">
+      <p className="text-foreground text-[11px] font-bold tracking-tight uppercase">
         {address.city}, {address.district}
       </p>
-      <p className="text-foreground-subtle text-[9px] font-black uppercase tracking-widest">
+      <p className="text-foreground-subtle text-[9px] font-black tracking-widest uppercase">
         {address.state} — {address.pincode}
       </p>
 
-      <div className="pt-3 flex flex-wrap gap-2">
-        <div className="flex items-center gap-2 text-[10px] font-black text-foreground bg-background-muted px-3 py-1.5 rounded-lg border border-border">
-          <PhoneIcon size={12} className="text-brand" />{" "}
-          <span>+91 {address.phone}</span>
+      <div className="flex flex-wrap gap-2 pt-3">
+        <div className="text-foreground bg-background-muted border-border flex items-center gap-2 rounded-lg border px-3 py-1.5 text-[10px] font-black">
+          <PhoneIcon size={12} className="text-brand" /> <span>+91 {address.phone}</span>
         </div>
         {address.altPhone && (
-          <div className="flex items-center gap-2 text-[10px] font-black text-foreground-subtle bg-background-muted/50 px-3 py-1.5 rounded-lg border border-border border-dashed">
+          <div className="text-foreground-subtle bg-background-muted/50 border-border flex items-center gap-2 rounded-lg border border-dashed px-3 py-1.5 text-[10px] font-black">
             <PhoneIcon size={12} /> <span>+91 {address.altPhone}</span>
           </div>
         )}
@@ -151,14 +134,9 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
   </div>
 );
 
-const AddressFormModal = ({
-  initialData,
-  onClose,
-  onSave,
-  isFirstAddress,
-}: any) => {
+const AddressFormModal = ({ initialData, onClose, onSave, isFirstAddress }: any) => {
   const [formData, setFormData] = useState<Partial<Address>>(
-    initialData || { type: "Home", isDefault: isFirstAddress || false }
+    initialData || { type: 'Home', isDefault: isFirstAddress || false },
   );
   const [loading, setLoading] = useState(false);
   const altPhoneRef = useRef<HTMLInputElement>(null);
@@ -192,7 +170,7 @@ const AddressFormModal = ({
       fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data[0].Status === "Success") {
+          if (data[0].Status === 'Success') {
             const details = data[0].PostOffice[0];
             setFormData((prev) => ({
               ...prev,
@@ -201,70 +179,65 @@ const AddressFormModal = ({
             }));
           } else {
             // Reset if invalid pincode
-            setFormData((prev) => ({ ...prev, state: "", district: "" }));
+            setFormData((prev) => ({ ...prev, state: '', district: '' }));
           }
         })
         .catch(() => {
-          setFormData((prev) => ({ ...prev, state: "", district: "" }));
+          setFormData((prev) => ({ ...prev, state: '', district: '' }));
         })
         .finally(() => setLoading(false));
     } else {
       // Clear region if user types or deletes pincode
       if (formData.district || formData.state) {
-        setFormData((prev) => ({ ...prev, state: "", district: "" }));
+        setFormData((prev) => ({ ...prev, state: '', district: '' }));
       }
     }
   }, [formData.pincode]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-background/60 backdrop-blur-md"
-        onClick={onClose}
-      />
-      <div className="relative bg-background-elevated w-full max-w-lg rounded-4xl shadow-2xl border border-border flex flex-col max-h-[90vh]">
-        <div className="px-6 py-5 border-b border-border flex justify-between items-center bg-background-elevated sticky top-0 rounded-t-4xl z-10">
-          <h2 className="text-lg font-black uppercase tracking-tighter">
-            Address Details
-          </h2>
+      <div className="bg-background/60 absolute inset-0 backdrop-blur-md" onClick={onClose} />
+      <div className="bg-background-elevated border-border relative flex max-h-[90vh] w-full max-w-lg flex-col rounded-4xl border shadow-2xl">
+        <div className="border-border bg-background-elevated sticky top-0 z-10 flex items-center justify-between rounded-t-4xl border-b px-6 py-5">
+          <h2 className="text-lg font-black tracking-tighter uppercase">Address Details</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-background-muted rounded-full transition-colors"
+            className="hover:bg-background-muted rounded-full p-2 transition-colors"
           >
             <CloseIcon size={20} />
           </button>
         </div>
 
-        <div className="p-4 overflow-y-auto space-y-6 no-scrollbar">
+        <div className="no-scrollbar space-y-6 overflow-y-auto p-4">
           <div className="grid grid-cols-2 gap-2">
             <div className="relative">
               <FormInput
                 label="Pincode"
                 placeholder="6 Digits"
                 required
-                value={formData.pincode || ""}
+                value={formData.pincode || ''}
                 onChange={(v: string) =>
                   setFormData({
                     ...formData,
-                    pincode: v.replace(/\D/g, "").slice(0, 6),
+                    pincode: v.replace(/\D/g, '').slice(0, 6),
                   })
                 }
               />
               {loading && (
                 <LoaderIcon
-                  className="absolute right-3 bottom-2.5 animate-spin text-brand"
+                  className="text-brand absolute right-3 bottom-2.5 animate-spin"
                   size={16}
                 />
               )}
             </div>
-            <div className="bg-background-muted rounded-xl px-3 border border-border flex flex-col justify-center">
-              <span className="text-[8px] font-black uppercase text-foreground-subtle tracking-widest leading-none mb-1">
+            <div className="bg-background-muted border-border flex flex-col justify-center rounded-xl border px-3">
+              <span className="text-foreground-subtle mb-1 text-[8px] leading-none font-black tracking-widest uppercase">
                 Detected Region
               </span>
-              <p className="text-[10px] font-bold truncate text-foreground">
+              <p className="text-foreground truncate text-[10px] font-bold">
                 {formData.district
                   ? `${formData.district}, ${formData.state}`
-                  : "Waiting for Pin..."}
+                  : 'Waiting for Pin...'}
               </p>
             </div>
           </div>
@@ -275,36 +248,30 @@ const AddressFormModal = ({
                 label="City / Town"
                 placeholder="e.g. Puthanathani"
                 required
-                value={formData.city || ""}
+                value={formData.city || ''}
                 onChange={(v: string) => setFormData({ ...formData, city: v })}
               />
               <FormInput
                 label="Area / Locality"
                 placeholder="Street/Colony"
                 required
-                value={formData.addressLine2 || ""}
-                onChange={(v: string) =>
-                  setFormData({ ...formData, addressLine2: v })
-                }
+                value={formData.addressLine2 || ''}
+                onChange={(v: string) => setFormData({ ...formData, addressLine2: v })}
               />
             </div>
             <div className="flex gap-2">
               <FormInput
                 label="Landmark"
                 placeholder="Famous place nearby"
-                value={formData.landmark || ""}
-                onChange={(v: string) =>
-                  setFormData({ ...formData, landmark: v })
-                }
+                value={formData.landmark || ''}
+                onChange={(v: string) => setFormData({ ...formData, landmark: v })}
               />
               <FormInput
                 label="Building / House No"
                 placeholder="No. / Name"
                 required
-                value={formData.addressLine1 || ""}
-                onChange={(v: string) =>
-                  setFormData({ ...formData, addressLine1: v })
-                }
+                value={formData.addressLine1 || ''}
+                onChange={(v: string) => setFormData({ ...formData, addressLine1: v })}
               />
             </div>
           </div>
@@ -316,7 +283,7 @@ const AddressFormModal = ({
               label="Recipient Name"
               placeholder="Full name"
               required
-              value={formData.name || ""}
+              value={formData.name || ''}
               onChange={(v: string) => setFormData({ ...formData, name: v })}
             />
             <div className="grid grid-cols-2 gap-4">
@@ -324,11 +291,11 @@ const AddressFormModal = ({
                 label="Primary Phone"
                 prefix="+91"
                 required
-                value={formData.phone || ""}
+                value={formData.phone || ''}
                 onChange={(v: string) =>
                   setFormData({
                     ...formData,
-                    phone: v.replace(/\D/g, "").slice(0, 10),
+                    phone: v.replace(/\D/g, '').slice(0, 10),
                   })
                 }
               />
@@ -336,34 +303,34 @@ const AddressFormModal = ({
                 inputRef={altPhoneRef}
                 label="Alt Phone (Optional)"
                 prefix="+91"
-                value={formData.altPhone || ""}
+                value={formData.altPhone || ''}
                 onChange={(v: string) =>
                   setFormData({
                     ...formData,
-                    altPhone: v.replace(/\D/g, "").slice(0, 10),
+                    altPhone: v.replace(/\D/g, '').slice(0, 10),
                   })
                 }
               />
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-            <div className="flex bg-background-muted p-1 rounded-full border border-border w-full sm:w-auto">
-              {(["Home", "Work"] as const).map((t) => (
+          <div className="flex flex-col items-center justify-between gap-4 pt-2 sm:flex-row">
+            <div className="bg-background-muted border-border flex w-full rounded-full border p-1 sm:w-auto">
+              {(['Home', 'Work'] as const).map((t) => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => setFormData({ ...formData, type: t })}
-                  className={`flex-1 sm:px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`flex-1 rounded-full py-2 text-[10px] font-black tracking-widest uppercase transition-all sm:px-6 ${
                     formData.type === t
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-foreground-subtle"
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-foreground-subtle'
                   }`}
                 >
-                  {t === "Home" ? (
-                    <HomeIcon size={10} className="inline mr-1" />
+                  {t === 'Home' ? (
+                    <HomeIcon size={10} className="mr-1 inline" />
                   ) : (
-                    <BriefcaseIcon size={10} className="inline mr-1" />
+                    <BriefcaseIcon size={10} className="mr-1 inline" />
                   )}
                   {t}
                 </button>
@@ -371,27 +338,21 @@ const AddressFormModal = ({
             </div>
 
             {!isFirstAddress && (
-              <label className="flex items-center gap-2 cursor-pointer group w-full sm:w-auto justify-center">
+              <label className="group flex w-full cursor-pointer items-center justify-center gap-2 sm:w-auto">
                 <div
-                  className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
-                    formData.isDefault
-                      ? "bg-brand border-brand shadow-lg"
-                      : "border-border"
+                  className={`flex h-5 w-5 items-center justify-center rounded-lg border-2 transition-all ${
+                    formData.isDefault ? 'bg-brand border-brand shadow-lg' : 'border-border'
                   }`}
                 >
-                  {formData.isDefault && (
-                    <CheckIcon size={12} className="text-brand-foreground" />
-                  )}
+                  {formData.isDefault && <CheckIcon size={12} className="text-brand-foreground" />}
                 </div>
                 <input
                   type="checkbox"
                   className="hidden"
                   checked={formData.isDefault}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isDefault: e.target.checked })
-                  }
+                  onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
                 />
-                <span className="text-[10px] font-black text-foreground-subtle uppercase tracking-widest">
+                <span className="text-foreground-subtle text-[10px] font-black tracking-widest uppercase">
                   Set Default
                 </span>
               </label>
@@ -399,9 +360,9 @@ const AddressFormModal = ({
           </div>
         </div>
 
-        <div className="px-6 py-5 border-t border-border bg-background-muted flex flex-col gap-2 rounded-b-4xl">
+        <div className="border-border bg-background-muted flex flex-col gap-2 rounded-b-4xl border-t px-6 py-5">
           {!isFormValid && (
-            <p className="text-[10px] text-destructive font-bold text-center flex items-center justify-center gap-1 uppercase tracking-tight">
+            <p className="text-destructive flex items-center justify-center gap-1 text-center text-[10px] font-bold tracking-tight uppercase">
               <AlertIcon size={12} /> Fill all required fields
             </p>
           )}
@@ -413,10 +374,10 @@ const AddressFormModal = ({
                 ...formData,
               })
             }
-            className={`w-full py-4 rounded-4xl font-black uppercase text-xs tracking-[0.2em] transition-all ${
+            className={`w-full rounded-4xl py-4 text-xs font-black tracking-[0.2em] uppercase transition-all ${
               isFormValid
-                ? "bg-brand text-brand-foreground shadow-xl shadow-brand/20 active:scale-95"
-                : "bg-border text-foreground-subtle cursor-not-allowed"
+                ? 'bg-brand text-brand-foreground shadow-brand/20 shadow-xl active:scale-95'
+                : 'bg-border text-foreground-subtle cursor-not-allowed'
             }`}
           >
             Save Address
@@ -434,9 +395,7 @@ export default function AddressPage() {
 
   // Default address always on top
   const sortedAddresses = useMemo(() => {
-    return [...addresses].sort((a, b) =>
-      a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
-    );
+    return [...addresses].sort((a, b) => (a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1));
   }, [addresses]);
 
   const handleSave = (data: Address) => {
@@ -469,15 +428,13 @@ export default function AddressPage() {
 
   return (
     <div className="bg-background text-foreground pb-20">
-      <main className="max-w-5xl mx-auto px-4 md:pt-24">
-        <div className="flex justify-between items-end mb-10 gap-4">
+      <main className="mx-auto max-w-5xl px-4 md:pt-24">
+        <div className="mb-10 flex items-end justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl font-black uppercase tracking-tighter">
-              My Addresses
-            </h1>
-            <p className="text-foreground-muted text-xs font-bold uppercase tracking-widest">
+            <h1 className="text-3xl font-black tracking-tighter uppercase">My Addresses</h1>
+            <p className="text-foreground-muted text-xs font-bold tracking-widest uppercase">
               {addresses.length} Saved Location
-              {addresses.length !== 1 ? "s" : ""}
+              {addresses.length !== 1 ? 's' : ''}
             </p>
           </div>
           <button
@@ -485,21 +442,19 @@ export default function AddressPage() {
               setEditingAddress(null);
               setIsModalOpen(true);
             }}
-            className="bg-brand text-brand-foreground px-6 py-3 rounded-4xl font-bold shadow-lg flex items-center gap-2 hover:opacity-90 active:scale-95"
+            className="bg-brand text-brand-foreground flex items-center gap-2 rounded-4xl px-6 py-3 font-bold shadow-lg hover:opacity-90 active:scale-95"
           >
             <PlusIcon size={18} /> Add New
           </button>
         </div>
 
         {sortedAddresses.length === 0 ? (
-          <div className="py-24 border-2 border-dashed border-border rounded-4xl flex flex-col items-center justify-center text-foreground-subtle bg-background-elevated/50">
+          <div className="border-border text-foreground-subtle bg-background-elevated/50 flex flex-col items-center justify-center rounded-4xl border-2 border-dashed py-24">
             <MapPinIcon size={48} className="mb-4 opacity-10" />
-            <p className="font-black uppercase text-xs tracking-widest">
-              No addresses saved
-            </p>
+            <p className="text-xs font-black tracking-widest uppercase">No addresses saved</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {sortedAddresses.map((addr) => (
               <AddressCard
                 key={addr.id}

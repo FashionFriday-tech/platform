@@ -1,33 +1,83 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRightIcon } from "@ff/ui";
+import { useState } from 'react';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRightIcon } from '@ff/ui';
 
-const GENDERS = ["Men", "Women"] as const;
+const GENDERS = ['Men', 'Women'] as const;
 type Gender = (typeof GENDERS)[number];
 
 const CATEGORIES_DATA = {
   Men: {
-    hero: "/images/categories/men.png",
+    hero: '/images/categories/men.png',
     list: [
-      { name: "Sneakers", slug: "sneakers", img: "/images/categories/men/sneaker.png", items: "124 Items" },
-      { name: "Watches", slug: "watches", img: "/images/categories/men/watches.png", items: "86 Items" },
-      { name: "Clothing", slug: "clothing", img: "/images/categories/men/cloths.png", items: "210 Items" },
-      { name: "Slippers", slug: "slippers", img: "/images/categories/men/slippers.png", items: "45 Items" },
-      { name: "Accessories", slug: "accessories", img: "/images/categories/men/accessories.png", items: "92 Items" },
-    ]
+      {
+        name: 'Sneakers',
+        slug: 'sneakers',
+        img: '/images/categories/men/sneaker.png',
+        items: '124 Items',
+      },
+      {
+        name: 'Watches',
+        slug: 'watches',
+        img: '/images/categories/men/watches.png',
+        items: '86 Items',
+      },
+      {
+        name: 'Clothing',
+        slug: 'clothing',
+        img: '/images/categories/men/cloths.png',
+        items: '210 Items',
+      },
+      {
+        name: 'Slippers',
+        slug: 'slippers',
+        img: '/images/categories/men/slippers.png',
+        items: '45 Items',
+      },
+      {
+        name: 'Accessories',
+        slug: 'accessories',
+        img: '/images/categories/men/accessories.png',
+        items: '92 Items',
+      },
+    ],
   },
   Women: {
-    hero: "/images/categories/womens.png", 
+    hero: '/images/categories/womens.png',
     list: [
-      { name: "Sneakers", slug: "sneakers", img: "/images/categories/women/sneaker.png", items: "110 Items" },
-      { name: "Watches", slug: "watches", img: "/images/categories/women/watches.png", items: "95 Items" },
-      { name: "Clothing", slug: "clothing", img: "/images/categories/women/cloth.png", items: "340 Items" },
-      { name: "Slippers", slug: "slippers", img: "/images/categories/women/slippers.png", items: "52 Items" },
-      { name: "Accessories", slug: "accessories", img: "/images/categories/women/accessories.png", items: "120 Items" },
-    ]
+      {
+        name: 'Sneakers',
+        slug: 'sneakers',
+        img: '/images/categories/women/sneaker.png',
+        items: '110 Items',
+      },
+      {
+        name: 'Watches',
+        slug: 'watches',
+        img: '/images/categories/women/watches.png',
+        items: '95 Items',
+      },
+      {
+        name: 'Clothing',
+        slug: 'clothing',
+        img: '/images/categories/women/cloth.png',
+        items: '340 Items',
+      },
+      {
+        name: 'Slippers',
+        slug: 'slippers',
+        img: '/images/categories/women/slippers.png',
+        items: '52 Items',
+      },
+      {
+        name: 'Accessories',
+        slug: 'accessories',
+        img: '/images/categories/women/accessories.png',
+        items: '120 Items',
+      },
+    ],
   },
 };
 
@@ -45,25 +95,24 @@ export default function StoreLandingPage() {
   };
 
   return (
-    <div className="h-screen bg-background select-none pb-14">
-      
+    <div className="bg-background h-screen pb-14 select-none">
       {/* --- HEADER: Fixed width constraints --- */}
-      <header className="fixed top-14 z-100 w-full left-0 right-0 bg-background backdrop-blur-md border-b border-border">
-        <div className="max-w-md mx-auto flex justify-around items-center h-14 px-4">
+      <header className="bg-background border-border fixed top-14 right-0 left-0 z-100 w-full border-b backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
           {GENDERS.map((gender, idx) => (
             <button
               key={gender}
               onClick={() => setGenderIndex(idx)}
-              className={`relative flex-1 h-full text-[10px] font-black uppercase tracking-[0.25em] transition-colors outline-none ${
-                activeGender === gender ? "text-foreground" : "text-foreground-subtle/40"
+              className={`relative h-full flex-1 text-[10px] font-black tracking-[0.25em] uppercase transition-colors outline-none ${
+                activeGender === gender ? 'text-foreground' : 'text-foreground-subtle/40'
               }`}
             >
               {gender}
               {activeGender === gender && (
                 <motion.div
                   layoutId="navUnderline"
-                  className="absolute bottom-0 left-4 right-4 h-0.5 bg-brand"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  className="bg-brand absolute right-4 bottom-0 left-4 h-0.5"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
               )}
             </button>
@@ -76,7 +125,7 @@ export default function StoreLandingPage() {
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         onDragEnd={handleDragEnd}
-        className="touch-pan-y relative z-10 pt-10 pb-20"
+        className="relative z-10 touch-pan-y pt-10 pb-20"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -84,11 +133,11 @@ export default function StoreLandingPage() {
             initial={{ opacity: 0, x: genderIndex === 0 ? -20 : 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: genderIndex === 0 ? 20 : -20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="max-w-2xl mx-auto px-4 pt-6"
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="mx-auto max-w-2xl px-4 pt-6"
           >
             {/* 1. HERO SECTION */}
-            <div className="relative w-full aspect-15/10 rounded-[2rem] overflow-hidden bg-background-muted border border-border/50 mb-8 shadow-sm">
+            <div className="bg-background-muted border-border/50 relative mb-8 aspect-15/10 w-full overflow-hidden rounded-[2rem] border shadow-sm">
               <motion.div
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
@@ -98,8 +147,10 @@ export default function StoreLandingPage() {
               />
               <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-transparent" />
               <div className="absolute bottom-8 left-8">
-                <p className="text-white/50 text-[8px] font-black uppercase tracking-[0.3em] mb-1">New Season</p>
-                <h1 className="text-white text-3xl font-black uppercase italic tracking-tighter leading-none">
+                <p className="mb-1 text-[8px] font-black tracking-[0.3em] text-white/50 uppercase">
+                  New Season
+                </p>
+                <h1 className="text-3xl leading-none font-black tracking-tighter text-white uppercase italic">
                   {activeGender}&apos;s <br /> Essentials
                 </h1>
               </div>
@@ -111,28 +162,28 @@ export default function StoreLandingPage() {
                 <Link
                   key={cat.slug}
                   href={`/categories/${cat.slug}?gender=${activeGender.toLowerCase()}`}
-                  className="block group"
+                  className="group block"
                 >
-                  <div className="flex items-center gap-4 p-2 rounded-[1.5rem] bg-background-muted/40 border border-transparent group-hover:border-border/40 group-active:scale-[0.98] group-active:bg-background-muted transition-all duration-300">
-                    <div className="w-25 h-25 rounded-4xl overflow-hidden shrink-0 border border-border/50 bg-background">
-                      <img 
-                        src={cat.img} 
-                        alt={cat.name} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                  <div className="bg-background-muted/40 group-hover:border-border/40 group-active:bg-background-muted flex items-center gap-4 rounded-[1.5rem] border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98]">
+                    <div className="border-border/50 bg-background h-25 w-25 shrink-0 overflow-hidden rounded-4xl border">
+                      <img
+                        src={cat.img}
+                        alt={cat.name}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="text-[20px] font-bold uppercase tracking-tighter italic text-foreground">
+                      <h3 className="text-foreground text-[20px] font-bold tracking-tighter uppercase italic">
                         {cat.name}
                       </h3>
-                      <p className="text-[12px] font-bold text-foreground-muted uppercase tracking-tight mt-0.5">
+                      <p className="text-foreground-muted mt-0.5 text-[12px] font-bold tracking-tight uppercase">
                         {cat.items}
                       </p>
                     </div>
 
                     <div className="pr-3">
-                      <div className="w-8 h-8 rounded-full border border-border/60 flex items-center justify-center group-hover:bg-foreground group-hover:text-background transition-all duration-300">
+                      <div className="border-border/60 group-hover:bg-foreground group-hover:text-background flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300">
                         <ChevronRightIcon size={14} />
                       </div>
                     </div>

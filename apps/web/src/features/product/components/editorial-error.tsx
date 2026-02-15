@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { ArrowLeftIcon } from "@ff/ui";
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { ArrowLeftIcon } from '@ff/ui';
 
 export default function EditorialError({ slug }: { slug: string }) {
   return (
-    <div className="h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
+    <div className="bg-background flex h-screen flex-col items-center justify-center p-6 text-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -14,26 +14,23 @@ export default function EditorialError({ slug }: { slug: string }) {
         className="max-w-2xl space-y-12"
       >
         <div className="space-y-4">
-          <span className="text-[10px] font-black uppercase tracking-[1em] text-brand opacity-60 block">
+          <span className="text-brand block text-[10px] font-black tracking-[1em] uppercase opacity-60">
             Error 404
           </span>
-          <h1 className="text-6xl md:text-8xl font-black uppercase italic tracking-tighter leading-tight text-foreground">
+          <h1 className="text-foreground text-6xl leading-tight font-black tracking-tighter uppercase italic md:text-8xl">
             Data <br /> Dissolved
           </h1>
           <p className="text-foreground-muted text-sm font-medium tracking-wide uppercase opacity-40">
-            The entity <span className="text-foreground">"{slug}"</span> does
-            not exist in our current catalog.
+            The entity <span className="text-foreground">"{slug}"</span> does not exist in our
+            current catalog.
           </p>
         </div>
 
         <Link
           href="/"
-          className="group inline-flex items-center gap-4 px-12 py-5 border border-border text-[10px] font-black uppercase tracking-widest hover:bg-foreground hover:text-background transition-all duration-500"
+          className="group border-border hover:bg-foreground hover:text-background inline-flex items-center gap-4 border px-12 py-5 text-[10px] font-black tracking-widest uppercase transition-all duration-500"
         >
-          <ArrowLeftIcon
-            size={14}
-            className="group-hover:-translate-x-2 transition-transform"
-          />
+          <ArrowLeftIcon size={14} className="transition-transform group-hover:-translate-x-2" />
           Return to Catalog
         </Link>
       </motion.div>

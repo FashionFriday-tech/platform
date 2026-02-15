@@ -1,3 +1,3 @@
 export const DEFAULT_SETTINGS = {
-    autoScrollLevel: 3,
+  autoScrollLevel: 3,
 };

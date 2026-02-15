@@ -1,15 +1,14 @@
-import { z } from "zod";
-import { UserBaseSchema } from "./user.base.schema";
-import { AdminPermissionEnum, UserRoleEnum } from "./user.enums";
+import { z } from 'zod';
+import { UserBaseSchema } from './user.base.schema';
+import { AdminPermissionEnum, UserRoleEnum } from './user.enums';
 
 /**
  * Admin-specific immutable fields
  */
 const AdminCore = z.object({
-  role: UserRoleEnum.refine(
-    (role) => role === "SUPER_ADMIN" || role === "STAFF_ADMIN",
-    { message: "Invalid admin role" }
-  ),
+  role: UserRoleEnum.refine((role) => role === 'SUPER_ADMIN' || role === 'STAFF_ADMIN', {
+    message: 'Invalid admin role',
+  }),
 
   adminMeta: z.object({
     permissions: z.array(AdminPermissionEnum).default([]),
@@ -32,9 +31,11 @@ export const CreateAdminSchema = AdminCore;
  * Role should NOT be updatable
  */
 export const UpdateAdminSchema = z.object({
-  adminMeta: z.object({
-    permissions: z.array(AdminPermissionEnum).optional(),
-  }).optional(),
+  adminMeta: z
+    .object({
+      permissions: z.array(AdminPermissionEnum).optional(),
+    })
+    .optional(),
 });
 
 /**

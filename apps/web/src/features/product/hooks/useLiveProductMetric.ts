@@ -1,14 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { getGlobalSlot, getPageSlot } from "../lib/time";
+import { useEffect, useMemo, useState } from 'react';
+import { getGlobalSlot, getPageSlot } from '../lib/time';
 
 const SLOT_MS = 5000;
 
 export function useLiveProductMetric(staticNumber: number) {
-  const [slotTime, setSlotTime] = useState(() =>
-    Math.floor(Date.now() / SLOT_MS) * SLOT_MS
-  );
+  const [slotTime, setSlotTime] = useState(() => Math.floor(Date.now() / SLOT_MS) * SLOT_MS);
 
   useEffect(() => {
     const syncToSlot = () => {

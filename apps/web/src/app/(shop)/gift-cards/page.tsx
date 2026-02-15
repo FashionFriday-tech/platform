@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   InstagramIcon,
   TwitterIcon,
@@ -19,11 +19,11 @@ import {
   ChevronRightIcon,
   WalletIcon,
   FacebookIcon,
-} from "@ff/ui";
-import { Header } from "@/components/layout/Header";
+} from '@ff/ui';
+import { Header } from '@/components/layout/Header';
 
 // --- Types ---
-type ClaimStatus = "idle" | "pending" | "approved";
+type ClaimStatus = 'idle' | 'pending' | 'approved';
 
 interface SocialTask {
   id: string;
@@ -49,85 +49,87 @@ interface Milestone {
 // --- Mock Data ---
 const initialSocialTasks: SocialTask[] = [
   {
-    id: "soc-1",
-    platform: "Instagram",
-    profileUrl: "https://instagram.com",
+    id: 'soc-1',
+    platform: 'Instagram',
+    profileUrl: 'https://instagram.com',
     icon: <InstagramIcon size={32} />,
     rewardAmount: 50,
-    status: "idle",
-    actionLabel: "Follow us",
-    placeholder: "Your Instagram Handle",
+    status: 'idle',
+    actionLabel: 'Follow us',
+    placeholder: 'Your Instagram Handle',
     // Instagram Gradient
-    cardStyle: "bg-gradient-to-bl from-[#833ab4] via-[#fd1d1d] to-[#fcb045]",
+    cardStyle: 'bg-gradient-to-bl from-[#833ab4] via-[#fd1d1d] to-[#fcb045]',
   },
   {
-    id: "soc-2",
-    platform: "Twitter",
-    profileUrl: "https://twitter.com",
+    id: 'soc-2',
+    platform: 'Twitter',
+    profileUrl: 'https://twitter.com',
     icon: <TwitterIcon size={32} />,
     rewardAmount: 50,
-    status: "idle",
-    actionLabel: "Follow us",
-    placeholder: "Your X Handle",
+    status: 'idle',
+    actionLabel: 'Follow us',
+    placeholder: 'Your X Handle',
     // X / Twitter Dark Blue
-    cardStyle: "bg-gradient-to-tr from-blue-600 to-blue-400",
+    cardStyle: 'bg-gradient-to-tr from-blue-600 to-blue-400',
   },
   {
-    id: "soc-3",
-    platform: "YouTube",
-    profileUrl: "https://youtube.com",
+    id: 'soc-3',
+    platform: 'YouTube',
+    profileUrl: 'https://youtube.com',
     icon: <YoutubeIcon size={32} />,
     rewardAmount: 100,
-    status: "idle",
-    actionLabel: "Subscribe",
-    placeholder: "Your Channel Name",
+    status: 'idle',
+    actionLabel: 'Subscribe',
+    placeholder: 'Your Channel Name',
     // YouTube Red
-    cardStyle: "bg-gradient-to-tr from-red-600 to-red-900",
+    cardStyle: 'bg-gradient-to-tr from-red-600 to-red-900',
   },
-{
-  id: "soc-4",
-  platform: "Facebook",
-  profileUrl: "https://facebook.com",
-  icon: <FacebookIcon size={32} />,
-  rewardAmount: 50,
-  status: "idle",
-  actionLabel: "Follow us",
-  placeholder: "Your Facebook Profile URL",
-  cardStyle: "bg-gradient-to-br from-[#1877F2] to-[#0F5BD8]",
-},
+  {
+    id: 'soc-4',
+    platform: 'Facebook',
+    profileUrl: 'https://facebook.com',
+    icon: <FacebookIcon size={32} />,
+    rewardAmount: 50,
+    status: 'idle',
+    actionLabel: 'Follow us',
+    placeholder: 'Your Facebook Profile URL',
+    cardStyle: 'bg-gradient-to-br from-[#1877F2] to-[#0F5BD8]',
+  },
 ];
 
 const initialMilestones: Milestone[] = [
   {
-    id: "mile-1",
-    title: "Silver Member",
+    id: 'mile-1',
+    title: 'Silver Member',
     targetAmount: 5000,
     currentAmount: 5000,
     rewardAmount: 500,
-    imageUrl: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop",
+    imageUrl:
+      'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop',
   },
   {
-    id: "mile-2",
-    title: "Gold Elite",
+    id: 'mile-2',
+    title: 'Gold Elite',
     targetAmount: 10000,
     currentAmount: 3250,
     rewardAmount: 1500,
-    imageUrl: "https://images.unsplash.com/photo-1628527304948-06157ee3c8a6?q=80&w=800&auto=format&fit=crop",
+    imageUrl:
+      'https://images.unsplash.com/photo-1628527304948-06157ee3c8a6?q=80&w=800&auto=format&fit=crop',
   },
 ];
 
 export default function RewardsPage() {
   const [socials, setSocials] = useState(initialSocialTasks);
   const [selectedTask, setSelectedTask] = useState<SocialTask | null>(null);
-  const [usernameInput, setUsernameInput] = useState("");
+  const [usernameInput, setUsernameInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [walletBalance] = useState(150);
 
   // --- Modal Logic ---
   const openClaimModal = (task: SocialTask) => {
-    if (task.status === "idle") {
+    if (task.status === 'idle') {
       setSelectedTask(task);
-      setUsernameInput("");
+      setUsernameInput('');
     }
   };
 
@@ -139,9 +141,7 @@ export default function RewardsPage() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     setSocials((prev) =>
-      prev.map((task) =>
-        task.id === selectedTask?.id ? { ...task, status: "pending" } : task
-      )
+      prev.map((task) => (task.id === selectedTask?.id ? { ...task, status: 'pending' } : task)),
     );
 
     setIsSubmitting(false);
@@ -149,274 +149,296 @@ export default function RewardsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-background selection:text-foreground">
-      <main className="max-w-6xl mx-auto px-4 py-20 pb-32">
-        
+    <div className="bg-background text-foreground selection:bg-background selection:text-foreground min-h-screen font-sans">
+      <main className="mx-auto max-w-6xl px-4 py-20 pb-32">
         {/* --- HERO SECTION: WALLET CARD --- */}
-        <div className="flex flex-col md:flex-row items-center justify-between mb-16 md:mb-24 pt-10">
-          
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-6xl font-semibold tracking-tighter mb-4 bg-linear-to-b from-foreground to-zinc-400 bg-clip-text text-transparent">
+        <div className="mb-16 flex flex-col items-center justify-between pt-10 md:mb-24 md:flex-row">
+          <div className="mb-8 text-center">
+            <h1 className="from-foreground mb-4 bg-linear-to-b to-zinc-400 bg-clip-text text-4xl font-semibold tracking-tighter text-transparent md:text-6xl">
               MEMBERS CLUB
             </h1>
-            <p className="text-zinc-500 text-sm md:text-base max-w-md mx-auto">
+            <p className="mx-auto max-w-md text-sm text-zinc-500 md:text-base">
               Exclusive rewards for our most loyal customers. Collect cards, unlock value.
             </p>
           </div>
 
           {/* The Hero Wallet Card */}
-          <div className="relative w-full max-w-md aspect-[1.58/1] bg-background rounded-4xl p-6 md:p-8 text-foreground shadow-[0_0_50px_rgba(255,255,255,0.1)] overflow-hidden flex flex-col justify-between group border border-foreground/10 transition-transform hover:scale-[1.02] duration-500">
-             
-             {/* Textures */}
-             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30 mix-blend-overlay" />
-             <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-linear-to-br from-transparent via-foreground/5 to-transparent rotate-45 pointer-events-none" />
+          <div className="bg-background text-foreground group border-foreground/10 relative flex aspect-[1.58/1] w-full max-w-md flex-col justify-between overflow-hidden rounded-4xl border p-6 shadow-[0_0_50px_rgba(255,255,255,0.1)] transition-transform duration-500 hover:scale-[1.02] md:p-8">
+            {/* Textures */}
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30 mix-blend-overlay" />
+            <div className="via-foreground/5 pointer-events-none absolute -top-[50%] -left-[50%] h-[200%] w-[200%] rotate-45 bg-linear-to-br from-transparent to-transparent" />
 
-             {/* Card Top */}
-             <div className="relative z-10 flex justify-between items-start">
-                <div className="flex items-center gap-2">
-                   <div className="w-8 h-8 rounded-full bg-background flex items-center justify-center text-foreground shadow-[0_0_15px_foreground]">
-                      <SparklesIcon size={16} />
-                   </div>
-                   <span className="font-bold text-sm tracking-[0.2em] opacity-90">background CARD</span>
+            {/* Card Top */}
+            <div className="relative z-10 flex items-start justify-between">
+              <div className="flex items-center gap-2">
+                <div className="bg-background text-foreground flex h-8 w-8 items-center justify-center rounded-full shadow-[0_0_15px_foreground]">
+                  <SparklesIcon size={16} />
                 </div>
-                <CreditCardIcon className="opacity-50" />
-             </div>
+                <span className="text-sm font-bold tracking-[0.2em] opacity-90">
+                  background CARD
+                </span>
+              </div>
+              <CreditCardIcon className="opacity-50" />
+            </div>
 
-             {/* Card Middle */}
-             <div className="relative z-10">
-                <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider mb-2">Available Credits</p>
-                <h2 className="text-5xl md:text-6xl font-bold tracking-tight text-foreground drop-shadow-lg">
-                   ₹{walletBalance}
-                </h2>
-             </div>
+            {/* Card Middle */}
+            <div className="relative z-10">
+              <p className="mb-2 text-[10px] font-bold tracking-wider text-zinc-400 uppercase">
+                Available Credits
+              </p>
+              <h2 className="text-foreground text-5xl font-bold tracking-tight drop-shadow-lg md:text-6xl">
+                ₹{walletBalance}
+              </h2>
+            </div>
 
-             {/* Card Bottom */}
-             <div className="relative z-10 flex justify-between items-end">
-                <div>
-                   <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Card Holder</p>
-                   <p className="font-medium text-sm text-zinc-300">AJMAL</p>
-                </div>
-                <p className="font-mono text-xs opacity-50 tracking-widest">**** 8829</p>
-             </div>
+            {/* Card Bottom */}
+            <div className="relative z-10 flex items-end justify-between">
+              <div>
+                <p className="mb-0.5 text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
+                  Card Holder
+                </p>
+                <p className="text-sm font-medium text-zinc-300">AJMAL</p>
+              </div>
+              <p className="font-mono text-xs tracking-widest opacity-50">**** 8829</p>
+            </div>
           </div>
         </div>
 
         {/* --- GRID LAYOUT --- */}
         <div className="space-y-16">
-            
-            {/* 1. SOCIAL GIFT CARDS */}
-            <section>
-              <div className="flex items-center gap-3 mb-8 px-2">
-                <div className="p-2 bg-white rounded-full text-black">
-                   <GiftIcon size={20} />
-                </div>
-                <h2 className="text-2xl font-bold">Social Gift Cards</h2>
+          {/* 1. SOCIAL GIFT CARDS */}
+          <section>
+            <div className="mb-8 flex items-center gap-3 px-2">
+              <div className="rounded-full bg-white p-2 text-black">
+                <GiftIcon size={20} />
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {socials.map((task) => (
-                  <div 
-                    key={task.id} 
-                    className={`relative w-full aspect-[1.58/1] rounded-4xl p-6 text-white flex flex-col justify-between overflow-hidden group 
-                    ${task.cardStyle} 
-                    ${task.status === "approved" ? "grayscale opacity-50" : "hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)]"} transition-all duration-500`}
+              <h2 className="text-2xl font-bold">Social Gift Cards</h2>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {socials.map((task) => (
+                <div
+                  key={task.id}
+                  className={`group relative flex aspect-[1.58/1] w-full flex-col justify-between overflow-hidden rounded-4xl p-6 text-white ${task.cardStyle} ${task.status === 'approved' ? 'opacity-50 grayscale' : 'hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)]'} transition-all duration-500`}
+                >
+                  {/* Top Row: Icon & Amount */}
+                  <div className="relative z-10 flex items-start justify-between">
+                    <div className="rounded-xl border border-white/10 bg-black/20 p-2.5 backdrop-blur-md">
+                      {task.icon}
+                    </div>
+                    <span className="text-3xl font-bold tracking-tight drop-shadow-md">
+                      ₹{task.rewardAmount}
+                    </span>
+                  </div>
+
+                  {/* Middle Row: Label */}
+                  <div className="relative z-10">
+                    <p className="mb-1 text-[10px] font-medium tracking-widest uppercase opacity-80">
+                      Task
+                    </p>
+                    <h3 className="text-xl leading-tight font-bold">{task.actionLabel}</h3>
+                  </div>
+
+                  {/* Bottom Row: Actions */}
+                  <div className="relative z-10 mt-2 flex items-center justify-between">
+                    {/* STATUS BADGES */}
+                    {task.status === 'pending' && (
+                      <div className="inline-flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-1.5 text-xs font-bold text-yellow-200 backdrop-blur-md">
+                        <ClockIcon size={12} className="animate-pulse" /> Pending
+                      </div>
+                    )}
+                    {task.status === 'approved' && (
+                      <div className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-black/40 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-md">
+                        <CheckCircleIcon size={12} /> Claimed
+                      </div>
+                    )}
+
+                    {/* ACTION BUTTONS (Only if Idle) */}
+                    {task.status === 'idle' && (
+                      <div className="flex w-full items-center gap-2">
+                        {/* 1. Visit Profile Button */}
+                        <a
+                          href={task.profileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-full border border-white/10 bg-white/10 p-2.5 text-white backdrop-blur-md transition-colors hover:bg-white/20"
+                          title="Go to Profile"
+                        >
+                          <ExternalLinkIcon size={16} />
+                        </a>
+
+                        {/* 2. Claim Button */}
+                        <button
+                          onClick={() => openClaimModal(task)}
+                          className="flex flex-1 items-center justify-center gap-1 rounded-full bg-white py-2.5 text-xs font-bold text-black shadow-lg transition-colors hover:bg-zinc-200"
+                        >
+                          Claim <ChevronRightIcon size={12} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 2. SHOPPING MILESTONES */}
+          <section>
+            <div className="mb-8 flex items-center gap-3 px-2">
+              <div className="bg-foreground text-background rounded-full p-2">
+                <TrophyIcon size={20} />
+              </div>
+              <h2 className="text-2xl font-bold">Shopping Milestones</h2>
+            </div>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {initialMilestones.map((milestone) => {
+                const progress = Math.min(
+                  (milestone.currentAmount / milestone.targetAmount) * 100,
+                  100,
+                );
+                const isUnlocked = progress >= 100;
+
+                return (
+                  <div
+                    key={milestone.id}
+                    className="border-foreground/10 group relative aspect-[1.58/1] w-full overflow-hidden rounded-4xl border"
                   >
-                    {/* Top Row: Icon & Amount */}
-                    <div className="relative z-10 flex justify-between items-start">
-                       <div className="bg-black/20 backdrop-blur-md p-2.5 rounded-xl border border-white/10">
-                          {task.icon}
-                       </div>
-                       <span className="font-bold text-3xl tracking-tight drop-shadow-md">₹{task.rewardAmount}</span>
-                    </div>
+                    {/* Background Image */}
+                    <img
+                      src={milestone.imageUrl}
+                      alt={milestone.title}
+                      className="absolute inset-0 h-full w-full object-cover opacity-60 grayscale transition-all duration-700 group-hover:opacity-80 group-hover:grayscale-0"
+                    />
+                    {/* Dark Overlay Gradient */}
+                    <div className="from-background/80 via-foregroiund/50 absolute inset-0 bg-linear-to-t to-transparent" />
 
-                    {/* Middle Row: Label */}
-                    <div className="relative z-10">
-                       <p className="text-[10px] font-medium uppercase tracking-widest opacity-80 mb-1">Task</p>
-                       <h3 className="text-xl font-bold leading-tight">{task.actionLabel}</h3>
-                    </div>
+                    {/* Card Content */}
+                    <div className="text-foreground absolute inset-0 flex flex-col justify-between p-6">
+                      {/* Top */}
+                      <div className="flex items-start justify-between">
+                        <div
+                          className={`rounded-md border px-3 py-1 text-[10px] font-bold tracking-widest uppercase backdrop-blur-md ${isUnlocked ? 'bg-foreground text-background border-foreground' : 'bg-background/50 text-foreground border-foreground/20'}`}
+                        >
+                          {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
+                        </div>
+                        <div className="text-right">
+                          <span className="block text-2xl leading-none font-bold">
+                            ₹{milestone.rewardAmount}
+                          </span>
+                          <span className="text-[9px] tracking-wide uppercase opacity-70">
+                            Credit
+                          </span>
+                        </div>
+                      </div>
 
-                    {/* Bottom Row: Actions */}
-                    <div className="relative z-10 flex items-center justify-between mt-2">
-                       {/* STATUS BADGES */}
-                       {task.status === "pending" && (
-                          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 text-yellow-200 text-xs font-bold rounded-lg backdrop-blur-md border border-yellow-500/30">
-                             <ClockIcon size={12} className="animate-pulse" /> Pending
-                          </div>
-                       )}
-                       {task.status === "approved" && (
-                          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-black/40 text-white text-xs font-bold rounded-lg backdrop-blur-md border border-white/20">
-                             <CheckCircleIcon size={12} /> Claimed
-                          </div>
-                       )}
+                      {/* Middle */}
+                      <div className="translate-y-2 transform text-center transition-transform group-hover:translate-y-0">
+                        {!isUnlocked && <LockIcon className="mx-auto mb-2 opacity-50" size={24} />}
+                        <h3 className="text-xl font-bold tracking-tight">{milestone.title}</h3>
+                      </div>
 
-                       {/* ACTION BUTTONS (Only if Idle) */}
-                       {task.status === "idle" && (
-                         <div className="flex items-center gap-2 w-full">
-                            {/* 1. Visit Profile Button */}
-                            <a 
-                              href={task.profileUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="p-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition-colors border border-white/10 text-white"
-                              title="Go to Profile"
-                            >
-                               <ExternalLinkIcon size={16} />
-                            </a>
+                      {/* Bottom: Progress Bar Integration */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-[10px] font-bold tracking-wider uppercase opacity-80">
+                          <span>Progress</span>
+                          <span>{Math.round(progress)}%</span>
+                        </div>
 
-                            {/* 2. Claim Button */}
-                            <button 
-                              onClick={() => openClaimModal(task)}
-                              className="flex-1 py-2.5 bg-white text-black text-xs font-bold rounded-full hover:bg-zinc-200 transition-colors shadow-lg flex items-center justify-center gap-1"
-                            >
-                               Claim <ChevronRightIcon size={12} />
-                            </button>
-                         </div>
-                       )}
+                        {/* The Progress Bar */}
+                        <div className="bg-foreground/20 h-2 w-full overflow-hidden rounded-full backdrop-blur-sm">
+                          <div
+                            className="bg-foreground h-full shadow-[0_0_15px_foreground]"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+
+                        <div className="mt-1 flex items-center justify-between">
+                          <p className="text-[10px] opacity-60">
+                            Spent ₹{milestone.currentAmount} / ₹{milestone.targetAmount}
+                          </p>
+                          {isUnlocked && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-green-400">
+                              Active <CheckCircleIcon size={10} />
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </section>
-
-            {/* 2. SHOPPING MILESTONES */}
-            <section>
-              <div className="flex items-center gap-3 mb-8 px-2">
-                <div className="p-2 bg-foreground rounded-full text-background">
-                   <TrophyIcon size={20} />
-                </div>
-                <h2 className="text-2xl font-bold">Shopping Milestones</h2>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {initialMilestones.map((milestone) => {
-                  const progress = Math.min((milestone.currentAmount / milestone.targetAmount) * 100, 100);
-                  const isUnlocked = progress >= 100;
-                  
-                  return (
-                    <div key={milestone.id} className="relative w-full aspect-[1.58/1] rounded-4xl overflow-hidden border border-foreground/10 group">
-                       
-                       {/* Background Image */}
-                       <img 
-                         src={milestone.imageUrl} 
-                         alt={milestone.title} 
-                         className="absolute inset-0 w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-700"
-                       />
-                       {/* Dark Overlay Gradient */}
-                       <div className="absolute inset-0 bg-linear-to-t from-background/80 via-foregroiund/50 to-transparent" />
-
-                       {/* Card Content */}
-                       <div className="absolute inset-0 p-6 flex flex-col justify-between text-foreground">
-                          
-                          {/* Top */}
-                          <div className="flex justify-between items-start">
-                             <div className={`px-3 py-1 rounded-md text-[10px] font-bold tracking-widest uppercase border backdrop-blur-md
-                                ${isUnlocked ? "bg-foreground text-background border-foreground" : "bg-background/50 text-foreground border-foreground/20"}`}>
-                                {isUnlocked ? "UNLOCKED" : "LOCKED"}
-                             </div>
-                             <div className="text-right">
-                                <span className="block font-bold text-2xl leading-none">₹{milestone.rewardAmount}</span>
-                                <span className="text-[9px] uppercase tracking-wide opacity-70">Credit</span>
-                             </div>
-                          </div>
-
-                          {/* Middle */}
-                          <div className="text-center transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                             {!isUnlocked && <LockIcon className="mx-auto mb-2 opacity-50" size={24} />}
-                             <h3 className="font-bold text-xl tracking-tight">{milestone.title}</h3>
-                          </div>
-
-                          {/* Bottom: Progress Bar Integration */}
-                          <div className="space-y-2">
-                             <div className="flex justify-between text-[10px] font-bold opacity-80 uppercase tracking-wider">
-                                <span>Progress</span>
-                                <span>{Math.round(progress)}%</span>
-                             </div>
-                             
-                             {/* The Progress Bar */}
-                             <div className="w-full bg-foreground/20 h-2 rounded-full overflow-hidden backdrop-blur-sm">
-                                <div 
-                                   className="bg-foreground h-full shadow-[0_0_15px_foreground]"
-                                   style={{ width: `${progress}%` }}
-                                />
-                             </div>
-                             
-                             <div className="flex justify-between items-center mt-1">
-                                <p className="text-[10px] opacity-60">
-                                   Spent ₹{milestone.currentAmount} / ₹{milestone.targetAmount}
-                                </p>
-                                {isUnlocked && (
-                                   <span className="text-[10px] font-bold text-green-400 flex items-center gap-1">
-                                      Active <CheckCircleIcon size={10} />
-                                   </span>
-                                )}
-                             </div>
-                          </div>
-                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+                );
+              })}
+            </div>
+          </section>
         </div>
       </main>
 
       {/* --- CLAIM VERIFICATION MODAL (Dark Mode) --- */}
       {selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-           {/* Backdrop */}
-           <div 
-             className="absolute inset-0 bg-background/30 backdrop-blur-sm transition-opacity animate-in fade-in"
-             onClick={() => setSelectedTask(null)}
-           />
+          {/* Backdrop */}
+          <div
+            className="bg-background/30 animate-in fade-in absolute inset-0 backdrop-blur-sm transition-opacity"
+            onClick={() => setSelectedTask(null)}
+          />
 
-           {/* Modal Content */}
-           <div className="relative w-full max-w-sm bg-background rounded-3xl shadow-2xl p-8 animate-in zoom-in-95 duration-200 text-foreground">
-              <button 
-                 onClick={() => setSelectedTask(null)}
-                 className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-foreground transition-colors"
+          {/* Modal Content */}
+          <div className="bg-background animate-in zoom-in-95 text-foreground relative w-full max-w-sm rounded-3xl p-8 shadow-2xl duration-200">
+            <button
+              onClick={() => setSelectedTask(null)}
+              className="hover:text-foreground absolute top-4 right-4 p-2 text-zinc-500 transition-colors"
+            >
+              <CloseIcon size={20} />
+            </button>
+
+            <div className="mb-6 text-center">
+              <div
+                className={`text-background mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.1)] ${selectedTask.cardStyle}`}
               >
-                 <CloseIcon size={20} />
-              </button>
+                {selectedTask.icon}
+              </div>
+              <h3 className="text-foreground text-xl font-bold">
+                Claim ₹{selectedTask.rewardAmount}
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-zinc-400">
+                Enter your username. We will verify that you followed our profile.
+              </p>
+            </div>
 
-              <div className="text-center mb-6">
-                 <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-background shadow-[0_0_30px_rgba(255,255,255,0.1)] mb-4 ${selectedTask.cardStyle}`}>
-                    {selectedTask.icon}
-                 </div>
-                 <h3 className="text-xl font-bold text-foreground">Claim ₹{selectedTask.rewardAmount}</h3>
-                 <p className="text-zinc-400 text-xs mt-2 leading-relaxed">
-                    Enter your username. We will verify that you followed our profile.
-                 </p>
+            <form onSubmit={handleSubmitClaim} className="space-y-4">
+              <div className="space-y-2 text-left">
+                <label className="ml-1 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                  Your Handle
+                </label>
+                <input
+                  type="text"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  placeholder={selectedTask.placeholder}
+                  className="bg-background focus:ring-foreground focus:border-foreground text-foreground w-full rounded-xl border border-zinc-800 px-4 py-4 text-sm font-medium transition-all outline-none placeholder:text-zinc-700 focus:ring-1"
+                  autoFocus
+                />
               </div>
 
-              <form onSubmit={handleSubmitClaim} className="space-y-4">
-                 <div className="space-y-2 text-left">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 ml-1">Your Handle</label>
-                    <input 
-                       type="text" 
-                       value={usernameInput}
-                       onChange={(e) => setUsernameInput(e.target.value)}
-                       placeholder={selectedTask.placeholder}
-                       className="w-full bg-background border border-zinc-800 rounded-xl px-4 py-4 outline-none focus:ring-1 focus:ring-foreground focus:border-foreground transition-all font-medium text-sm text-foreground placeholder:text-zinc-700"
-                       autoFocus
-                    />
-                 </div>
-
-                 <button 
-                    type="submit"
-                    disabled={isSubmitting || !usernameInput.trim()}
-                    className="w-full py-4 bg-foreground text-background rounded-xl font-bold text-sm hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                 >
-                    {isSubmitting ? (
-                       <><LoaderIcon size={16} className="animate-spin" /> Verifying...</>
-                    ) : (
-                       <><SendIcon size={16} /> Submit Request</>
-                    )}
-                 </button>
-              </form>
-           </div>
+              <button
+                type="submit"
+                disabled={isSubmitting || !usernameInput.trim()}
+                className="bg-foreground text-background flex w-full items-center justify-center gap-2 rounded-xl py-4 text-sm font-bold transition-all hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <>
+                    <LoaderIcon size={16} className="animate-spin" /> Verifying...
+                  </>
+                ) : (
+                  <>
+                    <SendIcon size={16} /> Submit Request
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       )}
-
     </div>
   );
 }

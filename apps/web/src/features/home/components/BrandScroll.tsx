@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
-} from "@/components/ui/magicUi/ScrollBasedVelocity";
-import BrandLogo from "@/data/brandLogos";
+} from '@/components/ui/magicUi/ScrollBasedVelocity';
+import BrandLogo from '@/data/brandLogos';
 
 // Helper for clean URLs
-const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, "-");
+const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-');
 
 // --- Reusable Sub-component ---
 const BrandList = ({
@@ -24,7 +24,7 @@ const BrandList = ({
       <div key={`${name}-${idx}`} className="mx-10">
         <Link
           href={`/brands/${slugify(name)}`}
-          className="relative block h-16 w-16 lg:w-24 transition-transform hover:scale-110 active:scale-95"
+          className="relative block h-16 w-16 transition-transform hover:scale-110 active:scale-95 lg:w-24"
         >
           <Image
             src={logo}
@@ -47,19 +47,15 @@ export default function BrandScroll() {
   const BRAND_ROW_B = BrandLogo.slice(midIndex);
 
   return (
-    <section className="w-full py-12 overflow-hidden">
+    <section className="w-full overflow-hidden py-12">
       <div className="relative flex w-full flex-col items-center justify-center">
-        <div className="container mx-auto px-4 mb-8 text-center">
-          <p
-            className="flex justify-center items-center text-[10px] font-black uppercase tracking-[0.5em]
-                  bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)]
-                  bg-size-[400%_100%] bg-clip-text text-transparent animate-[glaze_5s_linear_infinite]"
-          >
+        <div className="container mx-auto mb-8 px-4 text-center">
+          <p className="flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-size-[400%_100%] bg-clip-text text-[10px] font-black tracking-[0.5em] text-transparent uppercase">
             our brand collections
           </p>
         </div>
 
-        <ScrollVelocityContainer className="w-full flex flex-col gap-8">
+        <ScrollVelocityContainer className="flex w-full flex-col gap-8">
           {/* Row 1: First Half (Moving Right) */}
           <ScrollVelocityRow baseVelocity={1} direction={1}>
             <BrandList logos={BRAND_ROW_A} priorityStart />
@@ -72,8 +68,8 @@ export default function BrandScroll() {
         </ScrollVelocityContainer>
 
         {/* Side Gradients */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-background to-transparent z-10" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-linear-to-l from-background to-transparent z-10" />
+        <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-10 w-1/4 bg-linear-to-r to-transparent" />
+        <div className="from-background pointer-events-none absolute inset-y-0 right-0 z-10 w-1/4 bg-linear-to-l to-transparent" />
       </div>
     </section>
   );

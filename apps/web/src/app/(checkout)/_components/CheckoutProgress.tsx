@@ -1,28 +1,27 @@
-"use client";
+'use client';
 
-import { CheckIcon } from "@ff/ui";
+import { CheckIcon } from '@ff/ui';
 
 interface CheckoutStagesProps {
   currentStage: number; // 1: Cart, 2: Review, 3: Payment
 }
 
 const stages = [
-  { id: 1, name: "Bag" },
-  { id: 2, name: "Review" },
-  { id: 3, name: "Pay" },
+  { id: 1, name: 'Bag' },
+  { id: 2, name: 'Review' },
+  { id: 3, name: 'Pay' },
 ];
 
 export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
   return (
-    <nav className="sticky z-60 top-16 md:top-24 w-full py-2 bg-background transition-colors border-b border-border/40">
-      <div className="max-w-4xl mx-auto px-6 relative">
-        
+    <nav className="bg-background border-border/40 sticky top-16 z-60 w-full border-b py-2 transition-colors md:top-24">
+      <div className="relative mx-auto max-w-4xl px-6">
         {/* 1. The Background Connector Line (Centered) */}
-        <div className="absolute top-2.5 left-12 right-12 h-0.5 bg-border rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-brand transition-all duration-700 ease-in-out" 
-            style={{ 
-              width: currentStage === 1 ? "0%" : currentStage === 2 ? "50%" : "100%" 
+        <div className="bg-border absolute top-2.5 right-12 left-12 h-0.5 overflow-hidden rounded-full">
+          <div
+            className="bg-brand h-full transition-all duration-700 ease-in-out"
+            style={{
+              width: currentStage === 1 ? '0%' : currentStage === 2 ? '50%' : '100%',
             }}
           />
         </div>
@@ -35,28 +34,20 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
 
             return (
               <div key={stage.id} className="flex flex-col items-center gap-3">
-                <div className="relative flex items-center justify-center w-5 h-5 bg-background transition-transform duration-500">
-                  
+                <div className="bg-background relative flex h-5 w-5 items-center justify-center transition-transform duration-500">
                   {/* Liquid Pulse Effect */}
                   {isActive && (
-                    <span className="absolute inset-0 rounded-full bg-foreground animate-ping duration-2000" />
+                    <span className="bg-foreground absolute inset-0 animate-ping rounded-full duration-2000" />
                   )}
-                  
+
                   {/* Circle Border/Background */}
                   <div
-                    className={`
-                      absolute inset-0 rounded-full transition-all duration-500 ease-in-out border-2 z-10
-                      ${isActive ? "border-brand bg-foreground scale-110 shadow-[0_0_20px_rgba(var(--color-brand),0.3)]" : ""}
-                      ${isCompleted ? "bg-brand border-brand" : "bg-background border-border"}
-                    `}
+                    className={`absolute inset-0 z-10 rounded-full border-2 transition-all duration-500 ease-in-out ${isActive ? 'border-brand bg-foreground scale-110 shadow-[0_0_20px_rgba(var(--color-brand),0.3)]' : ''} ${isCompleted ? 'bg-brand border-brand' : 'bg-background border-border'} `}
                   />
 
                   {/* Stable Number/Icon */}
                   <span
-                    className={`
-                      relative z-20 text-xs font-black transition-colors duration-300
-                      ${isCompleted ? "text-brand-foreground" : isActive ? "text-background" : "text-foreground-subtle"}
-                    `}
+                    className={`relative z-20 text-xs font-black transition-colors duration-300 ${isCompleted ? 'text-brand-foreground' : isActive ? 'text-background' : 'text-foreground-subtle'} `}
                   >
                     {isCompleted ? <CheckIcon size={14} /> : stage.id}
                   </span>
@@ -64,10 +55,7 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
 
                 {/* Stage Name */}
                 <span
-                  className={`
-                    text-[10px] uppercase tracking-[0.2em] font-black transition-colors duration-500
-                    ${isActive ? "text-foreground" : "text-foreground-subtle"}
-                  `}
+                  className={`text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-500 ${isActive ? 'text-foreground' : 'text-foreground-subtle'} `}
                 >
                   {stage.name}
                 </span>

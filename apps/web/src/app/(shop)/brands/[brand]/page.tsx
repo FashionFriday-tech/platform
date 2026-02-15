@@ -1,6 +1,6 @@
-import { DUMMY_PRODUCTS } from "@/data/products";
-import CatalogueClient from "@/features/catalogue";
-import { notFound } from "next/navigation";
+import { DUMMY_PRODUCTS } from '@/data/products';
+import CatalogueClient from '@/features/catalogue';
+import { notFound } from 'next/navigation';
 
 // Next.js 15+ logic: params is a Promise
 interface Props {
@@ -17,16 +17,11 @@ export default async function BrandPage({ params }: Props) {
 
   // 2. Filter products with safety checks
   const brandProducts = DUMMY_PRODUCTS.filter(
-    (p) => String(p.brand).toLowerCase() === brandName.toLowerCase()
+    (p) => String(p.brand).toLowerCase() === brandName.toLowerCase(),
   );
 
   // 3. Determine initial sidebar context
-  const contextCategory = brandProducts[0]?.category || "sneakers";
+  const contextCategory = brandProducts[0]?.category || 'sneakers';
 
-  return (
-    <CatalogueClient
-      categorySlug={contextCategory}
-      initialProducts={brandProducts}
-    />
-  );
+  return <CatalogueClient categorySlug={contextCategory} initialProducts={brandProducts} />;
 }

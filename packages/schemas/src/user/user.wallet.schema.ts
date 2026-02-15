@@ -1,8 +1,5 @@
-import { z } from "zod";
-import {
-  WalletTypeEnum,
-  WalletTransactionStatusEnum,
-} from "./user.enums";
+import { z } from 'zod';
+import { WalletTypeEnum, WalletTransactionStatusEnum } from './user.enums';
 
 /**
  * Wallet (per user)

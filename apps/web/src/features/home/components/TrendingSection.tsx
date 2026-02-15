@@ -1,18 +1,16 @@
-import CoverflowCarousel, { Product } from "@/components/ui/carousel/CoverflowCarousel";
-import { trendingProducts } from "@/data/trendingProducts";
-
+import CoverflowCarousel, { Product } from '@/components/ui/carousel/CoverflowCarousel';
+import { trendingProducts } from '@/data/trendingProducts';
 
 export default async function TrendingSection() {
-
   return (
     // Dark background wrapper matching the reference
-    <section className="w-full py-10 sm:py-20 overflow-hidden">
+    <section className="w-full overflow-hidden py-10 sm:py-20">
       <div className="container mx-auto px-4 text-center sm:mb-10">
-        <h2 className="text-4xl md:text-7xl font-extrabold tracking-tight uppercase">
+        <h2 className="text-4xl font-extrabold tracking-tight uppercase md:text-7xl">
           Trending Now
         </h2>
-        <p className="etxt-foreground-muted mt-4 max-w-md mx-auto">
-            Discover the pieces everyone is talking about this season.
+        <p className="etxt-foreground-muted mx-auto mt-4 max-w-md">
+          Discover the pieces everyone is talking about this season.
         </p>
       </div>
 

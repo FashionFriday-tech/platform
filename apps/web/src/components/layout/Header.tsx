@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   SearchIcon,
   BellIcon,
@@ -12,108 +12,103 @@ import {
   ShoppingBagIcon,
   SearchListIcon,
   CategoryIcon,
-} from "@ff/ui";
-import { SearchOverlay } from "./SearchOverlay/SearchOverlay";
+} from '@ff/ui';
+import { SearchOverlay } from './SearchOverlay/SearchOverlay';
 
 // --- Data Configuration ---
 const navStructure = [
   {
-    label: "New Arrivals",
-    href: "/new-arrivals",
+    label: 'New Arrivals',
+    href: '/new-arrivals',
   },
   {
-    label: "Men",
-    href: "/men",
+    label: 'Men',
+    href: '/men',
   },
   {
-    label: "Women",
-    href: "/women",
+    label: 'Women',
+    href: '/women',
   },
   {
-    label: "Sale",
-    href: "/sale",
+    label: 'Sale',
+    href: '/sale',
     isRed: true,
   },
   {
-    label: "SNKRS",
-    href: "/snkrs",
+    label: 'SNKRS',
+    href: '/snkrs',
   },
 ];
 
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const marqueeText = "FREE SHIPPING ON PRE PAY • COD available +200 advance";
+  const marqueeText = 'FREE SHIPPING ON PRE PAY • COD available +200 advance';
   const marqueeContent = Array(10).fill(marqueeText);
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background">
+      <header className="bg-background fixed top-0 right-0 left-0 z-50">
         {/* DESKTOP TOP BAR */}
-        <div className="relative hidden sm:flex items-center justify-between z-50 mx-auto text-foreground px-6 lg:px-12 h-16">
-          <Link href="/" className="z-50 relative h-8 flex items-center">
+        <div className="text-foreground relative z-50 mx-auto hidden h-16 items-center justify-between px-6 sm:flex lg:px-12">
+          <Link href="/" className="relative z-50 flex h-8 items-center">
             <span className="text-xl font-black tracking-tighter uppercase italic">
               Fashion Friday
             </span>
           </Link>
 
           {/* Clean Navigation: No Dropdowns */}
-          <nav className="hidden lg:flex items-center gap-2 h-full">
+          <nav className="hidden h-full items-center gap-2 lg:flex">
             {navStructure.map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className={`relative px-4 py-2 text-[12px] font-black uppercase tracking-[0.2em] group
-        ${item.isRed ? "text-destructive" : "text-foreground"}
-      `}
+                className={`group relative px-4 py-2 text-[12px] font-black tracking-[0.2em] uppercase ${item.isRed ? 'text-destructive' : 'text-foreground'} `}
               >
                 <span className="relative z-10">{item.label}</span>
 
                 {/* Top Left Bracket */}
-                <span className="absolute top-0 left-0 w-1 h-1 border-t border-l border-brand opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1 group-hover:translate-y-1" />
+                <span className="border-brand absolute top-0 left-0 h-1 w-1 border-t border-l opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:opacity-100" />
 
                 {/* Bottom Right Bracket */}
-                <span className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-brand opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-x-1 group-hover:-translate-y-1" />
+                <span className="border-brand absolute right-0 bottom-0 h-1 w-1 border-r border-b opacity-0 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:opacity-100" />
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-5 z-50">
+          <div className="z-50 flex items-center gap-5">
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="hidden lg:flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-foreground hover:text-brand transition-colors"
+              className="text-foreground hover:text-brand hidden items-center gap-2 text-[10px] font-black tracking-widest uppercase transition-colors lg:flex"
             >
               <SearchIcon className="text-lg" />
               <span>Search</span>
             </button>
-            <div className="h-4 w-px bg-border hidden lg:block" />
-            <div className="flex items-center gap-4 text-foreground">
+            <div className="bg-border hidden h-4 w-px lg:block" />
+            <div className="text-foreground flex items-center gap-4">
               <Link href="/account/wishlist">
-                <WishlistIcon className="text-xl hover:text-brand transition-colors" />
+                <WishlistIcon className="hover:text-brand text-xl transition-colors" />
               </Link>
               <Link href="/checkout/cart" className="relative">
-                <ShoppingBagIcon className="text-2xl hover:text-brand transition-colors" />
-                <span className="absolute -top-1.5 -right-1.5 bg-brand text-brand-foreground text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-black">
+                <ShoppingBagIcon className="hover:text-brand text-2xl transition-colors" />
+                <span className="bg-brand text-brand-foreground absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
                   2
                 </span>
               </Link>
               <Link href="/account">
-                <UserIcon className="text-2xl hover:text-brand transition-colors" />
+                <UserIcon className="hover:text-brand text-2xl transition-colors" />
               </Link>
             </div>
           </div>
         </div>
 
         {/* MARQUEE */}
-        <div className="hidden sm:block bg-foreground text-background py-1.5 relative z-40">
-          <div className="flex whitespace-nowrap animate-marquee">
+        <div className="bg-foreground text-background relative z-40 hidden py-1.5 sm:block">
+          <div className="animate-marquee flex whitespace-nowrap">
             {[0, 1].map((set) => (
               <div key={set} className="flex gap-10 px-5">
                 {marqueeContent.map((text, i) => (
-                  <span
-                    key={i}
-                    className="text-[9px] font-black uppercase tracking-[0.2em]"
-                  >
+                  <span key={i} className="text-[9px] font-black tracking-[0.2em] uppercase">
                     {text}
                   </span>
                 ))}
@@ -124,9 +119,9 @@ export function Header() {
       </header>
 
       {/* MOBILE UI (UNCHANGED) */}
-      <div className="sticky top-0 lg:hidden w-full px-4 py-3 z-50 bg-background text-foreground flex justify-between items-center">
+      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-3 lg:hidden">
         <Link href="/account" className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full border-2 border-foreground overflow-hidden">
+          <div className="border-foreground h-10 w-10 overflow-hidden rounded-full border-2">
             <Image
               src="/images/model/aj.png"
               width={40}
@@ -135,18 +130,13 @@ export function Header() {
               className="object-cover object-top"
             />
           </div>
-          <span className="font-bold text-xs uppercase tracking-tighter">
-            HELLO, AJMAL
-          </span>
+          <span className="text-xs font-bold tracking-tighter uppercase">HELLO, AJMAL</span>
         </Link>
         <div className="flex items-center gap-4">
-          <SearchIcon
-            className="text-xl"
-            onClick={() => setIsSearchOpen(true)}
-          />
+          <SearchIcon className="text-xl" onClick={() => setIsSearchOpen(true)} />
           <Link href="/account/notifications" className="relative">
             <BellIcon className="text-xl" />
-            <span className="absolute top-0 right-0 w-2 h-2 bg-destructive rounded-full" />
+            <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
           </Link>
           <Link href="/account/wishlist">
             <WishlistIcon className="text-xl" />
@@ -154,7 +144,7 @@ export function Header() {
         </div>
       </div>
 
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border px-6 py-3 flex items-center justify-between">
+      <nav className="bg-background border-border fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between border-t px-6 py-3 lg:hidden">
         <Link href="/men">
           <CategoryIcon className="text-[25px]" />
         </Link>
@@ -172,7 +162,7 @@ export function Header() {
         </Link>
         <Link href="/checkout/cart" className="relative">
           <ShoppingBagIcon className="text-[25px]" />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-brand rounded-full border-2 border-background" />
+          <span className="bg-brand border-background absolute top-0 right-0 h-2 w-2 rounded-full border-2" />
         </Link>
         <Link href="/account">
           <UserIcon className="text-[25px]" />
@@ -181,10 +171,7 @@ export function Header() {
 
       <AnimatePresence>
         {isSearchOpen && (
-          <SearchOverlay
-            isSearchOpen={isSearchOpen}
-            setIsSearchOpen={setIsSearchOpen}
-          />
+          <SearchOverlay isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
         )}
       </AnimatePresence>
 

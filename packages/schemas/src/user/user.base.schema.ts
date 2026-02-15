@@ -1,30 +1,19 @@
-import { z } from "zod";
-import { AccountStatusEnum } from "./user.enums";
+import { z } from 'zod';
+import { AccountStatusEnum } from './user.enums';
 
 /**
  * Core identity fields (editable by user)
  */
 const UserIdentityCore = z.object({
-  name: z
-    .string()
-    .min(4, { message: "Name must be at least 4 characters" })
-    .trim(),
+  name: z.string().min(4, { message: 'Name must be at least 4 characters' }).trim(),
 
-  email: z
-    .string()
-    .email({ message: "Invalid email address" })
-    .toLowerCase()
-    .trim(),
+  email: z.string().email({ message: 'Invalid email address' }).toLowerCase().trim(),
 
   phone: z.string().regex(/^\+91[6-9]\d{9}$/, {
-    message:
-      "Phone must include +91 followed by a valid 10-digit Indian mobile number",
+    message: 'Phone must include +91 followed by a valid 10-digit Indian mobile number',
   }),
 
-  avatarUrl: z
-    .string()
-    .url({ message: "Avatar must be a valid URL" })
-    .optional(),
+  avatarUrl: z.string().url({ message: 'Avatar must be a valid URL' }).optional(),
 });
 
 /**
@@ -36,7 +25,7 @@ const UserSystemCore = z.object({
   isPhoneVerified: z.boolean().default(false),
   isEmailVerified: z.boolean().default(false),
 
-  accountStatus: AccountStatusEnum.default("ACTIVE"),
+  accountStatus: AccountStatusEnum.default('ACTIVE'),
 
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),

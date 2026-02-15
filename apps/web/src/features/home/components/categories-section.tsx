@@ -1,12 +1,10 @@
-"use client";
+'use client';
 
-import { useRef, useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
-import {categories} from "@/data/categories" 
-
-
+import { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { categories } from '@/data/categories';
 
 export default function CategoryCarousel() {
   const targetRef = useRef<HTMLDivElement>(null);
@@ -25,29 +23,29 @@ export default function CategoryCarousel() {
     };
 
     calculateHeight();
-    window.addEventListener("resize", calculateHeight);
-    return () => window.removeEventListener("resize", calculateHeight);
+    window.addEventListener('resize', calculateHeight);
+    return () => window.removeEventListener('resize', calculateHeight);
   }, []);
 
   const { scrollYProgress } = useScroll({ target: targetRef });
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-95%"]);
+  const x = useTransform(scrollYProgress, [0, 1], ['0%', '-95%']);
 
   return (
     <section
       ref={targetRef}
       aria-labelledby="category-heading"
       className="relative"
-      style={{ height: dynamicHeight ? `${dynamicHeight}px` : "auto" }}
+      style={{ height: dynamicHeight ? `${dynamicHeight}px` : 'auto' }}
     >
-      <div className="md:sticky md:top-0 md:h-screen md:flex md:flex-col md:justify-center md:overflow-hidden py-12">
+      <div className="py-12 md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-center md:overflow-hidden">
         {/* Header Section */}
-        <header className="container mx-auto px-4 lg:px-6 md:mt-20 mb-10">
-          <p className="text-xs font-bold uppercase tracking-widest mb-2 block text-muted-foreground">
+        <header className="container mx-auto mb-10 px-4 md:mt-20 lg:px-6">
+          <p className="text-muted-foreground mb-2 block text-xs font-bold tracking-widest uppercase">
             Curated Collections
           </p>
           <h2
             id="category-heading"
-            className="text-4xl lg:text-7xl font-black uppercase tracking-tighter"
+            className="text-4xl font-black tracking-tighter uppercase lg:text-7xl"
           >
             Shop by Category
           </h2>
@@ -62,14 +60,10 @@ export default function CategoryCarousel() {
           {categories.map((cat, index) => (
             <article
               key={`${cat.id}-${index}`}
-              className="relative shrink-0 w-full md:w-80 aspect-[3/4] rounded-2xl md:rounded-3xl overflow-hidden group"
+              className="group relative aspect-[3/4] w-full shrink-0 overflow-hidden rounded-2xl md:w-80 md:rounded-3xl"
             >
-              <Link
-                href={cat.href}
-                className="block w-full h-full"
-                title={`Browse ${cat.title}`}
-              >
-                <figure className="absolute inset-0 w-full h-full m-0">
+              <Link href={cat.href} className="block h-full w-full" title={`Browse ${cat.title}`}>
+                <figure className="absolute inset-0 m-0 h-full w-full">
                   <Image
                     src={cat.image}
                     alt={`Model featuring ${cat.title} collection`}
@@ -81,12 +75,12 @@ export default function CategoryCarousel() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity group-hover:opacity-80" />
                 </figure>
 
-                <div className="absolute bottom-0 left-0 w-full p-4 md:p-8 z-10">
+                <div className="absolute bottom-0 left-0 z-10 w-full p-4 md:p-8">
                   <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
-                    <p className="text-zinc-300 text-[10px] md:text-sm font-medium mb-1 md:mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <p className="mb-1 text-[10px] font-medium text-zinc-300 opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:mb-2 md:text-sm">
                       {cat.count}
                     </p>
-                    <h3 className="text-xl md:text-4xl font-black text-white uppercase tracking-tighter">
+                    <h3 className="text-xl font-black tracking-tighter text-white uppercase md:text-4xl">
                       {cat.title}
                     </h3>
                   </div>
@@ -97,14 +91,11 @@ export default function CategoryCarousel() {
         </motion.div>
 
         {/* Visual Progress Indicator */}
-        <nav
-          aria-hidden="true"
-          className="hidden md:block container mx-auto px-4 lg:px-6 mt-12"
-        >
-          <div className="w-full h-px bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+        <nav aria-hidden="true" className="container mx-auto mt-12 hidden px-4 md:block lg:px-6">
+          <div className="h-px w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
             <motion.div
-              className="h-full bg-primary"
-              style={{ scaleX: scrollYProgress, transformOrigin: "0%" }}
+              className="bg-primary h-full"
+              style={{ scaleX: scrollYProgress, transformOrigin: '0%' }}
             />
           </div>
         </nav>

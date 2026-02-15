@@ -1,17 +1,17 @@
-import { z } from "zod";
-import { UserBaseSchema } from "./user.base.schema";
+import { z } from 'zod';
+import { UserBaseSchema } from './user.base.schema';
 
 /**
  * Seller Schema
  */
 export const SellerSchema = UserBaseSchema.extend({
-  role: z.literal("SELLER"),
+  role: z.literal('SELLER'),
 
   sellerProfile: z.object({
     storeName: z
       .string()
-      .min(3, "Store name must be at least 3 characters")
-      .max(100, "Store name too long")
+      .min(3, 'Store name must be at least 3 characters')
+      .max(100, 'Store name too long')
       .trim(),
 
     isVerified: z.boolean().default(false),

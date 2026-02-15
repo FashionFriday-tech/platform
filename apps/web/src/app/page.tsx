@@ -1,5 +1,5 @@
-import Footer from "@/components/layout/Footer";
-import Request from "@/components/ui/sections/Request";
+import Footer from '@/components/layout/Footer';
+import Request from '@/components/ui/sections/Request';
 
 import {
   Hero,
@@ -10,7 +10,7 @@ import {
   InfluencerCarousel,
   WhyChooseUs,
   PWAInstallSection,
-} from "@/features/home";
+} from '@/features/home';
 
 export default function HomePage() {
   return (

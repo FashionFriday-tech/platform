@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { ArrowRightIcon, TagIcon, ShieldCheckIcon } from "@ff/ui";
+import { ArrowRightIcon, TagIcon, ShieldCheckIcon } from '@ff/ui';
 
 export function OrderSummary() {
   const subtotal = 3798;
@@ -11,85 +11,98 @@ export function OrderSummary() {
   return (
     <section id="summary" className="w-full transition-colors">
       {/* Container for both Mobile and Desktop */}
-      <div className="bg-foreground p-6 md:p-10 md:mb-20 lg:p-8 rounded-[2.5rem] border border-border lg:sticky lg:top-24 shadow-sm">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-medium tracking-tight text-background">Summary</h2>
-          <span className="lg:hidden text-[10px] border border-background text-background px-4 py-1 rounded-full font-bold uppercase tracking-wider">
+      <div className="bg-foreground border-border rounded-[2.5rem] border p-6 shadow-sm md:mb-20 md:p-10 lg:sticky lg:top-24 lg:p-8">
+        <div className="mb-8 flex items-center justify-between">
+          <h2 className="text-background text-2xl font-medium tracking-tight">Summary</h2>
+          <span className="border-background text-background rounded-full border px-4 py-1 text-[10px] font-bold tracking-wider uppercase lg:hidden">
             {/* Logic: 3 Items */} 3 Items
           </span>
         </div>
 
         {/* 1. Full Breakdown (Visible on all screens now) */}
         <div className="space-y-5 text-[15px]">
-          <div className="flex justify-between text-background-muted">
+          <div className="text-background-muted flex justify-between">
             <span className="font-medium">Subtotal</span>
-            <span className="font-semibold text-background">₹{subtotal.toLocaleString()}</span>
+            <span className="text-background font-semibold">₹{subtotal.toLocaleString()}</span>
           </div>
-          
-          <div className="flex justify-between items-center text-background font-medium">
+
+          <div className="text-background flex items-center justify-between font-medium">
             <div className="flex flex-col">
               <span className="flex items-center gap-2">Discount</span>
-              <span className="text-[10px] opacity-70 uppercase tracking-tighter">Promo: WELCOME10</span>
+              <span className="text-[10px] tracking-tighter uppercase opacity-70">
+                Promo: WELCOME10
+              </span>
             </div>
             <span>- ₹{discount.toLocaleString()}</span>
           </div>
 
-          <div className="flex justify-between text-background-muted">
+          <div className="text-background-muted flex justify-between">
             <span>Shipping</span>
-            <span className="font-semibold text-background uppercase text-[11px] tracking-widest">Calculated at Checkout</span>
+            <span className="text-background text-[11px] font-semibold tracking-widest uppercase">
+              Calculated at Checkout
+            </span>
           </div>
-          
-          <div className="border-t border-border pt-5 mt-2">
-            <div className="flex justify-between items-end">
+
+          <div className="border-border mt-2 border-t pt-5">
+            <div className="flex items-end justify-between">
               <div className="flex flex-col">
-                <span className="text-background-muted uppercase text-[10px] font-bold tracking-[0.2em]">Total</span>
-                <p className="text-[10px] text-background tracking-wide">Inclusive of taxes</p>
+                <span className="text-background-muted text-[10px] font-bold tracking-[0.2em] uppercase">
+                  Total
+                </span>
+                <p className="text-background text-[10px] tracking-wide">Inclusive of taxes</p>
               </div>
-              <span className="text-3xl font-bold tracking-tighter text-background">₹{total.toLocaleString()}</span>
+              <span className="text-background text-3xl font-bold tracking-tighter">
+                ₹{total.toLocaleString()}
+              </span>
             </div>
           </div>
         </div>
 
         {/* 2. Promo Code - Optimized for Mobile spacing */}
         <div className="relative mt-10 mb-8">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-background-subtle">
+          <div className="text-background-subtle absolute top-1/2 left-4 -translate-y-1/2">
             <TagIcon size={16} />
           </div>
-          <input 
-            type="text" 
-            placeholder="Promo Code" 
-            className="w-full bg-background border border-border rounded-2xl py-4 pl-12 pr-24 text-sm focus:outline-none focus:ring-1 focus:ring-foreground transition-all placeholder:text-background-subtle/50"
+          <input
+            type="text"
+            placeholder="Promo Code"
+            className="bg-background border-border focus:ring-foreground placeholder:text-background-subtle/50 w-full rounded-2xl border py-4 pr-24 pl-12 text-sm transition-all focus:ring-1 focus:outline-none"
           />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground text-background text-[10px] font-black px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity cursor-pointer">
+          <button className="bg-foreground text-background absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer rounded-xl px-4 py-2.5 text-[10px] font-black transition-opacity hover:opacity-90">
             APPLY
           </button>
         </div>
 
         {/* 3. Main Checkout Button */}
-        <button className="hidden lg:flex w-full group bg-background text-foreground py-4 rounded-full font-bold items-center justify-center gap-3 hover:opacity-95 transition-all active:scale-[0.98] cursor-pointer shadow-xl shadow-brand/10">
+        <button className="group bg-background text-foreground shadow-brand/10 hidden w-full cursor-pointer items-center justify-center gap-3 rounded-full py-4 font-bold shadow-xl transition-all hover:opacity-95 active:scale-[0.98] lg:flex">
           Checkout Now
           <ArrowRightIcon size={20} className="transition-transform group-hover:translate-x-1" />
         </button>
 
         {/* 4. Trust Badge */}
-        <div className="mt-8 pt-6 border-t border-border/50 flex items-center justify-center gap-3 text-[10px] text-background uppercase tracking-[0.2em] font-bold">
-          <ShieldCheckIcon size={16}/>
+        <div className="border-border/50 text-background mt-8 flex items-center justify-center gap-3 border-t pt-6 text-[10px] font-bold tracking-[0.2em] uppercase">
+          <ShieldCheckIcon size={16} />
           <span>Secure Checkout SSL</span>
         </div>
       </div>
 
       {/* 5. Mobile Sticky "Quick-Action" Bar (Extra UX layer) */}
       {/* This only shows on mobile and slides up to give a final nudge */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-100 p-4 bg-background">
-         <div className="bg-foreground text-background rounded-full p-2 flex items-center justify-between shadow-2xl">
-            <div className="pl-6 flex flex-col">
-               <span className="text-[10px] opacity-70 uppercase font-black tracking-widest">Total</span>
-               <span className="text-xl font-bold leading-none">₹{total.toLocaleString()}</span>
-            </div>
-            <a href="/checkout/review" className="bg-background text-foreground h-12 px-6 rounded-full font-black uppercase tracking-widest flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
-               Checkout Now <ArrowRightIcon size={16} />
-            </a>
-         </div>
+      <div className="bg-background fixed right-0 bottom-0 left-0 z-100 p-4 lg:hidden">
+        <div className="bg-foreground text-background flex items-center justify-between rounded-full p-2 shadow-2xl">
+          <div className="flex flex-col pl-6">
+            <span className="text-[10px] font-black tracking-widest uppercase opacity-70">
+              Total
+            </span>
+            <span className="text-xl leading-none font-bold">₹{total.toLocaleString()}</span>
+          </div>
+          <a
+            href="/checkout/review"
+            className="bg-background text-foreground flex h-12 items-center gap-2 rounded-full px-6 font-black tracking-widest uppercase transition-all hover:scale-[1.02] active:scale-95"
+          >
+            Checkout Now <ArrowRightIcon size={16} />
+          </a>
+        </div>
       </div>
     </section>
   );

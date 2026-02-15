@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 export default function ServiceWorkerRegister() {
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
+    if (!('serviceWorker' in navigator)) return;
 
     navigator.serviceWorker
-      .register("/sw.js")
+      .register('/sw.js')
       .then((registration) => {
         // Listen for updates
         registration.onupdatefound = () => {
@@ -16,18 +16,15 @@ export default function ServiceWorkerRegister() {
           if (!installingWorker) return;
 
           installingWorker.onstatechange = () => {
-            if (
-              installingWorker.state === "installed" &&
-              navigator.serviceWorker.controller
-            ) {
+            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
               // New content available
-              console.log("New version available. Refresh to update.");
+              console.log('New version available. Refresh to update.');
             }
           };
         };
       })
       .catch((error) => {
-        console.error("Service Worker registration failed:", error);
+        console.error('Service Worker registration failed:', error);
       });
   }, []);
 

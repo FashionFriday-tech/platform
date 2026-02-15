@@ -3,9 +3,9 @@ import {
   HiOutlineArrowsUpDown,
   HiOutlineArrowUpRight,
   HiOutlineArrowDownLeft,
-} from "react-icons/hi2";
-import { RiArrowUpDownLine, RiMenuSearchLine } from "react-icons/ri";
-import { PiArrowsLeftRightLight, PiMapPin, PiShoppingBag } from "react-icons/pi";
+} from 'react-icons/hi2';
+import { RiArrowUpDownLine, RiMenuSearchLine } from 'react-icons/ri';
+import { PiArrowsLeftRightLight, PiMapPin, PiShoppingBag } from 'react-icons/pi';
 import {
   IoPlaySharp,
   IoSquareSharp,
@@ -14,13 +14,14 @@ import {
   IoChevronBackOutline,
   IoChevronUpOutline,
   IoHeart,
-} from "react-icons/io5";
+} from 'react-icons/io5';
 import {
-  IoIosArrowDown, IoIosArrowBack,
+  IoIosArrowDown,
+  IoIosArrowBack,
   IoIosArrowForward,
   IoIosDownload,
   IoLogoApple,
-} from "react-icons/io";
+} from 'react-icons/io';
 import {
   FiSearch,
   FiBell,
@@ -50,10 +51,10 @@ import {
   FiCopy,
   FiClock,
   FiHeart,
-} from "react-icons/fi";
-import { GiDiamondTrophy } from "react-icons/gi";
-import { TfiCrown } from "react-icons/tfi";
-import { BsTags, BsShieldExclamation } from "react-icons/bs";
+} from 'react-icons/fi';
+import { GiDiamondTrophy } from 'react-icons/gi';
+import { TfiCrown } from 'react-icons/tfi';
+import { BsTags, BsShieldExclamation } from 'react-icons/bs';
 import {
   MdHistory,
   MdOutlineStarBorder,
@@ -103,24 +104,24 @@ import {
   MdDarkMode,
   MdWbSunny,
   MdOpenInNew,
-} from "react-icons/md";
-import { GiLifeBuoy } from "react-icons/gi";
-import { FiActivity } from "react-icons/fi";
-import { TbHeartMinus, TbHeartPlus, TbMapPin } from "react-icons/tb";
-import { RiShieldStarFill, RiVerifiedBadgeFill } from "react-icons/ri";
-import { FaInfoCircle } from "react-icons/fa";
-import { SiInstagram, SiX , SiYoutube, SiFacebook } from "react-icons/si";
-import { BiCategoryAlt, BiUser } from "react-icons/bi";
-import { GrFavorite } from "react-icons/gr";
-import { PiShoppingBagOpen } from "react-icons/pi";
-import { TiThMenuOutline } from "react-icons/ti";
-import { LuHeartHandshake, LuShieldCheck } from "react-icons/lu";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { RxHamburgerMenu } from "react-icons/rx";
-import { PiBriefcaseFill } from "react-icons/pi";
-import { GoHomeFill } from "react-icons/go";
-import { RxStarFilled } from "react-icons/rx";
-import { RxStar } from "react-icons/rx";
+} from 'react-icons/md';
+import { GiLifeBuoy } from 'react-icons/gi';
+import { FiActivity } from 'react-icons/fi';
+import { TbHeartMinus, TbHeartPlus, TbMapPin } from 'react-icons/tb';
+import { RiShieldStarFill, RiVerifiedBadgeFill } from 'react-icons/ri';
+import { FaInfoCircle } from 'react-icons/fa';
+import { SiInstagram, SiX, SiYoutube, SiFacebook } from 'react-icons/si';
+import { BiCategoryAlt, BiUser } from 'react-icons/bi';
+import { GrFavorite } from 'react-icons/gr';
+import { PiShoppingBagOpen } from 'react-icons/pi';
+import { TiThMenuOutline } from 'react-icons/ti';
+import { LuHeartHandshake, LuShieldCheck } from 'react-icons/lu';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { RxHamburgerMenu } from 'react-icons/rx';
+import { PiBriefcaseFill } from 'react-icons/pi';
+import { GoHomeFill } from 'react-icons/go';
+import { RxStarFilled } from 'react-icons/rx';
+import { RxStar } from 'react-icons/rx';
 
 // NAVIGATION & ARROWS
 export const ArrowLeftIcon = IoChevronBackOutline;
@@ -137,7 +138,7 @@ export const ChevronUpIcon = IoChevronUpOutline;
 export const ChevronDownIcon = IoChevronDownOutline;
 
 // SHOPPING & COMMERCE
-export const ShoppingBagIcon = PiShoppingBag ;
+export const ShoppingBagIcon = PiShoppingBag;
 export const ShoppingCartIcon = MdShoppingCart;
 export const PackageIcon = MdOutlineInventory2;
 export const TruckIcon = MdOutlineLocalShipping;
@@ -203,7 +204,7 @@ export const CameraIcon = MdOutlinePhotoCamera;
 export const ImageIcon = FiImage;
 
 // LOCATION & MAPS
-export const MapPinIcon = PiMapPin ;
+export const MapPinIcon = PiMapPin;
 export const NavigationIcon = MdNavigation;
 export const GlobeIcon = MdExplore;
 
@@ -232,7 +233,7 @@ export const MessageSquareIcon = MdForum;
 // UI
 export const MenuIcon = TiThMenuOutline;
 export const HamburgerMenuIcon = RxHamburgerMenu;
-export const HomeIcon = GoHomeFill ;
+export const HomeIcon = GoHomeFill;
 export const SettingsIcon = FiSettings;
 export const Settings2Icon = FiSettings;
 export const LogOutIcon = FiLogOut;
@@ -301,7 +302,6 @@ export const ArrowDownIconIOS = IoIosArrowDown;
 export const ArrowBackIconIOS = IoIosArrowBack;
 export const ArrowForwardIconIOS = IoIosArrowForward;
 
-export const BriefcaseIcon = PiBriefcaseFill ;
-
+export const BriefcaseIcon = PiBriefcaseFill;
 
 export type IconComponent = React.ComponentType<{ size?: number; className?: string }>;

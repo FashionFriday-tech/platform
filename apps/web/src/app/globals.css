@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @custom-variant dark (&:where(.dark *));
 
 /* =================================================
@@ -134,7 +134,6 @@
   -ms-overflow-style: none;
 }
 
-
 /* =================================================
    VIEW TRANSITION API SAFETY
 ================================================= */
@@ -145,7 +144,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none !important;

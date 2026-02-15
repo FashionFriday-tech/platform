@@ -1,26 +1,27 @@
-import { DUMMY_PRODUCTS } from "./products";
-import { Product } from "@ff/schemas";
+import { DUMMY_PRODUCTS } from './products';
+import { Product } from '@ff/schemas';
 
 /**
  * 1. SIDEBAR CONFIGURATION
  * Defines the UI labels and options for the sidebar
  */
-export const CATEGORY_FILTERS: Record<string, { id: string; label: string; options: string[] }[]> = {
-  "Shoes": [
-    { id: 'brand', label: 'Brand', options: ["Nike", "Adidas", "Jordan", "Kobe", "Yeezy"] },
-    { id: 'quality', label: 'Quality', options: ['UA', '7AA', 'Standard'] },
-    { id: 'colors', label: 'Colors', options: ['Red', 'White', 'Black', 'Blue', 'Zebra'] },
-    { id: 'sizes', label: 'Sizes', options: ['7', '8', '9', '10', '11'] },
-  ],
-  "Watches": [
-    { id: 'brand', label: 'Brand', options: ["Seiko", "Casio", "Rolex", "Titan"] },
-    { id: 'quality', label: 'Grade', options: ['10A Master', 'Original', 'Super Copy'] },
-  ],
-  "Clothing": [
-    { id: 'brand', label: 'Brand', options: ["Zara", "H&M", "Fear of God"] },
-    { id: 'quality', label: 'Fabric', options: ['Premium Cotton', 'Standard'] },
-  ],
-};
+export const CATEGORY_FILTERS: Record<string, { id: string; label: string; options: string[] }[]> =
+  {
+    Shoes: [
+      { id: 'brand', label: 'Brand', options: ['Nike', 'Adidas', 'Jordan', 'Kobe', 'Yeezy'] },
+      { id: 'quality', label: 'Quality', options: ['UA', '7AA', 'Standard'] },
+      { id: 'colors', label: 'Colors', options: ['Red', 'White', 'Black', 'Blue', 'Zebra'] },
+      { id: 'sizes', label: 'Sizes', options: ['7', '8', '9', '10', '11'] },
+    ],
+    Watches: [
+      { id: 'brand', label: 'Brand', options: ['Seiko', 'Casio', 'Rolex', 'Titan'] },
+      { id: 'quality', label: 'Grade', options: ['10A Master', 'Original', 'Super Copy'] },
+    ],
+    Clothing: [
+      { id: 'brand', label: 'Brand', options: ['Zara', 'H&M', 'Fear of God'] },
+      { id: 'quality', label: 'Fabric', options: ['Premium Cotton', 'Standard'] },
+    ],
+  };
 
 /**
  * 2. THE FILTER ENGINE
@@ -44,13 +45,13 @@ export function filterProducts(products: Product[], activeFilters: Record<string
 
       if (targetValue) {
         if (Array.isArray(targetValue)) {
-          const match = targetValue.some(val => 
-            selectedOptions.some(opt => opt.toLowerCase() === val.toString().toLowerCase())
+          const match = targetValue.some((val) =>
+            selectedOptions.some((opt) => opt.toLowerCase() === val.toString().toLowerCase()),
           );
           if (!match) return false;
         } else {
-          const match = selectedOptions.some(opt => 
-            opt.toLowerCase() === targetValue.toString().toLowerCase()
+          const match = selectedOptions.some(
+            (opt) => opt.toLowerCase() === targetValue.toString().toLowerCase(),
           );
           if (!match) return false;
         }
@@ -72,10 +73,14 @@ export const getProductBySlug = async (slug: string): Promise<Product | undefine
 };
 
 // B. Get similar items but exclude the one the user is already viewing
-export const getSimilarProducts = async (category: string, currentProductId?: string): Promise<Product[]> => {
-  return DUMMY_PRODUCTS
-    .filter((p) => p.category === category && p.id !== currentProductId)
-    .slice(0, 10);
+export const getSimilarProducts = async (
+  category: string,
+  currentProductId?: string,
+): Promise<Product[]> => {
+  return DUMMY_PRODUCTS.filter((p) => p.category === category && p.id !== currentProductId).slice(
+    0,
+    10,
+  );
 };
 
 // C. Find variants sharing a StyleID (e.g., same shoe, different color/quality)

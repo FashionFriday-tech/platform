@@ -1,53 +1,49 @@
-const VERSION = "v1.0.1";
+const VERSION = 'v1.0.1';
 
 const STATIC_CACHE = `ff-static-${VERSION}`;
 const DYNAMIC_CACHE = `ff-dynamic-${VERSION}`;
 const IMAGE_CACHE = `ff-images-${VERSION}`;
 
 const STATIC_ASSETS = [
-  "/",
-  "/manifest.json",
-  "/offline.html",
-  "/icon-192x192.png",
-  "/icon-512x512.png"
+  '/',
+  '/manifest.json',
+  '/offline.html',
+  '/icon-192x192.png',
+  '/icon-512x512.png',
 ];
 
 /* ---------------- INSTALL ---------------- */
-self.addEventListener("install", (event) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
-    })
+    }),
   );
   self.skipWaiting();
 });
 
 /* ---------------- ACTIVATE ---------------- */
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
         keys.map((key) => {
-          if (
-            key !== STATIC_CACHE &&
-            key !== DYNAMIC_CACHE &&
-            key !== IMAGE_CACHE
-          ) {
+          if (key !== STATIC_CACHE && key !== DYNAMIC_CACHE && key !== IMAGE_CACHE) {
             return caches.delete(key);
           }
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
   self.clients.claim();
 });
 
 /* ---------------- FETCH ---------------- */
-self.addEventListener("fetch", (event) => {
+self.addEventListener('fetch', (event) => {
   const { request } = event;
 
   // Only handle GET requests
-  if (request.method !== "GET") return;
+  if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
 
@@ -55,21 +51,19 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   // Navigation fallback (App Router safe)
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request).catch(() => caches.match("/offline.html"))
-    );
+  if (request.mode === 'navigate') {
+    event.respondWith(fetch(request).catch(() => caches.match('/offline.html')));
     return;
   }
 
   // Images → Cache First
-  if (request.destination === "image") {
+  if (request.destination === 'image') {
     event.respondWith(cacheFirst(request, IMAGE_CACHE, 60));
     return;
   }
 
   // API → Network First
-  if (url.pathname.startsWith("/api")) {
+  if (url.pathname.startsWith('/api')) {
     event.respondWith(networkFirst(request, DYNAMIC_CACHE));
     return;
   }
@@ -103,7 +97,7 @@ async function networkFirst(request, cacheName) {
     }
     return response;
   } catch {
-    return (await cache.match(request)) || caches.match("/offline.html");
+    return (await cache.match(request)) || caches.match('/offline.html');
   }
 }
 

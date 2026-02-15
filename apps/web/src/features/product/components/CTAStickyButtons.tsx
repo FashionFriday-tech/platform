@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import { HeartIcon, HeartPlusIcon, ShoppingBagIcon } from "@ff/ui";
+import React from 'react';
+import { HeartIcon, HeartPlusIcon, ShoppingBagIcon } from '@ff/ui';
 
 interface CTAStickyButtonsProps {
   isWishlisted: boolean;
@@ -18,12 +18,12 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
 }) => {
   return (
     <>
-      <div className="fixed md:hidden bottom-0 left-0 right-0 z-[100] w-full bg-black border-t border-white/10 px-4 py-3 flex items-center gap-2 lg:hidden">
+      <div className="fixed right-0 bottom-0 left-0 z-[100] flex w-full items-center gap-2 border-t border-white/10 bg-black px-4 py-3 md:hidden lg:hidden">
         {/* Wishlist Button */}
         <button
           onClick={() => setIsWishlisted((prev) => !prev)}
           aria-label="Toggle wishlist"
-          className={`h-12 w-12 shrink-0 flex items-center justify-center rounded-full transition-all duration-300 border border-white/50`}
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/50 transition-all duration-300`}
         >
           {isWishlisted ? (
             <HeartIcon size={20} fill="currentColor" />
@@ -35,9 +35,9 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
         {/* Main Buy Button - Centered Pill */}
         <button
           onClick={onBuyNow}
-          className="flex-1 h-12 flex justify-center items-center text-lg font-black uppercase border border-white/50 rounded-full cursor-pointer hover:bg-white/5 transition-colors overflow-hidden outline-none"
+          className="flex h-12 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-white/50 text-lg font-black uppercase transition-colors outline-none hover:bg-white/5"
         >
-          <span className="bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-[length:400%_100%] bg-clip-text text-transparent animate-glaze whitespace-nowrap">
+          <span className="animate-glaze bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-[length:400%_100%] bg-clip-text whitespace-nowrap text-transparent">
             Buy Now
           </span>
         </button>
@@ -46,7 +46,7 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
         <button
           onClick={onCartClick}
           aria-label="View Cart"
-          className="h-12 w-12 shrink-0 flex items-center justify-center rounded-full border border-white/50 text-white hover:bg-white/10 transition-all active:scale-90"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/50 text-white transition-all hover:bg-white/10 active:scale-90"
         >
           <ShoppingBagIcon size={18} />
         </button>

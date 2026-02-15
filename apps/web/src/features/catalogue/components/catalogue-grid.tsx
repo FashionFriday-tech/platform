@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react"; // Fix: Explicitly import React to resolve UMD global error
-import { motion, AnimatePresence } from "framer-motion";
-import { Product } from "@ff/schemas";
-import { CatalogueProductCard } from "@/components/ui/cards/catlogue-product-card";
+import React from 'react'; // Fix: Explicitly import React to resolve UMD global error
+import { motion, AnimatePresence } from 'framer-motion';
+import { Product } from '@ff/schemas';
+import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
 
 interface GridProps {
   products: Product[];
@@ -15,7 +15,7 @@ export const CatalogueGrid = ({ products }: GridProps) => {
 
   return (
     <div className="flex-1">
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 gap-y-8 pt-8 md:pt-28">
+      <div className="grid grid-cols-2 gap-4 gap-y-8 pt-8 md:pt-28 lg:grid-cols-3">
         {products.map((product, index) => {
           const isPromoPosition = (index + 1) % ITEMS_PER_PROMO === 0;
 
@@ -37,18 +37,18 @@ export const CatalogueGrid = ({ products }: GridProps) => {
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="col-span-2 xl:col-span-2 h-full md:h-full rounded-4xl bg-background overflow-hidden relative"
+                  className="bg-background relative col-span-2 h-full overflow-hidden rounded-4xl md:h-full xl:col-span-2"
                 >
                   <img
                     src="/gif/ad.gif"
                     alt="Promotion"
-                    className="w-full h-full object-cover scale-105 "
+                    className="h-full w-full scale-105 object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/20 flex flex-col justify-center px-10">
-                    <h4 className="text-white font-black italic uppercase text-2xl tracking-tighter">
+                  <div className="absolute inset-0 flex flex-col justify-center bg-black/20 px-10">
+                    <h4 className="text-2xl font-black tracking-tighter text-white uppercase italic">
                       Exclusive Drop
                     </h4>
-                    <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">
+                    <p className="text-[10px] font-bold tracking-widest text-white/60 uppercase">
                       Premium Quality Guaranteed
                     </p>
                   </div>
@@ -62,7 +62,7 @@ export const CatalogueGrid = ({ products }: GridProps) => {
       {/* Empty State Logic */}
       {products.length === 0 && (
         <div className="py-32 text-center">
-          <p className="opacity-30 text-[10px] font-black uppercase tracking-widest">
+          <p className="text-[10px] font-black tracking-widest uppercase opacity-30">
             No Gear Matches Your Current Refinement
           </p>
         </div>

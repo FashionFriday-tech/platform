@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link"; // Import Link
-import { ArrowLeftIcon, ArrowRightIcon } from "@ff/ui";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link'; // Import Link
+import { ArrowLeftIcon, ArrowRightIcon } from '@ff/ui';
 
 // --- TYPES ---
 export interface Product {
@@ -15,25 +15,17 @@ export interface Product {
 }
 
 const transitionSpec = {
-  type: "spring" as const,
+  type: 'spring' as const,
   stiffness: 150,
   damping: 25,
   mass: 1,
 };
 
-export default function CoverflowCarousel({
-  products,
-}: {
-  products: Product[];
-}) {
-  const [activeIndex, setActiveIndex] = useState(
-    Math.floor(products.length / 2)
-  );
+export default function CoverflowCarousel({ products }: { products: Product[] }) {
+  const [activeIndex, setActiveIndex] = useState(Math.floor(products.length / 2));
 
-  const handleNext = () =>
-    setActiveIndex((prev) => (prev + 1) % products.length);
-  const handlePrev = () =>
-    setActiveIndex((prev) => (prev - 1 + products.length) % products.length);
+  const handleNext = () => setActiveIndex((prev) => (prev + 1) % products.length);
+  const handlePrev = () => setActiveIndex((prev) => (prev - 1 + products.length) % products.length);
 
   const getVariant = (index: number) => {
     const total = products.length;
@@ -43,12 +35,12 @@ export default function CoverflowCarousel({
 
     if (offset === 0) {
       return {
-        x: "0%",
+        x: '0%',
         scale: 1,
         rotateY: 0,
         zIndex: 50,
         opacity: 1,
-        filter: "brightness(1) blur(0px)",
+        filter: 'brightness(1) blur(0px)',
       };
     }
     if (Math.abs(offset) === 1) {
@@ -59,7 +51,7 @@ export default function CoverflowCarousel({
         rotateY: `${dir * -40}deg`,
         zIndex: 40,
         opacity: 0.8,
-        filter: "brightness(0.8) blur(1px)",
+        filter: 'brightness(0.8) blur(1px)',
       };
     }
     if (Math.abs(offset) === 2) {
@@ -70,7 +62,7 @@ export default function CoverflowCarousel({
         rotateY: `${dir * -55}deg`,
         zIndex: 30,
         opacity: 0.6,
-        filter: "brightness(0.35) blur(3px)",
+        filter: 'brightness(0.35) blur(3px)',
       };
     }
     const dir = Math.sign(offset);
@@ -80,14 +72,14 @@ export default function CoverflowCarousel({
       rotateY: `${dir * -65}deg`,
       zIndex: 10,
       opacity: 0,
-      filter: "brightness(0.2) blur(6px)",
+      filter: 'brightness(0.2) blur(6px)',
     };
   };
 
   return (
-    <div className="relative w-full flex flex-col items-center justify-center">
+    <div className="relative flex w-full flex-col items-center justify-center">
       {/* 3D STAGE CONTAINER */}
-      <div className="relative w-full max-w-6xl h-112 flex items-center justify-center perspective-distant">
+      <div className="relative flex h-112 w-full max-w-6xl items-center justify-center perspective-distant">
         <AnimatePresence mode="popLayout">
           {products.map((product, index) => {
             const variant = getVariant(index);
@@ -99,19 +91,19 @@ export default function CoverflowCarousel({
                 animate={variant}
                 initial={variant}
                 transition={transitionSpec}
-                className="absolute w-70 md:w-[320px] aspect-3/4 rounded-4xl overflow-hidden shadow-xl"
-                style={{ transformStyle: "preserve-3d" }}
+                className="absolute aspect-3/4 w-70 overflow-hidden rounded-4xl shadow-xl md:w-[320px]"
+                style={{ transformStyle: 'preserve-3d' }}
                 onClick={() => !isActive && setActiveIndex(index)}
               >
                 {isActive ? (
                   <Link
                     href={`/product/${product.slug}`}
-                    className="block w-full h-full cursor-pointer"
+                    className="block h-full w-full cursor-pointer"
                   >
                     <CardContent product={product} isActive={isActive} />
                   </Link>
                 ) : (
-                  <div className="w-full h-full cursor-pointer">
+                  <div className="h-full w-full cursor-pointer">
                     <CardContent product={product} isActive={isActive} />
                   </div>
                 )}
@@ -122,18 +114,18 @@ export default function CoverflowCarousel({
       </div>
 
       {/* CONTROLS */}
-      <div className="flex gap-10 sm:mt-10 z-40">
+      <div className="z-40 flex gap-10 sm:mt-10">
         <button
           onClick={handlePrev}
-          className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-95"
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white transition-all hover:bg-white hover:text-black active:scale-95"
         >
-          <ArrowLeftIcon className="w-5 h-5" />
+          <ArrowLeftIcon className="h-5 w-5" />
         </button>
         <button
           onClick={handleNext}
-          className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-95"
+          className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white transition-all hover:bg-white hover:text-black active:scale-95"
         >
-          <ArrowRightIcon className="w-5 h-5" />
+          <ArrowRightIcon className="h-5 w-5" />
         </button>
       </div>
     </div>
@@ -141,15 +133,9 @@ export default function CoverflowCarousel({
 }
 
 // Sub-component for cleaner code
-function CardContent({
-  product,
-  isActive,
-}: {
-  product: Product;
-  isActive: boolean;
-}) {
+function CardContent({ product, isActive }: { product: Product; isActive: boolean }) {
   return (
-    <div className="relative w-full h-full">
+    <div className="relative h-full w-full">
       <Image
         src={product.image}
         alt={product.title}
@@ -159,10 +145,8 @@ function CardContent({
         priority={isActive}
       />
       {/* Optional Title Overlay on Hover */}
-      <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-end p-6">
-        <p className="text-white font-bold uppercase text-xs tracking-widest">
-          {product.title}
-        </p>
+      <div className="absolute inset-0 flex items-end bg-black/20 p-6 opacity-0 transition-opacity hover:opacity-100">
+        <p className="text-xs font-bold tracking-widest text-white uppercase">{product.title}</p>
       </div>
     </div>
   );

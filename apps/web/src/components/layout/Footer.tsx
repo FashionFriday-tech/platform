@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import { useState } from "react";
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
 import {
   FacebookIcon,
   InstagramIcon,
@@ -10,107 +10,105 @@ import {
   TwitterIcon,
   ChevronUpIcon,
   ArrowUpRightIcon,
-} from "@ff/ui";
+} from '@ff/ui';
 
 const FOOTER_SECTIONS = [
   {
-    title: "Shop",
+    title: 'Shop',
     links: [
-      { name: "New Arrivals", href: "/new-arrivals" },
-      { name: "Best Sellers", href: "/best-sellers" },
-      { name: "Men", href: "/men" },
-      { name: "Women", href: "/women" },
-      { name: "Accessories", href: "/accessories" },
-      { name: "Footwear", href: "/footwear" },
-      { name: "Gift Cards", href: "/gift-cards" },
+      { name: 'New Arrivals', href: '/new-arrivals' },
+      { name: 'Best Sellers', href: '/best-sellers' },
+      { name: 'Men', href: '/men' },
+      { name: 'Women', href: '/women' },
+      { name: 'Accessories', href: '/accessories' },
+      { name: 'Footwear', href: '/footwear' },
+      { name: 'Gift Cards', href: '/gift-cards' },
     ],
   },
   {
-    title: "Customer Care",
+    title: 'Customer Care',
     links: [
-      { name: "Contact Us", href: "/contact" },
-      { name: "Track Order", href: "/track-order" },
-      { name: "Returns & Exchanges", href: "/returns" },
-      { name: "Shipping Info", href: "/shipping" },
-      { name: "Size Guide", href: "/size-guide" },
-      { name: "Payment Options", href: "/payment-options" },
-      { name: "FAQs", href: "/faq" },
+      { name: 'Contact Us', href: '/contact' },
+      { name: 'Track Order', href: '/track-order' },
+      { name: 'Returns & Exchanges', href: '/returns' },
+      { name: 'Shipping Info', href: '/shipping' },
+      { name: 'Size Guide', href: '/size-guide' },
+      { name: 'Payment Options', href: '/payment-options' },
+      { name: 'FAQs', href: '/faq' },
     ],
   },
   {
-    title: "Company",
+    title: 'Company',
     links: [
-      { name: "About Us", href: "/about" },
-      { name: "Our Story", href: "/our-story" },
-      { name: "Careers", href: "/careers" },
-      { name: "Press & Media", href: "/press" },
-      { name: "Sustainability", href: "/sustainability" },
-      { name: "Store Locator", href: "/store-locator" },
-      { name: "Affiliates", href: "/affiliates" },
+      { name: 'About Us', href: '/about' },
+      { name: 'Our Story', href: '/our-story' },
+      { name: 'Careers', href: '/careers' },
+      { name: 'Press & Media', href: '/press' },
+      { name: 'Sustainability', href: '/sustainability' },
+      { name: 'Store Locator', href: '/store-locator' },
+      { name: 'Affiliates', href: '/affiliates' },
     ],
   },
   {
-    title: "Legal",
+    title: 'Legal',
     links: [
-      { name: "Privacy Policy", href: "/privacy-policy" },
-      { name: "Terms & Conditions", href: "/terms" },
-      { name: "Refund Policy", href: "/refund-policy" },
-      { name: "Shipping Policy", href: "/shipping-policy" },
-      { name: "Cookie Policy", href: "/cookie-policy" },
-      { name: "Disclaimer", href: "/disclaimer" },
+      { name: 'Privacy Policy', href: '/privacy-policy' },
+      { name: 'Terms & Conditions', href: '/terms' },
+      { name: 'Refund Policy', href: '/refund-policy' },
+      { name: 'Shipping Policy', href: '/shipping-policy' },
+      { name: 'Cookie Policy', href: '/cookie-policy' },
+      { name: 'Disclaimer', href: '/disclaimer' },
     ],
   },
 ];
 
 const SOCIAL_LINKS = [
-  { icon: FacebookIcon, href: "https://fashionfriday.in" },
-  { icon: InstagramIcon, href: "https://instagram.com/fashionfriday.in" },
-  { icon: YoutubeIcon, href: "https://Youtube.com/fashionfriday.store" },
-  { icon: TwitterIcon, href: "https://x.com/fashionfriday.in" },
+  { icon: FacebookIcon, href: 'https://fashionfriday.in' },
+  { icon: InstagramIcon, href: 'https://instagram.com/fashionfriday.in' },
+  { icon: YoutubeIcon, href: 'https://Youtube.com/fashionfriday.store' },
+  { icon: TwitterIcon, href: 'https://x.com/fashionfriday.in' },
 ];
 
 export default function Footer() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <footer className="w-full flex flex-col mb-14 sm:mb-0">
+    <footer className="mb-14 flex w-full flex-col sm:mb-0">
       <button
         type="button"
-        className="flex mt-0.5 py-4 justify-center items-center gap-2 bg-background text-forground w-full transition-colors border-y border-foreground"
+        className="bg-background text-forground border-foreground mt-0.5 flex w-full items-center justify-center gap-2 border-y py-4 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
       >
         <span>More about Online Shopping at Fashion Friday</span>
         <ChevronUpIcon
-          className={`transition-transform duration-500 ${
-            isOpen ? "rotate-0" : "rotate-180"
-          }`}
+          className={`transition-transform duration-500 ${isOpen ? 'rotate-0' : 'rotate-180'}`}
         />
       </button>
 
       {isOpen && (
-        <div className="text-black pt-16 pb-8 px-6 md:px-12 animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="flex flex-col xl:flex-row mb-16 gap-12 xl:gap-20">
-            <div className="flex flex-col items-center text-center xl:items-start xl:text-start shrink-0">
+        <div className="animate-in fade-in slide-in-from-top-4 px-6 pt-16 pb-8 text-black duration-300 md:px-12">
+          <div className="mb-16 flex flex-col gap-12 xl:flex-row xl:gap-20">
+            <div className="flex shrink-0 flex-col items-center text-center xl:items-start xl:text-start">
               <Image
                 src="/images/logos/ff-logo2.png"
                 alt="Fashion Friday"
                 width={144}
                 height={40}
-                className="w-36 mb-8 invert dark:invert-0"
+                className="mb-8 w-36 invert dark:invert-0"
               />
-              <p className="text-foreground-muted text-sm leading-relaxed max-w-sm">
-                Experience the Great Outdoors in Style with Fashion Friday. Shop
-                now and gear up for adventure in Fashion Friday!
+              <p className="text-foreground-muted max-w-sm text-sm leading-relaxed">
+                Experience the Great Outdoors in Style with Fashion Friday. Shop now and gear up for
+                adventure in Fashion Friday!
               </p>
-              <div className="flex gap-4 mt-8">
+              <div className="mt-8 flex gap-4">
                 {SOCIAL_LINKS.map((social, index) => (
                   <Link
                     key={index}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-blackground hover:bg-forground text-foreground hover:text-background border p-2 rounded-full transition-colors"
+                    className="bg-blackground hover:bg-forground text-foreground hover:text-background rounded-full border p-2 transition-colors"
                   >
                     <social.icon size={18} />
                   </Link>
@@ -118,18 +116,16 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 w-full gap-8 md:gap-4">
+            <div className="grid w-full grid-cols-2 gap-8 md:grid-cols-4 md:gap-4">
               {FOOTER_SECTIONS.map((section) => (
-                <div key={section.title} className="flex flex-col text-foreground">
-                  <h3 className="font-semibold text-lg mb-6">
-                    {section.title}
-                  </h3>
+                <div key={section.title} className="text-foreground flex flex-col">
+                  <h3 className="mb-6 text-lg font-semibold">{section.title}</h3>
                   <ul className="space-y-3">
                     {section.links.map((link) => (
                       <li key={link.name}>
                         <Link
                           href={link.href}
-                          className="group flex gap-2 text-sm text-foreground-muted transition-colors items-center"
+                          className="group text-foreground-muted flex items-center gap-2 text-sm transition-colors"
                         >
                           {link.name}
 
@@ -146,17 +142,12 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="text-foreground-muted flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-200 gap-2">
+          <div className="text-foreground-muted flex flex-col items-center justify-between gap-2 border-t border-gray-200 pt-8 md:flex-row">
             <div className="text-sm">
-              &copy; {new Date().getFullYear()} Fashion Friday - All Rights
-              Reserved
+              &copy; {new Date().getFullYear()} Fashion Friday - All Rights Reserved
             </div>
             <div className="transition-colors">
-              <a
-                href="https://unity11solutions.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="https://unity11solutions.com" target="_blank" rel="noopener noreferrer">
                 Design & Development by <span className="underline">Unity11</span>
               </a>
             </div>

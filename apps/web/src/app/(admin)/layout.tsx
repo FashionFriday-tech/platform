@@ -1,15 +1,14 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 export const metadata = {
-  title: "Admin Dashboard | Fashion Friday",
-  description:
-    "Manage products, orders, users, and analytics from the Fashion Friday admin panel.",
+  title: 'Admin Dashboard | Fashion Friday',
+  description: 'Manage products, orders, users, and analytics from the Fashion Friday admin panel.',
   openGraph: {
-    title: "Admin Dashboard | Fashion Friday",
+    title: 'Admin Dashboard | Fashion Friday',
     description:
-      "Access product management, order tracking, user accounts, and analytics for Fashion Friday.",
-    type: "website",
-    url: "https://www.fashionfriday.in/admin",
+      'Access product management, order tracking, user accounts, and analytics for Fashion Friday.',
+    type: 'website',
+    url: 'https://www.fashionfriday.in/admin',
   },
 };
 

@@ -1,8 +1,8 @@
 // src/app/product/[slug]/page.tsx
-import { Metadata } from "next";
-import { getProductBySlug, getSimilarProducts } from "@/data/filter-engine";
-import ProductPageMaster from "@/features/product";
-import EditorialError from "@/features/product/components/editorial-error";
+import { Metadata } from 'next';
+import { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
+import ProductPageMaster from '@/features/product';
+import EditorialError from '@/features/product/components/editorial-error';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -16,7 +16,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await getProductBySlug(slug);
 
-  if (!product) return { title: "Product Not Found" };
+  if (!product) return { title: 'Product Not Found' };
 
   return {
     title: `${product.name} | Premium ${product.attributes.quality} Store`,
@@ -32,11 +32,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
 
@@ -48,7 +44,5 @@ export default async function Page({
   // 3. Data Fetching with exclusion logic (Fixes TS Error 2554)
   const similarProducts = await getSimilarProducts(product.category, product.id);
 
-  return (
-    <ProductPageMaster product={product} similarProducts={similarProducts} />
-  );
+  return <ProductPageMaster product={product} similarProducts={similarProducts} />;
 }

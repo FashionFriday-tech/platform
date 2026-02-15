@@ -1,26 +1,26 @@
-import Image from "next/image";
-import Link from "next/link";
-import ImageCarousel from "@/components/ui/sections/ImageCarousel";
+import Image from 'next/image';
+import Link from 'next/link';
+import ImageCarousel from '@/components/ui/sections/ImageCarousel';
 
 export default function Hero() {
   return (
     // OUTER SECTION: Padding around the grid
-    <section className="w-full min-h-screen p-2 pb-6 lg:p-6 lg:mt-18">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[80vh] SM:mt-18 lg:h-[95vh]">
-        <div className="lg:col-span-6 relative h-125 lg:h-full rounded-4xl group w-full">
-         <ImageCarousel />
+    <section className="min-h-screen w-full p-2 pb-6 lg:mt-18 lg:p-6">
+      <div className="SM:mt-18 grid min-h-[80vh] grid-cols-1 gap-4 lg:h-[95vh] lg:grid-cols-12">
+        <div className="group relative h-125 w-full rounded-4xl lg:col-span-6 lg:h-full">
+          <ImageCarousel />
         </div>
-        <div className="lg:col-span-6 flex flex-col gap-4 h-full">
-          <div className="min-h-50 grow p-8 lg:p-12 rounded-4xl flex flex-col justify-center relative overflow-hidden">
+        <div className="flex h-full flex-col gap-4 lg:col-span-6">
+          <div className="relative flex min-h-50 grow flex-col justify-center overflow-hidden rounded-4xl p-8 lg:p-12">
             <Image
-                src="/images/hero/hero-grid1.png"
-                alt="Accessories Collection"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
+              src="/images/hero/hero-grid1.png"
+              alt="Accessories Collection"
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
           </div>
-          <div className="grid grid-cols-2 gap-4  h-50 lg:h-[50%] shrink-0">
-            <div className="relative rounded-4xl overflow-hidden group w-full h-full">
+          <div className="grid h-50 shrink-0 grid-cols-2 gap-4 lg:h-[50%]">
+            <div className="group relative h-full w-full overflow-hidden rounded-4xl">
               <Image
                 src="/images/hero/hero-grid1.png"
                 alt="Accessories Collection"
@@ -29,7 +29,7 @@ export default function Hero() {
               />
             </div>
 
-            <div className="relative rounded-4xl overflow-hidden group w-full h-full">
+            <div className="group relative h-full w-full overflow-hidden rounded-4xl">
               <Image
                 src="/images/hero/hero-grid2.png"
                 alt="Insulated Gear"
@@ -43,5 +43,3 @@ export default function Hero() {
     </section>
   );
 }
-
-

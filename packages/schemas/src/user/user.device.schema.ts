@@ -1,30 +1,18 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * Device identity fields (client-provided)
  */
 const DeviceIdentityCore = z.object({
-  deviceId: z
-    .string()
-    .min(10, { message: "Device ID must be at least 10 characters" }),
+  deviceId: z.string().min(10, { message: 'Device ID must be at least 10 characters' }),
 
-  deviceName: z
-    .string()
-    .min(2, { message: "Device name must be at least 2 characters" })
-    .trim(),
+  deviceName: z.string().min(2, { message: 'Device name must be at least 2 characters' }).trim(),
 
-  platform: z
-    .enum(["WEB", "ANDROID", "IOS"])
-    .optional(),
+  platform: z.enum(['WEB', 'ANDROID', 'IOS']).optional(),
 
-  userAgent: z
-    .string()
-    .optional(),
+  userAgent: z.string().optional(),
 
-  ipAddress: z
-    .string()
-    .ip({ message: "Invalid IP address" })
-    .optional(),
+  ipAddress: z.string().ip({ message: 'Invalid IP address' }).optional(),
 });
 
 /**

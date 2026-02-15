@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-const FASHION_KEYWORDS = [
-  "Search by brands",
-  "Search by model's name",
-  "Search by category",
-];
+const FASHION_KEYWORDS = ['Search by brands', "Search by model's name", 'Search by category'];
 
 export const SearchInput = ({ query, setQuery, onSave }: any) => {
   const [index, setIndex] = useState(0);
-  const [placeholder, setPlaceholder] = useState("");
+  const [placeholder, setPlaceholder] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fullText = FASHION_KEYWORDS[index];
-    const timeout = setTimeout(() => {
-      setPlaceholder(isDeleting 
-        ? fullText.substring(0, placeholder.length - 1) 
-        : fullText.substring(0, placeholder.length + 1)
-      );
+    const timeout = setTimeout(
+      () => {
+        setPlaceholder(
+          isDeleting
+            ? fullText.substring(0, placeholder.length - 1)
+            : fullText.substring(0, placeholder.length + 1),
+        );
 
-      if (!isDeleting && placeholder === fullText) {
-        setTimeout(() => setIsDeleting(true), 1000);
-      } else if (isDeleting && placeholder === "") {
-        setIsDeleting(false);
-        setIndex((prev) => (prev + 1) % FASHION_KEYWORDS.length);
-      }
-    }, isDeleting ? 20 : 50);
+        if (!isDeleting && placeholder === fullText) {
+          setTimeout(() => setIsDeleting(true), 1000);
+        } else if (isDeleting && placeholder === '') {
+          setIsDeleting(false);
+          setIndex((prev) => (prev + 1) % FASHION_KEYWORDS.length);
+        }
+      },
+      isDeleting ? 20 : 50,
+    );
 
     return () => clearTimeout(timeout);
   }, [placeholder, isDeleting, index]);
@@ -35,9 +35,9 @@ export const SearchInput = ({ query, setQuery, onSave }: any) => {
       type="text"
       value={query}
       onChange={(e) => setQuery(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && query.trim() && (onSave(query), setQuery(""))}
+      onKeyDown={(e) => e.key === 'Enter' && query.trim() && (onSave(query), setQuery(''))}
       placeholder={placeholder}
-      className="w-full text-2xl md:text-4xl italic tracking-tighter font-black uppercase bg-transparent py-6 border-b-4 border-white/10 outline-none transition-all placeholder:text-white/20"
+      className="w-full border-b-4 border-white/10 bg-transparent py-6 text-2xl font-black tracking-tighter uppercase italic transition-all outline-none placeholder:text-white/20 md:text-4xl"
       autoFocus
     />
   );

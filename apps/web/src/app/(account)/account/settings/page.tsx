@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useSettings } from "@/context/SettingsContext";
-import { useRouter } from "next/navigation";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSettings } from '@/context/SettingsContext';
+import { useRouter } from 'next/navigation';
 
 import {
   BellIcon,
@@ -18,8 +18,8 @@ import {
   TrashIcon,
   AlertTriangleIcon,
   CloseIcon,
-} from "@ff/ui";
-import { AnimatedThemeToggler } from "@/components/ui/magicUi/animated-theme-toggler";
+} from '@ff/ui';
+import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -33,23 +33,23 @@ export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
   const scrollLevel = settings.autoScrollLevel;
 
-const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
+  const speedLabels = ['Lvl 1', 'Lvl 2', 'Lvl 3', 'Lvl 4', 'Lvl 5'];
   return (
-    <div className="min-h-screen bg-[#F9F9F9] dark:bg-black text-foreground transition-colors duration-500 pb-20">
-      <main className="mx-auto max-w-2xl px-4 pt-12 space-y-10">
+    <div className="text-foreground min-h-screen bg-[#F9F9F9] pb-20 transition-colors duration-500 dark:bg-black">
+      <main className="mx-auto max-w-2xl space-y-10 px-4 pt-12">
         {/* Profile Identity */}
         <section
-          onClick={() => router.push("/account/profile")}
-          className="bg-background rounded-[2.5rem] p-8 flex items-center gap-5 shadow-sm border border-border/40"
+          onClick={() => router.push('/account/profile')}
+          className="bg-background border-border/40 flex items-center gap-5 rounded-[2.5rem] border p-8 shadow-sm"
         >
-          <div className="w-20 h-20 rounded-full bg-foreground flex items-center justify-center text-background text-3xl font-black italic uppercase">
+          <div className="bg-foreground text-background flex h-20 w-20 items-center justify-center rounded-full text-3xl font-black uppercase italic">
             AF
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-black tracking-tight leading-none italic uppercase">
+            <h2 className="text-xl leading-none font-black tracking-tight uppercase italic">
               Ajmal Faris
             </h2>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-foreground-subtle mt-2 opacity-60">
+            <p className="text-foreground-subtle mt-2 text-[10px] font-bold tracking-widest uppercase opacity-60">
               ajmalfaris@gmail.com
             </p>
           </div>
@@ -58,16 +58,16 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
 
         {/* Interaction Group */}
         <div className="space-y-3">
-          <p className="px-6 text-[10px] font-black uppercase tracking-[0.3em] text-foreground-subtle opacity-60">
+          <p className="text-foreground-subtle px-6 text-[10px] font-black tracking-[0.3em] uppercase opacity-60">
             Interaction
           </p>
-          <div className="bg-background rounded-[2rem] overflow-hidden border border-border/40 shadow-sm divide-y divide-border/20">
-            <div className="p-6 flex items-center justify-between">
+          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-[2rem] border shadow-sm">
+            <div className="flex items-center justify-between p-6">
               <div className="flex items-center gap-4 text-left">
-                <div className="p-3 rounded-2xl bg-foreground text-background">
+                <div className="bg-foreground text-background rounded-2xl p-3">
                   <MoonIcon size={20} />
                 </div>
-                <span className="text-sm font-black uppercase tracking-tight italic">
+                <span className="text-sm font-black tracking-tight uppercase italic">
                   Dark Mode
                 </span>
               </div>
@@ -75,24 +75,24 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
             </div>
 
             {/* 5-Stage Scroll Control */}
-            <div className="p-6 space-y-8">
+            <div className="space-y-8 p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 text-left">
-                  <div className="p-3 rounded-2xl bg-foreground text-background">
+                  <div className="bg-foreground text-background rounded-2xl p-3">
                     <MousePointerIcon size={20} />
                   </div>
                   <div className="flex-1">
-                    <span className="text-sm font-black uppercase tracking-tight italic">
+                    <span className="text-sm font-black tracking-tight uppercase italic">
                       Auto-Scroll Level
                     </span>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-foreground-subtle mt-1">
+                    <p className="text-foreground-subtle mt-1 text-[9px] font-bold tracking-widest uppercase">
                       Mechanical speed calibration
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="px-2 space-y-4">
+              <div className="space-y-4 px-2">
                 <input
                   type="range"
                   min="1"
@@ -104,17 +104,14 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
                       autoScrollLevel: Number(e.target.value),
                     })
                   }
-                  className="w-full h-1 bg-foreground/10 rounded-full appearance-none cursor-pointer accent-foreground"
+                  className="bg-foreground/10 accent-foreground h-1 w-full cursor-pointer appearance-none rounded-full"
                 />
                 <div className="flex justify-between px-1">
                   {speedLabels.map((label, i) => (
-                    <div
-                      key={label}
-                      className="flex flex-col items-center gap-2"
-                    >
+                    <div key={label} className="flex flex-col items-center gap-2">
                       <span
-                        className={`text-[7px] font-black uppercase tracking-widest transition-opacity ${
-                          scrollLevel === i + 1 ? "opacity-100" : "opacity-20"
+                        className={`text-[7px] font-black tracking-widest uppercase transition-opacity ${
+                          scrollLevel === i + 1 ? 'opacity-100' : 'opacity-20'
                         }`}
                       >
                         {label}
@@ -129,10 +126,10 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
 
         {/* Notification Settings */}
         <div className="space-y-3">
-          <p className="px-6 text-[10px] font-black uppercase tracking-[0.3em] text-foreground-subtle opacity-60">
+          <p className="text-foreground-subtle px-6 text-[10px] font-black tracking-[0.3em] uppercase opacity-60">
             Notification
           </p>
-          <div className="bg-background rounded-[2rem] overflow-hidden border border-border/40 shadow-sm divide-y divide-border/20">
+          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-[2rem] border shadow-sm">
             <SettingToggle
               icon={<BellIcon size={20} />}
               label="Order Logistics"
@@ -160,58 +157,45 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
 
         {/* Logistics Group */}
         <div className="space-y-3">
-          <p className="px-6 text-[10px] font-black uppercase tracking-[0.3em] text-foreground-subtle opacity-60">
+          <p className="text-foreground-subtle px-6 text-[10px] font-black tracking-[0.3em] uppercase opacity-60">
             Logistics & Security
           </p>
-          <div className="bg-background rounded-[2rem] overflow-hidden border border-border/40 shadow-sm divide-y divide-border/20">
-            <SettingLink
-              icon={<MapPinIcon size={20} />}
-              label="Shipping Addresses"
-            />
-            <SettingLink
-              icon={<CreditCardIcon size={20} />}
-              label="Stored Payment Assets"
-            />
-            <SettingLink
-              icon={<ShieldCheckIcon size={20} />}
-              label="Identity Verification"
-            />
+          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-[2rem] border shadow-sm">
+            <SettingLink icon={<MapPinIcon size={20} />} label="Shipping Addresses" />
+            <SettingLink icon={<CreditCardIcon size={20} />} label="Stored Payment Assets" />
+            <SettingLink icon={<ShieldCheckIcon size={20} />} label="Identity Verification" />
           </div>
         </div>
 
         {/* Destructive Options */}
-        <div className="pt-4 space-y-4">
-          <button className="w-full p-4 rounded-[2rem] bg-background border border-border flex items-center justify-between group active:scale-[0.98] transition-all">
+        <div className="space-y-4 pt-4">
+          <button className="bg-background border-border group flex w-full items-center justify-between rounded-[2rem] border p-4 transition-all active:scale-[0.98]">
             <div className="flex items-center gap-4 text-left">
-              <div className="p-3 rounded-2xl bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background transition-all">
+              <div className="bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background rounded-2xl p-3 transition-all">
                 <LogOutIcon size={20} />
               </div>
-              <span className="text-sm font-black uppercase tracking-tight italic">
-                Log Out
-              </span>
+              <span className="text-sm font-black tracking-tight uppercase italic">Log Out</span>
             </div>
             <ChevronRightIcon size={18} className="opacity-20" />
           </button>
 
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="w-full p-6 rounded-[2rem] bg-red-500/5 border border-red-500/20 text-red-600 flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
+            className="flex w-full items-center justify-center gap-3 rounded-[2rem] border border-red-500/20 bg-red-500/5 p-6 text-red-600 transition-all active:scale-[0.98]"
           >
             <TrashIcon size={18} />
-            <span className="text-[10px] font-black uppercase tracking-widest">
-              Delete Account
-            </span>
+            <span className="text-[10px] font-black tracking-widest uppercase">Delete Account</span>
           </button>
         </div>
 
         {/* Platform Info */}
-        <div className="py-10 text-center space-y-2 opacity-30">
-          <p className="text-[9px] font-black uppercase tracking-[0.5em] italic">
+        <div className="space-y-2 py-10 text-center opacity-30">
+          <p className="text-[9px] font-black tracking-[0.5em] uppercase italic">
             Fashion Friday v1.0
           </p>
           <a
             href="https://unity11-solutions.com"
-            className="text-[8px] font-bold uppercase tracking-widest"
+            className="text-[8px] font-bold tracking-widest uppercase"
           >
             Engineered by Unity11
           </a>
@@ -227,62 +211,61 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowDeleteModal(false)}
-              className="fixed inset-0 bg-background/80 backdrop-blur-xl z-[100]"
+              className="bg-background/80 fixed inset-0 z-[100] backdrop-blur-xl"
             />
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="fixed bottom-0 lg:bottom-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 w-full max-w-xl bg-background border-t lg:border border-border rounded-t-[3.5rem] lg:rounded-[3rem] p-10 lg:p-12 z-[110] shadow-2xl"
+              className="bg-background border-border fixed bottom-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:bottom-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
             >
-              <div className="flex justify-between items-start mb-8">
-                <div className="p-4 bg-red-600 text-white rounded-3xl shadow-xl shadow-red-600/20">
+              <div className="mb-8 flex items-start justify-between">
+                <div className="rounded-3xl bg-red-600 p-4 text-white shadow-xl shadow-red-600/20">
                   <AlertTriangleIcon size={32} />
                 </div>
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="p-2 hover:bg-muted rounded-full transition-colors"
+                  className="hover:bg-muted rounded-full p-2 transition-colors"
                 >
                   <CloseIcon size={24} />
                 </button>
               </div>
 
               <div className="space-y-6">
-                <h3 className="text-3xl font-black uppercase tracking-tighter italic">
+                <h3 className="text-3xl font-black tracking-tighter uppercase italic">
                   Permanent Wipe
                 </h3>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-foreground-subtle leading-loose">
-                  Deleting your account will purge all personal data from the
-                  **Fashion Friday** database. This is an irreversible action
-                  that clears:
+                <p className="text-foreground-subtle text-[10px] leading-loose font-bold tracking-widest uppercase">
+                  Deleting your account will purge all personal data from the **Fashion Friday**
+                  database. This is an irreversible action that clears:
                 </p>
 
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6">
+                <ul className="grid grid-cols-1 gap-x-6 gap-y-3 md:grid-cols-2">
                   {[
-                    "Complete Order History",
-                    "Stored Referral Credits",
-                    "Verified Shipping Addresses",
-                    "Stored Payment Methods",
-                    "Wishlists & Favorites",
-                    "Phone & KYC Verification",
+                    'Complete Order History',
+                    'Stored Referral Credits',
+                    'Verified Shipping Addresses',
+                    'Stored Payment Methods',
+                    'Wishlists & Favorites',
+                    'Phone & KYC Verification',
                   ].map((item, i) => (
                     <li
                       key={i}
-                      className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-red-600/60"
+                      className="flex items-center gap-3 text-[9px] font-black tracking-widest text-red-600/60 uppercase"
                     >
-                      <div className="w-1 h-1 bg-red-600 rounded-full" />
+                      <div className="h-1 w-1 rounded-full bg-red-600" />
                       {item}
                     </li>
                   ))}
                 </ul>
 
-                <div className="pt-8 space-y-3">
-                  <button className="w-full py-5 rounded-full bg-red-600 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-red-600/30 active:scale-95 transition-all">
+                <div className="space-y-3 pt-8">
+                  <button className="w-full rounded-full bg-red-600 py-5 text-[10px] font-black tracking-widest text-white uppercase shadow-2xl shadow-red-600/30 transition-all active:scale-95">
                     I Understand, Delete All Data
                   </button>
                   <button
                     onClick={() => setShowDeleteModal(false)}
-                    className="w-full py-5 rounded-full bg-foreground text-background font-black uppercase tracking-widest text-[10px]"
+                    className="bg-foreground text-background w-full rounded-full py-5 text-[10px] font-black tracking-widest uppercase"
                   >
                     Cancel & Protect My Account
                   </button>
@@ -300,26 +283,19 @@ const speedLabels = ["Lvl 1", "Lvl 2", "Lvl 3", "Lvl 4", "Lvl 5"];
 
 function SettingToggle({ icon, label, active, onToggle }: any) {
   return (
-    <div
-      className="p-6 flex items-center justify-between cursor-pointer"
-      onClick={onToggle}
-    >
+    <div className="flex cursor-pointer items-center justify-between p-6" onClick={onToggle}>
       <div className="flex items-center gap-4 text-left">
-        <div className="p-3 rounded-2xl bg-foreground text-background transition-all">
-          {icon}
-        </div>
-        <span className="text-sm font-black uppercase tracking-tight italic">
-          {label}
-        </span>
+        <div className="bg-foreground text-background rounded-2xl p-3 transition-all">{icon}</div>
+        <span className="text-sm font-black tracking-tight uppercase italic">{label}</span>
       </div>
       <div
-        className={`w-12 h-7 rounded-full transition-all flex items-center px-1.5 ${
-          active ? "bg-foreground" : "bg-foreground/10"
+        className={`flex h-7 w-12 items-center rounded-full px-1.5 transition-all ${
+          active ? 'bg-foreground' : 'bg-foreground/10'
         }`}
       >
         <motion.div
           animate={{ x: active ? 20 : 0 }}
-          className="w-4 h-4 rounded-full bg-background shadow-sm"
+          className="bg-background h-4 w-4 rounded-full shadow-sm"
         />
       </div>
     </div>
@@ -328,12 +304,10 @@ function SettingToggle({ icon, label, active, onToggle }: any) {
 
 function SettingLink({ icon, label }: any) {
   return (
-    <div className="p-6 flex items-center justify-between cursor-pointer group hover:bg-foreground/5 transition-colors text-left">
+    <div className="group hover:bg-foreground/5 flex cursor-pointer items-center justify-between p-6 text-left transition-colors">
       <div className="flex items-center gap-4">
-        <div className="p-3 rounded-2xl bg-foreground text-background">
-          {icon}
-        </div>
-        <span className="text-sm font-black uppercase tracking-tight italic group-hover:translate-x-1 transition-transform">
+        <div className="bg-foreground text-background rounded-2xl p-3">{icon}</div>
+        <span className="text-sm font-black tracking-tight uppercase italic transition-transform group-hover:translate-x-1">
           {label}
         </span>
       </div>

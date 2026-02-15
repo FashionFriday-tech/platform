@@ -9,10 +9,11 @@ export function EmptyWishlist() {
       </div>
       <h2 className="text-2xl font-bold tracking-tight text-gray-900">Your wishlist is empty</h2>
       <p className="mt-2 max-w-sm text-gray-500">
-        Looks like you haven't found anything yet. Explore our latest collections to find your new look.
+        Looks like you haven't found anything yet. Explore our latest collections to find your new
+        look.
       </p>
-      <Link 
-        href="/shop" 
+      <Link
+        href="/shop"
         className="mt-8 rounded-full bg-black px-8 py-3 text-sm font-semibold text-white transition-transform hover:scale-105 hover:bg-gray-800"
       >
         Start Shopping

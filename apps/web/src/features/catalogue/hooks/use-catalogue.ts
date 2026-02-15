@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { Product} from "@ff/schemas";
-import { filterProducts } from "@/data/filter-engine";
-import { useSettings } from "@/context/SettingsContext";
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { Product } from '@ff/schemas';
+import { filterProducts } from '@/data/filter-engine';
+import { useSettings } from '@/context/SettingsContext';
 
 interface UseCatalogueProps {
   initialProducts: Product[];
@@ -10,16 +10,16 @@ interface UseCatalogueProps {
 
 export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalogueProps) => {
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters);
-  const [sortBy, setSortBy] = useState<string>("newest");
+  const [sortBy, setSortBy] = useState<string>('newest');
 
   // --- AUTO-SCROLL ENGINE ---
   const { settings } = useSettings();
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const scrollRef = useRef<number | null>(null);
-  
+
   // Use a ref for the speed so the animation loop always has the latest value
   const speedRef = useRef(settings?.autoScrollLevel ?? 3);
-  
+
   useEffect(() => {
     speedRef.current = settings?.autoScrollLevel ?? 3;
   }, [settings?.autoScrollLevel]);
@@ -46,11 +46,10 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
       // If the state was set to false, do not schedule next frame
       if (scrollRef.current === null) return;
 
-      window.scrollBy({ top: speedRef.current, behavior: "auto" });
+      window.scrollBy({ top: speedRef.current, behavior: 'auto' });
 
       const isAtBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 10;
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10;
 
       if (isAtBottom) {
         stopAutoScroll();
@@ -73,16 +72,16 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
     };
 
     // Capture phase listeners (true) ensure we catch the event before other logic
-    window.addEventListener("wheel", handleInteraction, { passive: true, capture: true });
-    window.addEventListener("touchstart", handleInteraction, { passive: true, capture: true });
-    window.addEventListener("mousedown", handleInteraction, { passive: true, capture: true });
-    window.addEventListener("keydown", handleInteraction, { passive: true, capture: true });
+    window.addEventListener('wheel', handleInteraction, { passive: true, capture: true });
+    window.addEventListener('touchstart', handleInteraction, { passive: true, capture: true });
+    window.addEventListener('mousedown', handleInteraction, { passive: true, capture: true });
+    window.addEventListener('keydown', handleInteraction, { passive: true, capture: true });
 
     return () => {
-      window.removeEventListener("wheel", handleInteraction, true);
-      window.removeEventListener("touchstart", handleInteraction, true);
-      window.removeEventListener("mousedown", handleInteraction, true);
-      window.removeEventListener("keydown", handleInteraction, true);
+      window.removeEventListener('wheel', handleInteraction, true);
+      window.removeEventListener('touchstart', handleInteraction, true);
+      window.removeEventListener('mousedown', handleInteraction, true);
+      window.removeEventListener('keydown', handleInteraction, true);
       if (scrollRef.current) cancelAnimationFrame(scrollRef.current);
     };
   }, [stopAutoScroll]);
@@ -92,8 +91,12 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
     let result = filterProducts(initialProducts, activeFilters);
     const sorted = [...result];
     switch (sortBy) {
-      case "price-asc": sorted.sort((a, b) => a.price.sellingPrice - b.price.sellingPrice); break;
-      case "price-desc": sorted.sort((a, b) => b.price.sellingPrice - a.price.sellingPrice); break;
+      case 'price-asc':
+        sorted.sort((a, b) => a.price.sellingPrice - b.price.sellingPrice);
+        break;
+      case 'price-desc':
+        sorted.sort((a, b) => b.price.sellingPrice - a.price.sellingPrice);
+        break;
       // case "most-sold": sorted.sort((a, b) => b.salesCount - a.salesCount); break;
       // case "popularity": sorted.sort((a, b) => b.popularityScore - a.popularityScore); break;
       // default: sorted.sort((a, b) => b.staticNumber - a.staticNumber);
