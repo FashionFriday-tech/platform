@@ -1,43 +1,7 @@
-import {
-  HiOutlineAdjustmentsHorizontal,
-  HiOutlineArrowsUpDown,
-  HiOutlineArrowUpRight,
-  HiOutlineArrowDownLeft,
-} from 'react-icons/hi2';
-
-import {
-  RiArrowUpDownLine,
-  RiMenuSearchLine,
-  RiShieldStarFill,
-  RiVerifiedBadgeFill,
-} from 'react-icons/ri';
-
-import {
-  PiArrowsLeftRightLight,
-  PiMapPin,
-  PiShoppingBag,
-  PiShoppingBagOpen,
-  PiBriefcaseFill,
-} from 'react-icons/pi';
-
-import {
-  IoPlaySharp,
-  IoSquareSharp,
-  IoChevronDownOutline,
-  IoChevronForwardOutline,
-  IoChevronBackOutline,
-  IoChevronUpOutline,
-  IoHeart,
-} from 'react-icons/io5';
-
-import {
-  IoIosArrowDown,
-  IoIosArrowBack,
-  IoIosArrowForward,
-  IoIosDownload,
-  IoLogoApple,
-} from 'react-icons/io';
-
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { BiCategoryAlt, BiUser } from 'react-icons/bi';
+import { BsTags, BsShieldExclamation } from 'react-icons/bs';
+import { FaInfoCircle } from 'react-icons/fa';
 import {
   FiSearch,
   FiBell,
@@ -50,6 +14,7 @@ import {
   FiUsers,
   FiShare2,
   FiSend,
+  FiMail,
   FiCreditCard,
   FiImage,
   FiEye,
@@ -67,18 +32,41 @@ import {
   FiHeart,
   FiActivity,
 } from 'react-icons/fi';
-
 import { GiDiamondTrophy, GiLifeBuoy } from 'react-icons/gi';
-import { TfiCrown } from 'react-icons/tfi';
-import { BsTags, BsShieldExclamation } from 'react-icons/bs';
-
+import { GoHomeFill } from 'react-icons/go';
+import { GrFavorite } from 'react-icons/gr';
+import {
+  HiOutlineAdjustmentsHorizontal,
+  HiOutlineArrowsUpDown,
+  HiOutlineArrowUpRight,
+  HiOutlineArrowDownLeft,
+} from 'react-icons/hi2';
+import {
+  IoIosArrowDown,
+  IoIosArrowBack,
+  IoIosArrowForward,
+  IoIosDownload,
+  IoLogoApple,
+} from 'react-icons/io';
+import {
+  IoPlaySharp,
+  IoSquareSharp,
+  IoChevronDownOutline,
+  IoChevronForwardOutline,
+  IoChevronBackOutline,
+  IoChevronUpOutline,
+  IoHeart,
+} from 'react-icons/io5';
+import { LuHeartHandshake, LuShieldCheck } from 'react-icons/lu';
 import {
   MdHistory,
   MdClose,
   MdOutlineDeleteOutline,
+  MdOutlinePhone,
   MdOutlineModeEditOutline,
   MdCheck,
   MdOutlineAdd,
+  MdOutlineErrorOutline,
   MdOutlineLocalShipping,
   MdOutlineInventory2,
   MdOutlineCalendarMonth,
@@ -92,8 +80,11 @@ import {
   MdShoppingCart,
   MdStar,
   MdWarning,
+  MdChatBubble,
+  MdForum,
   MdTrendingUp,
   MdTrendingDown,
+  MdDescription,
   MdStorage,
   MdFindInPage,
   MdStraighten,
@@ -113,23 +104,21 @@ import {
   MdDarkMode,
   MdWbSunny,
   MdOpenInNew,
-  MdOutlineErrorOutline,
 } from 'react-icons/md';
-
-import { TbHeartMinus, TbHeartPlus } from 'react-icons/tb';
-import { FaInfoCircle } from 'react-icons/fa';
-import { SiInstagram, SiX, SiYoutube, SiFacebook } from 'react-icons/si';
-import { BiCategoryAlt, BiUser } from 'react-icons/bi';
-import { GrFavorite } from 'react-icons/gr';
-import { TiThMenuOutline } from 'react-icons/ti';
-import { LuHeartHandshake, LuShieldCheck } from 'react-icons/lu';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { PiArrowsLeftRightLight, PiMapPin, PiShoppingBag, PiBriefcaseFill } from 'react-icons/pi';
+import {
+  RiArrowUpDownLine,
+  RiMenuSearchLine,
+  RiShieldStarFill,
+  RiVerifiedBadgeFill,
+} from 'react-icons/ri';
 import { RxHamburgerMenu, RxStarFilled, RxStar } from 'react-icons/rx';
-import { GoHomeFill } from 'react-icons/go';
+import { SiInstagram, SiX, SiYoutube, SiFacebook } from 'react-icons/si';
+import { TbHeartMinus, TbHeartPlus } from 'react-icons/tb';
+import { TfiCrown } from 'react-icons/tfi';
+import { TiThMenuOutline } from 'react-icons/ti';
 
-/* ================================
-   NAVIGATION
-================================ */
+// NAVIGATION & ARROWS
 export const ArrowLeftIcon = IoChevronBackOutline;
 export const ArrowRightIcon = IoChevronForwardOutline;
 export const ArrowUpIcon = IoChevronUpOutline;
@@ -138,21 +127,20 @@ export const ArrowUpRightIcon = HiOutlineArrowUpRight;
 export const ArrowDownLeftIcon = HiOutlineArrowDownLeft;
 export const ArrowUpDownIcon = RiArrowUpDownLine;
 export const ArrowLeftRightIcon = PiArrowsLeftRightLight;
+export const ChevronLeftIcon = IoChevronBackOutline;
+export const ChevronRightIcon = IoChevronForwardOutline;
+export const ChevronUpIcon = IoChevronUpOutline;
+export const ChevronDownIcon = IoChevronDownOutline;
 
-/* ================================
-   SHOPPING
-================================ */
+// SHOPPING & COMMERCE
 export const ShoppingBagIcon = PiShoppingBag;
-export const ShoppingBagOpenIcon = PiShoppingBagOpen;
 export const ShoppingCartIcon = MdShoppingCart;
 export const PackageIcon = MdOutlineInventory2;
 export const TruckIcon = MdOutlineLocalShipping;
 export const GiftIcon = MdOutlineCardGiftcard;
 export const TagIcon = BsTags;
 
-/* ================================
-   FAVORITES
-================================ */
+// SOCIAL & FAVORITES
 export const HeartIcon = FiHeart;
 export const HeartFilledIcon = IoHeart;
 export const HeartPlusIcon = TbHeartPlus;
@@ -163,24 +151,18 @@ export const StarFilledIcon = MdStar;
 export const StarsIcon = MdStars;
 export const WishlistIcon = GrFavorite;
 
-/* ================================
-   SOCIAL
-================================ */
+// SOCIAL MEDIA
 export const InstagramIcon = SiInstagram;
 export const TwitterIcon = SiX;
 export const YoutubeIcon = SiYoutube;
 export const FacebookIcon = SiFacebook;
 
-/* ================================
-   USER
-================================ */
+// USER & ACCOUNT
 export const UserIcon = BiUser;
 export const UsersIcon = FiUsers;
 export const UserCheckIcon = MdVerifiedUser;
 
-/* ================================
-   ALERTS
-================================ */
+// NOTIFICATIONS & ALERTS
 export const BellIcon = FiBell;
 export const BellOffIcon = FiBellOff;
 export const AlertIcon = MdOutlineErrorOutline;
@@ -191,10 +173,9 @@ export const InfoCircleIcon = FaInfoCircle;
 export const HelpCircleIcon = FiHelpCircle;
 export const WarningIcon = MdWarning;
 
-/* ================================
-   ACTIONS
-================================ */
+// ACTIONS & CONTROLS
 export const PlayIcon = IoPlaySharp;
+export const PauseIcon = IoPlaySharp;
 export const StopIcon = IoSquareSharp;
 export const CheckIcon = MdCheck;
 export const CheckCircleIcon = MdOutlineCheckCircle;
@@ -203,6 +184,7 @@ export const PlusIcon = MdOutlineAdd;
 export const MinusIcon = FiMinus;
 export const EditIcon = MdOutlineModeEditOutline;
 export const DeleteIcon = MdOutlineDeleteOutline;
+export const TrashIcon = MdOutlineDeleteOutline;
 export const SaveIcon = MdOutlineSave;
 export const CopyIcon = FiCopy;
 export const ShareIcon = FiShare2;
@@ -210,70 +192,67 @@ export const SendIcon = FiSend;
 export const SearchIcon = FiSearch;
 export const FilterIcon = HiOutlineAdjustmentsHorizontal;
 export const SortIcon = HiOutlineArrowsUpDown;
+export const SlidersIcon = HiOutlineAdjustmentsHorizontal;
 
-/* ================================
-   MEDIA
-================================ */
+// MEDIA
 export const CameraIcon = MdOutlinePhotoCamera;
 export const ImageIcon = FiImage;
 
-/* ================================
-   LOCATION
-================================ */
+// LOCATION & MAPS
 export const MapPinIcon = PiMapPin;
 export const NavigationIcon = MdNavigation;
 export const GlobeIcon = MdExplore;
 
-/* ================================
-   TIME
-================================ */
+// TIME & CALENDAR
 export const ClockIcon = FiClock;
 export const CalendarIcon = MdOutlineCalendarMonth;
 export const HistoryIcon = MdHistory;
 
-/* ================================
-   PAYMENT
-================================ */
+// PAYMENT & FINANCE
 export const CreditCardIcon = FiCreditCard;
 export const WalletIcon = MdWallet;
+export const BanknoteIcon = FiCreditCard;
 
-/* ================================
-   SECURITY
-================================ */
+// SECURITY
 export const ShieldIcon = FiShield;
 export const ShieldCheckIcon = LuShieldCheck;
 export const ShieldAlertIcon = BsShieldExclamation;
 export const LockIcon = FiLock;
 
-/* ================================
-   UI
-================================ */
+// COMMUNICATION
+export const MailIcon = FiMail;
+export const PhoneIcon = MdOutlinePhone;
+export const MessageIcon = MdChatBubble;
+export const MessageSquareIcon = MdForum;
+
+// UI
 export const MenuIcon = TiThMenuOutline;
 export const HamburgerMenuIcon = RxHamburgerMenu;
 export const HomeIcon = GoHomeFill;
 export const SettingsIcon = FiSettings;
+export const Settings2Icon = FiSettings;
 export const LogOutIcon = FiLogOut;
 
-/* ================================
-   STATUS
-================================ */
+// STATUS & ACTIVITY
 export const LoaderIcon = AiOutlineLoading3Quarters;
 export const ActivityIcon = FiActivity;
 export const RefreshCcwIcon = FiRefreshCw;
 
-/* ================================
-   SPECIAL
-================================ */
+// SPECIAL
 export const ZapIcon = FiZap;
 export const CrownIcon = TfiCrown;
 export const SparklesIcon = MdOutlineAutoAwesome;
 export const TrophyIcon = GiDiamondTrophy;
 export const StarBadgeIcon = RiShieldStarFill;
 export const VerifiedIcon = RiVerifiedBadgeFill;
+export const VerifiedUserIcon = MdVerifiedUser;
 
-/* ================================
-   TOOLS
-================================ */
+// DOCUMENTS & FILES
+export const FileTextIcon = MdDescription;
+export const FileCheckIcon = MdOutlineCheckCircle;
+export const GavelIcon = MdDescription;
+
+// TOOLS
 export const ExternalLinkIcon = MdOpenInNew;
 export const RulerIcon = MdStraighten;
 export const ScaleIcon = MdScale;
@@ -285,24 +264,18 @@ export const FileSearchIcon = MdFindInPage;
 export const SearchListIcon = RiMenuSearchLine;
 export const CategoryIcon = BiCategoryAlt;
 
-/* ================================
-   CLOTHING
-================================ */
+// CLOTHING
 export const ShirtIcon = MdCheckroom;
 export const FootprintsIcon = MdDirectionsWalk;
 export const WatchIcon = MdWatch;
+export const SmartphoneIcon = MdOutlinePhone;
 
-/* ================================
-   BUSINESS
-================================ */
+// BUSINESS
 export const StoreIcon = MdStore;
 export const HandshakeIcon = LuHeartHandshake;
 export const LifeBuoyIcon = GiLifeBuoy;
-export const BriefcaseIcon = PiBriefcaseFill;
 
-/* ================================
-   MISC
-================================ */
+// MISC
 export const MousePointerIcon = MdMouse;
 export const MoveRightIcon = MdArrowForward;
 export const EyeIcon = FiEye;
@@ -311,23 +284,19 @@ export const DownloadIcon = FiDownload;
 export const UploadIcon = FiUpload;
 export const TrendingUpIcon = MdTrendingUp;
 export const TrendingDownIcon = MdTrendingDown;
+export const TicketPercentIcon = MdOutlineCardGiftcard;
 
-/* ================================
-   THEME
-================================ */
+// THEME
 export const MoonIcon = MdDarkMode;
 export const SunIcon = MdWbSunny;
 
-/* ================================
-   BRAND
-================================ */
+// BRAND
 export const AppleLogoIcon = IoLogoApple;
 export const DownloadIconIOS = IoIosDownload;
 export const ArrowDownIconIOS = IoIosArrowDown;
 export const ArrowBackIconIOS = IoIosArrowBack;
 export const ArrowForwardIconIOS = IoIosArrowForward;
 
-export type IconComponent = React.ComponentType<{
-  size?: number;
-  className?: string;
-}>;
+export const BriefcaseIcon = PiBriefcaseFill;
+
+export type IconComponent = React.ComponentType<{ size?: number; className?: string }>;
