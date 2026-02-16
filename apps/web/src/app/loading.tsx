@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function Loading() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -13,7 +15,14 @@ export default function Loading() {
         <div className="relative">
           <div className="border-foreground flex h-16 w-16 items-center justify-center rounded-full border">
             <span className="text-sm font-semibold tracking-widest">
-              <img src="/images/logos/ff-logo.png" alt="FF" className="h-auto w-10 dark:invert" />
+              <Image
+                src="/images/logos/ff-logo.png"
+                alt="FF logo"
+                width={40}
+                height={40}
+                className="h-auto w-10 dark:invert"
+                priority
+              />
             </span>
           </div>
 
