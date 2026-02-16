@@ -1,85 +1,85 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRightIcon } from "@ff/ui";
-import Image from "next/image";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRightIcon } from '@ff/ui';
+import Image from 'next/image';
 
-const GENDERS = ["men", "women"] as const;
-type Gender = typeof GENDERS[number];
+const GENDERS = ['men', 'women'] as const;
+type Gender = (typeof GENDERS)[number];
 
 const CATEGORIES_DATA = {
   men: {
-    label: "Men",
-    hero: "/images/categories/men.png",
+    label: 'Men',
+    hero: '/images/categories/men.png',
     list: [
       {
-        name: "Sneakers",
-        slug: "sneakers",
-        img: "/images/categories/men/sneaker.png",
-        items: "124 Items",
+        name: 'Sneakers',
+        slug: 'sneakers',
+        img: '/images/categories/men/sneaker.png',
+        items: '124 Items',
       },
       {
-        name: "Watches",
-        slug: "watches",
-        img: "/images/categories/men/watches.png",
-        items: "86 Items",
+        name: 'Watches',
+        slug: 'watches',
+        img: '/images/categories/men/watches.png',
+        items: '86 Items',
       },
       {
-        name: "Clothing",
-        slug: "clothing",
-        img: "/images/categories/men/cloths.png",
-        items: "210 Items",
+        name: 'Clothing',
+        slug: 'clothing',
+        img: '/images/categories/men/cloths.png',
+        items: '210 Items',
       },
       {
-        name: "Slippers",
-        slug: "slippers",
-        img: "/images/categories/men/slippers.png",
-        items: "45 Items",
+        name: 'Slippers',
+        slug: 'slippers',
+        img: '/images/categories/men/slippers.png',
+        items: '45 Items',
       },
       {
-        name: "Accessories",
-        slug: "accessories",
-        img: "/images/categories/men/accessories.png",
-        items: "92 Items",
+        name: 'Accessories',
+        slug: 'accessories',
+        img: '/images/categories/men/accessories.png',
+        items: '92 Items',
       },
     ],
   },
   women: {
-    label: "Women",
-    hero: "/images/categories/womens.png",
+    label: 'Women',
+    hero: '/images/categories/womens.png',
     list: [
       {
-        name: "Sneakers",
-        slug: "sneakers",
-        img: "/images/categories/women/sneaker.png",
-        items: "110 Items",
+        name: 'Sneakers',
+        slug: 'sneakers',
+        img: '/images/categories/women/sneaker.png',
+        items: '110 Items',
       },
       {
-        name: "Watches",
-        slug: "watches",
-        img: "/images/categories/women/watches.png",
-        items: "95 Items",
+        name: 'Watches',
+        slug: 'watches',
+        img: '/images/categories/women/watches.png',
+        items: '95 Items',
       },
       {
-        name: "Clothing",
-        slug: "clothing",
-        img: "/images/categories/women/cloth.png",
-        items: "340 Items",
+        name: 'Clothing',
+        slug: 'clothing',
+        img: '/images/categories/women/cloth.png',
+        items: '340 Items',
       },
       {
-        name: "Slippers",
-        slug: "slippers",
-        img: "/images/categories/women/slippers.png",
-        items: "52 Items",
+        name: 'Slippers',
+        slug: 'slippers',
+        img: '/images/categories/women/slippers.png',
+        items: '52 Items',
       },
       {
-        name: "Accessories",
-        slug: "accessories",
-        img: "/images/categories/women/accessories.png",
-        items: "120 Items",
+        name: 'Accessories',
+        slug: 'accessories',
+        img: '/images/categories/women/accessories.png',
+        items: '120 Items',
       },
     ],
   },
@@ -90,30 +90,27 @@ export default function StoreLandingPage() {
   const genderParam = (params?.gender as string)?.toLowerCase();
 
   const initialIndex =
-    GENDERS.indexOf(genderParam as Gender) !== -1
-      ? GENDERS.indexOf(genderParam as Gender)
-      : 0;
+    GENDERS.indexOf(genderParam as Gender) !== -1 ? GENDERS.indexOf(genderParam as Gender) : 0;
   const [genderIndex, setGenderIndex] = useState(initialIndex);
   const activeGender = GENDERS[genderIndex];
 
   useEffect(() => {
     const newIndex = GENDERS.indexOf(genderParam as Gender);
-    if (newIndex !== -1) setGenderIndex(newIndex);
+    if (newIndex !== -1) {
+      setGenderIndex(newIndex);
+    }
   }, [genderParam]);
 
   const handleGenderChange = (idx: number) => {
     setGenderIndex(idx);
-    window.history.replaceState(null, "", `/${GENDERS[idx]}`);
+    window.history.replaceState(null, '', `/${GENDERS[idx]}`);
   };
 
   const handleDragEnd = (event: any, info: any) => {
     const swipeThreshold = 50;
     if (info.offset.x > swipeThreshold && genderIndex > 0) {
       handleGenderChange(0);
-    } else if (
-      info.offset.x < -swipeThreshold &&
-      genderIndex < GENDERS.length - 1
-    ) {
+    } else if (info.offset.x < -swipeThreshold && genderIndex < GENDERS.length - 1) {
       handleGenderChange(1);
     }
   };
@@ -131,9 +128,7 @@ export default function StoreLandingPage() {
               key={gender}
               onClick={() => handleGenderChange(idx)}
               className={`relative h-full flex-1 text-[10px] font-black tracking-[0.25em] uppercase transition-colors outline-none ${
-                activeGender === gender
-                  ? "text-foreground"
-                  : "text-foreground-subtle/40"
+                activeGender === gender ? 'text-foreground' : 'text-foreground-subtle/40'
               }`}
             >
               {gender}
@@ -141,7 +136,7 @@ export default function StoreLandingPage() {
                 <motion.div
                   layoutId="navUnderline"
                   className="bg-brand absolute right-4 bottom-0 left-4 h-0.5"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
               )}
             </button>

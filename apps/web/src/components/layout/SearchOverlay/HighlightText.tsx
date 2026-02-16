@@ -1,5 +1,7 @@
 export const HighlightText = ({ text, highlight }: { text: string; highlight: string }) => {
-  if (!highlight.trim()) return <span className="text-foreground/20">{text}</span>;
+  if (!highlight.trim()) {
+    return <span className="text-foreground/20">{text}</span>;
+  }
   const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
   return (
     <span>

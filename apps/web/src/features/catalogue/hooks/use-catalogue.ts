@@ -44,7 +44,9 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
 
     const scrollStep = () => {
       // If the state was set to false, do not schedule next frame
-      if (scrollRef.current === null) return;
+      if (scrollRef.current === null) {
+        return;
+      }
 
       window.scrollBy({ top: speedRef.current, behavior: 'auto' });
 
@@ -82,13 +84,15 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
       window.removeEventListener('touchstart', handleInteraction, true);
       window.removeEventListener('mousedown', handleInteraction, true);
       window.removeEventListener('keydown', handleInteraction, true);
-      if (scrollRef.current) cancelAnimationFrame(scrollRef.current);
+      if (scrollRef.current) {
+        cancelAnimationFrame(scrollRef.current);
+      }
     };
   }, [stopAutoScroll]);
 
   // --- FILTER & SORT LOGIC ---
   const filteredAndSortedProducts = useMemo(() => {
-    let result = filterProducts(initialProducts, activeFilters);
+    const result = filterProducts(initialProducts, activeFilters);
     const sorted = [...result];
     switch (sortBy) {
       case 'price-asc':
@@ -107,7 +111,9 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
   const handleFilterChange = (key: string, value: string, isSingleSelect: boolean = false) => {
     setActiveFilters((prev) => {
       const currentValues = prev[key] || [];
-      if (isSingleSelect) return { ...prev, [key]: [value] };
+      if (isSingleSelect) {
+        return { ...prev, [key]: [value] };
+      }
       const newValues = currentValues.includes(value)
         ? currentValues.filter((v) => v !== value)
         : [...currentValues, value];

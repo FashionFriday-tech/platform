@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { MinusIcon, PlusIcon, CloseIcon } from "@ff/ui";
-import { BagItem } from "@/data/bagItems";
-import Image from "next/image";
+import { useState } from 'react';
+import { MinusIcon, PlusIcon, CloseIcon } from '@ff/ui';
+import { BagItem } from '@/data/bagItems';
+import Image from 'next/image';
 
 interface BagItemCardProps {
   item: BagItem;
@@ -21,7 +21,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
           alt={item.name}
           fill
           className={`object-cover transition-transform duration-1000 ease-out group-hover:scale-105 ${
-            !item.inStock ? "opacity-40 grayscale" : ""
+            !item.inStock ? 'opacity-40 grayscale' : ''
           }`}
           sizes="100vw"
         />
@@ -83,10 +83,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
               className="border-border text-foreground-subtle hover:text-destructive hover:border-destructive group/del flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border transition-all duration-300"
               aria-label="Remove item"
             >
-              <CloseIcon
-                size={18}
-                className="transition-transform group-hover/del:scale-110"
-              />
+              <CloseIcon size={18} className="transition-transform group-hover/del:scale-110" />
             </button>
 
             {/* Quantity Toggle */}

@@ -1,5 +1,5 @@
-import Image from "next/image";
-import type { HTMLAttributes } from "react";
+import Image from 'next/image';
+import type { HTMLAttributes } from 'react';
 
 const PHONE_WIDTH = 433;
 const PHONE_HEIGHT = 882;
@@ -22,13 +22,7 @@ export interface IphoneProps extends HTMLAttributes<HTMLDivElement> {
   videoSrc?: string;
 }
 
-export function Iphone({
-  src,
-  videoSrc,
-  className,
-  style,
-  ...props
-}: IphoneProps) {
+export function Iphone({ src, videoSrc, className, style, ...props }: IphoneProps) {
   const hasVideo = !!videoSrc;
   const hasMedia = hasVideo || !!src;
 
@@ -75,7 +69,7 @@ export function Iphone({
             borderRadius: `${RADIUS_H}% / ${RADIUS_V}%`,
           }}
         >
-          <Image src={src} alt="" fill className="object-cover object-top" />{" "}
+          <Image src={src} alt="" fill className="object-cover object-top" />{' '}
         </div>
       )}
 
@@ -84,9 +78,9 @@ export function Iphone({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="absolute inset-0 size-full"
-        style={{ transform: "translateZ(0)" }}
+        style={{ transform: 'translateZ(0)' }}
       >
-        <g mask={hasMedia ? "url(#screenPunch)" : undefined}>
+        <g mask={hasMedia ? 'url(#screenPunch)' : undefined}>
           <path
             d="M2 73C2 32.6832 34.6832 0 75 0H357C397.317 0 430 32.6832 430 73V809C430 849.317 397.317 882 357 882H75C34.6832 882 2 849.317 2 809V73Z"
             className="fill-[#000000] dark:fill-[#8E8E93]"
@@ -122,7 +116,7 @@ export function Iphone({
         <path
           d={`M${SCREEN_X} 75C${SCREEN_X} 44.2101 46.2101 ${SCREEN_Y} 77 ${SCREEN_Y}H355C385.79 ${SCREEN_Y} 410.75 44.2101 410.75 75V807C410.75 837.79 385.79 862.75 355 862.75H77C46.2101 862.75 ${SCREEN_X} 837.79 ${SCREEN_X} 807V75Z`}
           className="fill-[#000000] stroke-[#E5E5E5] stroke-[0.5] dark:fill-[#404040] dark:stroke-[#404040]"
-          mask={hasMedia ? "url(#screenPunch)" : undefined}
+          mask={hasMedia ? 'url(#screenPunch)' : undefined}
         />
 
         <path
@@ -140,13 +134,7 @@ export function Iphone({
 
         <defs>
           <mask id="screenPunch" maskUnits="userSpaceOnUse">
-            <rect
-              x="0"
-              y="0"
-              width={PHONE_WIDTH}
-              height={PHONE_HEIGHT}
-              fill="white"
-            />
+            <rect x="0" y="0" width={PHONE_WIDTH} height={PHONE_HEIGHT} fill="white" />
             <rect
               x={SCREEN_X}
               y={SCREEN_Y}

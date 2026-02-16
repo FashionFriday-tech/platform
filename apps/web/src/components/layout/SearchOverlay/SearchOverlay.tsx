@@ -38,7 +38,9 @@ export const SearchOverlay: React.FC<{
   }, [query, history]);
 
   const filteredSuggestions = useMemo(() => {
-    if (query.trim().length === 0) return [];
+    if (query.trim().length === 0) {
+      return [];
+    }
     return allSuggestions
       .filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
       .slice(0, 8);

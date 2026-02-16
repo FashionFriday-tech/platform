@@ -89,7 +89,9 @@ function ScrollVelocityRowImpl({
   useEffect(() => {
     const container = containerRef.current;
     const block = blockRef.current;
-    if (!container || !block) return;
+    if (!container || !block) {
+      return;
+    }
 
     const updateSizes = () => {
       const cw = container.offsetWidth || 0;
@@ -140,7 +142,9 @@ function ScrollVelocityRowImpl({
   });
 
   useAnimationFrame((_, delta) => {
-    if (!isInViewRef.current || !isPageVisibleRef.current) return;
+    if (!isInViewRef.current || !isPageVisibleRef.current) {
+      return;
+    }
     const dt = delta / 1000;
     const vf = velocityFactor.get();
     const absVf = Math.min(5, Math.abs(vf));
@@ -152,7 +156,9 @@ function ScrollVelocityRowImpl({
     }
 
     const bw = unitWidth.get() || 0;
-    if (bw <= 0) return;
+    if (bw <= 0) {
+      return;
+    }
     const pixelsPerSecond = (bw * baseVelocity) / 100;
     const moveBy = currentDirectionRef.current * pixelsPerSecond * speedMultiplier * dt;
     baseX.set(baseX.get() + moveBy);

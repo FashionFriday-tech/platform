@@ -12,13 +12,15 @@ export default function SourcingSection() {
   const categories = ['Sneakers', 'Apparel', 'Luxury Bags', 'Accessories', 'Other'];
 
   const validate = () => {
-    let newErrors: { [key: string]: string } = {};
+    const newErrors: { [key: string]: string } = {};
     if (formData.productName.trim().length < 3) {
       newErrors.productName = 'Product name is too short';
     } else if (formData.productName.length > 30) {
       newErrors.productName = 'Maximum 30 characters allowed';
     }
-    if (!formData.category) newErrors.category = 'Please select a category';
+    if (!formData.category) {
+      newErrors.category = 'Please select a category';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -26,7 +28,9 @@ export default function SourcingSection() {
 
   const handleSourceSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
     setLoading(true);
 
     setTimeout(() => {
@@ -89,7 +93,9 @@ export default function SourcingSection() {
                     value={formData.productName}
                     onChange={(e) => {
                       setFormData({ ...formData, productName: e.target.value });
-                      if (errors.productName) setErrors({});
+                      if (errors.productName) {
+                        setErrors({});
+                      }
                     }}
                   />
                 </div>
@@ -120,7 +126,9 @@ export default function SourcingSection() {
                     value={formData.category}
                     onChange={(e) => {
                       setFormData({ ...formData, category: e.target.value });
-                      if (errors.category) setErrors({});
+                      if (errors.category) {
+                        setErrors({});
+                      }
                     }}
                   >
                     <option value="" className="bg-background">

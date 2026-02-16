@@ -4,7 +4,9 @@ import { useEffect } from 'react';
 
 export default function ServiceWorkerRegister() {
   useEffect(() => {
-    if (!('serviceWorker' in navigator)) return;
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
 
     navigator.serviceWorker
       .register('/sw.js')
@@ -13,7 +15,9 @@ export default function ServiceWorkerRegister() {
         registration.onupdatefound = () => {
           const installingWorker = registration.installing;
 
-          if (!installingWorker) return;
+          if (!installingWorker) {
+            return;
+          }
 
           installingWorker.onstatechange = () => {
             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {

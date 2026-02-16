@@ -3,7 +3,9 @@ import { CloseIcon, ArrowUpRightIcon } from '@ff/ui';
 import { HighlightText } from './HighlightText';
 
 export const RecentSearches = ({ items, query, setQuery, onRemove }: any) => {
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>

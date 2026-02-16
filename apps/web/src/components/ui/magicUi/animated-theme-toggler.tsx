@@ -57,7 +57,9 @@ export const AnimatedThemeToggler = ({
     );
   }, [resolvedTheme, setTheme, duration]);
 
-  if (!mounted) return <div className="h-10 w-10" />; // Placeholder to avoid layout shift
+  if (!mounted) {
+    return <div className="h-10 w-10" />;
+  } // Placeholder to avoid layout shift
 
   return (
     <button

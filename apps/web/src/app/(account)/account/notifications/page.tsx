@@ -141,7 +141,9 @@ export default function NotificationsPage() {
 
 function NotificationList({ type }: { type: TabType }) {
   const notifications = useMemo(() => {
-    if (type === 'all') return MOCK_NOTIFICATIONS;
+    if (type === 'all') {
+      return MOCK_NOTIFICATIONS;
+    }
     return MOCK_NOTIFICATIONS.filter((n) =>
       type === 'orders' ? n.type === 'order' : n.type === 'promo',
     );

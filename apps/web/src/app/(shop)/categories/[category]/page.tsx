@@ -19,7 +19,9 @@ export default async function CategoryPage({ params }: Props) {
 
   const formattedCategory = categoryMap[category.toLowerCase()];
 
-  if (!formattedCategory) return notFound();
+  if (!formattedCategory) {
+    return notFound();
+  }
 
   const initialProducts = DUMMY_PRODUCTS.filter((p) => p.category === formattedCategory);
 

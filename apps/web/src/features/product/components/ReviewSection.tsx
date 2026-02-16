@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, ChangeEvent } from 'react';
 import {
   StarIcon,
   CloseIcon,
@@ -14,15 +14,9 @@ import {
   VerifiedIcon,
   InfoCircleIcon,
   FilledStarIcon,
-} from "@ff/ui";
-import {
-  motion,
-  AnimatePresence,
-  useAnimationFrame,
-  useMotionValue,
-  wrap,
-} from "framer-motion";
-import Image from "next/image";
+} from '@ff/ui';
+import { motion, AnimatePresence, useAnimationFrame, useMotionValue, wrap } from 'framer-motion';
+import Image from 'next/image';
 
 export default function ReviewSection() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -32,7 +26,7 @@ export default function ReviewSection() {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   // Form States
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -51,33 +45,30 @@ export default function ReviewSection() {
 
   const reviews = [
     {
-      name: "Damon W.",
-      initials: "DW",
+      name: 'Damon W.',
+      initials: 'DW',
       comment:
-        "Aggressive silhouette. Fabric is heavy and feels expensive. This is a total grail piece for any collection.",
-      image:
-        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800",
+        'Aggressive silhouette. Fabric is heavy and feels expensive. This is a total grail piece for any collection.',
+      image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
       rating: 5,
-      membership: "silver",
+      membership: 'silver',
     },
     {
-      name: "Sasha R.",
-      initials: "SR",
+      name: 'Sasha R.',
+      initials: 'SR',
       comment:
-        "Incredible attention to detail. Fits slightly oversized. The texture is exactly what I expected.",
-      image:
-        "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?w=800",
+        'Incredible attention to detail. Fits slightly oversized. The texture is exactly what I expected.',
+      image: 'https://images.unsplash.com/photo-1595341888016-a392ef81b7de?w=800',
       rating: 4,
-      membership: "gold",
+      membership: 'gold',
     },
     {
-      name: "Leo K.",
-      initials: "LK",
-      comment:
-        "The perfect staple. Color is richer in person. Highly recommend for daily wear.",
-      image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800",
+      name: 'Leo K.',
+      initials: 'LK',
+      comment: 'The perfect staple. Color is richer in person. Highly recommend for daily wear.',
+      image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=800',
       rating: 3,
-      membership: "platinum",
+      membership: 'platinum',
     },
   ];
 
@@ -88,17 +79,17 @@ export default function ReviewSection() {
   const TOTAL_SET_WIDTH = reviews.length * (CARD_WIDTH + GAP);
 
   useAnimationFrame((t, delta) => {
-    if (isPaused || isModalOpen || isFormOpen || isInfoOpen) return;
+    if (isPaused || isModalOpen || isFormOpen || isInfoOpen) {
+      return;
+    }
     const moveBy = -2;
-    let currentX = x.get();
-    let newX = currentX + moveBy;
+    const currentX = x.get();
+    const newX = currentX + moveBy;
     x.set(wrap(-TOTAL_SET_WIDTH, 0, newX));
   });
 
-  const nextModal = () =>
-    setSelectedReview((prev) => (prev + 1) % reviews.length);
-  const prevModal = () =>
-    setSelectedReview((prev) => (prev - 1 + reviews.length) % reviews.length);
+  const nextModal = () => setSelectedReview((prev) => (prev + 1) % reviews.length);
+  const prevModal = () => setSelectedReview((prev) => (prev - 1 + reviews.length) % reviews.length);
 
   return (
     <div
@@ -108,19 +99,13 @@ export default function ReviewSection() {
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto mb-10 flex max-w-3xl items-center justify-between">
           <div>
-            <h2 className="text-[14px] font-black tracking-[0.3em] uppercase italic">
-              Reviews
-            </h2>
+            <h2 className="text-[14px] font-black tracking-[0.3em] uppercase italic">Reviews</h2>
             <div className="flex gap-0.5">
               {[...Array(5)].map((_, starIndex) => (
                 <FilledStarIcon
                   key={starIndex}
                   size={10}
-                  className={
-                    starIndex < 4
-                      ? "fill-foreground text-foreground"
-                      : "text-foreground"
-                  }
+                  className={starIndex < 4 ? 'fill-foreground text-foreground' : 'text-foreground'}
                 />
               ))}
             </div>
@@ -162,22 +147,17 @@ export default function ReviewSection() {
               >
                 <div className="flex w-full items-center justify-between gap-3">
                   <div className="pointer-events-none aspect-square w-40 shrink-0 overflow-hidden rounded-4xl bg-zinc-800">
-                    <Image
-                      src={rev.image}
-                      alt="review"
-                      fill
-                      className="object-cover"
-                    />{" "}
+                    <Image src={rev.image} alt="review" fill className="object-cover" />{' '}
                   </div>
                   <div className="flex flex-1 flex-col items-start gap-2 pr-2">
                     <div className="flex items-center justify-start gap-2">
                       <div
                         className={`rounded-full border-2 border-dashed border-black p-0.5 ${
-                          rev.membership === "silver"
-                            ? "border-x-gray-400 border-y-gray-600"
-                            : rev.membership === "gold"
-                            ? "border-x-yellow-400 border-y-yellow-600"
-                            : "border-x-rose-400 border-y-rose-600"
+                          rev.membership === 'silver'
+                            ? 'border-x-gray-400 border-y-gray-600'
+                            : rev.membership === 'gold'
+                              ? 'border-x-yellow-400 border-y-yellow-600'
+                              : 'border-x-rose-400 border-y-rose-600'
                         }`}
                       >
                         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-[14px] font-black text-white uppercase italic">
@@ -189,11 +169,11 @@ export default function ReviewSection() {
                           {rev.name}
                           <VerifiedIcon
                             className={`mb-0.5 ml-1 w-5 ${
-                              rev.membership === "silver"
-                                ? "text-gray-400"
-                                : rev.membership === "gold"
-                                ? "text-yellow-500"
-                                : "text-rose-600"
+                              rev.membership === 'silver'
+                                ? 'text-gray-400'
+                                : rev.membership === 'gold'
+                                  ? 'text-yellow-500'
+                                  : 'text-rose-600'
                             }`}
                           />
                         </span>
@@ -206,11 +186,7 @@ export default function ReviewSection() {
                                 className="text-yellow-500"
                               />
                             ) : (
-                              <StarIcon
-                                key={starIndex}
-                                size={10}
-                                className="text-yellow-500"
-                              />
+                              <StarIcon key={starIndex} size={10} className="text-yellow-500" />
                             ),
                           )}
                         </div>
@@ -276,41 +252,24 @@ export default function ReviewSection() {
                 </h3>
                 <div className="space-y-4 text-sm leading-relaxed text-white/70">
                   <div className="flex gap-3 text-left">
-                    <ShoppingBagIcon
-                      className="shrink-0 text-white"
-                      size={18}
-                    />
+                    <ShoppingBagIcon className="shrink-0 text-white" size={18} />
                     <p>
-                      <span className="font-bold text-white">
-                        Verified Buyers Only:
-                      </span>{" "}
-                      Only customers with a confirmed purchase can submit
-                      reviews.
+                      <span className="font-bold text-white">Verified Buyers Only:</span> Only
+                      customers with a confirmed purchase can submit reviews.
                     </p>
                   </div>
                   <div className="flex gap-3 text-left">
-                    <ShieldCheckIcon
-                      className="shrink-0 text-white"
-                      size={18}
-                    />
+                    <ShieldCheckIcon className="shrink-0 text-white" size={18} />
                     <p>
-                      <span className="font-bold text-white">
-                        Zero Fake Reviews:
-                      </span>{" "}
-                      Every submission is cross-referenced with order IDs.
+                      <span className="font-bold text-white">Zero Fake Reviews:</span> Every
+                      submission is cross-referenced with order IDs.
                     </p>
                   </div>
                   <div className="flex gap-3 text-left">
-                    <AlertTriangleIcon
-                      className="shrink-0 text-rose-500"
-                      size={18}
-                    />
+                    <AlertTriangleIcon className="shrink-0 text-rose-500" size={18} />
                     <p>
-                      <span className="font-bold text-white">
-                        Community Conduct:
-                      </span>{" "}
-                      No abusive language. Harassment results in permanent
-                      removal.
+                      <span className="font-bold text-white">Community Conduct:</span> No abusive
+                      language. Harassment results in permanent removal.
                     </p>
                   </div>
                 </div>
@@ -344,8 +303,12 @@ export default function ReviewSection() {
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={(e, info) => {
-                if (info.offset.x < -100) nextModal();
-                if (info.offset.x > 100) prevModal();
+                if (info.offset.x < -100) {
+                  nextModal();
+                }
+                if (info.offset.x > 100) {
+                  prevModal();
+                }
               }}
               className="flex w-full max-w-5xl flex-col items-center gap-12 text-left md:flex-row"
             >
@@ -401,9 +364,9 @@ export default function ReviewSection() {
               className="bg-background/90 fixed inset-0 z-40"
             />
             <motion.div
-              initial={{ y: "100%" }}
+              initial={{ y: '100%' }}
               animate={{ y: 0 }}
-              exit={{ y: "100%" }}
+              exit={{ y: '100%' }}
               className="bg-background border-foreground fixed right-0 bottom-0 left-0 z-50 rounded-t-[3rem] border-t p-10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
             >
               <div className="mx-auto max-w-md space-y-8">
@@ -426,9 +389,7 @@ export default function ReviewSection() {
                     </label>
                     <span
                       className={`text-[10px] font-black tracking-widest ${
-                        CHARACTER_LIMIT - newComment.length < 0
-                          ? "text-red-500"
-                          : "text-white/20"
+                        CHARACTER_LIMIT - newComment.length < 0 ? 'text-red-500' : 'text-white/20'
                       }`}
                     >
                       {CHARACTER_LIMIT - newComment.length}
@@ -443,12 +404,7 @@ export default function ReviewSection() {
                         exit={{ opacity: 0, scale: 0.8 }}
                         className="relative h-32 w-32 shrink-0 overflow-hidden rounded-2xl border border-white/20 bg-white/5"
                       >
-                        <Image
-                          src={selectedImage}
-                          alt="Preview"
-                          fill
-                          className="object-cover"
-                        />
+                        <Image src={selectedImage} alt="Preview" fill className="object-cover" />
                         <button
                           onClick={() => setSelectedImage(null)}
                           className="absolute top-2 right-2 rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black"
@@ -463,8 +419,8 @@ export default function ReviewSection() {
                       placeholder="The cut, the feel, the vibe..."
                       className={`h-32 flex-1 rounded-2xl border bg-white/5 p-5 text-sm text-white transition-colors outline-none ${
                         CHARACTER_LIMIT - newComment.length < 0
-                          ? "border-red-500/50"
-                          : "border-white/10 focus:border-white/40"
+                          ? 'border-red-500/50'
+                          : 'border-white/10 focus:border-white/40'
                       }`}
                     />
                   </div>
@@ -482,8 +438,8 @@ export default function ReviewSection() {
                         size={28}
                         className={
                           starIndex < newRating
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-yellow-400"
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'text-yellow-400'
                         }
                       />
                     </motion.button>
@@ -508,8 +464,8 @@ export default function ReviewSection() {
                     onClick={() => fileInputRef.current?.click()}
                     className={`flex h-14 w-14 items-center justify-center rounded-full border transition-all ${
                       selectedImage
-                        ? "border-yellow-400 bg-yellow-400 text-black"
-                        : "border-white/10 bg-white/5 text-white/40 hover:text-white"
+                        ? 'border-yellow-400 bg-yellow-400 text-black'
+                        : 'border-white/10 bg-white/5 text-white/40 hover:text-white'
                     }`}
                   >
                     <CameraIcon size={20} />

@@ -30,8 +30,12 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
   const getVariant = (index: number) => {
     const total = products.length;
     let offset = index - activeIndex;
-    if (offset > total / 2) offset -= total;
-    if (offset < -total / 2) offset += total;
+    if (offset > total / 2) {
+      offset -= total;
+    }
+    if (offset < -total / 2) {
+      offset += total;
+    }
 
     if (offset === 0) {
       return {

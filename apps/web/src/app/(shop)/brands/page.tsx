@@ -23,10 +23,7 @@ export default function BrandsPage() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const displayedBrands = brandsData
-    .filter(
-      (b: Brand) =>
-        selectedCategory === 'All' || b.categories?.includes(selectedCategory as BrandCategory),
-    )
+    .filter((b: Brand) => selectedCategory === 'All' || b.categories?.includes(selectedCategory))
     .sort((a: Brand, b: Brand) =>
       sortOption === 'a-z' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name),
     );
@@ -103,8 +100,9 @@ function FilterDropdown({
 
   useEffect(() => {
     const clickOut = (e: MouseEvent) => {
-      if (isOpen && containerRef.current && !containerRef.current.contains(e.target as Node))
+      if (isOpen && containerRef.current && !containerRef.current.contains(e.target as Node)) {
         onClose();
+      }
     };
     document.addEventListener('mousedown', clickOut);
     return () => document.removeEventListener('mousedown', clickOut);

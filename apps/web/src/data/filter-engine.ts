@@ -30,13 +30,17 @@ export const CATEGORY_FILTERS: Record<string, { id: string; label: string; optio
 export function filterProducts(products: Product[], activeFilters: Record<string, string[]>) {
   return products.filter((product) => {
     for (const [key, selectedOptions] of Object.entries(activeFilters)) {
-      if (!selectedOptions || selectedOptions.length === 0) continue;
+      if (!selectedOptions || selectedOptions.length === 0) {
+        continue;
+      }
 
       // Price Range Check
       if (key === 'priceRange') {
         const [min, max] = selectedOptions[0].split('-').map(Number);
         const price = product.price.sellingPrice;
-        if (price < min || (max && price > max)) return false;
+        if (price < min || (max && price > max)) {
+          return false;
+        }
         continue;
       }
 
@@ -48,12 +52,16 @@ export function filterProducts(products: Product[], activeFilters: Record<string
           const match = targetValue.some((val) =>
             selectedOptions.some((opt) => opt.toLowerCase() === val.toString().toLowerCase()),
           );
-          if (!match) return false;
+          if (!match) {
+            return false;
+          }
         } else {
           const match = selectedOptions.some(
             (opt) => opt.toLowerCase() === targetValue.toString().toLowerCase(),
           );
-          if (!match) return false;
+          if (!match) {
+            return false;
+          }
         }
         continue;
       }
@@ -90,7 +98,9 @@ export const getSimilarProducts = async (
 
 // D. Safety check for the Price Slider
 export const getMaxPrice = (products: Product[]): number => {
-  if (!products || products.length === 0) return 50000;
+  if (!products || products.length === 0) {
+    return 50000;
+  }
   const prices = products.map((p) => p.price.sellingPrice);
   const max = Math.max(...prices);
   return isFinite(max) ? max : 50000;

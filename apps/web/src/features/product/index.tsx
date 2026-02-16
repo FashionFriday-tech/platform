@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   BellIcon,
   HeartIcon,
@@ -13,16 +13,16 @@ import {
   ShoppingCartIcon,
   StarBadgeIcon,
   FilledStarIcon,
-} from "@ff/ui";
-import { useLiveProductMetric } from "@/features/product/hooks/useLiveProductMetric";
+} from '@ff/ui';
+import { useLiveProductMetric } from '@/features/product/hooks/useLiveProductMetric';
 
-import Gallery from "./components/gallery";
-import { Product } from "@ff/schemas";
-import Link from "next/link";
-import ReviewSection from "./components/ReviewSection";
-import RelatedProducts from "./components/RelatedProducts";
-import ProductVariantPage from "./components/VariantDropdown";
-import Image from "next/image";
+import Gallery from './components/gallery';
+import { Product } from '@ff/schemas';
+import Link from 'next/link';
+import ReviewSection from './components/ReviewSection';
+import RelatedProducts from './components/RelatedProducts';
+import ProductVariantPage from './components/VariantDropdown';
+import Image from 'next/image';
 
 export default function ProductPageMaster({
   product,
@@ -39,9 +39,7 @@ export default function ProductPageMaster({
   // Use sizes from the variant if they exist, otherwise fallback to your hardcoded list
   const displaySizes = product.attributes.sizes;
 
-  const cols = Math.ceil(
-    displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2,
-  );
+  const cols = Math.ceil(displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2);
 
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
 
@@ -54,7 +52,7 @@ export default function ProductPageMaster({
           url: window.location.href,
         });
       } catch (err) {
-        console.log("Share failed", err);
+        console.log('Share failed', err);
       }
     }
   };
@@ -69,10 +67,7 @@ export default function ProductPageMaster({
           {/* LEFT: Gallery */}
           <div className="lg:col-span-6">
             <Gallery
-              images={[
-                product.media.mainImage,
-                ...product.media.liveImages,
-              ].filter(Boolean)}
+              images={[product.media.mainImage, ...product.media.liveImages].filter(Boolean)}
               videoUrl={product.media.youtubeId}
             />
           </div>
@@ -84,9 +79,7 @@ export default function ProductPageMaster({
               <div className="flex flex-col items-start justify-between">
                 <div className="flex w-full items-center justify-between">
                   <div className="text-foreground-muted mb-2 flex items-center justify-center gap-4 text-[10px] font-black uppercase">
-                    <Link
-                      href={`/brands/${String(product.brand).toLowerCase()}`}
-                    >
+                    <Link href={`/brands/${String(product.brand).toLowerCase()}`}>
                       <Image
                         src="/images/brand-logos/nike.png"
                         alt={product.brand[0]}
@@ -105,10 +98,7 @@ export default function ProductPageMaster({
 
                     <Link href={`/product/${product.slug}#review-section`}>
                       <span className="flex items-center justify-center gap-1">
-                        <FilledStarIcon
-                          size={11}
-                          className="mb-0.5 text-yellow-400"
-                        />
+                        <FilledStarIcon size={11} className="mb-0.5 text-yellow-400" />
                         {product.rating.averageRating}
                       </span>
                     </Link>
@@ -145,13 +135,11 @@ export default function ProductPageMaster({
             <div className="border-border flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="text-xl font-bold text-green-500">
-                  ₹{product.price.sellingPrice.toLocaleString()}{" "}
-                  {/* Data from Variant */}
+                  ₹{product.price.sellingPrice.toLocaleString()} {/* Data from Variant */}
                 </span>
                 {product.price.ogPrice > product.price.sellingPrice && (
                   <span className="text-foreground-muted text-lg line-through">
-                    ₹{product.price.ogPrice.toLocaleString()}{" "}
-                    {/* Data from Variant */}
+                    ₹{product.price.ogPrice.toLocaleString()} {/* Data from Variant */}
                   </span>
                 )}
               </div>
@@ -172,7 +160,7 @@ export default function ProductPageMaster({
             <ProductVariantPage />
 
             {/* 4. Size Selection */}
-            {product.category === "Sneakers" && (
+            {product.category === 'Sneakers' && (
               <div className="space-y-4">
                 <div className="flex items-end justify-between">
                   <label className="text-[10px] font-black tracking-widest uppercase">
@@ -197,8 +185,8 @@ export default function ProductPageMaster({
                       onClick={() => setSelectedSize(size)}
                       className={`rounded-full border py-1 font-semibold transition-all duration-300 ${
                         selectedSize === size
-                          ? "border-brand bg-brand text-brand-foreground scale-95"
-                          : "border-border hover:border-foreground"
+                          ? 'border-brand bg-brand text-brand-foreground scale-95'
+                          : 'border-border hover:border-foreground'
                       }`}
                     >
                       {size}
@@ -232,8 +220,8 @@ export default function ProductPageMaster({
                   aria-label="Toggle wishlist"
                   className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
                     isWishlisted
-                      ? "bg-background text-foreground scale-100"
-                      : "text-background hover:bg-background/10 scale-125 animate-pulse"
+                      ? 'bg-background text-foreground scale-100'
+                      : 'text-background hover:bg-background/10 scale-125 animate-pulse'
                   }`}
                 >
                   {isWishlisted ? (
@@ -257,23 +245,23 @@ export default function ProductPageMaster({
               {[
                 {
                   icon: <TruckIcon size={18} />,
-                  label: "Fast Delivery",
-                  sub: "2-4 Business Days",
+                  label: 'Fast Delivery',
+                  sub: '2-4 Business Days',
                 },
                 {
                   icon: <RefreshCcwIcon size={18} />,
-                  label: "7 Day Returns",
-                  sub: "Hassle-free policy",
+                  label: '7 Day Returns',
+                  sub: 'Hassle-free policy',
                 },
                 {
                   icon: <ShieldCheckIcon size={18} />,
-                  label: "Authentic Quality",
+                  label: 'Authentic Quality',
                   sub: `${product.attributes.quality} Grade`, // Data from Variant
                 },
                 {
                   icon: <StarIcon size={18} />,
-                  label: "Top Rated",
-                  sub: "Trusted by 5k+ users",
+                  label: 'Top Rated',
+                  sub: 'Trusted by 5k+ users',
                 },
               ].map((item, i) => (
                 <div
@@ -282,12 +270,8 @@ export default function ProductPageMaster({
                 >
                   <div className="text-brand shrink-0">{item.icon}</div>
                   <div>
-                    <h4 className="text-[9px] leading-tight font-black uppercase">
-                      {item.label}
-                    </h4>
-                    <p className="text-foreground-subtle text-[8px] font-bold">
-                      {item.sub}
-                    </p>
+                    <h4 className="text-[9px] leading-tight font-black uppercase">{item.label}</h4>
+                    <p className="text-foreground-subtle text-[8px] font-bold">{item.sub}</p>
                   </div>
                 </div>
               ))}
@@ -349,14 +333,12 @@ export default function ProductPageMaster({
                   Demand is rising.
                 </p> */}
                 <p className="text-sm leading-relaxed text-zinc-400">
-                  {liveMetric}+ peoples are watching the{" "}
+                  {liveMetric}+ peoples are watching the{' '}
                   <span className="text-foreground font-semibold">
                     "{product.name.toUpperCase()}"
-                  </span>{" "}
+                  </span>{' '}
                   right now.
-                  <span className="underline">
-                    Secure yours before the item sold out.
-                  </span>
+                  <span className="underline">Secure yours before the item sold out.</span>
                 </p>
               </div>
 

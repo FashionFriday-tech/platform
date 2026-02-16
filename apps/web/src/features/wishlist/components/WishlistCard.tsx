@@ -1,19 +1,17 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { ShoppingBagIcon, HeartMinusIcon, BellIcon } from "@ff/ui";
-import { Product } from "@/types/wishlist";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
+import Link from 'next/link';
+import { ShoppingBagIcon, HeartMinusIcon, BellIcon } from '@ff/ui';
+import { Product } from '@/types/wishlist';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
 interface WishlistCardProps {
   product: Product;
 }
 
 export function WishlistCard({ product }: WishlistCardProps) {
   const discount = product.originalPrice
-    ? Math.round(
-        ((product.originalPrice - product.price) / product.originalPrice) * 100,
-      )
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
   return (
@@ -64,9 +62,7 @@ export function WishlistCard({ product }: WishlistCardProps) {
             </p>
 
             <div className="mt-4 flex items-center justify-start gap-4">
-              <span className="text-foreground font-bold">
-                ${product.price}
-              </span>
+              <span className="text-foreground font-bold">${product.price}</span>
               {product.originalPrice && (
                 <span className="text-foreground-subtle line-through">
                   ${product.originalPrice}

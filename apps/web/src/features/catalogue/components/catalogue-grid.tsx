@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React from "react"; // Fix: Explicitly import React to resolve UMD global error
-import { motion, AnimatePresence } from "framer-motion";
-import { Product } from "@ff/schemas";
-import { CatalogueProductCard } from "@/components/ui/cards/catlogue-product-card";
-import Image from "next/image";
+import React from 'react'; // Fix: Explicitly import React to resolve UMD global error
+import { motion, AnimatePresence } from 'framer-motion';
+import { Product } from '@ff/schemas';
+import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
+import Image from 'next/image';
 
 interface GridProps {
   products: Product[];

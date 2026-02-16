@@ -1,11 +1,11 @@
-"use client";
-import { CartItemsCard, OrderSummary } from "@/features/cart";
-import { bagItems } from "@/data/bagItems";
-import { ShoppingBagIcon, ChevronDownIcon } from "@ff/ui";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import CheckoutStages from "../../_components/CheckoutProgress";
-import Image from "next/image";
+'use client';
+import { CartItemsCard, OrderSummary } from '@/features/cart';
+import { bagItems } from '@/data/bagItems';
+import { ShoppingBagIcon, ChevronDownIcon } from '@ff/ui';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import CheckoutStages from '../../_components/CheckoutProgress';
+import Image from 'next/image';
 
 export default function CartPage() {
   const freeShippingThreshold = 5000;
@@ -24,9 +24,7 @@ export default function CartPage() {
               {/* 2. Cart Items List */}
               <div>
                 {bagItems.length > 0 ? (
-                  bagItems.map((item) => (
-                    <CartItemsCard key={item.id} item={item} />
-                  ))
+                  bagItems.map((item) => <CartItemsCard key={item.id} item={item} />)
                 ) : (
                   <div className="py-24 text-center">
                     <div className="bg-background-muted text-foreground-subtle mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
@@ -82,7 +80,7 @@ export default function CartPage() {
                               alt="Loading placeholder"
                               width={80}
                               height={80}
-                              className="invert-0 dark:invert h-auto w-20"
+                              className="h-auto w-20 invert-0 dark:invert"
                             />
                           </div>
                         </div>

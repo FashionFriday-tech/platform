@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { StarBadgeIcon, StarsIcon } from "@ff/ui";
-import brandLogos from "@/data/brandLogos";
-import { Product } from "@ff/schemas";
-import Image from "next/image";
+import React from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { StarBadgeIcon, StarsIcon } from '@ff/ui';
+import brandLogos from '@/data/brandLogos';
+import { Product } from '@ff/schemas';
+import Image from 'next/image';
 
 interface StoreProductCardProps {
   // Use the concrete Product type instead of 'any' to catch errors early
@@ -15,12 +15,12 @@ interface StoreProductCardProps {
 
 export function CatalogueProductCard({ product }: StoreProductCardProps) {
   // Safety check to prevent crashes if a null product enters the grid
-  if (!product) return null;
+  if (!product) {
+    return null;
+  }
 
   const getBrandLogoByName = (name: string) => {
-    return brandLogos.find(
-      (brand) => brand.name.toLowerCase() === name.toLowerCase(),
-    )?.logo;
+    return brandLogos.find((brand) => brand.name.toLowerCase() === name.toLowerCase())?.logo;
   };
 
   // Helper to handle original price calculation safely
@@ -37,7 +37,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
       <Link href={`/product/${product.slug}`} className="block cursor-pointer">
         <div className="bg-background-muted relative aspect-4/5 overflow-hidden rounded-4xl lg:rounded-[2.5rem]">
           <Image
-            src={product.media.mainImage || "/images/placeholder.png"}
+            src={product.media.mainImage || '/images/placeholder.png'}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -48,10 +48,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
         <div className="mt-1 px-1">
           <div className="flex items-center justify-between text-[8px] md:text-[10px]">
             <Image
-              src={
-                getBrandLogoByName(product.brand[0]) ||
-                "/images/placeholder.png"
-              }
+              src={getBrandLogoByName(product.brand[0]) || '/images/placeholder.png'}
               alt={product.brand[0]}
               width={32}
               height={32}
@@ -69,12 +66,8 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
           <div className="mt-1 flex items-center gap-2 text-[11px]">
             <div className="flex w-full items-center justify-between">
               <span className="flex items-center gap-2">
-                <p className="text-foreground/50 font-medium line-through">
-                  ₹{originalPrice}
-                </p>
-                <p className="font-black text-green-500">
-                  ₹{product.price.sellingPrice}
-                </p>
+                <p className="text-foreground/50 font-medium line-through">₹{originalPrice}</p>
+                <p className="font-black text-green-500">₹{product.price.sellingPrice}</p>
               </span>
               <span className="text-foreground-muted flex items-center gap-1 text-[10px]">
                 <StarsIcon className="text-yellow-500" /> 4.5

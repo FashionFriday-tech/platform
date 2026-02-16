@@ -13,7 +13,9 @@ export default async function BrandPage({ params }: Props) {
 
   const brandName = resolvedParams.brand;
 
-  if (!brandName) return notFound();
+  if (!brandName) {
+    return notFound();
+  }
 
   // 2. Filter products with safety checks
   const brandProducts = DUMMY_PRODUCTS.filter(

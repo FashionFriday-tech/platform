@@ -32,13 +32,17 @@ export default function AuthPage() {
   // --- NEW: PASTE LOGIC ---
   const handlePaste = (e: React.ClipboardEvent) => {
     const pasteData = e.clipboardData.getData('text').trim();
-    if (!/^\d+$/.test(pasteData)) return;
+    if (!/^\d+$/.test(pasteData)) {
+      return;
+    }
 
     const digits = pasteData.slice(0, 4).split('');
     const newOtp = [...otp];
 
     digits.forEach((char, index) => {
-      if (index < 4) newOtp[index] = char;
+      if (index < 4) {
+        newOtp[index] = char;
+      }
     });
 
     setOtp(newOtp);
@@ -50,7 +54,7 @@ export default function AuthPage() {
   };
 
   const validate = () => {
-    let newErrors: { [key: string]: string } = {};
+    const newErrors: { [key: string]: string } = {};
 
     if (step === 'PHONE') {
       if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
@@ -84,7 +88,9 @@ export default function AuthPage() {
   };
 
   const handleNext = () => {
-    if (!validate()) return;
+    if (!validate()) {
+      return;
+    }
     setLoading(true);
 
     setTimeout(() => {
@@ -92,13 +98,18 @@ export default function AuthPage() {
       if (step === 'PHONE') {
         setStep('OTP');
         startTimer();
-      } else if (step === 'OTP') setStep('PROFILE');
-      else router.push('/');
+      } else if (step === 'OTP') {
+        setStep('PROFILE');
+      } else {
+        router.push('/');
+      }
     }, 1000);
   };
 
   const handleResendOTP = () => {
-    if (timer > 0) return;
+    if (timer > 0) {
+      return;
+    }
     setOtp(['', '', '', '']);
     startTimer();
     console.log('OTP Resent to', phoneNumber);
@@ -115,11 +126,15 @@ export default function AuthPage() {
   };
 
   const handleOtpChange = (index: number, value: string) => {
-    if (isNaN(Number(value))) return;
+    if (isNaN(Number(value))) {
+      return;
+    }
     const newOtp = [...otp];
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
-    if (value && index < 3) inputRefs.current[index + 1]?.focus();
+    if (value && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
     clearError('otp');
   };
 
@@ -200,8 +215,9 @@ export default function AuthPage() {
                   onPaste={index === 0 ? handlePaste : undefined} // Listen for paste on the first box
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Backspace' && !otp[index] && index > 0)
+                    if (e.key === 'Backspace' && !otp[index] && index > 0) {
                       inputRefs.current[index - 1]?.focus();
+                    }
                   }}
                   className={`h-16 w-16 rounded-full border-2 bg-transparent text-center text-2xl font-black text-white transition-all outline-none ${
                     errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'

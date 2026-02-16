@@ -160,7 +160,9 @@ const AddressFormModal = ({ initialData, onClose, onSave, isFirstAddress }: any)
 
   // Auto-focus to Alt Phone
   useEffect(() => {
-    if (formData.phone?.length === 10) altPhoneRef.current?.focus();
+    if (formData.phone?.length === 10) {
+      altPhoneRef.current?.focus();
+    }
   }, [formData.phone]);
 
   // PINCODE API LOGIC - Attempts every time pincode becomes 6 digits

@@ -3,7 +3,9 @@ import { SuggestionTag } from './SuggestionTag';
 import { HighlightText } from './HighlightText';
 
 export const QuickDiscovery = ({ items, query, setQuery, onSave }: any) => {
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>

@@ -68,7 +68,9 @@ export const useSearchData = (storageLimit: number = 10) => {
   const saveSearch = useCallback(
     (query: string) => {
       const trimmed = query.trim();
-      if (!trimmed) return;
+      if (!trimmed) {
+        return;
+      }
       setHistory((prev) => {
         const newHistory = [
           trimmed,
