@@ -23,14 +23,14 @@ const SORT_OPTIONS = [
 
 // --- UPDATED INTERFACE ---
 interface CatalogueClientProps {
-  gender: string; // Added: required gender string (men/women/snkrs)
+  gender?: string; // Added: required gender string (men/women/snkrs)
   initialProducts: Product[];
   categorySlug: string;
 }
 
 // --- UPDATED FUNCTION PARAMS ---
 export default function CatalogueClient({
-  gender, // Destructured gender
+  gender,
   initialProducts,
   categorySlug,
 }: CatalogueClientProps) {
