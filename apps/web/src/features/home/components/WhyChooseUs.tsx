@@ -1,43 +1,47 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { ShieldCheckIcon, TruckIcon, UsersIcon, RefreshCcwIcon } from '@ff/ui';
-import { CSSProperties } from 'react';
+import { motion } from "framer-motion";
+import { ShieldCheckIcon, TruckIcon, UsersIcon, RefreshCcwIcon } from "@ff/ui";
+import { CSSProperties } from "react";
+import Image from "next/image";
 
 // --- Data ---
 
 const features = [
   {
-    id: '01',
+    id: "01",
     icon: ShieldCheckIcon,
-    title: '100% Verified Sellers',
-    desc: 'Zero tolerance for fakes. We only onboard top-rated, authentic sellers to ensure legitimacy.',
+    title: "100% Verified Sellers",
+    desc:
+      "Zero tolerance for fakes. We only onboard top-rated, authentic sellers to ensure legitimacy.",
   },
   {
-    id: '02',
+    id: "02",
     icon: UsersIcon,
-    title: '1000+ Happy Customers',
-    desc: 'Join the movement. Thousands of satisfied customers across India trusting us for their daily fits.',
+    title: "1000+ Happy Customers",
+    desc:
+      "Join the movement. Thousands of satisfied customers across India trusting us for their daily fits.",
   },
   {
-    id: '03',
+    id: "03",
     icon: TruckIcon,
-    title: 'Pan-India Shipping',
-    desc: 'From Mumbai to Manipur, we deliver everywhere. Fast, trackable shipping to every pin code.',
+    title: "Pan-India Shipping",
+    desc:
+      "From Mumbai to Manipur, we deliver everywhere. Fast, trackable shipping to every pin code.",
   },
 ];
 
 const reviewImages = [
-  '/images/reviews/1.jpg',
-  '/images/reviews/2.jpg',
-  '/images/reviews/3.jpg',
-  '/images/reviews/4.jpg',
-  '/images/reviews/5.jpg',
-  '/images/reviews/6.jpg',
-  '/images/reviews/7.jpg',
-  '/images/reviews/8.jpg',
-  '/images/reviews/9.jpg',
-  '/images/reviews/10.jpg',
+  "/images/reviews/1.jpg",
+  "/images/reviews/2.jpg",
+  "/images/reviews/3.jpg",
+  "/images/reviews/4.jpg",
+  "/images/reviews/5.jpg",
+  "/images/reviews/6.jpg",
+  "/images/reviews/7.jpg",
+  "/images/reviews/8.jpg",
+  "/images/reviews/9.jpg",
+  "/images/reviews/10.jpg",
 ];
 
 // --- Interfaces ---
@@ -50,7 +54,11 @@ interface InfiniteColumnProps {
 
 // --- Components ---
 
-const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnProps) => {
+const InfiniteColumn = ({
+  images,
+  duration,
+  reverse = false,
+}: InfiniteColumnProps) => {
   const loopImages = [...images, ...images, ...images];
 
   return (
@@ -89,11 +97,11 @@ const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnPro
 
       <div
         className={`pause-on-hover flex cursor-pointer flex-col gap-4 ${
-          reverse ? 'animate-scroll-down' : 'animate-scroll-up'
+          reverse ? "animate-scroll-down" : "animate-scroll-up"
         }`}
         style={
           {
-            '--duration': `${duration}s`,
+            "--duration": `${duration}s`,
           } as CSSProperties
         }
       >
@@ -102,11 +110,12 @@ const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnPro
             key={i}
             className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:opacity-100 hover:shadow-2xl"
           >
-            <img
+            <Image
               src={src}
               alt={`Customer Review ${i}`}
+              width={800}
+              height={600}
               className="block h-auto w-full object-cover"
-              loading="lazy"
             />
           </div>
         ))}
@@ -141,8 +150,9 @@ export default function SplitFeatureSection() {
                 <span className="text-foreground-muted">Trust.</span>
               </h2>
               <p className="text-foreground-muted max-w-md text-lg leading-relaxed">
-                Join over 1000+ happy customers across India. We don't just ship products; we
-                deliver verified quality to every pin code in the country.
+                Join over 1000+ happy customers across India. We don't just ship
+                products; we deliver verified quality to every pin code in the
+                country.
               </p>
             </motion.div>
 
@@ -180,13 +190,23 @@ export default function SplitFeatureSection() {
 
             <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6">
               <div className="relative h-full overflow-hidden">
-                <InfiniteColumn images={reviewImages.slice(0, 3)} duration={25} />
+                <InfiniteColumn
+                  images={reviewImages.slice(0, 3)}
+                  duration={25}
+                />
               </div>
               <div className="relative h-full overflow-hidden pt-24">
-                <InfiniteColumn images={reviewImages.slice(3, 7)} duration={35} reverse={true} />
+                <InfiniteColumn
+                  images={reviewImages.slice(3, 7)}
+                  duration={35}
+                  reverse={true}
+                />
               </div>
               <div className="relative h-full overflow-hidden pt-12">
-                <InfiniteColumn images={reviewImages.slice(7, 10)} duration={28} />
+                <InfiniteColumn
+                  images={reviewImages.slice(7, 10)}
+                  duration={28}
+                />
               </div>
             </div>
           </div>

@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { MinusIcon, PlusIcon, CloseIcon } from '@ff/ui';
-import { BagItem } from '@/data/bagItems';
+import { useState } from "react";
+import { MinusIcon, PlusIcon, CloseIcon } from "@ff/ui";
+import { BagItem } from "@/data/bagItems";
+import Image from "next/image";
 
 interface BagItemCardProps {
   item: BagItem;
@@ -15,12 +16,14 @@ export function CartItemsCard({ item }: BagItemCardProps) {
     <div className="group border-border relative flex w-full flex-row gap-6 border-b py-10 transition-all last:border-0 md:gap-10">
       {/* 1. Optimized Image - Fixed Aspect & Premium Radii */}
       <div className="bg-background-muted relative aspect-square w-40 shrink-0 overflow-hidden rounded-3xl md:w-60">
-        <img
+        <Image
           src={item.image}
           alt={item.name}
-          className={`h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105 ${
-            !item.inStock ? 'opacity-40 grayscale' : ''
+          fill
+          className={`object-cover transition-transform duration-1000 ease-out group-hover:scale-105 ${
+            !item.inStock ? "opacity-40 grayscale" : ""
           }`}
+          sizes="100vw"
         />
 
         {/* Deletion / Wishlist Overlay Popup */}
@@ -80,7 +83,10 @@ export function CartItemsCard({ item }: BagItemCardProps) {
               className="border-border text-foreground-subtle hover:text-destructive hover:border-destructive group/del flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border transition-all duration-300"
               aria-label="Remove item"
             >
-              <CloseIcon size={18} className="transition-transform group-hover/del:scale-110" />
+              <CloseIcon
+                size={18}
+                className="transition-transform group-hover/del:scale-110"
+              />
             </button>
 
             {/* Quantity Toggle */}

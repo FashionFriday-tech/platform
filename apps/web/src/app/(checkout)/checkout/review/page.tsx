@@ -1,11 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MapPinIcon, ChevronRightIcon, PlusIcon, CloseIcon, ChevronUpIcon } from '@ff/ui';
-import { bagItems } from '@/data/bagItems';
-import CheckoutStages from '../../_components/CheckoutProgress';
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  MapPinIcon,
+  ChevronRightIcon,
+  PlusIcon,
+  CloseIcon,
+  ChevronUpIcon,
+} from "@ff/ui";
+import { bagItems } from "@/data/bagItems";
+import CheckoutStages from "../../_components/CheckoutProgress";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function FinalReviewPage() {
   const [address, setAddress] = useState<any>(null);
@@ -24,7 +31,7 @@ export default function FinalReviewPage() {
     } else if (!isLoggedIn) {
       setShowOTPModal(true);
     } else {
-      router.push('/checkout/payment');
+      router.push("/checkout/payment");
     }
   };
 
@@ -103,15 +110,20 @@ export default function FinalReviewPage() {
                     key={item.id}
                     className="border-border bg-background-muted/5 flex items-center gap-6 rounded-3xl border p-5"
                   >
-                    <div className="bg-background-muted border-border h-22 w-20 overflow-hidden rounded-xl border">
-                      <img
+                    <div className="bg-background-muted border-border relative h-22 w-20 overflow-hidden rounded-xl border">
+                      <Image
                         src={item.image}
                         alt={item.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="80px"
                       />
                     </div>
+
                     <div className="flex-1">
-                      <h3 className="text-xs font-bold tracking-tight uppercase">{item.name}</h3>
+                      <h3 className="text-xs font-bold tracking-tight uppercase">
+                        {item.name}
+                      </h3>
                       <p className="text-foreground-muted mt-1 text-[10px] font-bold uppercase">
                         Size: {item.size} • Qty: {item.quantity}
                       </p>
@@ -119,7 +131,9 @@ export default function FinalReviewPage() {
                         Color: {item.color}
                       </p>
                     </div>
-                    <p className="text-sm font-black tracking-tighter">₹{item.price}</p>
+                    <p className="text-sm font-black tracking-tighter">
+                      ₹{item.price}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -148,7 +162,9 @@ export default function FinalReviewPage() {
                     <span className="text-[8px] font-black tracking-widest uppercase opacity-50">
                       Total Payable
                     </span>
-                    <span className="text-4xl font-black tracking-tighter">₹{pricing.total}</span>
+                    <span className="text-4xl font-black tracking-tighter">
+                      ₹{pricing.total}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -157,7 +173,11 @@ export default function FinalReviewPage() {
                 onClick={handleContinue}
                 className="bg-background text-foreground flex w-full items-center justify-center gap-3 rounded-full py-5 text-sm font-black tracking-widest uppercase shadow-xl transition-all active:scale-95"
               >
-                {address ? (isLoggedIn ? 'Pay Now' : 'Verify & Continue') : 'Add Address'}
+                {address
+                  ? isLoggedIn
+                    ? "Pay Now"
+                    : "Verify & Continue"
+                  : "Add Address"}
                 <ChevronRightIcon size={18} />
               </button>
             </div>
@@ -178,7 +198,7 @@ export default function FinalReviewPage() {
         </motion.div>
 
         <motion.div
-          animate={{ height: isExpanded ? 'auto' : 'auto' }}
+          animate={{ height: isExpanded ? "auto" : "auto" }}
           className="bg-background/90 border-border w-full overflow-hidden rounded-t-[3rem] border-t shadow-2xl backdrop-blur-2xl"
         >
           <div className="mx-auto max-w-4xl px-4 pb-5">
@@ -207,12 +227,14 @@ export default function FinalReviewPage() {
                 onClick={() => setIsExpanded(!isExpanded)}
               >
                 <p className="text-foreground-subtle mb-1 flex items-center gap-2 text-[8px] font-black tracking-widest text-nowrap uppercase">
-                  Total Payable{' '}
+                  Total Payable{" "}
                   <motion.span animate={{ rotate: isExpanded ? 180 : 0 }}>
                     <ChevronUpIcon size={10} />
                   </motion.span>
                 </p>
-                <p className="text-background text-2xl font-black">₹{pricing.total}</p>
+                <p className="text-background text-2xl font-black">
+                  ₹{pricing.total}
+                </p>
               </div>
               <button
                 onClick={(e) => {
@@ -221,7 +243,11 @@ export default function FinalReviewPage() {
                 }}
                 className="bg-background text-foreground flex w-full items-center justify-center gap-2 rounded-full px-4 py-4 text-center text-sm font-black tracking-wide uppercase transition-all active:scale-95"
               >
-                {address ? (isLoggedIn ? 'Pay Now' : 'Verify & Continue') : 'Add Address'}
+                {address
+                  ? isLoggedIn
+                    ? "Pay Now"
+                    : "Verify & Continue"
+                  : "Add Address"}
                 <ChevronRightIcon size={18} />
               </button>
             </div>
@@ -242,7 +268,7 @@ export default function FinalReviewPage() {
       <OTPModal
         isOpen={showOTPModal}
         onClose={() => setShowOTPModal(false)}
-        phoneNumber={address?.primaryPhone || ''}
+        phoneNumber={address?.primaryPhone || ""}
         onVerify={() => {
           setIsLoggedIn(true);
           setShowOTPModal(false);
@@ -258,20 +284,25 @@ export default function FinalReviewPage() {
 function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
   const [formData, setFormData] = useState<any>(
     initialData || {
-      pincode: '',
-      city: '',
-      area: '',
-      landmark: '',
-      building: '',
-      recipientName: '',
-      primaryPhone: '+91 ',
-      altPhone: '+91 ',
+      pincode: "",
+      city: "",
+      area: "",
+      landmark: "",
+      building: "",
+      recipientName: "",
+      primaryPhone: "+91 ",
+      altPhone: "+91 ",
     },
   );
 
   const validate = () => {
     if (formData.pincode.length !== 6) return false;
-    if (!formData.city || !formData.area || !formData.building || !formData.recipientName)
+    if (
+      !formData.city ||
+      !formData.area ||
+      !formData.building ||
+      !formData.recipientName
+    )
       return false;
     return true;
   };
@@ -288,17 +319,20 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
             className="bg-background/50 fixed inset-0 z-60 backdrop-blur-xl"
           />
           <motion.div
-            initial={{ y: '100%' }}
+            initial={{ y: "100%" }}
             animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 20 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 20 }}
             className="bg-background border-border fixed right-0 bottom-0 left-0 z-70 mx-auto flex max-h-[92vh] max-w-3xl flex-col rounded-t-[3rem] border-t shadow-2xl"
           >
             <div className="flex items-center justify-between p-8 pb-6 md:p-12">
               <h2 className="text-2xl font-black tracking-tighter uppercase italic">
                 Address Details
               </h2>
-              <button onClick={onClose} className="bg-background-muted rounded-full p-3">
+              <button
+                onClick={onClose}
+                className="bg-background-muted rounded-full p-3"
+              >
                 <CloseIcon size={20} />
               </button>
             </div>
@@ -308,7 +342,9 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
                 <InputBox
                   label="Pincode"
                   value={formData.pincode}
-                  onChange={(v: string) => setFormData({ ...formData, pincode: v.slice(0, 6) })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, pincode: v.slice(0, 6) })
+                  }
                   placeholder="6 Digits"
                   type="number"
                 />
@@ -317,7 +353,9 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
                     Detected Region
                   </label>
                   <div className="bg-background-muted/20 border-border text-foreground-muted flex h-14.5 w-full items-center rounded-2xl border-2 border-dotted p-4 text-[10px] font-black tracking-widest uppercase">
-                    {formData.pincode.length === 6 ? 'KERALA, MALAPPURAM' : 'Waiting...'}
+                    {formData.pincode.length === 6
+                      ? "KERALA, MALAPPURAM"
+                      : "Waiting..."}
                   </div>
                 </div>
               </div>
@@ -326,13 +364,17 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
                 <InputBox
                   label="City / Town"
                   value={formData.city}
-                  onChange={(v: string) => setFormData({ ...formData, city: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, city: v })
+                  }
                   placeholder="e.g. Puthanathani"
                 />
                 <InputBox
                   label="Area / Locality"
                   value={formData.area}
-                  onChange={(v: string) => setFormData({ ...formData, area: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, area: v })
+                  }
                   placeholder="Street/Colony"
                 />
               </div>
@@ -341,13 +383,17 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
                 <InputBox
                   label="Building / House No"
                   value={formData.building}
-                  onChange={(v: string) => setFormData({ ...formData, building: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, building: v })
+                  }
                   placeholder="No. / Name"
                 />
                 <InputBox
                   label="Landmark"
                   value={formData.landmark}
-                  onChange={(v: string) => setFormData({ ...formData, landmark: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, landmark: v })
+                  }
                   placeholder="Optional"
                 />
               </div>
@@ -355,7 +401,9 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
               <InputBox
                 label="Recipient Name"
                 value={formData.recipientName}
-                onChange={(v: string) => setFormData({ ...formData, recipientName: v })}
+                onChange={(v: string) =>
+                  setFormData({ ...formData, recipientName: v })
+                }
                 placeholder="Full name"
               />
 
@@ -363,13 +411,17 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
                 <InputBox
                   label="Primary Phone"
                   value={formData.primaryPhone}
-                  onChange={(v: string) => setFormData({ ...formData, primaryPhone: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, primaryPhone: v })
+                  }
                   placeholder="+91"
                 />
                 <InputBox
                   label="Alt Phone"
                   value={formData.altPhone}
-                  onChange={(v: string) => setFormData({ ...formData, altPhone: v })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, altPhone: v })
+                  }
                   placeholder="Optional"
                 />
               </div>
@@ -398,7 +450,7 @@ function InputBox({
   value,
   onChange,
   placeholder,
-  type = 'text',
+  type = "text",
 }: {
   label: string;
   value: string;

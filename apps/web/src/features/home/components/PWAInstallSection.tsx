@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
   CloseIcon,
   ShareIcon,
@@ -11,29 +11,30 @@ import {
   DownloadIcon,
   AppleLogoIcon,
   DownloadIconIOS,
-} from '@ff/ui';
-import { Iphone } from '@/components/ui/magicUi/iphone';
+} from "@ff/ui";
+import { Iphone } from "@/components/ui/magicUi/iphone";
+import Image from "next/image";
 
 const FEATURES = [
   {
     icon: DownloadIcon,
-    title: 'Fast Download',
-    desc: 'Optimized assets for quick installs.',
+    title: "Fast Download",
+    desc: "Optimized assets for quick installs.",
   },
   {
     icon: ZapIcon,
-    title: 'Zero Latency',
-    desc: 'Instant loads and checkout.',
+    title: "Zero Latency",
+    desc: "Instant loads and checkout.",
   },
   {
     icon: ShieldIcon,
-    title: 'Privacy & Security',
-    desc: 'No app store. No tracking.',
+    title: "Privacy & Security",
+    desc: "No app store. No tracking.",
   },
   {
     icon: LockIcon,
-    title: 'Encrypted & Verified',
-    desc: 'Trusted by thousands.',
+    title: "Encrypted & Verified",
+    desc: "Trusted by thousands.",
   },
 ];
 
@@ -50,13 +51,14 @@ function usePWAInstall() {
 
     const ios =
       /iphone|ipad|ipod/.test(ua) ||
-      (navigator.platform === 'MacIntel' && (navigator as any).maxTouchPoints > 1);
+      (navigator.platform === "MacIntel" &&
+        (navigator as any).maxTouchPoints > 1);
 
     setIsIOS(ios);
 
     // Detect already installed
     if (
-      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia("(display-mode: standalone)").matches ||
       (navigator as any).standalone === true
     ) {
       setIsInstalled(true);
@@ -72,18 +74,18 @@ function usePWAInstall() {
       setDeferredPrompt(null);
     };
 
-    window.addEventListener('beforeinstallprompt', beforeInstallHandler);
-    window.addEventListener('appinstalled', installedHandler);
+    window.addEventListener("beforeinstallprompt", beforeInstallHandler);
+    window.addEventListener("appinstalled", installedHandler);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', beforeInstallHandler);
-      window.removeEventListener('appinstalled', installedHandler);
+      window.removeEventListener("beforeinstallprompt", beforeInstallHandler);
+      window.removeEventListener("appinstalled", installedHandler);
     };
   }, []);
 
   const install = async () => {
     if (isInstalled) {
-      window.location.href = '/';
+      window.location.href = "/";
       return;
     }
 
@@ -130,7 +132,13 @@ const fadeInUp: Variants = {
 /* ---------------- Component ---------------- */
 
 export default function PWAInstallSection() {
-  const { isInstalled, install, showInstructions, setShowInstructions, isIOS } = usePWAInstall();
+  const {
+    isInstalled,
+    install,
+    showInstructions,
+    setShowInstructions,
+    isIOS,
+  } = usePWAInstall();
 
   return (
     <>
@@ -163,14 +171,20 @@ export default function PWAInstallSection() {
                 <DownloadIcon className="mr-2 text-xl" /> Install our Web App
               </motion.span>
 
-              <motion.h1 variants={fadeInUp} className="text-4xl font-semibold md:text-5xl">
+              <motion.h1
+                variants={fadeInUp}
+                className="text-4xl font-semibold md:text-5xl"
+              >
                 Your Daily Drop <br />
                 <span className="text-neutral-400">On Your Homescreen.</span>
               </motion.h1>
 
-              <motion.p variants={fadeInUp} className="text-foreground-muted max-w-md text-sm">
-                Native-app experience. Faster loads, offline access, instant notifications and
-                exclusive drops.
+              <motion.p
+                variants={fadeInUp}
+                className="text-foreground-muted max-w-md text-sm"
+              >
+                Native-app experience. Faster loads, offline access, instant
+                notifications and exclusive drops.
               </motion.p>
 
               {/* Features */}
@@ -227,7 +241,7 @@ export default function PWAInstallSection() {
                   className="bg-foreground text-background flex w-full items-center justify-between rounded-full px-4 py-2 active:scale-[0.98]"
                 >
                   <div className="flex items-center justify-center">
-                    <img
+                    <Image
                       src="/images/logos/ff-app-icon.png"
                       alt="FF"
                       width={32}
@@ -235,7 +249,7 @@ export default function PWAInstallSection() {
                       className="mr-4 invert dark:invert-0"
                     />
                     <span className="text-sm font-bold">
-                      {isInstalled ? 'OPEN APP' : 'FASHION FRIDAY'}
+                      {isInstalled ? "OPEN APP" : "FASHION FRIDAY"}
                     </span>
                   </div>
                   <div className="bg-background text-forground text-foreground flex items-center justify-center rounded-full px-6 py-2">

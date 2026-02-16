@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
   InstagramIcon,
   TwitterIcon,
@@ -19,11 +19,12 @@ import {
   ChevronRightIcon,
   WalletIcon,
   FacebookIcon,
-} from '@ff/ui';
-import { Header } from '@/components/layout/Header';
+} from "@ff/ui";
+import { Header } from "@/components/layout/Header";
+import Image from "next/image";
 
 // --- Types ---
-type ClaimStatus = 'idle' | 'pending' | 'approved';
+type ClaimStatus = "idle" | "pending" | "approved";
 
 interface SocialTask {
   id: string;
@@ -49,87 +50,87 @@ interface Milestone {
 // --- Mock Data ---
 const initialSocialTasks: SocialTask[] = [
   {
-    id: 'soc-1',
-    platform: 'Instagram',
-    profileUrl: 'https://instagram.com',
+    id: "soc-1",
+    platform: "Instagram",
+    profileUrl: "https://instagram.com",
     icon: <InstagramIcon size={32} />,
     rewardAmount: 50,
-    status: 'idle',
-    actionLabel: 'Follow us',
-    placeholder: 'Your Instagram Handle',
+    status: "idle",
+    actionLabel: "Follow us",
+    placeholder: "Your Instagram Handle",
     // Instagram Gradient
-    cardStyle: 'bg-gradient-to-bl from-[#833ab4] via-[#fd1d1d] to-[#fcb045]',
+    cardStyle: "bg-gradient-to-bl from-[#833ab4] via-[#fd1d1d] to-[#fcb045]",
   },
   {
-    id: 'soc-2',
-    platform: 'Twitter',
-    profileUrl: 'https://twitter.com',
+    id: "soc-2",
+    platform: "Twitter",
+    profileUrl: "https://twitter.com",
     icon: <TwitterIcon size={32} />,
     rewardAmount: 50,
-    status: 'idle',
-    actionLabel: 'Follow us',
-    placeholder: 'Your X Handle',
+    status: "idle",
+    actionLabel: "Follow us",
+    placeholder: "Your X Handle",
     // X / Twitter Dark Blue
-    cardStyle: 'bg-gradient-to-tr from-blue-600 to-blue-400',
+    cardStyle: "bg-gradient-to-tr from-blue-600 to-blue-400",
   },
   {
-    id: 'soc-3',
-    platform: 'YouTube',
-    profileUrl: 'https://youtube.com',
+    id: "soc-3",
+    platform: "YouTube",
+    profileUrl: "https://youtube.com",
     icon: <YoutubeIcon size={32} />,
     rewardAmount: 100,
-    status: 'idle',
-    actionLabel: 'Subscribe',
-    placeholder: 'Your Channel Name',
+    status: "idle",
+    actionLabel: "Subscribe",
+    placeholder: "Your Channel Name",
     // YouTube Red
-    cardStyle: 'bg-gradient-to-tr from-red-600 to-red-900',
+    cardStyle: "bg-gradient-to-tr from-red-600 to-red-900",
   },
   {
-    id: 'soc-4',
-    platform: 'Facebook',
-    profileUrl: 'https://facebook.com',
+    id: "soc-4",
+    platform: "Facebook",
+    profileUrl: "https://facebook.com",
     icon: <FacebookIcon size={32} />,
     rewardAmount: 50,
-    status: 'idle',
-    actionLabel: 'Follow us',
-    placeholder: 'Your Facebook Profile URL',
-    cardStyle: 'bg-gradient-to-br from-[#1877F2] to-[#0F5BD8]',
+    status: "idle",
+    actionLabel: "Follow us",
+    placeholder: "Your Facebook Profile URL",
+    cardStyle: "bg-gradient-to-br from-[#1877F2] to-[#0F5BD8]",
   },
 ];
 
 const initialMilestones: Milestone[] = [
   {
-    id: 'mile-1',
-    title: 'Silver Member',
+    id: "mile-1",
+    title: "Silver Member",
     targetAmount: 5000,
     currentAmount: 5000,
     rewardAmount: 500,
     imageUrl:
-      'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop',
+      "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop",
   },
   {
-    id: 'mile-2',
-    title: 'Gold Elite',
+    id: "mile-2",
+    title: "Gold Elite",
     targetAmount: 10000,
     currentAmount: 3250,
     rewardAmount: 1500,
     imageUrl:
-      'https://images.unsplash.com/photo-1628527304948-06157ee3c8a6?q=80&w=800&auto=format&fit=crop',
+      "https://images.unsplash.com/photo-1628527304948-06157ee3c8a6?q=80&w=800&auto=format&fit=crop",
   },
 ];
 
 export default function RewardsPage() {
   const [socials, setSocials] = useState(initialSocialTasks);
   const [selectedTask, setSelectedTask] = useState<SocialTask | null>(null);
-  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [walletBalance] = useState(150);
 
   // --- Modal Logic ---
   const openClaimModal = (task: SocialTask) => {
-    if (task.status === 'idle') {
+    if (task.status === "idle") {
       setSelectedTask(task);
-      setUsernameInput('');
+      setUsernameInput("");
     }
   };
 
@@ -141,7 +142,9 @@ export default function RewardsPage() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     setSocials((prev) =>
-      prev.map((task) => (task.id === selectedTask?.id ? { ...task, status: 'pending' } : task)),
+      prev.map((task) =>
+        task.id === selectedTask?.id ? { ...task, status: "pending" } : task,
+      ),
     );
 
     setIsSubmitting(false);
@@ -158,7 +161,8 @@ export default function RewardsPage() {
               MEMBERS CLUB
             </h1>
             <p className="mx-auto max-w-md text-sm text-zinc-500 md:text-base">
-              Exclusive rewards for our most loyal customers. Collect cards, unlock value.
+              Exclusive rewards for our most loyal customers. Collect cards,
+              unlock value.
             </p>
           </div>
 
@@ -199,7 +203,9 @@ export default function RewardsPage() {
                 </p>
                 <p className="text-sm font-medium text-zinc-300">AJMAL</p>
               </div>
-              <p className="font-mono text-xs tracking-widest opacity-50">**** 8829</p>
+              <p className="font-mono text-xs tracking-widest opacity-50">
+                **** 8829
+              </p>
             </div>
           </div>
         </div>
@@ -219,7 +225,13 @@ export default function RewardsPage() {
               {socials.map((task) => (
                 <div
                   key={task.id}
-                  className={`group relative flex aspect-[1.58/1] w-full flex-col justify-between overflow-hidden rounded-4xl p-6 text-white ${task.cardStyle} ${task.status === 'approved' ? 'opacity-50 grayscale' : 'hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)]'} transition-all duration-500`}
+                  className={`group relative flex aspect-[1.58/1] w-full flex-col justify-between overflow-hidden rounded-4xl p-6 text-white ${
+                    task.cardStyle
+                  } ${
+                    task.status === "approved"
+                      ? "opacity-50 grayscale"
+                      : "hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
+                  } transition-all duration-500`}
                 >
                   {/* Top Row: Icon & Amount */}
                   <div className="relative z-10 flex items-start justify-between">
@@ -236,25 +248,28 @@ export default function RewardsPage() {
                     <p className="mb-1 text-[10px] font-medium tracking-widest uppercase opacity-80">
                       Task
                     </p>
-                    <h3 className="text-xl leading-tight font-bold">{task.actionLabel}</h3>
+                    <h3 className="text-xl leading-tight font-bold">
+                      {task.actionLabel}
+                    </h3>
                   </div>
 
                   {/* Bottom Row: Actions */}
                   <div className="relative z-10 mt-2 flex items-center justify-between">
                     {/* STATUS BADGES */}
-                    {task.status === 'pending' && (
+                    {task.status === "pending" && (
                       <div className="inline-flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-1.5 text-xs font-bold text-yellow-200 backdrop-blur-md">
-                        <ClockIcon size={12} className="animate-pulse" /> Pending
+                        <ClockIcon size={12} className="animate-pulse" />{" "}
+                        Pending
                       </div>
                     )}
-                    {task.status === 'approved' && (
+                    {task.status === "approved" && (
                       <div className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-black/40 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-md">
                         <CheckCircleIcon size={12} /> Claimed
                       </div>
                     )}
 
                     {/* ACTION BUTTONS (Only if Idle) */}
-                    {task.status === 'idle' && (
+                    {task.status === "idle" && (
                       <div className="flex w-full items-center gap-2">
                         {/* 1. Visit Profile Button */}
                         <a
@@ -305,10 +320,12 @@ export default function RewardsPage() {
                     className="border-foreground/10 group relative aspect-[1.58/1] w-full overflow-hidden rounded-4xl border"
                   >
                     {/* Background Image */}
-                    <img
+                    <Image
                       src={milestone.imageUrl}
                       alt={milestone.title}
-                      className="absolute inset-0 h-full w-full object-cover opacity-60 grayscale transition-all duration-700 group-hover:opacity-80 group-hover:grayscale-0"
+                      fill
+                      className="object-cover opacity-60 grayscale transition-all duration-700 group-hover:opacity-80 group-hover:grayscale-0"
+                      sizes="100vw"
                     />
                     {/* Dark Overlay Gradient */}
                     <div className="from-background/80 via-foregroiund/50 absolute inset-0 bg-linear-to-t to-transparent" />
@@ -318,9 +335,13 @@ export default function RewardsPage() {
                       {/* Top */}
                       <div className="flex items-start justify-between">
                         <div
-                          className={`rounded-md border px-3 py-1 text-[10px] font-bold tracking-widest uppercase backdrop-blur-md ${isUnlocked ? 'bg-foreground text-background border-foreground' : 'bg-background/50 text-foreground border-foreground/20'}`}
+                          className={`rounded-md border px-3 py-1 text-[10px] font-bold tracking-widest uppercase backdrop-blur-md ${
+                            isUnlocked
+                              ? "bg-foreground text-background border-foreground"
+                              : "bg-background/50 text-foreground border-foreground/20"
+                          }`}
                         >
-                          {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
+                          {isUnlocked ? "UNLOCKED" : "LOCKED"}
                         </div>
                         <div className="text-right">
                           <span className="block text-2xl leading-none font-bold">
@@ -334,8 +355,15 @@ export default function RewardsPage() {
 
                       {/* Middle */}
                       <div className="translate-y-2 transform text-center transition-transform group-hover:translate-y-0">
-                        {!isUnlocked && <LockIcon className="mx-auto mb-2 opacity-50" size={24} />}
-                        <h3 className="text-xl font-bold tracking-tight">{milestone.title}</h3>
+                        {!isUnlocked && (
+                          <LockIcon
+                            className="mx-auto mb-2 opacity-50"
+                            size={24}
+                          />
+                        )}
+                        <h3 className="text-xl font-bold tracking-tight">
+                          {milestone.title}
+                        </h3>
                       </div>
 
                       {/* Bottom: Progress Bar Integration */}
@@ -355,7 +383,8 @@ export default function RewardsPage() {
 
                         <div className="mt-1 flex items-center justify-between">
                           <p className="text-[10px] opacity-60">
-                            Spent ₹{milestone.currentAmount} / ₹{milestone.targetAmount}
+                            Spent ₹{milestone.currentAmount} / ₹
+                            {milestone.targetAmount}
                           </p>
                           {isUnlocked && (
                             <span className="flex items-center gap-1 text-[10px] font-bold text-green-400">
@@ -401,7 +430,8 @@ export default function RewardsPage() {
                 Claim ₹{selectedTask.rewardAmount}
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-zinc-400">
-                Enter your username. We will verify that you followed our profile.
+                Enter your username. We will verify that you followed our
+                profile.
               </p>
             </div>
 
@@ -427,7 +457,8 @@ export default function RewardsPage() {
               >
                 {isSubmitting ? (
                   <>
-                    <LoaderIcon size={16} className="animate-spin" /> Verifying...
+                    <LoaderIcon size={16} className="animate-spin" />{" "}
+                    Verifying...
                   </>
                 ) : (
                   <>

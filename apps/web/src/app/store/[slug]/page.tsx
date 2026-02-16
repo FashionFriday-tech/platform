@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { useParams, notFound } from 'next/navigation';
+import { useState, useMemo } from "react";
+import { useParams, notFound } from "next/navigation";
 import {
   CategorySlug,
   MOCK_PRODUCTS,
   CATEGORY_FILTERS,
   filterProducts,
   FilterDefinition,
-} from '@/data/store-data';
-import { ChevronDownIcon, SlidersIcon, CloseIcon } from '@ff/ui';
-import { Header } from '@/components/layout/Header';
+} from "@/data/store-data";
+import { ChevronDownIcon, SlidersIcon, CloseIcon } from "@ff/ui";
+import { Header } from "@/components/layout/Header";
+import Image from "next/image";
 
 // --- Filter Accordion Component ---
 function FilterSection({
@@ -31,7 +32,11 @@ function FilterSection({
         className="flex w-full items-center justify-between text-sm font-bold tracking-wider text-black uppercase"
       >
         {section.label}
-        <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDownIcon
+          className={`h-4 w-4 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
       {isOpen && (
@@ -39,7 +44,10 @@ function FilterSection({
           {section.options.map((option) => {
             const isChecked = selectedOptions.includes(option);
             return (
-              <label key={option} className="group flex cursor-pointer items-center">
+              <label
+                key={option}
+                className="group flex cursor-pointer items-center"
+              >
                 <input
                   type="checkbox"
                   className="h-4 w-4 rounded-none border-2 border-neutral-300 bg-white text-black accent-black focus:ring-black"
@@ -48,7 +56,9 @@ function FilterSection({
                 />
                 <span
                   className={`ml-3 text-sm transition-colors ${
-                    isChecked ? 'font-medium text-black' : 'text-neutral-600 group-hover:text-black'
+                    isChecked
+                      ? "font-medium text-black"
+                      : "text-neutral-600 group-hover:text-black"
                   }`}
                 >
                   {option}
@@ -69,22 +79,26 @@ export default function CategoryPage() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   // State for active filters: { 'brand': ['Nike', 'Adidas'], 'size': ['EU 42'] }
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(
+    {},
+  );
 
   // Validate Category
   const validCategories: CategorySlug[] = [
-    'sneakers',
-    'watches',
-    'cloths',
-    'slippers',
-    'accessories',
+    "sneakers",
+    "watches",
+    "cloths",
+    "slippers",
+    "accessories",
   ];
   if (!validCategories.includes(slug)) {
     notFound();
   }
 
   // 1. Get products for this category initially
-  const initialCategoryProducts = MOCK_PRODUCTS.filter((p) => p.category === slug);
+  const initialCategoryProducts = MOCK_PRODUCTS.filter(
+    (p) => p.category === slug,
+  );
 
   // 2. Get available filters for this category
   const availableFilters = CATEGORY_FILTERS[slug] || [];
@@ -128,7 +142,9 @@ export default function CategoryPage() {
 
       <div className="min-h-screen bg-white">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-200 bg-white/80 px-4 py-4 backdrop-blur-md sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-black tracking-tighter uppercase">{slug}</h1>
+          <h1 className="text-2xl font-black tracking-tighter uppercase">
+            {slug}
+          </h1>
 
           <div className="flex items-center gap-4">
             {/* Sorting (Simplified for demo) */}
@@ -142,7 +158,7 @@ export default function CategoryPage() {
               onClick={() => setIsMobileFilterOpen(true)}
               className="flex items-center gap-2 rounded-4xl border-2 border-black px-4 py-2 text-sm font-bold uppercase lg:hidden"
             >
-              <SlidersIcon className="h-4 w-4" /> Filters{' '}
+              <SlidersIcon className="h-4 w-4" /> Filters{" "}
               {activeFilterCount > 0 && `(${activeFilterCount})`}
             </button>
           </div>
@@ -168,7 +184,9 @@ export default function CategoryPage() {
                   key={section.id}
                   section={section}
                   selectedOptions={activeFilters[section.id] || []}
-                  onChange={(option) => handleFilterChange(section.id as string, option)}
+                  onChange={(option) =>
+                    handleFilterChange(section.id as string, option)
+                  }
                 />
               ))}
             </aside>
@@ -185,14 +203,12 @@ export default function CategoryPage() {
                     <div key={product.id} className="group">
                       {/* Product Image */}
                       <div className="relative mb-4 aspect-3/4 w-full overflow-hidden rounded-4xl bg-neutral-100">
-                        <img
-                          src={product.image || '/images/placeholders/2.png'}
+                        <Image
+                          src={product.image || "/images/placeholders/2.png"}
                           alt={product.name}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          onError={(e) => {
-                            e.currentTarget.src = '/images/placeholders/2.png';
-                          }}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          sizes="100vw"
                         />
                       </div>
 
@@ -204,7 +220,9 @@ export default function CategoryPage() {
                         <h3 className="truncate text-sm font-bold tracking-wide text-black uppercase">
                           {product.name}
                         </h3>
-                        <p className="text-sm text-neutral-900">₹{product.price}</p>
+                        <p className="text-sm text-neutral-900">
+                          ₹{product.price}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -236,7 +254,9 @@ export default function CategoryPage() {
                   key={section.id}
                   section={section}
                   selectedOptions={activeFilters[section.id] || []}
-                  onChange={(option) => handleFilterChange(section.id as string, option)}
+                  onChange={(option) =>
+                    handleFilterChange(section.id as string, option)
+                  }
                 />
               ))}
               <button

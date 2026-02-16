@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react'; // Fix: Explicitly import React to resolve UMD global error
-import { motion, AnimatePresence } from 'framer-motion';
-import { Product } from '@ff/schemas';
-import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
+import React from "react"; // Fix: Explicitly import React to resolve UMD global error
+import { motion, AnimatePresence } from "framer-motion";
+import { Product } from "@ff/schemas";
+import { CatalogueProductCard } from "@/components/ui/cards/catlogue-product-card";
+import Image from "next/image";
 
 interface GridProps {
   products: Product[];
@@ -39,10 +40,13 @@ export const CatalogueGrid = ({ products }: GridProps) => {
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-background relative col-span-2 h-full overflow-hidden rounded-4xl md:h-full xl:col-span-2"
                 >
-                  <img
+                  <Image
                     src="/gif/ad.gif"
                     alt="Promotion"
-                    className="h-full w-full scale-105 object-cover"
+                    fill
+                    className="scale-105 object-cover"
+                    sizes="100vw"
+                    unoptimized
                   />
                   <div className="absolute inset-0 flex flex-col justify-center bg-black/20 px-10">
                     <h4 className="text-2xl font-black tracking-tighter text-white uppercase italic">

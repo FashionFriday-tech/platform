@@ -1,16 +1,19 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ShoppingBagIcon, HeartMinusIcon, BellIcon } from '@ff/ui';
-import { Product } from '@/types/wishlist';
-import { cn } from '@/lib/utils';
+import Link from "next/link";
+import { ShoppingBagIcon, HeartMinusIcon, BellIcon } from "@ff/ui";
+import { Product } from "@/types/wishlist";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 interface WishlistCardProps {
   product: Product;
 }
 
 export function WishlistCard({ product }: WishlistCardProps) {
   const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    ? Math.round(
+        ((product.originalPrice - product.price) / product.originalPrice) * 100,
+      )
     : 0;
 
   return (
@@ -18,10 +21,12 @@ export function WishlistCard({ product }: WishlistCardProps) {
       {/* 1. Left Side: Image Container */}
       <div className="bg-background-muted relative aspect-square w-40 shrink-0 overflow-hidden rounded-2xl sm:w-32 md:w-40">
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
-          <img
+          <Image
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="100vw"
           />
         </Link>
 
@@ -59,7 +64,9 @@ export function WishlistCard({ product }: WishlistCardProps) {
             </p>
 
             <div className="mt-4 flex items-center justify-start gap-4">
-              <span className="text-foreground font-bold">${product.price}</span>
+              <span className="text-foreground font-bold">
+                ${product.price}
+              </span>
               {product.originalPrice && (
                 <span className="text-foreground-subtle line-through">
                   ${product.originalPrice}

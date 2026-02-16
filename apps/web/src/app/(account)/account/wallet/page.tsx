@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   WalletIcon,
   ArrowUpRightIcon,
@@ -13,24 +13,25 @@ import {
   PlusIcon,
   ChevronRightIcon,
   TrendingUpIcon,
-} from '@ff/ui';
-import { cn } from '@/lib/utils';
+} from "@ff/ui";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 // --- Types ---
-type TransactionType = 'reward' | 'refund' | 'purchase' | 'topup';
+type TransactionType = "reward" | "refund" | "purchase" | "topup";
 
 interface Transaction {
   id: string;
   type: TransactionType;
   amount: number;
   date: string;
-  status: 'completed' | 'pending' | 'failed';
+  status: "completed" | "pending" | "failed";
   description: string;
   timestamp: number;
 }
 
 export default function WalletPage() {
-  const [filter, setFilter] = useState<'all' | TransactionType>('all');
+  const [filter, setFilter] = useState<"all" | TransactionType>("all");
   const totals = useMemo(
     () => ({
       total: 3199,
@@ -42,46 +43,46 @@ export default function WalletPage() {
 
   const transactions: Transaction[] = [
     {
-      id: 'TX101',
-      type: 'reward',
+      id: "TX101",
+      type: "reward",
       amount: 100,
-      date: '26 Jan 2026',
-      status: 'completed',
-      description: 'Referral Reward: Rahul S.',
+      date: "26 Jan 2026",
+      status: "completed",
+      description: "Referral Reward: Rahul S.",
       timestamp: 1737885600000,
     },
     {
-      id: 'TX102',
-      type: 'refund',
+      id: "TX102",
+      type: "refund",
       amount: 2499,
-      date: '24 Jan 2026',
-      status: 'completed',
-      description: 'Refund: Order #FF9021',
+      date: "24 Jan 2026",
+      status: "completed",
+      description: "Refund: Order #FF9021",
       timestamp: 1737712800000,
     },
     {
-      id: 'TX103',
-      type: 'reward',
+      id: "TX103",
+      type: "reward",
       amount: 500,
-      date: '23 Jan 2026',
-      status: 'completed',
-      description: 'Gift Card: BDAY500',
+      date: "23 Jan 2026",
+      status: "completed",
+      description: "Gift Card: BDAY500",
       timestamp: 1737626400000,
     },
     {
-      id: 'TX104',
-      type: 'purchase',
+      id: "TX104",
+      type: "purchase",
       amount: -1200,
-      date: '22 Jan 2026',
-      status: 'completed',
-      description: 'Payment for Shoes',
+      date: "22 Jan 2026",
+      status: "completed",
+      description: "Payment for Shoes",
       timestamp: 1737540000000,
     },
   ];
 
   const sortedLedger = useMemo(() => {
     return transactions
-      .filter((t) => filter === 'all' || t.type === filter)
+      .filter((t) => filter === "all" || t.type === filter)
       .sort((a, b) => b.timestamp - a.timestamp);
   }, [filter]);
 
@@ -98,7 +99,7 @@ export default function WalletPage() {
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
               whileHover={{ scale: 1.015 }}
               className="relative aspect-5/4 h-full overflow-hidden rounded-4xl shadow-2xl"
             >
@@ -160,11 +161,14 @@ export default function WalletPage() {
                   </p>
                 </div>
                 <p className="text-foreground/80 max-w-md text-sm leading-relaxed font-bold italic md:text-base">
-                  Your <span className="text-foreground font-black">Refund Wallet</span> is 100%
-                  usable. Reward Wallet usage is capped at{' '}
+                  Your{" "}
+                  <span className="text-foreground font-black">
+                    Refund Wallet
+                  </span>{" "}
+                  is 100% usable. Reward Wallet usage is capped at{" "}
                   <span className="decoration-foreground underline underline-offset-4">
                     5% of total order value
-                  </span>{' '}
+                  </span>{" "}
                   per purchase.
                 </p>
               </div>
@@ -223,15 +227,15 @@ export default function WalletPage() {
               </h3>
             </div>
             <div className="bg-foreground/10 flex w-full items-center rounded-2xl p-1 md:w-auto">
-              {(['all', 'refund', 'reward', 'purchase'] as const).map((t) => (
+              {(["all", "refund", "reward", "purchase"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setFilter(t)}
                   className={cn(
-                    'flex-1 rounded-xl py-2.5 text-[9px] font-black tracking-widest uppercase transition-all md:flex-none',
+                    "flex-1 rounded-xl py-2.5 text-[9px] font-black tracking-widest uppercase transition-all md:flex-none",
                     filter === t
-                      ? 'bg-background text-foreground shadow-lg'
-                      : 'opacity-30 hover:opacity-100',
+                      ? "bg-background text-foreground shadow-lg"
+                      : "opacity-30 hover:opacity-100",
                   )}
                 >
                   {t}
@@ -253,10 +257,10 @@ export default function WalletPage() {
                   <div className="flex items-center gap-4">
                     <div
                       className={cn(
-                        'flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.5rem] transition-transform group-hover:scale-110',
+                        "flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.5rem] transition-transform group-hover:scale-110",
                         tx.amount > 0
-                          ? 'bg-emerald-500/10 text-emerald-500'
-                          : 'bg-red-400/10 text-red-400',
+                          ? "bg-emerald-500/10 text-emerald-500"
+                          : "bg-red-400/10 text-red-400",
                       )}
                     >
                       {tx.amount > 0 ? (
@@ -282,8 +286,8 @@ export default function WalletPage() {
                   <div className="text-right">
                     <p
                       className={cn(
-                        'text-lg font-black tracking-tighter text-nowrap italic',
-                        tx.amount > 0 ? 'text-emerald-500' : 'text-red-400',
+                        "text-lg font-black tracking-tighter text-nowrap italic",
+                        tx.amount > 0 ? "text-emerald-500" : "text-red-400",
                       )}
                     >
                       ₹{Math.abs(tx.amount).toLocaleString()}
@@ -303,7 +307,14 @@ export default function WalletPage() {
 }
 
 // --- Sub Wallet Components ---
-function SubWalletCard({ label, value, icon, description, action, color }: any) {
+function SubWalletCard({
+  label,
+  value,
+  icon,
+  description,
+  action,
+  color,
+}: any) {
   const [openWallet, setOpenWallet] = useState(false);
 
   return (
@@ -313,13 +324,19 @@ function SubWalletCard({ label, value, icon, description, action, color }: any) 
     >
       <div
         className={`border-border bg-foreground absolute left-0 z-20 w-full rounded-4xl border-t py-20 transition-all duration-300 ${
-          openWallet ? '-top-6' : 'top-6'
+          openWallet ? "-top-6" : "top-6"
         }`}
       >
         <h3 className="text-background absolute top-5 right-5 mb-2 text-3xl font-semibold tracking-tighter italic">
           {value}
         </h3>
-        <img src="/images/wallet/chip.png" alt="chip" className="absolute top-6 left-6 w-12" />
+        <Image
+          src="/images/wallet/chip.png"
+          alt="Card chip"
+          width={48}
+          height={48}
+          className="absolute left-6 top-6 w-12 h-auto"
+        />{" "}
       </div>
       <div className="border-border bg-background absolute top-14 right-2 left-2 z-40 w-auto rounded-4xl border-t-2 border-dashed py-20" />
 
@@ -331,7 +348,9 @@ function SubWalletCard({ label, value, icon, description, action, color }: any) 
           >
             {icon}
           </div>
-          <p className="text-sm font-black tracking-widest uppercase">{label}</p>
+          <p className="text-sm font-black tracking-widest uppercase">
+            {label}
+          </p>
           <div className="p-4">
             <ChevronRightIcon
               size={18}

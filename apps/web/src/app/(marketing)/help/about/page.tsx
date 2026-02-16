@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   MoveRightIcon,
   ShieldCheckIcon,
@@ -6,7 +6,8 @@ import {
   StarIcon,
   ArrowUpRightIcon,
   GlobeIcon,
-} from '@ff/ui';
+} from "@ff/ui";
+import Image from "next/image";
 
 // Note: Ensure you have framer-motion installed for the smoothest experience
 // npm install framer-motion
@@ -20,7 +21,7 @@ export default function AboutPage() {
           className="absolute inset-0 scale-110 bg-cover bg-fixed bg-center bg-no-repeat transition-transform duration-3000 hover:scale-100"
           style={{
             backgroundImage: `url('https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=2000&auto=format&fit=crop')`,
-            filter: 'brightness(0.3) grayscale(0.5)',
+            filter: "brightness(0.3) grayscale(0.5)",
           }}
         />
 
@@ -46,15 +47,20 @@ export default function AboutPage() {
           </h1>
 
           <p className="mx-auto mt-12 max-w-2xl text-lg leading-relaxed font-light text-white/60 md:text-xl">
-            Bridging the gap between{' '}
-            <span className="font-medium text-white">Global Luxury Aesthetics</span> and{' '}
+            Bridging the gap between{" "}
+            <span className="font-medium text-white">
+              Global Luxury Aesthetics
+            </span>{" "}
+            and{" "}
             <span className="font-medium text-white">India's Ambition.</span>
           </p>
         </div>
 
         {/* Floating Scroll Indicator */}
         <div className="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-4 opacity-50">
-          <p className="vertical-text text-[10px] tracking-[0.5em] uppercase">Scroll</p>
+          <p className="vertical-text text-[10px] tracking-[0.5em] uppercase">
+            Scroll
+          </p>
           <div className="from-brand h-12 w-px bg-linear-to-b to-transparent" />
         </div>
       </section>
@@ -70,33 +76,40 @@ export default function AboutPage() {
 
             <div className="space-y-8 text-xl leading-relaxed font-light text-white/70">
               <p className="border-brand border-l-4 py-2 pl-8">
-                "It started with a realization: Why should the youth of India be mocked for their
-                fashion sense just because global labels are priced out of reach? High fashion isn't
-                a privilege—it's a form of self-expression."
+                "It started with a realization: Why should the youth of India be
+                mocked for their fashion sense just because global labels are
+                priced out of reach? High fashion isn't a privilege—it's a form
+                of self-expression."
               </p>
 
               <p>
-                In 2020, <span className="font-bold text-white">Fashion Friday</span> was born out
-                of a rebellion. We saw a nation rising digitally but left behind aesthetically. We
-                decided to bridge that gap by sourcing the finest surplus and master-quality pieces
-                that don't just look the part—they feel the part.
+                In 2020,{" "}
+                <span className="font-bold text-white">Fashion Friday</span> was
+                born out of a rebellion. We saw a nation rising digitally but
+                left behind aesthetically. We decided to bridge that gap by
+                sourcing the finest surplus and master-quality pieces that don't
+                just look the part—they feel the part.
               </p>
 
               <p className="text-white">
-                We aren't just selling clothes; we are providing the "Armor of Confidence" for the
-                next generation of Indian creators, entrepreneurs, and dreamers to stand tall on the
-                global stage.
+                We aren't just selling clothes; we are providing the "Armor of
+                Confidence" for the next generation of Indian creators,
+                entrepreneurs, and dreamers to stand tall on the global stage.
               </p>
             </div>
           </div>
 
           <div className="relative lg:col-span-5">
             <div className="group relative aspect-4/5 overflow-hidden rounded-4xl border border-white/10">
-              <img
-                src="/images/model/aj.png"
-                className="h-full w-full scale-125 object-cover grayscale transition-all duration-700"
-                alt="Founder Vision"
-              />
+              <div className="relative h-full w-full">
+                <Image
+                  src="/images/model/aj.png"
+                  alt="Founder Vision"
+                  fill
+                  className="scale-125 object-cover grayscale transition-all duration-700"
+                  sizes="100vw"
+                />
+              </div>
               <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute right-8 bottom-8 left-8">
                 <p className="text-brand mb-2 text-sm font-black tracking-widest uppercase italic">
@@ -121,32 +134,38 @@ export default function AboutPage() {
                 Uncompromised Quality
               </h4>
               <p className="text-sm leading-relaxed text-black/60">
-                Every piece undergoes a rigorous 12-point quality check. If it’s not master-grade,
-                it doesn’t make the cut.
+                Every piece undergoes a rigorous 12-point quality check. If it’s
+                not master-grade, it doesn’t make the cut.
               </p>
             </div>
             <div className="space-y-4">
               <GlobeIcon size={40} className="text-brand-dark" />
-              <h4 className="text-xl font-black tracking-tighter uppercase">Global Trends</h4>
+              <h4 className="text-xl font-black tracking-tighter uppercase">
+                Global Trends
+              </h4>
               <p className="text-sm leading-relaxed text-black/60">
-                We track runways from Tokyo to Paris, bringing the most relevant streetwear to India
-                in real-time.
+                We track runways from Tokyo to Paris, bringing the most relevant
+                streetwear to India in real-time.
               </p>
             </div>
             <div className="space-y-4">
               <StarIcon size={40} className="text-brand-dark" />
-              <h4 className="text-xl font-black tracking-tighter uppercase">10k+ Community</h4>
+              <h4 className="text-xl font-black tracking-tighter uppercase">
+                10k+ Community
+              </h4>
               <p className="text-sm leading-relaxed text-black/60">
-                More than customers, we are a brotherhood of style-conscious Indians across all 28
-                states.
+                More than customers, we are a brotherhood of style-conscious
+                Indians across all 28 states.
               </p>
             </div>
             <div className="space-y-4">
               <ZapIcon size={40} className="text-brand-dark" />
-              <h4 className="text-xl font-black tracking-tighter uppercase">Fastest Shipping</h4>
+              <h4 className="text-xl font-black tracking-tighter uppercase">
+                Fastest Shipping
+              </h4>
               <p className="text-sm leading-relaxed text-black/60">
-                Our logistics network ensures that whether you're in Mumbai or Mizoram, your style
-                arrives fast.
+                Our logistics network ensures that whether you're in Mumbai or
+                Mizoram, your style arrives fast.
               </p>
             </div>
           </div>
@@ -167,8 +186,9 @@ export default function AboutPage() {
             the weekend?
           </h3>
           <p className="mx-auto max-w-4xl text-xl leading-tight font-medium italic md:text-3xl">
-            "We believe that looking like a million bucks shouldn't cost a million bucks. True
-            confidence is the only luxury that matters, and we’ve made it accessible to everyone."
+            "We believe that looking like a million bucks shouldn't cost a
+            million bucks. True confidence is the only luxury that matters, and
+            we’ve made it accessible to everyone."
           </p>
         </div>
       </section>
@@ -184,15 +204,16 @@ export default function AboutPage() {
               More than <br /> a Store.
             </h2>
             <p className="mt-10 max-w-md text-lg text-white/50">
-              We are evolving into India's premier fashion hub. From curated collections to original
-              streetwear designs, we are building the future of Indian Gen-Z culture.
+              We are evolving into India's premier fashion hub. From curated
+              collections to original streetwear designs, we are building the
+              future of Indian Gen-Z culture.
             </p>
           </div>
 
           <div className="flex flex-col gap-6">
             <button className="group relative overflow-hidden rounded-2xl bg-white px-12 py-8 text-xl font-black tracking-widest text-black uppercase transition-all hover:pr-16">
               <span className="relative z-10 flex items-center justify-between">
-                Explore The Drop{' '}
+                Explore The Drop{" "}
                 <ArrowUpRightIcon className="transition-transform group-hover:rotate-45" />
               </span>
               <div className="bg-brand absolute inset-0 translate-y-full transition-transform duration-500 group-hover:translate-y-0" />
@@ -200,7 +221,7 @@ export default function AboutPage() {
 
             <button className="group rounded-2xl border border-white/20 px-12 py-8 text-xl font-black tracking-widest text-white uppercase backdrop-blur-sm transition-all hover:bg-white/10">
               <span className="flex items-center justify-between">
-                Join the Community{' '}
+                Join the Community{" "}
                 <MoveRightIcon className="transition-transform group-hover:translate-x-2" />
               </span>
             </button>

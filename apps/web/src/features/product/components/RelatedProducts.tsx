@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { StarBadgeIcon, StarsIcon } from '@ff/ui';
-import { Product } from '@ff/schemas';
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { StarBadgeIcon, StarsIcon } from "@ff/ui";
+import { Product } from "@ff/schemas";
+import Image from "next/image";
 
 interface RelatedProductsProps {
   products?: Product[];
@@ -35,12 +36,17 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                 exit={{ opacity: 0 }}
                 className="group w-full cursor-pointer"
               >
-                <Link href={`/product/${product.slug}`} className="block w-full">
+                <Link
+                  href={`/product/${product.slug}`}
+                  className="block w-full"
+                >
                   <div className="bg-foreground/5 relative aspect-4/5 w-full overflow-hidden rounded-[2.5rem]">
-                    <img
-                      src={product.media.mainImage || '/images/placeholder.png'}
+                    <Image
+                      src={product.media.mainImage || "/images/placeholder.png"}
                       alt={product.name}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      sizes="100vw"
                     />
                   </div>
                 </Link>
@@ -48,7 +54,13 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                 <div className="mt-4 space-y-1 px-1">
                   {/* Brand & Quality */}
                   <div className="mb-0.5 flex items-center justify-between text-[10px]">
-                    <img src="/images/brand-logos/nike.png" alt="brand" className="w-10 invert" />
+                    <Image
+                      src="/images/brand-logos/nike.png"
+                      alt="brand"
+                      width={40}
+                      height={40}
+                      className="invert"
+                    />
 
                     <span className="border-border flex items-center gap-1 rounded-full border px-2 py-0.5 font-bold text-blue-500 uppercase">
                       <StarBadgeIcon /> {product.attributes.quality}
@@ -67,7 +79,9 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                         <p className="text-foreground/40 font-medium line-through">
                           ₹{product.price.ogPrice}
                         </p>
-                        <p className="font-black text-green-500">₹{product.price.sellingPrice}</p>
+                        <p className="font-black text-green-500">
+                          ₹{product.price.sellingPrice}
+                        </p>
                       </span>
 
                       <span className="flex items-center gap-1 text-[14px] text-yellow-500">
