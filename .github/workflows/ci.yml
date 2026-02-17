@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, dev, fix/lint-errors]
   pull_request:
 
 concurrency:
