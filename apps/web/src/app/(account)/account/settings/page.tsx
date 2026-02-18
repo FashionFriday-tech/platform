@@ -20,6 +20,7 @@ import {
   CloseIcon,
 } from '@ff/ui';
 import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
+import Link from 'next/link';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -193,12 +194,12 @@ export default function SettingsPage() {
           <p className="text-[9px] font-black tracking-[0.5em] uppercase italic">
             Fashion Friday v1.0
           </p>
-          <a
+          <Link
             href="https://unity11-solutions.com"
             className="text-[8px] font-bold tracking-widest uppercase"
           >
             Engineered by Unity11
-          </a>
+          </Link>
         </div>
       </main>
 

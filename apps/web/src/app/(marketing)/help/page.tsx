@@ -41,7 +41,7 @@ export default function HelpHub() {
 
       {/* 2. LIVE SUPPORT GRID (WhatsApp & Chat) */}
       <section className="mb-10 grid h-auto grid-cols-1 gap-4 md:h-64 md:grid-cols-2 lg:grid-cols-3">
-        <a
+        <Link
           href="https://wa.me/+917558969093"
           className="group border-border flex items-center justify-between rounded-4xl border p-12 transition-all duration-500 hover:bg-[#25D366]"
         >
@@ -59,8 +59,8 @@ export default function HelpHub() {
             </div>
           </div>
           <ArrowUpRightIcon className="group-hover:text-white" size={32} />
-        </a>
-        <a
+        </Link>
+        <Link
           href="tel:+91 7558969093"
           className="group border-border flex items-center justify-between rounded-4xl border p-12 transition-all duration-500 hover:bg-[#2576d3]"
         >
@@ -77,7 +77,7 @@ export default function HelpHub() {
             </div>
           </div>
           <ArrowUpRightIcon className="group-hover:text-white" size={32} />
-        </a>
+        </Link>
         <button
           onClick={handleEmailClick}
           className="group border-border flex w-full items-center justify-between rounded-4xl border p-12 text-start transition-all duration-500 hover:bg-[#d32525]"

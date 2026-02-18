@@ -22,6 +22,7 @@ import {
 } from '@ff/ui';
 import { Header } from '@/components/layout/Header';
 import Image from 'next/image';
+import Link from 'next/link';
 
 // --- Types ---
 type ClaimStatus = 'idle' | 'pending' | 'approved';
@@ -266,7 +267,7 @@ export default function RewardsPage() {
                     {task.status === 'idle' && (
                       <div className="flex w-full items-center gap-2">
                         {/* 1. Visit Profile Button */}
-                        <a
+                        <Link
                           href={task.profileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -274,7 +275,7 @@ export default function RewardsPage() {
                           title="Go to Profile"
                         >
                           <ExternalLinkIcon size={16} />
-                        </a>
+                        </Link>
 
                         {/* 2. Claim Button */}
                         <button

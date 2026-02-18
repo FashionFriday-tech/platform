@@ -44,7 +44,7 @@ export default function CartPage() {
                     </Link>
                   </div>
                 )}
-                <a
+                <Link
                   href="#summary"
                   className="bg-background/80 border-border animate-bounce-subtle group right-6 bottom-28 z-40 mt-10 flex items-center justify-between gap-3 rounded-full border px-6 py-3 backdrop-blur-xl transition-all active:scale-95 lg:hidden"
                 >
@@ -60,7 +60,7 @@ export default function CartPage() {
                   <div className="bg-foreground text-background flex h-8 w-8 items-center justify-center rounded-full transition-transform group-hover:translate-y-0.5">
                     <ChevronDownIcon size={16} />
                   </div>
-                </a>
+                </Link>
               </div>
 
               {/* 3. Cross-sell Section */}

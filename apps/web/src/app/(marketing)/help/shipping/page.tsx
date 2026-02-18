@@ -2,6 +2,7 @@
 import React from 'react';
 import { shippingData } from '@/data/shipping';
 import { NavigationIcon, LifeBuoyIcon, AlertTriangleIcon, CameraIcon } from '@ff/ui';
+import Link from 'next/link';
 
 export default function ShippingDeliveryPage() {
   return (
@@ -149,24 +150,24 @@ export default function ShippingDeliveryPage() {
       {/* NAV FOOTER */}
       <nav className="mx-auto mt-32 flex max-w-7xl flex-col items-center justify-between gap-8 border-t border-white/5 px-6 pt-20 md:flex-row">
         <div className="flex gap-10">
-          <a
+          <Link
             href="/help/returns"
             className="hover:text-brand text-[10px] font-black opacity-30 transition-all hover:opacity-100"
           >
             Returns Policy
-          </a>
-          <a
+          </Link>
+          <Link
             href="/help/faq"
             className="hover:text-brand text-[10px] font-black opacity-30 transition-all hover:opacity-100"
           >
             Common FAQ
-          </a>
-          <a
+          </Link>
+          <Link
             href="/terms"
             className="hover:text-brand text-[10px] font-black opacity-30 transition-all hover:opacity-100"
           >
             Full Terms
-          </a>
+          </Link>
         </div>
         <p className="text-[9px] font-black tracking-[0.4em] opacity-20">
           ARCHITECT SYSTEMS // 2026 LOGISTICS

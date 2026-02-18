@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRightIcon, TagIcon, ShieldCheckIcon } from '@ff/ui';
+import Link from 'next/link';
 
 export function OrderSummary() {
   const subtotal = 3798;
@@ -96,12 +97,12 @@ export function OrderSummary() {
             </span>
             <span className="text-xl leading-none font-bold">₹{total.toLocaleString()}</span>
           </div>
-          <a
+          <Link
             href="/checkout/review"
             className="bg-background text-foreground flex h-12 items-center gap-2 rounded-full px-6 font-black tracking-widest uppercase transition-all hover:scale-[1.02] active:scale-95"
           >
             Checkout Now <ArrowRightIcon size={16} />
-          </a>
+          </Link>
         </div>
       </div>
     </section>

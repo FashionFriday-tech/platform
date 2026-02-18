@@ -147,9 +147,9 @@ export default function Footer() {
               &copy; {new Date().getFullYear()} Fashion Friday - All Rights Reserved
             </div>
             <div className="transition-colors">
-              <a href="https://unity11solutions.com" target="_blank" rel="noopener noreferrer">
+              <Link href="https://unity11solutions.com" target="_blank" rel="noopener noreferrer">
                 Design & Development by <span className="underline">Unity11</span>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
