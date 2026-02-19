@@ -12,21 +12,41 @@ import {
 } from '@ff/ui';
 import { sizeData } from '@/data/sizes';
 
+// --- 1. DEFINE TYPES ---
+type CategoryKey = keyof typeof sizeData;
+
+interface SizeChartRow {
+  [key: string]: string | number;
+}
+
+interface CategoryData {
+  units: string[];
+  chart: SizeChartRow[];
+}
+
 export default function SizeGuidePage() {
-  const [activeCat, setActiveCat] = useState<keyof typeof sizeData>('footwear');
-  const [baseUnit, setBaseUnit] = useState<string>('');
-  const [targetUnit, setTargetUnit] = useState<string>('');
+  const [activeCat, setActiveCat] = useState<CategoryKey>('footwear');
+
+  // --- 2. SAFE DATA ACCESS ---
+  // We cast this to CategoryData to stop the "any" errors
+  const currentCatData = (sizeData as Record<CategoryKey, CategoryData>)[activeCat];
+  const availableUnits = currentCatData.units;
+
+  // Initialize with actual values from the data instead of empty strings
+  const [baseUnit, setBaseUnit] = useState<string>(availableUnits[0]);
+  const [targetUnit, setTargetUnit] = useState<string>(availableUnits[availableUnits.length - 1]);
+
   const [activePicker, setActivePicker] = useState<'base' | 'target' | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
-  // Sync units when category changes
-  useEffect(() => {
-    const availableUnits = sizeData[activeCat].units;
+  // --- 3. SYNC UNITS ON CAT CHANGE (Render-Phase) ---
+  const [prevCat, setPrevCat] = useState<CategoryKey>(activeCat);
+  if (activeCat !== prevCat) {
+    setPrevCat(activeCat);
     setBaseUnit(availableUnits[0]);
     setTargetUnit(availableUnits[availableUnits.length - 1]);
-  }, [activeCat]);
+  }
 
-  // Handle clicking outside to close the picker
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
@@ -68,10 +88,10 @@ export default function SizeGuidePage() {
       {/* 2. CATEGORY SWITCHER */}
       <nav className="mx-auto mb-16 max-w-4xl px-6">
         <div className="bg-muted/20 border-border flex gap-1 rounded-full border p-1.5">
-          {['footwear', 'apparel'].map((id) => (
+          {(['footwear', 'apparel'] as const).map((id) => (
             <button
               key={id}
-              onClick={() => setActiveCat(id as any)}
+              onClick={() => setActiveCat(id)}
               className={`flex flex-1 items-center justify-center gap-3 rounded-full py-4 text-[10px] font-black tracking-widest uppercase transition-all duration-500 ${
                 activeCat === id
                   ? 'bg-foreground text-background shadow-xl'
@@ -90,7 +110,6 @@ export default function SizeGuidePage() {
         <div className="sticky top-20 z-40 mb-20" ref={pickerRef}>
           <div className="bg-foreground text-background rounded-[2.5rem] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.7)]">
             <div className="relative flex items-center">
-              {/* FROM BUTTON */}
               <button
                 onClick={() => setActivePicker(activePicker === 'base' ? null : 'base')}
                 className="flex flex-1 flex-col items-center rounded-3xl py-4 transition-all"
@@ -104,14 +123,11 @@ export default function SizeGuidePage() {
                   </span>
                   <ChevronDownIcon
                     size={14}
-                    className={`opacity-40 transition-transform ${
-                      activePicker === 'base' ? 'rotate-180' : ''
-                    }`}
+                    className={`opacity-40 transition-transform ${activePicker === 'base' ? 'rotate-180' : ''}`}
                   />
                 </div>
               </button>
 
-              {/* SWAP TOGGLE */}
               <button
                 onClick={handleSwap}
                 className="bg-brand z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all hover:scale-110 active:scale-95 md:h-12 md:w-12"
@@ -119,7 +135,6 @@ export default function SizeGuidePage() {
                 <ArrowLeftRightIcon size={18} className="text-background" />
               </button>
 
-              {/* TO BUTTON */}
               <button
                 onClick={() => setActivePicker(activePicker === 'target' ? null : 'target')}
                 className="flex flex-1 flex-col items-center rounded-3xl py-4 text-center transition-all hover:bg-white/5"
@@ -130,9 +145,7 @@ export default function SizeGuidePage() {
                 <div className="mr-4 flex items-center gap-2">
                   <ChevronDownIcon
                     size={14}
-                    className={`opacity-40 transition-transform ${
-                      activePicker === 'target' ? 'rotate-180' : ''
-                    }`}
+                    className={`opacity-40 transition-transform ${activePicker === 'target' ? 'rotate-180' : ''}`}
                   />
                   <span className="text-sm font-black tracking-tighter text-nowrap uppercase md:text-lg">
                     {targetUnit}
@@ -140,7 +153,6 @@ export default function SizeGuidePage() {
                 </div>
               </button>
 
-              {/* DYNAMIC DROPDOWN MODAL */}
               {activePicker && (
                 <div className="bg-foreground animate-in slide-in-from-top-2 absolute top-[120%] left-0 w-full rounded-[2.5rem] p-6 shadow-2xl duration-300">
                   <div className="mb-6 flex items-center justify-between px-2">
@@ -155,11 +167,15 @@ export default function SizeGuidePage() {
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                    {sizeData[activeCat].units.map((u: string) => (
+                    {availableUnits.map((u) => (
                       <button
                         key={u}
                         onClick={() => {
-                          activePicker === 'base' ? setBaseUnit(u) : setTargetUnit(u);
+                          if (activePicker === 'base') {
+                            setBaseUnit(u);
+                          } else {
+                            setTargetUnit(u);
+                          }
                           setActivePicker(null);
                         }}
                         className={`flex items-center justify-center rounded-4xl px-4 py-5 text-sm font-black tracking-widest uppercase transition-all ${
@@ -180,14 +196,14 @@ export default function SizeGuidePage() {
 
         {/* 4. RESULTS GRID */}
         <div className="relative z-0 space-y-4">
-          {sizeData[activeCat].chart.map((row: any, i: number) => (
+          {currentCatData.chart.map((row, i) => (
             <div
               key={i}
               className="group bg-muted/5 border-border hover:bg-muted/10 hover:border-foreground flex items-center justify-between rounded-4xl border p-5 transition-all duration-500"
             >
               <div className="flex min-w-28 flex-col items-center md:min-w-44">
                 <span className="text-3xl leading-none font-black tracking-tighter md:text-5xl">
-                  {String(row[baseUnit])}
+                  {String(row[baseUnit] ?? '-')}
                 </span>
                 <p className="mt-3 text-[9px] font-black tracking-[0.2em] uppercase opacity-30">
                   {baseUnit}
@@ -200,7 +216,7 @@ export default function SizeGuidePage() {
 
               <div className="flex min-w-28 flex-col items-center text-right md:min-w-44">
                 <span className="text-3xl leading-none font-black tracking-tighter md:text-5xl">
-                  {String(row[targetUnit])}
+                  {String(row[targetUnit] ?? '-')}
                 </span>
                 <p className="mt-3 text-[9px] font-black tracking-[0.2em] uppercase opacity-30">
                   {targetUnit}
@@ -219,7 +235,6 @@ export default function SizeGuidePage() {
                 className="text-foreground group-hover:text-brand transition-colors"
               />
             </div>
-
             <div className="space-y-1 text-center md:text-left">
               <h4 className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40">
                 Manufacturing Variance
@@ -237,7 +252,7 @@ export default function SizeGuidePage() {
         </div>
       </section>
 
-      {/* Backdrop for closing */}
+      {/* Backdrop */}
       {activePicker && (
         <div
           className="fixed inset-0 z-30 bg-black/40 transition-all duration-500"
@@ -245,19 +260,17 @@ export default function SizeGuidePage() {
         />
       )}
 
-      {/* 6. ANATOMICAL CALIBRATION (THE GUIDE) */}
+      {/* 6. ANATOMICAL CALIBRATION */}
       {activeCat === 'footwear' && (
         <section id="manual-size-mesure" className="mt-32 px-6">
           <div className="flex flex-col items-start gap-16 md:flex-row">
-            {/* LEFT: THE MANIFESTO */}
             <div className="top-32 md:sticky md:w-1/3">
               <div className="space-y-6">
                 <div className="text-brand relative flex items-center gap-3">
-                  <div className="bg-brand h-[1px] w-8" />
+                  <div className="bg-brand h-px w-8" />
                   <span className="text-[10px] font-black tracking-[0.4em] uppercase">
                     Manual Checking Method
                   </span>
-
                   <div className="absolute top-0 right-0 opacity-6 transition-transform duration-700 group-hover:scale-110">
                     <RulerIcon size={150} />
                   </div>
@@ -269,7 +282,6 @@ export default function SizeGuidePage() {
                   Socks lie. Branding varies. Centimeters are the only objective truth in the
                   universe. Follow the protocol to find your true Size.
                 </p>
-
                 <div className="space-y-4 pt-8">
                   <div className="border-border bg-muted/5 rounded-3xl border p-6">
                     <h4 className="mb-4 text-[10px] font-black tracking-widest uppercase opacity-40">
@@ -286,28 +298,27 @@ export default function SizeGuidePage() {
               </div>
             </div>
 
-            {/* RIGHT: THE STEPS */}
             <div className="space-y-4 md:w-2/3">
               {[
                 {
                   step: '01',
                   title: 'The Foundation',
-                  desc: 'Place a sheet of paper on a flat floor, flush against a straight wall. No carpet. Surface must be rigid.',
+                  desc: 'Place a sheet of paper on a flat floor, flush against a straight wall. No carpet.',
                 },
                 {
                   step: '02',
                   title: 'Alignment',
-                  desc: 'Stand on the paper with your heel firmly touching the wall. Distribute your weight equally across both feet.',
+                  desc: 'Stand on the paper with your heel firmly touching the wall.',
                 },
                 {
                   step: '03',
                   title: 'The Mark',
-                  desc: "Keep the pen vertical. Mark the exact tip of your longest toe. Don't pull back; trust the measurement.",
+                  desc: 'Keep the pen vertical. Mark the exact tip of your longest toe.',
                 },
                 {
                   step: '04',
                   title: 'Metric Capture',
-                  desc: "Measure from the paper's edge (the wall side) to your mark in Millimeters/Centimeters.",
+                  desc: "Measure from the paper's edge to your mark in Millimeters/Centimeters.",
                 },
               ].map((item, idx) => (
                 <div
@@ -330,8 +341,6 @@ export default function SizeGuidePage() {
                   </div>
                 </div>
               ))}
-
-              {/* FINAL ADVICE CARD */}
               <div className="bg-foreground text-background mt-8 rounded-[2.5rem] p-10">
                 <div className="flex items-start gap-6">
                   <div className="bg-foreground text-background rounded-full p-3">
@@ -343,7 +352,7 @@ export default function SizeGuidePage() {
                     </h3>
                     <p className="text-xs leading-tight font-bold uppercase opacity-80">
                       Humans are asymmetrical disasters. Always measure both feet and use the larger
-                      result. If you land between sizes, size up. Tight shoes ruin lives.
+                      result.
                     </p>
                   </div>
                 </div>
