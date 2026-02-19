@@ -1,15 +1,16 @@
 'use client';
 import React from 'react';
-import {
-  NavigationIcon,
-  CameraIcon,
-  AlertTriangleIcon,
-  ArrowRightIcon,
-  HistoryIcon,
-  InfoIcon,
-  ExternalLinkIcon,
-} from '@ff/ui';
+import { NavigationIcon, CameraIcon, ArrowRightIcon, HistoryIcon, InfoIcon } from '@ff/ui';
 import { returnsData } from '@/data/returns';
+
+// --- 1. DEFINE POLICY TYPES ---
+interface ReturnSection {
+  id: string | number;
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  points: string[];
+}
 
 export default function ReturnsRefundsPage() {
   return (
@@ -33,7 +34,7 @@ export default function ReturnsRefundsPage() {
 
       {/* 2. THE REFUND FLOW DIAGRAM */}
       <section className="mx-auto mt-12 mb-20 max-w-7xl px-6">
-        <div className="rounded-[3.5rem] border border-white/5 bg-white/[0.02] p-10 md:p-16">
+        <div className="rounded-[3.5rem] border border-white/5 bg-white/5 p-10 md:p-16">
           <h3 className="mb-12 text-center text-[10px] font-black tracking-[0.5em] uppercase opacity-30">
             Automated Wallet Credit Flow
           </h3>
@@ -69,7 +70,7 @@ export default function ReturnsRefundsPage() {
 
       {/* 3. CORE POLICY BENTO GRID */}
       <main className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 md:grid-cols-2">
-        {returnsData.map((section: any) => {
+        {(returnsData as ReturnSection[]).map((section) => {
           const Icon = section.icon;
           return (
             <div
@@ -87,7 +88,7 @@ export default function ReturnsRefundsPage() {
                   {section.description}
                 </p>
                 <div className="mt-auto space-y-4">
-                  {section.points.map((point: string, idx: any) => (
+                  {section.points.map((point, idx) => (
                     <div key={idx} className="flex items-start gap-3">
                       <ArrowRightIcon size={14} className="text-brand mt-0.5 shrink-0" />
                       <span className="text-[10px] leading-relaxed font-black tracking-widest italic opacity-70">
