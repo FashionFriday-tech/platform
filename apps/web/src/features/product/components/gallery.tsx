@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { PlayIcon, ImageIcon, PauseIcon } from '@ff/ui';
 import Image from 'next/image';
 
@@ -26,7 +26,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
     lastTap.current = now;
   };
 
-  const handleDragEnd = (event: any, info: any) => {
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (activeMode === 'video') {
       return;
     }
@@ -72,7 +72,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
               setActiveMode('video');
               setIsZoomed(false);
             }}
-            className={`relative flex aspect-[4/5] w-full shrink-0 items-center justify-center overflow-hidden rounded-[2rem] border-2 bg-gray-100 transition-all duration-300 ${
+            className={`relative flex aspect-4/5 w-full shrink-0 items-center justify-center overflow-hidden rounded-4xl border-2 bg-gray-100 transition-all duration-300 ${
               activeMode === 'video'
                 ? 'scale-95 border-black shadow-lg'
                 : 'border-transparent opacity-70 hover:opacity-100'
