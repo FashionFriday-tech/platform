@@ -2,7 +2,21 @@ import { motion } from 'framer-motion';
 import { SuggestionTag } from './SuggestionTag';
 import { HighlightText } from './HighlightText';
 
-export const QuickDiscovery = ({ items, query, setQuery, onSave }: any) => {
+// 1. Define the item interface
+interface DiscoveryItem {
+  label: string;
+  type: string;
+}
+
+// 2. Define the component props
+interface QuickDiscoveryProps {
+  items: DiscoveryItem[];
+  query: string;
+  setQuery: (query: string) => void;
+  onSave: (query: string) => void;
+}
+
+export const QuickDiscovery = ({ items, query, setQuery, onSave }: QuickDiscoveryProps) => {
   if (items.length === 0) {
     return null;
   }
@@ -13,7 +27,7 @@ export const QuickDiscovery = ({ items, query, setQuery, onSave }: any) => {
         Quick Discovery
       </h4>
       <div className="flex flex-col">
-        {items.map((item: any) => (
+        {items.map((item) => (
           <button
             key={item.label}
             onClick={() => {
