@@ -3,7 +3,6 @@ import { Product } from '@ff/schemas';
 
 /**
  * 1. SIDEBAR CONFIGURATION
- * Defines the UI labels and options for the sidebar
  */
 export const CATEGORY_FILTERS: Record<string, { id: string; label: string; options: string[] }[]> =
   {
@@ -25,7 +24,6 @@ export const CATEGORY_FILTERS: Record<string, { id: string; label: string; optio
 
 /**
  * 2. THE FILTER ENGINE
- * O(n) logic for multi-select and price range filtering
  */
 export function filterProducts(products: Product[], activeFilters: Record<string, string[]>) {
   return products.filter((product) => {
@@ -35,7 +33,7 @@ export function filterProducts(products: Product[], activeFilters: Record<string
       }
 
       // Price Range Check
-      if (key === 'priceRange') {
+      if (key === 'priceRange' && selectedOptions[0]) {
         const [min, max] = selectedOptions[0].split('-').map(Number);
         const price = product.price.sellingPrice;
         if (price < min || (max && price > max)) {
@@ -44,20 +42,29 @@ export function filterProducts(products: Product[], activeFilters: Record<string
         continue;
       }
 
-      // Attribute Check (Root or Nested)
-      const targetValue = (product as any)[key] || (product.attributes as any)[key];
+      const productObj = product as unknown as Record<string, unknown>;
+      const attributesObj = product.attributes as unknown as Record<string, unknown>;
+      const targetValue = productObj[key] ?? attributesObj[key];
 
-      if (targetValue) {
+      if (targetValue !== undefined && targetValue !== null) {
         if (Array.isArray(targetValue)) {
           const match = targetValue.some((val) =>
-            selectedOptions.some((opt) => opt.toLowerCase() === val.toString().toLowerCase()),
+            selectedOptions.some((opt) => opt.toLowerCase() === String(val).toLowerCase()),
           );
           if (!match) {
             return false;
           }
         } else {
+          // Explicitly check for primitives to satisfy @typescript-eslint/no-base-to-string
+          const isPrimitive =
+            typeof targetValue === 'string' ||
+            typeof targetValue === 'number' ||
+            typeof targetValue === 'boolean';
+
+          const stringifiedValue = isPrimitive ? String(targetValue) : '';
+
           const match = selectedOptions.some(
-            (opt) => opt.toLowerCase() === targetValue.toString().toLowerCase(),
+            (opt) => opt.toLowerCase() === stringifiedValue.toLowerCase(),
           );
           if (!match) {
             return false;
@@ -71,37 +78,26 @@ export function filterProducts(products: Product[], activeFilters: Record<string
 }
 
 /**
- * 3. DATA FETCHING LOGIC (The "Login" for Data)
+ * 3. DATA FETCHING LOGIC
  */
 
-// A. Get a single product by its URL slug
-export const getProductBySlug = async (slug: string): Promise<Product | undefined> => {
-  // Simulating a delay for a professional API feel
+export const getProductBySlug = (slug: string): Product | undefined => {
   return DUMMY_PRODUCTS.find((p) => p.slug === slug);
 };
 
-// B. Get similar items but exclude the one the user is already viewing
-export const getSimilarProducts = async (
-  category: string,
-  currentProductId?: string,
-): Promise<Product[]> => {
+export const getSimilarProducts = (category: string, currentProductId?: string): Product[] => {
   return DUMMY_PRODUCTS.filter((p) => p.category === category && p.id !== currentProductId).slice(
     0,
     10,
   );
 };
 
-// C. Find variants sharing a StyleID (e.g., same shoe, different color/quality)
-// export const getSiblingVariants = (styleId: string): Product[] => {
-//   return DUMMY_PRODUCTS.filter((p) => p.styleId === styleId);
-// };
-
-// D. Safety check for the Price Slider
 export const getMaxPrice = (products: Product[]): number => {
   if (!products || products.length === 0) {
     return 50000;
   }
   const prices = products.map((p) => p.price.sellingPrice);
   const max = Math.max(...prices);
-  return isFinite(max) ? max : 50000;
+
+  return Number.isFinite(max) ? max : 50000;
 };
