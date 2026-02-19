@@ -18,6 +18,15 @@ import {
 import { motion, AnimatePresence, useAnimationFrame, useMotionValue, wrap } from 'framer-motion';
 import Image from 'next/image';
 
+interface Review {
+  name: string;
+  initials: string;
+  comment: string;
+  image: string;
+  rating: number;
+  membership: 'silver' | 'gold' | 'platinum';
+}
+
 export default function ReviewSection() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,7 +52,7 @@ export default function ReviewSection() {
     }
   };
 
-  const reviews = [
+  const reviews: Review[] = [
     {
       name: 'Damon W.',
       initials: 'DW',
@@ -101,7 +110,7 @@ export default function ReviewSection() {
           <div>
             <h2 className="text-[14px] font-black tracking-[0.3em] uppercase italic">Reviews</h2>
             <div className="flex gap-0.5">
-              {[...Array(5)].map((_, starIndex) => (
+              {Array.from({ length: 5 }).map((_, starIndex) => (
                 <FilledStarIcon
                   key={starIndex}
                   size={10}
@@ -143,7 +152,7 @@ export default function ReviewSection() {
                   setSelectedReview(i % reviews.length);
                   setIsModalOpen(true);
                 }}
-                className="pointer-events-auto flex w-[400px] shrink-0 flex-col items-start gap-4 rounded-4xl border border-transparent bg-white p-1 text-black shadow-2xl transition-shadow hover:shadow-white/5"
+                className="pointer-events-auto flex w-100 shrink-0 flex-col items-start gap-4 rounded-4xl border border-transparent bg-white p-1 text-black shadow-2xl transition-shadow hover:shadow-white/5"
               >
                 <div className="flex w-full items-center justify-between gap-3">
                   <div className="pointer-events-none aspect-square w-40 shrink-0 overflow-hidden rounded-4xl bg-zinc-800">
@@ -178,7 +187,7 @@ export default function ReviewSection() {
                           />
                         </span>
                         <div className="mt-0.5 flex gap-0.5">
-                          {[...Array(5)].map((_, starIndex) =>
+                          {Array.from({ length: 5 }).map((_, starIndex) =>
                             starIndex < rev.rating ? (
                               <FilledStarIcon
                                 key={starIndex}
@@ -205,7 +214,7 @@ export default function ReviewSection() {
 
       <div className="flex flex-col items-center justify-center gap-2">
         <div className="mt-10 flex w-full items-end justify-center gap-2">
-          {[...Array(5)].map((_, starIndex) => (
+          {Array.from({ length: 5 }).map((_, starIndex) => (
             <StarIcon
               key={starIndex}
               size={42}
@@ -217,7 +226,7 @@ export default function ReviewSection() {
             />
           ))}
         </div>
-        <p className="flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-[length:400%_100%] bg-clip-text text-[8px] font-black tracking-[0.5em] text-transparent uppercase">
+        <p className="flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-size-[400%_100%] bg-clip-text text-[8px] font-black tracking-[0.5em] text-transparent uppercase">
           Drop Your Review
         </p>
       </div>
@@ -229,7 +238,7 @@ export default function ReviewSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-6 backdrop-blur-md"
+            className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 p-6 backdrop-blur-md"
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
@@ -427,7 +436,7 @@ export default function ReviewSection() {
                 </div>
 
                 <div className="flex w-full items-center justify-center gap-4">
-                  {[...Array(5)].map((_, starIndex) => (
+                  {Array.from({ length: 5 }).map((_, starIndex) => (
                     <motion.button
                       key={starIndex}
                       whileTap={{ scale: 0.9 }}
