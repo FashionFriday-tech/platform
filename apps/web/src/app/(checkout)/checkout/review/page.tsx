@@ -8,15 +8,27 @@ import CheckoutStages from '../../_components/CheckoutProgress';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
+// --- 1. Define the Address Interface ---
+interface AddressDetails {
+  pincode: string;
+  city: string;
+  area: string;
+  landmark: string;
+  building: string;
+  recipientName: string;
+  primaryPhone: string;
+  altPhone: string;
+}
+
 export default function FinalReviewPage() {
-  const [address, setAddress] = useState<any>(null);
+  // --- 2. Apply the interface to State ---
+  const [address, setAddress] = useState<AddressDetails | null>(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
 
   const pricing = { subtotal: 4048, discount: 250, total: 3798 };
-
   const router = useRouter();
 
   const handleContinue = () => {
@@ -35,9 +47,7 @@ export default function FinalReviewPage() {
 
       <main className="mx-auto max-w-7xl pt-10">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
-          {/* LEFT CONTENT: Stays exactly as your original design */}
           <div className="flex-1 space-y-8">
-            {/* 1. ADDRESS PREVIEW SECTION */}
             <section>
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-foreground-subtle text-[10px] font-black tracking-[0.2em] uppercase">
@@ -93,7 +103,6 @@ export default function FinalReviewPage() {
               </AnimatePresence>
             </section>
 
-            {/* 2. PRODUCT REVIEW LIST */}
             <section>
               <h2 className="text-foreground-subtle mb-4 text-[10px] font-black tracking-[0.2em] uppercase">
                 Your Selection ({bagItems.length})
@@ -130,7 +139,6 @@ export default function FinalReviewPage() {
             </section>
           </div>
 
-          {/* RIGHT ASIDE: Only visible on Large Screens */}
           <aside className="sticky top-24 hidden w-96 space-y-4 lg:block">
             <div className="bg-foreground text-background rounded-[2.5rem] p-8 shadow-2xl">
               <h3 className="mb-8 text-center text-[10px] font-black tracking-[0.3em] uppercase opacity-50">
@@ -172,7 +180,6 @@ export default function FinalReviewPage() {
         </div>
       </main>
 
-      {/* MOBILE STICKY FOOTER: Stays exactly as your original design */}
       <div className="fixed right-0 bottom-0 left-0 z-50 flex flex-col items-center lg:hidden">
         <motion.div
           onClick={() => setIsExpanded(!isExpanded)}
@@ -236,7 +243,7 @@ export default function FinalReviewPage() {
       <AddressFormDrawer
         isOpen={showAddressForm}
         onClose={() => setShowAddressForm(false)}
-        onSave={(data: any) => {
+        onSave={(data: AddressDetails) => {
           setAddress(data);
           setShowAddressForm(false);
         }}
@@ -256,11 +263,15 @@ export default function FinalReviewPage() {
   );
 }
 
-{
-  /* --- Address Form Drawer --- */
+interface AddressFormDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: AddressDetails) => void;
+  initialData: AddressDetails | null;
 }
-function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
-  const [formData, setFormData] = useState<any>(
+
+function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressFormDrawerProps) {
+  const [formData, setFormData] = useState<AddressDetails>(
     initialData || {
       pincode: '',
       city: '',
@@ -315,9 +326,11 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
                 <InputBox
                   label="Pincode"
                   value={formData.pincode}
-                  onChange={(v: string) => setFormData({ ...formData, pincode: v.slice(0, 6) })}
+                  onChange={(v: string) =>
+                    setFormData({ ...formData, pincode: v.replace(/\D/g, '').slice(0, 6) })
+                  }
                   placeholder="6 Digits"
-                  type="number"
+                  type="text"
                 />
                 <div className="space-y-2">
                   <label className="text-foreground-muted px-4 text-[9px] font-black tracking-[0.2em] uppercase">
@@ -397,9 +410,6 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: any) {
   );
 }
 
-{
-  /* --- Helpers --- */
-}
 function InputBox({
   label,
   value,
@@ -429,7 +439,14 @@ function InputBox({
   );
 }
 
-function OTPModal({ isOpen, onClose, phoneNumber, onVerify }: any) {
+interface OTPModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  phoneNumber: string;
+  onVerify: () => void;
+}
+
+function OTPModal({ isOpen, onClose, phoneNumber, onVerify }: OTPModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
