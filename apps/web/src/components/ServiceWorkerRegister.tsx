@@ -22,7 +22,7 @@ export default function ServiceWorkerRegister() {
           installingWorker.onstatechange = () => {
             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
               // New content available
-              console.log('New version available. Refresh to update.');
+              alert('New version available. Refresh to update.');
             }
           };
         };

@@ -41,7 +41,7 @@ export default function SettingsPage() {
         {/* Profile Identity */}
         <section
           onClick={() => router.push('/account/profile')}
-          className="bg-background border-border/40 flex items-center gap-5 rounded-[2.5rem] border p-8 shadow-sm"
+          className="bg-background border-border/40 flex cursor-pointer items-center gap-5 rounded-[2.5rem] border p-8 shadow-sm"
         >
           <div className="bg-foreground text-background flex h-20 w-20 items-center justify-center rounded-full text-3xl font-black uppercase italic">
             AF
@@ -62,7 +62,7 @@ export default function SettingsPage() {
           <p className="text-foreground-subtle px-6 text-[10px] font-black tracking-[0.3em] uppercase opacity-60">
             Interaction
           </p>
-          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-[2rem] border shadow-sm">
+          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-4xl border shadow-sm">
             <div className="flex items-center justify-between p-6">
               <div className="flex items-center gap-4 text-left">
                 <div className="bg-foreground text-background rounded-2xl p-3">
@@ -130,7 +130,7 @@ export default function SettingsPage() {
           <p className="text-foreground-subtle px-6 text-[10px] font-black tracking-[0.3em] uppercase opacity-60">
             Notification
           </p>
-          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-[2rem] border shadow-sm">
+          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-4xl border shadow-sm">
             <SettingToggle
               icon={<BellIcon size={20} />}
               label="Order Logistics"
@@ -161,7 +161,7 @@ export default function SettingsPage() {
           <p className="text-foreground-subtle px-6 text-[10px] font-black tracking-[0.3em] uppercase opacity-60">
             Logistics & Security
           </p>
-          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-[2rem] border shadow-sm">
+          <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-4xl border shadow-sm">
             <SettingLink icon={<MapPinIcon size={20} />} label="Shipping Addresses" />
             <SettingLink icon={<CreditCardIcon size={20} />} label="Stored Payment Assets" />
             <SettingLink icon={<ShieldCheckIcon size={20} />} label="Identity Verification" />
@@ -170,7 +170,7 @@ export default function SettingsPage() {
 
         {/* Destructive Options */}
         <div className="space-y-4 pt-4">
-          <button className="bg-background border-border group flex w-full items-center justify-between rounded-[2rem] border p-4 transition-all active:scale-[0.98]">
+          <button className="bg-background border-border group flex w-full items-center justify-between rounded-4xl border p-4 transition-all active:scale-[0.98]">
             <div className="flex items-center gap-4 text-left">
               <div className="bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background rounded-2xl p-3 transition-all">
                 <LogOutIcon size={20} />
@@ -182,7 +182,7 @@ export default function SettingsPage() {
 
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="flex w-full items-center justify-center gap-3 rounded-[2rem] border border-red-500/20 bg-red-500/5 p-6 text-red-600 transition-all active:scale-[0.98]"
+            className="flex w-full items-center justify-center gap-3 rounded-4xl border border-red-500/20 bg-red-500/5 p-6 text-red-600 transition-all active:scale-[0.98]"
           >
             <TrashIcon size={18} />
             <span className="text-[10px] font-black tracking-widest uppercase">Delete Account</span>
@@ -212,13 +212,13 @@ export default function SettingsPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowDeleteModal(false)}
-              className="bg-background/80 fixed inset-0 z-[100] backdrop-blur-xl"
+              className="bg-background/80 fixed inset-0 z-100 backdrop-blur-xl"
             />
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="bg-background border-border fixed bottom-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:bottom-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
+              className="bg-background border-border fixed bottom-0 z-110 w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:bottom-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
             >
               <div className="mb-8 flex items-start justify-between">
                 <div className="rounded-3xl bg-red-600 p-4 text-white shadow-xl shadow-red-600/20">
@@ -282,7 +282,14 @@ export default function SettingsPage() {
 
 // --- Monochrome Components ---
 
-function SettingToggle({ icon, label, active, onToggle }: any) {
+interface SettingToggleProps {
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  onToggle: () => void;
+}
+
+function SettingToggle({ icon, label, active, onToggle }: SettingToggleProps) {
   return (
     <div className="flex cursor-pointer items-center justify-between p-6" onClick={onToggle}>
       <div className="flex items-center gap-4 text-left">
@@ -303,7 +310,12 @@ function SettingToggle({ icon, label, active, onToggle }: any) {
   );
 }
 
-function SettingLink({ icon, label }: any) {
+interface SettingLinkProps {
+  icon: React.ReactNode;
+  label: string;
+}
+
+function SettingLink({ icon, label }: SettingLinkProps) {
   return (
     <div className="group hover:bg-foreground/5 flex cursor-pointer items-center justify-between p-6 text-left transition-colors">
       <div className="flex items-center gap-4">
