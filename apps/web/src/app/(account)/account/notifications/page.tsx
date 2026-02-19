@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { motion, useMotionValue, useTransform, animate, type Transition } from 'framer-motion';
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  animate,
+  type Transition,
+  type PanInfo,
+} from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 import { MenuIcon, TagIcon, BellOffIcon, ShoppingBagIcon } from '@ff/ui';
@@ -26,17 +33,21 @@ export default function NotificationsPage() {
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
-  const snapTransition: Transition = {
-    type: 'spring',
-    bounce: 0,
-    duration: 0.3,
-  };
+  // Moved inside useMemo to satisfy exhaustive-deps and prevent unnecessary re-creations
+  const snapTransition = useMemo<Transition>(
+    () => ({
+      type: 'spring',
+      bounce: 0,
+      duration: 0.3,
+    }),
+    [],
+  );
 
   useEffect(() => {
     if (containerWidth > 0) {
       animate(x, -activeIndex * containerWidth, snapTransition);
     }
-  }, [activeIndex, containerWidth, x]);
+  }, [activeIndex, containerWidth, x, snapTransition]);
 
   const indicatorX = useTransform(
     x,
@@ -44,7 +55,8 @@ export default function NotificationsPage() {
     ['0%', `${(TABS.length - 1) * 100}%`],
   );
 
-  const handleDragEnd = (_: any, info: any) => {
+  // FIX: Applied PanInfo type to info parameter to resolve unsafe member access
+  const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const velocity = info.velocity.x;
     const offset = info.offset.x;
 
@@ -78,9 +90,10 @@ export default function NotificationsPage() {
                   activeIndex === i ? 'text-foreground' : 'text-foreground/40',
                 )}
               >
-                {tab == 'all' ? (
+                {/* FIX: Changed == to === (eqeqeq) */}
+                {tab === 'all' ? (
                   <MenuIcon className="w-4" />
-                ) : tab == 'orders' ? (
+                ) : tab === 'orders' ? (
                   <ShoppingBagIcon className="w-4" />
                 ) : (
                   <TagIcon className="w-4" />
@@ -102,14 +115,14 @@ export default function NotificationsPage() {
         <motion.div
           drag="x"
           dragDirectionLock
-          dragMomentum={false} // Crucial: stops the list from drifting away
+          dragMomentum={false}
           dragConstraints={{ left: -containerWidth * (TABS.length - 1), right: 0 }}
           dragElastic={0.1}
           onDragEnd={handleDragEnd}
           style={{
             x,
             width: containerWidth * TABS.length || '300%',
-            touchAction: 'pan-y', // Allows vertical scroll while capturing horizontal swipe
+            touchAction: 'pan-y',
           }}
           className="flex h-full cursor-grab active:cursor-grabbing"
         >
