@@ -1,24 +1,16 @@
 'use client';
 import React from 'react';
-import {
-  ScaleIcon,
-  ShieldCheckIcon,
-  CameraIcon,
-  TruckIcon,
-  AlertTriangleIcon,
-  UserCheckIcon,
-  CreditCardIcon,
-  BoxIcon,
-  GavelIcon,
-  GlobeIcon,
-  LockIcon,
-  RefreshCcwIcon,
-  EyeIcon,
-  MessageSquareIcon,
-  InfoIcon,
-} from '@ff/ui';
-
+import { ScaleIcon, GlobeIcon, LockIcon, EyeIcon, MessageSquareIcon } from '@ff/ui';
 import { termsData } from '@/data/terms';
+
+// 1. Define the structure of a single Term Item
+interface TermSector {
+  id: string | number;
+  title: string;
+  content: string;
+  // This type handles a React component/icon being passed as a property
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+}
 
 export default function MasterTermsPage() {
   return (
@@ -42,7 +34,8 @@ export default function MasterTermsPage() {
 
       {/* 2. BENTO GRID (1-9) */}
       <main className="mx-auto mt-16 grid max-w-7xl grid-cols-1 gap-6 px-6 md:grid-cols-2 lg:grid-cols-3">
-        {termsData.map((sector: any) => (
+        {/* 2. Apply the interface to the map function */}
+        {(termsData as TermSector[]).map((sector) => (
           <div
             key={sector.id}
             className="hover:border-brand/30 rounded-[2.5rem] border border-white/5 bg-[#0a0a0a] p-10 transition-all duration-500"
