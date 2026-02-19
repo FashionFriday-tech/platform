@@ -15,12 +15,17 @@ export const AnimatedThemeToggler = ({
   duration = 500,
   ...props
 }: AnimatedThemeTogglerProps) => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Prevent hydration mismatch
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const toggleTheme = useCallback(async () => {
     const isDark = resolvedTheme === 'dark';
@@ -57,14 +62,19 @@ export const AnimatedThemeToggler = ({
     );
   }, [resolvedTheme, setTheme, duration]);
 
+  // Prevent hydration mismatch by returning placeholder on server
   if (!mounted) {
-    return <div className="h-10 w-10" />;
-  } // Placeholder to avoid layout shift
+    return <div className={cn('h-10 w-10', className)} />;
+  }
 
   return (
     <button
       ref={buttonRef}
-      onClick={toggleTheme}
+      type="button"
+      // FIX: Handle async promise safely to avoid @typescript-eslint/no-misused-promises
+      onClick={() => {
+        void toggleTheme();
+      }}
       className={cn('hover:bg-secondary relative rounded-full p-2 transition-colors', className)}
       {...props}
     >
