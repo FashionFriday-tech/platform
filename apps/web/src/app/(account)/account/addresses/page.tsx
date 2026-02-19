@@ -16,6 +16,8 @@ import {
   MapPinIcon,
 } from '@ff/ui';
 
+// --- INTERFACES ---
+
 interface Address {
   id: string;
   name: string;
@@ -32,9 +34,51 @@ interface Address {
   isDefault: boolean;
 }
 
+interface PincodeAPIResponse {
+  Status: string;
+  PostOffice:
+    | {
+        State: string;
+        District: string;
+      }[]
+    | null;
+}
+
+interface FormInputProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  prefix?: string;
+  placeholder?: string;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
+  required?: boolean;
+}
+
+interface AddressCardProps {
+  address: Address;
+  onEdit: (address: Address) => void;
+  onDelete: (id: string) => void;
+  onSetDefault: (id: string) => void;
+}
+
+interface AddressFormModalProps {
+  initialData: Address | null;
+  onClose: () => void;
+  onSave: (address: Address) => void;
+  isFirstAddress: boolean;
+}
+
 // --- REUSABLE COMPONENTS ---
 
-const FormInput = ({ label, value, onChange, prefix, placeholder, inputRef, required }: any) => (
+const FormInput = ({
+  label,
+  value,
+  onChange,
+  prefix,
+  placeholder,
+  inputRef,
+  required,
+}: FormInputProps) => (
   <div className="w-full space-y-1">
     <label className="text-foreground-subtle ml-1 flex justify-between text-[9px] font-black tracking-widest uppercase">
       {label}
@@ -59,7 +103,7 @@ const FormInput = ({ label, value, onChange, prefix, placeholder, inputRef, requ
   </div>
 );
 
-const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
+const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: AddressCardProps) => (
   <div
     className={`bg-background-elevated flex flex-col rounded-4xl border p-6 transition-all duration-300 ${
       address.isDefault
@@ -134,7 +178,12 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: any) => (
   </div>
 );
 
-const AddressFormModal = ({ initialData, onClose, onSave, isFirstAddress }: any) => {
+const AddressFormModal = ({
+  initialData,
+  onClose,
+  onSave,
+  isFirstAddress,
+}: AddressFormModalProps) => {
   const [formData, setFormData] = useState<Partial<Address>>(
     initialData || { type: 'Home', isDefault: isFirstAddress || false },
   );
@@ -154,25 +203,25 @@ const AddressFormModal = ({ initialData, onClose, onSave, isFirstAddress }: any)
       requiredFields.every((f) => f && f.trim().length > 0) &&
       formData.phone?.length === 10 &&
       formData.pincode?.length === 6 &&
-      formData.district // Ensures API successfully found the region
+      !!formData.district
     );
   }, [formData]);
 
-  // Auto-focus to Alt Phone
   useEffect(() => {
     if (formData.phone?.length === 10) {
       altPhoneRef.current?.focus();
     }
   }, [formData.phone]);
 
-  // PINCODE API LOGIC - Attempts every time pincode becomes 6 digits
   useEffect(() => {
     if (formData.pincode?.length === 6) {
-      setLoading(true);
-      fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data[0].Status === 'Success') {
+      const fetchRegion = async () => {
+        setLoading(true);
+        try {
+          const res = await fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`);
+          const data = (await res.json()) as PincodeAPIResponse[];
+
+          if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice) {
             const details = data[0].PostOffice[0];
             setFormData((prev) => ({
               ...prev,
@@ -180,21 +229,21 @@ const AddressFormModal = ({ initialData, onClose, onSave, isFirstAddress }: any)
               district: details.District,
             }));
           } else {
-            // Reset if invalid pincode
             setFormData((prev) => ({ ...prev, state: '', district: '' }));
           }
-        })
-        .catch(() => {
+        } catch {
           setFormData((prev) => ({ ...prev, state: '', district: '' }));
-        })
-        .finally(() => setLoading(false));
+        } finally {
+          setLoading(false);
+        }
+      };
+      void fetchRegion();
     } else {
-      // Clear region if user types or deletes pincode
       if (formData.district || formData.state) {
         setFormData((prev) => ({ ...prev, state: '', district: '' }));
       }
     }
-  }, [formData.pincode]);
+  }, [formData.pincode, formData.district, formData.state]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -374,7 +423,7 @@ const AddressFormModal = ({ initialData, onClose, onSave, isFirstAddress }: any)
               onSave({
                 id: initialData?.id || Date.now().toString(),
                 ...formData,
-              })
+              } as Address)
             }
             className={`w-full rounded-4xl py-4 text-xs font-black tracking-[0.2em] uppercase transition-all ${
               isFormValid
@@ -395,7 +444,6 @@ export default function AddressPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
-  // Default address always on top
   const sortedAddresses = useMemo(() => {
     return [...addresses].sort((a, b) => (a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1));
   }, [addresses]);
@@ -411,7 +459,12 @@ export default function AddressPage() {
     const idx = updated.findIndex((a) => a.id === data.id);
     const finalData = { ...data, isDefault: makeThisDefault };
 
-    idx >= 0 ? (updated[idx] = finalData) : updated.push(finalData);
+    if (idx >= 0) {
+      updated[idx] = finalData;
+    } else {
+      updated.push(finalData);
+    }
+
     setAddresses(updated);
     setIsModalOpen(false);
   };
@@ -461,7 +514,7 @@ export default function AddressPage() {
               <AddressCard
                 key={addr.id}
                 address={addr}
-                onEdit={(a: Address) => {
+                onEdit={(a) => {
                   setEditingAddress(a);
                   setIsModalOpen(true);
                 }}
