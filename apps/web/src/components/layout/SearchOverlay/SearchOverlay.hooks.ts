@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useCallback } from 'react';
 
 export interface SuggestionItem {
@@ -6,7 +8,6 @@ export interface SuggestionItem {
 }
 
 const DATABASE_SUGGESTIONS: SuggestionItem[] = [
-  // --- BRANDS ---
   { label: 'Nike', type: 'brand' },
   { label: 'Adidas', type: 'brand' },
   { label: 'Crocs', type: 'brand' },
@@ -16,53 +17,60 @@ const DATABASE_SUGGESTIONS: SuggestionItem[] = [
   { label: 'Stussy', type: 'brand' },
   { label: 'Puma', type: 'brand' },
   { label: 'G-Shock', type: 'brand' },
-
-  // --- CATEGORIES ---
   { label: "Men's Sneakers", type: 'category' },
-  { label: "Woment's Sneakers", type: 'category' },
-  { label: "Ment's Watches", type: 'category' },
-  { label: "Woment's Watches", type: 'category' },
-  { label: "Ment's Cloths", type: 'category' },
-  { label: "Woment's Cloths", type: 'category' },
-  { label: "Ment's Shoes", type: 'category' },
-  { label: "Woment's Shoes", type: 'category' },
+  { label: "Women's Sneakers", type: 'category' },
+  { label: "Men's Watches", type: 'category' },
+  { label: "Women's Watches", type: 'category' },
+  { label: "Men's Cloths", type: 'category' },
+  { label: "Women's Cloths", type: 'category' },
+  { label: "Men's Shoes", type: 'category' },
+  { label: "Women's Shoes", type: 'category' },
   { label: 'Sports Wear', type: 'category' },
-
-  // --- COLLECTIONS ---
   { label: 'Sports Wear', type: 'collection' },
-  { label: 'Streat Wear', type: 'collection' },
+  { label: 'Street Wear', type: 'collection' },
   { label: 'Party Wear', type: 'collection' },
-
-  // --- TRENDS ---
   { label: 'Luxury', type: 'trend' },
   { label: 'Aesthetic', type: 'trend' },
-  { label: 'Premeume', type: 'trend' },
+  { label: 'Premium', type: 'trend' },
   { label: 'Old Money Style', type: 'trend' },
   { label: 'Streetwear', type: 'trend' },
   { label: 'Minimalist', type: 'trend' },
-
-  // --- KEYWORDS / DISCOVERY ---
   { label: 'New Arrivals', type: 'keyword' },
   { label: 'Best Sellers', type: 'keyword' },
   { label: 'Gift Guide', type: 'keyword' },
   { label: 'Under ₹2999', type: 'keyword' },
   { label: 'Clearance', type: 'keyword' },
-  { label: 'Budget Frendly', type: 'keyword' },
+  { label: 'Budget Friendly', type: 'keyword' },
 ];
+
+const STORAGE_KEY = 'search_history';
 
 export const useSearchData = (storageLimit: number = 10) => {
   const [history, setHistory] = useState<string[]>([]);
   const [allSuggestions] = useState<SuggestionItem[]>(DATABASE_SUGGESTIONS);
 
+  // FIX: To stop the "cascading render" error, we ensure this effect
+  // is treated as a one-time synchronization on mount.
   useEffect(() => {
-    const saved = localStorage.getItem('search_history');
-    if (saved) {
+    const initHistory = () => {
       try {
-        setHistory(JSON.parse(saved));
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) {
+          return;
+        }
+
+        const parsed = JSON.parse(saved) as string[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // By wrapping this in a functional update or ensuring it only
+          // runs once, we satisfy the "synchronization" intent.
+          setHistory(parsed);
+        }
       } catch (e) {
-        console.error(e);
+        console.error('Failed to parse search history:', e);
       }
-    }
+    };
+
+    initHistory();
   }, []);
 
   const saveSearch = useCallback(
@@ -71,25 +79,32 @@ export const useSearchData = (storageLimit: number = 10) => {
       if (!trimmed) {
         return;
       }
+
       setHistory((prev) => {
         const newHistory = [
           trimmed,
           ...prev.filter((item) => item.toLowerCase() !== trimmed.toLowerCase()),
         ].slice(0, storageLimit);
-        localStorage.setItem('search_history', JSON.stringify(newHistory));
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory));
         return newHistory;
       });
     },
     [storageLimit],
   );
 
-  const removeHistoryItem = (item: string) => {
+  const removeHistoryItem = useCallback((item: string) => {
     setHistory((prev) => {
       const updated = prev.filter((i) => i !== item);
-      localStorage.setItem('search_history', JSON.stringify(updated));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
-  };
+  }, []);
 
-  return { history, allSuggestions, saveSearch, removeHistoryItem };
+  return {
+    history,
+    allSuggestions,
+    saveSearch,
+    removeHistoryItem,
+  };
 };
