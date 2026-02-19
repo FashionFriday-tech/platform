@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { DEFAULT_SETTINGS } from '@/config/defaultSettings';
 
 const STORAGE_KEY = 'app_settings';
@@ -17,22 +17,34 @@ const SettingsContext = createContext<SettingsContextType | null>(null);
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
-  // Load once from localStorage
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(stored) });
-    }
+    const syncSettings = () => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          // FIX: Cast JSON.parse to Partial<Settings> to remove 'any'
+          const parsed = JSON.parse(stored) as Partial<Settings>;
+
+          setSettings((prev) => ({
+            ...prev,
+            ...parsed,
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load settings from storage:', error);
+      }
+    };
+
+    syncSettings();
   }, []);
 
-  // Persist on change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  }, [settings]);
-
-  const updateSettings = (updates: Partial<Settings>) => {
-    setSettings((prev) => ({ ...prev, ...updates }));
-  };
+  const updateSettings = useCallback((updates: Partial<Settings>) => {
+    setSettings((prev) => {
+      const next = { ...prev, ...updates };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
 
   return (
     <SettingsContext.Provider value={{ settings, updateSettings }}>
