@@ -1,10 +1,19 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { orders, Order, OrderStatus } from '@/data/order';
+import { orders, Order, OrderStatus, OrderItem } from '@/data/order'; // Assuming OrderItem is exported there
 
 import { TruckIcon, MapPinIcon, ChevronRightIcon, PackageIcon, CalendarIcon } from '@ff/ui';
 import Image from 'next/image';
+
+// --- Interfaces ---
+
+interface TabButtonProps {
+  isActive: boolean;
+  label: string;
+  count?: number;
+  onClick: () => void;
+}
 
 // --- Sub-Components ---
 
@@ -23,7 +32,7 @@ const StatusBadge = ({ status, label }: { status: OrderStatus; label: string }) 
   );
 };
 
-const TabButton = ({ isActive, label, count, onClick }: any) => (
+const TabButton = ({ isActive, label, count, onClick }: TabButtonProps) => (
   <button
     onClick={onClick}
     className={`flex min-w-fit flex-1 items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold whitespace-nowrap transition-all sm:px-8 ${
@@ -47,8 +56,7 @@ const TabButton = ({ isActive, label, count, onClick }: any) => (
   </button>
 );
 
-// Updated to accept a single item per card
-const OrderCard = ({ order, item }: { order: Order; item: any }) => (
+const OrderCard = ({ order, item }: { order: Order; item: OrderItem }) => (
   <article className="bg-background-elevated border-border flex h-full flex-col rounded-4xl border p-5 shadow-sm sm:p-7">
     {/* Header */}
     <div className="mb-6 flex items-start justify-between">
@@ -126,7 +134,6 @@ const OrderCard = ({ order, item }: { order: Order; item: any }) => (
 export default function OrdersPage() {
   const [activeTab, setActiveTab] = useState<OrderStatus>('shipping');
 
-  // Flattening orders so each item becomes a unique "shipment card"
   const flattenedOrders = useMemo(() => {
     return orders
       .filter((o) => o.status === activeTab)
@@ -139,7 +146,6 @@ export default function OrdersPage() {
       );
   }, [activeTab]);
 
-  // Counts based on total items per category
   const getCount = (status: OrderStatus) => {
     return orders
       .filter((o) => o.status === status)
@@ -155,7 +161,7 @@ export default function OrdersPage() {
           </h1>
 
           <div className="bg-background-muted no-scrollbar flex items-center gap-1 overflow-x-auto rounded-3xl p-1.5 shadow-inner">
-            {['shipping', 'arrived', 'canceled'].map((tab) => (
+            {(['shipping', 'arrived', 'canceled'] as const).map((tab) => (
               <TabButton
                 key={tab}
                 isActive={activeTab === tab}
