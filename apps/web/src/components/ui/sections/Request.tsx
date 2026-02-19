@@ -35,15 +35,13 @@ export default function SourcingSection() {
 
     setTimeout(() => {
       setLoading(false);
-      console.log('Request Submitted', formData);
-      // Add success toast or logic here
     }, 1200);
   };
 
   return (
     <div className="my-10 flex items-center justify-center">
       <div className="border-foreground-subtle bg-background w-full max-w-6xl overflow-hidden rounded-[2.5rem] border-2 lg:grid lg:grid-cols-2 lg:items-stretch">
-        <div className="border-foreground-subtle group relative hidden min-h-[600px] border-r lg:block">
+        <div className="border-foreground-subtle group relative hidden min-h-150 border-r lg:block">
           <Image
             src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop" // Luxe sneaker sourcing theme
             alt="Personal Sourcing Service"
@@ -79,7 +77,7 @@ export default function SourcingSection() {
                   Product Name
                 </label>
                 <div
-                  className={`bg-foreground/[0.02] flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
+                  className={`bg-foreground/2] flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
                     errors.productName
                       ? 'border-red-500'
                       : 'border-foreground-subtle focus-within:border-foreground'
@@ -114,7 +112,7 @@ export default function SourcingSection() {
                   Category
                 </label>
                 <div
-                  className={`bg-foreground/[0.02] flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
+                  className={`bg-foreground/2 flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
                     errors.category
                       ? 'border-red-500'
                       : 'border-foreground-subtle focus-within:border-foreground'
@@ -154,7 +152,7 @@ export default function SourcingSection() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-foreground text-background group hover:bg-foreground/90 mt-6 flex w-full items-center justify-center rounded-full px-10 py-4 font-black tracking-[0.1em] uppercase transition-all active:scale-95 disabled:opacity-50"
+              className="bg-foreground text-background group hover:bg-foreground/90 mt-6 flex w-full items-center justify-center rounded-full px-10 py-4 font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-50"
             >
               {loading ? 'Sending the Request...' : 'I Need This Product'}
             </button>
