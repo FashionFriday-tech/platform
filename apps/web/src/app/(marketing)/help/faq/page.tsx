@@ -22,8 +22,9 @@ export default function FAQPage() {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
     }, 3000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [placeholders.length]);
 
   const filteredFaqs = faqData.filter((item) => {
     const matchesFilter = filter === 'All' || item.category === filter;
