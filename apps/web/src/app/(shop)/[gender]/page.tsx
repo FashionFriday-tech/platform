@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useParams, useRouter } from 'next/navigation';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { ChevronRightIcon } from '@ff/ui';
 import Image from 'next/image';
 
@@ -87,26 +86,36 @@ const CATEGORIES_DATA = {
 
 export default function StoreLandingPage() {
   const params = useParams();
+  const router = useRouter();
   const genderParam = (params?.gender as string)?.toLowerCase();
 
-  const initialIndex =
-    GENDERS.indexOf(genderParam as Gender) !== -1 ? GENDERS.indexOf(genderParam as Gender) : 0;
-  const [genderIndex, setGenderIndex] = useState(initialIndex);
-  const activeGender = GENDERS[genderIndex];
-
-  useEffect(() => {
-    const newIndex = GENDERS.indexOf(genderParam as Gender);
-    if (newIndex !== -1) {
-      setGenderIndex(newIndex);
-    }
-  }, [genderParam]);
-
-  const handleGenderChange = (idx: number) => {
-    setGenderIndex(idx);
-    window.history.replaceState(null, '', `/${GENDERS[idx]}`);
+  /**
+   * 1. DERIVED STATE
+   * Instead of using useEffect to sync a local state with the URL,
+   * we calculate the active gender directly from the params.
+   */
+  const getIndexFromParam = (param: string | undefined) => {
+    const idx = GENDERS.indexOf(param as Gender);
+    return idx !== -1 ? idx : 0;
   };
 
-  const handleDragEnd = (event: any, info: any) => {
+  const genderIndex = getIndexFromParam(genderParam);
+  const activeGender = GENDERS[genderIndex];
+
+  /**
+   * 2. NAVIGATION HANDLER
+   * Updates the URL via the router. Next.js will detect the param change
+   * and re-render this component with the new derived index.
+   */
+  const handleGenderChange = (idx: number) => {
+    router.replace(`/${GENDERS[idx]}`, { scroll: false });
+  };
+
+  /**
+   * 3. GESTURE HANDLER
+   * Typed 'info' as PanInfo to resolve @typescript-eslint/no-unsafe-member-access
+   */
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
     const swipeThreshold = 50;
     if (info.offset.x > swipeThreshold && genderIndex > 0) {
       handleGenderChange(0);
@@ -118,9 +127,8 @@ export default function StoreLandingPage() {
   const currentData = CATEGORIES_DATA[activeGender];
 
   return (
-    /* lg:h-screen + overflow-hidden only on desktop to lock the frame */
     <div className="bg-background min-h-screen overflow-x-hidden select-none lg:h-screen lg:overflow-hidden">
-      {/* --- MOBILE HEADER: UNCHANGED --- */}
+      {/* --- MOBILE HEADER --- */}
       <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md lg:hidden">
         <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
           {GENDERS.map((gender, idx) => (
@@ -160,9 +168,9 @@ export default function StoreLandingPage() {
             transition={{ duration: 0.4 }}
             className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:flex-row lg:px-12 lg:pt-28 lg:pb-0"
           >
-            {/* 1. HERO SECTION: Fixed on Desktop, Flows on Mobile */}
+            {/* 1. HERO SECTION */}
             <div className="flex w-full items-start justify-center lg:h-full lg:w-1/2 lg:pr-8">
-              <div className="group border-border/50 relative aspect-5/4 w-full overflow-hidden rounded-[2rem] border shadow-2xl lg:fixed lg:aspect-auto lg:h-[80%] lg:w-[95%] lg:max-w-[600px] lg:rounded-[3.5rem]">
+              <div className="group border-border/50 relative aspect-5/4 w-full overflow-hidden rounded-4xl border shadow-2xl lg:fixed lg:aspect-auto lg:h-[80%] lg:w-[95%] lg:max-w-150 lg:rounded-[3.5rem]">
                 <motion.div
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
@@ -170,7 +178,7 @@ export default function StoreLandingPage() {
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
                   style={{ backgroundImage: `url(${currentData.hero})` }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-8 left-8 lg:bottom-16 lg:left-16">
                   <p className="mb-2 text-[8px] font-black tracking-[0.4em] text-white/50 uppercase lg:text-[10px]">
                     Exclusive Collection
@@ -184,7 +192,7 @@ export default function StoreLandingPage() {
               </div>
             </div>
 
-            {/* 2. CATEGORY LIST: Scrollable on Desktop, Natural on Mobile */}
+            {/* 2. CATEGORY LIST */}
             <div className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:gap-6 lg:overflow-y-auto lg:pt-0 lg:pb-10">
               <div className="w-full max-w-2xl space-y-3 lg:space-y-6">
                 {currentData.list.map((cat) => (
@@ -193,8 +201,8 @@ export default function StoreLandingPage() {
                     href={`/${activeGender}/${cat.slug}`}
                     className="group block"
                   >
-                    <div className="bg-background-muted/40 group-hover:border-border/40 flex items-center gap-4 rounded-[1.5rem] border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98] lg:gap-6 lg:rounded-[2.5rem] lg:p-4">
-                      <div className="border-border/50 bg-background relative h-28 w-28 shrink-0 overflow-hidden rounded-4xl border shadow-md lg:h-32 lg:w-32 lg:rounded-[2rem]">
+                    <div className="bg-background-muted/40 group-hover:border-border/40 flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98] lg:gap-6 lg:rounded-[2.5rem] lg:p-4">
+                      <div className="border-border/50 bg-background relative h-28 w-28 shrink-0 overflow-hidden rounded-4xl border shadow-md lg:h-32 lg:w-32 lg:rounded-4xl">
                         <Image
                           src={cat.img}
                           alt={cat.name}
