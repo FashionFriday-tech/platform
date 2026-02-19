@@ -16,9 +16,30 @@ import {
 } from '@ff/ui';
 import Image from 'next/image';
 
-// --- Sub-Components (DRY Optimization) ---
+// --- Types ---
 
-const ProfileSection = ({ title, icon: Icon, children, badge }: any) => (
+interface ProfileSectionProps {
+  title: string;
+  icon?: React.ComponentType<{ size?: number; className?: string }>;
+  children: React.ReactNode;
+  badge?: React.ReactNode;
+}
+
+interface ModernInputProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: string;
+  actionLabel?: string;
+  onAction?: () => void;
+  isLoading?: boolean;
+  isVerified?: boolean;
+  icon?: React.ReactNode;
+}
+
+// --- Sub-Components ---
+
+const ProfileSection = ({ title, icon: Icon, children, badge }: ProfileSectionProps) => (
   <section className="bg-background-elevated border-border overflow-hidden rounded-4xl border shadow-sm">
     <div className="bg-background-muted border-border flex items-center justify-between gap-2 border-b px-6 py-4">
       <div className="flex items-center gap-2">
@@ -37,8 +58,8 @@ const ProfileSection = ({ title, icon: Icon, children, badge }: any) => (
 
 export default function EcommerceProfile() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(false);
-  const [completion, setCompletion] = useState(75);
+  const [loading] = useState(false);
+  const [completion] = useState(75);
   const [verifyingField, setVerifyingField] = useState<string | null>(null);
   const [verifiedStatus, setVerifiedStatus] = useState({
     phone: false,
@@ -70,13 +91,15 @@ export default function EcommerceProfile() {
           {/* LEFT SIDEBAR */}
           <aside className="space-y-6 md:col-span-4">
             <div className="bg-background-elevated border-border relative overflow-hidden rounded-4xl border p-6 text-center shadow-sm">
-              {/* Decorative Header */}
               <div className="from-background-muted absolute top-0 left-0 z-0 h-24 w-full bg-linear-to-b to-transparent" />
 
               <div className="relative z-10">
-                <div
+                <button
+                  type="button"
                   className="border-brand group relative mx-auto h-28 w-28 cursor-pointer rounded-full border-2 border-dashed p-1"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                  }}
                 >
                   <div className="relative h-full w-full overflow-hidden rounded-full">
                     <Image
@@ -93,12 +116,11 @@ export default function EcommerceProfile() {
                   <div className="bg-brand text-brand-foreground border-background absolute right-0 bottom-0 rounded-full border-2 p-1.5">
                     <CameraIcon size={14} />
                   </div>
-                </div>
+                </button>
 
                 <h2 className="mt-4 text-lg font-bold">{formData.name}</h2>
                 <p className="text-foreground-muted mb-4 text-sm">Gold Member</p>
 
-                {/* Progress Bar */}
                 <div className="bg-background-muted rounded-4xl p-4 text-left">
                   <div className="mb-2 flex items-end justify-between">
                     <span className="text-xs font-bold tracking-tighter uppercase">
@@ -114,7 +136,6 @@ export default function EcommerceProfile() {
                   </div>
                 </div>
 
-                {/* Address Link */}
                 <Link href="/profile/addresses" className="group mt-4 block">
                   <div className="border-border bg-background hover:border-brand flex items-center justify-between rounded-3xl border p-3 px-4 transition-all hover:shadow-md">
                     <div className="flex items-center gap-3">
@@ -139,7 +160,7 @@ export default function EcommerceProfile() {
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
-                onChange={(e) => {
+                onChange={() => {
                   /* logic */
                 }}
               />
@@ -147,7 +168,12 @@ export default function EcommerceProfile() {
           </aside>
 
           {/* MAIN FORM */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-6 md:col-span-8">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+            className="space-y-6 md:col-span-8"
+          >
             <ProfileSection
               title="Identity Details"
               icon={UserIcon}
@@ -161,23 +187,33 @@ export default function EcommerceProfile() {
                 <ModernInput
                   label="Full Name"
                   value={formData.name}
-                  onChange={(v: string) => setFormData({ ...formData, name: v })}
+                  onChange={(v) => {
+                    setFormData({ ...formData, name: v });
+                  }}
                 />
                 <ModernInput
                   label="Phone Number"
                   value={formData.phone}
-                  onChange={(v: string) => setFormData({ ...formData, phone: v })}
+                  onChange={(v) => {
+                    setFormData({ ...formData, phone: v });
+                  }}
                   actionLabel="Verify"
-                  onAction={() => handleVerifyField('phone')}
+                  onAction={() => {
+                    handleVerifyField('phone');
+                  }}
                   isLoading={verifyingField === 'phone'}
                   isVerified={verifiedStatus.phone}
                 />
                 <ModernInput
                   label="Email Address"
                   value={formData.email}
-                  onChange={(v: string) => setFormData({ ...formData, email: v })}
+                  onChange={(v) => {
+                    setFormData({ ...formData, email: v });
+                  }}
                   actionLabel="Verify"
-                  onAction={() => handleVerifyField('email')}
+                  onAction={() => {
+                    handleVerifyField('email');
+                  }}
                   isLoading={verifyingField === 'email'}
                   isVerified={verifiedStatus.email}
                 />
@@ -199,7 +235,9 @@ export default function EcommerceProfile() {
                       <button
                         key={g}
                         type="button"
-                        onClick={() => setFormData({ ...formData, gender: g })}
+                        onClick={() => {
+                          setFormData({ ...formData, gender: g });
+                        }}
                         className={`rounded-4xl border py-3 text-sm font-medium transition-all ${
                           formData.gender === g
                             ? 'bg-brand text-brand-foreground border-brand scale-[1.02]'
@@ -223,6 +261,12 @@ export default function EcommerceProfile() {
                         <button
                           key={style}
                           type="button"
+                          onClick={() => {
+                            const newStyles = isSelected
+                              ? formData.stylePreference.filter((s) => s !== style)
+                              : [...formData.stylePreference, style];
+                            setFormData({ ...formData, stylePreference: newStyles });
+                          }}
                           className={`rounded-full border-2 px-4 py-2 text-sm font-medium transition-all ${
                             isSelected
                               ? 'bg-brand text-brand-foreground border-brand'
@@ -241,20 +285,23 @@ export default function EcommerceProfile() {
                     label="Date of Birth"
                     type="date"
                     value={formData.dob}
-                    onChange={(v: string) => setFormData({ ...formData, dob: v })}
+                    onChange={(v) => {
+                      setFormData({ ...formData, dob: v });
+                    }}
                     icon={<GiftIcon size={16} />}
                   />
                   <ModernInput
                     label="Anniversary"
                     type="date"
                     value={formData.anniversary}
-                    onChange={(v: string) => setFormData({ ...formData, anniversary: v })}
+                    onChange={(v) => {
+                      setFormData({ ...formData, anniversary: v });
+                    }}
                   />
                 </div>
               </div>
             </ProfileSection>
 
-            {/* Sticky Action Bar */}
             <div className="sticky bottom-16 z-20 flex w-full items-center justify-center pt-4 md:bottom-4">
               <div className="bg-foreground flex gap-3 rounded-4xl p-2 shadow-xl backdrop-blur-xl">
                 <button
@@ -285,7 +332,6 @@ export default function EcommerceProfile() {
   );
 }
 
-// --- REFACTORED INPUT ---
 const ModernInput = ({
   label,
   value,
@@ -295,8 +341,7 @@ const ModernInput = ({
   onAction,
   isLoading,
   isVerified,
-  icon,
-}: any) => (
+}: ModernInputProps) => (
   <div className="w-full space-y-1.5">
     <div className="flex justify-between">
       <label className="text-foreground-subtle text-xs font-bold tracking-wider uppercase">
@@ -312,15 +357,20 @@ const ModernInput = ({
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          onChange(e.target.value);
+        }}
         disabled={isVerified}
         className={`bg-background border-border text-foreground focus:ring-ring focus:border-brand w-full rounded-4xl border py-3.5 pl-4 text-sm transition-all outline-none focus:ring-1 ${actionLabel ? 'pr-28' : 'pr-4'} ${
-          isVerified && 'border-brand opacity-80'
+          isVerified ? 'border-brand opacity-80' : ''
         }`}
       />
       {onAction && !isVerified && (
         <button
-          onClick={onAction}
+          type="button"
+          onClick={() => {
+            onAction();
+          }}
           disabled={isLoading || !value}
           className="bg-brand text-brand-foreground absolute top-1.5 right-1.5 bottom-1.5 min-w-20 rounded-3xl px-4 text-xs font-bold transition-all hover:opacity-90 disabled:opacity-30"
         >
