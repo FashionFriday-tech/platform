@@ -1,8 +1,19 @@
+'use client';
+
 import { motion } from 'framer-motion';
 import { CloseIcon, ArrowUpRightIcon } from '@ff/ui';
 import { HighlightText } from './HighlightText';
 
-export const RecentSearches = ({ items, query, setQuery, onRemove }: any) => {
+// --- 1. DEFINE PROPS INTERFACE ---
+interface RecentSearchesProps {
+  items: string[];
+  query: string;
+  setQuery: (query: string) => void;
+  onRemove: (item: string) => void;
+}
+
+export const RecentSearches = ({ items, query, setQuery, onRemove }: RecentSearchesProps) => {
+  // 2. Safely check length now that items is string[]
   if (items.length === 0) {
     return null;
   }
@@ -13,27 +24,40 @@ export const RecentSearches = ({ items, query, setQuery, onRemove }: any) => {
         Recent Searches
       </h4>
       <div className="flex flex-col">
-        {items.map((item: string) => (
+        {items.map((item) => (
           <div
             key={item}
             className="group flex items-center justify-between border-b border-white/5 transition-colors hover:border-white/10"
           >
             <button
-              onClick={() => setQuery(item)}
+              onClick={() => {
+                setQuery(item);
+              }}
               className="flex-1 py-2 text-left font-mono text-lg uppercase"
             >
               <HighlightText text={item} highlight={query} />
             </button>
-            <button className="text-foreground/20 p-2 text-xl">
+            <div className="text-foreground/20 p-2 text-xl">
               {query.length > 0 ? (
-                <ArrowUpRightIcon onClick={() => setQuery(item)} />
+                <button
+                  onClick={() => {
+                    setQuery(item);
+                  }}
+                  aria-label="Set query"
+                >
+                  <ArrowUpRightIcon />
+                </button>
               ) : (
-                <CloseIcon
-                  onClick={() => onRemove(item)}
-                  className="transition-colors hover:text-red-500"
-                />
+                <button
+                  onClick={() => {
+                    onRemove(item);
+                  }}
+                  aria-label="Remove search"
+                >
+                  <CloseIcon className="transition-colors hover:text-red-500" />
+                </button>
               )}
-            </button>
+            </div>
           </div>
         ))}
       </div>
