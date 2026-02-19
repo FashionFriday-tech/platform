@@ -1,4 +1,3 @@
-// src/app/product/[slug]/page.tsx
 import { Metadata } from 'next';
 import { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
 import ProductPageMaster from '@/features/product';
@@ -8,13 +7,12 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // params MUST be awaited in Next.js 15
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+
+  // REMOVED await: getProductBySlug is synchronous
+  const product = getProductBySlug(slug);
 
   if (!product) {
     return { title: 'Product Not Found' };
@@ -34,17 +32,20 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+export default async function Page({ params }: Props) {
+  // params MUST be awaited in Next.js 15
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+
+  // REMOVED await: This is a synchronous lookup in your dummy data
+  const product = getProductBySlug(slug);
 
   // 2. High-end Error Handling
   if (!product) {
     return <EditorialError slug={slug} />;
   }
 
-  // 3. Data Fetching with exclusion logic (Fixes TS Error 2554)
-  const similarProducts = await getSimilarProducts(product.category, product.id);
+  // 3. REMOVED await: Logic moved to synchronous execution
+  const similarProducts = getSimilarProducts(product.category, product.id);
 
   return <ProductPageMaster product={product} similarProducts={similarProducts} />;
 }
