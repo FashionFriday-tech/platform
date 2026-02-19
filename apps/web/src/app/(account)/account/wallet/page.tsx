@@ -32,6 +32,7 @@ interface Transaction {
 
 export default function WalletPage() {
   const [filter, setFilter] = useState<'all' | TransactionType>('all');
+
   const totals = useMemo(
     () => ({
       total: 3199,
@@ -41,61 +42,62 @@ export default function WalletPage() {
     [],
   );
 
-  const transactions: Transaction[] = [
-    {
-      id: 'TX101',
-      type: 'reward',
-      amount: 100,
-      date: '26 Jan 2026',
-      status: 'completed',
-      description: 'Referral Reward: Rahul S.',
-      timestamp: 1737885600000,
-    },
-    {
-      id: 'TX102',
-      type: 'refund',
-      amount: 2499,
-      date: '24 Jan 2026',
-      status: 'completed',
-      description: 'Refund: Order #FF9021',
-      timestamp: 1737712800000,
-    },
-    {
-      id: 'TX103',
-      type: 'reward',
-      amount: 500,
-      date: '23 Jan 2026',
-      status: 'completed',
-      description: 'Gift Card: BDAY500',
-      timestamp: 1737626400000,
-    },
-    {
-      id: 'TX104',
-      type: 'purchase',
-      amount: -1200,
-      date: '22 Jan 2026',
-      status: 'completed',
-      description: 'Payment for Shoes',
-      timestamp: 1737540000000,
-    },
-  ];
+  // FIX: Memoizing transactions so it can be a stable dependency for sortedLedger
+  const transactions: Transaction[] = useMemo(
+    () => [
+      {
+        id: 'TX101',
+        type: 'reward',
+        amount: 100,
+        date: '26 Jan 2026',
+        status: 'completed',
+        description: 'Referral Reward: Rahul S.',
+        timestamp: 1737885600000,
+      },
+      {
+        id: 'TX102',
+        type: 'refund',
+        amount: 2499,
+        date: '24 Jan 2026',
+        status: 'completed',
+        description: 'Refund: Order #FF9021',
+        timestamp: 1737712800000,
+      },
+      {
+        id: 'TX103',
+        type: 'reward',
+        amount: 500,
+        date: '23 Jan 2026',
+        status: 'completed',
+        description: 'Gift Card: BDAY500',
+        timestamp: 1737626400000,
+      },
+      {
+        id: 'TX104',
+        type: 'purchase',
+        amount: -1200,
+        date: '22 Jan 2026',
+        status: 'completed',
+        description: 'Payment for Shoes',
+        timestamp: 1737540000000,
+      },
+    ],
+    [],
+  );
 
   const sortedLedger = useMemo(() => {
     return transactions
       .filter((t) => filter === 'all' || t.type === filter)
       .sort((a, b) => b.timestamp - a.timestamp);
-  }, [filter]);
+  }, [filter, transactions]); // Fixed missing dependency
 
   return (
     <div className="bg-background text-foreground min-h-screen transition-colors duration-500">
-      {/* 1. CINEMATIC HERO SECTION */}
       <section className="relative overflow-hidden rounded-b-[4rem] px-4 pt-6 pb-20 md:rounded-b-[6rem] md:px-8 md:pt-32">
-        {/* BACKGROUND IMAGE CONTAINER */}
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 hover:scale-105" />
-        {/* DYNAMIC OVERLAYS */}
+
         <main className="relative z-10 mx-auto max-w-5xl space-y-12">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-            {/* GLASSMORPHISM MAIN CARD */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -103,14 +105,9 @@ export default function WalletPage() {
               whileHover={{ scale: 1.015 }}
               className="relative aspect-5/4 h-full overflow-hidden rounded-4xl shadow-2xl"
             >
-              {/* Background image */}
-              {/* <div
-                className="absolute inset-0 bg-cover bg-center scale-105"
-                style={{ backgroundImage: "url('/images/wallet/hero4.png')" }}
-              /> */}
-
               <video
-                className="absolute inset-0 h-full w-full scale-105 object-cover brightness-75 contrast-110 hue-rotate-[200deg] saturate-10"
+                // FIX: Canonical hue-rotate-180 or hue-rotate-200 (using 200 to match intent)
+                className="absolute inset-0 h-full w-full scale-105 object-cover brightness-75 contrast-110 hue-rotate-200 saturate-10"
                 autoPlay
                 muted
                 loop
@@ -119,29 +116,25 @@ export default function WalletPage() {
                 <source src="/videos/wallet/coin.mp4" type="video/mp4" />
               </video>
 
-              {/* Content */}
               <div className="relative z-10 flex h-full flex-col justify-between p-6">
                 <div className="flex h-full items-start justify-between">
                   <div>
                     <p className="mb-2 text-[10px] font-extrabold tracking-[0.35em] text-white/60 uppercase">
                       Total Balance
                     </p>
-
                     <h2 className="text-4xl font-bold tracking-tighter text-white drop-shadow-[0_6px_30px_rgba(16,185,129,0.45)] md:text-4xl">
                       ₹{totals.total.toLocaleString()}
                     </h2>
                   </div>
 
-                  {/* Status icon */}
                   <div className="relative">
                     <div className="bg-foreground/40 absolute inset-0 animate-pulse rounded-xl blur-lg" />
-                    <div className="bg-backgroiund/40 relative rounded-xl border border-white/20 p-3 text-white">
+                    <div className="bg-background/40 relative rounded-xl border border-white/20 p-3 text-white">
                       <ShieldCheckIcon size={22} />
                     </div>
                   </div>
                 </div>
 
-                {/* Footer */}
                 <div className="flex items-center justify-between text-xs text-white/60">
                   <span>Bank-grade security</span>
                   <span className="font-semibold text-white">Updated live</span>
@@ -149,7 +142,6 @@ export default function WalletPage() {
               </div>
             </motion.div>
 
-            {/* USAGE LOGIC SUMMARY */}
             <div className="space-y-8">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -171,7 +163,7 @@ export default function WalletPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10">
+                <div className="rounded-4xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10">
                   <p className="text-foreground/30 mb-1 text-[8px] font-black tracking-widest uppercase">
                     Status
                   </p>
@@ -179,7 +171,7 @@ export default function WalletPage() {
                     Elite Member
                   </p>
                 </div>
-                <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10">
+                <div className="rounded-4xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10">
                   <p className="text-foreground/30 mb-1 text-[8px] font-black tracking-widest uppercase">
                     Last Sync
                   </p>
@@ -193,7 +185,6 @@ export default function WalletPage() {
         </main>
       </section>
 
-      {/* 2. RESPONSIVE SUB-WALLETS */}
       <section className="mx-auto max-w-5xl space-y-20 px-4 md:px-8">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-2">
           <SubWalletCard
@@ -214,7 +205,6 @@ export default function WalletPage() {
           />
         </div>
 
-        {/* 3. ACTIVITY LEDGER */}
         <div className="space-y-6 pb-20">
           <div className="border-border bg-background-muted/20 flex flex-col items-center justify-between gap-4 rounded-4xl border p-3 md:flex-row">
             <div className="flex items-center gap-3 px-4">
@@ -249,12 +239,12 @@ export default function WalletPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   key={tx.id}
-                  className="hover:bg-foreground/[0.01] group flex cursor-pointer items-center justify-between p-4 transition-all md:px-12"
+                  className="hover:bg-foreground/5 group flex cursor-pointer items-center justify-between p-4 transition-all md:px-12"
                 >
                   <div className="flex items-center gap-4">
                     <div
                       className={cn(
-                        'flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.5rem] transition-transform group-hover:scale-110',
+                        'flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl transition-transform group-hover:scale-110',
                         tx.amount > 0
                           ? 'bg-emerald-500/10 text-emerald-500'
                           : 'bg-red-400/10 text-red-400',
@@ -283,7 +273,7 @@ export default function WalletPage() {
                   <div className="text-right">
                     <p
                       className={cn(
-                        'text-lg font-black tracking-tighter text-nowrap italic',
+                        'text-lg font-black tracking-tighter whitespace-nowrap italic',
                         tx.amount > 0 ? 'text-emerald-500' : 'text-red-400',
                       )}
                     >
@@ -304,18 +294,19 @@ export default function WalletPage() {
 }
 
 // --- Sub Wallet Components ---
-function SubWalletCard({ label, value, icon, description, action, color }: any) {
+function SubWalletCard({ label, value, icon, description, action }: any) {
   const [openWallet, setOpenWallet] = useState(false);
 
   return (
     <div
       onClick={() => setOpenWallet(!openWallet)}
-      className={`bg-background border-border hover:border-foreground/20 group relative flex h-72 flex-col justify-between rounded-[3.5rem] border p-8 shadow-sm`}
+      className="bg-background border-border hover:border-foreground/20 group relative flex h-72 cursor-pointer flex-col justify-between rounded-[3.5rem] border p-8 shadow-sm"
     >
       <div
-        className={`border-border bg-foreground absolute left-0 z-20 w-full rounded-4xl border-t py-20 transition-all duration-300 ${
-          openWallet ? '-top-6' : 'top-6'
-        }`}
+        className={cn(
+          'border-border bg-foreground absolute left-0 z-20 w-full rounded-4xl border-t py-20 transition-all duration-300',
+          openWallet ? '-top-6' : 'top-6',
+        )}
       >
         <h3 className="text-background absolute top-5 right-5 mb-2 text-3xl font-semibold tracking-tighter italic">
           {value}
@@ -326,16 +317,14 @@ function SubWalletCard({ label, value, icon, description, action, color }: any) 
           width={48}
           height={48}
           className="absolute top-6 left-6 h-auto w-12"
-        />{' '}
+        />
       </div>
       <div className="border-border bg-background absolute top-14 right-2 left-2 z-40 w-auto rounded-4xl border-t-2 border-dashed py-20" />
-
       <div className="border-border bg-background absolute top-12 left-0 z-30 w-full rounded-4xl border-t py-20" />
+
       <div className="z-50 pt-12">
-        <div className={`text-foreground flex items-center justify-between`}>
-          <div
-            className={`bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background rounded-[1.25rem] p-4 transition-all duration-700`}
-          >
+        <div className="text-foreground flex items-center justify-between">
+          <div className="bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background rounded-[1.25rem] p-4 transition-all duration-700">
             {icon}
           </div>
           <p className="text-sm font-black tracking-widest uppercase">{label}</p>
@@ -347,15 +336,13 @@ function SubWalletCard({ label, value, icon, description, action, color }: any) 
           </div>
         </div>
       </div>
+
       <div className="border-border flex items-center justify-between border-t pt-6">
-        <p
-          className={`max-w-[160px] text-[10px] leading-tight font-bold uppercase italic opacity-30`}
-        >
+        {/* FIX: Canonical max-w-40 instead of max-w-[160px] */}
+        <p className="max-w-40 text-[10px] leading-tight font-bold uppercase italic opacity-30">
           {description}
         </p>
-        <button
-          className={`text-foreground text-[10px] font-black tracking-widest uppercase underline underline-offset-8 transition-colors`}
-        >
+        <button className="text-foreground text-[10px] font-black tracking-widest uppercase underline underline-offset-8 transition-colors">
           {action}
         </button>
       </div>
