@@ -112,7 +112,6 @@ export default function AuthPage() {
     }
     setOtp(['', '', '', '']);
     startTimer();
-    console.log('OTP Resent to', phoneNumber);
   };
 
   const clearError = (key: string) => {
