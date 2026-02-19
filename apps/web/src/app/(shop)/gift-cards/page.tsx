@@ -17,10 +17,8 @@ import {
   LockIcon,
   ExternalLinkIcon,
   ChevronRightIcon,
-  WalletIcon,
   FacebookIcon,
 } from '@ff/ui';
-import { Header } from '@/components/layout/Header';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -30,13 +28,13 @@ type ClaimStatus = 'idle' | 'pending' | 'approved';
 interface SocialTask {
   id: string;
   platform: string;
-  profileUrl: string; // URL to your social profile
+  profileUrl: string;
   icon: React.ReactNode;
   rewardAmount: number;
   status: ClaimStatus;
   actionLabel: string;
   placeholder: string;
-  cardStyle: string; // CSS for the specific brand gradient
+  cardStyle: string;
 }
 
 interface Milestone {
@@ -59,7 +57,6 @@ const initialSocialTasks: SocialTask[] = [
     status: 'idle',
     actionLabel: 'Follow us',
     placeholder: 'Your Instagram Handle',
-    // Instagram Gradient
     cardStyle: 'bg-gradient-to-bl from-[#833ab4] via-[#fd1d1d] to-[#fcb045]',
   },
   {
@@ -71,7 +68,6 @@ const initialSocialTasks: SocialTask[] = [
     status: 'idle',
     actionLabel: 'Follow us',
     placeholder: 'Your X Handle',
-    // X / Twitter Dark Blue
     cardStyle: 'bg-gradient-to-tr from-blue-600 to-blue-400',
   },
   {
@@ -83,7 +79,6 @@ const initialSocialTasks: SocialTask[] = [
     status: 'idle',
     actionLabel: 'Subscribe',
     placeholder: 'Your Channel Name',
-    // YouTube Red
     cardStyle: 'bg-gradient-to-tr from-red-600 to-red-900',
   },
   {
@@ -135,57 +130,62 @@ export default function RewardsPage() {
     }
   };
 
-  const handleSubmitClaim = async (e: React.FormEvent) => {
+  /**
+   * FIX: handleSubmit is now a synchronous wrapper around the async logic
+   * to satisfy @typescript-eslint/no-misused-promises
+   */
+  const handleSubmitClaim = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!usernameInput.trim()) {
-      return;
-    }
 
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const performSubmit = async () => {
+      if (!usernameInput.trim() || !selectedTask) {
+        return;
+      }
 
-    setSocials((prev) =>
-      prev.map((task) => (task.id === selectedTask?.id ? { ...task, status: 'pending' } : task)),
-    );
+      setIsSubmitting(true);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    setIsSubmitting(false);
-    setSelectedTask(null);
+      setSocials((prev) =>
+        prev.map((task) => (task.id === selectedTask.id ? { ...task, status: 'pending' } : task)),
+      );
+
+      setIsSubmitting(false);
+      setSelectedTask(null);
+    };
+
+    void performSubmit();
   };
 
   return (
-    <div className="bg-background text-foreground selection:bg-background selection:text-foreground min-h-screen font-sans">
+    <div className="bg-background text-foreground min-h-screen font-sans">
       <main className="mx-auto max-w-6xl px-4 py-20 pb-32">
-        {/* --- HERO SECTION: WALLET CARD --- */}
+        {/* --- HERO SECTION --- */}
         <div className="mb-16 flex flex-col items-center justify-between pt-10 md:mb-24 md:flex-row">
-          <div className="mb-8 text-center">
-            <h1 className="from-foreground mb-4 bg-linear-to-b to-zinc-400 bg-clip-text text-4xl font-semibold tracking-tighter text-transparent md:text-6xl">
-              MEMBERS CLUB
+          <div className="mb-8 text-center md:text-left">
+            <h1 className="from-foreground mb-4 bg-linear-to-b to-zinc-400 bg-clip-text text-4xl font-semibold tracking-tighter text-transparent uppercase md:text-6xl">
+              Members Club
             </h1>
-            <p className="mx-auto max-w-md text-sm text-zinc-500 md:text-base">
+            <p className="mx-auto max-w-md text-sm text-zinc-500 md:mx-0 md:text-base">
               Exclusive rewards for our most loyal customers. Collect cards, unlock value.
             </p>
           </div>
 
-          {/* The Hero Wallet Card */}
+          {/* Hero Wallet Card */}
           <div className="bg-background text-foreground group border-foreground/10 relative flex aspect-[1.58/1] w-full max-w-md flex-col justify-between overflow-hidden rounded-4xl border p-6 shadow-[0_0_50px_rgba(255,255,255,0.1)] transition-transform duration-500 hover:scale-[1.02] md:p-8">
-            {/* Textures */}
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30 mix-blend-overlay" />
-            <div className="via-foreground/5 pointer-events-none absolute -top-[50%] -left-[50%] h-[200%] w-[200%] rotate-45 bg-linear-to-br from-transparent to-transparent" />
 
-            {/* Card Top */}
             <div className="relative z-10 flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <div className="bg-background text-foreground flex h-8 w-8 items-center justify-center rounded-full shadow-[0_0_15px_foreground]">
+                <div className="bg-background text-foreground flex h-8 w-8 items-center justify-center rounded-full shadow-[0_0_15px_rgba(255,255,255,0.2)]">
                   <SparklesIcon size={16} />
                 </div>
-                <span className="text-sm font-bold tracking-[0.2em] opacity-90">
-                  background CARD
+                <span className="text-sm font-bold tracking-[0.2em] uppercase opacity-90">
+                  Fashion Card
                 </span>
               </div>
               <CreditCardIcon className="opacity-50" />
             </div>
 
-            {/* Card Middle */}
             <div className="relative z-10">
               <p className="mb-2 text-[10px] font-bold tracking-wider text-zinc-400 uppercase">
                 Available Credits
@@ -195,7 +195,6 @@ export default function RewardsPage() {
               </h2>
             </div>
 
-            {/* Card Bottom */}
             <div className="relative z-10 flex items-end justify-between">
               <div>
                 <p className="mb-0.5 text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
@@ -210,7 +209,6 @@ export default function RewardsPage() {
 
         {/* --- GRID LAYOUT --- */}
         <div className="space-y-16">
-          {/* 1. SOCIAL GIFT CARDS */}
           <section>
             <div className="mb-8 flex items-center gap-3 px-2">
               <div className="rounded-full bg-white p-2 text-black">
@@ -227,11 +225,10 @@ export default function RewardsPage() {
                     task.cardStyle
                   } ${
                     task.status === 'approved'
-                      ? 'opacity-50 grayscale'
+                      ? 'cursor-not-allowed opacity-50 grayscale'
                       : 'hover:-translate-y-2 hover:shadow-[0_10px_40px_rgba(0,0,0,0.5)]'
                   } transition-all duration-500`}
                 >
-                  {/* Top Row: Icon & Amount */}
                   <div className="relative z-10 flex items-start justify-between">
                     <div className="rounded-xl border border-white/10 bg-black/20 p-2.5 backdrop-blur-md">
                       {task.icon}
@@ -241,7 +238,6 @@ export default function RewardsPage() {
                     </span>
                   </div>
 
-                  {/* Middle Row: Label */}
                   <div className="relative z-10">
                     <p className="mb-1 text-[10px] font-medium tracking-widest uppercase opacity-80">
                       Task
@@ -249,9 +245,7 @@ export default function RewardsPage() {
                     <h3 className="text-xl leading-tight font-bold">{task.actionLabel}</h3>
                   </div>
 
-                  {/* Bottom Row: Actions */}
                   <div className="relative z-10 mt-2 flex items-center justify-between">
-                    {/* STATUS BADGES */}
                     {task.status === 'pending' && (
                       <div className="inline-flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-1.5 text-xs font-bold text-yellow-200 backdrop-blur-md">
                         <ClockIcon size={12} className="animate-pulse" /> Pending
@@ -263,21 +257,17 @@ export default function RewardsPage() {
                       </div>
                     )}
 
-                    {/* ACTION BUTTONS (Only if Idle) */}
                     {task.status === 'idle' && (
                       <div className="flex w-full items-center gap-2">
-                        {/* 1. Visit Profile Button */}
                         <Link
                           href={task.profileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="rounded-full border border-white/10 bg-white/10 p-2.5 text-white backdrop-blur-md transition-colors hover:bg-white/20"
-                          title="Go to Profile"
                         >
                           <ExternalLinkIcon size={16} />
                         </Link>
 
-                        {/* 2. Claim Button */}
                         <button
                           onClick={() => openClaimModal(task)}
                           className="flex flex-1 items-center justify-center gap-1 rounded-full bg-white py-2.5 text-xs font-bold text-black shadow-lg transition-colors hover:bg-zinc-200"
@@ -292,7 +282,6 @@ export default function RewardsPage() {
             </div>
           </section>
 
-          {/* 2. SHOPPING MILESTONES */}
           <section>
             <div className="mb-8 flex items-center gap-3 px-2">
               <div className="bg-foreground text-background rounded-full p-2">
@@ -314,20 +303,17 @@ export default function RewardsPage() {
                     key={milestone.id}
                     className="border-foreground/10 group relative aspect-[1.58/1] w-full overflow-hidden rounded-4xl border"
                   >
-                    {/* Background Image */}
                     <Image
                       src={milestone.imageUrl}
                       alt={milestone.title}
                       fill
                       className="object-cover opacity-60 grayscale transition-all duration-700 group-hover:opacity-80 group-hover:grayscale-0"
-                      sizes="100vw"
+                      sizes="(min-width: 768px) 50vw, 100vw"
                     />
-                    {/* Dark Overlay Gradient */}
-                    <div className="from-background/80 via-foregroiund/50 absolute inset-0 bg-linear-to-t to-transparent" />
+                    {/* FIX: Corrected foregroiund typo to foreground */}
+                    <div className="from-background/80 via-foreground/50 absolute inset-0 bg-linear-to-t to-transparent" />
 
-                    {/* Card Content */}
                     <div className="text-foreground absolute inset-0 flex flex-col justify-between p-6">
-                      {/* Top */}
                       <div className="flex items-start justify-between">
                         <div
                           className={`rounded-md border px-3 py-1 text-[10px] font-bold tracking-widest uppercase backdrop-blur-md ${
@@ -348,27 +334,22 @@ export default function RewardsPage() {
                         </div>
                       </div>
 
-                      {/* Middle */}
                       <div className="translate-y-2 transform text-center transition-transform group-hover:translate-y-0">
                         {!isUnlocked && <LockIcon className="mx-auto mb-2 opacity-50" size={24} />}
                         <h3 className="text-xl font-bold tracking-tight">{milestone.title}</h3>
                       </div>
 
-                      {/* Bottom: Progress Bar Integration */}
                       <div className="space-y-2">
                         <div className="flex justify-between text-[10px] font-bold tracking-wider uppercase opacity-80">
                           <span>Progress</span>
                           <span>{Math.round(progress)}%</span>
                         </div>
-
-                        {/* The Progress Bar */}
                         <div className="bg-foreground/20 h-2 w-full overflow-hidden rounded-full backdrop-blur-sm">
                           <div
-                            className="bg-foreground h-full shadow-[0_0_15px_foreground]"
+                            className="bg-foreground h-full shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all duration-1000"
                             style={{ width: `${progress}%` }}
                           />
                         </div>
-
                         <div className="mt-1 flex items-center justify-between">
                           <p className="text-[10px] opacity-60">
                             Spent ₹{milestone.currentAmount} / ₹{milestone.targetAmount}
@@ -389,17 +370,15 @@ export default function RewardsPage() {
         </div>
       </main>
 
-      {/* --- CLAIM VERIFICATION MODAL (Dark Mode) --- */}
+      {/* --- CLAIM MODAL --- */}
       {selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
           <div
-            className="bg-background/30 animate-in fade-in absolute inset-0 backdrop-blur-sm transition-opacity"
+            className="bg-background/30 absolute inset-0 backdrop-blur-sm transition-opacity"
             onClick={() => setSelectedTask(null)}
           />
 
-          {/* Modal Content */}
-          <div className="bg-background animate-in zoom-in-95 text-foreground relative w-full max-w-sm rounded-3xl p-8 shadow-2xl duration-200">
+          <div className="bg-background relative w-full max-w-sm rounded-3xl p-8 shadow-2xl">
             <button
               onClick={() => setSelectedTask(null)}
               className="hover:text-foreground absolute top-4 right-4 p-2 text-zinc-500 transition-colors"
@@ -409,13 +388,11 @@ export default function RewardsPage() {
 
             <div className="mb-6 text-center">
               <div
-                className={`text-background mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl shadow-[0_0_30px_rgba(255,255,255,0.1)] ${selectedTask.cardStyle}`}
+                className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl text-white shadow-lg ${selectedTask.cardStyle}`}
               >
                 {selectedTask.icon}
               </div>
-              <h3 className="text-foreground text-xl font-bold">
-                Claim ₹{selectedTask.rewardAmount}
-              </h3>
+              <h3 className="text-xl font-bold">Claim ₹{selectedTask.rewardAmount}</h3>
               <p className="mt-2 text-xs leading-relaxed text-zinc-400">
                 Enter your username. We will verify that you followed our profile.
               </p>
