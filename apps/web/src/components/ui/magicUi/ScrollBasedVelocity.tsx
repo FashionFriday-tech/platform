@@ -3,6 +3,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   motion,
+  MotionValue,
   useAnimationFrame,
   useMotionValue,
   useScroll,
@@ -10,7 +11,6 @@ import {
   useTransform,
   useVelocity,
 } from 'motion/react';
-import type { MotionValue } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 
