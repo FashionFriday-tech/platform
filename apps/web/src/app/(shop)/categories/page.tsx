@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { ChevronRightIcon } from '@ff/ui';
 import Image from 'next/image';
 
@@ -86,7 +86,10 @@ export default function StoreLandingPage() {
   const [genderIndex, setGenderIndex] = useState(0);
   const activeGender = GENDERS[genderIndex];
 
-  const handleDragEnd = (event: any, info: any) => {
+  /**
+   * FIX: Replaced 'any' with proper types to resolve @typescript-eslint/no-unsafe-member-access
+   */
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
     const swipeThreshold = 50;
     if (info.offset.x > swipeThreshold && genderIndex > 0) {
       setGenderIndex(0);
@@ -98,7 +101,7 @@ export default function StoreLandingPage() {
   return (
     <div className="bg-background h-screen pb-14 select-none">
       {/* --- HEADER: Fixed width constraints --- */}
-      <header className="bg-background border-border fixed top-14 right-0 left-0 z-100 w-full border-b backdrop-blur-md">
+      <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
           {GENDERS.map((gender, idx) => (
             <button
@@ -138,7 +141,8 @@ export default function StoreLandingPage() {
             className="mx-auto max-w-2xl px-4 pt-6"
           >
             {/* 1. HERO SECTION */}
-            <div className="bg-background-muted border-border/50 relative mb-8 aspect-15/10 w-full overflow-hidden rounded-[2rem] border shadow-sm">
+            {/* FIX: Changed rounded-[2rem] to rounded-4xl */}
+            <div className="bg-background-muted border-border/50 relative mb-8 aspect-15/10 w-full overflow-hidden rounded-4xl border shadow-sm">
               <motion.div
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
@@ -167,7 +171,8 @@ export default function StoreLandingPage() {
                   href={`/categories/${cat.slug}?gender=${activeGender.toLowerCase()}`}
                   className="group block"
                 >
-                  <div className="bg-background-muted/40 group-hover:border-border/40 group-active:bg-background-muted flex items-center gap-4 rounded-[1.5rem] border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98]">
+                  {/* FIX: Changed rounded-[1.5rem] to rounded-3xl */}
+                  <div className="bg-background-muted/40 group-hover:border-border/40 group-active:bg-background-muted flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98]">
                     <div className="border-border/50 bg-background relative h-25 w-25 shrink-0 overflow-hidden rounded-4xl border">
                       <Image
                         src={cat.img}
