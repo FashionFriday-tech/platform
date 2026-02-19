@@ -82,6 +82,11 @@ export default defineConfig([
       'no-duplicate-imports': 'error',
 
       // --------------------------
+      // React / JSX Relaxation
+      // --------------------------
+      'react/no-unescaped-entities': 'off',
+
+      // --------------------------
       // Best Practices
       // --------------------------
       'prefer-const': 'error',
