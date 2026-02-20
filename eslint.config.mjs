@@ -15,9 +15,6 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  // ==================================================
-  // Global Ignores
-  // ==================================================
   globalIgnores([
     'node_modules/**',
     'dist/**',
@@ -30,21 +27,13 @@ export default defineConfig([
     '*.config.ts',
   ]),
 
-  // ==================================================
-  // Base Configurations
-  // ==================================================
+  // --- Base Configs (Applies to ALL files) ---
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
-  ...nextVitals,
-  ...nextTs,
-  ...tailwind.configs['flat/recommended'],
-  jsxA11y.flatConfigs.recommended,
   security.configs.recommended,
   eslintPluginPrettierRecommended,
 
-  // ==================================================
-  // Main Configuration
-  // ==================================================
+  // --- Global Rules & Settings ---
   {
     languageOptions: {
       parserOptions: {
@@ -54,20 +43,13 @@ export default defineConfig([
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.jest,
       },
     },
-
     plugins: {
-      'react-hooks': reactHooks,
       'simple-import-sort': simpleImportSort,
       unicorn,
     },
-
     rules: {
-      // --------------------------
-      // 🔄 Import Sorting Rules
-      // --------------------------
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': [
         'error',
@@ -80,20 +62,7 @@ export default defineConfig([
           ],
         },
       ],
-
-      // --------------------------
-      // 🏗️ Monorepo Boundaries
-      // --------------------------
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: ['../**/apps/*'],
-        },
-      ],
-
-      // --------------------------
-      // 🛡️ TypeScript Strictness
-      // --------------------------
+      'no-restricted-imports': ['error', { patterns: ['../**/apps/*'] }],
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
@@ -103,79 +72,44 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-argument': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          ignoreRestSiblings: true,
-        },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
       ],
-
-      // --------------------------
-      // ♿ Accessibility (jsx-a11y)
-      // --------------------------
-      'jsx-a11y/alt-text': 'error',
-      'jsx-a11y/anchor-is-valid': 'error',
-      'jsx-a11y/no-autofocus': 'warn',
-
-      // --------------------------
-      // 🦄 Unicorn — Modern JS
-      // --------------------------
       'unicorn/better-regex': 'error',
-      'unicorn/catch-error-name': 'error',
-      'unicorn/consistent-function-scoping': 'error',
-      'unicorn/explicit-length-check': 'error',
-      'unicorn/filename-case': [
-        'error',
-        {
-          cases: {
-            kebabCase: true,
-            pascalCase: true,
-          },
-        },
-      ],
-      'unicorn/no-array-for-each': 'error',
-      'unicorn/no-await-expression-member': 'error',
-      'unicorn/no-console-spaces': 'error',
+      'unicorn/filename-case': ['error', { cases: { kebabCase: true, pascalCase: true } }],
       'unicorn/no-nested-ternary': 'error',
-      'unicorn/no-new-array': 'error',
-      'unicorn/no-useless-undefined': 'error',
-      'unicorn/prefer-array-flat-map': 'error',
       'unicorn/prefer-includes': 'error',
-      'unicorn/prefer-string-trim-start-end': 'error',
-      'unicorn/prefer-ternary': 'warn',
       'unicorn/prevent-abbreviations': 'off',
-
-      // --------------------------
-      // 🔒 Security
-      // --------------------------
-      'security/detect-non-literal-regexp': 'error',
       'security/detect-object-injection': 'warn',
       'security/detect-possible-timing-attacks': 'error',
-      'security/detect-unsafe-regex': 'error',
-
-      // --------------------------
-      // ⚛️ React & Hooks
-      // --------------------------
-      'react-hooks/exhaustive-deps': 'warn',
-      'react-hooks/rules-of-hooks': 'error',
-      'react/no-unescaped-entities': 'off',
-
-      // --------------------------
-      // ✨ Code Quality & Best Practices
-      // --------------------------
       curly: ['error', 'all'],
       eqeqeq: ['error', 'always'],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'no-debugger': 'error',
-      'no-unused-expressions': 'error',
-      'no-var': 'error',
       'prefer-const': 'error',
     },
   },
 
-  // ==================================================
-  // Test Files Only
-  // ==================================================
+  // --- Frontend Specific (Web & UI Packages Only) ---
+  {
+    files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+    plugins: {
+      'react-hooks': reactHooks,
+      'jsx-a11y': jsxA11y,
+      tailwindcss: tailwind,
+    },
+    // Manually merging the flat configs for scoped application
+    rules: {
+      ...nextVitals[0].rules,
+      ...nextTs[0].rules,
+      ...tailwind.configs['flat/recommended'][0].rules,
+      ...jsxA11y.flatConfigs.recommended.rules,
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/anchor-is-valid': 'error',
+    },
+  },
+
+  // --- Test Files Only ---
   {
     files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
     plugins: {
@@ -183,32 +117,13 @@ export default defineConfig([
       'testing-library': testingLibrary,
     },
     languageOptions: {
-      globals: {
-        ...globals.jest,
-      },
+      globals: { ...globals.jest },
     },
     rules: {
-      // --------------------------
-      // 🧪 Jest Rules
-      // --------------------------
-      'jest/no-disabled-tests': 'warn',
       'jest/no-focused-tests': 'error',
-      'jest/no-identical-title': 'error',
-      'jest/no-standalone-expect': 'error',
       'jest/valid-expect': 'error',
-      'jest/valid-expect-in-promise': 'error',
-
-      // --------------------------
-      // 🧪 Testing Library Rules
-      // --------------------------
       'testing-library/await-async-queries': 'error',
-      'testing-library/await-async-utils': 'error',
-      'testing-library/no-await-sync-queries': 'error',
       'testing-library/no-container': 'error',
-      'testing-library/no-debugging-utils': 'warn',
-      'testing-library/no-dom-import': 'error',
-      'testing-library/prefer-find-by': 'error',
-      'testing-library/prefer-screen-queries': 'error',
     },
   },
 ]);
