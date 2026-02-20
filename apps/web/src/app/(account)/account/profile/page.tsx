@@ -31,7 +31,7 @@ interface ModernInputProps {
   onChange: (value: string) => void;
   type?: string;
   actionLabel?: string;
-  onAction?: () => void;
+  onAction?: () => Promise<void> | void;
   isLoading?: boolean;
   isVerified?: boolean;
   icon?: React.ReactNode;
@@ -198,8 +198,8 @@ export default function EcommerceProfile() {
                     setFormData({ ...formData, phone: v });
                   }}
                   actionLabel="Verify"
-                  onAction={() => {
-                    handleVerifyField('phone');
+                  onAction={async () => {
+                    await handleVerifyField('phone');
                   }}
                   isLoading={verifyingField === 'phone'}
                   isVerified={verifiedStatus.phone}
@@ -211,8 +211,8 @@ export default function EcommerceProfile() {
                     setFormData({ ...formData, email: v });
                   }}
                   actionLabel="Verify"
-                  onAction={() => {
-                    handleVerifyField('email');
+                  onAction={async () => {
+                    await handleVerifyField('email');
                   }}
                   isLoading={verifyingField === 'email'}
                   isVerified={verifiedStatus.email}
@@ -369,7 +369,7 @@ const ModernInput = ({
         <button
           type="button"
           onClick={() => {
-            onAction();
+            void onAction();
           }}
           disabled={isLoading || !value}
           className="bg-brand text-brand-foreground absolute top-1.5 right-1.5 bottom-1.5 min-w-20 rounded-3xl px-4 text-xs font-bold transition-all hover:opacity-90 disabled:opacity-30"
