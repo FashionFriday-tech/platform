@@ -62,29 +62,6 @@ const wishlistItems: Product[] = [
 export default function WishlistPage() {
   const hasItems = wishlistItems.length > 0;
 
-  // SEO: Structured Data (ItemList Schema)
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    itemListElement: wishlistItems.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      item: {
-        '@type': 'Product',
-        name: item.name,
-        image: item.image,
-        offers: {
-          '@type': 'Offer',
-          price: item.price,
-          priceCurrency: 'USD',
-          availability: item.inStock
-            ? 'https://schema.org/InStock'
-            : 'https://schema.org/OutOfStock',
-        },
-      },
-    })),
-  };
-
   return (
     <main className="bg-background text-foreground min-h-screen md:pt-20">
       {/* Header Section */}
