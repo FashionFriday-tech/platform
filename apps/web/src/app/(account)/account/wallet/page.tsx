@@ -5,12 +5,9 @@ import {
   ArrowUpRightIcon,
   ChevronRightIcon,
   HistoryIcon,
-  PlusIcon,
   RefreshCcwIcon,
   ShieldCheckIcon,
   TicketPercentIcon,
-  TrendingUpIcon,
-  WalletIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
@@ -295,7 +292,17 @@ export default function WalletPage() {
 }
 
 // --- Sub Wallet Components ---
-function SubWalletCard({ label, value, icon, description, action }: any) {
+
+interface SubWalletCardProps {
+  label: string;
+  value: string;
+  icon: React.ReactNode;
+  description: string;
+  action: string;
+  color?: string;
+}
+
+function SubWalletCard({ label, value, icon, description, action }: SubWalletCardProps) {
   const [openWallet, setOpenWallet] = useState(false);
 
   return (
@@ -339,7 +346,6 @@ function SubWalletCard({ label, value, icon, description, action }: any) {
       </div>
 
       <div className="border-border flex items-center justify-between border-t pt-6">
-        {/* FIX: Canonical max-w-40 instead of max-w-[160px] */}
         <p className="max-w-40 text-[10px] leading-tight font-bold uppercase italic opacity-30">
           {description}
         </p>
