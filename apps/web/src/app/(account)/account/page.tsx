@@ -53,7 +53,7 @@ export default function ProfileOverviewPage() {
                 title="Security Update"
                 desc="Two-factor authentication successfully enabled."
                 time="Jan 08, 2026"
-                isLast
+                _isLast
               />
             </div>
 
@@ -75,10 +75,10 @@ interface ActivityItemProps {
   title: string;
   desc: string;
   time: string;
-  isLast?: boolean;
+  _isLast?: boolean;
 }
 
-function ActivityItem({ icon, title, desc, time, isLast }: ActivityItemProps) {
+function ActivityItem({ icon, title, desc, time, _isLast }: ActivityItemProps) {
   return (
     <div className="flex items-start gap-6 py-6">
       {/* Icon Circle */}
