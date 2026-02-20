@@ -21,6 +21,7 @@ export default defineConfig([
     'coverage/**',
     'next-env.d.ts',
     '*.config.js',
+    '*.config.ts',
   ]),
 
   // ==================================================
@@ -49,11 +50,17 @@ export default defineConfig([
       'react-hooks': reactHooks,
       'simple-import-sort': simpleImportSort,
     },
+
     rules: {
       // --------------------------
       // 🔄 Import Sorting Rules
       // --------------------------
-      'simple-import-sort/imports': 'error',
+      'simple-import-sort/imports': [
+        'error',
+        {
+          groups: [['^react', '^next'], ['^@?\\w'], ['^@/'], ['^\\.\\./', '^\\./', '^\\.']],
+        },
+      ],
       'simple-import-sort/exports': 'error',
 
       // --------------------------
@@ -70,6 +77,10 @@ export default defineConfig([
           ignoreRestSiblings: true,
         },
       ],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
 
       // --------------------------
       // ⚛️ React & Hooks
@@ -84,7 +95,6 @@ export default defineConfig([
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
       'no-unused-expressions': 'error',
-      'no-duplicate-imports': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
       eqeqeq: ['error', 'always'],
