@@ -37,7 +37,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
       className="group cursor-pointer"
     >
       <Link href={`/product/${product.slug}`} className="block cursor-pointer">
-        <div className="bg-background-muted relative aspect-4/5 overflow-hidden rounded-4xl lg:rounded-[2.5rem]">
+        <div className="bg-background-muted aspect-4/5 rounded-4xl relative overflow-hidden lg:rounded-[2.5rem]">
           <Image
             src={product.media.mainImage || '/images/placeholder.png'}
             alt={product.name}
@@ -56,12 +56,12 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
               height={32}
               className="invert-0 dark:invert"
             />
-            <span className="border-border flex items-center justify-center gap-1 rounded-full border px-2 py-0.5 font-bold text-blue-500 uppercase">
+            <span className="border-border flex items-center justify-center gap-1 rounded-full border px-2 py-0.5 font-bold uppercase text-blue-500">
               <StarBadgeIcon /> {product.attributes.quality}
             </span>
           </div>
 
-          <h2 className="text-foreground line-clamp-1 truncate text-[14px] font-bold tracking-tight uppercase">
+          <h2 className="text-foreground line-clamp-1 truncate text-[14px] font-bold uppercase tracking-tight">
             {product.name}
           </h2>
 

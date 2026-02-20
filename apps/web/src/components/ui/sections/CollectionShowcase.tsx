@@ -32,7 +32,7 @@ export default function CollectionShowcase({ products }: { products: Product[] }
               animate={{ scale: 1, opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} // Custom easing for "luxury" feel
-              className="absolute inset-0 mt-[5%] ml-[5%] h-[90%] w-[90%] overflow-hidden rounded-4xl"
+              className="rounded-4xl absolute inset-0 ml-[5%] mt-[5%] h-[90%] w-[90%] overflow-hidden"
             >
               <Image
                 src={activeProduct.image}
@@ -45,12 +45,12 @@ export default function CollectionShowcase({ products }: { products: Product[] }
               {/* Overlay Content on the Image */}
               <div className="absolute inset-0 flex flex-col justify-between bg-black/10 p-12">
                 <div className="self-start">
-                  <span className="rounded-full border border-white bg-white/90 px-3 py-1 text-xs font-bold tracking-widest uppercase backdrop-blur">
+                  <span className="rounded-full border border-white bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-widest backdrop-blur">
                     {activeProduct.category}
                   </span>
                 </div>
                 {/* Large Title Overlay */}
-                <h2 className="text-8xl leading-none font-black tracking-tighter break-all text-white uppercase opacity-50 mix-blend-overlay">
+                <h2 className="break-all text-8xl font-black uppercase leading-none tracking-tighter text-white opacity-50 mix-blend-overlay">
                   {activeProduct.title.split(' ')[0]}
                 </h2>
               </div>
@@ -61,10 +61,10 @@ export default function CollectionShowcase({ products }: { products: Product[] }
         {/* RIGHT: SCROLLABLE LIST */}
         <div className="flex flex-col justify-center bg-white px-12 py-24 xl:px-24">
           <div className="mb-16">
-            <span className="mb-4 block text-xs font-bold tracking-widest text-gray-400 uppercase">
+            <span className="mb-4 block text-xs font-bold uppercase tracking-widest text-gray-400">
               Just Dropped
             </span>
-            <h2 className="mb-6 text-5xl font-black tracking-tight uppercase">
+            <h2 className="mb-6 text-5xl font-black uppercase tracking-tight">
               The New <br /> Collection
             </h2>
             <p className="max-w-md leading-relaxed text-gray-500">
@@ -83,7 +83,7 @@ export default function CollectionShowcase({ products }: { products: Product[] }
               >
                 <div className="relative z-10 flex items-baseline justify-between">
                   <div className="flex flex-col">
-                    <h3 className="text-3xl font-bold text-gray-400 uppercase transition-colors duration-300 group-hover:text-black">
+                    <h3 className="text-3xl font-bold uppercase text-gray-400 transition-colors duration-300 group-hover:text-black">
                       {product.title}
                     </h3>
                     <p className="mt-2 -translate-y-2 text-sm text-gray-400 opacity-0 transition-opacity duration-300 group-hover:translate-y-0 group-hover:opacity-100">
@@ -108,7 +108,7 @@ export default function CollectionShowcase({ products }: { products: Product[] }
           <div className="mt-12">
             <Link
               href="/shop/new"
-              className="inline-flex items-center gap-2 border-b-2 border-black pb-1 text-sm font-bold tracking-widest uppercase transition-colors hover:border-gray-600 hover:text-gray-600"
+              className="inline-flex items-center gap-2 border-b-2 border-black pb-1 text-sm font-bold uppercase tracking-widest transition-colors hover:border-gray-600 hover:text-gray-600"
             >
               View All Arrivals
             </Link>
@@ -118,20 +118,20 @@ export default function CollectionShowcase({ products }: { products: Product[] }
 
       {/* --- MOBILE LAYOUT (Standard Stack) --- */}
       <div className="px-4 py-16 lg:hidden">
-        <h2 className="mb-8 text-4xl font-black tracking-tight uppercase">New Arrivals</h2>
+        <h2 className="mb-8 text-4xl font-black uppercase tracking-tight">New Arrivals</h2>
         <div className="grid grid-cols-1 gap-8">
           {products.map((product) => (
             <Link href={`/product/${product.id}`} key={product.id} className="group">
               <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-2xl bg-gray-100">
                 <Image src={product.image} alt={product.title} fill className="object-cover" />
-                <div className="absolute top-4 left-4">
-                  <span className="rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold tracking-widest uppercase backdrop-blur">
+                <div className="absolute left-4 top-4">
+                  <span className="rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-widest backdrop-blur">
                     {product.category}
                   </span>
                 </div>
               </div>
               <div className="flex items-start justify-between">
-                <h3 className="text-xl leading-tight font-bold uppercase">{product.title}</h3>
+                <h3 className="text-xl font-bold uppercase leading-tight">{product.title}</h3>
                 <span className="font-medium">${product.price}</span>
               </div>
             </Link>

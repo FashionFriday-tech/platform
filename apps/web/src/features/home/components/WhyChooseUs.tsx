@@ -139,7 +139,7 @@ export default function SplitFeatureSection() {
               viewport={{ once: true }}
               className="mb-12"
             >
-              <h2 className="mb-6 text-5xl leading-[0.9] font-bold tracking-tighter uppercase md:text-7xl">
+              <h2 className="mb-6 text-5xl font-bold uppercase leading-[0.9] tracking-tighter md:text-7xl">
                 Defined by <br />
                 <span className="text-foreground-muted">Trust.</span>
               </h2>
@@ -164,7 +164,7 @@ export default function SplitFeatureSection() {
                     <div className="absolute inset-0 bg-white opacity-0 blur-xl transition-opacity duration-300" />
                   </div>
                   <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xl font-bold tracking-wide uppercase">
+                    <h3 className="mb-2 flex items-center gap-2 text-xl font-bold uppercase tracking-wide">
                       {item.title}
                     </h3>
                     <p className="text-foreground-muted max-w-sm text-sm leading-relaxed transition-colors duration-300">
@@ -177,9 +177,9 @@ export default function SplitFeatureSection() {
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="relative h-150 w-full overflow-hidden border-white/5 lg:h-screen lg:border-l">
-            <div className="from-background via-blackground pointer-events-none absolute top-0 right-0 left-0 z-20 h-24 bg-linear-to-b to-transparent" />
-            <div className="from-blackground via-background pointer-events-none absolute right-0 -bottom-6 left-0 z-20 h-24 bg-linear-to-t to-transparent" />
+          <div className="h-150 relative w-full overflow-hidden border-white/5 lg:h-screen lg:border-l">
+            <div className="from-background via-blackground bg-linear-to-b pointer-events-none absolute left-0 right-0 top-0 z-20 h-24 to-transparent" />
+            <div className="from-blackground via-background bg-linear-to-t pointer-events-none absolute -bottom-6 left-0 right-0 z-20 h-24 to-transparent" />
 
             <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6">
               <div className="relative h-full overflow-hidden">

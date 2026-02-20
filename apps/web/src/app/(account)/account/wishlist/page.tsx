@@ -65,7 +65,7 @@ export default function WishlistPage() {
   return (
     <main className="bg-background text-foreground min-h-screen md:pt-20">
       {/* Header Section */}
-      <header className="border-foreground/10 bg-background/80 right-0 left-0 z-40 rounded-4xl border-b px-2 backdrop-blur-md">
+      <header className="border-foreground/10 bg-background/80 rounded-4xl left-0 right-0 z-40 border-b px-2 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
           {/* Left: Title + Count */}
           <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function WishlistPage() {
           </span>
         </div>
       </header>
-      <div className="mx-auto px-4 pt-8 pb-24 sm:px-8 sm:pt-16">
+      <div className="mx-auto px-4 pb-24 pt-8 sm:px-8 sm:pt-16">
         {/* Content Section */}
         <AnimatePresence mode="wait">
           {hasItems ? (

@@ -21,7 +21,7 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
   return (
     <Link href={`/brands/${brand.slug}`} className="group">
       <div
-        className="group relative flex aspect-3/4 items-center justify-center overflow-hidden rounded-4xl duration-500 hover:scale-95 md:w-62.5"
+        className="aspect-3/4 rounded-4xl md:w-62.5 group relative flex items-center justify-center overflow-hidden duration-500 hover:scale-95"
         style={{
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}

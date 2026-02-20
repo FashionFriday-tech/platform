@@ -15,7 +15,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
   const [isConfirming, setIsConfirming] = useState(false);
 
   return (
-    <div className="group border-border relative flex w-full flex-row gap-6 border-b py-10 transition-all last:border-0 md:gap-10">
+    <div className="border-border group relative flex w-full flex-row gap-6 border-b py-10 transition-all last:border-0 md:gap-10">
       {/* 1. Optimized Image - Fixed Aspect & Premium Radii */}
       <div className="bg-background-muted relative aspect-square w-40 shrink-0 overflow-hidden rounded-3xl md:w-60">
         <Image
@@ -40,7 +40,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
               </button>
               <button
                 onClick={() => setIsConfirming(false)} // Replace with actual Delete logic
-                className="hover:bg-destructive hover:text-destructive-foreground w-full rounded-full bg-red-600 py-3 text-xs font-bold text-white uppercase transition-all"
+                className="hover:bg-destructive hover:text-destructive-foreground w-full rounded-full bg-red-600 py-3 text-xs font-bold uppercase text-white transition-all"
               >
                 Remove
               </button>
@@ -53,10 +53,10 @@ export function CartItemsCard({ item }: BagItemCardProps) {
         <div className="flex flex-col items-start justify-between gap-2">
           {/* Info */}
           <div className="space-y-1">
-            <h3 className="text-foreground text-lg leading-tight font-medium tracking-tight md:text-3xl">
+            <h3 className="text-foreground text-lg font-medium leading-tight tracking-tight md:text-3xl">
               {item.name}
             </h3>
-            <div className="text-foreground-subtle flex items-center gap-3 text-sm text-[11px] font-semibold tracking-widest uppercase md:text-lg">
+            <div className="text-foreground-subtle flex items-center gap-3 text-[11px] text-sm font-semibold uppercase tracking-widest md:text-lg">
               <span className="text-sm md:text-lg">{item.color}</span>
               <span className="bg-border h-3" />
               <span>{item.size}</span>
@@ -70,7 +70,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
                 ₹{item.originalPrice.toLocaleString()}
               </span>
             )}
-            <span className="text-foreground font-bold tracking-tight tabular-nums">
+            <span className="text-foreground font-bold tabular-nums tracking-tight">
               ₹{(item.price * item.quantity).toLocaleString()}
             </span>
           </div>

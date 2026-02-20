@@ -55,14 +55,14 @@ export default function CatalogueClient({
         <div className="mx-auto flex h-12">
           <button
             onClick={() => setActiveDrawer('filter')}
-            className="border-border hover:bg-background-muted flex flex-1 items-center justify-center gap-2 border-r text-[10px] font-black tracking-widest uppercase transition-all outline-none"
+            className="border-border hover:bg-background-muted flex flex-1 items-center justify-center gap-2 border-r text-[10px] font-black uppercase tracking-widest outline-none transition-all"
           >
             <SlidersIcon size={13} /> Filter
           </button>
 
           <button
             onClick={toggleAutoScroll}
-            className={`border-border flex flex-1 items-center justify-center gap-2 border-r text-[10px] font-black tracking-widest uppercase transition-all outline-none ${
+            className={`border-border flex flex-1 items-center justify-center gap-2 border-r text-[10px] font-black uppercase tracking-widest outline-none transition-all ${
               isAutoScrolling ? 'text-brand bg-brand/5' : ''
             }`}
           >
@@ -77,7 +77,7 @@ export default function CatalogueClient({
           <div className="flex flex-1 items-center justify-center">
             <button
               onClick={() => setActiveDrawer('sort')}
-              className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase outline-none lg:hidden"
+              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest outline-none lg:hidden"
             >
               <ArrowUpDownIcon size={13} /> Sort
             </button>
@@ -87,7 +87,7 @@ export default function CatalogueClient({
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="cursor-pointer bg-transparent text-[10px] font-black tracking-widest uppercase outline-none"
+                className="cursor-pointer bg-transparent text-[10px] font-black uppercase tracking-widest outline-none"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -102,7 +102,7 @@ export default function CatalogueClient({
 
       {/* --- MAIN GRID AREA --- */}
       <main className="container mx-auto flex flex-col px-4 pb-20 lg:flex-row">
-        <div className="hidden w-76 shrink-0 lg:block">
+        <div className="w-76 hidden shrink-0 lg:block">
           <CatalogueSidebar
             category={categorySlug}
             activeFilters={activeFilters}
@@ -123,7 +123,7 @@ export default function CatalogueClient({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setActiveDrawer(null)}
-              className="bg-background/60 fixed inset-0 z-60 backdrop-blur-sm"
+              className="bg-background/60 z-60 fixed inset-0 backdrop-blur-sm"
             />
 
             <motion.div
@@ -131,14 +131,14 @@ export default function CatalogueClient({
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="bg-background border-border fixed right-0 bottom-0 left-0 z-70 flex max-h-[85vh] flex-col rounded-t-4xl border-t"
+              className="bg-background border-border z-70 rounded-t-4xl fixed bottom-0 left-0 right-0 flex max-h-[85vh] flex-col border-t"
             >
               <div className="flex w-full shrink-0 justify-center py-5">
                 <div className="bg-border h-1 w-12 rounded-full opacity-30" />
               </div>
 
               <div className="no-scrollbar overflow-y-auto px-8 pb-10">
-                <h3 className="text-foreground-subtle border-border/10 mb-6 border-b pb-4 text-[10px] font-black tracking-widest uppercase">
+                <h3 className="text-foreground-subtle border-border/10 mb-6 border-b pb-4 text-[10px] font-black uppercase tracking-widest">
                   {activeDrawer === 'filter' ? 'REFINE SEARCH' : 'SORT RESULTS'}
                 </h3>
 
@@ -154,7 +154,7 @@ export default function CatalogueClient({
                         className="border-border flex w-full items-center justify-between border-b py-5 last:border-none"
                       >
                         <span
-                          className={`text-[11px] tracking-widest uppercase ${
+                          className={`text-[11px] uppercase tracking-widest ${
                             sortBy === opt.value ? 'text-brand font-black' : 'font-bold opacity-60'
                           }`}
                         >
@@ -175,7 +175,7 @@ export default function CatalogueClient({
                     />
                     <button
                       onClick={() => setActiveDrawer(null)}
-                      className="bg-foreground text-background w-full rounded-full py-4 text-[11px] font-black tracking-widest uppercase"
+                      className="bg-foreground text-background w-full rounded-full py-4 text-[11px] font-black uppercase tracking-widest"
                     >
                       Close and View Results
                     </button>

@@ -19,7 +19,7 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
 }) => {
   return (
     <>
-      <div className="fixed right-0 bottom-0 left-0 z-[100] flex w-full items-center gap-2 border-t border-white/10 bg-black px-4 py-3 md:hidden lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-[100] flex w-full items-center gap-2 border-t border-white/10 bg-black px-4 py-3 md:hidden lg:hidden">
         {/* Wishlist Button */}
         <button
           onClick={() => setIsWishlisted((prev) => !prev)}
@@ -36,9 +36,9 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
         {/* Main Buy Button - Centered Pill */}
         <button
           onClick={onBuyNow}
-          className="flex h-12 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-white/50 text-lg font-black uppercase transition-colors outline-none hover:bg-white/5"
+          className="flex h-12 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-white/50 text-lg font-black uppercase outline-none transition-colors hover:bg-white/5"
         >
-          <span className="animate-glaze bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-[length:400%_100%] bg-clip-text whitespace-nowrap text-transparent">
+          <span className="animate-glaze whitespace-nowrap bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-[length:400%_100%] bg-clip-text text-transparent">
             Buy Now
           </span>
         </button>

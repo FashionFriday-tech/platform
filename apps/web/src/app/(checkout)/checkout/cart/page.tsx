@@ -27,7 +27,7 @@ export default function CartPage() {
                     <div className="bg-background-muted text-foreground-subtle mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
                       <ShoppingBagIcon size={32} />
                     </div>
-                    <h2 className="mb-2 text-2xl font-black tracking-tighter uppercase">
+                    <h2 className="mb-2 text-2xl font-black uppercase tracking-tighter">
                       Your bag is empty
                     </h2>
                     <p className="text-foreground-muted mb-8 text-sm">
@@ -35,7 +35,7 @@ export default function CartPage() {
                     </p>
                     <Link
                       href="/shop"
-                      className="bg-foreground text-background inline-block rounded-full px-10 py-4 text-xs font-black tracking-widest uppercase transition-transform active:scale-95"
+                      className="bg-foreground text-background inline-block rounded-full px-10 py-4 text-xs font-black uppercase tracking-widest transition-transform active:scale-95"
                     >
                       Explore Collection
                     </Link>
@@ -43,13 +43,13 @@ export default function CartPage() {
                 )}
                 <Link
                   href="#summary"
-                  className="bg-background/80 border-border animate-bounce-subtle group right-6 bottom-28 z-40 mt-10 flex items-center justify-between gap-3 rounded-full border px-6 py-3 backdrop-blur-xl transition-all active:scale-95 lg:hidden"
+                  className="bg-background/80 border-border animate-bounce-subtle group bottom-28 right-6 z-40 mt-10 flex items-center justify-between gap-3 rounded-full border px-6 py-3 backdrop-blur-xl transition-all active:scale-95 lg:hidden"
                 >
                   <div className="flex flex-col items-start">
-                    <span className="text-foreground-subtle text-[10px] leading-none font-black tracking-[0.2em] uppercase">
+                    <span className="text-foreground-subtle text-[10px] font-black uppercase leading-none tracking-[0.2em]">
                       View
                     </span>
-                    <span className="text-foreground font-bold tracking-widest uppercase">
+                    <span className="text-foreground font-bold uppercase tracking-widest">
                       Summary
                     </span>
                   </div>
@@ -63,13 +63,13 @@ export default function CartPage() {
               {/* 3. Cross-sell Section */}
               {bagItems.length > 0 && (
                 <section className="pt-10">
-                  <h3 className="text-foreground-subtle mb-6 text-sm font-bold tracking-[0.2em] uppercase">
+                  <h3 className="text-foreground-subtle mb-6 text-sm font-bold uppercase tracking-[0.2em]">
                     Complete the look
                   </h3>
                   <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
                     {[1, 2, 3].map((i) => (
                       <div key={i} className="group cursor-pointer">
-                        <div className="bg-background-muted border-border relative aspect-3/4 overflow-hidden rounded-4xl border">
+                        <div className="bg-background-muted border-border aspect-3/4 rounded-4xl relative overflow-hidden border">
                           <div className="bg-foreground/5 absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100" />
                           <div className="absolute inset-0 flex animate-pulse items-center justify-center">
                             <Image
@@ -93,7 +93,7 @@ export default function CartPage() {
             </div>
 
             {/* Right Column: Sticky Summary */}
-            <aside className="w-full lg:sticky lg:top-24 lg:w-100">
+            <aside className="lg:w-100 w-full lg:sticky lg:top-24">
               <OrderSummary />
             </aside>
           </div>

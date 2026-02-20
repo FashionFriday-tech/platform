@@ -172,7 +172,7 @@ function ScrollVelocityRowImpl({
       {...props}
     >
       <motion.div
-        className="inline-flex transform-gpu items-center will-change-transform select-none"
+        className="inline-flex transform-gpu select-none items-center will-change-transform"
         style={{ x }}
       >
         {Array.from({ length: numCopies }).map((_, i) => (

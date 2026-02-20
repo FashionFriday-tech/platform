@@ -6,7 +6,7 @@ export default function Loading() {
       {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="bg-forground absolute -top-32 left-1/2 h-96 w-96 -translate-x-1/2 animate-pulse rounded-full blur-3xl" />
-        <div className="bg-forground absolute right-1/3 bottom-0 h-72 w-72 animate-pulse rounded-full blur-3xl delay-700" />
+        <div className="bg-forground absolute bottom-0 right-1/3 h-72 w-72 animate-pulse rounded-full blur-3xl delay-700" />
       </div>
 
       {/* Loader content */}
@@ -32,7 +32,7 @@ export default function Loading() {
 
         {/* Text */}
         <div className="flex flex-col items-center gap-1">
-          <p className="text-forground text-xs tracking-[0.3em] uppercase">Loading The Page</p>
+          <p className="text-forground text-xs uppercase tracking-[0.3em]">Loading The Page</p>
 
           {/* Loading dots */}
           <div className="mt-1 flex gap-1">

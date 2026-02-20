@@ -88,7 +88,7 @@ export default function Footer() {
       </button>
 
       {isOpen && (
-        <div className="animate-in fade-in slide-in-from-top-4 px-6 pt-16 pb-8 text-black duration-300 md:px-12">
+        <div className="animate-in fade-in slide-in-from-top-4 px-6 pb-8 pt-16 text-black duration-300 md:px-12">
           <div className="mb-16 flex flex-col gap-12 xl:flex-row xl:gap-20">
             <div className="flex shrink-0 flex-col items-center text-center xl:items-start xl:text-start">
               <Image
@@ -126,7 +126,7 @@ export default function Footer() {
                       <li key={link.name}>
                         <Link
                           href={link.href}
-                          className="group text-foreground-muted flex items-center gap-2 text-sm transition-colors"
+                          className="text-foreground-muted group flex items-center gap-2 text-sm transition-colors"
                         >
                           {link.name}
 

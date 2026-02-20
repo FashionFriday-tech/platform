@@ -19,23 +19,23 @@ export default function QualityProtocolPage() {
       <header className="mx-auto flex h-screen max-w-7xl flex-col items-center justify-center px-6 pb-20 text-center">
         <div className="bg-brand/10 border-brand/20 mb-10 flex items-center gap-2 rounded-full border px-5 py-2">
           <ActivityIcon size={12} className="text-brand" />
-          <span className="text-brand text-[9px] font-black tracking-[0.4em] uppercase">
+          <span className="text-brand text-[9px] font-black uppercase tracking-[0.4em]">
             Quality Classification System
           </span>
         </div>
 
-        <h1 className="mb-8 text-6xl leading-[0.72] font-black tracking-tighter uppercase md:text-[9vw]">
+        <h1 className="mb-8 text-6xl font-black uppercase leading-[0.72] tracking-tighter md:text-[9vw]">
           Product <br />
           <span className="text-foreground/20 italic">Quality Guide</span>
         </h1>
 
-        <p className="max-w-2xl text-[11px] leading-relaxed font-bold tracking-widest uppercase opacity-50 md:text-xs">
+        <p className="max-w-2xl text-[11px] font-bold uppercase leading-relaxed tracking-widest opacity-50 md:text-xs">
           Understand the real difference between <span className="text-foreground">OG</span>,{' '}
           <span className="text-foreground">Surplus</span>,
           <span className="text-foreground">7A</span> and other grades. <br />
           No marketing lies. Just manufacturing truth.
         </p>
-        <div className="absolute bottom-30 left-1/2 -translate-x-1/2 transform animate-bounce md:bottom-20">
+        <div className="bottom-30 absolute left-1/2 -translate-x-1/2 transform animate-bounce md:bottom-20">
           <ArrowDownIconIOS size={32} className="text-foreground-muted" />
         </div>
       </header>
@@ -48,7 +48,7 @@ export default function QualityProtocolPage() {
               key={cat}
               // 3. Removed 'as any' and replaced with strict cast
               onClick={() => setActiveCat(cat)}
-              className={`rounded-full px-12 py-4 text-[10px] font-black tracking-widest whitespace-nowrap uppercase transition-all ${
+              className={`whitespace-nowrap rounded-full px-12 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${
                 activeCat === cat
                   ? 'bg-brand text-black shadow-[0_0_30_rgba(var(--brand-rgb),0.3)]'
                   : 'opacity-30 hover:opacity-100'
@@ -104,21 +104,21 @@ export default function QualityProtocolPage() {
                 </svg>
                 <span className="text-lg font-black italic">{item.accuracy}</span>
               </div>
-              <p className="mt-4 text-[7px] font-black tracking-widest uppercase opacity-30">
+              <p className="mt-4 text-[7px] font-black uppercase tracking-widest opacity-30">
                 Accuracy
               </p>
             </div>
 
             <div className="flex-1 space-y-4 text-center md:text-left">
               <div className="space-y-1">
-                <span className="text-brand text-[9px] font-black tracking-[0.4em] uppercase">
+                <span className="text-brand text-[9px] font-black uppercase tracking-[0.4em]">
                   {item.tier}
                 </span>
-                <h3 className="text-4xl leading-none font-black tracking-tighter uppercase italic md:text-5xl">
+                <h3 className="text-4xl font-black uppercase italic leading-none tracking-tighter md:text-5xl">
                   {item.name}
                 </h3>
               </div>
-              <p className="max-w-lg text-[12px] leading-relaxed font-medium uppercase italic opacity-50">
+              <p className="max-w-lg text-[12px] font-medium uppercase italic leading-relaxed opacity-50">
                 {item.detail}
               </p>
             </div>
@@ -130,7 +130,7 @@ export default function QualityProtocolPage() {
                   className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 px-5 py-2.5"
                 >
                   <div className="bg-brand h-1.5 w-1.5 rounded-full shadow-[0_0_8px_rgba(var(--brand-rgb),0.8)]" />
-                  <span className="text-[9px] font-black tracking-widest uppercase opacity-60">
+                  <span className="text-[9px] font-black uppercase tracking-widest opacity-60">
                     {t}
                   </span>
                 </div>
@@ -143,24 +143,24 @@ export default function QualityProtocolPage() {
       {/* 4. THE SURPLUS EXPLAINER */}
       <section className="mx-auto mt-24 max-w-6xl px-6">
         <div className="bg-foreground text-background relative overflow-hidden rounded-[3.5rem] p-8 md:p-20">
-          <div className="absolute top-0 right-0 p-10 opacity-5">
+          <div className="absolute right-0 top-0 p-10 opacity-5">
             <ShieldCheckIcon size={350} />
           </div>
           <div className="relative z-10 grid grid-cols-1 gap-12 lg:grid-cols-2">
-            <h2 className="text-6xl leading-[0.8] font-black tracking-tighter uppercase italic md:text-8xl">
+            <h2 className="text-6xl font-black uppercase italic leading-[0.8] tracking-tighter md:text-8xl">
               Factory <br /> Exit <br /> Status.
             </h2>
             <div className="flex flex-col justify-center space-y-6">
-              <p className="text-xl leading-tight font-bold uppercase italic">
+              <p className="text-xl font-bold uppercase italic leading-tight">
                 Surplus units are NOT reconstructions. They are genuine products that exited the
                 production cycle due to over-stocking, seasonal expiration, or minor aesthetic QC
                 failures.
               </p>
               <div className="flex gap-4">
-                <div className="rounded-full bg-black px-5 py-2 text-[10px] font-black tracking-widest text-white uppercase">
+                <div className="rounded-full bg-black px-5 py-2 text-[10px] font-black uppercase tracking-widest text-white">
                   Liquidated Stock
                 </div>
-                <div className="rounded-full bg-black px-5 py-2 text-[10px] font-black tracking-widest text-white uppercase">
+                <div className="rounded-full bg-black px-5 py-2 text-[10px] font-black uppercase tracking-widest text-white">
                   Authentic DNA
                 </div>
               </div>

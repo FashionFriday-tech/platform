@@ -198,7 +198,7 @@ export default function PWAInstallSection() {
         >
           <motion.span
             variants={fadeInUp}
-            className="flex w-fit items-center justify-center rounded-full border px-4 py-1 text-[10px] font-bold tracking-widest uppercase"
+            className="flex w-fit items-center justify-center rounded-full border px-4 py-1 text-[10px] font-bold uppercase tracking-widest"
           >
             <DownloadIcon className="mr-2 text-xl" /> Install our Web App
           </motion.span>
@@ -243,7 +243,7 @@ export default function PWAInstallSection() {
                     onClick={() => {
                       setShowInstructions(false);
                     }}
-                    className="absolute top-2 right-2 p-1 hover:opacity-70"
+                    className="absolute right-2 top-2 p-1 hover:opacity-70"
                     aria-label="Close instructions"
                   >
                     <CloseIcon className="h-4 w-4" />

@@ -10,26 +10,26 @@ export default function ShippingDeliveryPage() {
   return (
     <div className="selection:bg-brand min-h-screen bg-[#050505] pb-32 font-sans text-[#f0f0f0] selection:text-black">
       {/* 1. MINIMALIST HEADER */}
-      <header className="mx-auto max-w-7xl border-b border-white/5 px-6 pt-32 pb-20">
+      <header className="mx-auto max-w-7xl border-b border-white/5 px-6 pb-20 pt-32">
         <div className="bg-brand/10 border-brand/20 mb-8 flex w-fit items-center gap-2 rounded-full border px-4 py-1.5">
           <NavigationIcon size={12} className="text-brand" />
-          <span className="text-brand text-[10px] font-black tracking-[0.4em] uppercase">
+          <span className="text-brand text-[10px] font-black uppercase tracking-[0.4em]">
             Support / Logistics Protocol
           </span>
         </div>
-        <h1 className="mb-8 text-7xl leading-[0.8] font-black tracking-tighter uppercase italic md:text-[9vw]">
+        <h1 className="mb-8 text-7xl font-black uppercase italic leading-[0.8] tracking-tighter md:text-[9vw]">
           Shipping & <br /> <span className="opacity-10">Delivery.</span>
         </h1>
-        <p className="max-w-2xl text-[11px] leading-relaxed font-bold tracking-widest uppercase italic opacity-40">
+        <p className="max-w-2xl text-[11px] font-bold uppercase italic leading-relaxed tracking-widest opacity-40">
           Transparent transit. No promises, only ranges. We provide the gear; our logistics partners
           provide the speed.
         </p>
       </header>
 
       {/* 2. THE TRANSIT JOURNEY MAP */}
-      <div className="mx-auto mt-12 mb-20 max-w-7xl px-6">
+      <div className="mx-auto mb-20 mt-12 max-w-7xl px-6">
         <div className="rounded-[3rem] border border-white/5 bg-white/[0.02] p-10">
-          <h3 className="mb-12 text-center text-[10px] font-black tracking-[0.5em] uppercase opacity-30">
+          <h3 className="mb-12 text-center text-[10px] font-black uppercase tracking-[0.5em] opacity-30">
             Standard Transit Lifecycle
           </h3>
 
@@ -41,10 +41,10 @@ export default function ShippingDeliveryPage() {
               { label: 'Remote', time: '7-10 Days' },
             ].map((step, i) => (
               <div key={i} className="text-center md:text-left">
-                <p className="text-brand mb-1 text-[10px] font-black tracking-widest uppercase">
+                <p className="text-brand mb-1 text-[10px] font-black uppercase tracking-widest">
                   {step.label}
                 </p>
-                <p className="text-xl font-bold tracking-tighter italic opacity-80">{step.time}</p>
+                <p className="text-xl font-bold italic tracking-tighter opacity-80">{step.time}</p>
               </div>
             ))}
           </div>
@@ -58,23 +58,23 @@ export default function ShippingDeliveryPage() {
           return (
             <div
               key={item.id}
-              className="group hover:border-brand/20 rounded-[2.5rem] border border-white/5 bg-[#0a0a0a] p-10 transition-all duration-500"
+              className="hover:border-brand/20 group rounded-[2.5rem] border border-white/5 bg-[#0a0a0a] p-10 transition-all duration-500"
             >
               <div className="flex h-full flex-col">
                 <div className="text-brand group-hover:bg-brand mb-10 w-fit rounded-2xl bg-white/5 p-4 transition-all duration-500 group-hover:text-black">
                   <Icon size={24} />
                 </div>
-                <h3 className="mb-4 text-3xl font-black tracking-tighter uppercase italic">
+                <h3 className="mb-4 text-3xl font-black uppercase italic tracking-tighter">
                   {item.title}
                 </h3>
-                <p className="mb-10 max-w-xs text-xs leading-relaxed font-bold uppercase opacity-40">
+                <p className="mb-10 max-w-xs text-xs font-bold uppercase leading-relaxed opacity-40">
                   {item.description}
                 </p>
                 <div className="mt-auto space-y-4">
                   {item.details.map((detail, idx) => (
                     <div key={idx} className="flex items-center gap-3">
                       <div className="bg-brand h-1 w-1 shrink-0 rounded-full" />
-                      <span className="text-[10px] font-black tracking-widest uppercase opacity-70">
+                      <span className="text-[10px] font-black uppercase tracking-widest opacity-70">
                         {detail}
                       </span>
                     </div>
@@ -92,9 +92,9 @@ export default function ShippingDeliveryPage() {
         <div className="rounded-[3rem] border border-white/10 bg-[#0f0f0f] p-12">
           <div className="mb-8 flex items-center gap-4">
             <AlertTriangleIcon className="text-brand" size={28} />
-            <h3 className="text-3xl font-black tracking-tighter italic">Failed Delivery (RTO)</h3>
+            <h3 className="text-3xl font-black italic tracking-tighter">Failed Delivery (RTO)</h3>
           </div>
-          <div className="space-y-6 text-xs leading-relaxed font-bold tracking-wide opacity-50">
+          <div className="space-y-6 text-xs font-bold leading-relaxed tracking-wide opacity-50">
             <p>1. COURIER ATTEMPTS: OUR PARTNERS WILL ATTEMPT DELIVERY A MAXIMUM OF 3 TIMES.</p>
             <p>
               2. NON-DELIVERY: IF THE CUSTOMER IS UNAVAILABLE OR THE ADDRESS IS INCORRECT, THE
@@ -111,9 +111,9 @@ export default function ShippingDeliveryPage() {
         <div className="bg-brand flex flex-col justify-between rounded-[3rem] p-12 text-black">
           <div className="mb-8 flex items-center gap-4">
             <CameraIcon size={28} />
-            <h3 className="text-3xl font-black tracking-tighter italic">Damaged Packages</h3>
+            <h3 className="text-3xl font-black italic tracking-tighter">Damaged Packages</h3>
           </div>
-          <p className="mb-8 text-[11px] leading-relaxed font-black italic">
+          <p className="mb-8 text-[11px] font-black italic leading-relaxed">
             MANDATORY: YOU MUST RECORD A CONTINUOUS, UNCUT 360° UNBOXING VIDEO STARTING FROM THE
             SEALED PACKAGE. WITHOUT THIS VIDEO, NO CLAIM FOR DAMAGE OR MISSING ITEMS WILL BE
             PROCESSED. REPORT WITHIN 24H.
@@ -133,7 +133,7 @@ export default function ShippingDeliveryPage() {
       <section className="mx-auto mt-20 max-w-7xl px-6">
         <div className="flex flex-col items-center rounded-[4rem] border border-white/5 p-12 text-center md:p-20">
           <LifeBuoyIcon size={48} className="text-brand mb-8 opacity-50" />
-          <h2 className="mb-6 text-5xl font-black tracking-tighter italic">Need Escalation?</h2>
+          <h2 className="mb-6 text-5xl font-black italic tracking-tighter">Need Escalation?</h2>
           <p className="mb-12 max-w-xl text-[10px] font-bold tracking-[0.2em] opacity-40">
             ONLY CONTACT SUPPORT IF YOUR TRACKING HAS NOT UPDATED FOR 4+ DAYS OR THE ESTIMATED
             DELIVERY WINDOW HAS EXPIRED.

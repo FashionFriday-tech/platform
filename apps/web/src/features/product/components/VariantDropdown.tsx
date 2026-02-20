@@ -35,7 +35,7 @@ const SelectionTray = ({
   <div className={`rounded-4xl border border-white/25 p-4 transition-all duration-300`}>
     <button
       onClick={onToggle}
-      className="flex w-full items-center justify-between font-black text-white uppercase"
+      className="flex w-full items-center justify-between font-black uppercase text-white"
     >
       <span className="text-xs">{title}</span>
       <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>

@@ -11,7 +11,7 @@ export default function HelpHub() {
     const email = 'help@fashionfriday.in';
     const subject = 'Support Request';
 
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
 
     if (isMobile) {
       window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
@@ -28,7 +28,7 @@ export default function HelpHub() {
       {/* 1. HERO SECTION */}
       <section className="flex h-screen items-center justify-center px-6">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 pb-32 text-center md:pb-0">
-          <h2 className="text-7xl leading-[0.8] font-black tracking-tighter uppercase italic md:text-[10rem]">
+          <h2 className="text-7xl font-black uppercase italic leading-[0.8] tracking-tighter md:text-[10rem]">
             How can we <span className="text-foreground-subtle">Help You?</span>
           </h2>
           <p className="text-foreground-muted mx-auto max-w-xl text-sm md:text-xl">
@@ -36,7 +36,7 @@ export default function HelpHub() {
           </p>
         </div>
 
-        <div className="absolute bottom-30 left-1/2 -translate-x-1/2 transform animate-bounce md:bottom-20">
+        <div className="bottom-30 absolute left-1/2 -translate-x-1/2 transform animate-bounce md:bottom-20">
           <ArrowDownIconIOS size={32} className="text-foreground-muted" />
         </div>
       </section>
@@ -45,7 +45,7 @@ export default function HelpHub() {
       <section className="mb-10 grid h-auto grid-cols-1 gap-4 md:h-64 md:grid-cols-2 lg:grid-cols-3">
         <Link
           href="https://wa.me/+917558969093"
-          className="group border-border flex items-center justify-between rounded-4xl border p-12 transition-all duration-500 hover:bg-[#25D366]"
+          className="border-border rounded-4xl group flex items-center justify-between border p-12 transition-all duration-500 hover:bg-[#25D366]"
         >
           <div className="flex items-center gap-6">
             <div className="bg-background-muted rounded-full p-4 group-hover:bg-white/20">
@@ -64,7 +64,7 @@ export default function HelpHub() {
         </Link>
         <Link
           href="tel:+91 7558969093"
-          className="group border-border flex items-center justify-between rounded-4xl border p-12 transition-all duration-500 hover:bg-[#2576d3]"
+          className="border-border rounded-4xl group flex items-center justify-between border p-12 transition-all duration-500 hover:bg-[#2576d3]"
         >
           {' '}
           <div className="flex items-center gap-6">
@@ -82,7 +82,7 @@ export default function HelpHub() {
         </Link>
         <button
           onClick={handleEmailClick}
-          className="group border-border flex w-full items-center justify-between rounded-4xl border p-12 text-start transition-all duration-500 hover:bg-[#d32525]"
+          className="border-border rounded-4xl group flex w-full items-center justify-between border p-12 text-start transition-all duration-500 hover:bg-[#d32525]"
         >
           <div className="flex items-center gap-6">
             <div className="bg-background-muted rounded-full p-4 group-hover:bg-white/20">
@@ -107,7 +107,7 @@ export default function HelpHub() {
           <Link
             key={item.id}
             href={item.href}
-            className={`group border-border hover:bg-foreground relative flex aspect-3/2 flex-col justify-between rounded-4xl border-y p-12 transition-all duration-700 lg:border-x`}
+            className={`border-border hover:bg-foreground aspect-3/2 rounded-4xl group relative flex flex-col justify-between border-y p-12 transition-all duration-700 lg:border-x`}
           >
             <div className="flex items-start justify-between">
               <div className="bg-background-muted group-hover:bg-background group-hover:text-foreground rounded-2xl p-4">
@@ -116,10 +116,10 @@ export default function HelpHub() {
               <ArrowUpRightIcon className="text-foreground md:text-background transition-all group-hover:opacity-100 md:opacity-0" />
             </div>
             <div>
-              <p className="text-brand mb-2 text-[10px] font-black tracking-widest uppercase italic">
+              <p className="text-brand mb-2 text-[10px] font-black uppercase italic tracking-widest">
                 Ref. FF-0{index + 1}
               </p>
-              <h3 className="group-hover:text-background text-4xl leading-none font-black tracking-tighter uppercase transition-colors">
+              <h3 className="group-hover:text-background text-4xl font-black uppercase leading-none tracking-tighter transition-colors">
                 {item.label}
               </h3>
               <p className="text-foreground-subtle group-hover:text-background/60 mt-2 text-sm transition-colors">

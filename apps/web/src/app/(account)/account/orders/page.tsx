@@ -26,7 +26,7 @@ const StatusBadge = ({ status, label }: { status: OrderStatus; label: string }) 
   };
   return (
     <span
-      className={`rounded-full border px-3 py-1 text-[10px] font-bold tracking-widest uppercase ${styles[status]}`}
+      className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-widest ${styles[status]}`}
     >
       {label}
     </span>
@@ -36,7 +36,7 @@ const StatusBadge = ({ status, label }: { status: OrderStatus; label: string }) 
 const TabButton = ({ isActive, label, count, onClick }: TabButtonProps) => (
   <button
     onClick={onClick}
-    className={`flex min-w-fit flex-1 items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold whitespace-nowrap transition-all sm:px-8 ${
+    className={`flex min-w-fit flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-bold transition-all sm:px-8 ${
       isActive
         ? 'bg-background text-foreground scale-[0.98] shadow-sm'
         : 'text-foreground-subtle hover:text-foreground'
@@ -58,11 +58,11 @@ const TabButton = ({ isActive, label, count, onClick }: TabButtonProps) => (
 );
 
 const OrderCard = ({ order, item }: { order: Order; item: OrderItem }) => (
-  <article className="bg-background-elevated border-border flex h-full flex-col rounded-4xl border p-5 shadow-sm sm:p-7">
+  <article className="bg-background-elevated border-border rounded-4xl flex h-full flex-col border p-5 shadow-sm sm:p-7">
     {/* Header */}
     <div className="mb-6 flex items-start justify-between">
       <div className="space-y-1">
-        <p className="text-foreground-subtle text-[10px] font-black tracking-[0.2em] uppercase">
+        <p className="text-foreground-subtle text-[10px] font-black uppercase tracking-[0.2em]">
           ID: {order.id}
         </p>
         <div className="text-foreground-muted flex items-center gap-2">
@@ -156,8 +156,8 @@ export default function OrdersPage() {
   return (
     <div className="bg-background text-foreground selection:bg-brand selection:text-brand-foreground min-h-screen pb-16">
       <header className="bg-background/80 border-border sticky top-0 z-40 border-b backdrop-blur-md lg:top-6">
-        <div className="mx-auto max-w-6xl px-4 pt-6 pb-4">
-          <h1 className="mb-6 text-center text-xl font-black tracking-widest uppercase sm:text-left">
+        <div className="mx-auto max-w-6xl px-4 pb-4 pt-6">
+          <h1 className="mb-6 text-center text-xl font-black uppercase tracking-widest sm:text-left">
             My Orders
           </h1>
 

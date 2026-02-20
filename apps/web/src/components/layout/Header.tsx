@@ -50,11 +50,11 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-background fixed top-0 right-0 left-0 z-50">
+      <header className="bg-background fixed left-0 right-0 top-0 z-50">
         {/* DESKTOP TOP BAR */}
         <div className="text-foreground relative z-50 mx-auto hidden h-16 items-center justify-between px-6 sm:flex lg:px-12">
           <Link href="/" className="relative z-50 flex h-8 items-center">
-            <span className="text-xl font-black tracking-tighter uppercase italic">
+            <span className="text-xl font-black uppercase italic tracking-tighter">
               Fashion Friday
             </span>
           </Link>
@@ -65,15 +65,15 @@ export function Header() {
               <Link
                 key={item.label}
                 href={item.href}
-                className={`group relative px-4 py-2 text-[12px] font-black tracking-[0.2em] uppercase ${item.isRed ? 'text-destructive' : 'text-foreground'} `}
+                className={`group relative px-4 py-2 text-[12px] font-black uppercase tracking-[0.2em] ${item.isRed ? 'text-destructive' : 'text-foreground'} `}
               >
                 <span className="relative z-10">{item.label}</span>
 
                 {/* Top Left Bracket */}
-                <span className="border-brand absolute top-0 left-0 h-1 w-1 border-t border-l opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:opacity-100" />
+                <span className="border-brand absolute left-0 top-0 h-1 w-1 border-l border-t opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:opacity-100" />
 
                 {/* Bottom Right Bracket */}
-                <span className="border-brand absolute right-0 bottom-0 h-1 w-1 border-r border-b opacity-0 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:opacity-100" />
+                <span className="border-brand absolute bottom-0 right-0 h-1 w-1 border-b border-r opacity-0 transition-all duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1 group-hover:opacity-100" />
               </Link>
             ))}
           </nav>
@@ -81,7 +81,7 @@ export function Header() {
           <div className="z-50 flex items-center gap-5">
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="text-foreground hover:text-brand hidden items-center gap-2 text-[10px] font-black tracking-widest uppercase transition-colors lg:flex"
+              className="text-foreground hover:text-brand hidden items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-colors lg:flex"
             >
               <SearchIcon className="text-lg" />
               <span>Search</span>
@@ -93,7 +93,7 @@ export function Header() {
               </Link>
               <Link href="/checkout/cart" className="relative">
                 <ShoppingBagIcon className="hover:text-brand text-2xl transition-colors" />
-                <span className="bg-brand text-brand-foreground absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
+                <span className="bg-brand text-brand-foreground absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
                   2
                 </span>
               </Link>
@@ -110,7 +110,7 @@ export function Header() {
             {[0, 1].map((set) => (
               <div key={set} className="flex gap-10 px-5">
                 {marqueeContent.map((text, i) => (
-                  <span key={i} className="text-[9px] font-black tracking-[0.2em] uppercase">
+                  <span key={i} className="text-[9px] font-black uppercase tracking-[0.2em]">
                     {text}
                   </span>
                 ))}
@@ -132,13 +132,13 @@ export function Header() {
               className="object-cover object-top"
             />
           </div>
-          <span className="text-xs font-bold tracking-tighter uppercase">HELLO, AJMAL</span>
+          <span className="text-xs font-bold uppercase tracking-tighter">HELLO, AJMAL</span>
         </Link>
         <div className="flex items-center gap-4">
           <SearchIcon className="text-xl" onClick={() => setIsSearchOpen(true)} />
           <Link href="/account/notifications" className="relative">
             <BellIcon className="text-xl" />
-            <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
+            <span className="bg-destructive absolute right-0 top-0 h-2 w-2 rounded-full" />
           </Link>
           <Link href="/account/wishlist">
             <WishlistIcon className="text-xl" />
@@ -146,7 +146,7 @@ export function Header() {
         </div>
       </div>
 
-      <nav className="bg-background border-border fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between border-t px-6 py-3 lg:hidden">
+      <nav className="bg-background border-border fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t px-6 py-3 lg:hidden">
         <Link href="/men">
           <CategoryIcon className="text-[25px]" />
         </Link>
@@ -164,7 +164,7 @@ export function Header() {
         </Link>
         <Link href="/checkout/cart" className="relative">
           <ShoppingBagIcon className="text-[25px]" />
-          <span className="bg-brand border-background absolute top-0 right-0 h-2 w-2 rounded-full border-2" />
+          <span className="bg-brand border-background absolute right-0 top-0 h-2 w-2 rounded-full border-2" />
         </Link>
         <Link href="/account">
           <UserIcon className="text-[25px]" />

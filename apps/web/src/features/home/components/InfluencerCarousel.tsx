@@ -142,7 +142,7 @@ export default function TrendingCoverflowPage() {
   return (
     <section className="bg w-full overflow-hidden sm:py-24">
       <div className="container mx-auto px-4 text-center sm:mb-16">
-        <h2 className="text-4xl font-extrabold tracking-tight uppercase md:text-7xl">
+        <h2 className="text-4xl font-extrabold uppercase tracking-tight md:text-7xl">
           Content Partners
         </h2>
         <p className="text-foreground-muted mx-auto mt-4 max-w-md">
@@ -150,7 +150,7 @@ export default function TrendingCoverflowPage() {
         </p>
       </div>
 
-      <div className="relative flex h-96 w-full items-center justify-center sm:my-10 sm:h-125">
+      <div className="sm:h-125 relative flex h-96 w-full items-center justify-center sm:my-10">
         <div
           className="relative flex h-full w-full max-w-6xl items-center justify-center"
           style={{ perspective: '1000px' }}
@@ -174,7 +174,7 @@ export default function TrendingCoverflowPage() {
                 initial={variant}
                 transition={{ type: 'spring', stiffness: 100, damping: 20 }}
                 onClick={() => handleCardClick(virtualIndex, product.link)}
-                className="group absolute aspect-3/5 w-70 cursor-pointer overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl md:w-87"
+                className="aspect-3/5 w-70 md:w-87 group absolute cursor-pointer overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl"
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 <div className="relative h-full w-full">
@@ -189,7 +189,7 @@ export default function TrendingCoverflowPage() {
                   {/* Play Button (Centered on ALL cards) */}
                   <div className="absolute inset-0 z-20 flex items-center justify-center">
                     <div
-                      className={`flex h-16 w-16 scale-110 items-center justify-center rounded-full border-2 border-white text-white opacity-100 shadow-lg backdrop-blur-xs transition-all duration-500 ease-out group-hover:bg-white group-hover:text-black hover:scale-125`}
+                      className={`backdrop-blur-xs flex h-16 w-16 scale-110 items-center justify-center rounded-full border-2 border-white text-white opacity-100 shadow-lg transition-all duration-500 ease-out hover:scale-125 group-hover:bg-white group-hover:text-black`}
                     >
                       <PlayIcon className="ml-1 h-6 w-6 fill-current" />
                     </div>

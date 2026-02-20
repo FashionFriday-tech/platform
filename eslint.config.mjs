@@ -4,8 +4,6 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import jest from 'eslint-plugin-jest';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import security from 'eslint-plugin-security';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -155,28 +153,44 @@ export default defineConfig([
   },
 
   // ==================================================
-  // Next.js Web App (apps/web only)
+  // Next.js — scoped to apps/web only
   // ==================================================
-  {
+  ...nextVitals.map((config) => ({
+    ...config,
     files: ['apps/web/**/*.{ts,tsx}'],
-    ...nextVitals,
-    ...nextTs,
-  },
+  })),
+  ...nextTs.map((config) => ({
+    ...config,
+    files: ['apps/web/**/*.{ts,tsx}'],
+  })),
 
   // ==================================================
-  // Frontend — Web & UI Package
+  // Tailwind — scoped to web & ui
   // ==================================================
   {
     files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
-    ...tailwind.configs['flat/recommended'],
     plugins: {
-      react,
-      'react-hooks': reactHooks,
-      'jsx-a11y': jsxA11y,
+      tailwindcss: tailwind,
     },
     rules: {
-      ...jsxA11y.flatConfigs.recommended.rules,
+      ...tailwind.configs['flat/recommended'][0].rules,
+    },
+  },
 
+  // ==================================================
+  // React, Hooks & Accessibility — scoped to web & ui
+  // ==================================================
+  {
+    files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+    },
+    rules: {
       // --------------------------
       // ♿ Accessibility
       // --------------------------
@@ -195,7 +209,7 @@ export default defineConfig([
   },
 
   // ==================================================
-  // NestJS API Overrides (apps/api only)
+  // NestJS API Overrides
   // ==================================================
   {
     files: ['apps/api/**/*.ts'],
@@ -242,8 +256,8 @@ export default defineConfig([
       // --------------------------
       'jest/no-disabled-tests': 'warn',
       'jest/no-focused-tests': 'error',
-      'jest/no-identical-title': 'error',
       'jest/no-standalone-expect': 'error',
+      'jest/no-identical-title': 'error',
       'jest/valid-expect': 'error',
       'jest/valid-expect-in-promise': 'error',
 
