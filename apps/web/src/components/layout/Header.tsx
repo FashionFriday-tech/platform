@@ -9,7 +9,7 @@ import {
   UserIcon,
   WishlistIcon,
 } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
