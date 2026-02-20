@@ -7,7 +7,7 @@ import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from '@/components/ui/magicUi/ScrollBasedVelocity';
-import BrandLogo from '@/data/brandLogos';
+import BrandLogo from '@/data/brand-logos';
 
 // Helper for clean URLs
 const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-');

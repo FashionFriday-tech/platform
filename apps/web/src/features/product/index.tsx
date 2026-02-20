@@ -19,7 +19,7 @@ import {
   TruckIcon,
 } from '@ff/ui';
 
-import { useLiveProductMetric } from '@/features/product/hooks/useLiveProductMetric';
+import { useLiveProductMetric } from '@/features/product/hooks/use-live-product-metric';
 
 import Gallery from './components/gallery';
 import RelatedProducts from './components/RelatedProducts';

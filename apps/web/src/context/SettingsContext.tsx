@@ -2,7 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-import { DEFAULT_SETTINGS } from '@/config/defaultSettings';
+import { DEFAULT_SETTINGS } from '@/config/default-settings.';
 
 const STORAGE_KEY = 'app_settings';
 

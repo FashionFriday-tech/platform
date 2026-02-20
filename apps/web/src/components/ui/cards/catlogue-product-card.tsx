@@ -8,7 +8,7 @@ import { type Product } from '@ff/schemas';
 import { StarBadgeIcon, StarsIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
 
-import brandLogos from '@/data/brandLogos';
+import brandLogos from '@/data/brand-logos';
 
 interface StoreProductCardProps {
   // Use the concrete Product type instead of 'any' to catch errors early

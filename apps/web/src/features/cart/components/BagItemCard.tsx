@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 import { CloseIcon, MinusIcon, PlusIcon } from '@ff/ui';
 
-import { type BagItem } from '@/data/bagItems';
+import { type BagItem } from '@/data/bag-items';
 
 interface BagItemCardProps {
   item: BagItem;

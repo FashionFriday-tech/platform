@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon, SlidersIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import brandsData from '@/data/brandLogos';
+import brandsData from '@/data/brand-logos';
 import { BrandCard } from '@/features/brand/components/BrandCard';
 import type { Brand, BrandCategory } from '@/features/brand/types/brand';
 

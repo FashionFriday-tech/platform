@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronRightIcon, ChevronUpIcon, CloseIcon, MapPinIcon, PlusIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { bagItems } from '@/data/bagItems';
+import { bagItems } from '@/data/bag-items';
 
 import CheckoutStages from '../../_components/CheckoutProgress';
 

@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { ChevronDownIcon, ShoppingBagIcon } from '@ff/ui';
 
-import { bagItems } from '@/data/bagItems';
+import { bagItems } from '@/data/bag-items';
 import { CartItemsCard, OrderSummary } from '@/features/cart';
 
 import CheckoutStages from '../../_components/CheckoutProgress';
