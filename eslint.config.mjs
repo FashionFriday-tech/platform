@@ -3,9 +3,12 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
+import security from 'eslint-plugin-security';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tailwind from 'eslint-plugin-tailwindcss';
+import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -33,6 +36,8 @@ export default defineConfig([
   ...nextVitals,
   ...nextTs,
   ...tailwind.configs['flat/recommended'],
+  jsxA11y.flatConfigs.recommended,
+  security.configs.recommended,
   eslintPluginPrettierRecommended,
 
   {
@@ -51,6 +56,7 @@ export default defineConfig([
     plugins: {
       'react-hooks': reactHooks,
       'simple-import-sort': simpleImportSort,
+      unicorn,
     },
 
     rules: {
@@ -98,6 +104,49 @@ export default defineConfig([
           ignoreRestSiblings: true,
         },
       ],
+
+      // --------------------------
+      // ♿ Accessibility (jsx-a11y)
+      // --------------------------
+      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/anchor-is-valid': 'error',
+      'jsx-a11y/no-autofocus': 'warn',
+
+      // --------------------------
+      // 🦄 Unicorn — Modern JS
+      // --------------------------
+      'unicorn/better-regex': 'error',
+      'unicorn/catch-error-name': 'error',
+      'unicorn/consistent-function-scoping': 'error',
+      'unicorn/explicit-length-check': 'error',
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+            pascalCase: true,
+          },
+        },
+      ],
+      'unicorn/no-array-for-each': 'error',
+      'unicorn/no-await-expression-member': 'error',
+      'unicorn/no-console-spaces': 'error',
+      'unicorn/no-nested-ternary': 'error',
+      'unicorn/no-new-array': 'error',
+      'unicorn/no-useless-undefined': 'error',
+      'unicorn/prefer-array-flat-map': 'error',
+      'unicorn/prefer-includes': 'error',
+      'unicorn/prefer-string-trim-start-end': 'error',
+      'unicorn/prefer-ternary': 'warn',
+      'unicorn/prevent-abbreviations': 'off',
+
+      // --------------------------
+      // 🔒 Security
+      // --------------------------
+      'security/detect-non-literal-regexp': 'error',
+      'security/detect-object-injection': 'warn',
+      'security/detect-possible-timing-attacks': 'error',
+      'security/detect-unsafe-regex': 'error',
 
       // --------------------------
       // ⚛️ React & Hooks
