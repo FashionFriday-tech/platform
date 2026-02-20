@@ -63,6 +63,13 @@ export default defineConfig([
       ],
       'simple-import-sort/exports': 'error',
 
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: ['../**/apps/*'],
+        },
+      ],
+
       // --------------------------
       // 🛡️ TypeScript Strictness
       // --------------------------
