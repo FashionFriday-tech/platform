@@ -5,6 +5,7 @@ import nextTs from 'eslint-config-next/typescript';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactHooks from 'eslint-plugin-react-hooks';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import tailwind from 'eslint-plugin-tailwindcss';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -31,6 +32,7 @@ export default defineConfig([
   ...tseslint.configs.recommendedTypeChecked,
   ...nextVitals,
   ...nextTs,
+  ...tailwind.configs['flat/recommended'],
   eslintPluginPrettierRecommended,
 
   {
@@ -58,11 +60,19 @@ export default defineConfig([
       'simple-import-sort/imports': [
         'error',
         {
-          groups: [['^react', '^next'], ['^@?\\w'], ['^@/'], ['^\\.\\./', '^\\./', '^\\.']],
+          groups: [
+            ['^react', '^next'],
+            ['^@?\\w'],
+            ['^@/'],
+            ['^\\.\\./', '^\\./', '^\\.'],
+          ],
         },
       ],
       'simple-import-sort/exports': 'error',
 
+      // --------------------------
+      // 🏗️ Monorepo Boundaries
+      // --------------------------
       'no-restricted-imports': [
         'error',
         {
@@ -73,6 +83,10 @@ export default defineConfig([
       // --------------------------
       // 🛡️ TypeScript Strictness
       // --------------------------
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+      ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unsafe-argument': 'error',
@@ -84,28 +98,24 @@ export default defineConfig([
           ignoreRestSiblings: true,
         },
       ],
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
-      ],
 
       // --------------------------
       // ⚛️ React & Hooks
       // --------------------------
-      'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/rules-of-hooks': 'error',
       'react/no-unescaped-entities': 'off',
 
       // --------------------------
       // ✨ Code Quality & Best Practices
       // --------------------------
+      curly: ['error', 'all'],
+      eqeqeq: ['error', 'always'],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
       'no-unused-expressions': 'error',
-      'prefer-const': 'error',
       'no-var': 'error',
-      eqeqeq: ['error', 'always'],
-      curly: ['error', 'all'],
+      'prefer-const': 'error',
     },
   },
 ]);
