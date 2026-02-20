@@ -5,6 +5,7 @@ import nextTs from 'eslint-config-next/typescript';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import jest from 'eslint-plugin-jest';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import security from 'eslint-plugin-security';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -15,6 +16,9 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
+  // ==================================================
+  // Global Ignores
+  // ==================================================
   globalIgnores([
     'node_modules/**',
     'dist/**',
@@ -27,13 +31,17 @@ export default defineConfig([
     '*.config.ts',
   ]),
 
-  // --- Base Configs (Applies to ALL files) ---
+  // ==================================================
+  // Base Configurations (Applies to ALL files)
+  // ==================================================
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   security.configs.recommended,
   eslintPluginPrettierRecommended,
 
-  // --- Global Rules & Settings ---
+  // ==================================================
+  // Global Rules & Settings
+  // ==================================================
   {
     languageOptions: {
       parserOptions: {
@@ -45,11 +53,16 @@ export default defineConfig([
         ...globals.node,
       },
     },
+
     plugins: {
       'simple-import-sort': simpleImportSort,
       unicorn,
     },
+
     rules: {
+      // --------------------------
+      // 🔄 Import Sorting
+      // --------------------------
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': [
         'error',
@@ -62,7 +75,20 @@ export default defineConfig([
           ],
         },
       ],
-      'no-restricted-imports': ['error', { patterns: ['../**/apps/*'] }],
+
+      // --------------------------
+      // 🏗️ Monorepo Boundaries
+      // --------------------------
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: ['../**/apps/*'],
+        },
+      ],
+
+      // --------------------------
+      // 🛡️ TypeScript Strictness
+      // --------------------------
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
@@ -72,44 +98,133 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-argument': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
       ],
+
+      // --------------------------
+      // 🦄 Unicorn — Modern JS
+      // --------------------------
       'unicorn/better-regex': 'error',
-      'unicorn/filename-case': ['error', { cases: { kebabCase: true, pascalCase: true } }],
+      'unicorn/catch-error-name': 'error',
+      'unicorn/consistent-function-scoping': 'error',
+      'unicorn/explicit-length-check': 'error',
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+            pascalCase: true,
+          },
+        },
+      ],
+      'unicorn/no-array-for-each': 'error',
+      'unicorn/no-await-expression-member': 'error',
+      'unicorn/no-console-spaces': 'error',
       'unicorn/no-nested-ternary': 'error',
+      'unicorn/no-new-array': 'error',
+      'unicorn/no-useless-undefined': 'error',
+      'unicorn/prefer-array-flat-map': 'error',
       'unicorn/prefer-includes': 'error',
+      'unicorn/prefer-string-trim-start-end': 'error',
+      'unicorn/prefer-ternary': 'warn',
       'unicorn/prevent-abbreviations': 'off',
+
+      // --------------------------
+      // 🔒 Security
+      // --------------------------
+      'security/detect-non-literal-regexp': 'error',
       'security/detect-object-injection': 'warn',
       'security/detect-possible-timing-attacks': 'error',
+      'security/detect-unsafe-regex': 'error',
+
+      // --------------------------
+      // ✨ Code Quality
+      // --------------------------
       curly: ['error', 'all'],
       eqeqeq: ['error', 'always'],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-debugger': 'error',
+      'no-unused-expressions': 'error',
+      'no-var': 'error',
       'prefer-const': 'error',
     },
   },
 
-  // --- Frontend Specific (Web & UI Packages Only) ---
+  // ==================================================
+  // Next.js Web App (apps/web only)
+  // ==================================================
+  {
+    files: ['apps/web/**/*.{ts,tsx}'],
+    ...nextVitals,
+    ...nextTs,
+  },
+
+  // ==================================================
+  // Frontend — Web & UI Package
+  // ==================================================
   {
     files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+    ...tailwind.configs['flat/recommended'],
     plugins: {
+      react,
       'react-hooks': reactHooks,
       'jsx-a11y': jsxA11y,
-      tailwindcss: tailwind,
     },
-    // Manually merging the flat configs for scoped application
     rules: {
-      ...nextVitals[0].rules,
-      ...nextTs[0].rules,
-      ...tailwind.configs['flat/recommended'][0].rules,
       ...jsxA11y.flatConfigs.recommended.rules,
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+
+      // --------------------------
+      // ♿ Accessibility
+      // --------------------------
       'jsx-a11y/alt-text': 'error',
       'jsx-a11y/anchor-is-valid': 'error',
+      'jsx-a11y/no-autofocus': 'warn',
+
+      // --------------------------
+      // ⚛️ React & Hooks
+      // --------------------------
+      'react/display-name': 'warn',
+      'react/no-unescaped-entities': 'off',
+      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/rules-of-hooks': 'error',
     },
   },
 
-  // --- Test Files Only ---
+  // ==================================================
+  // NestJS API Overrides (apps/api only)
+  // ==================================================
+  {
+    files: ['apps/api/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      'unicorn/filename-case': [
+        'error',
+        {
+          cases: {
+            kebabCase: true,
+          },
+        },
+      ],
+    },
+  },
+
+  // ==================================================
+  // Shared Packages Overrides
+  // ==================================================
+  {
+    files: ['packages/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
+
+  // ==================================================
+  // Test Files Only
+  // ==================================================
   {
     files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
     plugins: {
@@ -117,13 +232,32 @@ export default defineConfig([
       'testing-library': testingLibrary,
     },
     languageOptions: {
-      globals: { ...globals.jest },
+      globals: {
+        ...globals.jest,
+      },
     },
     rules: {
+      // --------------------------
+      // 🧪 Jest
+      // --------------------------
+      'jest/no-disabled-tests': 'warn',
       'jest/no-focused-tests': 'error',
+      'jest/no-identical-title': 'error',
+      'jest/no-standalone-expect': 'error',
       'jest/valid-expect': 'error',
+      'jest/valid-expect-in-promise': 'error',
+
+      // --------------------------
+      // 🧪 Testing Library
+      // --------------------------
       'testing-library/await-async-queries': 'error',
+      'testing-library/await-async-utils': 'error',
+      'testing-library/no-await-sync-queries': 'error',
       'testing-library/no-container': 'error',
+      'testing-library/no-debugging-utils': 'warn',
+      'testing-library/no-dom-import': 'error',
+      'testing-library/prefer-find-by': 'error',
+      'testing-library/prefer-screen-queries': 'error',
     },
   },
 ]);
