@@ -1,6 +1,5 @@
 'use client';
 import { ChevronDownIcon, ShoppingBagIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -10,11 +9,6 @@ import { CartItemsCard, OrderSummary } from '@/features/cart';
 import CheckoutStages from '../../_components/CheckoutProgress';
 
 export default function CartPage() {
-  const freeShippingThreshold = 5000;
-  const currentTotal = 3798;
-  const progress = Math.min((currentTotal / freeShippingThreshold) * 100, 100);
-  const remaining = freeShippingThreshold - currentTotal;
-
   return (
     <div className="bg-background text-foreground min-h-screen px-2 transition-colors duration-300 md:px-6 lg:py-20">
       <CheckoutStages currentStage={1} />
