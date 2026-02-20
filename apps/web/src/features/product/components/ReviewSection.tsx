@@ -87,7 +87,7 @@ export default function ReviewSection() {
   const GAP = 16;
   const TOTAL_SET_WIDTH = reviews.length * (CARD_WIDTH + GAP);
 
-  useAnimationFrame((t, delta) => {
+  useAnimationFrame((_t, _delta) => {
     if (isPaused || isModalOpen || isFormOpen || isInfoOpen) {
       return;
     }
