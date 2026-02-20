@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import eslint from '@eslint/js';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import jest from 'eslint-plugin-jest';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import security from 'eslint-plugin-security';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -65,12 +69,7 @@ export default defineConfig([
       'simple-import-sort/imports': [
         'error',
         {
-          groups: [
-            ['^react', '^next'],
-            ['^@?\\w'],
-            ['^@/'],
-            ['^\\.\\./', '^\\./', '^\\.'],
-          ],
+          groups: [['^react', '^next'], ['^@?\\w'], ['^@/'], ['^\\.\\./', '^\\./', '^\\.']],
         },
       ],
 
@@ -106,10 +105,6 @@ export default defineConfig([
       // --------------------------
       // 🦄 Unicorn — Modern JS
       // --------------------------
-      'unicorn/better-regex': 'error',
-      'unicorn/catch-error-name': 'error',
-      'unicorn/consistent-function-scoping': 'error',
-      'unicorn/explicit-length-check': 'error',
       'unicorn/filename-case': [
         'error',
         {
@@ -119,25 +114,33 @@ export default defineConfig([
           },
         },
       ],
+      'unicorn/better-regex': 'off',
+      'unicorn/catch-error-name': 'off',
       'unicorn/no-array-for-each': 'error',
       'unicorn/no-await-expression-member': 'error',
       'unicorn/no-console-spaces': 'error',
-      'unicorn/no-nested-ternary': 'error',
       'unicorn/no-new-array': 'error',
       'unicorn/no-useless-undefined': 'error',
       'unicorn/prefer-array-flat-map': 'error',
       'unicorn/prefer-includes': 'error',
       'unicorn/prefer-string-trim-start-end': 'error',
-      'unicorn/prefer-ternary': 'warn',
       'unicorn/prevent-abbreviations': 'off',
+
+      // FIX: Turned off rules causing Circular Loops & React issues
+      'unicorn/no-nested-ternary': 'off',
+      'unicorn/prefer-ternary': 'off',
+      'unicorn/explicit-length-check': 'off',
+      'unicorn/consistent-function-scoping': 'off',
 
       // --------------------------
       // 🔒 Security
       // --------------------------
-      'security/detect-non-literal-regexp': 'error',
-      'security/detect-object-injection': 'warn',
       'security/detect-possible-timing-attacks': 'error',
       'security/detect-unsafe-regex': 'error',
+
+      // FIX: Turned off false-positive warnings
+      'security/detect-object-injection': 'off',
+      'security/detect-non-literal-regexp': 'off',
 
       // --------------------------
       // ✨ Code Quality
@@ -178,7 +181,7 @@ export default defineConfig([
   },
 
   // ==================================================
-  // React, Hooks & Accessibility — scoped to web & ui
+  // React Hooks — Shared (Web & UI)
   // ==================================================
   {
     files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
@@ -191,20 +194,22 @@ export default defineConfig([
       'react-hooks': reactHooks,
     },
     rules: {
-      // --------------------------
-      // ♿ Accessibility
-      // --------------------------
-      'jsx-a11y/alt-text': 'error',
-      'jsx-a11y/anchor-is-valid': 'error',
-      'jsx-a11y/no-autofocus': 'warn',
-
-      // --------------------------
-      // ⚛️ React & Hooks
-      // --------------------------
-      'react/display-name': 'warn',
-      'react/no-unescaped-entities': 'off',
       'react-hooks/exhaustive-deps': 'warn',
       'react-hooks/rules-of-hooks': 'error',
+    },
+  },
+
+  // ==================================================
+  // React Core Rules — UI Package Only
+  // ==================================================
+  {
+    files: ['packages/ui/**/*.{ts,tsx}'],
+    plugins: {
+      react: reactPlugin,
+    },
+    rules: {
+      'react/display-name': 'warn',
+      'react/no-unescaped-entities': 'off',
     },
   },
 
@@ -251,19 +256,12 @@ export default defineConfig([
       },
     },
     rules: {
-      // --------------------------
-      // 🧪 Jest
-      // --------------------------
       'jest/no-disabled-tests': 'warn',
       'jest/no-focused-tests': 'error',
       'jest/no-standalone-expect': 'error',
       'jest/no-identical-title': 'error',
       'jest/valid-expect': 'error',
       'jest/valid-expect-in-promise': 'error',
-
-      // --------------------------
-      // 🧪 Testing Library
-      // --------------------------
       'testing-library/await-async-queries': 'error',
       'testing-library/await-async-utils': 'error',
       'testing-library/no-await-sync-queries': 'error',

@@ -94,11 +94,11 @@ export default function NotificationsPage() {
                 {/* FIX: Changed == to === (eqeqeq) */}
                 {tab === 'all' ? (
                   <MenuIcon className="w-4" />
-                ) : (tab === 'orders' ? (
+                ) : tab === 'orders' ? (
                   <ShoppingBagIcon className="w-4" />
                 ) : (
                   <TagIcon className="w-4" />
-                ))}
+                )}
                 {tab}
               </button>
             ))}

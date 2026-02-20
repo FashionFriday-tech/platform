@@ -165,9 +165,9 @@ export default function ReviewSection() {
                         className={`rounded-full border-2 border-dashed border-black p-0.5 ${
                           rev.membership === 'silver'
                             ? 'border-x-gray-400 border-y-gray-600'
-                            : (rev.membership === 'gold'
+                            : rev.membership === 'gold'
                               ? 'border-x-yellow-400 border-y-yellow-600'
-                              : 'border-x-rose-400 border-y-rose-600')
+                              : 'border-x-rose-400 border-y-rose-600'
                         }`}
                       >
                         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-[14px] font-black uppercase italic text-white">
@@ -181,9 +181,9 @@ export default function ReviewSection() {
                             className={`mb-0.5 ml-1 w-5 ${
                               rev.membership === 'silver'
                                 ? 'text-gray-400'
-                                : (rev.membership === 'gold'
+                                : rev.membership === 'gold'
                                   ? 'text-yellow-500'
-                                  : 'text-rose-600')
+                                  : 'text-rose-600'
                             }`}
                           />
                         </span>

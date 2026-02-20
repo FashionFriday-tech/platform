@@ -21,7 +21,7 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
           <div
             className="bg-brand h-full transition-all duration-700 ease-in-out"
             style={{
-              width: currentStage === 1 ? '0%' : (currentStage === 2 ? '50%' : '100%'),
+              width: currentStage === 1 ? '0%' : currentStage === 2 ? '50%' : '100%',
             }}
           />
         </div>
@@ -47,7 +47,7 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
 
                   {/* Stable Number/Icon */}
                   <span
-                    className={`relative z-20 text-xs font-black transition-colors duration-300 ${isCompleted ? 'text-brand-foreground' : (isActive ? 'text-background' : 'text-foreground-subtle')} `}
+                    className={`relative z-20 text-xs font-black transition-colors duration-300 ${isCompleted ? 'text-brand-foreground' : isActive ? 'text-background' : 'text-foreground-subtle'} `}
                   >
                     {isCompleted ? <CheckIcon size={14} /> : stage.id}
                   </span>

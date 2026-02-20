@@ -446,7 +446,7 @@ export default function AddressPage() {
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
   const sortedAddresses = useMemo(() => {
-    return [...addresses].sort((a, b) => (a.isDefault === b.isDefault ? 0 : (a.isDefault ? -1 : 1)));
+    return [...addresses].sort((a, b) => (a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1));
   }, [addresses]);
 
   const handleSave = (data: Address) => {

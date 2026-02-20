@@ -318,7 +318,7 @@ export default function AuthPage() {
           disabled={loading}
           className="group mt-2 flex w-full items-center justify-center rounded-full bg-white py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:bg-zinc-200 disabled:opacity-50"
         >
-          {loading ? 'Processing...' : (step === 'PROFILE' ? 'Start Shopping!' : 'Continue')}
+          {loading ? 'Processing...' : step === 'PROFILE' ? 'Start Shopping!' : 'Continue'}
           {!loading && (
             <ChevronRightIcon className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
           )}
