@@ -1,4 +1,18 @@
-export const sizeData: any = {
+interface SizeChartEntry {
+  [key: string]: string;
+}
+
+interface SizeCategory {
+  units: string[];
+  chart: SizeChartEntry[];
+}
+
+interface SizeData {
+  footwear: SizeCategory;
+  apparel: SizeCategory;
+}
+
+export const sizeData: SizeData = {
   footwear: {
     units: ['IND / UK', 'US Men', 'US Women', 'Euro', 'CM', 'M / W'],
     chart: [
