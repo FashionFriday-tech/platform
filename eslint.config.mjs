@@ -1,10 +1,12 @@
-import { defineConfig, globalIgnores } from 'eslint/config';
 import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import globals from 'globals';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import reactHooks from 'eslint-plugin-react-hooks';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig([
   // ==================================================
@@ -18,17 +20,17 @@ export default defineConfig([
     'out/**',
     'coverage/**',
     'next-env.d.ts',
+    '*.config.js',
   ]),
 
   // ==================================================
-  // Base JavaScript Rules
+  // Base Configurations
   // ==================================================
   eslint.configs.recommended,
-
-  // ==================================================
-  // TypeScript (Type-Checked)
-  // ==================================================
   ...tseslint.configs.recommendedTypeChecked,
+  ...nextVitals,
+  ...nextTs,
+  eslintPluginPrettierRecommended,
 
   {
     languageOptions: {
@@ -42,55 +44,51 @@ export default defineConfig([
         ...globals.jest,
       },
     },
-  },
 
-  // ==================================================
-  // Next.js (Web App Only)
-  // ==================================================
-  ...nextVitals,
-  ...nextTs,
-
-  // ==================================================
-  // Prettier Integration
-  // ==================================================
-  eslintPluginPrettierRecommended,
-
-  // ==================================================
-  // Custom Industrial Rules
-  // ==================================================
-  {
+    plugins: {
+      'react-hooks': reactHooks,
+      'simple-import-sort': simpleImportSort,
+    },
     rules: {
       // --------------------------
-      // TypeScript Strictness
+      // 🔄 Import Sorting Rules
       // --------------------------
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unused-vars': ['off', { argsIgnorePattern: '^_' }],
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
 
       // --------------------------
-      // Code Quality
+      // 🛡️ TypeScript Strictness
       // --------------------------
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'no-debugger': 'error',
-      eqeqeq: ['error', 'always'],
-      curly: ['error', 'all'],
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
 
       // --------------------------
-      // Import Hygiene
+      // ⚛️ React & Hooks
       // --------------------------
-      'no-duplicate-imports': 'error',
-
-      // --------------------------
-      // React / JSX Relaxation
-      // --------------------------
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
       'react/no-unescaped-entities': 'off',
 
       // --------------------------
-      // Best Practices
+      // ✨ Code Quality & Best Practices
       // --------------------------
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-debugger': 'error',
+      'no-unused-expressions': 'error',
+      'no-duplicate-imports': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
     },
   },
 ]);
