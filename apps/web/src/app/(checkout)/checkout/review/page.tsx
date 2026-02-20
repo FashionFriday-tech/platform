@@ -255,7 +255,7 @@ export default function FinalReviewPage() {
 
       <OTPModal
         isOpen={showOTPModal}
-        onClose={() => setShowOTPModal(false)}
+        _onClose={() => setShowOTPModal(false)}
         phoneNumber={address?.primaryPhone || ''}
         onVerify={() => {
           setIsLoggedIn(true);
@@ -444,12 +444,12 @@ function InputBox({
 
 interface OTPModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  _onClose: () => void;
   phoneNumber: string;
   onVerify: () => void;
 }
 
-function OTPModal({ isOpen, onClose, phoneNumber, onVerify }: OTPModalProps) {
+function OTPModal({ isOpen, _onClose, phoneNumber, onVerify }: OTPModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (

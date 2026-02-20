@@ -5,7 +5,6 @@ import {
   CreditCardIcon,
   type IconComponent,
   MapPinIcon,
-  PackageIcon,
   RefreshCcwIcon,
   TruckIcon,
 } from '@ff/ui';

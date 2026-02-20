@@ -8,7 +8,6 @@ import { ChevronRightIcon } from '@ff/ui';
 import { AnimatePresence, motion, type PanInfo } from 'framer-motion';
 
 const GENDERS = ['Men', 'Women'] as const;
-type Gender = (typeof GENDERS)[number];
 
 const CATEGORIES_DATA = {
   Men: {

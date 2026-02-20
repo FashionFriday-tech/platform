@@ -27,7 +27,6 @@ interface SelectionTrayProps {
 const SelectionTray = ({
   title,
   options,
-  selectedValue,
   isOpen,
   onToggle,
   onChange,

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { ArrowUpRightIcon, TagIcon } from '@ff/ui';
+import { ArrowUpRightIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 
 export interface Product {

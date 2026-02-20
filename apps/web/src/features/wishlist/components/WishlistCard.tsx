@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 import { BellIcon, HeartMinusIcon, ShoppingBagIcon } from '@ff/ui';
 
-import { cn } from '@/lib/utils';
 import { type Product } from '@/types/wishlist';
 interface WishlistCardProps {
   product: Product;

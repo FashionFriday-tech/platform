@@ -23,14 +23,14 @@ const SORT_OPTIONS = [
 
 // --- UPDATED INTERFACE ---
 interface CatalogueClientProps {
-  gender?: string; // Added: required gender string (men/women/snkrs)
+  _gender?: string; // Added: required gender string (men/women/snkrs)
   initialProducts: Product[];
   categorySlug: string;
 }
 
 // --- UPDATED FUNCTION PARAMS ---
 export default function CatalogueClient({
-  gender,
+  _gender,
   initialProducts,
   categorySlug,
 }: CatalogueClientProps) {
@@ -40,7 +40,6 @@ export default function CatalogueClient({
     handleFilterChange,
     sortBy,
     setSortBy,
-    totalResults,
     isAutoScrolling,
     toggleAutoScroll,
   } = useCatalogue({ initialProducts });

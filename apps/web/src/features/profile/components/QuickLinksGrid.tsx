@@ -9,7 +9,7 @@ import { quickLinks } from '@/data/profile';
 export function QuickLinksGrid() {
   return (
     <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 sm:gap-6 lg:grid-cols-5">
-      {quickLinks.map((link, index) => {
+      {quickLinks.map((link, _index) => {
         const Icon = link.icon;
         return (
           <Link

@@ -1,4 +1,3 @@
-import ShopByBrand from '@/components/ui/sections/BrandGrid';
 import brandLogos from '@/data/brandLogos';
 const brands = brandLogos;
 import Link from 'next/link';

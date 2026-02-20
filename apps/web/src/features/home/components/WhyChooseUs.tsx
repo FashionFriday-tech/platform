@@ -3,7 +3,7 @@
 import { type CSSProperties } from 'react';
 import Image from 'next/image';
 
-import { RefreshCcwIcon, ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
+import { ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
 
 // --- Data ---
