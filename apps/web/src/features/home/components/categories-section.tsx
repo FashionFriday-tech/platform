@@ -1,9 +1,10 @@
 'use client';
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 import { categories } from '@/data/categories';
 

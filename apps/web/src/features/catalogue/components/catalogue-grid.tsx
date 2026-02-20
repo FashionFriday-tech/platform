@@ -1,9 +1,10 @@
 'use client';
 
-import { Product } from '@ff/schemas';
-import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
 import React from 'react'; // Fix: Explicitly import React to resolve UMD global error
+import Image from 'next/image';
+
+import { type Product } from '@ff/schemas';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
 

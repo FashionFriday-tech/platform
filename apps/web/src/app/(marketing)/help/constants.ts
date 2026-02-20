@@ -1,3 +1,5 @@
+import { type ComponentType } from 'react';
+
 import {
   CreditCardIcon,
   FileTextIcon,
@@ -10,7 +12,6 @@ import {
   StarBadgeIcon,
   TruckIcon,
 } from '@ff/ui';
-import { ComponentType } from 'react';
 
 export type IconComponent = ComponentType<{ size?: number }>;
 

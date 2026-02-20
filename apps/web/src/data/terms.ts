@@ -3,7 +3,7 @@ import {
   CameraIcon,
   CreditCardIcon,
   GavelIcon,
-  IconComponent,
+  type IconComponent,
   InfoIcon,
   RefreshCcwIcon,
   ShieldCheckIcon,

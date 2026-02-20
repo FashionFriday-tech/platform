@@ -1,5 +1,9 @@
 'use client';
 
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 import {
   AlertTriangleIcon,
   BellIcon,
@@ -15,9 +19,6 @@ import {
   TrashIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
 
 import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
 import { useSettings } from '@/context/SettingsContext';

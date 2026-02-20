@@ -1,6 +1,7 @@
 'use client';
-import { ArrowRightIcon, CameraIcon, HistoryIcon, InfoIcon, NavigationIcon } from '@ff/ui';
 import React from 'react';
+
+import { ArrowRightIcon, CameraIcon, HistoryIcon, InfoIcon, NavigationIcon } from '@ff/ui';
 
 import { returnsData } from '@/data/returns';
 

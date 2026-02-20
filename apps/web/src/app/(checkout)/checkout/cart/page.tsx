@@ -1,7 +1,8 @@
 'use client';
-import { ChevronDownIcon, ShoppingBagIcon } from '@ff/ui';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { ChevronDownIcon, ShoppingBagIcon } from '@ff/ui';
 
 import { bagItems } from '@/data/bagItems';
 import { CartItemsCard, OrderSummary } from '@/features/cart';

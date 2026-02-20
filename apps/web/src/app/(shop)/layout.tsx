@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 export const metadata = {
   title: 'Shop Trendy Footwear & Fashion Accessories Online | Fashion Friday',

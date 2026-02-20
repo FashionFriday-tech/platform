@@ -1,5 +1,3 @@
-import './globals.css';
-
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
@@ -8,6 +6,8 @@ import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { SettingsProvider } from '@/context/SettingsContext';
 
 import { ThemeProvider } from './providers/theme-provider';
+
+import './globals.css';
 
 const geistSans = Geist({
   subsets: ['latin'],

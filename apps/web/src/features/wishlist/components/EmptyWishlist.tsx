@@ -1,5 +1,6 @@
-import { HeartIcon } from '@ff/ui';
 import Link from 'next/link';
+
+import { HeartIcon } from '@ff/ui';
 
 export function EmptyWishlist() {
   return (

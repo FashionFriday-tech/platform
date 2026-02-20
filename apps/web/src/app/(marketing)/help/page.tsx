@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowDownIconIOS, ArrowUpRightIcon, MailIcon, MessageIcon, PhoneIcon } from '@ff/ui';
 import Link from 'next/link';
+
+import { ArrowDownIconIOS, ArrowUpRightIcon, MailIcon, MessageIcon, PhoneIcon } from '@ff/ui';
 
 import { helpSections } from './constants';
 

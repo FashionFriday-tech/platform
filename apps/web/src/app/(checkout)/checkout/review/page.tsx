@@ -1,10 +1,11 @@
 'use client';
 
-import { ChevronRightIcon, ChevronUpIcon, CloseIcon, MapPinIcon, PlusIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+
+import { ChevronRightIcon, ChevronUpIcon, CloseIcon, MapPinIcon, PlusIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { bagItems } from '@/data/bagItems';
 

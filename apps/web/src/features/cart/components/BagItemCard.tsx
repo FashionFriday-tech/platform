@@ -1,10 +1,11 @@
 'use client';
 
-import { CloseIcon, MinusIcon, PlusIcon } from '@ff/ui';
-import Image from 'next/image';
 import { useState } from 'react';
+import Image from 'next/image';
 
-import { BagItem } from '@/data/bagItems';
+import { CloseIcon, MinusIcon, PlusIcon } from '@ff/ui';
+
+import { type BagItem } from '@/data/bagItems';
 
 interface BagItemCardProps {
   item: BagItem;

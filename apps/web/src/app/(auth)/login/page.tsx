@@ -1,9 +1,10 @@
 'use client';
 
-import { ArrowLeftIcon, ChevronRightIcon, VerifiedUserIcon } from '@ff/ui';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+
+import { ArrowLeftIcon, ChevronRightIcon, VerifiedUserIcon } from '@ff/ui';
 
 export default function AuthPage() {
   const [step, setStep] = useState<'PHONE' | 'OTP' | 'PROFILE'>('PHONE');

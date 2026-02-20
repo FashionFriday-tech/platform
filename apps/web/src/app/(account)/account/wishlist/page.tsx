@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { EmptyWishlist, WishlistCard } from '@/features/wishlist';
-import { Product } from '@/types/wishlist';
+import { type Product } from '@/types/wishlist';
 
 // MOCK DATA (In production, fetch this from your store/API)
 const wishlistItems: Product[] = [

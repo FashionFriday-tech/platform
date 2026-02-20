@@ -1,5 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import {
   CheckCircleIcon,
   ChevronRightIcon,
@@ -18,9 +22,6 @@ import {
   TwitterIcon,
   YoutubeIcon,
 } from '@ff/ui';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState } from 'react';
 
 // --- Types ---
 type ClaimStatus = 'idle' | 'pending' | 'approved';

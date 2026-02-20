@@ -1,10 +1,11 @@
 'use client';
 
 // Data & Hook Imports
-import { Product } from '@ff/schemas';
+import { useState } from 'react';
+
+import { type Product } from '@ff/schemas';
 import { ArrowUpDownIcon, PlayIcon, SlidersIcon, StopIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
 
 import { CatalogueGrid } from './components/catalogue-grid';
 // Sub-component Imports

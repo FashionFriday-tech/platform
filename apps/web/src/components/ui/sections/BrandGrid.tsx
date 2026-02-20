@@ -1,10 +1,11 @@
 'use client';
 
-import { ArrowUpRightIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+
+import { ArrowUpRightIcon } from '@ff/ui';
+import { motion } from 'framer-motion';
 
 interface BrandItem {
   id: number;

@@ -1,6 +1,7 @@
 'use client';
-import { EyeIcon, GlobeIcon, LockIcon, MessageSquareIcon, ScaleIcon } from '@ff/ui';
 import React from 'react';
+
+import { EyeIcon, GlobeIcon, LockIcon, MessageSquareIcon, ScaleIcon } from '@ff/ui';
 
 import { termsData } from '@/data/terms';
 

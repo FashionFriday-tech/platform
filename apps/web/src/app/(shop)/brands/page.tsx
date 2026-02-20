@@ -1,8 +1,9 @@
 'use client';
 
+import React, { useEffect, useRef, useState } from 'react';
+
 import { ChevronDownIcon, SlidersIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useRef, useState } from 'react';
 
 import brandsData from '@/data/brandLogos';
 import { BrandCard } from '@/features/brand/components/BrandCard';

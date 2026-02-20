@@ -1,5 +1,7 @@
 'use client';
 
+import React, { useState } from 'react';
+
 import {
   ChevronRightIcon,
   ChevronUpIcon,
@@ -11,7 +13,6 @@ import {
   ZapIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useState } from 'react';
 
 import CheckoutStages from '../../_components/CheckoutProgress';
 

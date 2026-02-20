@@ -1,4 +1,4 @@
-import { Brand } from '@/features/brand/types/brand';
+import { type Brand } from '@/features/brand/types/brand';
 
 const brandLogos: Brand[] = [
   {

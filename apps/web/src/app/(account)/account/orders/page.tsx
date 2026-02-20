@@ -1,10 +1,11 @@
 'use client';
 
-import { CalendarIcon, ChevronRightIcon, MapPinIcon, PackageIcon, TruckIcon } from '@ff/ui';
-import Image from 'next/image';
 import { useMemo, useState } from 'react';
+import Image from 'next/image';
 
-import { Order, OrderItem, orders, OrderStatus } from '@/data/order'; // Assuming OrderItem is exported there
+import { CalendarIcon, ChevronRightIcon, MapPinIcon, PackageIcon, TruckIcon } from '@ff/ui';
+
+import { type Order, type OrderItem, orders, type OrderStatus } from '@/data/order'; // Assuming OrderItem is exported there
 
 // --- Interfaces ---
 

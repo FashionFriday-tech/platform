@@ -1,8 +1,9 @@
 'use client';
 
-import { PackageIcon, TagIcon } from '@ff/ui';
-import Image from 'next/image';
 import React, { useState } from 'react';
+import Image from 'next/image';
+
+import { PackageIcon, TagIcon } from '@ff/ui';
 
 export default function SourcingSection() {
   const [formData, setFormData] = useState({ productName: '', category: '' });

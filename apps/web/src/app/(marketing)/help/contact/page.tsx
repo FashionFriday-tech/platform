@@ -1,4 +1,6 @@
 'use client';
+import React, { useEffect, useRef, useState } from 'react';
+
 import {
   ArrowUpRightIcon,
   ChevronDownIcon,
@@ -10,7 +12,6 @@ import {
   StoreIcon,
   UsersIcon,
 } from '@ff/ui';
-import React, { useEffect, useRef, useState } from 'react';
 
 interface InteractionCardProps {
   icon: React.ReactNode;

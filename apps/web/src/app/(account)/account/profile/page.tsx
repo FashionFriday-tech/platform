@@ -1,5 +1,9 @@
 'use client';
 
+import { useRef, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import {
   CameraIcon,
   CheckCircleIcon,
@@ -12,9 +16,6 @@ import {
   SparklesIcon,
   UserIcon,
 } from '@ff/ui';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRef, useState } from 'react';
 
 // --- Types ---
 

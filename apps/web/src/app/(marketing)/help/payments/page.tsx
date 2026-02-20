@@ -1,4 +1,6 @@
 'use client';
+import React from 'react';
+
 import {
   AlertTriangleIcon,
   ArrowRightIcon,
@@ -9,7 +11,6 @@ import {
   ShieldCheckIcon,
   ZapIcon,
 } from '@ff/ui';
-import React from 'react';
 
 import { paymentData } from '@/data/payments';
 

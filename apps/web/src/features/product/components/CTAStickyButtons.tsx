@@ -1,7 +1,8 @@
 'use client';
 
-import { HeartIcon, HeartPlusIcon, ShoppingBagIcon } from '@ff/ui';
 import React from 'react';
+
+import { HeartIcon, HeartPlusIcon, ShoppingBagIcon } from '@ff/ui';
 
 interface CTAStickyButtonsProps {
   isWishlisted: boolean;

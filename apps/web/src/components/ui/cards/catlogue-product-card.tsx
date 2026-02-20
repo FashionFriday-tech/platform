@@ -1,11 +1,12 @@
 'use client';
 
-import { Product } from '@ff/schemas';
-import { StarBadgeIcon, StarsIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+
+import { type Product } from '@ff/schemas';
+import { StarBadgeIcon, StarsIcon } from '@ff/ui';
+import { motion } from 'framer-motion';
 
 import brandLogos from '@/data/brandLogos';
 

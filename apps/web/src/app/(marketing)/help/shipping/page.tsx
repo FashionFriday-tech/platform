@@ -1,7 +1,8 @@
 'use client';
-import { AlertTriangleIcon, CameraIcon, LifeBuoyIcon, NavigationIcon } from '@ff/ui';
-import Link from 'next/link';
 import React from 'react';
+import Link from 'next/link';
+
+import { AlertTriangleIcon, CameraIcon, LifeBuoyIcon, NavigationIcon } from '@ff/ui';
 
 import { shippingData } from '@/data/shipping';
 

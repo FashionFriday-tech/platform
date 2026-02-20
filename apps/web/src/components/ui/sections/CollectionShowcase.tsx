@@ -1,10 +1,11 @@
 'use client';
 
-import { ArrowUpRightIcon, TagIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+
+import { ArrowUpRightIcon, TagIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export interface Product {
   id: string;

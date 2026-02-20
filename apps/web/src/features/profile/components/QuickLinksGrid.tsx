@@ -1,8 +1,8 @@
 'use client';
 
-import { ExternalLinkIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
+
+import { ExternalLinkIcon } from '@ff/ui';
 
 import { quickLinks } from '@/data/profile';
 

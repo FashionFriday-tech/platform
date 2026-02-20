@@ -1,7 +1,8 @@
 'use client';
 
-import { ActivityIcon, ArrowDownIconIOS, FootprintsIcon, ShieldCheckIcon, WatchIcon } from '@ff/ui';
 import React, { useState } from 'react';
+
+import { ActivityIcon, ArrowDownIconIOS, FootprintsIcon, ShieldCheckIcon, WatchIcon } from '@ff/ui';
 
 import { ProductQuality } from '@/data/quality';
 

@@ -3,7 +3,7 @@ import {
   CameraIcon,
   ClockIcon,
   CreditCardIcon,
-  IconComponent,
+  type IconComponent,
   MapPinIcon,
   PackageIcon,
   RefreshCcwIcon,

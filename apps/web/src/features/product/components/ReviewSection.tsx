@@ -1,5 +1,8 @@
 'use client';
 
+import { type ChangeEvent, useRef, useState } from 'react';
+import Image from 'next/image';
+
 import {
   AlertTriangleIcon,
   ArrowLeftIcon,
@@ -15,8 +18,6 @@ import {
   VerifiedIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion, useAnimationFrame, useMotionValue, wrap } from 'framer-motion';
-import Image from 'next/image';
-import { ChangeEvent, useRef, useState } from 'react';
 
 interface Review {
   name: string;

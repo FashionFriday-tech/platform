@@ -1,5 +1,8 @@
 'use client';
 
+import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
+
 import {
   AppleLogoIcon,
   CloseIcon,
@@ -10,9 +13,7 @@ import {
   ShieldIcon,
   ZapIcon,
 } from '@ff/ui';
-import { AnimatePresence, motion, Variants } from 'framer-motion';
-import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { AnimatePresence, motion, type Variants } from 'framer-motion';
 
 import { Iphone } from '@/components/ui/magicUi/iphone';
 

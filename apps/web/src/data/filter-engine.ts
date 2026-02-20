@@ -1,4 +1,4 @@
-import { Product } from '@ff/schemas';
+import { type Product } from '@ff/schemas';
 
 import { DUMMY_PRODUCTS } from './products';
 

@@ -1,5 +1,8 @@
 'use client';
 
+import React, { useMemo, useState } from 'react';
+import Image from 'next/image';
+
 import {
   ArrowDownLeftIcon,
   ArrowUpRightIcon,
@@ -10,8 +13,6 @@ import {
   TicketPercentIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
-import React, { useMemo, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 

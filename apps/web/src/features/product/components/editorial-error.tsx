@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
+
 import { ArrowLeftIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 
 export default function EditorialError({ slug }: { slug: string }) {
   return (

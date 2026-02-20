@@ -1,5 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+
 import {
   BellIcon,
   CategoryIcon,
@@ -10,9 +14,6 @@ import {
   WishlistIcon,
 } from '@ff/ui';
 import { AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState } from 'react';
 
 import { SearchOverlay } from './SearchOverlay/SearchOverlay';
 

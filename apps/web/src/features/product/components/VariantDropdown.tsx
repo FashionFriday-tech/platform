@@ -1,9 +1,10 @@
 'use client';
 
+import React, { useState } from 'react';
+import Image from 'next/image';
+
 import { ArrowDownIconIOS } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import Image from 'next/image';
-import React, { useState } from 'react';
 
 // --- Types ---
 interface Option {

@@ -1,4 +1,4 @@
-import { FileCheckIcon, IconComponent, ShieldAlertIcon, TruckIcon, WalletIcon } from '@ff/ui';
+import { FileCheckIcon, type IconComponent, ShieldAlertIcon, TruckIcon, WalletIcon } from '@ff/ui';
 
 export interface PolicySection {
   id: string;

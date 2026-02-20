@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowRightIcon, ShieldCheckIcon, TagIcon } from '@ff/ui';
 import Link from 'next/link';
+
+import { ArrowRightIcon, ShieldCheckIcon, TagIcon } from '@ff/ui';
 
 export function OrderSummary() {
   const subtotal = 3798;

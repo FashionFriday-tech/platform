@@ -1,5 +1,6 @@
-import { Product } from '@ff/schemas';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { type Product } from '@ff/schemas';
 
 import { useSettings } from '@/context/SettingsContext';
 import { filterProducts } from '@/data/filter-engine';

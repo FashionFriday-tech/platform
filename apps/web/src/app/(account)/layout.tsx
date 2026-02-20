@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 export const metadata = {
   title: 'My Account | Fashion Friday',
   description: 'Manage your profile, orders, and account settings on Fashion Friday.',

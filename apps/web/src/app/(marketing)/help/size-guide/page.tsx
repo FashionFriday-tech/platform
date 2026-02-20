@@ -1,4 +1,6 @@
 'use client';
+import React, { useEffect, useRef, useState } from 'react';
+
 import {
   ArrowLeftRightIcon,
   ArrowRightIcon,
@@ -9,7 +11,6 @@ import {
   RulerIcon,
   ShirtIcon,
 } from '@ff/ui';
-import React, { useEffect, useRef, useState } from 'react';
 
 import { sizeData } from '@/data/sizes';
 

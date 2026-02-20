@@ -1,8 +1,9 @@
 import ShopByBrand from '@/components/ui/sections/BrandGrid';
 import brandLogos from '@/data/brandLogos';
 const brands = brandLogos;
-import { ArrowUpRightIcon } from '@ff/ui';
 import Link from 'next/link';
+
+import { ArrowUpRightIcon } from '@ff/ui';
 
 import { BrandCard } from '@/features/brand/components/BrandCard';
 

@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import { type Metadata } from 'next';
 
 import { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
 import ProductPageMaster from '@/features/product';

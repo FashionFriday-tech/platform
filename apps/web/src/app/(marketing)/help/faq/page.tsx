@@ -1,7 +1,8 @@
 'use client';
-import { ArrowUpRightIcon, ChevronRightIcon, MailIcon, SearchIcon, SendIcon } from '@ff/ui';
-import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+
+import { ArrowUpRightIcon, ChevronRightIcon, MailIcon, SearchIcon, SendIcon } from '@ff/ui';
 
 import { faqData } from '@/data/faq';
 

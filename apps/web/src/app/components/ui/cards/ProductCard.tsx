@@ -1,9 +1,10 @@
 'use client';
 
-import { StarBadgeIcon, StarsIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { StarBadgeIcon, StarsIcon } from '@ff/ui';
+import { motion } from 'framer-motion';
 
 interface Product {
   id: string | number;

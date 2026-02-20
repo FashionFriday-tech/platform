@@ -1,4 +1,6 @@
 'use client';
+import React from 'react';
+
 import {
   DatabaseIcon,
   EyeOffIcon,
@@ -10,7 +12,6 @@ import {
   TrashIcon,
   UserCheckIcon,
 } from '@ff/ui';
-import React from 'react';
 
 const policyData = [
   {

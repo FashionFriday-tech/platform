@@ -1,11 +1,12 @@
 'use client';
 
-import { ArrowBackIconIOS, ArrowForwardIconIOS, CloseIcon, HamburgerMenuIcon } from '@ff/ui';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
 
-import { HelpSection, helpSections } from './constants';
+import { ArrowBackIconIOS, ArrowForwardIconIOS, CloseIcon, HamburgerMenuIcon } from '@ff/ui';
+
+import { type HelpSection, helpSections } from './constants';
 
 export default function HelpLayout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

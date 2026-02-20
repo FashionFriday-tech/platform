@@ -2,7 +2,7 @@ import {
   AlertCircleIcon,
   BanknoteIcon,
   CreditCardIcon,
-  IconComponent,
+  type IconComponent,
   RefreshCcwIcon,
 } from '@ff/ui';
 

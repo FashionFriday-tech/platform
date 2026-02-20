@@ -1,10 +1,11 @@
 'use client';
 
-import { Product } from '@ff/schemas';
-import { StarBadgeIcon, StarsIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { type Product } from '@ff/schemas';
+import { StarBadgeIcon, StarsIcon } from '@ff/ui';
+import { motion } from 'framer-motion';
 
 interface RelatedProductsProps {
   products?: Product[];
