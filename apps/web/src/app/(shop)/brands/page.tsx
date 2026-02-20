@@ -15,7 +15,7 @@ const ALL_CATEGORIES: (BrandCategory | 'All')[] = [
   'watches',
   'accessories',
 ];
-const SORT_OPTIONS = ['a-z', 'z-a'];
+const SORT_OPTIONS: ('a-z' | 'z-a')[] = ['a-z', 'z-a'];
 const SORT_MAP: Record<string, string> = { 'a-z': 'A - Z', 'z-a': 'Z - A' };
 
 export default function BrandsPage() {
@@ -46,7 +46,7 @@ export default function BrandsPage() {
             options={ALL_CATEGORIES}
             isOpen={activeDropdown === 'cat'}
             onToggle={() => setActiveDropdown(activeDropdown === 'cat' ? null : 'cat')}
-            onSelect={(val) => setSelectedCategory(val as any)}
+            onSelect={(val) => setSelectedCategory(val)}
             onClose={() => setActiveDropdown(null)}
           />
           <div className="flex items-center gap-4">
@@ -59,7 +59,7 @@ export default function BrandsPage() {
             displayMap={SORT_MAP}
             isOpen={activeDropdown === 'sort'}
             onToggle={() => setActiveDropdown(activeDropdown === 'sort' ? null : 'sort')}
-            onSelect={(val) => setSortOption(val as any)}
+            onSelect={(val) => setSortOption(val)}
             onClose={() => setActiveDropdown(null)}
           />
         </div>
@@ -74,20 +74,20 @@ export default function BrandsPage() {
   );
 }
 
-// --- Reusable DRY Dropdown Component ---
+// --- Reusable Generic Dropdown Component ---
 
-interface DropdownProps {
+interface DropdownProps<T> {
   label: string;
-  activeValue: string;
-  options: string[];
+  activeValue: T;
+  options: readonly T[];
   isOpen: boolean;
   onToggle: () => void;
-  onSelect: (val: string) => void;
+  onSelect: (val: T) => void;
   onClose: () => void;
   displayMap?: Record<string, string>;
 }
 
-function FilterDropdown({
+function FilterDropdown<T extends string>({
   label,
   activeValue,
   options,
@@ -96,7 +96,7 @@ function FilterDropdown({
   onSelect,
   onClose,
   displayMap,
-}: DropdownProps) {
+}: DropdownProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
