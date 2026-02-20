@@ -38,7 +38,7 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <CatalogueClient
-      gender={formattedGender}
+      _gender={formattedGender}
       categorySlug={formattedCategory}
       initialProducts={initialProducts}
     />
