@@ -3,11 +3,13 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import jest from 'eslint-plugin-jest';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
 import security from 'eslint-plugin-security';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tailwind from 'eslint-plugin-tailwindcss';
+import testingLibrary from 'eslint-plugin-testing-library';
 import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -40,6 +42,9 @@ export default defineConfig([
   security.configs.recommended,
   eslintPluginPrettierRecommended,
 
+  // ==================================================
+  // Main Configuration
+  // ==================================================
   {
     languageOptions: {
       parserOptions: {
@@ -47,8 +52,8 @@ export default defineConfig([
         tsconfigRootDir: import.meta.dirname,
       },
       globals: {
-        ...globals.node,
         ...globals.browser,
+        ...globals.node,
         ...globals.jest,
       },
     },
@@ -63,6 +68,7 @@ export default defineConfig([
       // --------------------------
       // 🔄 Import Sorting Rules
       // --------------------------
+      'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': [
         'error',
         {
@@ -74,7 +80,6 @@ export default defineConfig([
           ],
         },
       ],
-      'simple-import-sort/exports': 'error',
 
       // --------------------------
       // 🏗️ Monorepo Boundaries
@@ -165,6 +170,45 @@ export default defineConfig([
       'no-unused-expressions': 'error',
       'no-var': 'error',
       'prefer-const': 'error',
+    },
+  },
+
+  // ==================================================
+  // Test Files Only
+  // ==================================================
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    plugins: {
+      jest,
+      'testing-library': testingLibrary,
+    },
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+    rules: {
+      // --------------------------
+      // 🧪 Jest Rules
+      // --------------------------
+      'jest/no-disabled-tests': 'warn',
+      'jest/no-focused-tests': 'error',
+      'jest/no-identical-title': 'error',
+      'jest/no-standalone-expect': 'error',
+      'jest/valid-expect': 'error',
+      'jest/valid-expect-in-promise': 'error',
+
+      // --------------------------
+      // 🧪 Testing Library Rules
+      // --------------------------
+      'testing-library/await-async-queries': 'error',
+      'testing-library/await-async-utils': 'error',
+      'testing-library/no-await-sync-queries': 'error',
+      'testing-library/no-container': 'error',
+      'testing-library/no-debugging-utils': 'warn',
+      'testing-library/no-dom-import': 'error',
+      'testing-library/prefer-find-by': 'error',
+      'testing-library/prefer-screen-queries': 'error',
     },
   },
 ]);
