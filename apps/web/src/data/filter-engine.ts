@@ -1,5 +1,6 @@
-import { DUMMY_PRODUCTS } from './products';
 import { Product } from '@ff/schemas';
+
+import { DUMMY_PRODUCTS } from './products';
 
 /**
  * 1. SIDEBAR CONFIGURATION

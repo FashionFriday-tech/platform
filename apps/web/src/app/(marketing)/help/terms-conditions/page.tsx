@@ -1,6 +1,7 @@
 'use client';
+import { EyeIcon, GlobeIcon, LockIcon, MessageSquareIcon, ScaleIcon } from '@ff/ui';
 import React from 'react';
-import { ScaleIcon, GlobeIcon, LockIcon, EyeIcon, MessageSquareIcon } from '@ff/ui';
+
 import { termsData } from '@/data/terms';
 
 // 1. Define the structure of a single Term Item

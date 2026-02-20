@@ -1,16 +1,17 @@
 'use client';
-import React from 'react';
-import { paymentData } from '@/data/payments';
 import {
-  ShieldCheckIcon,
-  LockIcon,
-  ArrowRightIcon,
-  InfoIcon,
   AlertTriangleIcon,
-  GlobeIcon,
-  ZapIcon,
+  ArrowRightIcon,
   ExternalLinkIcon,
+  GlobeIcon,
+  InfoIcon,
+  LockIcon,
+  ShieldCheckIcon,
+  ZapIcon,
 } from '@ff/ui';
+import React from 'react';
+
+import { paymentData } from '@/data/payments';
 
 export default function PaymentsBillingPage() {
   return (

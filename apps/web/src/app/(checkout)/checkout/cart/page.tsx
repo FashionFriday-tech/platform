@@ -1,11 +1,13 @@
 'use client';
-import { CartItemsCard, OrderSummary } from '@/features/cart';
-import { bagItems } from '@/data/bagItems';
-import { ShoppingBagIcon, ChevronDownIcon } from '@ff/ui';
-import Link from 'next/link';
+import { ChevronDownIcon, ShoppingBagIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
-import CheckoutStages from '../../_components/CheckoutProgress';
 import Image from 'next/image';
+import Link from 'next/link';
+
+import { bagItems } from '@/data/bagItems';
+import { CartItemsCard, OrderSummary } from '@/features/cart';
+
+import CheckoutStages from '../../_components/CheckoutProgress';
 
 export default function CartPage() {
   const freeShippingThreshold = 5000;

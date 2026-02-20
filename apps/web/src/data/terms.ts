@@ -1,14 +1,14 @@
 import {
-  UserCheckIcon,
   BoxIcon,
-  InfoIcon,
   CameraIcon,
   CreditCardIcon,
-  ShieldCheckIcon,
-  TruckIcon,
-  RefreshCcwIcon,
   GavelIcon,
   IconComponent,
+  InfoIcon,
+  RefreshCcwIcon,
+  ShieldCheckIcon,
+  TruckIcon,
+  UserCheckIcon,
 } from '@ff/ui';
 
 export interface TermItem {

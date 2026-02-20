@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { SuggestionTag } from './SuggestionTag';
+
 import { HighlightText } from './HighlightText';
+import { SuggestionTag } from './SuggestionTag';
 
 // 1. Define the item interface
 interface DiscoveryItem {

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeftIcon, ArrowRightIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link'; // Import Link
-import { ArrowLeftIcon, ArrowRightIcon } from '@ff/ui';
+import { useState } from 'react';
 
 // --- TYPES ---
 export interface Product {

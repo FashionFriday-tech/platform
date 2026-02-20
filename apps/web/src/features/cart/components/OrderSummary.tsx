@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRightIcon, TagIcon, ShieldCheckIcon } from '@ff/ui';
+import { ArrowRightIcon, ShieldCheckIcon, TagIcon } from '@ff/ui';
 import Link from 'next/link';
 
 export function OrderSummary() {

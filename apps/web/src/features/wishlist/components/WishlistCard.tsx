@@ -1,10 +1,11 @@
 'use client';
 
-import Link from 'next/link';
-import { ShoppingBagIcon, HeartMinusIcon, BellIcon } from '@ff/ui';
-import { Product } from '@/types/wishlist';
-import { cn } from '@/lib/utils';
+import { BellIcon, HeartMinusIcon, ShoppingBagIcon } from '@ff/ui';
 import Image from 'next/image';
+import Link from 'next/link';
+
+import { cn } from '@/lib/utils';
+import { Product } from '@/types/wishlist';
 interface WishlistCardProps {
   product: Product;
 }

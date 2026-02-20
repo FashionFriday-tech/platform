@@ -1,13 +1,13 @@
 import {
-  PackageIcon,
-  ClockIcon,
-  TruckIcon,
-  MapPinIcon,
-  CameraIcon,
   AlertCircleIcon,
+  CameraIcon,
+  ClockIcon,
   CreditCardIcon,
-  RefreshCcwIcon,
   IconComponent,
+  MapPinIcon,
+  PackageIcon,
+  RefreshCcwIcon,
+  TruckIcon,
 } from '@ff/ui';
 
 export interface ShippingSection {

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon, SlidersIcon } from '@ff/ui';
-import { BrandCard } from '@/features/brand/components/BrandCard';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+
 import brandsData from '@/data/brandLogos';
+import { BrandCard } from '@/features/brand/components/BrandCard';
 import type { Brand, BrandCategory } from '@/features/brand/types/brand';
 
 const ALL_CATEGORIES: (BrandCategory | 'All')[] = [

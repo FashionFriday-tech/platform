@@ -1,6 +1,7 @@
 'use client';
+import { ArrowRightIcon, CameraIcon, HistoryIcon, InfoIcon, NavigationIcon } from '@ff/ui';
 import React from 'react';
-import { NavigationIcon, CameraIcon, ArrowRightIcon, HistoryIcon, InfoIcon } from '@ff/ui';
+
 import { returnsData } from '@/data/returns';
 
 // --- 1. DEFINE POLICY TYPES ---

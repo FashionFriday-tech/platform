@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MapPinIcon, ChevronRightIcon, PlusIcon, CloseIcon, ChevronUpIcon } from '@ff/ui';
-import { bagItems } from '@/data/bagItems';
-import CheckoutStages from '../../_components/CheckoutProgress';
-import { useRouter } from 'next/navigation';
+import { ChevronRightIcon, ChevronUpIcon, CloseIcon, MapPinIcon, PlusIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+
+import { bagItems } from '@/data/bagItems';
+
+import CheckoutStages from '../../_components/CheckoutProgress';
 
 // --- 1. Define the Address Interface ---
 interface AddressDetails {

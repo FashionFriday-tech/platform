@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { CloseIcon } from '@ff/ui';
-import { useSearchData } from './SearchOverlay.hooks';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useMemo, useState } from 'react';
 
+import { QuickDiscovery } from './QuickDiscovery';
+import { RecentSearches } from './RecentSearches';
 // Sub-components
 import { SearchInput } from './SearchInput';
-import { RecentSearches } from './RecentSearches';
-import { QuickDiscovery } from './QuickDiscovery';
+import { useSearchData } from './SearchOverlay.hooks';
 
 export const SearchOverlay: React.FC<{
   isSearchOpen: boolean;

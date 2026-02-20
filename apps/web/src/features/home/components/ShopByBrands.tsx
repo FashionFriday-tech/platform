@@ -1,9 +1,10 @@
 import ShopByBrand from '@/components/ui/sections/BrandGrid';
 import brandLogos from '@/data/brandLogos';
 const brands = brandLogos;
-import { BrandCard } from '@/features/brand/components/BrandCard';
 import { ArrowUpRightIcon } from '@ff/ui';
 import Link from 'next/link';
+
+import { BrandCard } from '@/features/brand/components/BrandCard';
 
 const FEATURED_BRAND_NAMES = ['nike', 'adidas', 'zara', 'crocs', 'new balance', 'asics'];
 

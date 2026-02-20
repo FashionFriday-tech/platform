@@ -1,13 +1,13 @@
-import React from 'react';
 import {
-  MoveRightIcon,
-  ShieldCheckIcon,
-  ZapIcon,
-  StarIcon,
   ArrowUpRightIcon,
   GlobeIcon,
+  MoveRightIcon,
+  ShieldCheckIcon,
+  StarIcon,
+  ZapIcon,
 } from '@ff/ui';
 import Image from 'next/image';
+import React from 'react';
 
 // Note: Ensure you have framer-motion installed for the smoothest experience
 // npm install framer-motion

@@ -1,17 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  TruckIcon,
-  InfoIcon,
   ChevronRightIcon,
   ChevronUpIcon,
-  ShieldCheckIcon,
-  ZapIcon,
   CloseIcon,
   CreditCardIcon,
+  InfoIcon,
+  ShieldCheckIcon,
+  TruckIcon,
+  ZapIcon,
 } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from 'react';
+
 import CheckoutStages from '../../_components/CheckoutProgress';
 
 export default function PaymentPage() {

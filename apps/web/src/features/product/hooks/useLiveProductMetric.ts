@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+
 import { getGlobalSlot, getPageSlot } from '../lib/time';
 
 const SLOT_MS = 5000;

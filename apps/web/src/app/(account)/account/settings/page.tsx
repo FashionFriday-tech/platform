@@ -1,26 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useSettings } from '@/context/SettingsContext';
-import { useRouter } from 'next/navigation';
-
 import {
-  BellIcon,
-  MousePointerIcon,
-  MoonIcon,
-  ShieldCheckIcon,
-  LogOutIcon,
-  ChevronRightIcon,
-  CreditCardIcon,
-  MapPinIcon,
-  Settings2Icon,
-  TrashIcon,
   AlertTriangleIcon,
+  BellIcon,
+  ChevronRightIcon,
   CloseIcon,
+  CreditCardIcon,
+  LogOutIcon,
+  MapPinIcon,
+  MoonIcon,
+  MousePointerIcon,
+  Settings2Icon,
+  ShieldCheckIcon,
+  TrashIcon,
 } from '@ff/ui';
-import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
+import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+
+import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function SettingsPage() {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import { TruckIcon, RefreshCcwIcon, ShieldCheckIcon, CreditCardIcon } from '@ff/ui';
+import { CreditCardIcon, RefreshCcwIcon, ShieldCheckIcon, TruckIcon } from '@ff/ui';
 
 export default function ProductPerks() {
   const perks = [

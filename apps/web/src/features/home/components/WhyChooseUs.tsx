@@ -1,9 +1,9 @@
 'use client';
 
+import { RefreshCcwIcon, ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
-import { ShieldCheckIcon, TruckIcon, UsersIcon, RefreshCcwIcon } from '@ff/ui';
-import { CSSProperties } from 'react';
 import Image from 'next/image';
+import { CSSProperties } from 'react';
 
 // --- Data ---
 

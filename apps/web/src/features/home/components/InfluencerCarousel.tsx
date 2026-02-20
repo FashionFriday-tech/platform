@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { ArrowLeftIcon, ArrowRightIcon, PlayIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 /* ---------------- TYPES ---------------- */
 type Product = {

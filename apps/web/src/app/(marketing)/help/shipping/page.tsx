@@ -1,8 +1,9 @@
 'use client';
-import React from 'react';
-import { shippingData } from '@/data/shipping';
-import { NavigationIcon, LifeBuoyIcon, AlertTriangleIcon, CameraIcon } from '@ff/ui';
+import { AlertTriangleIcon, CameraIcon, LifeBuoyIcon, NavigationIcon } from '@ff/ui';
 import Link from 'next/link';
+import React from 'react';
+
+import { shippingData } from '@/data/shipping';
 
 export default function ShippingDeliveryPage() {
   return (

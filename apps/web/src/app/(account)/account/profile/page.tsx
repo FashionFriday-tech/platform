@@ -1,20 +1,20 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import Link from 'next/link';
 import {
   CameraIcon,
-  UserIcon,
-  GiftIcon,
-  SparklesIcon,
-  SaveIcon,
-  LoaderIcon,
-  ShieldCheckIcon,
   CheckCircleIcon,
-  MapPinIcon,
   ChevronRightIcon,
+  GiftIcon,
+  LoaderIcon,
+  MapPinIcon,
+  SaveIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
+  UserIcon,
 } from '@ff/ui';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRef, useState } from 'react';
 
 // --- Types ---
 

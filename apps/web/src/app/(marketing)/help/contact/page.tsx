@@ -1,16 +1,16 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
 import {
-  UsersIcon,
+  ArrowUpRightIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  HandshakeIcon,
+  InstagramIcon,
+  SendIcon,
   SparklesIcon,
   StoreIcon,
-  HandshakeIcon,
-  SendIcon,
-  ArrowUpRightIcon,
-  InstagramIcon,
-  ChevronRightIcon,
-  ChevronDownIcon,
+  UsersIcon,
 } from '@ff/ui';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface InteractionCardProps {
   icon: React.ReactNode;

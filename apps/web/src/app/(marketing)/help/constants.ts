@@ -1,14 +1,14 @@
 import {
+  CreditCardIcon,
+  FileTextIcon,
+  HelpCircleIcon,
   InfoIcon,
   MailIcon,
-  HelpCircleIcon,
-  TruckIcon,
   RefreshCcwIcon,
-  ShieldIcon,
-  FileTextIcon,
   RulerIcon,
-  CreditCardIcon,
+  ShieldIcon,
   StarBadgeIcon,
+  TruckIcon,
 } from '@ff/ui';
 import { ComponentType } from 'react';
 

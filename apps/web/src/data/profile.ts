@@ -1,12 +1,12 @@
 import {
-  UserIcon,
-  PackageIcon,
-  MapPinIcon,
-  WalletIcon,
   GiftIcon,
   HandshakeIcon,
-  ShareIcon,
+  MapPinIcon,
+  PackageIcon,
   SettingsIcon,
+  ShareIcon,
+  UserIcon,
+  WalletIcon,
   WishlistIcon,
 } from '@ff/ui';
 

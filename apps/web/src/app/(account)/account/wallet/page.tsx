@@ -1,21 +1,22 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  WalletIcon,
-  ArrowUpRightIcon,
   ArrowDownLeftIcon,
+  ArrowUpRightIcon,
+  ChevronRightIcon,
   HistoryIcon,
+  PlusIcon,
   RefreshCcwIcon,
   ShieldCheckIcon,
   TicketPercentIcon,
-  PlusIcon,
-  ChevronRightIcon,
   TrendingUpIcon,
+  WalletIcon,
 } from '@ff/ui';
-import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import React, { useMemo, useState } from 'react';
+
+import { cn } from '@/lib/utils';
 
 // --- Types ---
 type TransactionType = 'reward' | 'refund' | 'purchase' | 'topup';

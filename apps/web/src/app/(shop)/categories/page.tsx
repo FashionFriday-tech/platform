@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { ChevronRightIcon } from '@ff/ui';
+import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
 const GENDERS = ['Men', 'Women'] as const;
 type Gender = (typeof GENDERS)[number];

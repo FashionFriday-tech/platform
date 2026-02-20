@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { BellOffIcon, MenuIcon, ShoppingBagIcon, TagIcon } from '@ff/ui';
 import {
+  animate,
   motion,
+  type PanInfo,
+  type Transition,
   useMotionValue,
   useTransform,
-  animate,
-  type Transition,
-  type PanInfo,
 } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { MenuIcon, TagIcon, BellOffIcon, ShoppingBagIcon } from '@ff/ui';
+import { cn } from '@/lib/utils';
 
 const TABS = ['all', 'orders', 'promo'] as const;
 type TabType = (typeof TABS)[number];

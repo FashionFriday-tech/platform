@@ -1,17 +1,18 @@
 'use client';
-import React, { useState } from 'react';
 import {
-  ShieldCheckIcon,
-  CpuIcon,
-  LayersIcon,
-  ZapIcon,
-  InfoIcon,
   ActivityIcon,
-  WatchIcon,
-  FootprintsIcon,
-  ShirtIcon,
   ArrowDownIconIOS,
+  CpuIcon,
+  FootprintsIcon,
+  InfoIcon,
+  LayersIcon,
+  ShieldCheckIcon,
+  ShirtIcon,
+  WatchIcon,
+  ZapIcon,
 } from '@ff/ui';
+import React, { useState } from 'react';
+
 import { ProductQuality } from '@/data/quality';
 
 export default function QualityProtocolPage() {

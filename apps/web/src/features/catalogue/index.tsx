@@ -1,16 +1,15 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SlidersIcon, ArrowUpDownIcon, PlayIcon, StopIcon } from '@ff/ui';
-
 // Data & Hook Imports
 import { Product } from '@ff/schemas';
-import { useCatalogue } from './hooks/use-catalogue';
+import { ArrowUpDownIcon, PlayIcon, SlidersIcon, StopIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from 'react';
 
+import { CatalogueGrid } from './components/catalogue-grid';
 // Sub-component Imports
 import { CatalogueSidebar } from './components/catalogue-sidebar';
-import { CatalogueGrid } from './components/catalogue-grid';
+import { useCatalogue } from './hooks/use-catalogue';
 
 // Sort Options
 const SORT_OPTIONS = [

@@ -1,18 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  SearchIcon,
   BellIcon,
+  CategoryIcon,
+  SearchIcon,
+  SearchListIcon,
+  ShoppingBagIcon,
   UserIcon,
   WishlistIcon,
-  ShoppingBagIcon,
-  SearchListIcon,
-  CategoryIcon,
 } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { SearchOverlay } from './SearchOverlay/SearchOverlay';
 
 // --- Data Configuration ---

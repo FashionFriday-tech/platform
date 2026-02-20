@@ -1,7 +1,8 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { SearchIcon, SendIcon, MailIcon, ChevronRightIcon, ArrowUpRightIcon } from '@ff/ui';
+import { ArrowUpRightIcon, ChevronRightIcon, MailIcon, SearchIcon, SendIcon } from '@ff/ui';
 import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+
 import { faqData } from '@/data/faq';
 
 export default function FAQPage() {

@@ -1,8 +1,10 @@
-import type { Metadata } from 'next';
 import '@/app/globals.css';
-import ImageCarousel from '@/components/ui/sections/ImageCarousel';
-import Link from 'next/link';
+
+import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
+
+import ImageCarousel from '@/components/ui/sections/ImageCarousel';
 
 export const metadata: Metadata = {
   title: 'Sign in | Fashion Friday',

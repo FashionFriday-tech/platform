@@ -1,15 +1,16 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
 import {
-  RulerIcon,
+  ArrowLeftRightIcon,
   ArrowRightIcon,
-  ShirtIcon,
+  ChevronDownIcon,
+  CloseIcon,
   FootprintsIcon,
   InfoIcon,
-  ChevronDownIcon,
-  ArrowLeftRightIcon,
-  CloseIcon,
+  RulerIcon,
+  ShirtIcon,
 } from '@ff/ui';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { sizeData } from '@/data/sizes';
 
 // --- 1. DEFINE TYPES ---

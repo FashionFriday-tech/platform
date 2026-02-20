@@ -1,22 +1,22 @@
 'use client';
 
-import { useState, useRef, ChangeEvent } from 'react';
 import {
-  StarIcon,
-  CloseIcon,
+  AlertTriangleIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
   CameraIcon,
-  TrashIcon,
-  ShieldCheckIcon,
-  AlertTriangleIcon,
-  ShoppingBagIcon,
-  VerifiedIcon,
-  InfoCircleIcon,
+  CloseIcon,
   FilledStarIcon,
+  InfoCircleIcon,
+  ShieldCheckIcon,
+  ShoppingBagIcon,
+  StarIcon,
+  TrashIcon,
+  VerifiedIcon,
 } from '@ff/ui';
-import { motion, AnimatePresence, useAnimationFrame, useMotionValue, wrap } from 'framer-motion';
+import { AnimatePresence, motion, useAnimationFrame, useMotionValue, wrap } from 'framer-motion';
 import Image from 'next/image';
+import { ChangeEvent, useRef, useState } from 'react';
 
 interface Review {
   name: string;

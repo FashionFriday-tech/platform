@@ -1,16 +1,16 @@
 'use client';
-import React from 'react';
 import {
-  ShieldCheckIcon,
-  LockIcon,
-  EyeOffIcon,
   DatabaseIcon,
-  GlobeIcon,
-  UserCheckIcon,
-  TrashIcon,
+  EyeOffIcon,
   FileSearchIcon,
+  GlobeIcon,
+  LockIcon,
   RefreshCcwIcon,
+  ShieldCheckIcon,
+  TrashIcon,
+  UserCheckIcon,
 } from '@ff/ui';
+import React from 'react';
 
 const policyData = [
   {

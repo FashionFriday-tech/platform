@@ -1,8 +1,9 @@
 'use client';
 
+import { ArrowDownIconIOS, ArrowUpRightIcon, MailIcon, MessageIcon, PhoneIcon } from '@ff/ui';
 import Link from 'next/link';
+
 import { helpSections } from './constants';
-import { ArrowUpRightIcon, MessageIcon, PhoneIcon, MailIcon, ArrowDownIconIOS } from '@ff/ui';
 
 export default function HelpHub() {
   const handleEmailClick = () => {

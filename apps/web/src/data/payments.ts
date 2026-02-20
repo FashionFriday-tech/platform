@@ -1,9 +1,9 @@
 import {
-  CreditCardIcon,
-  BanknoteIcon,
   AlertCircleIcon,
-  RefreshCcwIcon,
+  BanknoteIcon,
+  CreditCardIcon,
   IconComponent,
+  RefreshCcwIcon,
 } from '@ff/ui';
 
 export interface PaymentSection {

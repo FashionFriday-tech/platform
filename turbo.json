@@ -11,7 +11,9 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "cache": true,
+      "inputs": ["**/*.{ts,tsx,js,jsx}", "eslint.config.mjs", "tsconfig.json"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],

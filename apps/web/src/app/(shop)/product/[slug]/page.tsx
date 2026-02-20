@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+
 import { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
 import ProductPageMaster from '@/features/product';
 import EditorialError from '@/features/product/components/editorial-error';

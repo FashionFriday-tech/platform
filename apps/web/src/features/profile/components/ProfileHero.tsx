@@ -1,8 +1,9 @@
 'use client';
 
-import { CrownIcon, ZapIcon, SmartphoneIcon, ArrowUpRightIcon, SparklesIcon } from '@ff/ui';
-import { userData } from '@/data/profile';
+import { ArrowUpRightIcon, CrownIcon, SmartphoneIcon, SparklesIcon, ZapIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
+
+import { userData } from '@/data/profile';
 
 export function ProfileHero() {
   const progressPercentage = (userData.loyaltyPoints / userData.pointsToNextTier) * 100;

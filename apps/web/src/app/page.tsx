@@ -1,15 +1,14 @@
 import Footer from '@/components/layout/Footer';
 import Request from '@/components/ui/sections/Request';
-
 import {
-  Hero,
   BrandScroll,
   CaegoriesSection,
-  TrendingSection,
-  ShopByBrand,
+  Hero,
   InfluencerCarousel,
-  WhyChooseUs,
   PWAInstallSection,
+  ShopByBrand,
+  TrendingSection,
+  WhyChooseUs,
 } from '@/features/home';
 
 export default function HomePage() {

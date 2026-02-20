@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CopyIcon, CheckIcon, UsersIcon, WalletIcon, ClockIcon, ShareIcon, GiftIcon } from '@ff/ui';
+import { CheckIcon, ClockIcon, CopyIcon, GiftIcon, ShareIcon, UsersIcon, WalletIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useCallback, useMemo, useState } from 'react';
 
 export default function ReferralsPage() {
   const [copied, setCopied] = useState(false);

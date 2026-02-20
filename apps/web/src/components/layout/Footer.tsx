@@ -1,16 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
 import {
+  ArrowUpRightIcon,
+  ChevronUpIcon,
   FacebookIcon,
   InstagramIcon,
-  YoutubeIcon,
   TwitterIcon,
-  ChevronUpIcon,
-  ArrowUpRightIcon,
+  YoutubeIcon,
 } from '@ff/ui';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
 const FOOTER_SECTIONS = [
   {

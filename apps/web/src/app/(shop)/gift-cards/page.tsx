@@ -1,26 +1,26 @@
 'use client';
 
-import { useState } from 'react';
 import {
-  InstagramIcon,
-  TwitterIcon,
-  YoutubeIcon,
-  GiftIcon,
   CheckCircleIcon,
-  SparklesIcon,
-  TrophyIcon,
-  CreditCardIcon,
+  ChevronRightIcon,
   ClockIcon,
   CloseIcon,
-  LoaderIcon,
-  SendIcon,
-  LockIcon,
+  CreditCardIcon,
   ExternalLinkIcon,
-  ChevronRightIcon,
   FacebookIcon,
+  GiftIcon,
+  InstagramIcon,
+  LoaderIcon,
+  LockIcon,
+  SendIcon,
+  SparklesIcon,
+  TrophyIcon,
+  TwitterIcon,
+  YoutubeIcon,
 } from '@ff/ui';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 
 // --- Types ---
 type ClaimStatus = 'idle' | 'pending' | 'approved';

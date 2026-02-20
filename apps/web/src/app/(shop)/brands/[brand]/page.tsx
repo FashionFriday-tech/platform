@@ -1,6 +1,7 @@
+import { notFound } from 'next/navigation';
+
 import { DUMMY_PRODUCTS } from '@/data/products';
 import CatalogueClient from '@/features/catalogue';
-import { notFound } from 'next/navigation';
 
 // Next.js 15+ logic: params is a Promise
 interface Props {

@@ -1,28 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { Product } from '@ff/schemas';
 import {
   BellIcon,
-  HeartIcon,
-  ShareIcon,
-  StarIcon,
-  ShieldCheckIcon,
-  TruckIcon,
-  RefreshCcwIcon,
   EyeIcon,
+  FilledStarIcon,
+  HeartIcon,
+  RefreshCcwIcon,
+  ShareIcon,
+  ShieldCheckIcon,
   ShoppingCartIcon,
   StarBadgeIcon,
-  FilledStarIcon,
+  StarIcon,
+  TruckIcon,
 } from '@ff/ui';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
+
 import { useLiveProductMetric } from '@/features/product/hooks/useLiveProductMetric';
 
 import Gallery from './components/gallery';
-import { Product } from '@ff/schemas';
-import Link from 'next/link';
-import ReviewSection from './components/ReviewSection';
 import RelatedProducts from './components/RelatedProducts';
+import ReviewSection from './components/ReviewSection';
 import ProductVariantPage from './components/VariantDropdown';
-import Image from 'next/image';
 
 export default function ProductPageMaster({
   product,

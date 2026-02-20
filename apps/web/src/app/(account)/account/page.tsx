@@ -1,7 +1,8 @@
 'use client';
 
+import { HeartIcon, HistoryIcon, ShieldCheckIcon, StarIcon } from '@ff/ui';
+
 import { ProfileHero, QuickLinksGrid } from '@/features/profile';
-import { HistoryIcon, StarIcon, HeartIcon, ShieldCheckIcon } from '@ff/ui';
 
 export default function ProfileOverviewPage() {
   return (

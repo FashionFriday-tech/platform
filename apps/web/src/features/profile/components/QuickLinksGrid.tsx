@@ -1,9 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { quickLinks } from '@/data/profile';
-import { motion } from 'framer-motion';
 import { ExternalLinkIcon } from '@ff/ui';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+
+import { quickLinks } from '@/data/profile';
 
 export function QuickLinksGrid() {
   return (

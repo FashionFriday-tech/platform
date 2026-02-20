@@ -1,19 +1,20 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
 import {
-  CloseIcon,
-  ShareIcon,
-  ZapIcon,
-  ShieldIcon,
-  LockIcon,
-  DownloadIcon,
   AppleLogoIcon,
+  CloseIcon,
+  DownloadIcon,
   DownloadIconIOS,
+  LockIcon,
+  ShareIcon,
+  ShieldIcon,
+  ZapIcon,
 } from '@ff/ui';
-import { Iphone } from '@/components/ui/magicUi/iphone';
+import { AnimatePresence, motion, Variants } from 'framer-motion';
 import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
+
+import { Iphone } from '@/components/ui/magicUi/iphone';
 
 // --- Types ---
 

@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Product } from '@ff/schemas';
-import { filterProducts } from '@/data/filter-engine';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { useSettings } from '@/context/SettingsContext';
+import { filterProducts } from '@/data/filter-engine';
 
 interface UseCatalogueProps {
   initialProducts: Product[];

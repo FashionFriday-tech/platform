@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { StarBadgeIcon, StarsIcon } from '@ff/ui';
-import brandLogos from '@/data/brandLogos';
 import { Product } from '@ff/schemas';
+import { StarBadgeIcon, StarsIcon } from '@ff/ui';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
+
+import brandLogos from '@/data/brandLogos';
 
 interface StoreProductCardProps {
   // Use the concrete Product type instead of 'any' to catch errors early

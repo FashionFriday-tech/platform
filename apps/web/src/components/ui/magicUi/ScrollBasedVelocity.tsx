@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   motion,
   MotionValue,
@@ -11,6 +10,7 @@ import {
   useTransform,
   useVelocity,
 } from 'motion/react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 
