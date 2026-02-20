@@ -1,28 +1,21 @@
 'use client';
-import {
-  ActivityIcon,
-  ArrowDownIconIOS,
-  CpuIcon,
-  FootprintsIcon,
-  InfoIcon,
-  LayersIcon,
-  ShieldCheckIcon,
-  ShirtIcon,
-  WatchIcon,
-  ZapIcon,
-} from '@ff/ui';
+
+import { ActivityIcon, ArrowDownIconIOS, FootprintsIcon, ShieldCheckIcon, WatchIcon } from '@ff/ui';
 import React, { useState } from 'react';
 
 import { ProductQuality } from '@/data/quality';
 
+// 1. Define the valid keys strictly based on your data
+type QualityCategory = keyof typeof ProductQuality;
+
 export default function QualityProtocolPage() {
-  const [activeCat, setActiveCat] = useState<keyof typeof ProductQuality>('footwear');
+  // 2. Initialize with the strict type
+  const [activeCat, setActiveCat] = useState<QualityCategory>('footwear');
 
   return (
     <div className="selection:bg-brand min-h-screen bg-[#050505] pb-32 font-sans text-[#f0f0f0] selection:text-black">
       {/* 1. NEURAL HEADER */}
       <header className="mx-auto flex h-screen max-w-7xl flex-col items-center justify-center px-6 pb-20 text-center">
-        {/* Eyebrow */}
         <div className="bg-brand/10 border-brand/20 mb-10 flex items-center gap-2 rounded-full border px-5 py-2">
           <ActivityIcon size={12} className="text-brand" />
           <span className="text-brand text-[9px] font-black tracking-[0.4em] uppercase">
@@ -30,13 +23,11 @@ export default function QualityProtocolPage() {
           </span>
         </div>
 
-        {/* Title */}
         <h1 className="mb-8 text-6xl leading-[0.72] font-black tracking-tighter uppercase md:text-[9vw]">
           Product <br />
           <span className="text-foreground/20 italic">Quality Guide</span>
         </h1>
 
-        {/* Subtext */}
         <p className="max-w-2xl text-[11px] leading-relaxed font-bold tracking-widest uppercase opacity-50 md:text-xs">
           Understand the real difference between <span className="text-foreground">OG</span>,{' '}
           <span className="text-foreground">Surplus</span>,
@@ -51,20 +42,22 @@ export default function QualityProtocolPage() {
       {/* 2. CATEGORY NAV */}
       <nav className="mb-24 flex justify-center px-6">
         <div className="flex gap-1 overflow-x-auto rounded-full border border-white/5 bg-[#0f0f0f] p-1.5 shadow-2xl">
-          {Object.keys(ProductQuality).map((cat) => (
+          {(Object.keys(ProductQuality) as QualityCategory[]).map((cat) => (
             <button
               key={cat}
-              onClick={() => setActiveCat(cat as any)}
+              // 3. Removed 'as any' and replaced with strict cast
+              onClick={() => setActiveCat(cat)}
               className={`rounded-full px-12 py-4 text-[10px] font-black tracking-widest whitespace-nowrap uppercase transition-all ${
                 activeCat === cat
-                  ? 'bg-brand text-black shadow-[0_0_30px_rgba(var(--brand-rgb),0.3)]'
+                  ? 'bg-brand text-black shadow-[0_0_30_rgba(var(--brand-rgb),0.3)]'
                   : 'opacity-30 hover:opacity-100'
               }`}
             >
               <div className="flex items-center gap-2">
                 {cat === 'footwear' && <FootprintsIcon size={14} />}
                 {cat === 'watches' && <WatchIcon size={14} />}
-                {cat === 'Apparel' && <WatchIcon size={14} />}
+                {/* 4. Match the casing of your data key */}
+                {cat.toLowerCase() === 'apparel' && <WatchIcon size={14} />}
                 {cat}
               </div>
             </button>
@@ -74,19 +67,18 @@ export default function QualityProtocolPage() {
 
       {/* 3. PROTOCOL LIST */}
       <main className="mx-auto max-w-6xl space-y-6 px-6">
-        {ProductQuality[activeCat].map((item, i) => (
+        {ProductQuality[activeCat].map((item) => (
           <div
             key={item.id}
             className={`group relative flex flex-col items-center gap-10 overflow-hidden rounded-[2.8rem] border bg-[#0a0a0a] p-8 transition-all duration-700 md:flex-row md:p-12 ${
               item.id === 'og'
-                ? 'border-brand/40 from-brand/5 bg-gradient-to-br to-transparent'
+                ? 'border-brand/40 from-brand/5 bg-linear-to-br to-transparent'
                 : 'hover:border-brand/30 border-white/5'
             }`}
           >
-            {/* Accuracy Circle Meter */}
             <div className="flex shrink-0 flex-col items-center justify-center">
               <div className="relative flex h-28 w-28 items-center justify-center">
-                <svg className="absolute inset-0 h-full w-full rotate-[-90deg]">
+                <svg className="absolute inset-0 h-full w-full -rotate-90">
                   <circle
                     cx="56"
                     cy="56"
@@ -116,7 +108,6 @@ export default function QualityProtocolPage() {
               </p>
             </div>
 
-            {/* Center: Detail */}
             <div className="flex-1 space-y-4 text-center md:text-left">
               <div className="space-y-1">
                 <span className="text-brand text-[9px] font-black tracking-[0.4em] uppercase">
@@ -131,7 +122,6 @@ export default function QualityProtocolPage() {
               </p>
             </div>
 
-            {/* Right: Technical Tags */}
             <div className="grid w-full shrink-0 grid-cols-1 gap-2 md:w-56">
               {item.tech.map((t) => (
                 <div
