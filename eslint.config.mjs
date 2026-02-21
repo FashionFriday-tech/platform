@@ -261,6 +261,7 @@ export default defineConfig([
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       'security/detect-object-injection': 'warn',
+      '@typescript-eslint/no-extraneous-class': 'off',
 
       // API logs to stdout intentionally (use a logger in prod)
       'no-console': 'warn',
