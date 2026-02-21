@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import eslint from '@eslint/js';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
@@ -19,7 +16,7 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig([
   // ==================================================
-  // Global Ignores
+  // 🚫 Global Ignores
   // ==================================================
   globalIgnores([
     'node_modules/**',
@@ -34,26 +31,27 @@ export default defineConfig([
   ]),
 
   // ==================================================
-  // Base Configurations (Applies to ALL files)
+  // 📦 Base Configurations (Applies to ALL files)
   // ==================================================
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.strictTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
   security.configs.recommended,
   eslintPluginPrettierRecommended,
 
   // ==================================================
-  // Global Rules & Settings
+  // 🌐 Global Rules & Settings (All TS/TSX files)
   // ==================================================
   {
+    files: ['**/*.{ts,tsx}'],
+
     languageOptions: {
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
+      // NOTE: Do NOT merge browser + node globals here.
+      // Globals are scoped per environment below.
     },
 
     plugins: {
@@ -69,12 +67,19 @@ export default defineConfig([
       'simple-import-sort/imports': [
         'error',
         {
-          groups: [['^react', '^next'], ['^@?\\w'], ['^@/'], ['^\\.\\./', '^\\./', '^\\.']],
+          groups: [
+            ['^react', '^next'],
+            ['^@?\\w'],
+            ['^@/'],
+            ['^\\.\\./|^\\./|\\.'],
+          ],
         },
       ],
 
       // --------------------------
       // 🏗️ Monorepo Boundaries
+      // NOTE: For stronger enforcement, consider eslint-plugin-boundaries.
+      // This pattern catches relative cross-app imports but NOT aliased ones.
       // --------------------------
       'no-restricted-imports': [
         'error',
@@ -86,6 +91,10 @@ export default defineConfig([
       // --------------------------
       // 🛡️ TypeScript Strictness
       // --------------------------
+      '@typescript-eslint/consistent-type-exports': [
+        'error',
+        { fixMixedExportsWithInlineTypeSpecifier: true },
+      ],
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
@@ -93,6 +102,10 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -100,6 +113,11 @@ export default defineConfig([
           varsIgnorePattern: '^_',
           ignoreRestSiblings: true,
         },
+      ],
+      '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        { allowNumber: true, allowBoolean: false, allowNullish: false },
       ],
 
       // --------------------------
@@ -116,7 +134,8 @@ export default defineConfig([
       ],
       'unicorn/better-regex': 'off',
       'unicorn/catch-error-name': 'off',
-      'unicorn/no-array-for-each': 'error',
+      'unicorn/no-array-for-each': 'warn',
+      'unicorn/no-array-reduce': 'warn',
       'unicorn/no-await-expression-member': 'error',
       'unicorn/no-console-spaces': 'error',
       'unicorn/no-new-array': 'error',
@@ -126,7 +145,7 @@ export default defineConfig([
       'unicorn/prefer-string-trim-start-end': 'error',
       'unicorn/prevent-abbreviations': 'off',
 
-      // FIX: Turned off rules causing Circular Loops & React issues
+      // FIX: Turned off rules causing circular loops & React issues
       'unicorn/no-nested-ternary': 'off',
       'unicorn/prefer-ternary': 'off',
       'unicorn/explicit-length-check': 'off',
@@ -138,8 +157,8 @@ export default defineConfig([
       'security/detect-possible-timing-attacks': 'error',
       'security/detect-unsafe-regex': 'error',
 
-      // FIX: Turned off false-positive warnings
-      'security/detect-object-injection': 'off',
+      // FIX: High false-positive rate — disabled intentionally
+      'security/detect-object-injection': 'warn',
       'security/detect-non-literal-regexp': 'off',
 
       // --------------------------
@@ -147,7 +166,7 @@ export default defineConfig([
       // --------------------------
       curly: ['error', 'all'],
       eqeqeq: ['error', 'always'],
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-console': 'error',
       'no-debugger': 'error',
       'no-unused-expressions': 'error',
       'no-var': 'error',
@@ -156,22 +175,46 @@ export default defineConfig([
   },
 
   // ==================================================
-  // Next.js — scoped to apps/web only
+  // 🌍 Browser Environment — Web & UI only
+  // ==================================================
+  {
+    files: ['apps/web/**/*.{ts,tsx}', 'apps/admin/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+
+  // ==================================================
+  // 🖥️ Node Environment — API only
+  // ==================================================
+  {
+    files: ['apps/api/**/*.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+
+  // ==================================================
+  // ⚡ Next.js — scoped to apps/web only
   // ==================================================
   ...nextVitals.map((config) => ({
     ...config,
-    files: ['apps/web/**/*.{ts,tsx}'],
+    files: ['apps/web/**/*.{ts,tsx}', 'apps/admin/**/*.{ts,tsx}'],
   })),
   ...nextTs.map((config) => ({
     ...config,
-    files: ['apps/web/**/*.{ts,tsx}'],
+    files: ['apps/web/**/*.{ts,tsx}', 'apps/admin/**/*.{ts,tsx}'],
   })),
 
   // ==================================================
-  // Tailwind — scoped to web & ui
+  // 🎨 Tailwind — scoped to web & ui
   // ==================================================
   {
-    files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+    files: ['apps/web/**/*.{ts,tsx}', 'apps/admin/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
     plugins: {
       tailwindcss: tailwind,
     },
@@ -181,45 +224,48 @@ export default defineConfig([
   },
 
   // ==================================================
-  // React Hooks — Shared (Web & UI)
+  // ⚛️ React Core + Hooks — Web & UI
   // ==================================================
   {
-    files: ['apps/web/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
+    files: ['apps/web/**/*.{ts,tsx}', 'apps/admin/**/*.{ts,tsx}', 'packages/ui/**/*.{ts,tsx}'],
     settings: {
       react: {
         version: 'detect',
       },
     },
     plugins: {
+      react: reactPlugin,
       'react-hooks': reactHooks,
     },
     rules: {
-      'react-hooks/exhaustive-deps': 'warn',
+      // Core
+      'react/display-name': 'warn',
+      'react/no-unescaped-entities': 'off',
+      'react/jsx-no-useless-fragment': 'warn',
+      'react/self-closing-comp': 'error',
+
+      // Hooks
+      'react-hooks/exhaustive-deps': 'error',
       'react-hooks/rules-of-hooks': 'error',
     },
   },
 
   // ==================================================
-  // React Core Rules — UI Package Only
-  // ==================================================
-  {
-    files: ['packages/ui/**/*.{ts,tsx}'],
-    plugins: {
-      react: reactPlugin,
-    },
-    rules: {
-      'react/display-name': 'warn',
-      'react/no-unescaped-entities': 'off',
-    },
-  },
-
-  // ==================================================
-  // NestJS API Overrides
+  // 🔧 NestJS API Overrides
   // ==================================================
   {
     files: ['apps/api/**/*.ts'],
     rules: {
+      // NestJS decorators & DI patterns make some unsafe rules noisy
       '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      'security/detect-object-injection': 'warn',
+
+      // API logs to stdout intentionally (use a logger in prod)
+      'no-console': 'warn',
+
+      // API files use kebab-case only (no PascalCase components)
       'unicorn/filename-case': [
         'error',
         {
@@ -232,20 +278,24 @@ export default defineConfig([
   },
 
   // ==================================================
-  // Shared Packages Overrides
+  // 📦 Shared Packages Overrides
   // ==================================================
   {
     files: ['packages/**/*.{ts,tsx}'],
     rules: {
+      // Packages are consumed by multiple apps — relax cross-boundary rule
       'no-restricted-imports': 'off',
+
+      // Allow console.warn/error in shared utility packages
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
 
   // ==================================================
-  // Test Files Only
+  // 🧪 Test Files Only
   // ==================================================
   {
-    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
     plugins: {
       jest,
       'testing-library': testingLibrary,
@@ -256,12 +306,23 @@ export default defineConfig([
       },
     },
     rules: {
+      // Relax strict TS rules in tests for developer ergonomics
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      'no-console': 'off',
+
+      // Jest
+      'jest/expect-expect': 'error',
       'jest/no-disabled-tests': 'warn',
       'jest/no-focused-tests': 'error',
-      'jest/no-standalone-expect': 'error',
       'jest/no-identical-title': 'error',
+      'jest/no-standalone-expect': 'error',
       'jest/valid-expect': 'error',
       'jest/valid-expect-in-promise': 'error',
+
+      // Testing Library
       'testing-library/await-async-queries': 'error',
       'testing-library/await-async-utils': 'error',
       'testing-library/no-await-sync-queries': 'error',
