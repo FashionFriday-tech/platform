@@ -49,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body
         className={` ${geistSans.variable} ${geistMono.variable} bg-background text-foreground min-h-screen antialiased`}
+        suppressHydrationWarning
       >
         <SettingsProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
