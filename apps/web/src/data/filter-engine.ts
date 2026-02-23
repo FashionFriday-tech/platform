@@ -6,22 +6,24 @@ import { DUMMY_PRODUCTS } from './products';
  * 1. SIDEBAR CONFIGURATION
  */
 export const CATEGORY_FILTERS: Record<string, { id: string; label: string; options: string[] }[]> =
-  {
-    Shoes: [
-      { id: 'brand', label: 'Brand', options: ['Nike', 'Adidas', 'Jordan', 'Kobe', 'Yeezy'] },
-      { id: 'quality', label: 'Quality', options: ['UA', '7AA', 'Standard'] },
-      { id: 'colors', label: 'Colors', options: ['Red', 'White', 'Black', 'Blue', 'Zebra'] },
-      { id: 'sizes', label: 'Sizes', options: ['7', '8', '9', '10', '11'] },
-    ],
-    Watches: [
-      { id: 'brand', label: 'Brand', options: ['Seiko', 'Casio', 'Rolex', 'Titan'] },
-      { id: 'quality', label: 'Grade', options: ['10A Master', 'Original', 'Super Copy'] },
-    ],
-    Clothing: [
-      { id: 'brand', label: 'Brand', options: ['Zara', 'H&M', 'Fear of God'] },
-      { id: 'quality', label: 'Fabric', options: ['Premium Cotton', 'Standard'] },
-    ],
-  };
+{
+  Sneakers: [
+    { id: 'brand', label: 'Brand', options: ['Nike', 'Adidas', 'Jordan', 'Kobe', 'Yeezy'] },
+    { id: 'quality', label: 'Quality', options: ['UA', '7AA', 'Standard'] },
+    { id: 'colors', label: 'Colors', options: ['Red', 'White', 'Black', 'Blue', 'Zebra'] },
+    { id: 'sizes', label: 'Sizes', options: ['7', '8', '9', '10', '11'] },
+  ],
+  Watches: [
+    { id: 'brand', label: 'Brand', options: ['Seiko', 'Casio', 'Rolex', 'Titan'] },
+    { id: 'quality', label: 'Grade', options: ['10A Master', 'Original', 'Super Copy'] },
+  ],
+  Clothing: [
+    { id: 'brand', label: 'Brand', options: ['Zara', 'H&M', 'Fear of God'] },
+    { id: 'quality', label: 'Fabric', options: ['Premium Cotton', 'Standard'] },
+  ],
+  Accessories: [],
+  Slippers: [],
+};
 
 /**
  * 2. THE FILTER ENGINE

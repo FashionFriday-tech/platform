@@ -31,7 +31,7 @@ export const CatalogueSidebar = ({
   });
 
   // Fetch the filters based on the capitalized category name
-  const filters: FilterSection[] = CATEGORY_FILTERS[category] || [];
+  const filters: FilterSection[] = (CATEGORY_FILTERS[category] as FilterSection[]) || [];
 
   const toggleSection = (id: string) => {
     setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -49,7 +49,9 @@ export const CatalogueSidebar = ({
       {/* Price Range Section */}
       <div className="border-border border-b py-4">
         <button
-          onClick={() => toggleSection('priceRange')}
+          onClick={() => {
+            toggleSection('priceRange');
+          }}
           className="flex w-full items-center justify-between py-2 text-[11px] font-black uppercase tracking-widest"
         >
           Budget Range
@@ -73,16 +75,18 @@ export const CatalogueSidebar = ({
                 max={maxPrice}
                 step="500"
                 // Extract current max from string "0-XXXX"
-                value={Number((activeFilters.priceRange?.[0] || `0-${maxPrice}`).split('-')[1])}
-                onChange={(e) => onFilterChange('priceRange', `0-${e.target.value}`, true)}
+                value={Number((activeFilters.priceRange?.[0] ?? `0-${maxPrice}`).split('-')[1])}
+                onChange={(e) => {
+                  onFilterChange('priceRange', `0-${e.target.value}`, true);
+                }}
                 className="bg-border accent-foreground h-1 w-full cursor-pointer appearance-none rounded-full"
               />
               <div className="mt-2 flex justify-between text-[10px] font-black opacity-40">
                 <span>₹0</span>
                 <span>
                   ₹
-                  {Number(
-                    (activeFilters.priceRange?.[0] || `0-${maxPrice}`).split('-')[1],
+                  {(
+                    Number((activeFilters.priceRange?.[0] ?? `0-${maxPrice}`).split('-')[1]) || 0
                   ).toLocaleString()}
                 </span>
               </div>
@@ -95,7 +99,9 @@ export const CatalogueSidebar = ({
       {filters.map((section: FilterSection) => (
         <div key={section.id} className="border-border border-b py-4">
           <button
-            onClick={() => toggleSection(section.id)}
+            onClick={() => {
+              toggleSection(section.id);
+            }}
             className="flex w-full items-center justify-between py-2 text-[11px] font-black uppercase tracking-widest"
           >
             {section.label}
@@ -113,13 +119,15 @@ export const CatalogueSidebar = ({
                 exit={{ height: 0, opacity: 0 }}
                 className="flex flex-wrap gap-2 overflow-hidden pb-4 pt-2"
               >
-                {section.options.map((opt: string) => {
+                {section.options?.map((opt: string) => {
                   // Checks if the option is in the active filters array
-                  const isActive = activeFilters[section.id]?.includes(opt);
+                  const isActive = activeFilters[section.id]?.includes(opt) ?? false;
                   return (
                     <button
                       key={opt}
-                      onClick={() => onFilterChange(section.id, opt)}
+                      onClick={() => {
+                        onFilterChange(section.id, opt);
+                      }}
                       className={`rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all duration-200 active:scale-90 ${
                         isActive
                           ? 'bg-foreground text-background border-foreground shadow-lg'
@@ -139,7 +147,9 @@ export const CatalogueSidebar = ({
       {/* Clear All Helper */}
       {Object.keys(activeFilters).length > 0 && (
         <button
-          onClick={() => window.location.reload()} // Quick hack to reset, or call a clear function
+          onClick={() => {
+            window.location.reload();
+          }} // Quick hack to reset, or call a clear function
           className="border-border mt-8 w-full border border-dashed py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-colors hover:border-red-500 hover:bg-red-500 hover:text-white"
         >
           Reset All
