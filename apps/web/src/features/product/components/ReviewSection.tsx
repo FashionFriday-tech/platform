@@ -1,6 +1,6 @@
 'use client';
 
-import { type ChangeEvent, useRef, useState } from 'react';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
 import {
@@ -83,16 +83,26 @@ export default function ReviewSection() {
   ];
 
   const duplicatedReviews = [...reviews, ...reviews, ...reviews, ...reviews];
+  const [cardWidth, setCardWidth] = useState(600);
   const x = useMotionValue(0);
-  const CARD_WIDTH = 400;
-  const GAP = 16;
-  const TOTAL_SET_WIDTH = reviews.length * (CARD_WIDTH + GAP);
+  const GAP = 32;
+  const TOTAL_SET_WIDTH = reviews.length * (cardWidth + GAP);
 
-  useAnimationFrame((_t, _delta) => {
+  useEffect(() => {
+    const updateWidth = () => {
+      setCardWidth(window.innerWidth < 768 ? 400 : 600);
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  useAnimationFrame((_t, delta) => {
     if (isPaused || isModalOpen || isFormOpen || isInfoOpen) {
       return;
     }
-    const moveBy = -2;
+    // Normalize speed: 2px per frame @ 60fps (16.67ms)
+    const moveBy = -1.5 * (delta / 16.67);
     const currentX = x.get();
     const newX = currentX + moveBy;
     x.set(wrap(-TOTAL_SET_WIDTH, 0, newX));
@@ -104,7 +114,7 @@ export default function ReviewSection() {
   return (
     <div
       id="review-section"
-      className="scroll-mt-60 overflow-hidden bg-[#050505] px-6 py-12 text-white"
+      className="bg-background text-foreground scroll-mt-60 overflow-hidden px-6 py-12"
     >
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto mb-10 flex max-w-3xl items-center justify-between">
@@ -127,9 +137,8 @@ export default function ReviewSection() {
             <InfoCircleIcon size={20} />
           </button>
         </div>
-
         <div
-          className="relative w-full overflow-visible"
+          className="relative w-full overflow-visible [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
@@ -153,32 +162,42 @@ export default function ReviewSection() {
                   setSelectedReview(i % reviews.length);
                   setIsModalOpen(true);
                 }}
-                className="w-100 rounded-4xl pointer-events-auto flex shrink-0 flex-col items-start gap-4 border border-transparent bg-white p-1 text-black shadow-2xl transition-shadow hover:shadow-white/5"
+                className="group bg-card text-card-foreground border-border pointer-events-auto flex w-[450px] shrink-0 flex-col items-start gap-4 rounded-[3rem] border p-3 shadow-2xl transition-all duration-300 hover:border-foreground/20 md:w-[700px] md:p-6"
               >
-                <div className="flex w-full items-center justify-between gap-3">
-                  <div className="rounded-4xl pointer-events-none aspect-square w-40 shrink-0 overflow-hidden bg-zinc-800">
-                    <Image src={rev.image} alt="review" fill className="object-cover" />{' '}
+                <div className="flex w-full items-center justify-between gap-6">
+                  {/* High-End Image Cropping - 1:1 Aspect Ratio */}
+                  <div className="relative aspect-square w-40 shrink-0 overflow-hidden rounded-[2.5rem] bg-zinc-800 shadow-2xl md:w-64">
+                    <Image
+                      src={rev.image}
+                      alt="review"
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
-                  <div className="flex flex-1 flex-col items-start gap-2 pr-2">
-                    <div className="flex items-center justify-start gap-2">
+
+                  <div className="flex flex-1 flex-col items-start gap-3 pr-4">
+                    <div className="flex items-center justify-start gap-3">
+                      {/* Detailed Membership Ring */}
                       <div
-                        className={`rounded-full border-2 border-dashed border-black p-0.5 ${
+                        className={`rounded-full border border-dashed p-1 transition-transform duration-500 group-hover:rotate-45 ${
                           rev.membership === 'silver'
-                            ? 'border-x-gray-400 border-y-gray-600'
+                            ? 'border-gray-400'
                             : rev.membership === 'gold'
-                              ? 'border-x-yellow-400 border-y-yellow-600'
-                              : 'border-x-rose-400 border-y-rose-600'
+                              ? 'border-yellow-400'
+                              : 'border-rose-500'
                         }`}
                       >
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-[14px] font-black uppercase italic text-white">
+                        <span className="bg-foreground text-background flex h-10 w-10 items-center justify-center rounded-full text-[16px] font-black italic uppercase">
                           {rev.initials}
                         </span>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="flex items-center text-[14px] font-black uppercase leading-none">
+
+                      <div className="flex flex-col text-left">
+                        <span className="flex items-center text-[15px] font-black uppercase leading-none tracking-tight">
                           {rev.name}
                           <VerifiedIcon
-                            className={`mb-0.5 ml-1 w-5 ${
+                            className={`mb-0.5 ml-1.5 w-4 ${
                               rev.membership === 'silver'
                                 ? 'text-gray-400'
                                 : rev.membership === 'gold'
@@ -187,24 +206,28 @@ export default function ReviewSection() {
                             }`}
                           />
                         </span>
-                        <div className="mt-0.5 flex gap-0.5">
-                          {Array.from({ length: 5 }).map((_, starIndex) =>
-                            starIndex < rev.rating ? (
-                              <FilledStarIcon
-                                key={starIndex}
-                                size={10}
-                                className="text-yellow-500"
-                              />
-                            ) : (
-                              <StarIcon key={starIndex} size={10} className="text-yellow-500" />
-                            ),
-                          )}
+
+                        <div className="mt-1.5 flex gap-0.5">
+                          {[...Array(5)].map((_, starIndex) => (
+                            <FilledStarIcon
+                              key={starIndex}
+                              size={10}
+                              className={
+                                starIndex < rev.rating ? 'text-yellow-400' : 'text-muted-foreground'
+                              }
+                            />
+                          ))}
                         </div>
                       </div>
                     </div>
-                    <p className="line-clamp-3 text-sm font-medium italic leading-snug opacity-80">
+
+                    <p className="text-muted-foreground line-clamp-3 text-left text-sm font-medium italic leading-relaxed">
                       "{rev.comment}"
                     </p>
+
+                    <span className="text-muted-foreground/30 text-[9px] font-bold uppercase tracking-[0.2em] transition-colors group-hover:text-muted-foreground/60">
+                      Tap to expand
+                    </span>
                   </div>
                 </div>
               </div>
@@ -227,7 +250,7 @@ export default function ReviewSection() {
             />
           ))}
         </div>
-        <p className="bg-size-[400%_100%] flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-clip-text text-[8px] font-black uppercase tracking-[0.5em] text-transparent">
+        <p className="bg-size-[400%_100%] flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)))] bg-clip-text text-[8px] font-black uppercase tracking-[0.5em] text-transparent">
           Drop Your Review
         </p>
       </div>
@@ -245,11 +268,11 @@ export default function ReviewSection() {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md rounded-[2.5rem] border border-white/10 bg-zinc-900 p-8"
+              className="bg-card border-border relative w-full max-w-md rounded-[2.5rem] border p-8 shadow-2xl"
             >
               <button
                 onClick={() => setIsInfoOpen(false)}
-                className="absolute right-6 top-6 text-white/40 hover:text-white"
+                className="text-muted-foreground hover:text-foreground absolute right-6 top-6 transition-colors"
               >
                 <CloseIcon size={24} />
               </button>
@@ -333,10 +356,10 @@ export default function ReviewSection() {
               </div>
               <div className="space-y-6 md:w-1/2">
                 <div className="flex items-center gap-4">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-xl font-black text-black">
+                  <span className="bg-foreground text-background flex h-14 w-14 items-center justify-center rounded-full text-xl font-black">
                     {reviews[selectedReview].initials}
                   </span>
-                  <h2 className="text-4xl font-black uppercase italic leading-none tracking-tighter">
+                  <h2 className="text-foreground text-4xl font-black uppercase italic leading-none tracking-tighter">
                     {reviews[selectedReview].name}
                   </h2>
                 </div>
@@ -371,13 +394,13 @@ export default function ReviewSection() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsFormOpen(false)}
-              className="bg-background/90 fixed inset-0 z-40"
+              className="bg-background/80 fixed inset-0 z-40 backdrop-blur-sm"
             />
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              className="bg-background border-foreground fixed bottom-0 left-0 right-0 z-50 rounded-t-[3rem] border-t p-10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]"
+              className="bg-card border-border fixed bottom-0 left-0 right-0 z-50 rounded-t-[3rem] border-t p-10 shadow-2xl"
             >
               <div className="mx-auto max-w-md space-y-8">
                 <div className="text-foreground flex items-center justify-between">
