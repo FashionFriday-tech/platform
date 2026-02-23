@@ -2,7 +2,7 @@ import Footer from '@/components/layout/Footer';
 import Request from '@/components/ui/sections/Request';
 import {
   BrandScroll,
-  CaegoriesSection,
+  CategoriesSection,
   Hero,
   InfluencerCarousel,
   PWAInstallSection,
@@ -16,7 +16,7 @@ export default function HomePage() {
     <main>
       <Hero />
       <BrandScroll />
-      <CaegoriesSection />
+      <CategoriesSection />
       <TrendingSection />
       <ShopByBrand />
       <InfluencerCarousel />
