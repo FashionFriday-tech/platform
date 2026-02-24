@@ -55,7 +55,7 @@ export const SearchOverlay: React.FC<{
           {/* Close Trigger - Stay positioned relative to overlay */}
           <button
             onClick={() => setIsSearchOpen(false)}
-            className="text-foreground absolute right-4 top-4 z-[10001] rounded-full p-3 transition-colors hover:bg-white/5"
+            className="text-foreground absolute top-4 right-4 z-[10001] rounded-full p-3 transition-colors hover:bg-white/5"
           >
             <CloseIcon className="text-2xl" />
           </button>

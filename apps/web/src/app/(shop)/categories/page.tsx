@@ -99,15 +99,15 @@ export default function StoreLandingPage() {
   };
 
   return (
-    <div className="bg-background h-screen select-none pb-14">
+    <div className="bg-background h-screen pb-14 select-none">
       {/* --- HEADER: Fixed width constraints --- */}
-      <header className="bg-background border-border fixed left-0 right-0 top-14 z-50 w-full border-b backdrop-blur-md">
+      <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
           {GENDERS.map((gender, idx) => (
             <button
               key={gender}
               onClick={() => setGenderIndex(idx)}
-              className={`relative h-full flex-1 text-[10px] font-black uppercase tracking-[0.25em] outline-none transition-colors ${
+              className={`relative h-full flex-1 text-[10px] font-black tracking-[0.25em] uppercase transition-colors outline-none ${
                 activeGender === gender ? 'text-foreground' : 'text-foreground-subtle/40'
               }`}
             >
@@ -115,7 +115,7 @@ export default function StoreLandingPage() {
               {activeGender === gender && (
                 <motion.div
                   layoutId="navUnderline"
-                  className="bg-brand absolute bottom-0 left-4 right-4 h-0.5"
+                  className="bg-brand absolute right-4 bottom-0 left-4 h-0.5"
                   transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -129,7 +129,7 @@ export default function StoreLandingPage() {
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         onDragEnd={handleDragEnd}
-        className="relative z-10 touch-pan-y pb-20 pt-10"
+        className="relative z-10 touch-pan-y pt-10 pb-20"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -142,7 +142,7 @@ export default function StoreLandingPage() {
           >
             {/* 1. HERO SECTION */}
             {/* FIX: Changed rounded-[2rem] to rounded-4xl */}
-            <div className="bg-background-muted border-border/50 aspect-15/10 rounded-4xl relative mb-8 w-full overflow-hidden border shadow-sm">
+            <div className="bg-background-muted border-border/50 relative mb-8 aspect-15/10 w-full overflow-hidden rounded-4xl border shadow-sm">
               <motion.div
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
@@ -152,12 +152,12 @@ export default function StoreLandingPage() {
                   backgroundImage: `url(${CATEGORIES_DATA[activeGender].hero})`,
                 }}
               />
-              <div className="bg-linear-to-t absolute inset-0 from-black/90 via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-transparent" />
               <div className="absolute bottom-8 left-8">
-                <p className="mb-1 text-[8px] font-black uppercase tracking-[0.3em] text-white/50">
+                <p className="mb-1 text-[8px] font-black tracking-[0.3em] text-white/50 uppercase">
                   New Season
                 </p>
-                <h1 className="text-3xl font-black uppercase italic leading-none tracking-tighter text-white">
+                <h1 className="text-3xl leading-none font-black tracking-tighter text-white uppercase italic">
                   {activeGender}&apos;s <br /> Essentials
                 </h1>
               </div>
@@ -173,7 +173,7 @@ export default function StoreLandingPage() {
                 >
                   {/* FIX: Changed rounded-[1.5rem] to rounded-3xl */}
                   <div className="bg-background-muted/40 group-hover:border-border/40 group-active:bg-background-muted flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98]">
-                    <div className="border-border/50 bg-background h-25 w-25 rounded-4xl relative shrink-0 overflow-hidden border">
+                    <div className="border-border/50 bg-background relative h-25 w-25 shrink-0 overflow-hidden rounded-4xl border">
                       <Image
                         src={cat.img}
                         alt={cat.name}
@@ -184,10 +184,10 @@ export default function StoreLandingPage() {
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="text-foreground text-[20px] font-bold uppercase italic tracking-tighter">
+                      <h3 className="text-foreground text-[20px] font-bold tracking-tighter uppercase italic">
                         {cat.name}
                       </h3>
-                      <p className="text-foreground-muted mt-0.5 text-[12px] font-bold uppercase tracking-tight">
+                      <p className="text-foreground-muted mt-0.5 text-[12px] font-bold tracking-tight uppercase">
                         {cat.items}
                       </p>
                     </div>

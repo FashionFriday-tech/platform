@@ -38,14 +38,14 @@ const CustomSelect = ({ options, label }: { options: string[]; label: string }) 
 
   return (
     <div className="relative space-y-1" ref={dropdownRef}>
-      <label className="text-foreground-subtle ml-4 text-[10px] font-black uppercase tracking-widest">
+      <label className="text-foreground-subtle ml-4 text-[10px] font-black tracking-widest uppercase">
         {label}
       </label>
       <div
         onClick={() => setIsOpen(!isOpen)}
         className="border-border bg-background hover:border-brand flex w-full cursor-pointer items-center justify-between rounded-full border px-8 py-5 transition-colors"
       >
-        <span className="select-none text-[11px] font-black uppercase tracking-widest">
+        <span className="text-[11px] font-black tracking-widest uppercase select-none">
           {selected}
         </span>
         <ChevronDownIcon
@@ -55,7 +55,7 @@ const CustomSelect = ({ options, label }: { options: string[]; label: string }) 
       </div>
 
       {isOpen && (
-        <div className="bg-background border-border animate-in fade-in zoom-in-95 absolute left-0 top-full z-50 mt-2 w-full rounded-[2.5rem] border p-2 shadow-2xl duration-200">
+        <div className="bg-background border-border animate-in fade-in zoom-in-95 absolute top-full left-0 z-50 mt-2 w-full rounded-[2.5rem] border p-2 shadow-2xl duration-200">
           {options.map((option) => (
             <div
               key={option}
@@ -96,16 +96,16 @@ export default function ContactPage() {
   return (
     <div className="bg-background text-foreground min-h-screen pb-20 transition-colors duration-500">
       {/* 1. SOFT HERO SECTION */}
-      <section className="px-6 pb-20 pt-32">
+      <section className="px-6 pt-32 pb-20">
         <div className="mx-auto max-w-7xl space-y-8 text-center">
-          <div className="border-border bg-background-muted inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em]">
+          <div className="border-border bg-background-muted inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-black tracking-[0.3em] uppercase">
             <span className="relative flex h-2 w-2">
               <span className="bg-brand absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
               <span className="bg-brand relative inline-flex h-2 w-2 rounded-full"></span>
             </span>
             Direct Access Node
           </div>
-          <h1 className="text-6xl font-black uppercase italic leading-[0.9] tracking-[-0.04em] md:text-[8vw]">
+          <h1 className="text-6xl leading-[0.9] font-black tracking-[-0.04em] uppercase italic md:text-[8vw]">
             Let's Build <br />
             <span className="text-foreground-subtle italic">The Future.</span>
           </h1>
@@ -151,10 +151,10 @@ export default function ContactPage() {
             {/* LEFT: INFO */}
             <div className="space-y-12 p-10 md:p-20 lg:col-span-5">
               <div className="space-y-6">
-                <h2 className="text-5xl font-black uppercase italic leading-none tracking-tighter">
+                <h2 className="text-5xl leading-none font-black tracking-tighter uppercase italic">
                   Drop us <br /> a note.
                 </h2>
-                <p className="text-foreground-muted max-w-sm font-medium leading-relaxed">
+                <p className="text-foreground-muted max-w-sm leading-relaxed font-medium">
                   Select your inquiry type so we can route your message to the correct department
                   immediately.
                 </p>
@@ -165,7 +165,7 @@ export default function ContactPage() {
                   <div className="bg-background border-border rounded-full border p-4 transition-transform group-hover:scale-110">
                     <InstagramIcon size={20} />
                   </div>
-                  <span className="border-brand border-b text-sm font-black uppercase italic tracking-widest">
+                  <span className="border-brand border-b text-sm font-black tracking-widest uppercase italic">
                     @fashionfriday.in
                   </span>
                 </div>
@@ -173,7 +173,7 @@ export default function ContactPage() {
                   <div className="bg-background border-border rounded-full border p-4 transition-transform group-hover:scale-110">
                     <ArrowUpRightIcon size={20} />
                   </div>
-                  <span className="border-brand border-b text-sm font-black uppercase italic tracking-widest">
+                  <span className="border-brand border-b text-sm font-black tracking-widest uppercase italic">
                     career@fashionfriday.com
                   </span>
                 </div>
@@ -191,33 +191,33 @@ export default function ContactPage() {
                   <input
                     type="text"
                     placeholder="FULL NAME"
-                    className="border-border focus:border-brand w-full rounded-full border bg-transparent px-8 py-5 text-[11px] font-black uppercase tracking-widest outline-none"
+                    className="border-border focus:border-brand w-full rounded-full border bg-transparent px-8 py-5 text-[11px] font-black tracking-widest uppercase outline-none"
                   />
                   <input
                     type="email"
                     placeholder="EMAIL ADDRESS"
-                    className="border-border focus:border-brand w-full rounded-full border bg-transparent px-8 py-5 text-[11px] font-black uppercase tracking-widest outline-none"
+                    className="border-border focus:border-brand w-full rounded-full border bg-transparent px-8 py-5 text-[11px] font-black tracking-widest uppercase outline-none"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-foreground-subtle ml-4 text-[10px] font-black uppercase tracking-widest">
+                  <label className="text-foreground-subtle ml-4 text-[10px] font-black tracking-widest uppercase">
                     Portfolio / Website Link (Optional)
                   </label>
                   <input
                     type="url"
                     placeholder="HTTPS://"
-                    className="border-border focus:border-brand w-full rounded-full border bg-transparent px-8 py-5 text-[11px] font-black uppercase tracking-widest outline-none"
+                    className="border-border focus:border-brand w-full rounded-full border bg-transparent px-8 py-5 text-[11px] font-black tracking-widest uppercase outline-none"
                   />
                 </div>
 
                 <textarea
                   rows={4}
                   placeholder="TELL US ABOUT YOUR VISION..."
-                  className="border-border focus:border-brand rounded-4xl w-full resize-none border bg-transparent px-8 py-6 text-[11px] font-black uppercase tracking-widest outline-none"
+                  className="border-border focus:border-brand w-full resize-none rounded-4xl border bg-transparent px-8 py-6 text-[11px] font-black tracking-widest uppercase outline-none"
                 />
 
-                <button className="bg-brand text-brand-foreground flex w-full items-center justify-center gap-4 rounded-full py-6 text-[11px] font-black uppercase tracking-[0.4em] transition-all hover:scale-[0.98] active:scale-[0.96]">
+                <button className="bg-brand text-brand-foreground flex w-full items-center justify-center gap-4 rounded-full py-6 text-[11px] font-black tracking-[0.4em] uppercase transition-all hover:scale-[0.98] active:scale-[0.96]">
                   Send Transmission <SendIcon size={16} />
                 </button>
               </form>
@@ -228,7 +228,7 @@ export default function ContactPage() {
 
       {/* FOOTER MINI */}
       <footer className="px-6 py-10 pb-6 text-center">
-        <p className="text-[10px] uppercase tracking-[1em] text-white/30">
+        <p className="text-[10px] tracking-[1em] text-white/30 uppercase">
           Fashion Friday © 2026 / Defined in India
         </p>
       </footer>
@@ -239,7 +239,7 @@ export default function ContactPage() {
 function InteractionCard({ icon, title, desc, tag }: InteractionCardProps) {
   return (
     <div className="bg-background border-border hover:bg-brand hover:text-brand-foreground group relative cursor-pointer overflow-hidden rounded-[3rem] border p-8 shadow-sm transition-all duration-500">
-      <div className="absolute right-8 top-6 text-[10px] font-black uppercase tracking-widest opacity-20">
+      <div className="absolute top-6 right-8 text-[10px] font-black tracking-widest uppercase opacity-20">
         {tag}
       </div>
       <div className="relative z-10 space-y-12">
@@ -247,14 +247,14 @@ function InteractionCard({ icon, title, desc, tag }: InteractionCardProps) {
           {icon}
         </div>
         <div className="space-y-2">
-          <h3 className="flex items-center gap-2 text-2xl font-black uppercase italic tracking-tighter">
+          <h3 className="flex items-center gap-2 text-2xl font-black tracking-tighter uppercase italic">
             {title}{' '}
             <ChevronRightIcon
               size={20}
               className="-translate-x-4 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
             />
           </h3>
-          <p className="text-xs font-medium uppercase leading-tight tracking-widest opacity-60">
+          <p className="text-xs leading-tight font-medium tracking-widest uppercase opacity-60">
             {desc}
           </p>
         </div>

@@ -42,19 +42,19 @@ export default function SourcingSection() {
   return (
     <div className="my-10 flex items-center justify-center">
       <div className="border-foreground-subtle bg-background w-full max-w-6xl overflow-hidden rounded-[2.5rem] border-2 lg:grid lg:grid-cols-2 lg:items-stretch">
-        <div className="border-foreground-subtle min-h-150 group relative hidden border-r lg:block">
+        <div className="border-foreground-subtle group relative hidden min-h-150 border-r lg:block">
           <Image
             src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop" // Luxe sneaker sourcing theme
             alt="Personal Sourcing Service"
             fill
             className="object-cover grayscale transition-all duration-700 hover:grayscale-0"
           />
-          <div className="from-background bg-linear-to-t absolute inset-0 via-transparent to-transparent opacity-80" />
-          <div className="absolute bottom-12 left-12 right-12">
-            <p className="text-foreground-muted mb-2 text-[10px] font-black uppercase tracking-[0.4em]">
+          <div className="from-background absolute inset-0 bg-linear-to-t via-transparent to-transparent opacity-80" />
+          <div className="absolute right-12 bottom-12 left-12">
+            <p className="text-foreground-muted mb-2 text-[10px] font-black tracking-[0.4em] uppercase">
               Bespoke Service
             </p>
-            <h4 className="text-foreground text-3xl font-black uppercase italic tracking-tighter">
+            <h4 className="text-foreground text-3xl font-black tracking-tighter uppercase italic">
               Sourcing <br /> The Unattainable
             </h4>
           </div>
@@ -74,7 +74,7 @@ export default function SourcingSection() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {/* PRODUCT NAME */}
               <div className="flex flex-col">
-                <label className="text-foreground-muted mb-3 px-6 text-[10px] font-black uppercase tracking-[0.2em]">
+                <label className="text-foreground-muted mb-3 px-6 text-[10px] font-black tracking-[0.2em] uppercase">
                   Product Name
                 </label>
                 <div
@@ -100,7 +100,7 @@ export default function SourcingSection() {
                 </div>
                 <div className="mt-2 h-4 px-6">
                   {errors.productName && (
-                    <p className="animate-in fade-in slide-in-from-top-1 text-[10px] font-bold uppercase tracking-widest text-red-500">
+                    <p className="animate-in fade-in slide-in-from-top-1 text-[10px] font-bold tracking-widest text-red-500 uppercase">
                       {errors.productName}
                     </p>
                   )}
@@ -109,7 +109,7 @@ export default function SourcingSection() {
 
               {/* CATEGORY */}
               <div className="flex flex-col">
-                <label className="text-foreground-muted mb-3 px-6 text-[10px] font-black uppercase tracking-[0.2em]">
+                <label className="text-foreground-muted mb-3 px-6 text-[10px] font-black tracking-[0.2em] uppercase">
                   Category
                 </label>
                 <div
@@ -142,7 +142,7 @@ export default function SourcingSection() {
                 </div>
                 <div className="mt-2 h-4 px-6">
                   {errors.category && (
-                    <p className="animate-in fade-in slide-in-from-top-1 text-[10px] font-bold uppercase tracking-widest text-red-500">
+                    <p className="animate-in fade-in slide-in-from-top-1 text-[10px] font-bold tracking-widest text-red-500 uppercase">
                       {errors.category}
                     </p>
                   )}
@@ -153,7 +153,7 @@ export default function SourcingSection() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-foreground text-background hover:bg-foreground/90 group mt-6 flex w-full items-center justify-center rounded-full px-10 py-4 font-black uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50"
+              className="bg-foreground text-background hover:bg-foreground/90 group mt-6 flex w-full items-center justify-center rounded-full px-10 py-4 font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-50"
             >
               {loading ? 'Sending the Request...' : 'I Need This Product'}
             </button>

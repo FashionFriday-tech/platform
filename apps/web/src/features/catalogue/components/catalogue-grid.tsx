@@ -40,7 +40,7 @@ export const CatalogueGrid = ({ products }: GridProps) => {
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-background rounded-4xl relative col-span-2 h-full overflow-hidden md:h-full xl:col-span-2"
+                  className="bg-background relative col-span-2 h-full overflow-hidden rounded-4xl md:h-full xl:col-span-2"
                 >
                   <Image
                     src="/gif/ad.gif"
@@ -51,10 +51,10 @@ export const CatalogueGrid = ({ products }: GridProps) => {
                     unoptimized
                   />
                   <div className="absolute inset-0 flex flex-col justify-center bg-black/20 px-10">
-                    <h4 className="text-2xl font-black uppercase italic tracking-tighter text-white">
+                    <h4 className="text-2xl font-black tracking-tighter text-white uppercase italic">
                       Exclusive Drop
                     </h4>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">
+                    <p className="text-[10px] font-bold tracking-widest text-white/60 uppercase">
                       Premium Quality Guaranteed
                     </p>
                   </div>
@@ -68,7 +68,7 @@ export const CatalogueGrid = ({ products }: GridProps) => {
       {/* Empty State Logic */}
       {products.length === 0 && (
         <div className="py-32 text-center">
-          <p className="text-[10px] font-black uppercase tracking-widest opacity-30">
+          <p className="text-[10px] font-black tracking-widest uppercase opacity-30">
             No Gear Matches Your Current Refinement
           </p>
         </div>

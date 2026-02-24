@@ -12,10 +12,10 @@ export function ProfileHero() {
     <section className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:pt-24">
       {/* Header */}
       <div className="mb-10">
-        <p className="text-foreground-muted text-xs font-bold uppercase tracking-[0.35em]">
+        <p className="text-foreground-muted text-xs font-bold tracking-[0.35em] uppercase">
           Account Dashboard
         </p>
-        <h1 className="mt-2 text-4xl font-black uppercase tracking-tighter md:text-5xl">
+        <h1 className="mt-2 text-4xl font-black tracking-tighter uppercase md:text-5xl">
           Welcome, {userData.name}
         </h1>
       </div>
@@ -28,7 +28,7 @@ export function ProfileHero() {
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ rotateX: 4, rotateY: -4 }}
           transition={{ type: 'spring', stiffness: 120, damping: 14 }}
-          className="from-foreground via-foreground/90 to-foreground/80 text-background rounded-4xl bg-linear-to-br relative aspect-[1.6/1] overflow-hidden p-8 md:p-10"
+          className="from-foreground via-foreground/90 to-foreground/80 text-background relative aspect-[1.6/1] overflow-hidden rounded-4xl bg-linear-to-br p-8 md:p-10"
         >
           {/* Noise / Texture */}
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/noisy.png')] opacity-10" />
@@ -40,8 +40,8 @@ export function ProfileHero() {
           <div className="relative z-10 flex h-full flex-col justify-between">
             {/* Top */}
             <div className="flex items-center justify-between">
-              <div className="from-background/40 to-background/10 border-background/20 bg-linear-to-br h-10 w-14 rounded-lg border" />
-              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest">
+              <div className="from-background/40 to-background/10 border-background/20 h-10 w-14 rounded-lg border bg-linear-to-br" />
+              <div className="flex items-center gap-2 text-xs font-black tracking-widest uppercase">
                 {userData.tierName}
                 <CrownIcon size={18} />
               </div>
@@ -49,7 +49,7 @@ export function ProfileHero() {
 
             {/* Middle */}
             <div>
-              <p className="mb-3 text-xs uppercase tracking-[0.25em] opacity-60">
+              <p className="mb-3 text-xs tracking-[0.25em] uppercase opacity-60">
                 Membership Credits
               </p>
               <div className="flex items-baseline gap-4 font-mono">
@@ -63,26 +63,26 @@ export function ProfileHero() {
             {/* Bottom */}
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-widest opacity-60">Cardholder</p>
+                <p className="text-[10px] tracking-widest uppercase opacity-60">Cardholder</p>
                 <p className="text-lg font-bold uppercase">{userData.name}</p>
               </div>
 
               <div className="text-right">
-                <p className="text-[10px] uppercase tracking-widest opacity-60">Valid Thru</p>
+                <p className="text-[10px] tracking-widest uppercase opacity-60">Valid Thru</p>
                 <p className="font-mono tracking-wider">12 / 26</p>
               </div>
             </div>
           </div>
 
           {/* Light sweep */}
-          <div className="bg-linear-to-tr absolute inset-0 translate-x-[-120%] from-transparent via-white/10 to-transparent transition-transform duration-500 hover:translate-x-[120%]" />
+          <div className="absolute inset-0 translate-x-[-120%] bg-linear-to-tr from-transparent via-white/10 to-transparent transition-transform duration-500 hover:translate-x-[120%]" />
         </motion.div>
 
         {/* RIGHT: Stats + Perks */}
         <div className="flex flex-col gap-6">
           {/* Progress */}
           <div className="border-border bg-background rounded-3xl border p-6">
-            <div className="mb-3 flex justify-between text-xs font-bold uppercase tracking-widest">
+            <div className="mb-3 flex justify-between text-xs font-bold tracking-widest uppercase">
               <span>Next Tier Progress</span>
               <span>{Math.round(progressPercentage)}%</span>
             </div>
@@ -108,7 +108,7 @@ export function ProfileHero() {
           </div>
 
           {/* CTA */}
-          <button className="bg-foreground text-background mt-2 flex items-center justify-between rounded-full px-6 py-4 text-xs font-bold uppercase tracking-widest transition hover:opacity-90">
+          <button className="bg-foreground text-background mt-2 flex items-center justify-between rounded-full px-6 py-4 text-xs font-bold tracking-widest uppercase transition hover:opacity-90">
             View All Benefits
             <ArrowUpRightIcon size={16} />
           </button>
@@ -122,7 +122,7 @@ function BenefitCard({ icon, title }: { icon: React.ReactNode; title: string }) 
   return (
     <div className="border-border bg-background hover:bg-background-muted rounded-2xl border p-4 transition-colors">
       <div className="text-foreground mb-3">{icon}</div>
-      <p className="text-foreground-muted text-[11px] font-bold uppercase tracking-widest">
+      <p className="text-foreground-muted text-[11px] font-bold tracking-widest uppercase">
         {title}
       </p>
     </div>

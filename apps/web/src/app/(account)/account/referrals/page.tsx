@@ -106,7 +106,7 @@ export default function ReferralsPage() {
     <div className="bg-background text-foreground min-h-screen px-4 py-10 transition-colors duration-500 md:px-8">
       <main className="mx-auto max-w-4xl space-y-4 md:pt-20">
         <section
-          className="relative space-y-6 overflow-hidden rounded-xl rounded-bl-[4rem] rounded-tr-[4rem] p-6 shadow-xl md:p-8"
+          className="relative space-y-6 overflow-hidden rounded-xl rounded-tr-[4rem] rounded-bl-[4rem] p-6 shadow-xl md:p-8"
           style={{
             backgroundImage: "url('/images/refferal/hero.png')",
             backgroundSize: 'cover',
@@ -120,7 +120,7 @@ export default function ReferralsPage() {
                 <GiftIcon size={24} className="text-white" />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-black uppercase italic tracking-tight text-white md:text-2xl">
+                <h2 className="text-xl font-black tracking-tight text-white uppercase italic md:text-2xl">
                   Invite Friends. Earn ₹100.
                 </h2>
                 <p className="mt-2 max-w-xl text-xs text-white/70 md:text-sm">
@@ -131,7 +131,7 @@ export default function ReferralsPage() {
 
             <div className="flex flex-col items-stretch gap-3 rounded-2xl border border-white/10 bg-black/50 p-3 lg:flex-row">
               <div className="flex flex-1 items-center gap-3 rounded-xl bg-black/70 px-4 py-3">
-                <span className="truncate text-[11px] font-black uppercase italic tracking-widest text-white">
+                <span className="truncate text-[11px] font-black tracking-widest text-white uppercase italic">
                   {referralCode}
                 </span>
                 <button
@@ -154,7 +154,7 @@ export default function ReferralsPage() {
 
               <button
                 onClick={onShareClick} // Fixed handler
-                className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-8 text-[11px] font-black uppercase tracking-widest text-black shadow-xl transition-all active:scale-95"
+                className="flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-8 text-[11px] font-black tracking-widest text-black uppercase shadow-xl transition-all active:scale-95"
               >
                 <ShareIcon size={16} /> Share Invite
               </button>
@@ -172,10 +172,10 @@ export default function ReferralsPage() {
               <div className="flex items-center gap-4">
                 <div className="bg-foreground/5 rounded-xl p-2.5">{m.icon}</div>
                 <div>
-                  <p className="mb-0.5 text-[7px] font-black uppercase tracking-[0.2em] opacity-40">
+                  <p className="mb-0.5 text-[7px] font-black tracking-[0.2em] uppercase opacity-40">
                     {m.label}
                   </p>
-                  <h3 className={`text-lg font-black italic tracking-tighter ${m.color}`}>
+                  <h3 className={`text-lg font-black tracking-tighter italic ${m.color}`}>
                     {m.value}
                   </h3>
                 </div>
@@ -187,7 +187,7 @@ export default function ReferralsPage() {
         {/* ACTIVITY GRID */}
         <div className="space-y-3">
           <div className="flex items-center justify-between px-4 pt-4">
-            <h3 className="text-[9px] font-black uppercase tracking-[0.3em] opacity-60">
+            <h3 className="text-[9px] font-black tracking-[0.3em] uppercase opacity-60">
               Activity
             </h3>
             <div className="bg-foreground/5 border-border flex items-center gap-1 rounded-xl border p-1">
@@ -195,7 +195,7 @@ export default function ReferralsPage() {
                 <button
                   key={s}
                   onClick={() => setSortCriteria(s)}
-                  className={`rounded-lg px-4 py-2 text-[8px] font-black uppercase tracking-widest transition-all ${
+                  className={`rounded-lg px-4 py-2 text-[8px] font-black tracking-widest uppercase transition-all ${
                     sortCriteria === s ? 'bg-background text-foreground shadow-sm' : 'opacity-30'
                   }`}
                 >
@@ -222,17 +222,17 @@ export default function ReferralsPage() {
                       className={`h-1.5 w-1.5 rounded-full ${user.status === 'Active' ? 'bg-emerald-500 shadow-[0_0_8px_emerald]' : 'bg-orange-500'}`}
                     />
                     <span
-                      className={`text-[8px] font-black uppercase tracking-widest ${user.status === 'Active' ? 'text-emerald-500' : 'text-orange-500'}`}
+                      className={`text-[8px] font-black tracking-widest uppercase ${user.status === 'Active' ? 'text-emerald-500' : 'text-orange-500'}`}
                     >
                       {user.status}
                     </span>
                   </div>
                   <div>
-                    <h4 className="truncate text-[11px] font-black uppercase italic tracking-tight">
+                    <h4 className="truncate text-[11px] font-black tracking-tight uppercase italic">
                       {user.name}
                     </h4>
                     <div className="mt-1 flex items-center justify-between">
-                      <span className="text-[7px] font-bold uppercase tracking-widest opacity-20">
+                      <span className="text-[7px] font-bold tracking-widest uppercase opacity-20">
                         {user.date}
                       </span>
                       <span

@@ -163,7 +163,7 @@ export default function RewardsPage() {
         {/* --- HERO SECTION --- */}
         <div className="mb-16 flex flex-col items-center justify-between pt-10 md:mb-24 md:flex-row">
           <div className="mb-8 text-center md:text-left">
-            <h1 className="from-foreground bg-linear-to-b mb-4 to-zinc-400 bg-clip-text text-4xl font-semibold uppercase tracking-tighter text-transparent md:text-6xl">
+            <h1 className="from-foreground mb-4 bg-linear-to-b to-zinc-400 bg-clip-text text-4xl font-semibold tracking-tighter text-transparent uppercase md:text-6xl">
               Members Club
             </h1>
             <p className="mx-auto max-w-md text-sm text-zinc-500 md:mx-0 md:text-base">
@@ -172,7 +172,7 @@ export default function RewardsPage() {
           </div>
 
           {/* Hero Wallet Card */}
-          <div className="bg-background text-foreground border-foreground/10 rounded-4xl group relative flex aspect-[1.58/1] w-full max-w-md flex-col justify-between overflow-hidden border p-6 shadow-[0_0_50px_rgba(255,255,255,0.1)] transition-transform duration-500 hover:scale-[1.02] md:p-8">
+          <div className="bg-background text-foreground border-foreground/10 group relative flex aspect-[1.58/1] w-full max-w-md flex-col justify-between overflow-hidden rounded-4xl border p-6 shadow-[0_0_50px_rgba(255,255,255,0.1)] transition-transform duration-500 hover:scale-[1.02] md:p-8">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30 mix-blend-overlay" />
 
             <div className="relative z-10 flex items-start justify-between">
@@ -180,7 +180,7 @@ export default function RewardsPage() {
                 <div className="bg-background text-foreground flex h-8 w-8 items-center justify-center rounded-full shadow-[0_0_15px_rgba(255,255,255,0.2)]">
                   <SparklesIcon size={16} />
                 </div>
-                <span className="text-sm font-bold uppercase tracking-[0.2em] opacity-90">
+                <span className="text-sm font-bold tracking-[0.2em] uppercase opacity-90">
                   Fashion Card
                 </span>
               </div>
@@ -188,7 +188,7 @@ export default function RewardsPage() {
             </div>
 
             <div className="relative z-10">
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              <p className="mb-2 text-[10px] font-bold tracking-wider text-zinc-400 uppercase">
                 Available Credits
               </p>
               <h2 className="text-foreground text-5xl font-bold tracking-tight drop-shadow-lg md:text-6xl">
@@ -198,7 +198,7 @@ export default function RewardsPage() {
 
             <div className="relative z-10 flex items-end justify-between">
               <div>
-                <p className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+                <p className="mb-0.5 text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
                   Card Holder
                 </p>
                 <p className="text-sm font-medium text-zinc-300">AJMAL</p>
@@ -222,7 +222,7 @@ export default function RewardsPage() {
               {socials.map((task) => (
                 <div
                   key={task.id}
-                  className={`rounded-4xl group relative flex aspect-[1.58/1] w-full flex-col justify-between overflow-hidden p-6 text-white ${
+                  className={`group relative flex aspect-[1.58/1] w-full flex-col justify-between overflow-hidden rounded-4xl p-6 text-white ${
                     task.cardStyle
                   } ${
                     task.status === 'approved'
@@ -240,10 +240,10 @@ export default function RewardsPage() {
                   </div>
 
                   <div className="relative z-10">
-                    <p className="mb-1 text-[10px] font-medium uppercase tracking-widest opacity-80">
+                    <p className="mb-1 text-[10px] font-medium tracking-widest uppercase opacity-80">
                       Task
                     </p>
-                    <h3 className="text-xl font-bold leading-tight">{task.actionLabel}</h3>
+                    <h3 className="text-xl leading-tight font-bold">{task.actionLabel}</h3>
                   </div>
 
                   <div className="relative z-10 mt-2 flex items-center justify-between">
@@ -302,7 +302,7 @@ export default function RewardsPage() {
                 return (
                   <div
                     key={milestone.id}
-                    className="border-foreground/10 rounded-4xl group relative aspect-[1.58/1] w-full overflow-hidden border"
+                    className="border-foreground/10 group relative aspect-[1.58/1] w-full overflow-hidden rounded-4xl border"
                   >
                     <Image
                       src={milestone.imageUrl}
@@ -312,12 +312,12 @@ export default function RewardsPage() {
                       sizes="(min-width: 768px) 50vw, 100vw"
                     />
                     {/* FIX: Corrected foregroiund typo to foreground */}
-                    <div className="from-background/80 via-foreground/50 bg-linear-to-t absolute inset-0 to-transparent" />
+                    <div className="from-background/80 via-foreground/50 absolute inset-0 bg-linear-to-t to-transparent" />
 
                     <div className="text-foreground absolute inset-0 flex flex-col justify-between p-6">
                       <div className="flex items-start justify-between">
                         <div
-                          className={`rounded-md border px-3 py-1 text-[10px] font-bold uppercase tracking-widest backdrop-blur-md ${
+                          className={`rounded-md border px-3 py-1 text-[10px] font-bold tracking-widest uppercase backdrop-blur-md ${
                             isUnlocked
                               ? 'bg-foreground text-background border-foreground'
                               : 'bg-background/50 text-foreground border-foreground/20'
@@ -326,10 +326,10 @@ export default function RewardsPage() {
                           {isUnlocked ? 'UNLOCKED' : 'LOCKED'}
                         </div>
                         <div className="text-right">
-                          <span className="block text-2xl font-bold leading-none">
+                          <span className="block text-2xl leading-none font-bold">
                             ₹{milestone.rewardAmount}
                           </span>
-                          <span className="text-[9px] uppercase tracking-wide opacity-70">
+                          <span className="text-[9px] tracking-wide uppercase opacity-70">
                             Credit
                           </span>
                         </div>
@@ -341,7 +341,7 @@ export default function RewardsPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider opacity-80">
+                        <div className="flex justify-between text-[10px] font-bold tracking-wider uppercase opacity-80">
                           <span>Progress</span>
                           <span>{Math.round(progress)}%</span>
                         </div>
@@ -373,7 +373,7 @@ export default function RewardsPage() {
 
       {/* --- CLAIM MODAL --- */}
       {selectedTask && (
-        <div className="z-100 fixed inset-0 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
           <div
             className="bg-background/30 absolute inset-0 backdrop-blur-sm transition-opacity"
             onClick={() => setSelectedTask(null)}
@@ -382,7 +382,7 @@ export default function RewardsPage() {
           <div className="bg-background relative w-full max-w-sm rounded-3xl p-8 shadow-2xl">
             <button
               onClick={() => setSelectedTask(null)}
-              className="hover:text-foreground absolute right-4 top-4 p-2 text-zinc-500 transition-colors"
+              className="hover:text-foreground absolute top-4 right-4 p-2 text-zinc-500 transition-colors"
             >
               <CloseIcon size={20} />
             </button>
@@ -401,7 +401,7 @@ export default function RewardsPage() {
 
             <form onSubmit={handleSubmitClaim} className="space-y-4">
               <div className="space-y-2 text-left">
-                <label className="ml-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                <label className="ml-1 text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
                   Your Handle
                 </label>
                 <input
@@ -409,7 +409,7 @@ export default function RewardsPage() {
                   value={usernameInput}
                   onChange={(e) => setUsernameInput(e.target.value)}
                   placeholder={selectedTask.placeholder}
-                  className="bg-background focus:ring-foreground focus:border-foreground text-foreground w-full rounded-xl border border-zinc-800 px-4 py-4 text-sm font-medium outline-none transition-all placeholder:text-zinc-700 focus:ring-1"
+                  className="bg-background focus:ring-foreground focus:border-foreground text-foreground w-full rounded-xl border border-zinc-800 px-4 py-4 text-sm font-medium transition-all outline-none placeholder:text-zinc-700 focus:ring-1"
                   autoFocus
                 />
               </div>

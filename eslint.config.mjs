@@ -67,12 +67,7 @@ export default defineConfig([
       'simple-import-sort/imports': [
         'error',
         {
-          groups: [
-            ['^react', '^next'],
-            ['^@?\\w'],
-            ['^@/'],
-            ['^\\.\\./|^\\./|\\.'],
-          ],
+          groups: [['^react', '^next'], ['^@?\\w'], ['^@/'], ['^\\.\\./|^\\./|\\.']],
         },
       ],
 

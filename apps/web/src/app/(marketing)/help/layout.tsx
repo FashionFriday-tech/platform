@@ -25,10 +25,10 @@ export default function HelpLayout({ children }: { children: React.ReactNode }) 
           </button>
 
           <div className="flex flex-col text-center">
-            <span className="text-foreground-subtle text-[8px] font-black uppercase tracking-[0.4em]">
+            <span className="text-foreground-subtle text-[8px] font-black tracking-[0.4em] uppercase">
               Support Hub
             </span>
-            <span className="text-[10px] font-black uppercase tracking-widest">
+            <span className="text-[10px] font-black tracking-widest uppercase">
               {activeSection?.label || 'Directory'}
             </span>
           </div>
@@ -41,7 +41,7 @@ export default function HelpLayout({ children }: { children: React.ReactNode }) 
 
       {/* --- SIDEBAR OVERLAY --- */}
       <div
-        className={`z-60 fixed inset-0 transition-all duration-500 ${
+        className={`fixed inset-0 z-60 transition-all duration-500 ${
           isMenuOpen ? 'visible opacity-100' : 'pointer-events-none invisible opacity-0'
         }`}
       >
@@ -52,12 +52,12 @@ export default function HelpLayout({ children }: { children: React.ReactNode }) 
         />
 
         <nav
-          className={`bg-background border-border absolute right-0 top-0 h-full w-full border-l transition-transform duration-500 ease-out sm:w-96 ${
+          className={`bg-background border-border absolute top-0 right-0 h-full w-full border-l transition-transform duration-500 ease-out sm:w-96 ${
             isMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
         >
           <div className="border-border flex h-20 items-center justify-between border-b px-8">
-            <p className="text-xs font-black uppercase tracking-widest">Navigation</p>
+            <p className="text-xs font-black tracking-widest uppercase">Navigation</p>
             <button onClick={() => setIsMenuOpen(false)}>
               <CloseIcon size={24} />
             </button>
@@ -69,7 +69,7 @@ export default function HelpLayout({ children }: { children: React.ReactNode }) 
                 key={item.id}
                 href={item.href}
                 onClick={() => setIsMenuOpen(false)}
-                className={`border-border rounded-4xl flex items-center justify-between border p-8 text-xl transition-all ${
+                className={`border-border flex items-center justify-between rounded-4xl border p-8 text-xl transition-all ${
                   pathname === item.href
                     ? 'bg-foreground text-background'
                     : 'hover:bg-background-muted'
@@ -77,7 +77,7 @@ export default function HelpLayout({ children }: { children: React.ReactNode }) 
               >
                 <div className="flex items-center gap-6">
                   <item.icon />
-                  <span className="uppercase tracking-tighter">{item.label}</span>
+                  <span className="tracking-tighter uppercase">{item.label}</span>
                 </div>
                 <ArrowForwardIconIOS />
               </Link>

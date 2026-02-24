@@ -119,7 +119,7 @@ export default function ReviewSection() {
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto mb-10 flex max-w-3xl items-center justify-between">
           <div>
-            <h2 className="text-[14px] font-black uppercase italic tracking-[0.3em]">Reviews</h2>
+            <h2 className="text-[14px] font-black tracking-[0.3em] uppercase italic">Reviews</h2>
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, starIndex) => (
                 <FilledStarIcon
@@ -162,7 +162,7 @@ export default function ReviewSection() {
                   setSelectedReview(i % reviews.length);
                   setIsModalOpen(true);
                 }}
-                className="group bg-card text-card-foreground border-border pointer-events-auto flex w-[450px] shrink-0 flex-col items-start gap-4 rounded-[3rem] border p-3 shadow-2xl transition-all duration-300 hover:border-foreground/20 md:w-[700px] md:p-6"
+                className="group bg-card text-card-foreground border-border hover:border-foreground/20 pointer-events-auto flex w-[450px] shrink-0 flex-col items-start gap-4 rounded-[3rem] border p-3 shadow-2xl transition-all duration-300 md:w-[700px] md:p-6"
               >
                 <div className="flex w-full items-center justify-between gap-6">
                   {/* High-End Image Cropping - 1:1 Aspect Ratio */}
@@ -188,13 +188,13 @@ export default function ReviewSection() {
                               : 'border-rose-500'
                         }`}
                       >
-                        <span className="bg-foreground text-background flex h-10 w-10 items-center justify-center rounded-full text-[16px] font-black italic uppercase">
+                        <span className="bg-foreground text-background flex h-10 w-10 items-center justify-center rounded-full text-[16px] font-black uppercase italic">
                           {rev.initials}
                         </span>
                       </div>
 
                       <div className="flex flex-col text-left">
-                        <span className="flex items-center text-[15px] font-black uppercase leading-none tracking-tight">
+                        <span className="flex items-center text-[15px] leading-none font-black tracking-tight uppercase">
                           {rev.name}
                           <VerifiedIcon
                             className={`mb-0.5 ml-1.5 w-4 ${
@@ -221,11 +221,11 @@ export default function ReviewSection() {
                       </div>
                     </div>
 
-                    <p className="text-muted-foreground line-clamp-3 text-left text-sm font-medium italic leading-relaxed">
+                    <p className="text-muted-foreground line-clamp-3 text-left text-sm leading-relaxed font-medium italic">
                       "{rev.comment}"
                     </p>
 
-                    <span className="text-muted-foreground/30 text-[9px] font-bold uppercase tracking-[0.2em] transition-colors group-hover:text-muted-foreground/60">
+                    <span className="text-muted-foreground/30 group-hover:text-muted-foreground/60 text-[9px] font-bold tracking-[0.2em] uppercase transition-colors">
                       Tap to expand
                     </span>
                   </div>
@@ -250,7 +250,7 @@ export default function ReviewSection() {
             />
           ))}
         </div>
-        <p className="bg-size-[400%_100%] flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)))] bg-clip-text text-[8px] font-black uppercase tracking-[0.5em] text-transparent">
+        <p className="flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)))] bg-size-[400%_100%] bg-clip-text text-[8px] font-black tracking-[0.5em] text-transparent uppercase">
           Drop Your Review
         </p>
       </div>
@@ -262,7 +262,7 @@ export default function ReviewSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="z-60 fixed inset-0 flex items-center justify-center bg-black/80 p-6 backdrop-blur-md"
+            className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 p-6 backdrop-blur-md"
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
@@ -272,7 +272,7 @@ export default function ReviewSection() {
             >
               <button
                 onClick={() => setIsInfoOpen(false)}
-                className="text-muted-foreground hover:text-foreground absolute right-6 top-6 transition-colors"
+                className="text-muted-foreground hover:text-foreground absolute top-6 right-6 transition-colors"
               >
                 <CloseIcon size={24} />
               </button>
@@ -280,7 +280,7 @@ export default function ReviewSection() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-black">
                   <ShieldCheckIcon size={28} />
                 </div>
-                <h3 className="text-2xl font-black uppercase italic tracking-tighter">
+                <h3 className="text-2xl font-black tracking-tighter uppercase italic">
                   Review Integrity
                 </h3>
                 <div className="space-y-4 text-sm leading-relaxed text-white/70">
@@ -308,7 +308,7 @@ export default function ReviewSection() {
                 </div>
                 <button
                   onClick={() => setIsInfoOpen(false)}
-                  className="mt-4 w-full rounded-full bg-white py-4 text-xs font-black uppercase tracking-widest text-black"
+                  className="mt-4 w-full rounded-full bg-white py-4 text-xs font-black tracking-widest text-black uppercase"
                 >
                   Understood
                 </button>
@@ -328,7 +328,7 @@ export default function ReviewSection() {
           >
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute right-8 top-8 text-white opacity-50 transition-opacity hover:opacity-100"
+              className="absolute top-8 right-8 text-white opacity-50 transition-opacity hover:opacity-100"
             >
               <CloseIcon size={32} />
             </button>
@@ -359,11 +359,11 @@ export default function ReviewSection() {
                   <span className="bg-foreground text-background flex h-14 w-14 items-center justify-center rounded-full text-xl font-black">
                     {reviews[selectedReview].initials}
                   </span>
-                  <h2 className="text-foreground text-4xl font-black uppercase italic leading-none tracking-tighter">
+                  <h2 className="text-foreground text-4xl leading-none font-black tracking-tighter uppercase italic">
                     {reviews[selectedReview].name}
                   </h2>
                 </div>
-                <p className="text-xl font-medium italic leading-tight text-white/90 md:text-3xl">
+                <p className="text-xl leading-tight font-medium text-white/90 italic md:text-3xl">
                   "{reviews[selectedReview].comment}"
                 </p>
                 <div className="flex gap-4 pt-8">
@@ -400,11 +400,11 @@ export default function ReviewSection() {
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              className="bg-card border-border fixed bottom-0 left-0 right-0 z-50 rounded-t-[3rem] border-t p-10 shadow-2xl"
+              className="bg-card border-border fixed right-0 bottom-0 left-0 z-50 rounded-t-[3rem] border-t p-10 shadow-2xl"
             >
               <div className="mx-auto max-w-md space-y-8">
                 <div className="text-foreground flex items-center justify-between">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em]">
+                  <h3 className="text-[10px] font-black tracking-[0.3em] uppercase">
                     Drop your Review
                   </h3>
                   <button
@@ -417,7 +417,7 @@ export default function ReviewSection() {
 
                 <div className="relative space-y-3">
                   <div className="flex items-end justify-between">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/20">
+                    <label className="text-[10px] font-black tracking-widest text-white/20 uppercase">
                       Experience & Media
                     </label>
                     <span
@@ -440,7 +440,7 @@ export default function ReviewSection() {
                         <Image src={selectedImage} alt="Preview" fill className="object-cover" />
                         <button
                           onClick={() => setSelectedImage(null)}
-                          className="absolute right-2 top-2 rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black"
+                          className="absolute top-2 right-2 rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black"
                         >
                           <TrashIcon size={14} />
                         </button>
@@ -450,7 +450,7 @@ export default function ReviewSection() {
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       placeholder="The cut, the feel, the vibe..."
-                      className={`h-32 flex-1 rounded-2xl border bg-white/5 p-5 text-sm text-white outline-none transition-colors ${
+                      className={`h-32 flex-1 rounded-2xl border bg-white/5 p-5 text-sm text-white transition-colors outline-none ${
                         CHARACTER_LIMIT - newComment.length < 0
                           ? 'border-red-500/50'
                           : 'border-white/10 focus:border-white/40'
@@ -481,7 +481,7 @@ export default function ReviewSection() {
 
                 <div className="flex gap-4">
                   <button
-                    className="flex-1 rounded-full bg-white py-4 text-xs font-black uppercase tracking-widest text-black transition-all active:scale-95 disabled:opacity-50"
+                    className="flex-1 rounded-full bg-white py-4 text-xs font-black tracking-widest text-black uppercase transition-all active:scale-95 disabled:opacity-50"
                     disabled={newComment.length === 0 || newRating === 0}
                   >
                     Publish Review

@@ -48,14 +48,14 @@ export default function FAQPage() {
   return (
     <div className="bg-background text-foreground min-h-screen pb-20 transition-colors duration-500">
       {/* 1. HEADER SECTION - Removed pt-32 to start from top */}
-      <section className="overflow-x-hidden px-6 pb-16 pt-10">
+      <section className="overflow-x-hidden px-6 pt-10 pb-16">
         <div className="mx-auto flex max-w-7xl flex-col items-center text-center">
           {/* HEADER AREA */}
           <div className="mb-12 space-y-4">
-            <div className="border-border bg-background-muted mx-auto inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em]">
+            <div className="border-border bg-background-muted mx-auto inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-black tracking-[0.3em] uppercase">
               Knowledge Base / 2026
             </div>
-            <h1 className="text-6xl font-black uppercase italic leading-[0.9] tracking-[-0.04em] md:text-[7vw]">
+            <h1 className="text-6xl leading-[0.9] font-black tracking-[-0.04em] uppercase italic md:text-[7vw]">
               How can we <br /> <span className="text-foreground-subtle italic">assist?</span>
             </h1>
           </div>
@@ -65,15 +65,15 @@ export default function FAQPage() {
             {/* SEARCH BOX */}
             <div className="border-border focus-within:border-brand group relative w-full overflow-hidden rounded-full border shadow-sm transition-all">
               <SearchIcon
-                className="absolute left-6 top-1/2 z-10 -translate-y-1/2 opacity-30"
+                className="absolute top-1/2 left-6 z-10 -translate-y-1/2 opacity-30"
                 size={18}
               />
 
-              <div className="pointer-events-none absolute left-14 top-1/2 flex h-full -translate-y-1/2 items-center">
+              <div className="pointer-events-none absolute top-1/2 left-14 flex h-full -translate-y-1/2 items-center">
                 {!searchQuery && (
                   <span
                     key={placeholderIndex}
-                    className="animate-placeholder text-[11px] font-black uppercase tracking-widest opacity-30"
+                    className="animate-placeholder text-[11px] font-black tracking-widest uppercase opacity-30"
                   >
                     {placeholders[placeholderIndex]}
                   </span>
@@ -84,7 +84,7 @@ export default function FAQPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="relative z-0 w-full bg-transparent py-6 pl-14 pr-6 text-[11px] font-black uppercase tracking-widest outline-none"
+                className="relative z-0 w-full bg-transparent py-6 pr-6 pl-14 text-[11px] font-black tracking-widest uppercase outline-none"
               />
             </div>
 
@@ -95,7 +95,7 @@ export default function FAQPage() {
                   <button
                     key={cat}
                     onClick={() => setFilter(cat)}
-                    className={`shrink-0 whitespace-nowrap rounded-full border px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all ${
+                    className={`shrink-0 rounded-full border px-8 py-4 text-[10px] font-black tracking-widest whitespace-nowrap uppercase transition-all ${
                       filter === cat
                         ? 'bg-brand text-brand-foreground border-brand'
                         : 'border-border hover:border-brand bg-transparent'
@@ -124,7 +124,7 @@ export default function FAQPage() {
                 onClick={() => setActiveId(activeId === faq.id ? null : faq.id)}
                 className="group flex w-full items-center justify-between px-8 py-8 text-left"
               >
-                <h3 className="text-xl font-black uppercase italic tracking-tight transition-transform group-hover:translate-x-2">
+                <h3 className="text-xl font-black tracking-tight uppercase italic transition-transform group-hover:translate-x-2">
                   {faq.question}
                 </h3>
                 <div
@@ -139,13 +139,13 @@ export default function FAQPage() {
               {activeId === faq.id && (
                 <div className="px-8 pb-10">
                   <div className="border-border space-y-4 border-t pt-6">
-                    <p className="text-foreground-muted font-medium italic leading-relaxed">
+                    <p className="text-foreground-muted leading-relaxed font-medium italic">
                       {faq.answer}
                     </p>
                     {faq.href && (
                       <Link
                         href={faq.href}
-                        className="text-brand inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all hover:tracking-[0.1rem]"
+                        className="text-brand inline-flex items-center gap-2 text-[10px] font-black tracking-widest uppercase transition-all hover:tracking-[0.1rem]"
                       >
                         {faq.linkText} <ArrowUpRightIcon size={14} />
                       </Link>
@@ -165,11 +165,11 @@ export default function FAQPage() {
             <div className="space-y-6">
               <div className="bg-background border-border mx-auto inline-flex items-center gap-3 rounded-full border px-4 py-2">
                 <MailIcon className="text-brand" size={14} />
-                <span className="text-[9px] font-black uppercase tracking-widest">
+                <span className="text-[9px] font-black tracking-widest uppercase">
                   Support Node
                 </span>
               </div>
-              <h2 className="text-4xl font-black uppercase italic leading-none tracking-tighter md:text-6xl">
+              <h2 className="text-4xl leading-none font-black tracking-tighter uppercase italic md:text-6xl">
                 Still Need <span className="text-foreground-subtle">Answers?</span>
               </h2>
               <p className="text-foreground-muted mx-auto max-w-sm text-sm font-medium italic">
@@ -185,16 +185,16 @@ export default function FAQPage() {
                   name="question"
                   rows={3}
                   placeholder="WRITE YOUR QUESTION HERE..."
-                  className="w-full resize-none rounded-[2.5rem] bg-transparent px-10 py-8 text-[12px] font-black uppercase tracking-widest outline-none transition-all placeholder:opacity-30"
+                  className="w-full resize-none rounded-[2.5rem] bg-transparent px-10 py-8 text-[12px] font-black tracking-widest uppercase transition-all outline-none placeholder:opacity-30"
                 />
 
                 <div className="flex flex-col items-center justify-between gap-4 px-6 pb-4 sm:flex-row">
-                  <span className="text-[9px] font-black uppercase italic tracking-widest opacity-30">
+                  <span className="text-[9px] font-black tracking-widest uppercase italic opacity-30">
                     Sending to: support@fashionfriday.in
                   </span>
                   <button
                     type="submit"
-                    className="bg-brand text-brand-foreground flex items-center justify-center gap-3 rounded-full px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all hover:scale-105 active:scale-95"
+                    className="bg-brand text-brand-foreground flex items-center justify-center gap-3 rounded-full px-8 py-4 text-[10px] font-black tracking-[0.2em] uppercase shadow-xl transition-all hover:scale-105 active:scale-95"
                   >
                     Send on Gmail <SendIcon size={14} />
                   </button>
@@ -206,7 +206,7 @@ export default function FAQPage() {
       </section>
 
       <footer className="mt-32 text-center">
-        <p className="text-[10px] font-black uppercase italic tracking-[1em] opacity-20">
+        <p className="text-[10px] font-black tracking-[1em] uppercase italic opacity-20">
           Curated in India / 2026
         </p>
       </footer>

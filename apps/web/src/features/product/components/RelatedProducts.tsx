@@ -16,7 +16,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
     <section className="w-full py-6 lg:py-20">
       {/* Header */}
       <div className="mb-8 flex items-end justify-between px-4 lg:px-8">
-        <h2 className="text-3xl font-black uppercase italic tracking-tighter lg:text-4xl">
+        <h2 className="text-3xl font-black tracking-tighter uppercase italic lg:text-4xl">
           Similer Drops
         </h2>
       </div>
@@ -38,7 +38,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                 className="group w-full cursor-pointer"
               >
                 <Link href={`/product/${product.slug}`} className="block w-full">
-                  <div className="bg-foreground/5 aspect-4/5 relative w-full overflow-hidden rounded-[2.5rem]">
+                  <div className="bg-foreground/5 relative aspect-4/5 w-full overflow-hidden rounded-[2.5rem]">
                     <Image
                       src={product.media.mainImage || '/images/placeholder.png'}
                       alt={product.name}
@@ -60,13 +60,13 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                       className="invert"
                     />
 
-                    <span className="border-border flex items-center gap-1 rounded-full border px-2 py-0.5 font-bold uppercase text-blue-500">
+                    <span className="border-border flex items-center gap-1 rounded-full border px-2 py-0.5 font-bold text-blue-500 uppercase">
                       <StarBadgeIcon /> {product.attributes.quality}
                     </span>
                   </div>
 
                   {/* Name */}
-                  <h2 className="text-foreground line-clamp-1 truncate text-[1.2rem] font-bold uppercase tracking-tight">
+                  <h2 className="text-foreground line-clamp-1 truncate text-[1.2rem] font-bold tracking-tight uppercase">
                     {product.name}
                   </h2>
 

@@ -84,7 +84,7 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
   return (
     <div className="relative flex w-full flex-col items-center justify-center">
       {/* 3D STAGE CONTAINER */}
-      <div className="h-112 perspective-distant relative flex w-full max-w-6xl items-center justify-center">
+      <div className="relative flex h-112 w-full max-w-6xl items-center justify-center perspective-distant">
         <AnimatePresence mode="popLayout">
           {products.map((product, index) => {
             const variant = getVariant(index);
@@ -96,7 +96,7 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
                 animate={variant}
                 initial={variant}
                 transition={transitionSpec}
-                className="aspect-3/4 w-70 rounded-4xl absolute overflow-hidden shadow-xl md:w-[320px]"
+                className="absolute aspect-3/4 w-70 overflow-hidden rounded-4xl shadow-xl md:w-[320px]"
                 style={{ transformStyle: 'preserve-3d' }}
                 onClick={() => !isActive && setActiveIndex(index)}
               >
@@ -151,7 +151,7 @@ function CardContent({ product, isActive }: { product: Product; isActive: boolea
       />
       {/* Optional Title Overlay on Hover */}
       <div className="absolute inset-0 flex items-end bg-black/20 p-6 opacity-0 transition-opacity hover:opacity-100">
-        <p className="text-xs font-bold uppercase tracking-widest text-white">{product.title}</p>
+        <p className="text-xs font-bold tracking-widest text-white uppercase">{product.title}</p>
       </div>
     </div>
   );

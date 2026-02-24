@@ -92,7 +92,7 @@ export default function WalletPage() {
 
   return (
     <div className="bg-background text-foreground min-h-screen transition-colors duration-500">
-      <section className="relative overflow-hidden rounded-b-[4rem] px-4 pb-20 pt-6 md:rounded-b-[6rem] md:px-8 md:pt-32">
+      <section className="relative overflow-hidden rounded-b-[4rem] px-4 pt-6 pb-20 md:rounded-b-[6rem] md:px-8 md:pt-32">
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 hover:scale-105" />
 
         <main className="relative z-10 mx-auto max-w-5xl space-y-12">
@@ -102,11 +102,11 @@ export default function WalletPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
               whileHover={{ scale: 1.015 }}
-              className="aspect-5/4 rounded-4xl relative h-full overflow-hidden shadow-2xl"
+              className="relative aspect-5/4 h-full overflow-hidden rounded-4xl shadow-2xl"
             >
               <video
                 // FIX: Canonical hue-rotate-180 or hue-rotate-200 (using 200 to match intent)
-                className="contrast-110 hue-rotate-200 saturate-10 absolute inset-0 h-full w-full scale-105 object-cover brightness-75"
+                className="absolute inset-0 h-full w-full scale-105 object-cover brightness-75 contrast-110 hue-rotate-200 saturate-10"
                 autoPlay
                 muted
                 loop
@@ -118,7 +118,7 @@ export default function WalletPage() {
               <div className="relative z-10 flex h-full flex-col justify-between p-6">
                 <div className="flex h-full items-start justify-between">
                   <div>
-                    <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.35em] text-white/60">
+                    <p className="mb-2 text-[10px] font-extrabold tracking-[0.35em] text-white/60 uppercase">
                       Total Balance
                     </p>
                     <h2 className="text-4xl font-bold tracking-tighter text-white drop-shadow-[0_6px_30px_rgba(16,185,129,0.45)] md:text-4xl">
@@ -147,11 +147,11 @@ export default function WalletPage() {
                   <div className="border-foreground flex animate-pulse items-center justify-center rounded-full border p-1">
                     <span className="bg-foreground h-2 w-2 rounded-full shadow-[0_0_12px_#4ade80]" />
                   </div>
-                  <p className="text-foreground/60 text-[10px] font-black uppercase tracking-widest">
+                  <p className="text-foreground/60 text-[10px] font-black tracking-widest uppercase">
                     Spending Power
                   </p>
                 </div>
-                <p className="text-foreground/80 max-w-md text-sm font-bold italic leading-relaxed md:text-base">
+                <p className="text-foreground/80 max-w-md text-sm leading-relaxed font-bold italic md:text-base">
                   Your <span className="text-foreground font-black">Refund Wallet</span> is 100%
                   usable. Reward Wallet usage is capped at{' '}
                   <span className="decoration-foreground underline underline-offset-4">
@@ -163,18 +163,18 @@ export default function WalletPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-4xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10">
-                  <p className="text-foreground/30 mb-1 text-[8px] font-black uppercase tracking-widest">
+                  <p className="text-foreground/30 mb-1 text-[8px] font-black tracking-widest uppercase">
                     Status
                   </p>
-                  <p className="text-foreground text-xs font-black uppercase italic tracking-tight">
+                  <p className="text-foreground text-xs font-black tracking-tight uppercase italic">
                     Elite Member
                   </p>
                 </div>
                 <div className="rounded-4xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10">
-                  <p className="text-foreground/30 mb-1 text-[8px] font-black uppercase tracking-widest">
+                  <p className="text-foreground/30 mb-1 text-[8px] font-black tracking-widest uppercase">
                     Last Sync
                   </p>
-                  <p className="text-foreground text-xs font-black uppercase italic tracking-tight">
+                  <p className="text-foreground text-xs font-black tracking-tight uppercase italic">
                     Live
                   </p>
                 </div>
@@ -205,10 +205,10 @@ export default function WalletPage() {
         </div>
 
         <div className="space-y-6 pb-20">
-          <div className="border-border bg-background-muted/20 rounded-4xl flex flex-col items-center justify-between gap-4 border p-3 md:flex-row">
+          <div className="border-border bg-background-muted/20 flex flex-col items-center justify-between gap-4 rounded-4xl border p-3 md:flex-row">
             <div className="flex items-center gap-3 px-4">
               <HistoryIcon size={16} className="opacity-30" />
-              <h3 className="text-foreground-subtle text-[10px] font-black uppercase tracking-[0.3em]">
+              <h3 className="text-foreground-subtle text-[10px] font-black tracking-[0.3em] uppercase">
                 Activity History
               </h3>
             </div>
@@ -218,7 +218,7 @@ export default function WalletPage() {
                   key={t}
                   onClick={() => setFilter(t)}
                   className={cn(
-                    'flex-1 rounded-xl py-2.5 text-[9px] font-black uppercase tracking-widest transition-all md:flex-none',
+                    'flex-1 rounded-xl py-2.5 text-[9px] font-black tracking-widest uppercase transition-all md:flex-none',
                     filter === t
                       ? 'bg-background text-foreground shadow-lg'
                       : 'opacity-30 hover:opacity-100',
@@ -256,14 +256,14 @@ export default function WalletPage() {
                       )}
                     </div>
                     <div>
-                      <h4 className="text-base font-black uppercase italic tracking-tight">
+                      <h4 className="text-base font-black tracking-tight uppercase italic">
                         {tx.description}
                       </h4>
                       <div className="mt-2 flex items-center gap-4">
-                        <span className="text-[9px] font-bold uppercase tracking-widest opacity-30">
+                        <span className="text-[9px] font-bold tracking-widest uppercase opacity-30">
                           {tx.date}
                         </span>
-                        <span className="bg-foreground/5 rounded-md px-2 py-0.5 text-[7px] font-black uppercase tracking-widest opacity-50">
+                        <span className="bg-foreground/5 rounded-md px-2 py-0.5 text-[7px] font-black tracking-widest uppercase opacity-50">
                           Ref: {tx.id}
                         </span>
                       </div>
@@ -272,13 +272,13 @@ export default function WalletPage() {
                   <div className="text-right">
                     <p
                       className={cn(
-                        'whitespace-nowrap text-lg font-black italic tracking-tighter',
+                        'text-lg font-black tracking-tighter whitespace-nowrap italic',
                         tx.amount > 0 ? 'text-emerald-500' : 'text-red-400',
                       )}
                     >
                       ₹{Math.abs(tx.amount).toLocaleString()}
                     </p>
-                    <p className="mt-1 text-[8px] font-black uppercase italic tracking-widest opacity-20">
+                    <p className="mt-1 text-[8px] font-black tracking-widest uppercase italic opacity-20">
                       {tx.type}
                     </p>
                   </div>
@@ -313,11 +313,11 @@ function SubWalletCard({ label, value, icon, description, action }: SubWalletCar
     >
       <div
         className={cn(
-          'border-border bg-foreground rounded-4xl absolute left-0 z-20 w-full border-t py-20 transition-all duration-300',
+          'border-border bg-foreground absolute left-0 z-20 w-full rounded-4xl border-t py-20 transition-all duration-300',
           openWallet ? '-top-6' : 'top-6',
         )}
       >
-        <h3 className="text-background absolute right-5 top-5 mb-2 text-3xl font-semibold italic tracking-tighter">
+        <h3 className="text-background absolute top-5 right-5 mb-2 text-3xl font-semibold tracking-tighter italic">
           {value}
         </h3>
         <Image
@@ -325,18 +325,18 @@ function SubWalletCard({ label, value, icon, description, action }: SubWalletCar
           alt="Card chip"
           width={48}
           height={48}
-          className="absolute left-6 top-6 h-auto w-12"
+          className="absolute top-6 left-6 h-auto w-12"
         />
       </div>
-      <div className="border-border bg-background rounded-4xl absolute left-2 right-2 top-14 z-40 w-auto border-t-2 border-dashed py-20" />
-      <div className="border-border bg-background rounded-4xl absolute left-0 top-12 z-30 w-full border-t py-20" />
+      <div className="border-border bg-background absolute top-14 right-2 left-2 z-40 w-auto rounded-4xl border-t-2 border-dashed py-20" />
+      <div className="border-border bg-background absolute top-12 left-0 z-30 w-full rounded-4xl border-t py-20" />
 
       <div className="z-50 pt-12">
         <div className="text-foreground flex items-center justify-between">
           <div className="bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background rounded-[1.25rem] p-4 transition-all duration-700">
             {icon}
           </div>
-          <p className="text-sm font-black uppercase tracking-widest">{label}</p>
+          <p className="text-sm font-black tracking-widest uppercase">{label}</p>
           <div className="p-4">
             <ChevronRightIcon
               size={18}
@@ -347,10 +347,10 @@ function SubWalletCard({ label, value, icon, description, action }: SubWalletCar
       </div>
 
       <div className="border-border flex items-center justify-between border-t pt-6">
-        <p className="max-w-40 text-[10px] font-bold uppercase italic leading-tight opacity-30">
+        <p className="max-w-40 text-[10px] leading-tight font-bold uppercase italic opacity-30">
           {description}
         </p>
-        <button className="text-foreground text-[10px] font-black uppercase tracking-widest underline underline-offset-8 transition-colors">
+        <button className="text-foreground text-[10px] font-black tracking-widest uppercase underline underline-offset-8 transition-colors">
           {action}
         </button>
       </div>
