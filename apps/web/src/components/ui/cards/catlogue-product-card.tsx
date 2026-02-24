@@ -16,11 +16,6 @@ interface StoreProductCardProps {
 }
 
 export function CatalogueProductCard({ product }: StoreProductCardProps) {
-  // Safety check to prevent crashes if a null product enters the grid
-  if (!product) {
-    return null;
-  }
-
   const getBrandLogoByName = (name: string) => {
     return brandLogos.find((brand) => brand.name.toLowerCase() === name.toLowerCase())?.logo;
   };
@@ -50,7 +45,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
         <div className="mt-1 px-1">
           <div className="flex items-center justify-between text-[8px] md:text-[10px]">
             <Image
-              src={getBrandLogoByName(product.brand[0]) || '/images/placeholder.png'}
+              src={getBrandLogoByName(product.brand[0]) ?? '/images/placeholder.png'}
               alt={product.brand[0]}
               width={32}
               height={32}

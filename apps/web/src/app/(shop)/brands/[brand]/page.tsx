@@ -24,7 +24,7 @@ export default async function BrandPage({ params }: Props) {
   );
 
   // 3. Determine initial sidebar context
-  const contextCategory = brandProducts[0]?.category || 'sneakers';
+  const contextCategory = brandProducts.length > 0 ? brandProducts[0].category : 'sneakers';
 
   return <CatalogueClient categorySlug={contextCategory} initialProducts={brandProducts} />;
 }

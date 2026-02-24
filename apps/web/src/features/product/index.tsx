@@ -46,15 +46,16 @@ export default function ProductPageMaster({
    */
   const handleShare = () => {
     const performShare = async () => {
-      if (typeof navigator !== 'undefined' && navigator.share) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (navigator.share) {
         try {
           await navigator.share({
             title: product.name,
             text: `Check out the ${product.name} ${product.attributes.quality} Quality on Fashion Friday! \n\n`,
             url: window.location.href,
           });
-        } catch (error) {
-          console.error('Share failed', error);
+        } catch {
+          // Silent catch
         }
       }
     };

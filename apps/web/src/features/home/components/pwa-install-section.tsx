@@ -76,10 +76,8 @@ function usePWAInstall() {
       return false;
     }
     const ua = window.navigator.userAgent.toLowerCase();
-    return (
-      /iphone|ipad|ipod/.test(ua) ||
-      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-    );
+    const isIPadPro = ua.includes('macintosh') && navigator.maxTouchPoints > 1;
+    return /iphone|ipad|ipod/.test(ua) || isIPadPro;
   });
 
   useEffect(() => {

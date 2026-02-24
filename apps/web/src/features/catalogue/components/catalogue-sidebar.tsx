@@ -31,10 +31,17 @@ export const CatalogueSidebar = ({
   });
 
   // Fetch the filters based on the capitalized category name
-  const filters: FilterSection[] = (CATEGORY_FILTERS[category] as FilterSection[]) || [];
+  const filters: FilterSection[] = (
+    Object.prototype.hasOwnProperty.call(CATEGORY_FILTERS, category)
+      ? CATEGORY_FILTERS[category]
+      : []
+  ) as FilterSection[];
 
   const toggleSection = (id: string) => {
-    setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
+    setOpenSections((prev) => ({
+      ...prev,
+      [id]: Object.prototype.hasOwnProperty.call(prev, id) ? !prev[id] : true,
+    }));
   };
 
   return (
@@ -75,7 +82,7 @@ export const CatalogueSidebar = ({
                 max={maxPrice}
                 step="500"
                 // Extract current max from string "0-XXXX"
-                value={Number((activeFilters.priceRange?.[0] ?? `0-${maxPrice}`).split('-')[1])}
+                value={Number((activeFilters.priceRange[0] ?? `0-${maxPrice}`).split('-')[1])}
                 onChange={(e) => {
                   onFilterChange('priceRange', `0-${e.target.value}`, true);
                 }}
@@ -86,7 +93,7 @@ export const CatalogueSidebar = ({
                 <span>
                   ₹
                   {(
-                    Number((activeFilters.priceRange?.[0] ?? `0-${maxPrice}`).split('-')[1]) || 0
+                    Number((activeFilters.priceRange[0] ?? `0-${maxPrice}`).split('-')[1]) || 0
                   ).toLocaleString()}
                 </span>
               </div>
@@ -119,9 +126,9 @@ export const CatalogueSidebar = ({
                 exit={{ height: 0, opacity: 0 }}
                 className="flex flex-wrap gap-2 overflow-hidden pb-4 pt-2"
               >
-                {section.options?.map((opt: string) => {
+                {section.options.map((opt: string) => {
                   // Checks if the option is in the active filters array
-                  const isActive = activeFilters[section.id]?.includes(opt) ?? false;
+                  const isActive = activeFilters[section.id].includes(opt);
                   return (
                     <button
                       key={opt}

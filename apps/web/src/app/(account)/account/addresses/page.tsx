@@ -194,7 +194,7 @@ const AddressFormModal = ({
   isFirstAddress,
 }: AddressFormModalProps) => {
   const [formData, setFormData] = useState<Partial<Address>>(
-    initialData || { type: 'Home', isDefault: isFirstAddress || false },
+    initialData ?? { type: 'Home', isDefault: isFirstAddress || false },
   );
   const [loading, setLoading] = useState(false);
   const altPhoneRef = useRef<HTMLInputElement>(null);
@@ -227,10 +227,10 @@ const AddressFormModal = ({
       const fetchRegion = async () => {
         setLoading(true);
         try {
-          const res = await fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`);
+          const res = await fetch(`https://api.postalpincode.in/pincode/${formData.pincode ?? ''}`);
           const data = (await res.json()) as PincodeAPIResponse[];
 
-          if (data?.[0]?.Status === 'Success' && data[0].PostOffice) {
+          if (data[0]?.Status === 'Success' && data[0].PostOffice) {
             const details = data[0].PostOffice[0];
             setFormData((prev) => ({
               ...prev,
@@ -275,7 +275,7 @@ const AddressFormModal = ({
                 label="Pincode"
                 placeholder="6 Digits"
                 required
-                value={formData.pincode || ''}
+                value={formData.pincode ?? ''}
                 onChange={(v: string) => {
                   setFormData({
                     ...formData,
@@ -296,7 +296,7 @@ const AddressFormModal = ({
               </span>
               <p className="text-foreground truncate text-[10px] font-bold">
                 {formData.district
-                  ? `${formData.district}, ${formData.state}`
+                  ? `${formData.district ?? ''}, ${formData.state ?? ''}`
                   : 'Waiting for Pin...'}
               </p>
             </div>
@@ -308,7 +308,7 @@ const AddressFormModal = ({
                 label="City / Town"
                 placeholder="e.g. Puthanathani"
                 required
-                value={formData.city || ''}
+                value={formData.city ?? ''}
                 onChange={(v: string) => {
                   setFormData({ ...formData, city: v });
                 }}
@@ -317,7 +317,7 @@ const AddressFormModal = ({
                 label="Area / Locality"
                 placeholder="Street/Colony"
                 required
-                value={formData.addressLine2 || ''}
+                value={formData.addressLine2 ?? ''}
                 onChange={(v: string) => {
                   setFormData({ ...formData, addressLine2: v });
                 }}
@@ -327,7 +327,7 @@ const AddressFormModal = ({
               <FormInput
                 label="Landmark"
                 placeholder="Famous place nearby"
-                value={formData.landmark || ''}
+                value={formData.landmark ?? ''}
                 onChange={(v: string) => {
                   setFormData({ ...formData, landmark: v });
                 }}
@@ -336,7 +336,7 @@ const AddressFormModal = ({
                 label="Building / House No"
                 placeholder="No. / Name"
                 required
-                value={formData.addressLine1 || ''}
+                value={formData.addressLine1 ?? ''}
                 onChange={(v: string) => {
                   setFormData({ ...formData, addressLine1: v });
                 }}
@@ -351,7 +351,7 @@ const AddressFormModal = ({
               label="Recipient Name"
               placeholder="Full name"
               required
-              value={formData.name || ''}
+              value={formData.name ?? ''}
               onChange={(v: string) => {
                 setFormData({ ...formData, name: v });
               }}
@@ -361,7 +361,7 @@ const AddressFormModal = ({
                 label="Primary Phone"
                 prefix="+91"
                 required
-                value={formData.phone || ''}
+                value={formData.phone ?? ''}
                 onChange={(v: string) => {
                   setFormData({
                     ...formData,
@@ -373,7 +373,7 @@ const AddressFormModal = ({
                 inputRef={altPhoneRef}
                 label="Alt Phone (Optional)"
                 prefix="+91"
-                value={formData.altPhone || ''}
+                value={formData.altPhone ?? ''}
                 onChange={(v: string) => {
                   setFormData({
                     ...formData,
@@ -444,7 +444,7 @@ const AddressFormModal = ({
             disabled={!isFormValid}
             onClick={() => {
               onSave({
-                id: initialData?.id || Date.now().toString(),
+                id: initialData?.id ?? Date.now().toString(),
                 ...formData,
               } as Address);
             }}
@@ -483,7 +483,7 @@ export default function AddressPage() {
     const finalData = { ...data, isDefault: makeThisDefault };
 
     if (idx >= 0) {
-      updated[idx] = finalData;
+      updated = updated.map((a, i) => (i === idx ? finalData : a));
     } else {
       updated.push(finalData);
     }

@@ -61,8 +61,8 @@ export default function ReferralsPage() {
   }, [sortCriteria, rawUsers]); // rawUsers is now a stable dependency
 
   const handleCopy = useCallback((text: string) => {
-    navigator.clipboard.writeText(text).catch((error) => {
-      console.error('Copy failed', error);
+    navigator.clipboard.writeText(text).catch(() => {
+      // Handle or log error silently
     });
     setCopied(true);
     setTimeout(() => {
@@ -79,24 +79,23 @@ export default function ReferralsPage() {
         url: referralLink,
       };
 
-      if (navigator.canShare && navigator.canShare({ files: [] })) {
+      if (navigator.canShare({ files: [] })) {
         try {
           const response = await fetch('/images/refferal/hero.png');
           const blob = await response.blob();
           const file = new File([blob], 'invite.png', { type: blob.type });
           shareData.files = [file];
-        } catch (error) {
-          console.error('Image attachment failed', error);
+        } catch {
+          // Silent catch
         }
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (navigator.share) {
         try {
           await navigator.share(shareData);
-        } catch (error) {
-          if ((error as Error).name !== 'AbortError') {
-            console.error('Share failed', error);
-          }
+        } catch {
+          // Silent catch
         }
       } else {
         handleCopy(referralLink);

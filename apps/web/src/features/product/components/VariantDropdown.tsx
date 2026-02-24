@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link'; // Added Link import
+import Image from 'next/image';
+import Link from 'next/link';
 
 import { ArrowDownIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -25,8 +26,6 @@ const ColorTray = ({
   isOpen: boolean;
   onToggle: () => void;
 }) => {
-  const activeColor = options.find((o) => o.slug === selectedValue);
-
   return (
     <div
       className={`border border-white/10 p-4 transition-all duration-300 ${
@@ -75,8 +74,10 @@ const ColorTray = ({
                     />
 
                     <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-transparent transition-all duration-300">
-                      <img
+                      <Image
                         src={opt.imageUrl}
+                        width={56}
+                        height={56}
                         className="h-full w-full object-cover"
                         alt={opt.label}
                       />

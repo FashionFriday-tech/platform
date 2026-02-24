@@ -20,11 +20,11 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
   const scrollRef = useRef<number | null>(null);
 
   // Use a ref for the speed so the animation loop always has the latest value
-  const speedRef = useRef(settings?.autoScrollLevel ?? 3);
+  const speedRef = useRef(settings.autoScrollLevel);
 
   useEffect(() => {
-    speedRef.current = settings?.autoScrollLevel ?? 3;
-  }, [settings?.autoScrollLevel]);
+    speedRef.current = settings.autoScrollLevel;
+  }, [settings.autoScrollLevel]);
 
   // STOPS THE SCROLL: Immediately cancels the frame and resets state
   const stopAutoScroll = useCallback(() => {
@@ -112,7 +112,7 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
 
   const handleFilterChange = (key: string, value: string, isSingleSelect = false) => {
     setActiveFilters((prev) => {
-      const currentValues = prev[key] || [];
+      const currentValues = Object.prototype.hasOwnProperty.call(prev, key) ? prev[key] : [];
       if (isSingleSelect) {
         return { ...prev, [key]: [value] };
       }

@@ -372,7 +372,7 @@ const ModernInput = ({
           onClick={() => {
             void onAction();
           }}
-          disabled={isLoading || !value}
+          disabled={isLoading ?? !value}
           className="bg-brand text-brand-foreground absolute bottom-1.5 right-1.5 top-1.5 min-w-20 rounded-3xl px-4 text-xs font-bold transition-all hover:opacity-90 disabled:opacity-30"
         >
           {isLoading ? <LoaderIcon className="animate-spin" size={14} /> : actionLabel}

@@ -31,7 +31,7 @@ export const CATEGORY_FILTERS: Record<string, { id: string; label: string; optio
 export function filterProducts(products: Product[], activeFilters: Record<string, string[]>) {
   return products.filter((product) => {
     for (const [key, selectedOptions] of Object.entries(activeFilters)) {
-      if (!selectedOptions || selectedOptions.length === 0) {
+      if (selectedOptions.length === 0) {
         continue;
       }
 
@@ -47,7 +47,9 @@ export function filterProducts(products: Product[], activeFilters: Record<string
 
       const productObj = product as unknown as Record<string, unknown>;
       const attributesObj = product.attributes as unknown as Record<string, unknown>;
-      const targetValue = productObj[key] ?? attributesObj[key];
+      const targetValue =
+        (Object.prototype.hasOwnProperty.call(productObj, key) ? productObj[key] : undefined) ??
+        (Object.prototype.hasOwnProperty.call(attributesObj, key) ? attributesObj[key] : undefined);
 
       if (targetValue !== undefined && targetValue !== null) {
         if (Array.isArray(targetValue)) {
@@ -96,7 +98,7 @@ export const getSimilarProducts = (category: string, currentProductId?: string):
 };
 
 export const getMaxPrice = (products: Product[]): number => {
-  if (!products || products.length === 0) {
+  if (products.length === 0) {
     return 50000;
   }
   const prices = products.map((p) => p.price.sellingPrice);

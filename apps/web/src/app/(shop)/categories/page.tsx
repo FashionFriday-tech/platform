@@ -151,7 +151,11 @@ export default function StoreLandingPage() {
                 transition={{ duration: 0.8 }}
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${CATEGORIES_DATA[activeGender].hero})`,
+                  backgroundImage: `url(${
+                    Object.prototype.hasOwnProperty.call(CATEGORIES_DATA, activeGender)
+                      ? CATEGORIES_DATA[activeGender].hero
+                      : CATEGORIES_DATA.Men.hero
+                  })`,
                 }}
               />
               <div className="bg-linear-to-t absolute inset-0 from-black/90 via-black/10 to-transparent" />
@@ -167,7 +171,10 @@ export default function StoreLandingPage() {
 
             {/* 2. CATEGORY ROWS */}
             <div className="space-y-3">
-              {CATEGORIES_DATA[activeGender].list.map((cat) => (
+              {(Object.prototype.hasOwnProperty.call(CATEGORIES_DATA, activeGender)
+                ? CATEGORIES_DATA[activeGender].list
+                : CATEGORIES_DATA.Men.list
+              ).map((cat) => (
                 <Link
                   key={cat.slug}
                   href={`/categories/${cat.slug}?gender=${activeGender.toLowerCase()}`}

@@ -34,7 +34,7 @@ export default function HelpLayout({ children }: { children: React.ReactNode }) 
               Support Hub
             </span>
             <span className="text-[10px] font-black uppercase tracking-widest">
-              {activeSection?.label || 'Directory'}
+              {activeSection?.label ?? 'Directory'}
             </span>
           </div>
 

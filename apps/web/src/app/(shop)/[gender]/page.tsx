@@ -88,7 +88,7 @@ const CATEGORIES_DATA = {
 export default function StoreLandingPage() {
   const params = useParams();
   const router = useRouter();
-  const genderParam = (params?.gender as string)?.toLowerCase();
+  const genderParam = (params.gender as string).toLowerCase();
 
   /**
    * 1. DERIVED STATE
@@ -125,7 +125,9 @@ export default function StoreLandingPage() {
     }
   };
 
-  const currentData = CATEGORIES_DATA[activeGender];
+  const currentData = Object.prototype.hasOwnProperty.call(CATEGORIES_DATA, activeGender)
+    ? CATEGORIES_DATA[activeGender]
+    : CATEGORIES_DATA.men;
 
   return (
     <div className="bg-background min-h-screen select-none overflow-x-hidden lg:h-screen lg:overflow-hidden">

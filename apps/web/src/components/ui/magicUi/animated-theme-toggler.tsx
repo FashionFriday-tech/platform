@@ -35,6 +35,7 @@ export const AnimatedThemeToggler = ({
     const isDark = resolvedTheme === 'dark';
 
     // Check if the browser supports View Transitions
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!buttonRef.current || !document.startViewTransition) {
       setTheme(isDark ? 'light' : 'dark');
       return;

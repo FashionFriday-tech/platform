@@ -25,7 +25,7 @@ export default function BrandsPage() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const displayedBrands = brandsData
-    .filter((b: Brand) => selectedCategory === 'All' || b.categories?.includes(selectedCategory))
+    .filter((b: Brand) => selectedCategory === 'All' || b.categories.includes(selectedCategory))
     .sort((a: Brand, b: Brand) =>
       sortOption === 'a-z' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name),
     );
@@ -124,7 +124,11 @@ function FilterDropdown<T extends string>({
     };
   }, [isOpen, onClose]);
 
-  const displayLabel = displayMap ? displayMap[activeValue] || activeValue : activeValue;
+  const displayLabel = displayMap
+    ? Object.prototype.hasOwnProperty.call(displayMap, activeValue)
+      ? displayMap[activeValue]
+      : activeValue
+    : activeValue;
 
   return (
     <div className="relative w-full" ref={containerRef}>

@@ -29,7 +29,9 @@ export default function SizeGuidePage() {
 
   // --- 2. SAFE DATA ACCESS ---
   // We cast this to CategoryData to stop the "any" errors
-  const currentCatData = (sizeData as Record<CategoryKey, CategoryData>)[activeCat];
+  const currentCatData = Object.prototype.hasOwnProperty.call(sizeData, activeCat)
+    ? (sizeData as Record<CategoryKey, CategoryData>)[activeCat]
+    : (sizeData as Record<CategoryKey, CategoryData>).footwear;
   const availableUnits = currentCatData.units;
 
   // Initialize with actual values from the data instead of empty strings
@@ -213,7 +215,9 @@ export default function SizeGuidePage() {
             >
               <div className="flex min-w-28 flex-col items-center md:min-w-44">
                 <span className="text-3xl font-black leading-none tracking-tighter md:text-5xl">
-                  {String(row[baseUnit] ?? '-')}
+                  {String(
+                    Object.prototype.hasOwnProperty.call(row, baseUnit) ? row[baseUnit] : '-',
+                  )}
                 </span>
                 <p className="mt-3 text-[9px] font-black uppercase tracking-[0.2em] opacity-30">
                   {baseUnit}
@@ -226,7 +230,9 @@ export default function SizeGuidePage() {
 
               <div className="flex min-w-28 flex-col items-center text-right md:min-w-44">
                 <span className="text-3xl font-black leading-none tracking-tighter md:text-5xl">
-                  {String(row[targetUnit] ?? '-')}
+                  {String(
+                    Object.prototype.hasOwnProperty.call(row, targetUnit) ? row[targetUnit] : '-',
+                  )}
                 </span>
                 <p className="mt-3 text-[9px] font-black uppercase tracking-[0.2em] opacity-30">
                   {targetUnit}

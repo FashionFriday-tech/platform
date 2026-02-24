@@ -30,7 +30,7 @@ export default async function CategoryPage({ params }: Props) {
   const initialProducts = DUMMY_PRODUCTS.filter((p) => {
     const isCorrectCategory = p.category === formattedCategory;
 
-    const pGender = p.gender?.toLowerCase();
+    const pGender = p.gender.toLowerCase();
     const isCorrectGender = pGender === formattedGender || pGender === 'unisex';
 
     return isCorrectCategory && isCorrectGender;

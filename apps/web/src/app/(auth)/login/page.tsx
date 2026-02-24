@@ -69,7 +69,7 @@ export default function AuthPage() {
       if (otp.join('').length < 4) {
         newErrors.otp = 'Please enter the 4-digit code';
       }
-    } else if (step === 'PROFILE') {
+    } else {
       if (!profile.fullName.trim()) {
         newErrors.name = 'Full name is required';
       } else if (!/^[\sA-Za-z]+$/.test(profile.fullName)) {
@@ -120,10 +120,9 @@ export default function AuthPage() {
   };
 
   const clearError = (key: string) => {
-    if (errors[key]) {
+    if (Object.prototype.hasOwnProperty.call(errors, key)) {
       setErrors((prev) => {
-        const next = { ...prev };
-        delete next[key];
+        const { [key]: _, ...next } = prev;
         return next;
       });
     }

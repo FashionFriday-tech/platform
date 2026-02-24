@@ -268,7 +268,7 @@ export default function FinalReviewPage() {
         _onClose={() => {
           setShowOTPModal(false);
         }}
-        phoneNumber={address?.primaryPhone || ''}
+        phoneNumber={address?.primaryPhone ?? ''}
         onVerify={() => {
           setIsLoggedIn(true);
           setShowOTPModal(false);
@@ -287,7 +287,7 @@ interface AddressFormDrawerProps {
 
 function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressFormDrawerProps) {
   const [formData, setFormData] = useState<AddressDetails>(
-    initialData || {
+    initialData ?? {
       pincode: '',
       city: '',
       area: '',
@@ -426,7 +426,11 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressForm
 
             <div className="border-border bg-background/80 border-t p-8 backdrop-blur-xl md:px-12">
               <button
-                onClick={() => validate() && onSave(formData)}
+                onClick={() => {
+                  if (validate()) {
+                    onSave(formData);
+                  }
+                }}
                 className="bg-foreground text-background w-full rounded-full py-6 text-xs font-black uppercase tracking-[0.2em] shadow-2xl transition-transform active:scale-95"
               >
                 Save Shipping Address

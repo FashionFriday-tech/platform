@@ -31,8 +31,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             ...parsed,
           }));
         }
-      } catch (error) {
-        console.error('Failed to load settings from storage:', error);
+      } catch {
+        // Silent catch
       }
     };
 

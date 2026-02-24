@@ -65,8 +65,8 @@ export const useSearchData = (storageLimit = 10) => {
           // runs once, we satisfy the "synchronization" intent.
           setHistory(parsed);
         }
-      } catch (error) {
-        console.error('Failed to parse search history:', error);
+      } catch {
+        // Silent catch
       }
     };
 

@@ -224,7 +224,7 @@ export default function ReviewSection() {
                         </span>
 
                         <div className="mt-1.5 flex gap-0.5">
-                          {[...Array(5)].map((_, starIndex) => (
+                          {[null, null, null, null, null].map((_, starIndex) => (
                             <FilledStarIcon
                               key={starIndex}
                               size={10}

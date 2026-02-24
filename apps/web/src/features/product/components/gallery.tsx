@@ -156,9 +156,9 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                 <iframe
                   width={353}
                   height={628}
-                  src={`https://www.youtube.com/embed/${videoUrl}`}
+                  src={`https://www.youtube.com/embed/${videoUrl ?? ''}`}
                   title="Sneaker"
-                  frameBorder="0"
+                  style={{ border: 0 }}
                   allow="autoplay; encrypted-media; picture-in-picture"
                   referrerPolicy="strict-origin-when-cross-origin"
                   allowFullScreen
@@ -195,7 +195,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                 {activeMode !== 'video' ? (
                   <PlayIcon size={14} />
                 ) : (
-                  <PauseIcon size={14} fill={activeMode === 'video' ? 'black' : 'currentColor'} />
+                  <PauseIcon size={14} fill="black" />
                 )}
               </button>
             </div>

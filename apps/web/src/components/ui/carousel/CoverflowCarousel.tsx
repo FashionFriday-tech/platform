@@ -102,7 +102,11 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
                 transition={transitionSpec}
                 className="aspect-3/4 w-70 rounded-4xl absolute overflow-hidden shadow-xl md:w-[320px]"
                 style={{ transformStyle: 'preserve-3d' }}
-                onClick={() => !isActive && setActiveIndex(index)}
+                onClick={() => {
+                  if (!isActive) {
+                    setActiveIndex(index);
+                  }
+                }}
               >
                 {isActive ? (
                   <Link

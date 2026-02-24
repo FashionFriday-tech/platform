@@ -70,7 +70,10 @@ export default function QualityProtocolPage() {
 
       {/* 3. PROTOCOL LIST */}
       <main className="mx-auto max-w-6xl space-y-6 px-6">
-        {ProductQuality[activeCat].map((item) => (
+        {(Object.prototype.hasOwnProperty.call(ProductQuality, activeCat)
+          ? ProductQuality[activeCat]
+          : []
+        ).map((item) => (
           <div
             key={item.id}
             className={`group relative flex flex-col items-center gap-10 overflow-hidden rounded-[2.8rem] border bg-[#0a0a0a] p-8 transition-all duration-700 md:flex-row md:p-12 ${
