@@ -31,9 +31,9 @@ export default function BrandsPage() {
     );
 
   return (
-    <main className="bg-background text-foreground min-h-screen px-4 pt-10 pb-24 md:px-10 md:pt-26">
+    <main className="bg-background text-foreground md:pt-26 min-h-screen px-4 pb-24 pt-10 md:px-10">
       <header className="mb-10">
-        <h1 className="text-center text-6xl leading-[0.8] font-black tracking-tighter uppercase italic md:text-8xl">
+        <h1 className="text-center text-6xl font-black uppercase italic leading-[0.8] tracking-tighter md:text-8xl">
           Collection <br /> <span className="text-muted-foreground font-outline-2">of Brands</span>
         </h1>
       </header>
@@ -46,9 +46,15 @@ export default function BrandsPage() {
             activeValue={selectedCategory}
             options={ALL_CATEGORIES}
             isOpen={activeDropdown === 'cat'}
-            onToggle={() => setActiveDropdown(activeDropdown === 'cat' ? null : 'cat')}
-            onSelect={(val) => setSelectedCategory(val)}
-            onClose={() => setActiveDropdown(null)}
+            onToggle={() => {
+              setActiveDropdown(activeDropdown === 'cat' ? null : 'cat');
+            }}
+            onSelect={(val) => {
+              setSelectedCategory(val);
+            }}
+            onClose={() => {
+              setActiveDropdown(null);
+            }}
           />
           <div className="flex items-center gap-4">
             <SlidersIcon size={14} className="text-muted-foreground ml-2" />
@@ -59,9 +65,15 @@ export default function BrandsPage() {
             options={SORT_OPTIONS}
             displayMap={SORT_MAP}
             isOpen={activeDropdown === 'sort'}
-            onToggle={() => setActiveDropdown(activeDropdown === 'sort' ? null : 'sort')}
-            onSelect={(val) => setSortOption(val)}
-            onClose={() => setActiveDropdown(null)}
+            onToggle={() => {
+              setActiveDropdown(activeDropdown === 'sort' ? null : 'sort');
+            }}
+            onSelect={(val) => {
+              setSortOption(val);
+            }}
+            onClose={() => {
+              setActiveDropdown(null);
+            }}
           />
         </div>
       </div>
@@ -107,7 +119,9 @@ function FilterDropdown<T extends string>({
       }
     };
     document.addEventListener('mousedown', clickOut);
-    return () => document.removeEventListener('mousedown', clickOut);
+    return () => {
+      document.removeEventListener('mousedown', clickOut);
+    };
   }, [isOpen, onClose]);
 
   const displayLabel = displayMap ? displayMap[activeValue] || activeValue : activeValue;
@@ -116,7 +130,7 @@ function FilterDropdown<T extends string>({
     <div className="relative w-full" ref={containerRef}>
       <button
         onClick={onToggle}
-        className={`flex w-full items-center justify-center gap-3 rounded-full py-2.5 text-[11px] font-black tracking-tight uppercase transition-all duration-300 ${
+        className={`flex w-full items-center justify-center gap-3 rounded-full py-2.5 text-[11px] font-black uppercase tracking-tight transition-all duration-300 ${
           isOpen
             ? 'bg-foreground text-background border-foreground'
             : 'bg-background border-border text-foreground hover:border-foreground/50'

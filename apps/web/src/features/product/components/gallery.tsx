@@ -44,9 +44,9 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
 
   return (
     <div className="flex w-full max-w-6xl flex-col gap-6 lg:flex-row">
-      <div className="hidden h-[inherit] max-h-full w-50 shrink-0 flex-col gap-4 lg:flex">
+      <div className="w-50 hidden h-[inherit] max-h-full shrink-0 flex-col gap-4 lg:flex">
         <div
-          className="no-scrollbar flex flex-col gap-4 overflow-y-auto rounded-4xl"
+          className="no-scrollbar rounded-4xl flex flex-col gap-4 overflow-y-auto"
           style={{ maxHeight: 'calc(100vh - 100px)' }}
         >
           {images.map((img, i) => (
@@ -57,7 +57,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                 setActiveMode('image');
                 setIsZoomed(false);
               }}
-              className={`relative aspect-4/5 w-full shrink-0 overflow-hidden rounded-4xl border-2 transition-all duration-300 ${
+              className={`aspect-4/5 rounded-4xl relative w-full shrink-0 overflow-hidden border-2 transition-all duration-300 ${
                 index === i && activeMode === 'image'
                   ? 'scale-95 border-black shadow-lg'
                   : 'border-transparent opacity-70 hover:scale-105 hover:opacity-100'
@@ -73,7 +73,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
               setActiveMode('video');
               setIsZoomed(false);
             }}
-            className={`relative flex aspect-4/5 w-full shrink-0 items-center justify-center overflow-hidden rounded-4xl border-2 bg-gray-100 transition-all duration-300 ${
+            className={`aspect-4/5 rounded-4xl relative flex w-full shrink-0 items-center justify-center overflow-hidden border-2 bg-gray-100 transition-all duration-300 ${
               activeMode === 'video'
                 ? 'scale-95 border-black shadow-lg'
                 : 'border-transparent opacity-70 hover:opacity-100'
@@ -97,7 +97,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
       <div className="group relative w-full flex-1 touch-none select-none">
         {/* --- MEDIA VIEWPORT --- */}
         <div
-          className="relative aspect-4/5 cursor-crosshair overflow-hidden rounded-[2.5rem] bg-white shadow-sm"
+          className="aspect-4/5 relative cursor-crosshair overflow-hidden rounded-[2.5rem] bg-white shadow-sm"
           onPointerDown={handleInteraction}
         >
           <AnimatePresence mode="wait">
@@ -174,7 +174,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                   setActiveMode('image');
                   setIsZoomed(false);
                 }}
-                className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase transition-all ${
+                className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest transition-all ${
                   activeMode === 'image'
                     ? 'bg-white text-gray-400'
                     : 'text-white opacity-60 hover:opacity-100'

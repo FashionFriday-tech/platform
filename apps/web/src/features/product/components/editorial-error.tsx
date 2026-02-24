@@ -15,13 +15,13 @@ export default function EditorialError({ slug }: { slug: string }) {
         className="max-w-2xl space-y-12"
       >
         <div className="space-y-4">
-          <span className="text-brand block text-[10px] font-black tracking-[1em] uppercase opacity-60">
+          <span className="text-brand block text-[10px] font-black uppercase tracking-[1em] opacity-60">
             Error 404
           </span>
-          <h1 className="text-foreground text-6xl leading-tight font-black tracking-tighter uppercase italic md:text-8xl">
+          <h1 className="text-foreground text-6xl font-black uppercase italic leading-tight tracking-tighter md:text-8xl">
             Data <br /> Dissolved
           </h1>
-          <p className="text-foreground-muted text-sm font-medium tracking-wide uppercase opacity-40">
+          <p className="text-foreground-muted text-sm font-medium uppercase tracking-wide opacity-40">
             The entity <span className="text-foreground">"{slug}"</span> does not exist in our
             current catalog.
           </p>
@@ -29,7 +29,7 @@ export default function EditorialError({ slug }: { slug: string }) {
 
         <Link
           href="/"
-          className="border-border hover:bg-foreground hover:text-background group inline-flex items-center gap-4 border px-12 py-5 text-[10px] font-black tracking-widest uppercase transition-all duration-500"
+          className="border-border hover:bg-foreground hover:text-background group inline-flex items-center gap-4 border px-12 py-5 text-[10px] font-black uppercase tracking-widest transition-all duration-500"
         >
           <ArrowLeftIcon size={14} className="transition-transform group-hover:-translate-x-2" />
           Return to Catalog

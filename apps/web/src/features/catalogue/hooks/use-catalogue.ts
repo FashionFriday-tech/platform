@@ -110,7 +110,7 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
     return sorted;
   }, [initialProducts, activeFilters, sortBy]);
 
-  const handleFilterChange = (key: string, value: string, isSingleSelect: boolean = false) => {
+  const handleFilterChange = (key: string, value: string, isSingleSelect = false) => {
     setActiveFilters((prev) => {
       const currentValues = prev[key] || [];
       if (isSingleSelect) {

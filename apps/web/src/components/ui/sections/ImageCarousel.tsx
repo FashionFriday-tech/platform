@@ -33,7 +33,7 @@ const ImageCarousel = () => {
   };
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-4xl bg-black">
+    <div className="rounded-4xl relative flex h-full w-full items-center justify-center overflow-hidden bg-black">
       <style>{`
         @keyframes fillBar {
           0% { width: 0%; }
@@ -63,13 +63,15 @@ const ImageCarousel = () => {
       ))}
 
       {/* Navigation Dots */}
-      <div className="absolute right-0 bottom-8 left-0 z-20 flex items-center justify-center gap-3">
+      <div className="absolute bottom-8 left-0 right-0 z-20 flex items-center justify-center gap-3">
         {slides.map((_, index) => {
           const isActive = index === currentSlide;
           return (
             <button
               key={index}
-              onClick={() => setCurrentSlide(index)}
+              onClick={() => {
+                setCurrentSlide(index);
+              }}
               className={`relative h-1.5 overflow-hidden rounded-full transition-all duration-500 ease-out ${
                 isActive ? 'w-12 bg-white/30' : 'w-1.5 bg-white/50 hover:bg-white/80'
               }`}

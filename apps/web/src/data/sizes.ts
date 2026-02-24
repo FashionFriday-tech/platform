@@ -1,6 +1,4 @@
-interface SizeChartEntry {
-  [key: string]: string;
-}
+type SizeChartEntry = Record<string, string>;
 
 interface SizeCategory {
   units: string[];

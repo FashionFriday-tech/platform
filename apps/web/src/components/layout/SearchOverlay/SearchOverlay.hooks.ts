@@ -45,7 +45,7 @@ const DATABASE_SUGGESTIONS: SuggestionItem[] = [
 
 const STORAGE_KEY = 'search_history';
 
-export const useSearchData = (storageLimit: number = 10) => {
+export const useSearchData = (storageLimit = 10) => {
   const [history, setHistory] = useState<string[]>([]);
   const [allSuggestions] = useState<SuggestionItem[]>(DATABASE_SUGGESTIONS);
 

@@ -11,7 +11,7 @@ export default function AuthPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState(['', '', '', '']);
   const [profile, setProfile] = useState({ fullName: '', email: '' });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
 
@@ -25,10 +25,14 @@ export default function AuthPage() {
         setTimer((prev) => prev - 1);
       }, 1000);
     }
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [timer]);
 
-  const startTimer = () => setTimer(30);
+  const startTimer = () => {
+    setTimer(30);
+  };
 
   // --- NEW: PASTE LOGIC ---
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -55,7 +59,7 @@ export default function AuthPage() {
   };
 
   const validate = () => {
-    const newErrors: { [key: string]: string } = {};
+    const newErrors: Record<string, string> = {};
 
     if (step === 'PHONE') {
       if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
@@ -146,7 +150,7 @@ export default function AuthPage() {
             setStep(step === 'OTP' ? 'PHONE' : 'OTP');
             setErrors({});
           }}
-          className="mb-8 flex items-center text-[10px] font-bold tracking-widest text-zinc-500 uppercase transition-colors hover:text-white"
+          className="mb-8 flex items-center text-[10px] font-bold uppercase tracking-widest text-zinc-500 transition-colors hover:text-white"
         >
           <ArrowLeftIcon size={14} className="mr-2" />
           {step === 'OTP' ? 'Change Number' : 'Back to OTP'}
@@ -154,7 +158,7 @@ export default function AuthPage() {
       )}
 
       <div className="mb-10 space-y-3">
-        <h1 className="text-4xl font-black tracking-tight text-white uppercase">
+        <h1 className="text-4xl font-black uppercase tracking-tight text-white">
           {step === 'PHONE' && 'Join the Club'}
           {step === 'OTP' && 'Confirm OTP'}
           {step === 'PROFILE' && 'Welcome'}
@@ -166,7 +170,12 @@ export default function AuthPage() {
         </p>
       </div>
 
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className="space-y-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
+      >
         {step === 'PHONE' && (
           <div>
             <div className="flex gap-2">
@@ -182,7 +191,7 @@ export default function AuthPage() {
                   clearError('phone');
                 }}
                 placeholder="WhatsApp Number"
-                className={`block w-full rounded-full border-2 bg-transparent px-6 py-4 text-white transition-all outline-none ${
+                className={`block w-full rounded-full border-2 bg-transparent px-6 py-4 text-white outline-none transition-all ${
                   errors.phone
                     ? 'animate-shake border-red-500'
                     : 'border-zinc-800 focus:border-white'
@@ -191,7 +200,7 @@ export default function AuthPage() {
             </div>
             <div className="mt-2 h-4 px-6">
               {errors.phone && (
-                <p className="text-[10px] font-bold tracking-widest text-red-500 uppercase">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-red-500">
                   {errors.phone}
                 </p>
               )}
@@ -213,13 +222,15 @@ export default function AuthPage() {
                     inputRefs.current[index] = el;
                   }}
                   onPaste={index === 0 ? handlePaste : undefined} // Listen for paste on the first box
-                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onChange={(e) => {
+                    handleOtpChange(index, e.target.value);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Backspace' && !otp[index] && index > 0) {
                       inputRefs.current[index - 1]?.focus();
                     }
                   }}
-                  className={`h-16 w-16 rounded-full border-2 bg-transparent text-center text-2xl font-black text-white transition-all outline-none ${
+                  className={`h-16 w-16 rounded-full border-2 bg-transparent text-center text-2xl font-black text-white outline-none transition-all ${
                     errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                   }`}
                 />
@@ -228,7 +239,7 @@ export default function AuthPage() {
 
             <div className="h-6 text-center">
               {errors.otp ? (
-                <p className="animate-in fade-in text-[10px] font-bold tracking-widest text-red-500 uppercase">
+                <p className="animate-in fade-in text-[10px] font-bold uppercase tracking-widest text-red-500">
                   {errors.otp}
                 </p>
               ) : (
@@ -236,7 +247,7 @@ export default function AuthPage() {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={timer > 0}
-                  className={`font-bold tracking-[0.2em] uppercase ${
+                  className={`font-bold uppercase tracking-[0.2em] ${
                     timer > 0
                       ? 'cursor-not-allowed text-lg text-zinc-200'
                       : 'text-[10px] text-white underline underline-offset-4'
@@ -267,13 +278,13 @@ export default function AuthPage() {
                   setProfile({ ...profile, fullName: e.target.value });
                   clearError('name');
                 }}
-                className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white transition-all outline-none ${
+                className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white outline-none transition-all ${
                   errors.name ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                 }`}
               />
               <div className="px-8">
                 {errors.name && (
-                  <p className="text-[10px] font-bold tracking-widest text-red-500 uppercase">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-red-500">
                     {errors.name}
                   </p>
                 )}
@@ -289,13 +300,13 @@ export default function AuthPage() {
                   setProfile({ ...profile, email: e.target.value });
                   clearError('email');
                 }}
-                className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white transition-all outline-none ${
+                className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white outline-none transition-all ${
                   errors.email ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                 }`}
               />
               <div className="px-8">
                 {errors.email && (
-                  <p className="text-[10px] font-bold tracking-widest text-red-500 uppercase">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-red-500">
                     {errors.email}
                   </p>
                 )}
@@ -316,7 +327,7 @@ export default function AuthPage() {
         <button
           onClick={handleNext}
           disabled={loading}
-          className="group mt-2 flex w-full items-center justify-center rounded-full bg-white py-5 text-sm font-black tracking-widest text-black uppercase transition-all hover:bg-zinc-200 disabled:opacity-50"
+          className="group mt-2 flex w-full items-center justify-center rounded-full bg-white py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:bg-zinc-200 disabled:opacity-50"
         >
           {loading ? 'Processing...' : step === 'PROFILE' ? 'Start Shopping!' : 'Continue'}
           {!loading && (
@@ -326,7 +337,7 @@ export default function AuthPage() {
 
         {step !== 'OTP' && (
           <div className="mt-8 space-y-2 text-center">
-            <p className="text-[10px] leading-loose tracking-widest text-zinc-600 uppercase">
+            <p className="text-[10px] uppercase leading-loose tracking-widest text-zinc-600">
               By continuing, you agree to our <br />
               <Link
                 href="/terms"

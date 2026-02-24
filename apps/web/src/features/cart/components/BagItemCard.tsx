@@ -33,14 +33,18 @@ export function CartItemsCard({ item }: BagItemCardProps) {
           <div className="bg-background/50 animate-in fade-in zoom-in absolute inset-0 z-10 flex flex-col items-center justify-center p-2 text-center duration-300">
             <div className="flex w-full flex-col gap-2">
               <button
-                onClick={() => setIsConfirming(false)} // Replace with actual Wishlist logic
+                onClick={() => {
+                  setIsConfirming(false);
+                }} // Replace with actual Wishlist logic
                 className="bg-foreground text-background w-full rounded-full py-4 text-xs font-bold uppercase transition-transform active:scale-95"
               >
                 Move to Wishlist
               </button>
               <button
-                onClick={() => setIsConfirming(false)} // Replace with actual Delete logic
-                className="hover:bg-destructive hover:text-destructive-foreground w-full rounded-full bg-red-600 py-3 text-xs font-bold text-white uppercase transition-all"
+                onClick={() => {
+                  setIsConfirming(false);
+                }} // Replace with actual Delete logic
+                className="hover:bg-destructive hover:text-destructive-foreground w-full rounded-full bg-red-600 py-3 text-xs font-bold uppercase text-white transition-all"
               >
                 Remove
               </button>
@@ -53,10 +57,10 @@ export function CartItemsCard({ item }: BagItemCardProps) {
         <div className="flex flex-col items-start justify-between gap-2">
           {/* Info */}
           <div className="space-y-1">
-            <h3 className="text-foreground text-lg leading-tight font-medium tracking-tight md:text-3xl">
+            <h3 className="text-foreground text-lg font-medium leading-tight tracking-tight md:text-3xl">
               {item.name}
             </h3>
-            <div className="text-foreground-subtle flex items-center gap-3 text-sm text-[11px] font-semibold tracking-widest uppercase md:text-lg">
+            <div className="text-foreground-subtle flex items-center gap-3 text-[11px] text-sm font-semibold uppercase tracking-widest md:text-lg">
               <span className="text-sm md:text-lg">{item.color}</span>
               <span className="bg-border h-3" />
               <span>{item.size}</span>
@@ -70,7 +74,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
                 ₹{item.originalPrice.toLocaleString()}
               </span>
             )}
-            <span className="text-foreground font-bold tracking-tight tabular-nums">
+            <span className="text-foreground font-bold tabular-nums tracking-tight">
               ₹{(item.price * item.quantity).toLocaleString()}
             </span>
           </div>
@@ -81,7 +85,9 @@ export function CartItemsCard({ item }: BagItemCardProps) {
           <div className="flex items-center gap-4">
             {/* Optimized Delete Trigger */}
             <button
-              onClick={() => setIsConfirming((prev) => !prev)}
+              onClick={() => {
+                setIsConfirming((prev) => !prev);
+              }}
               className="border-border text-foreground-subtle hover:text-destructive hover:border-destructive group/del flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border transition-all duration-300"
               aria-label="Remove item"
             >

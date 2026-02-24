@@ -41,7 +41,7 @@ interface ModernInputProps {
 // --- Sub-Components ---
 
 const ProfileSection = ({ title, icon: Icon, children, badge }: ProfileSectionProps) => (
-  <section className="bg-background-elevated border-border overflow-hidden rounded-4xl border shadow-sm">
+  <section className="bg-background-elevated border-border rounded-4xl overflow-hidden border shadow-sm">
     <div className="bg-background-muted border-border flex items-center justify-between gap-2 border-b px-6 py-4">
       <div className="flex items-center gap-2">
         {Icon && <Icon size={18} className="text-foreground" />}
@@ -91,8 +91,8 @@ export default function EcommerceProfile() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
           {/* LEFT SIDEBAR */}
           <aside className="space-y-6 md:col-span-4">
-            <div className="bg-background-elevated border-border relative overflow-hidden rounded-4xl border p-6 text-center shadow-sm">
-              <div className="from-background-muted absolute top-0 left-0 z-0 h-24 w-full bg-linear-to-b to-transparent" />
+            <div className="bg-background-elevated border-border rounded-4xl relative overflow-hidden border p-6 text-center shadow-sm">
+              <div className="from-background-muted bg-linear-to-b absolute left-0 top-0 z-0 h-24 w-full to-transparent" />
 
               <div className="relative z-10">
                 <button
@@ -114,7 +114,7 @@ export default function EcommerceProfile() {
                       <CameraIcon className="text-white" size={24} />
                     </div>
                   </div>
-                  <div className="bg-brand text-brand-foreground border-background absolute right-0 bottom-0 rounded-full border-2 p-1.5">
+                  <div className="bg-brand text-brand-foreground border-background absolute bottom-0 right-0 rounded-full border-2 p-1.5">
                     <CameraIcon size={14} />
                   </div>
                 </button>
@@ -124,7 +124,7 @@ export default function EcommerceProfile() {
 
                 <div className="bg-background-muted rounded-4xl p-4 text-left">
                   <div className="mb-2 flex items-end justify-between">
-                    <span className="text-xs font-bold tracking-tighter uppercase">
+                    <span className="text-xs font-bold uppercase tracking-tighter">
                       Profile Strength
                     </span>
                     <span className="text-sm font-bold">{completion}%</span>
@@ -228,7 +228,7 @@ export default function EcommerceProfile() {
             >
               <div className="space-y-6">
                 <div>
-                  <label className="text-foreground-subtle mb-3 block text-xs font-bold tracking-wider uppercase">
+                  <label className="text-foreground-subtle mb-3 block text-xs font-bold uppercase tracking-wider">
                     I shop for
                   </label>
                   <div className="grid grid-cols-3 gap-3">
@@ -252,7 +252,7 @@ export default function EcommerceProfile() {
                 </div>
 
                 <div>
-                  <label className="text-foreground-subtle mb-3 block text-xs font-bold tracking-wider uppercase">
+                  <label className="text-foreground-subtle mb-3 block text-xs font-bold uppercase tracking-wider">
                     My Style Vibe
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -304,7 +304,7 @@ export default function EcommerceProfile() {
             </ProfileSection>
 
             <div className="sticky bottom-16 z-20 flex w-full items-center justify-center pt-4 md:bottom-4">
-              <div className="bg-foreground flex gap-3 rounded-4xl p-2 shadow-xl backdrop-blur-xl">
+              <div className="bg-foreground rounded-4xl flex gap-3 p-2 shadow-xl backdrop-blur-xl">
                 <button
                   type="button"
                   className="text-background hover:bg-background rounded-4xl px-6 py-3 font-medium transition-colors"
@@ -314,7 +314,7 @@ export default function EcommerceProfile() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-background text-foreground flex items-center gap-2 rounded-4xl px-8 py-3 font-semibold transition-all hover:opacity-90"
+                  className="bg-background text-foreground rounded-4xl flex items-center gap-2 px-8 py-3 font-semibold transition-all hover:opacity-90"
                 >
                   {loading ? (
                     <LoaderIcon className="animate-spin" size={18} />
@@ -345,7 +345,7 @@ const ModernInput = ({
 }: ModernInputProps) => (
   <div className="w-full space-y-1.5">
     <div className="flex justify-between">
-      <label className="text-foreground-subtle text-xs font-bold tracking-wider uppercase">
+      <label className="text-foreground-subtle text-xs font-bold uppercase tracking-wider">
         {label}
       </label>
       {isVerified && (
@@ -362,7 +362,7 @@ const ModernInput = ({
           onChange(e.target.value);
         }}
         disabled={isVerified}
-        className={`bg-background border-border text-foreground focus:ring-ring focus:border-brand w-full rounded-4xl border py-3.5 pl-4 text-sm transition-all outline-none focus:ring-1 ${actionLabel ? 'pr-28' : 'pr-4'} ${
+        className={`bg-background border-border text-foreground focus:ring-ring focus:border-brand rounded-4xl w-full border py-3.5 pl-4 text-sm outline-none transition-all focus:ring-1 ${actionLabel ? 'pr-28' : 'pr-4'} ${
           isVerified ? 'border-brand opacity-80' : ''
         }`}
       />
@@ -373,7 +373,7 @@ const ModernInput = ({
             void onAction();
           }}
           disabled={isLoading || !value}
-          className="bg-brand text-brand-foreground absolute top-1.5 right-1.5 bottom-1.5 min-w-20 rounded-3xl px-4 text-xs font-bold transition-all hover:opacity-90 disabled:opacity-30"
+          className="bg-brand text-brand-foreground absolute bottom-1.5 right-1.5 top-1.5 min-w-20 rounded-3xl px-4 text-xs font-bold transition-all hover:opacity-90 disabled:opacity-30"
         >
           {isLoading ? <LoaderIcon className="animate-spin" size={14} /> : actionLabel}
         </button>
@@ -381,7 +381,7 @@ const ModernInput = ({
       {isVerified && (
         <CheckCircleIcon
           size={20}
-          className="text-brand absolute top-1/2 right-4 -translate-y-1/2"
+          className="text-brand absolute right-4 top-1/2 -translate-y-1/2"
         />
       )}
     </div>

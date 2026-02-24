@@ -53,7 +53,7 @@ export default function FinalReviewPage() {
           <div className="flex-1 space-y-8">
             <section>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-foreground-subtle text-[10px] font-black tracking-[0.2em] uppercase">
+                <h2 className="text-foreground-subtle text-[10px] font-black uppercase tracking-[0.2em]">
                   Shipping Destination
                 </h2>
               </div>
@@ -63,14 +63,14 @@ export default function FinalReviewPage() {
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="border-foreground bg-background shadow-foreground/5 flex items-start justify-between rounded-4xl border-2 p-8 shadow-xl"
+                    className="border-foreground bg-background shadow-foreground/5 rounded-4xl flex items-start justify-between border-2 p-8 shadow-xl"
                   >
                     <div className="flex gap-6">
                       <div className="bg-foreground text-background flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl">
                         <MapPinIcon size={20} />
                       </div>
                       <div>
-                        <p className="text-sm font-black tracking-tight uppercase">
+                        <p className="text-sm font-black uppercase tracking-tight">
                           {address.recipientName}
                         </p>
                         <p className="text-foreground-muted mt-1 text-sm leading-relaxed">
@@ -84,7 +84,9 @@ export default function FinalReviewPage() {
                       </div>
                     </div>
                     <button
-                      onClick={() => setShowAddressForm(true)}
+                      onClick={() => {
+                        setShowAddressForm(true);
+                      }}
                       className="text-[10px] font-black uppercase underline underline-offset-4"
                     >
                       Edit
@@ -92,13 +94,15 @@ export default function FinalReviewPage() {
                   </motion.div>
                 ) : (
                   <motion.button
-                    onClick={() => setShowAddressForm(true)}
-                    className="border-border hover:border-foreground bg-background-muted/10 group flex w-full flex-col items-center gap-2 rounded-4xl border-2 border-dashed p-6 transition-all"
+                    onClick={() => {
+                      setShowAddressForm(true);
+                    }}
+                    className="border-border hover:border-foreground bg-background-muted/10 rounded-4xl group flex w-full flex-col items-center gap-2 border-2 border-dashed p-6 transition-all"
                   >
                     <div className="bg-background group-hover:bg-foreground group-hover:text-background flex items-center justify-center rounded-full border p-2 transition-colors">
                       <PlusIcon size={24} />
                     </div>
-                    <span className="text-xs font-black tracking-widest uppercase">
+                    <span className="text-xs font-black uppercase tracking-widest">
                       Add Shipping Address
                     </span>
                   </motion.button>
@@ -107,7 +111,7 @@ export default function FinalReviewPage() {
             </section>
 
             <section>
-              <h2 className="text-foreground-subtle mb-4 text-[10px] font-black tracking-[0.2em] uppercase">
+              <h2 className="text-foreground-subtle mb-4 text-[10px] font-black uppercase tracking-[0.2em]">
                 Your Selection ({bagItems.length})
               </h2>
               <div className="grid grid-cols-1 gap-4">
@@ -116,7 +120,7 @@ export default function FinalReviewPage() {
                     key={item.id}
                     className="border-border bg-background-muted/5 flex items-center gap-6 rounded-3xl border p-5"
                   >
-                    <div className="bg-background-muted border-border relative h-22 w-20 overflow-hidden rounded-xl border">
+                    <div className="bg-background-muted border-border h-22 relative w-20 overflow-hidden rounded-xl border">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -127,7 +131,7 @@ export default function FinalReviewPage() {
                     </div>
 
                     <div className="flex-1">
-                      <h3 className="text-xs font-bold tracking-tight uppercase">{item.name}</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-tight">{item.name}</h3>
                       <p className="text-foreground-muted mt-1 text-[10px] font-bold uppercase">
                         Size: {item.size} • Qty: {item.quantity}
                       </p>
@@ -144,23 +148,23 @@ export default function FinalReviewPage() {
 
           <aside className="sticky top-24 hidden w-96 space-y-4 lg:block">
             <div className="bg-foreground text-background rounded-[2.5rem] p-8 shadow-2xl">
-              <h3 className="mb-8 text-center text-[10px] font-black tracking-[0.3em] uppercase opacity-50">
+              <h3 className="mb-8 text-center text-[10px] font-black uppercase tracking-[0.3em] opacity-50">
                 Checkout Summary
               </h3>
 
               <div className="mb-10 space-y-4">
-                <div className="flex justify-between text-xs font-bold tracking-widest uppercase opacity-80">
+                <div className="flex justify-between text-xs font-bold uppercase tracking-widest opacity-80">
                   <span>Subtotal</span>
                   <span>₹{pricing.subtotal}</span>
                 </div>
-                <div className="flex justify-between text-xs font-bold tracking-widest text-emerald-400 uppercase">
+                <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-emerald-400">
                   <span>Discount</span>
                   <span>-₹{pricing.discount}</span>
                 </div>
                 <div className="bg-background/10 my-4 h-px w-full" />
                 <div className="flex items-end justify-between">
                   <div className="flex flex-col">
-                    <span className="text-[8px] font-black tracking-widest uppercase opacity-50">
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-50">
                       Total Payable
                     </span>
                     <span className="text-4xl font-black tracking-tighter">₹{pricing.total}</span>
@@ -170,22 +174,24 @@ export default function FinalReviewPage() {
 
               <button
                 onClick={handleContinue}
-                className="bg-background text-foreground flex w-full items-center justify-center gap-3 rounded-full py-5 text-sm font-black tracking-widest uppercase shadow-xl transition-all active:scale-95"
+                className="bg-background text-foreground flex w-full items-center justify-center gap-3 rounded-full py-5 text-sm font-black uppercase tracking-widest shadow-xl transition-all active:scale-95"
               >
                 {address ? (isLoggedIn ? 'Pay Now' : 'Verify & Continue') : 'Add Address'}
                 <ChevronRightIcon size={18} />
               </button>
             </div>
-            <p className="text-foreground-subtle text-center text-[8px] font-bold tracking-widest uppercase opacity-50">
+            <p className="text-foreground-subtle text-center text-[8px] font-bold uppercase tracking-widest opacity-50">
               Secure Payment powered by Stripe & Razorpay
             </p>
           </aside>
         </div>
       </main>
 
-      <div className="fixed right-0 bottom-0 left-0 z-50 flex flex-col items-center lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 flex flex-col items-center lg:hidden">
         <motion.div
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => {
+            setIsExpanded(!isExpanded);
+          }}
           className="bg-background border-border z-10 cursor-pointer rounded-t-full border-x border-t px-16 py-2 text-[10px] font-bold tracking-[0.3em]"
         >
           YOU SAVED ₹{pricing.discount} 🎉
@@ -201,7 +207,7 @@ export default function FinalReviewPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-foreground-subtle space-y-4 p-4 text-xs font-bold tracking-widest uppercase"
+                  className="text-foreground-subtle space-y-4 p-4 text-xs font-bold uppercase tracking-widest"
                 >
                   <div className="flex justify-between">
                     <span>Subtotal</span>
@@ -218,9 +224,11 @@ export default function FinalReviewPage() {
             <div className="bg-foreground flex w-full items-center justify-between rounded-full p-2">
               <div
                 className="flex cursor-pointer flex-col px-4"
-                onClick={() => setIsExpanded(!isExpanded)}
+                onClick={() => {
+                  setIsExpanded(!isExpanded);
+                }}
               >
-                <p className="text-foreground-subtle mb-1 flex items-center gap-2 text-[8px] font-black tracking-widest text-nowrap uppercase">
+                <p className="text-foreground-subtle mb-1 flex items-center gap-2 text-nowrap text-[8px] font-black uppercase tracking-widest">
                   Total Payable{' '}
                   <motion.span animate={{ rotate: isExpanded ? 180 : 0 }}>
                     <ChevronUpIcon size={10} />
@@ -233,7 +241,7 @@ export default function FinalReviewPage() {
                   e.stopPropagation();
                   handleContinue();
                 }}
-                className="bg-background text-foreground flex w-full items-center justify-center gap-2 rounded-full px-4 py-4 text-center text-sm font-black tracking-wide uppercase transition-all active:scale-95"
+                className="bg-background text-foreground flex w-full items-center justify-center gap-2 rounded-full px-4 py-4 text-center text-sm font-black uppercase tracking-wide transition-all active:scale-95"
               >
                 {address ? (isLoggedIn ? 'Pay Now' : 'Verify & Continue') : 'Add Address'}
                 <ChevronRightIcon size={18} />
@@ -245,7 +253,9 @@ export default function FinalReviewPage() {
 
       <AddressFormDrawer
         isOpen={showAddressForm}
-        onClose={() => setShowAddressForm(false)}
+        onClose={() => {
+          setShowAddressForm(false);
+        }}
         onSave={(data: AddressDetails) => {
           setAddress(data);
           setShowAddressForm(false);
@@ -255,7 +265,9 @@ export default function FinalReviewPage() {
 
       <OTPModal
         isOpen={showOTPModal}
-        _onClose={() => setShowOTPModal(false)}
+        _onClose={() => {
+          setShowOTPModal(false);
+        }}
         phoneNumber={address?.primaryPhone || ''}
         onVerify={() => {
           setIsLoggedIn(true);
@@ -306,17 +318,17 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressForm
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="bg-background/50 fixed inset-0 z-60 backdrop-blur-xl"
+            className="bg-background/50 z-60 fixed inset-0 backdrop-blur-xl"
           />
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 20 }}
-            className="bg-background border-border fixed right-0 bottom-0 left-0 z-70 mx-auto flex max-h-[92vh] max-w-3xl flex-col rounded-t-[3rem] border-t shadow-2xl"
+            className="bg-background border-border z-70 fixed bottom-0 left-0 right-0 mx-auto flex max-h-[92vh] max-w-3xl flex-col rounded-t-[3rem] border-t shadow-2xl"
           >
             <div className="flex items-center justify-between p-8 pb-6 md:p-12">
-              <h2 className="text-2xl font-black tracking-tighter uppercase italic">
+              <h2 className="text-2xl font-black uppercase italic tracking-tighter">
                 Address Details
               </h2>
               <button onClick={onClose} className="bg-background-muted rounded-full p-3">
@@ -329,17 +341,17 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressForm
                 <InputBox
                   label="Pincode"
                   value={formData.pincode}
-                  onChange={(v: string) =>
-                    setFormData({ ...formData, pincode: v.replace(/\D/g, '').slice(0, 6) })
-                  }
+                  onChange={(v: string) => {
+                    setFormData({ ...formData, pincode: v.replace(/\D/g, '').slice(0, 6) });
+                  }}
                   placeholder="6 Digits"
                   type="text"
                 />
                 <div className="space-y-2">
-                  <label className="text-foreground-muted px-4 text-[9px] font-black tracking-[0.2em] uppercase">
+                  <label className="text-foreground-muted px-4 text-[9px] font-black uppercase tracking-[0.2em]">
                     Detected Region
                   </label>
-                  <div className="bg-background-muted/20 border-border text-foreground-muted flex h-14.5 w-full items-center rounded-2xl border-2 border-dotted p-4 text-[10px] font-black tracking-widest uppercase">
+                  <div className="bg-background-muted/20 border-border text-foreground-muted h-14.5 flex w-full items-center rounded-2xl border-2 border-dotted p-4 text-[10px] font-black uppercase tracking-widest">
                     {formData.pincode.length === 6 ? 'KERALA, MALAPPURAM' : 'Waiting...'}
                   </div>
                 </div>
@@ -349,13 +361,17 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressForm
                 <InputBox
                   label="City / Town"
                   value={formData.city}
-                  onChange={(v: string) => setFormData({ ...formData, city: v })}
+                  onChange={(v: string) => {
+                    setFormData({ ...formData, city: v });
+                  }}
                   placeholder="e.g. Puthanathani"
                 />
                 <InputBox
                   label="Area / Locality"
                   value={formData.area}
-                  onChange={(v: string) => setFormData({ ...formData, area: v })}
+                  onChange={(v: string) => {
+                    setFormData({ ...formData, area: v });
+                  }}
                   placeholder="Street/Colony"
                 />
               </div>
@@ -364,13 +380,17 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressForm
                 <InputBox
                   label="Building / House No"
                   value={formData.building}
-                  onChange={(v: string) => setFormData({ ...formData, building: v })}
+                  onChange={(v: string) => {
+                    setFormData({ ...formData, building: v });
+                  }}
                   placeholder="No. / Name"
                 />
                 <InputBox
                   label="Landmark"
                   value={formData.landmark}
-                  onChange={(v: string) => setFormData({ ...formData, landmark: v })}
+                  onChange={(v: string) => {
+                    setFormData({ ...formData, landmark: v });
+                  }}
                   placeholder="Optional"
                 />
               </div>
@@ -378,7 +398,9 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressForm
               <InputBox
                 label="Recipient Name"
                 value={formData.recipientName}
-                onChange={(v: string) => setFormData({ ...formData, recipientName: v })}
+                onChange={(v: string) => {
+                  setFormData({ ...formData, recipientName: v });
+                }}
                 placeholder="Full name"
               />
 
@@ -386,13 +408,17 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressForm
                 <InputBox
                   label="Primary Phone"
                   value={formData.primaryPhone}
-                  onChange={(v: string) => setFormData({ ...formData, primaryPhone: v })}
+                  onChange={(v: string) => {
+                    setFormData({ ...formData, primaryPhone: v });
+                  }}
                   placeholder="+91"
                 />
                 <InputBox
                   label="Alt Phone"
                   value={formData.altPhone}
-                  onChange={(v: string) => setFormData({ ...formData, altPhone: v })}
+                  onChange={(v: string) => {
+                    setFormData({ ...formData, altPhone: v });
+                  }}
                   placeholder="Optional"
                 />
               </div>
@@ -401,7 +427,7 @@ function AddressFormDrawer({ isOpen, onClose, onSave, initialData }: AddressForm
             <div className="border-border bg-background/80 border-t p-8 backdrop-blur-xl md:px-12">
               <button
                 onClick={() => validate() && onSave(formData)}
-                className="bg-foreground text-background w-full rounded-full py-6 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95"
+                className="bg-foreground text-background w-full rounded-full py-6 text-xs font-black uppercase tracking-[0.2em] shadow-2xl transition-transform active:scale-95"
               >
                 Save Shipping Address
               </button>
@@ -428,15 +454,17 @@ function InputBox({
 }) {
   return (
     <div className="space-y-2">
-      <label className="text-foreground-muted px-4 text-[8px] font-black tracking-[0.2em] uppercase">
+      <label className="text-foreground-muted px-4 text-[8px] font-black uppercase tracking-[0.2em]">
         {label}
       </label>
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          onChange(e.target.value);
+        }}
         placeholder={placeholder}
-        className="border-border focus:border-foreground w-full rounded-2xl border-2 border-dotted bg-transparent p-4 text-sm font-bold transition-all outline-none placeholder:opacity-20"
+        className="border-border focus:border-foreground w-full rounded-2xl border-2 border-dotted bg-transparent p-4 text-sm font-bold outline-none transition-all placeholder:opacity-20"
       />
     </div>
   );
@@ -453,16 +481,16 @@ function OTPModal({ isOpen, _onClose, phoneNumber, onVerify }: OTPModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="bg-background/90 fixed inset-0 z-100 flex items-center justify-center p-6 backdrop-blur-xl">
+        <div className="bg-background/90 z-100 fixed inset-0 flex items-center justify-center p-6 backdrop-blur-xl">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="bg-background border-border w-full max-w-md rounded-[3rem] border p-10 text-center shadow-2xl"
           >
-            <h2 className="mb-2 text-2xl font-black tracking-tighter uppercase italic">
+            <h2 className="mb-2 text-2xl font-black uppercase italic tracking-tighter">
               Verify Phone
             </h2>
-            <p className="text-foreground-muted mb-8 text-[10px] font-bold tracking-widest uppercase">
+            <p className="text-foreground-muted mb-8 text-[10px] font-bold uppercase tracking-widest">
               Sent to {phoneNumber}
             </p>
             <div className="mb-8 flex justify-center gap-4">
@@ -475,7 +503,7 @@ function OTPModal({ isOpen, _onClose, phoneNumber, onVerify }: OTPModalProps) {
             </div>
             <button
               onClick={onVerify}
-              className="bg-foreground text-background w-full rounded-full py-5 text-xs font-black tracking-widest uppercase"
+              className="bg-foreground text-background w-full rounded-full py-5 text-xs font-black uppercase tracking-widest"
             >
               Verify & Pay
             </button>

@@ -17,7 +17,7 @@ export default function ProductPerks() {
         >
           <div className="shrink-0 text-[var(--brand-primary)]">{perk.icon}</div>
           <div>
-            <h4 className="mb-1 text-[10px] leading-none font-black tracking-widest uppercase">
+            <h4 className="mb-1 text-[10px] font-black uppercase leading-none tracking-widest">
               {perk.title}
             </h4>
             <p className="text-[10px] text-[var(--text-secondary)]">{perk.desc}</p>

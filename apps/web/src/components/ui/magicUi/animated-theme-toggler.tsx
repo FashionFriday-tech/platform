@@ -26,7 +26,9 @@ export const AnimatedThemeToggler = ({
       setMounted(true);
     });
 
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   const toggleTheme = useCallback(async () => {

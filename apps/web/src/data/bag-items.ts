@@ -1,4 +1,4 @@
-export type BagItem = {
+export interface BagItem {
   id: string;
   name: string;
   price: number;
@@ -8,7 +8,7 @@ export type BagItem = {
   image: string;
   quantity: number;
   inStock: boolean;
-};
+}
 
 export const bagItems: BagItem[] = [
   {

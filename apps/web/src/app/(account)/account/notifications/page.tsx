@@ -31,7 +31,9 @@ export default function NotificationsPage() {
     };
     updateWidth();
     window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
+    return () => {
+      window.removeEventListener('resize', updateWidth);
+    };
   }, []);
 
   // Moved inside useMemo to satisfy exhaustive-deps and prevent unnecessary re-creations
@@ -78,16 +80,18 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="bg-background text-foreground fixed inset-0 flex flex-col overflow-hidden overscroll-none pt-16 select-none md:pt-20">
+    <div className="bg-background text-foreground fixed inset-0 flex select-none flex-col overflow-hidden overscroll-none pt-16 md:pt-20">
       <header className="border-foreground/10 bg-background relative z-30 shrink-0 border-b">
         <div className="relative mx-auto max-w-md px-4">
           <nav className="flex w-full">
             {TABS.map((tab, i) => (
               <button
                 key={tab}
-                onClick={() => setActiveIndex(i)}
+                onClick={() => {
+                  setActiveIndex(i);
+                }}
                 className={cn(
-                  'flex flex-1 items-center justify-center gap-2 py-4 text-sm font-medium capitalize transition-colors outline-none',
+                  'flex flex-1 items-center justify-center gap-2 py-4 text-sm font-medium capitalize outline-none transition-colors',
                   activeIndex === i ? 'text-foreground' : 'text-foreground/40',
                 )}
               >

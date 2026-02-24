@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowDownIcon } from '@ff/ui';
 import Link from 'next/link'; // Added Link import
+
+import { ArrowDownIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface ColorOption {
   label: string;
@@ -34,10 +35,10 @@ const ColorTray = ({
     >
       <button
         onClick={onToggle}
-        className="flex w-full items-center justify-between font-black text-white uppercase transition-colors"
+        className="flex w-full items-center justify-between font-black uppercase text-white transition-colors"
       >
         <div className="flex items-center gap-4">
-          <span className="text-[10px] tracking-[0.3em] italic">Color Options</span>
+          <span className="text-[10px] italic tracking-[0.3em]">Color Options</span>
         </div>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
           <ArrowDownIcon size={18} />
@@ -52,7 +53,7 @@ const ColorTray = ({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="no-scrollbar flex gap-4 overflow-x-auto pt-6 pb-2">
+            <div className="no-scrollbar flex gap-4 overflow-x-auto pb-2 pt-6">
               {options.map((opt) => (
                 <div key={opt.slug} className={`flex shrink-0 flex-col items-center gap-2`}>
                   {/* Link wrapper for navigation */}
@@ -82,7 +83,7 @@ const ColorTray = ({
                     </div>
                   </Link>
                   <span
-                    className={`text-[8px] font-black tracking-widest uppercase italic ${
+                    className={`text-[8px] font-black uppercase italic tracking-widest ${
                       selectedValue === opt.slug ? 'text-white' : 'text-white/40'
                     }`}
                   >
@@ -142,7 +143,9 @@ export default function ProductSelection() {
         selectedValue={color}
         onChange={setColor}
         isOpen={isOpen}
-        onToggle={() => setIsOpen(!isOpen)}
+        onToggle={() => {
+          setIsOpen(!isOpen);
+        }}
       />
     </div>
   );

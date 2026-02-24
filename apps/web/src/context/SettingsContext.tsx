@@ -8,10 +8,10 @@ const STORAGE_KEY = 'app_settings';
 
 type Settings = typeof DEFAULT_SETTINGS;
 
-type SettingsContextType = {
+interface SettingsContextType {
   settings: Settings;
   updateSettings: (updates: Partial<Settings>) => void;
-};
+}
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
 

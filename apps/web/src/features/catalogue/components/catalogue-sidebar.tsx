@@ -40,8 +40,8 @@ export const CatalogueSidebar = ({
   return (
     <aside className="no-scrollbar sticky top-28 hidden h-[calc(100vh-120px)] w-72 shrink-0 overflow-y-auto pr-4 lg:block">
       <div className="border-border mb-8 flex items-center justify-between border-b pb-4">
-        <h2 className="text-xl font-black tracking-tighter uppercase italic">Refine</h2>
-        <span className="text-[10px] font-bold tracking-widest uppercase opacity-30">
+        <h2 className="text-xl font-black uppercase italic tracking-tighter">Refine</h2>
+        <span className="text-[10px] font-bold uppercase tracking-widest opacity-30">
           {category}
         </span>
       </div>
@@ -52,7 +52,7 @@ export const CatalogueSidebar = ({
           onClick={() => {
             toggleSection('priceRange');
           }}
-          className="flex w-full items-center justify-between py-2 text-[11px] font-black tracking-widest uppercase"
+          className="flex w-full items-center justify-between py-2 text-[11px] font-black uppercase tracking-widest"
         >
           Budget Range
           <ChevronDownIcon
@@ -67,7 +67,7 @@ export const CatalogueSidebar = ({
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden px-2 pt-4 pb-2"
+              className="overflow-hidden px-2 pb-2 pt-4"
             >
               <input
                 type="range"
@@ -102,7 +102,7 @@ export const CatalogueSidebar = ({
             onClick={() => {
               toggleSection(section.id);
             }}
-            className="flex w-full items-center justify-between py-2 text-[11px] font-black tracking-widest uppercase"
+            className="flex w-full items-center justify-between py-2 text-[11px] font-black uppercase tracking-widest"
           >
             {section.label}
             <ChevronDownIcon
@@ -117,7 +117,7 @@ export const CatalogueSidebar = ({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="flex flex-wrap gap-2 overflow-hidden pt-2 pb-4"
+                className="flex flex-wrap gap-2 overflow-hidden pb-4 pt-2"
               >
                 {section.options?.map((opt: string) => {
                   // Checks if the option is in the active filters array
@@ -128,7 +128,7 @@ export const CatalogueSidebar = ({
                       onClick={() => {
                         onFilterChange(section.id, opt);
                       }}
-                      className={`rounded-full border px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-90 ${
+                      className={`rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all duration-200 active:scale-90 ${
                         isActive
                           ? 'bg-foreground text-background border-foreground shadow-lg'
                           : 'bg-background border-border hover:border-foreground/40'
@@ -150,7 +150,7 @@ export const CatalogueSidebar = ({
           onClick={() => {
             window.location.reload();
           }} // Quick hack to reset, or call a clear function
-          className="border-border mt-8 w-full border border-dashed py-4 text-[10px] font-black tracking-[0.2em] uppercase transition-colors hover:border-red-500 hover:bg-red-500 hover:text-white"
+          className="border-border mt-8 w-full border border-dashed py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-colors hover:border-red-500 hover:bg-red-500 hover:text-white"
         >
           Reset All
         </button>

@@ -5,9 +5,8 @@ import { Header } from '@/components/layout/Header';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { SettingsProvider } from '@/context/SettingsContext';
 
-import { ThemeProvider } from './providers/theme-provider';
-
 import './globals.css';
+import { ThemeProvider } from './providers/theme-provider';
 
 const geistSans = Geist({
   subsets: ['latin'],

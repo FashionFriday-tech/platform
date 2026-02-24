@@ -78,7 +78,9 @@ export default function Footer() {
       <button
         type="button"
         className="bg-background text-forground border-foreground mt-0.5 flex w-full items-center justify-center gap-2 border-y py-4 transition-colors"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+        }}
         aria-expanded={isOpen}
       >
         <span>More about Online Shopping at Fashion Friday</span>
@@ -88,7 +90,7 @@ export default function Footer() {
       </button>
 
       {isOpen && (
-        <div className="animate-in fade-in slide-in-from-top-4 px-6 pt-16 pb-8 text-black duration-300 md:px-12">
+        <div className="animate-in fade-in slide-in-from-top-4 px-6 pb-8 pt-16 text-black duration-300 md:px-12">
           <div className="mb-16 flex flex-col gap-12 xl:flex-row xl:gap-20">
             <div className="flex shrink-0 flex-col items-center text-center xl:items-start xl:text-start">
               <Image

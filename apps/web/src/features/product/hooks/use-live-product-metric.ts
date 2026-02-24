@@ -28,10 +28,14 @@ export function useLiveProductMetric(staticNumber: number) {
       const interval = setInterval(syncToSlot, SLOT_MS);
 
       // proper cleanup
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+      };
     }, delay);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
 
   return useMemo(() => {

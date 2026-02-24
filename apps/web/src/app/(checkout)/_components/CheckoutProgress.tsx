@@ -14,10 +14,10 @@ const stages = [
 
 export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
   return (
-    <nav className="bg-background border-border/40 sticky top-16 z-60 w-full border-b py-2 transition-colors md:top-24">
+    <nav className="bg-background border-border/40 z-60 sticky top-16 w-full border-b py-2 transition-colors md:top-24">
       <div className="relative mx-auto max-w-4xl px-6">
         {/* 1. The Background Connector Line (Centered) */}
-        <div className="bg-border absolute top-2.5 right-12 left-12 h-0.5 overflow-hidden rounded-full">
+        <div className="bg-border absolute left-12 right-12 top-2.5 h-0.5 overflow-hidden rounded-full">
           <div
             className="bg-brand h-full transition-all duration-700 ease-in-out"
             style={{
@@ -37,7 +37,7 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
                 <div className="bg-background relative flex h-5 w-5 items-center justify-center transition-transform duration-500">
                   {/* Liquid Pulse Effect */}
                   {isActive && (
-                    <span className="bg-foreground absolute inset-0 animate-ping rounded-full duration-2000" />
+                    <span className="bg-foreground duration-2000 absolute inset-0 animate-ping rounded-full" />
                   )}
 
                   {/* Circle Border/Background */}
@@ -55,7 +55,7 @@ export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
 
                 {/* Stage Name */}
                 <span
-                  className={`text-[10px] font-black tracking-[0.2em] uppercase transition-colors duration-500 ${isActive ? 'text-foreground' : 'text-foreground-subtle'} `}
+                  className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${isActive ? 'text-foreground' : 'text-foreground-subtle'} `}
                 >
                   {stage.name}
                 </span>

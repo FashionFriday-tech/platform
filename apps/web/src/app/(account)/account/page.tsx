@@ -23,12 +23,12 @@ export default function ProfileOverviewPage() {
           <div className="bg-background-muted/30 border-border rounded-[2.5rem] border p-6 md:p-12">
             <header className="mb-10 flex items-center justify-between">
               <div>
-                <h2 className="text-foreground-subtle mb-1 text-[10px] font-bold tracking-[0.3em] uppercase">
+                <h2 className="text-foreground-subtle mb-1 text-[10px] font-bold uppercase tracking-[0.3em]">
                   Timeline
                 </h2>
-                <p className="text-3xl font-black tracking-tighter uppercase">Recent Activity</p>
+                <p className="text-3xl font-black uppercase tracking-tighter">Recent Activity</p>
               </div>
-              <button className="text-foreground hover:text-brand hidden items-center gap-2 text-[10px] font-bold tracking-widest uppercase transition-colors sm:flex">
+              <button className="text-foreground hover:text-brand hidden items-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-colors sm:flex">
                 <HistoryIcon size={14} />
                 Full History
               </button>
@@ -58,7 +58,7 @@ export default function ProfileOverviewPage() {
             </div>
 
             {/* CTA for Mobile */}
-            <button className="text-foreground-subtle border-border active:bg-background-muted mt-8 w-full rounded-full border py-4 text-xs font-bold tracking-widest uppercase sm:hidden">
+            <button className="text-foreground-subtle border-border active:bg-background-muted mt-8 w-full rounded-full border py-4 text-xs font-bold uppercase tracking-widest sm:hidden">
               View Full History
             </button>
           </div>
@@ -89,8 +89,8 @@ function ActivityItem({ icon, title, desc, time, _isLast }: ActivityItemProps) {
       {/* Text Content */}
       <div className="min-w-0 flex-1">
         <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
-          <h3 className="text-foreground text-sm font-bold tracking-tight uppercase">{title}</h3>
-          <span className="text-foreground-subtle shrink-0 text-[10px] font-medium tracking-widest uppercase">
+          <h3 className="text-foreground text-sm font-bold uppercase tracking-tight">{title}</h3>
+          <span className="text-foreground-subtle shrink-0 text-[10px] font-medium uppercase tracking-widest">
             {time}
           </span>
         </div>

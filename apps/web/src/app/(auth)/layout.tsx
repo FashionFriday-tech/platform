@@ -23,12 +23,12 @@ export const metadata: Metadata = {
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen w-full items-center justify-center bg-black p-4 text-white selection:bg-black selection:text-white">
-      <div className="absolute top-6 right-6 z-50">
+      <div className="absolute right-6 top-6 z-50">
         <Link
           href="/"
           className="group flex items-center gap-2 text-zinc-500 transition-all duration-300 hover:text-white"
         >
-          <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Exit to Store</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Exit to Store</span>
           <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800 transition-all group-hover:border-white group-hover:bg-white group-hover:text-black">
             <Image
               src="/images/logos/ff-logo.png"
