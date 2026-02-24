@@ -138,7 +138,7 @@ export default function ReviewSection() {
           </button>
         </div>
         <div
-          className="relative w-full overflow-visible [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
+          className="relative w-full overflow-visible"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
