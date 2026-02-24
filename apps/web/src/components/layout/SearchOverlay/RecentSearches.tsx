@@ -21,7 +21,7 @@ export const RecentSearches = ({ items, query, setQuery, onRemove }: RecentSearc
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <h4 className="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
+      <h4 className="mb-4 text-[10px] font-bold tracking-[0.2em] uppercase opacity-40">
         Recent Searches
       </h4>
       <div className="flex flex-col">

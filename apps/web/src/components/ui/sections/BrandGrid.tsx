@@ -28,13 +28,13 @@ export default function BrandGrid({ brands, viewAllHref = '/brands' }: Props) {
     <section className="w-full py-16 transition-colors duration-300 lg:py-24">
       {/* HEADER */}
       <div className="container mx-auto mb-8 flex items-end justify-between px-4">
-        <h2 className="text-4xl font-black uppercase tracking-tighter lg:text-4xl">
+        <h2 className="text-4xl font-black tracking-tighter uppercase lg:text-4xl">
           Shop by brands
         </h2>
 
         <Link
           href={viewAllHref}
-          className="hidden items-center gap-2 border-b-2 border-black pb-1 text-sm font-bold uppercase tracking-widest md:flex dark:border-white"
+          className="hidden items-center gap-2 border-b-2 border-black pb-1 text-sm font-bold tracking-widest uppercase md:flex dark:border-white"
         >
           View All Brands <ArrowUpRightIcon className="h-4 w-4" />
         </Link>
@@ -58,7 +58,7 @@ export default function BrandGrid({ brands, viewAllHref = '/brands' }: Props) {
                 onMouseEnter={() => {
                   setActiveId(brand.id);
                 }}
-                className="md:aspect-6/3 relative isolate flex aspect-square items-center justify-center overflow-hidden bg-white p-8 transition-colors dark:bg-black"
+                className="relative isolate flex aspect-square items-center justify-center overflow-hidden bg-white p-8 transition-colors md:aspect-6/3 dark:bg-black"
               >
                 {/* HOVER OVERLAY (The box that moves) */}
                 {isActive && (
@@ -92,7 +92,7 @@ export default function BrandGrid({ brands, viewAllHref = '/brands' }: Props) {
         <div className="mt-8 flex justify-center text-black md:hidden dark:text-white">
           <Link
             href={viewAllHref}
-            className="inline-flex items-center gap-2 border-b-2 border-black pb-1 text-sm font-bold uppercase tracking-widest dark:border-white"
+            className="inline-flex items-center gap-2 border-b-2 border-black pb-1 text-sm font-bold tracking-widest uppercase dark:border-white"
           >
             View All Brands
           </Link>

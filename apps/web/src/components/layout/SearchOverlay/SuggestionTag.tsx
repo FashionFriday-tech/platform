@@ -8,7 +8,7 @@ export const SuggestionTag = ({ type }: { type: string }) => {
   };
   return (
     <span
-      className={`rounded-full border px-2 py-0.5 text-[7px] font-black uppercase tracking-[0.2em] ${
+      className={`rounded-full border px-2 py-0.5 text-[7px] font-black tracking-[0.2em] uppercase ${
         Object.prototype.hasOwnProperty.call(styles, type) ? styles[type] : styles.keyword
       }`}
     >

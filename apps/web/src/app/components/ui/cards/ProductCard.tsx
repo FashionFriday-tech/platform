@@ -26,7 +26,7 @@ export default function ProductCard({ product }: { product: Product }) {
       className="group w-full cursor-pointer"
     >
       <Link href={`/product/${product.slug}`} className="block w-full">
-        <div className="bg-foreground/5 aspect-4/5 relative w-full overflow-hidden rounded-[2.5rem]">
+        <div className="bg-foreground/5 relative aspect-4/5 w-full overflow-hidden rounded-[2.5rem]">
           <Image
             src={product.promoImage || '/images/placeholder.png'}
             alt={product.name}
@@ -48,13 +48,13 @@ export default function ProductCard({ product }: { product: Product }) {
             className="invert"
           />
 
-          <span className="border-border flex items-center justify-center gap-1 rounded-full border px-1.5 py-0.5 font-bold uppercase text-green-500">
+          <span className="border-border flex items-center justify-center gap-1 rounded-full border px-1.5 py-0.5 font-bold text-green-500 uppercase">
             <StarBadgeIcon /> {product.quality}
           </span>
         </div>
 
         {/* Product Name */}
-        <h2 className="text-foreground line-clamp-1 truncate text-[1.2rem] font-bold uppercase tracking-tight">
+        <h2 className="text-foreground line-clamp-1 truncate text-[1.2rem] font-bold tracking-tight uppercase">
           {product.name}
         </h2>
 

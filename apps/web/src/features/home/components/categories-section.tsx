@@ -44,12 +44,12 @@ export default function CategoryCarousel() {
       <div className="py-12 md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-center md:overflow-hidden">
         {/* Header Section */}
         <header className="container mx-auto mb-10 px-4 md:mt-20 lg:px-6">
-          <p className="text-muted-foreground mb-2 block text-xs font-bold uppercase tracking-widest">
+          <p className="text-muted-foreground mb-2 block text-xs font-bold tracking-widest uppercase">
             Curated Collections
           </p>
           <h2
             id="category-heading"
-            className="text-4xl font-black uppercase tracking-tighter lg:text-7xl"
+            className="text-4xl font-black tracking-tighter uppercase lg:text-7xl"
           >
             Shop by Category
           </h2>
@@ -84,7 +84,7 @@ export default function CategoryCarousel() {
                     <p className="mb-1 text-[10px] font-medium text-zinc-300 opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:mb-2 md:text-sm">
                       {cat.count}
                     </p>
-                    <h3 className="text-xl font-black uppercase tracking-tighter text-white md:text-4xl">
+                    <h3 className="text-xl font-black tracking-tighter text-white uppercase md:text-4xl">
                       {cat.title}
                     </h3>
                   </div>

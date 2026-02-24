@@ -68,7 +68,7 @@ export default function ProductPageMaster({
   return (
     <div className="bg-background text-foreground min-h-screen pb-10 transition-colors">
       {/* --- MAIN PRODUCT GRID --- */}
-      <section className="lg:pt-26 px-4 pt-2 md:px-8">
+      <section className="px-4 pt-2 md:px-8 lg:pt-26">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-12">
           {/* LEFT: Gallery */}
           <div className="lg:col-span-6">
@@ -120,7 +120,7 @@ export default function ProductPageMaster({
                   </div>
                 </div>
                 <div className="flex w-full items-start justify-between">
-                  <h1 className="text-3xl font-bold uppercase italic leading-8 tracking-tighter md:text-5xl">
+                  <h1 className="text-3xl leading-8 font-bold tracking-tighter uppercase italic md:text-5xl">
                     {product.name}
                   </h1>
                   <button
@@ -132,7 +132,7 @@ export default function ProductPageMaster({
                 </div>
               </div>
 
-              <p className="text-foreground/80 mt-2 text-xs capitalize italic leading-4 tracking-wider">
+              <p className="text-foreground/80 mt-2 text-xs leading-4 tracking-wider capitalize italic">
                 {product.description}
               </p>
             </div>
@@ -167,7 +167,7 @@ export default function ProductPageMaster({
             {product.category === 'Sneakers' && (
               <div className="space-y-4">
                 <div className="flex items-end justify-between">
-                  <label className="text-[10px] font-black uppercase tracking-widest">
+                  <label className="text-[10px] font-black tracking-widest uppercase">
                     Select Size (EU)
                   </label>
                   <Link
@@ -211,7 +211,7 @@ export default function ProductPageMaster({
                     </span>
                   </div>
                 ) : (
-                  <button className="border-destructive text-destructive flex h-16 w-full items-center justify-center gap-3 rounded-full border-2 font-black uppercase tracking-[0.2em]">
+                  <button className="border-destructive text-destructive flex h-16 w-full items-center justify-center gap-3 rounded-full border-2 font-black tracking-[0.2em] uppercase">
                     <BellIcon size={20} />
                     Notify Me
                   </button>
@@ -260,7 +260,7 @@ export default function ProductPageMaster({
                 >
                   <div className="text-brand shrink-0">{item.icon}</div>
                   <div>
-                    <h4 className="text-[9px] font-black uppercase leading-tight">{item.label}</h4>
+                    <h4 className="text-[9px] leading-tight font-black uppercase">{item.label}</h4>
                     <p className="text-foreground-subtle text-[8px] font-bold">{item.sub}</p>
                   </div>
                 </div>
@@ -273,17 +273,17 @@ export default function ProductPageMaster({
       {showWatchingPopup && (
         <div className="bg-background/60 fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-2xl transition-all">
           {/* FIX: Optimized max-w-[360px] to max-w-90 per Tailwind canonical suggestion */}
-          <div className="max-w-90 relative w-full">
+          <div className="relative w-full max-w-90">
             <div className="flex flex-col items-center justify-center rounded-[40px] border border-white/5 bg-black p-10 text-center text-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
               <div className="mb-8 flex items-center gap-2">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">
+                <span className="text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase">
                   Live
                 </span>
               </div>
 
               <div className="mb-6 flex items-center justify-center gap-4">
-                <h2 className="text-6xl font-black italic leading-none tracking-tighter">
+                <h2 className="text-6xl leading-none font-black tracking-tighter italic">
                   {liveMetric}
                 </h2>
                 <div className="flex animate-bounce flex-col text-red-500">
@@ -317,7 +317,7 @@ export default function ProductPageMaster({
                 onClick={() => {
                   setShowWatchingPopup(false);
                 }}
-                className="w-full rounded-full bg-white py-4 text-sm font-black uppercase tracking-wide text-black transition-colors hover:bg-zinc-200 active:scale-95"
+                className="w-full rounded-full bg-white py-4 text-sm font-black tracking-wide text-black uppercase transition-colors hover:bg-zinc-200 active:scale-95"
               >
                 View the drop
               </button>

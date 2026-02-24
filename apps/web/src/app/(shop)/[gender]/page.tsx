@@ -130,9 +130,9 @@ export default function StoreLandingPage() {
     : CATEGORIES_DATA.men;
 
   return (
-    <div className="bg-background min-h-screen select-none overflow-x-hidden lg:h-screen lg:overflow-hidden">
+    <div className="bg-background min-h-screen overflow-x-hidden select-none lg:h-screen lg:overflow-hidden">
       {/* --- MOBILE HEADER --- */}
-      <header className="bg-background border-border fixed left-0 right-0 top-14 z-50 w-full border-b backdrop-blur-md lg:hidden">
+      <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md lg:hidden">
         <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
           {GENDERS.map((gender, idx) => (
             <button
@@ -140,7 +140,7 @@ export default function StoreLandingPage() {
               onClick={() => {
                 handleGenderChange(idx);
               }}
-              className={`relative h-full flex-1 text-[10px] font-black uppercase tracking-[0.25em] outline-none transition-colors ${
+              className={`relative h-full flex-1 text-[10px] font-black tracking-[0.25em] uppercase transition-colors outline-none ${
                 activeGender === gender ? 'text-foreground' : 'text-foreground-subtle/40'
               }`}
             >
@@ -148,7 +148,7 @@ export default function StoreLandingPage() {
               {activeGender === gender && (
                 <motion.div
                   layoutId="navUnderline"
-                  className="bg-brand absolute bottom-0 left-4 right-4 h-0.5"
+                  className="bg-brand absolute right-4 bottom-0 left-4 h-0.5"
                   transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -171,11 +171,11 @@ export default function StoreLandingPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pb-20 pt-20 lg:flex-row lg:px-12 lg:pb-0 lg:pt-28"
+            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:flex-row lg:px-12 lg:pt-28 lg:pb-0"
           >
             {/* 1. HERO SECTION */}
             <div className="flex w-full items-start justify-center lg:h-full lg:w-1/2 lg:pr-8">
-              <div className="border-border/50 aspect-5/4 rounded-4xl lg:max-w-150 group relative w-full overflow-hidden border shadow-2xl lg:fixed lg:aspect-auto lg:h-[80%] lg:w-[95%] lg:rounded-[3.5rem]">
+              <div className="border-border/50 group relative aspect-5/4 w-full overflow-hidden rounded-4xl border shadow-2xl lg:fixed lg:aspect-auto lg:h-[80%] lg:w-[95%] lg:max-w-150 lg:rounded-[3.5rem]">
                 <motion.div
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
@@ -183,12 +183,12 @@ export default function StoreLandingPage() {
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
                   style={{ backgroundImage: `url(${currentData.hero})` }}
                 />
-                <div className="bg-linear-to-t absolute inset-0 from-black/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-8 left-8 lg:bottom-16 lg:left-16">
-                  <p className="mb-2 text-[8px] font-black uppercase tracking-[0.4em] text-white/50 lg:text-[10px]">
+                  <p className="mb-2 text-[8px] font-black tracking-[0.4em] text-white/50 uppercase lg:text-[10px]">
                     Exclusive Collection
                   </p>
-                  <h1 className="text-3xl font-black uppercase italic leading-[0.85] tracking-tighter text-white lg:text-7xl">
+                  <h1 className="text-3xl leading-[0.85] font-black tracking-tighter text-white uppercase italic lg:text-7xl">
                     {currentData.label}&apos;s
                     <br />
                     Essentials
@@ -198,7 +198,7 @@ export default function StoreLandingPage() {
             </div>
 
             {/* 2. CATEGORY LIST */}
-            <div className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:gap-6 lg:overflow-y-auto lg:pb-10 lg:pt-0">
+            <div className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:gap-6 lg:overflow-y-auto lg:pt-0 lg:pb-10">
               <div className="w-full max-w-2xl space-y-3 lg:space-y-6">
                 {currentData.list.map((cat) => (
                   <Link
@@ -207,7 +207,7 @@ export default function StoreLandingPage() {
                     className="group block"
                   >
                     <div className="bg-background-muted/40 group-hover:border-border/40 flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98] lg:gap-6 lg:rounded-[2.5rem] lg:p-4">
-                      <div className="border-border/50 bg-background rounded-4xl lg:rounded-4xl relative h-28 w-28 shrink-0 overflow-hidden border shadow-md lg:h-32 lg:w-32">
+                      <div className="border-border/50 bg-background relative h-28 w-28 shrink-0 overflow-hidden rounded-4xl border shadow-md lg:h-32 lg:w-32 lg:rounded-4xl">
                         <Image
                           src={cat.img}
                           alt={cat.name}
@@ -218,10 +218,10 @@ export default function StoreLandingPage() {
                       </div>
 
                       <div className="flex-1">
-                        <h3 className="text-foreground group-hover:text-brand text-[20px] font-bold uppercase italic tracking-tighter transition-colors lg:text-3xl">
+                        <h3 className="text-foreground group-hover:text-brand text-[20px] font-bold tracking-tighter uppercase italic transition-colors lg:text-3xl">
                           {cat.name}
                         </h3>
-                        <p className="text-foreground-muted mt-0.5 text-[12px] font-bold uppercase tracking-tight">
+                        <p className="text-foreground-muted mt-0.5 text-[12px] font-bold tracking-tight uppercase">
                           {cat.items}
                         </p>
                       </div>

@@ -149,7 +149,7 @@ export default function AuthPage() {
             setStep(step === 'OTP' ? 'PHONE' : 'OTP');
             setErrors({});
           }}
-          className="mb-8 flex items-center text-[10px] font-bold uppercase tracking-widest text-zinc-500 transition-colors hover:text-white"
+          className="mb-8 flex items-center text-[10px] font-bold tracking-widest text-zinc-500 uppercase transition-colors hover:text-white"
         >
           <ArrowLeftIcon size={14} className="mr-2" />
           {step === 'OTP' ? 'Change Number' : 'Back to OTP'}
@@ -157,7 +157,7 @@ export default function AuthPage() {
       )}
 
       <div className="mb-10 space-y-3">
-        <h1 className="text-4xl font-black uppercase tracking-tight text-white">
+        <h1 className="text-4xl font-black tracking-tight text-white uppercase">
           {step === 'PHONE' && 'Join the Club'}
           {step === 'OTP' && 'Confirm OTP'}
           {step === 'PROFILE' && 'Welcome'}
@@ -190,7 +190,7 @@ export default function AuthPage() {
                   clearError('phone');
                 }}
                 placeholder="WhatsApp Number"
-                className={`block w-full rounded-full border-2 bg-transparent px-6 py-4 text-white outline-none transition-all ${
+                className={`block w-full rounded-full border-2 bg-transparent px-6 py-4 text-white transition-all outline-none ${
                   errors.phone
                     ? 'animate-shake border-red-500'
                     : 'border-zinc-800 focus:border-white'
@@ -199,7 +199,7 @@ export default function AuthPage() {
             </div>
             <div className="mt-2 h-4 px-6">
               {errors.phone && (
-                <p className="text-[10px] font-bold uppercase tracking-widest text-red-500">
+                <p className="text-[10px] font-bold tracking-widest text-red-500 uppercase">
                   {errors.phone}
                 </p>
               )}
@@ -229,7 +229,7 @@ export default function AuthPage() {
                       inputRefs.current[index - 1]?.focus();
                     }
                   }}
-                  className={`h-16 w-16 rounded-full border-2 bg-transparent text-center text-2xl font-black text-white outline-none transition-all ${
+                  className={`h-16 w-16 rounded-full border-2 bg-transparent text-center text-2xl font-black text-white transition-all outline-none ${
                     errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                   }`}
                 />
@@ -238,7 +238,7 @@ export default function AuthPage() {
 
             <div className="h-6 text-center">
               {errors.otp ? (
-                <p className="animate-in fade-in text-[10px] font-bold uppercase tracking-widest text-red-500">
+                <p className="animate-in fade-in text-[10px] font-bold tracking-widest text-red-500 uppercase">
                   {errors.otp}
                 </p>
               ) : (
@@ -246,7 +246,7 @@ export default function AuthPage() {
                   type="button"
                   onClick={handleResendOTP}
                   disabled={timer > 0}
-                  className={`font-bold uppercase tracking-[0.2em] ${
+                  className={`font-bold tracking-[0.2em] uppercase ${
                     timer > 0
                       ? 'cursor-not-allowed text-lg text-zinc-200'
                       : 'text-[10px] text-white underline underline-offset-4'
@@ -277,13 +277,13 @@ export default function AuthPage() {
                   setProfile({ ...profile, fullName: e.target.value });
                   clearError('name');
                 }}
-                className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white outline-none transition-all ${
+                className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white transition-all outline-none ${
                   errors.name ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                 }`}
               />
               <div className="px-8">
                 {errors.name && (
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-red-500">
+                  <p className="text-[10px] font-bold tracking-widest text-red-500 uppercase">
                     {errors.name}
                   </p>
                 )}
@@ -299,13 +299,13 @@ export default function AuthPage() {
                   setProfile({ ...profile, email: e.target.value });
                   clearError('email');
                 }}
-                className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white outline-none transition-all ${
+                className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white transition-all outline-none ${
                   errors.email ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                 }`}
               />
               <div className="px-8">
                 {errors.email && (
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-red-500">
+                  <p className="text-[10px] font-bold tracking-widest text-red-500 uppercase">
                     {errors.email}
                   </p>
                 )}
@@ -326,7 +326,7 @@ export default function AuthPage() {
         <button
           onClick={handleNext}
           disabled={loading}
-          className="group mt-2 flex w-full items-center justify-center rounded-full bg-white py-5 text-sm font-black uppercase tracking-widest text-black transition-all hover:bg-zinc-200 disabled:opacity-50"
+          className="group mt-2 flex w-full items-center justify-center rounded-full bg-white py-5 text-sm font-black tracking-widest text-black uppercase transition-all hover:bg-zinc-200 disabled:opacity-50"
         >
           {loading ? 'Processing...' : step === 'PROFILE' ? 'Start Shopping!' : 'Continue'}
           {!loading && (
@@ -336,7 +336,7 @@ export default function AuthPage() {
 
         {step !== 'OTP' && (
           <div className="mt-8 space-y-2 text-center">
-            <p className="text-[10px] uppercase leading-loose tracking-widest text-zinc-600">
+            <p className="text-[10px] leading-loose tracking-widest text-zinc-600 uppercase">
               By continuing, you agree to our <br />
               <Link
                 href="/terms"

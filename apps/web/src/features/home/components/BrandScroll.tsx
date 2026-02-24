@@ -51,7 +51,7 @@ export default function BrandScroll() {
     <section className="w-full overflow-hidden py-12">
       <div className="relative flex w-full flex-col items-center justify-center">
         <div className="container mx-auto mb-8 px-4 text-center">
-          <p className="bg-size-[400%_100%] flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-clip-text text-[10px] font-black uppercase tracking-[0.5em] text-transparent">
+          <p className="bg-size-[400%_100%] flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-clip-text text-[10px] font-black tracking-[0.5em] text-transparent uppercase">
             our brand collections
           </p>
         </div>
@@ -69,8 +69,8 @@ export default function BrandScroll() {
         </ScrollVelocityContainer>
 
         {/* Side Gradients */}
-        <div className="from-background bg-linear-to-r pointer-events-none absolute inset-y-0 left-0 z-10 w-1/4 to-transparent" />
-        <div className="from-background bg-linear-to-l pointer-events-none absolute inset-y-0 right-0 z-10 w-1/4 to-transparent" />
+        <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-10 w-1/4 bg-linear-to-r to-transparent" />
+        <div className="from-background pointer-events-none absolute inset-y-0 right-0 z-10 w-1/4 bg-linear-to-l to-transparent" />
       </div>
     </section>
   );
