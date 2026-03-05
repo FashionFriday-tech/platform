@@ -5,13 +5,13 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo run lint",
-    "lint:fix": "turbo run lint --continue -- --fix",
+    "lint": "turbo run lint --parallel",
+    "lint:fix": "turbo run lint --parallel -- --fix",
     "format": "prettier --write .",
     "prepare": "husky || true",
     "typecheck": "turbo typecheck",
-    "clean": "rm -rf node_modules .turbo",
-    "ci": "pnpm lint && pnpm typecheck && pnpm build"
+    "clean": "pnpm dlx rimraf node_modules .turbo",
+    "ci": "pnpm typecheck && pnpm lint && pnpm build"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
