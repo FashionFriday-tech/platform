@@ -13,7 +13,13 @@
     "lint": {
       "dependsOn": ["^lint"],
       "cache": true,
-      "inputs": ["**/*.{ts,tsx,js,jsx}", "eslint.config.mjs", "tsconfig.json"]
+      "inputs": [
+        "**/*.{ts,tsx,js,jsx}",
+        "eslint.config.js",
+        "eslint.config.mjs",
+        "tsconfig.json",
+        "../../packages/eslint-config/**"
+      ]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
