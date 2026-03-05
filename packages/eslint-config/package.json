@@ -1,0 +1,13 @@
+{
+  "name": "@ff/eslint-config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./base": "./base.mjs",
+    "./typescript": "./typescript.mjs",
+    "./react": "./react.mjs",
+    "./next": "./next.mjs",
+    "./node": "./node.mjs",
+    "./testing": "./testing.mjs"
+  }
+}
