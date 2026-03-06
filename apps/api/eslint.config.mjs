@@ -1,7 +1,5 @@
 import base from '@ff/eslint-config/base';
 import ts from '@ff/eslint-config/typescript';
-import react from '@ff/eslint-config/react';
-import next from '@ff/eslint-config/next';
 import testing from '@ff/eslint-config/testing';
 
 export default [
@@ -15,7 +13,11 @@ export default [
 
   ...base,
   ...ts,
-  ...react,
-  ...next,
   ...testing,
+
+  {
+    rules: {
+      "@typescript-eslint/no-extraneous-class": "off", // NestJS AppModule-ന് വേണ്ടി
+    },
+  },
 ];
