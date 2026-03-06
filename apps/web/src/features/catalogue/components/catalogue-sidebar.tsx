@@ -1,5 +1,6 @@
-import { useState } from 'react';
+'use client';
 
+import { useState } from 'react';
 import { ChevronDownIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -13,7 +14,7 @@ interface FilterSection {
 }
 
 interface SidebarProps {
-  category: string; // Updated to string to match capitalized categories like "Shoes"
+  category: string;
   activeFilters: Record<string, string[]>;
   onFilterChange: (key: string, value: string, isSingle?: boolean) => void;
   maxPrice: number;
@@ -21,9 +22,9 @@ interface SidebarProps {
 
 export const CatalogueSidebar = ({
   category,
-  activeFilters,
+  activeFilters = {}, // Default value to prevent undefined errors
   onFilterChange,
-  maxPrice,
+  maxPrice = 10000,
 }: SidebarProps) => {
   // Initialize with all dynamic sections open for better UX
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -44,6 +45,12 @@ export const CatalogueSidebar = ({
     }));
   };
 
+  // Helper to safely get the current max price from range string
+  const getCurrentPriceValue = () => {
+    const range = activeFilters?.priceRange?.[0] || `0-${maxPrice}`;
+    return Number(range.split('-')[1] || maxPrice);
+  };
+
   return (
     <aside className="no-scrollbar sticky top-28 hidden h-[calc(100vh-120px)] w-72 shrink-0 overflow-y-auto pr-4 lg:block">
       <div className="border-border mb-8 flex items-center justify-between border-b pb-4">
@@ -56,9 +63,7 @@ export const CatalogueSidebar = ({
       {/* Price Range Section */}
       <div className="border-border border-b py-4">
         <button
-          onClick={() => {
-            toggleSection('priceRange');
-          }}
+          onClick={() => toggleSection('priceRange')}
           className="flex w-full items-center justify-between py-2 text-[11px] font-black tracking-widest uppercase"
         >
           Budget Range
@@ -81,8 +86,7 @@ export const CatalogueSidebar = ({
                 min="0"
                 max={maxPrice}
                 step="500"
-                // Extract current max from string "0-XXXX"
-                value={Number((activeFilters.priceRange[0] ?? `0-${maxPrice}`).split('-')[1])}
+                value={getCurrentPriceValue()}
                 onChange={(e) => {
                   onFilterChange('priceRange', `0-${e.target.value}`, true);
                 }}
@@ -90,12 +94,7 @@ export const CatalogueSidebar = ({
               />
               <div className="mt-2 flex justify-between text-[10px] font-black opacity-40">
                 <span>₹0</span>
-                <span>
-                  ₹
-                  {(
-                    Number((activeFilters.priceRange[0] ?? `0-${maxPrice}`).split('-')[1]) || 0
-                  ).toLocaleString()}
-                </span>
+                <span>₹{getCurrentPriceValue().toLocaleString()}</span>
               </div>
             </motion.div>
           )}
@@ -106,9 +105,7 @@ export const CatalogueSidebar = ({
       {filters.map((section: FilterSection) => (
         <div key={section.id} className="border-border border-b py-4">
           <button
-            onClick={() => {
-              toggleSection(section.id);
-            }}
+            onClick={() => toggleSection(section.id)}
             className="flex w-full items-center justify-between py-2 text-[11px] font-black tracking-widest uppercase"
           >
             {section.label}
@@ -127,14 +124,12 @@ export const CatalogueSidebar = ({
                 className="flex flex-wrap gap-2 overflow-hidden pt-2 pb-4"
               >
                 {section.options.map((opt: string) => {
-                  // Checks if the option is in the active filters array
-                  const isActive = activeFilters[section.id].includes(opt);
+                  // Safe check for includes with optional chaining
+                  const isActive = activeFilters?.[section.id]?.includes(opt) ?? false;
                   return (
                     <button
                       key={opt}
-                      onClick={() => {
-                        onFilterChange(section.id, opt);
-                      }}
+                      onClick={() => onFilterChange(section.id, opt)}
                       className={`rounded-full border px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-90 ${
                         isActive
                           ? 'bg-foreground text-background border-foreground shadow-lg'
@@ -155,8 +150,8 @@ export const CatalogueSidebar = ({
       {Object.keys(activeFilters).length > 0 && (
         <button
           onClick={() => {
-            window.location.reload();
-          }} // Quick hack to reset, or call a clear function
+            window.location.href = window.location.pathname; // Proper way to reset filters via URL
+          }}
           className="border-border mt-8 w-full border border-dashed py-4 text-[10px] font-black tracking-[0.2em] uppercase transition-colors hover:border-red-500 hover:bg-red-500 hover:text-white"
         >
           Reset All
