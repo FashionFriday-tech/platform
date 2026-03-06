@@ -36,11 +36,5 @@ export default async function CategoryPage({ params }: Props) {
     return isCorrectCategory && isCorrectGender;
   });
 
-  return (
-    <CatalogueClient
-      _gender={formattedGender}
-      categorySlug={formattedCategory}
-      initialProducts={initialProducts}
-    />
-  );
+  return <CatalogueClient categorySlug={formattedCategory} initialProducts={initialProducts} />;
 }

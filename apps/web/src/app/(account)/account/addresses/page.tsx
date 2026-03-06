@@ -110,7 +110,7 @@ const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: AddressCardPro
   <div
     className={`bg-background-elevated flex flex-col rounded-4xl border p-6 transition-all duration-300 ${
       address.isDefault
-        ? 'border-brand ring-brand ring-1 shadow-xl'
+        ? 'border-brand ring-brand shadow-xl ring-1'
         : 'border-border hover:border-foreground/20 shadow-sm'
     }`}
   >

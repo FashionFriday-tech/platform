@@ -46,7 +46,6 @@ export default function ProductPageMaster({
    */
   const handleShare = () => {
     const performShare = async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (navigator.share) {
         try {
           await navigator.share({
@@ -206,7 +205,7 @@ export default function ProductPageMaster({
               <div className="w-full lg:flex-1">
                 {product.inventory.totalStock > 0 ? (
                   <div className="bg-foreground flex w-full cursor-pointer items-center justify-center rounded-full py-3.5 text-2xl font-black uppercase">
-                    <span className="light:bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#656565,#ffffff)] bg-size-[400%_100%] animate-[glaze_5s_linear_infinite] bg-clip-text text-transparent dark:bg-[linear-gradient(90deg,#000000,#9ca3af,#000000,#9ca3af,#000000)]">
+                    <span className="light:bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#656565,#ffffff)] animate-[glaze_5s_linear_infinite] bg-size-[400%_100%] bg-clip-text text-transparent dark:bg-[linear-gradient(90deg,#000000,#9ca3af,#000000,#9ca3af,#000000)]">
                       Buy Now
                     </span>
                   </div>

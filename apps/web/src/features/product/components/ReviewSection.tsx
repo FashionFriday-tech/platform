@@ -266,7 +266,7 @@ export default function ReviewSection() {
             />
           ))}
         </div>
-        <p className="bg-size-[400%_100%] flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)))] bg-clip-text text-[8px] font-black tracking-[0.5em] text-transparent uppercase">
+        <p className="flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)))] bg-size-[400%_100%] bg-clip-text text-[8px] font-black tracking-[0.5em] text-transparent uppercase">
           Drop Your Review
         </p>
       </div>
@@ -357,7 +357,7 @@ export default function ReviewSection() {
             <motion.div
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
-              onDragEnd={(e, info) => {
+              onDragEnd={(_e, info) => {
                 if (info.offset.x < -100) {
                   nextModal();
                 }

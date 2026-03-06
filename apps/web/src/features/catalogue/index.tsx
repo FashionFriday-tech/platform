@@ -23,17 +23,12 @@ const SORT_OPTIONS = [
 
 // --- UPDATED INTERFACE ---
 interface CatalogueClientProps {
-  _gender?: string; // Added: required gender string (men/women/snkrs)
   initialProducts: Product[];
   categorySlug: string;
 }
 
 // --- UPDATED FUNCTION PARAMS ---
-export default function CatalogueClient({
-  _gender,
-  initialProducts,
-  categorySlug,
-}: CatalogueClientProps) {
+export default function CatalogueClient({ initialProducts, categorySlug }: CatalogueClientProps) {
   const {
     products,
     activeFilters,
@@ -46,7 +41,7 @@ export default function CatalogueClient({
 
   const [activeDrawer, setActiveDrawer] = useState<'filter' | 'sort' | null>(null);
 
-  const maxPrice = Math.max(...initialProducts.map((p) => p.price.sellingPrice), 10000);
+  const maxPrice = Math.max(...initialProducts.map((p: Product) => p.price.sellingPrice), 10000);
 
   return (
     <div className="bg-background text-foreground min-h-screen transition-colors duration-500">
