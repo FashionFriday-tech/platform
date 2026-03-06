@@ -1,31 +1,14 @@
 {
+  "extends": "./packages/tsconfig/base.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext"],
-
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-
-    "esModuleInterop": true,
-
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./apps/web/src/*"],
-      "@ff/ui": ["packages/ui/src/index.tsx"],
+      "@/*": ["apps/web/src/*"],
+      "@ff/ui": ["packages/ui/src"],
       "@ff/ui/*": ["packages/ui/src/*"],
-      "@ff/schemas": ["packages/types/src/index.ts"]
+      "@ff/schemas": ["packages/schemas/src"]
     }
   },
+  "include": ["apps", "packages"],
   "exclude": ["node_modules", "dist", "build", ".next"]
 }
