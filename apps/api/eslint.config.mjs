@@ -1,8 +1,8 @@
-import base from '@repo/eslint-config/base';
-import ts from '@repo/eslint-config/typescript';
-import react from '@repo/eslint-config/react';
-import next from '@repo/eslint-config/next';
-import testing from '@repo/eslint-config/testing';
+import base from '@ff/eslint-config/base';
+import ts from '@ff/eslint-config/typescript';
+import react from '@ff/eslint-config/react';
+import next from '@ff/eslint-config/next';
+import testing from '@ff/eslint-config/testing';
 
 export default [
   {
