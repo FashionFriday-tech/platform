@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+
 import { ChevronDownIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -22,9 +23,9 @@ interface SidebarProps {
 
 export const CatalogueSidebar = ({
   category,
-  activeFilters = {}, // Default value to prevent undefined errors
+  activeFilters, // Default value to prevent undefined errors
   onFilterChange,
-  maxPrice = 10000,
+  maxPrice,
 }: SidebarProps) => {
   // Initialize with all dynamic sections open for better UX
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -63,7 +64,9 @@ export const CatalogueSidebar = ({
       {/* Price Range Section */}
       <div className="border-border border-b py-4">
         <button
-          onClick={() => toggleSection('priceRange')}
+          onClick={() => {
+            toggleSection('priceRange');
+          }}
           className="flex w-full items-center justify-between py-2 text-[11px] font-black tracking-widest uppercase"
         >
           Budget Range
@@ -105,7 +108,9 @@ export const CatalogueSidebar = ({
       {filters.map((section: FilterSection) => (
         <div key={section.id} className="border-border border-b py-4">
           <button
-            onClick={() => toggleSection(section.id)}
+            onClick={() => {
+              toggleSection(section.id);
+            }}
             className="flex w-full items-center justify-between py-2 text-[11px] font-black tracking-widest uppercase"
           >
             {section.label}
@@ -129,7 +134,9 @@ export const CatalogueSidebar = ({
                   return (
                     <button
                       key={opt}
-                      onClick={() => onFilterChange(section.id, opt)}
+                      onClick={() => {
+                        onFilterChange(section.id, opt);
+                      }}
                       className={`rounded-full border px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-90 ${
                         isActive
                           ? 'bg-foreground text-background border-foreground shadow-lg'
