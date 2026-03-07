@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nest start --watch",
     "build": "nest build",
-    "start": "node dist/main",
+    "start": "node dist/main.js",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "typecheck": "tsc --noEmit",
@@ -16,26 +16,30 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@ff/schemas": "workspace:*",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "nestjs-zod": "^5.1.1",
+    "pg": "^8.20.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "@ff/schemas": "workspace:*"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@ff/eslint-config": "workspace:*",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
-    "@types/node": "^22.10.7",
-    "@types/jest": "^30.0.0",
     "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
-    "typescript": "^5.7.3",
+    "jest": "^30.0.0",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "jest": "^30.0.0",
-    "ts-jest": "^29.2.5",
-    "supertest": "^7.0.0",
-    "@ff/eslint-config": "workspace:*"
+    "typescript": "^5.7.3"
   }
 }
