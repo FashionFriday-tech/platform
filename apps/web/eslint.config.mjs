@@ -19,8 +19,8 @@ export default [
 
   {
     rules: {
-      "react/no-unescaped-entities": "off",
-      "security/detect-object-injection": "off"
+      'react/no-unescaped-entities': 'off',
+      'security/detect-object-injection': 'off',
     },
   },
 ];

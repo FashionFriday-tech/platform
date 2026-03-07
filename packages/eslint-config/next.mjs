@@ -6,8 +6,8 @@ export default [
   ...nextTs,
   {
     rules: {
-      "react/no-unescaped-entities": "off",
-      "react/display-name": "off"
-    }
-  }
+      'react/no-unescaped-entities': 'off',
+      'react/display-name': 'off',
+    },
+  },
 ];

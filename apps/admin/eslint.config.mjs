@@ -29,10 +29,7 @@ export default [
     rules: {
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'unicorn/no-array-reduce': 'off',
-      '@typescript-eslint/no-misused-promises': [
-        'error',
-        { checksVoidReturn: false },
-      ],
+      '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
     },
   },
 ];

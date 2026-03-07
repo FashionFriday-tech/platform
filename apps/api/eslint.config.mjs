@@ -17,7 +17,7 @@ export default [
 
   {
     rules: {
-      "@typescript-eslint/no-extraneous-class": "off", // NestJS AppModule-ന് വേണ്ടി
+      '@typescript-eslint/no-extraneous-class': 'off', // NestJS AppModule-ന് വേണ്ടി
     },
   },
 ];

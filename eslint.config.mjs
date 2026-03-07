@@ -1,19 +1,19 @@
 export default [
   {
     ignores: [
-      "apps/**",
-      "packages/**",
-      "**/node_modules/**",
-      "**/.next/**",
-      "**/.turbo/**",
-      "**/dist/**"
+      'apps/**',
+      'packages/**',
+      '**/node_modules/**',
+      '**/.next/**',
+      '**/.turbo/**',
+      '**/dist/**',
     ],
   },
   {
-    files: ["*.js", "*.mjs"],
+    files: ['*.js', '*.mjs'],
     languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
+      ecmaVersion: 'latest',
+      sourceType: 'module',
     },
-  }
+  },
 ];
