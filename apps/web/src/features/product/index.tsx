@@ -305,7 +305,7 @@ export default function ProductPageMaster({
                 <p className="text-sm leading-relaxed text-zinc-400">
                   {liveMetric}+ peoples are watching the{' '}
                   <span className="text-foreground font-semibold">
-                    "{product.name.toUpperCase()}"
+                    {product.name.toUpperCase()}
                   </span>{' '}
                   right now.{' '}
                   <span className="underline">Secure yours before the item sold out.</span>
