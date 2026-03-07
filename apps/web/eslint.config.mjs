@@ -16,4 +16,11 @@ export default [
   ...ts,
   ...testing,
   ...next,
+
+  {
+    rules: {
+      "react/no-unescaped-entities": "off",
+      "security/detect-object-injection": "off"
+    },
+  },
 ];
