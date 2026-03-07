@@ -183,7 +183,7 @@ export default function PWAInstallSection() {
           transition={{ duration: 0.7 }}
           className="flex w-full justify-center md:w-1/2"
         >
-          <Iphone className="w-65 lg:w-65" src="/images/model/ff-app.png" />
+          <Iphone className="w-65 lg:w-65" src="/images/model/ff-app-product-page.webp" />
         </motion.div>
 
         {/* Content: Copy & Actions */}
