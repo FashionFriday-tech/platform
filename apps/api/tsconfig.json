@@ -5,6 +5,6 @@
     "baseUrl": "./",
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "src/main.ts", "database/**/*.ts"],
+  "include": ["src/**/*.ts", "src/main.ts"],
   "exclude": ["node_modules", "dist"]
 }
