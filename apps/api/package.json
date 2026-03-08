@@ -7,9 +7,13 @@
     "build": "nest build",
     "dev": "nest start --watch",
     "start": "node dist/main.js",
-    "lint": "eslint \"src/**/*.ts\"",
+    "start:prod": "node dist/main.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "prisma:generate": "prisma generate"
+    "test": "jest",
+    "prisma:generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ff/schemas": "workspace:*",
