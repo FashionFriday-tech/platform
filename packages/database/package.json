@@ -5,8 +5,9 @@
   "types": "./src/index.ts",
   "scripts": {
     "build": "tsc",
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev"
+    "build-schema": "prisma-import --schema prisma/schema.prisma --output prisma/schema.prisma",
+    "generate": "npm run build-schema && prisma generate",
+    "migrate": "npm run build-schema && prisma migrate dev"
   },
   "devDependencies": {
     "prisma": "^5.0.0",
