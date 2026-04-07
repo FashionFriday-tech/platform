@@ -1,3 +1,7 @@
+// --- Entry Point for Prisma Schema ---
+// This file is the "compiled" output for Prisma.
+// The scalable, source-of-truth files are located in ./models/*.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,8 +11,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    String  @id @default(uuid())
-  email String  @unique
-  name  String?
-}
+// ---------------------------------------------------------
+// --- MODULAR IMPORTS ---
+// ---------------------------------------------------------
+
+// import "./models/user.prisma"
+// import "./models/product.prisma"
+// import "./models/address.prisma"
+// import "./models/review.prisma"
+// import "./models/order.prisma"
