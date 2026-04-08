@@ -8,7 +8,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ZodValidationPipe());
 
-  await app.listen(4000);
+  await app.listen(3001);
 }
 
 void bootstrap();
