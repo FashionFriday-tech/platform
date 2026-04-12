@@ -5,15 +5,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { ArrowLeftIcon, ChevronRightIcon, VerifiedUserIcon } from '@ff/ui';
+import { toast } from 'sonner';
+
+import { authApi } from '@/lib/api-client';
 
 export default function AuthPage() {
   const [step, setStep] = useState<'PHONE' | 'OTP' | 'PROFILE'>('PHONE');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '']);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [profile, setProfile] = useState({ fullName: '', email: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [otpToken, setOtpToken] = useState('');
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
@@ -41,11 +45,11 @@ export default function AuthPage() {
       return;
     }
 
-    const digits = pasteData.slice(0, 4).split('');
+    const digits = pasteData.slice(0, 6).split('');
     const newOtp = [...otp];
 
     for (const [index, char] of digits.entries()) {
-      if (index < 4) {
+      if (index < 6) {
         newOtp[index] = char;
       }
     }
@@ -53,8 +57,8 @@ export default function AuthPage() {
     setOtp(newOtp);
     clearError('otp');
 
-    // Focus the last filled input or the 4th input
-    const nextIndex = digits.length >= 4 ? 3 : digits.length;
+    // Focus the last filled input or the 6th input
+    const nextIndex = digits.length >= 6 ? 5 : digits.length;
     inputRefs.current[nextIndex]?.focus();
   };
 
@@ -66,8 +70,8 @@ export default function AuthPage() {
         newErrors.phone = 'Enter a valid 10-digit WhatsApp number';
       }
     } else if (step === 'OTP') {
-      if (otp.join('').length < 4) {
-        newErrors.otp = 'Please enter the 4-digit code';
+      if (otp.join('').length < 6) {
+        newErrors.otp = 'Please enter the 6-digit code';
       }
     } else {
       if (!profile.fullName.trim()) {
@@ -92,31 +96,73 @@ export default function AuthPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!validate()) {
       return;
     }
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
+    try {
       if (step === 'PHONE') {
+        await authApi.sendOtp(phoneNumber);
         setStep('OTP');
         startTimer();
+        toast.success('OTP sent successfully!');
       } else if (step === 'OTP') {
-        setStep('PROFILE');
+        const response = await authApi.verifyOtp(phoneNumber, otp.join(''));
+        setOtpToken(response.otpToken);
+
+        if (response.isNewUser) {
+          setStep('PROFILE');
+        } else {
+          // Normal login
+          if (response.accessToken) {
+            localStorage.setItem('accessToken', response.accessToken);
+          }
+          if (response.refreshToken) {
+            localStorage.setItem('refreshToken', response.refreshToken);
+          }
+          toast.success('Login successful!');
+          router.push('/');
+        }
       } else {
+        // Step === PROFILE
+        const response = await authApi.signup(
+          phoneNumber,
+          profile.fullName,
+          profile.email,
+          otpToken,
+        );
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('refreshToken', response.refreshToken);
+        toast.success('Welcome to Fashion Friday!');
         router.push('/');
       }
-    }, 1000);
+    } catch (error: any) {
+      console.error('Auth Error:', error);
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleResendOTP = () => {
+  const handleResendOTP = async () => {
     if (timer > 0) {
       return;
     }
-    setOtp(['', '', '', '']);
-    startTimer();
+    setLoading(true);
+    try {
+      await authApi.sendOtp(phoneNumber);
+      setOtp(['', '', '', '', '', '']);
+      startTimer();
+      toast.success('OTP resent successfully!');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Failed to resend OTP';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearError = (key: string) => {
@@ -135,7 +181,7 @@ export default function AuthPage() {
     const newOtp = [...otp];
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
     clearError('otp');
