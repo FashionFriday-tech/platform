@@ -9,7 +9,9 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "typecheck": "turbo run typecheck",
-    "clean": "pnpm dlx rimraf node_modules .turbo"
+    "clean": "pnpm dlx rimraf node_modules .turbo",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
   },
   "devDependencies": {
     "@types/node": "^25.4.0",
