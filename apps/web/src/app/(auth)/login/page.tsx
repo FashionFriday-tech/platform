@@ -13,7 +13,7 @@ export default function AuthPage() {
   const [step, setStep] = useState<'PHONE' | 'OTP' | 'PROFILE'>('PHONE');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [profile, setProfile] = useState({ fullName: '', email: '' });
+  const [profile, setProfile] = useState({ name: '', email: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -74,13 +74,13 @@ export default function AuthPage() {
         newErrors.otp = 'Please enter the 6-digit code';
       }
     } else {
-      if (!profile.fullName.trim()) {
+      if (!profile.name.trim()) {
         newErrors.name = 'Full name is required';
-      } else if (!/^[\sA-Za-z]+$/.test(profile.fullName)) {
+      } else if (!/^[\sA-Za-z]+$/.test(profile.name)) {
         newErrors.name = 'Only letters are allowed.';
-      } else if (profile.fullName.length > 25) {
+      } else if (profile.name.length > 25) {
         newErrors.name = 'Name cannot exceed 25 characters';
-      } else if (profile.fullName.length < 4) {
+      } else if (profile.name.length < 4) {
         newErrors.name = 'Name is too short';
       }
 
@@ -129,7 +129,7 @@ export default function AuthPage() {
         // Step === PROFILE
         const response = await authApi.signup(
           phoneNumber,
-          profile.fullName,
+          profile.name,
           profile.email,
           otpToken,
         );
@@ -318,9 +318,9 @@ export default function AuthPage() {
               <input
                 type="text"
                 placeholder="Full Name"
-                value={profile.fullName}
+                value={profile.name}
                 onChange={(e) => {
-                  setProfile({ ...profile, fullName: e.target.value });
+                  setProfile({ ...profile, name: e.target.value });
                   clearError('name');
                 }}
                 className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white transition-all outline-none ${
