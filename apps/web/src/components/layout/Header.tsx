@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -43,7 +44,13 @@ const navStructure = [
 ];
 
 export function Header() {
+  const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Hide header on login and signup pages
+  if (pathname === '/login' || pathname === '/signup') {
+    return null;
+  }
 
   const marqueeText = 'FREE SHIPPING ON PRE PAY • COD available +200 advance';
   const marqueeContent = Array(10).fill(marqueeText);
