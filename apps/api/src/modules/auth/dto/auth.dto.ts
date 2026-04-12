@@ -1,5 +1,5 @@
+import { SendOtpSchema, SignupSchema, VerifyOtpSchema } from '@ff/schemas';
 import { createZodDto } from 'nestjs-zod';
-import { SendOtpSchema, VerifyOtpSchema, SignupSchema } from '@ff/schemas';
 
 export class SendOtpDto extends createZodDto(SendOtpSchema) {
   phone!: string;

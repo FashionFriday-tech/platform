@@ -1,17 +1,34 @@
-import { Injectable, BadRequestException, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../../database/prisma.service';
-import { SendOtpDto, VerifyOtpDto, SignupDto } from './dto/auth.dto';
-import * as argon2 from 'argon2';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import * as argon2 from 'argon2';
+
+import { PrismaService } from '../../database/prisma.service';
+import { SendOtpDto, SignupDto, VerifyOtpDto } from './dto/auth.dto';
+
+interface JwtPayload {
+  sub: string;
+  role?: string;
+  phone?: string;
+  iat?: number;
+  exp?: number;
+}
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async sendOtp(dto: SendOtpDto) {
     const { phone } = dto;
@@ -20,7 +37,7 @@ export class AuthService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // In production, send OTP via SMS integration (e.g., Twilio)
-    console.log(`[SECURE SMS MOCK] Sending OTP ${otp} to phone ${phone}`);
+    this.logger.log(`[SECURE SMS MOCK] Sending OTP ${otp} to phone ${phone}`);
 
     // 2. Hash it securely using Argon2
     const otpHash = await argon2.hash(otp);
@@ -75,14 +92,11 @@ export class AuthService {
       return { isNewUser: false, ...tokens, user };
     } else {
       // User does NOT exist -> Generate temporary token for sign up
-      const tempToken = this.jwtService.sign(
-        { phone },
-        { expiresIn: '15m' }
-      );
+      const tempToken = this.jwtService.sign({ phone }, { expiresIn: '15m' });
       return {
         isNewUser: true,
         message: 'Please complete registration',
-        otpToken: tempToken
+        otpToken: tempToken,
       };
     }
   }
@@ -92,19 +106,19 @@ export class AuthService {
 
     // 1. Verify otpToken
     try {
-      const decoded = this.jwtService.verify(otpToken);
+      const decoded = this.jwtService.verify<JwtPayload>(otpToken);
       if (decoded.phone !== phone) {
         throw new BadRequestException('Phone number mapping mismatch');
       }
-    } catch (e) {
+    } catch {
       throw new UnauthorizedException('Invalid or expired signup token. Please verify OTP again.');
     }
 
     // 2. Check if user already exists
     const existingUser = await this.prisma.db.user.findFirst({
       where: {
-        OR: [{ phone }, { email }]
-      }
+        OR: [{ phone }, { email }],
+      },
     });
 
     if (existingUser) {
@@ -131,9 +145,9 @@ export class AuthService {
       return {
         isNewUser: false,
         ...tokens,
-        user: newUser
+        user: newUser,
       };
-    } catch (error) {
+    } catch {
       throw new InternalServerErrorException('Error creating user account');
     }
   }
@@ -178,14 +192,11 @@ export class AuthService {
       where: { id: userId },
     });
 
-    if (!user || user.accountStatus !== 'ACTIVE' || !user.refreshToken) {
+    if (user?.accountStatus !== 'ACTIVE' || !user.refreshToken) {
       throw new UnauthorizedException('Access Denied');
     }
 
-    const refreshTokenMatches = await argon2.verify(
-      user.refreshToken,
-      refreshToken,
-    );
+    const refreshTokenMatches = await argon2.verify(user.refreshToken, refreshToken);
 
     if (!refreshTokenMatches) {
       throw new UnauthorizedException('Access Denied');

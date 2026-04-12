@@ -1,17 +1,26 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SendOtpDto, VerifyOtpDto, SignupDto } from './dto/auth.dto';
-import { ZodValidationPipe } from 'nestjs-zod';
-import { UsePipes, UseGuards, Req } from '@nestjs/common';
-import { RefreshTokenGuard } from './guards/refresh.guard';
-import { JwtAuthGuard } from './guards/jwt.guard';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Req, UseGuards, UsePipes } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import type { Request } from 'express';
+import { ZodValidationPipe } from 'nestjs-zod';
+
+import { AuthService } from './auth.service';
+import { SendOtpDto, SignupDto, VerifyOtpDto } from './dto/auth.dto';
+import { JwtAuthGuard } from './guards/jwt.guard';
+import { RefreshTokenGuard } from './guards/refresh.guard';
+
+interface AuthRequest extends Request {
+  user: {
+    id?: string;
+    sub?: string;
+    refreshToken?: string;
+  };
+}
 
 @Controller('auth')
 @UsePipes(ZodValidationPipe)
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(ThrottlerGuard)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
@@ -40,16 +49,24 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: any) {
-    return this.authService.logout(req.user.id);
+  async logout(@Req() req: AuthRequest) {
+    const { id } = req.user;
+    if (!id) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.logout(id);
   }
 
   @UseGuards(RefreshTokenGuard, ThrottlerGuard)
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refresh(@Req() req: Request) {
-    const user = req.user as any;
-    return this.authService.refreshTokens(user.sub, user.refreshToken);
+  async refresh(@Req() req: AuthRequest) {
+    const sub = req.user?.sub;
+    const refreshToken = req.user?.refreshToken;
+    if (!sub || !refreshToken) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.refreshTokens(sub, refreshToken);
   }
 }
