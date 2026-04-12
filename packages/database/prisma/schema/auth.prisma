@@ -1,0 +1,10 @@
+model Otp {
+  id        String   @id @default(uuid())
+  phone     String   @unique
+  otpHash   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+  @@map("otps")
+}
