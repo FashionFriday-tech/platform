@@ -12,7 +12,13 @@ const DeviceIdentityCore = z.object({
 
   userAgent: z.string().optional(),
 
-  ipAddress: z.string().ip({ message: 'Invalid IP address' }).optional(),
+  ipAddress: z
+    .string()
+    .regex(
+      /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+      'Invalid IP address',
+    )
+    .optional(),
 });
 
 /**
