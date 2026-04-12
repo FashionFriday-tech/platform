@@ -5,10 +5,12 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  app.enableCors();
   app.useGlobalPipes(new ZodValidationPipe());
 
-  await app.listen(3001);
+  await app.listen(process.env.PORT ?? 3001);
 }
 
-void bootstrap();
+bootstrap().catch(() => {
+  // Silent fail or use logger
+});
