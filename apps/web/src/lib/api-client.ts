@@ -24,7 +24,7 @@ export interface SignupResponse {
   user: {
     id: string;
     phone: string;
-    fullName: string;
+    name: string;
     email: string;
   };
 }
@@ -42,13 +42,13 @@ export const authApi = {
 
   signup: async (
     phone: string,
-    fullName: string,
+    name: string,
     email: string,
     otpToken: string,
   ): Promise<SignupResponse> => {
     const response = await api.post('/auth/signup', {
       phone,
-      fullName,
+      name,
       email,
       otpToken,
     });
