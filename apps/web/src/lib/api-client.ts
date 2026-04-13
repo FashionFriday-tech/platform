@@ -121,6 +121,16 @@ export const authApi = {
     return response.data;
   },
 
+  sendEmailOtp: async (): Promise<SendOtpResponse> => {
+    const response = await api.post('/auth/email/send-otp');
+    return response.data;
+  },
+
+  verifyEmailOtp: async (otp: string): Promise<{ success: boolean; message: string; user: SignupResponse['user'] }> => {
+    const response = await api.post('/auth/email/verify-otp', { otp });
+    return response.data;
+  },
+
   signup: async (
     phone: string,
     name: string,

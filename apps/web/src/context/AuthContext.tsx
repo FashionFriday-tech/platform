@@ -14,6 +14,8 @@ interface User {
   avatarUrl?: string | null;
   loyaltyPoints?: number;
   accountStatus?: string;
+  isEmailVerified?: boolean;
+  isPhoneVerified?: boolean;
   createdAt?: string;
 }
 
