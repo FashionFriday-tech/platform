@@ -16,7 +16,18 @@ import {
 } from '@ff/ui';
 import { AnimatePresence } from 'framer-motion';
 
+import { useAuth } from '@/context/AuthContext';
 import { SearchOverlay } from './SearchOverlay/SearchOverlay';
+
+// --- Helper Functions ---
+const getInitials = (name: string) => {
+  if (!name) return '';
+  const parts = name.trim().split(' ');
+  if (parts.length >= 2) {
+    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+  }
+  return parts[0].substring(0, 2).toUpperCase();
+};
 
 // --- Data Configuration ---
 const navStructure = [
@@ -44,6 +55,7 @@ const navStructure = [
 ];
 
 export function Header() {
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -93,7 +105,6 @@ export function Header() {
               className="text-foreground hover:text-brand hidden items-center gap-2 text-[10px] font-black tracking-widest uppercase transition-colors lg:flex"
             >
               <SearchIcon className="text-lg" />
-              <span>Search</span>
             </button>
             <div className="bg-border hidden h-4 w-px lg:block" />
             <div className="text-foreground flex items-center gap-4">
@@ -106,8 +117,25 @@ export function Header() {
                   2
                 </span>
               </Link>
-              <Link href="/account">
-                <UserIcon className="hover:text-brand text-2xl transition-colors" />
+              <Link href="/account" className="hover:text-brand flex items-center transition-colors">
+                {user ? (
+                  user.avatarUrl && user.avatarUrl !== '' ? (
+                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-border transition-transform hover:scale-110">
+                      <Image
+                        src={user.avatarUrl}
+                        alt={user.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="bg-foreground text-background flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-black uppercase transition-transform hover:scale-110">
+                      {getInitials(user.name)}
+                    </div>
+                  )
+                ) : (
+                  <UserIcon className="text-2xl" />
+                )}
               </Link>
             </div>
           </div>
@@ -129,19 +157,20 @@ export function Header() {
         </div>
       </header>
 
-      {/* MOBILE UI (UNCHANGED) */}
+      {/* MOBILE UI */}
       <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-3 lg:hidden">
-        <Link href="/account" className="flex items-center gap-4">
-          <div className="border-foreground h-10 w-10 overflow-hidden rounded-full border-2">
-            <Image
-              src="/images/model/aj.png"
-              width={40}
-              height={40}
-              alt="User"
-              className="object-cover object-top"
-            />
-          </div>
-          <span className="text-xs font-bold tracking-tighter uppercase">HELLO, AJMAL</span>
+        <Link href="/account" className="border-foreground flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 bg-zinc-100 transition-transform active:scale-95 dark:bg-zinc-800">
+          {user ? (
+            user.avatarUrl && user.avatarUrl !== '' ? (
+              <div className="relative h-full w-full">
+                <Image src={user.avatarUrl} alt={user.name} fill className="object-cover" />
+              </div>
+            ) : (
+              <span className="text-[10px] font-black uppercase">{getInitials(user.name)}</span>
+            )
+          ) : (
+            <UserIcon size={20} />
+          )}
         </Link>
         <div className="flex items-center gap-4">
           <SearchIcon

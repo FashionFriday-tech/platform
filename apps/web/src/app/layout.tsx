@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import { Header } from '@/components/layout/Header';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
+import { AuthProvider } from '@/context/AuthContext';
 import { SettingsProvider } from '@/context/SettingsContext';
 
 import { ThemeProvider } from './providers/theme-provider';
@@ -52,11 +53,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         <SettingsProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <ServiceWorkerRegister />
-            <Header />
-            {children}
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <ServiceWorkerRegister />
+              <Header />
+              {children}
+            </ThemeProvider>
+          </AuthProvider>
         </SettingsProvider>
       </body>
     </html>

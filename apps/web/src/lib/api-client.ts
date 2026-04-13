@@ -23,6 +23,59 @@ api.interceptors.request.use(
   },
 );
 
+// Add a response interceptor for handling token expiration
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If the error is 401 and not already retried
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        // Call the refresh endpoint
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/refresh`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${refreshToken}`,
+            },
+          },
+        );
+
+        const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+        // Store new tokens
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', newRefreshToken);
+
+        // Update the original request with the new access token
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+        // Retry the original request
+        return api(originalRequest);
+      } catch (refreshError) {
+        // If refresh fails, clear tokens and redirect to login
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        if (typeof window !== 'undefined') {
+          window.location.href = '/';
+        }
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);
+
 export interface SendOtpResponse {
   message: string;
 }
@@ -32,6 +85,15 @@ export interface VerifyOtpResponse {
   otpToken: string;
   accessToken?: string;
   refreshToken?: string;
+  user?: {
+    id: string;
+    phone: string;
+    name: string;
+    email: string;
+    role: string;
+    avatarUrl?: string;
+    loyaltyPoints?: number;
+  };
 }
 
 export interface SignupResponse {
@@ -42,6 +104,9 @@ export interface SignupResponse {
     phone: string;
     name: string;
     email: string;
+    role: string;
+    avatarUrl?: string;
+    loyaltyPoints?: number;
   };
 }
 
@@ -71,9 +136,20 @@ export const authApi = {
     return response.data;
   },
 
+  getMe: async (): Promise<SignupResponse['user']> => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  },
+
+  updateProfile: async (data: any): Promise<SignupResponse['user']> => {
+    const response = await api.patch('/auth/profile', data);
+    return response.data;
+  },
+
   logout: async (): Promise<{ success: boolean; message: string }> => {
     try {
-      const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+      const accessToken =
+        typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
       if (!accessToken) {
         return { success: true, message: 'Already logged out' };
       }

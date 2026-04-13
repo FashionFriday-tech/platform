@@ -4,34 +4,32 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-import { ExternalLinkIcon } from '@ff/ui';
+import { ExternalLinkIcon, UserIcon as UIIcon } from '@ff/ui';
 
 import { quickLinks } from '@/data/profile';
-import { authApi } from '@/lib/api-client';
+import { useAuth } from '@/context/AuthContext';
 
 export function QuickLinksGrid() {
-  const router = useRouter();
+  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await authApi.logout();
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      await logout();
       toast.success('Logged out successfully');
-      router.push('/login');
     } catch (error) {
       console.error('Logout error:', error);
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      toast.success('Logged out successfully');
-      router.push('/login');
+      toast.error('Failed to logout cleanly');
     }
   };
 
   return (
     <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 sm:gap-6 lg:grid-cols-5">
       {quickLinks.map((link, _index) => {
-        const Icon = link.icon;
+        const isLogoutLink = 'action' in link && link.action === 'logout';
+        const displayLabel = isLogoutLink && !user ? 'Login' : link.label;
+        const displayDescription = isLogoutLink && !user ? 'Sign in to your account' : link.description;
+        const Icon = isLogoutLink && !user ? UIIcon : link.icon;
+        const targetHref = isLogoutLink && !user ? '/login' : link.href;
 
         const content = (
           <>
@@ -43,10 +41,10 @@ export function QuickLinksGrid() {
             {/* Content Area */}
             <div className="flex-1 sm:flex-none">
               <h3 className="text-foreground text-lg tracking-tighter uppercase sm:text-xl sm:font-bold">
-                {link.label}
+                {displayLabel}
               </h3>
               <p className="text-foreground mt-2 hidden text-xs leading-relaxed font-medium tracking-widest uppercase opacity-0 transition-opacity duration-500 group-hover:opacity-100 sm:block">
-                {link.description}
+                {displayDescription}
               </p>
             </div>
 
@@ -60,7 +58,7 @@ export function QuickLinksGrid() {
         const className =
           'bg-background border-border sm:bg-background-muted/30 hover:bg-background sm:hover:shadow-foreground/5 sm:hover:border-foreground/20 group relative flex items-center gap-6 border-b p-4 transition-all duration-500 sm:flex-col sm:items-center sm:rounded-4xl sm:border sm:p-6 sm:text-center sm:hover:-translate-y-2 sm:hover:shadow-2xl';
 
-        if ('action' in link && link.action === 'logout') {
+        if (isLogoutLink && user) {
           return (
             <button key={link.label} onClick={handleLogout} className={className}>
               {content}
@@ -69,7 +67,7 @@ export function QuickLinksGrid() {
         }
 
         return (
-          <Link key={link.label} href={link.href || '#'} className={className}>
+          <Link key={link.label} href={targetHref || '#'} className={className}>
             {content}
           </Link>
         );

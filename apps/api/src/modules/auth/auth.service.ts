@@ -189,6 +189,20 @@ export class AuthService {
     return { success: true, message: 'Logged out successfully' };
   }
 
+  async getProfile(userId: string) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { refreshToken, ...userWithoutToken } = user;
+    return userWithoutToken;
+  }
+
   async refreshTokens(userId: string, refreshToken: string) {
     const user = await this.prisma.db.user.findUnique({
       where: { id: userId },
@@ -207,5 +221,25 @@ export class AuthService {
     const tokens = await this.getTokens(user.id, user.role);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
+  }
+
+  async updateProfile(userId: string, data: any) {
+    try {
+      const updatedUser = await this.prisma.db.user.update({
+        where: { id: userId },
+        data: {
+          name: data.name,
+          email: data.email,
+          avatarUrl: data.avatarUrl,
+          // Add other fields if needed, currentlyprisma model might not have them
+        },
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { refreshToken, ...userWithoutToken } = updatedUser;
+      return userWithoutToken;
+    } catch {
+      throw new BadRequestException('Failed to update profile');
+    }
   }
 }

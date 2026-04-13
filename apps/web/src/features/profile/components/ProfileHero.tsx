@@ -1,11 +1,48 @@
 'use client';
 
+import Link from 'next/link';
 import { ArrowUpRightIcon, CrownIcon, SmartphoneIcon, SparklesIcon, ZapIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
 
-import { userData } from '@/data/profile';
+import { useAuth } from '@/context/AuthContext';
+import { userData as fallbackData } from '@/data/profile';
 
 export function ProfileHero() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="m-8 h-96 animate-pulse rounded-4xl bg-zinc-800/10" />;
+  }
+
+  if (!user) {
+    return (
+      <section className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:pt-32">
+        <div className="border-border relative overflow-hidden rounded-[2.5rem] border bg-zinc-800/5 p-8 text-center md:p-16 dark:bg-zinc-800/20">
+          <h2 className="mb-6 text-3xl font-black tracking-tighter uppercase md:text-5xl">
+            Unlock Your Style Dashboard
+          </h2>
+          <p className="text-foreground-muted mx-auto mb-10 max-w-xl text-sm leading-relaxed font-bold tracking-widest uppercase md:text-base">
+            Login to track orders, manage your profile, and access exclusive loyalty perks.
+          </p>
+          <Link
+            href="/login"
+            className="bg-foreground text-background inline-block rounded-full px-10 py-5 text-xs font-black tracking-[0.2em] uppercase hover:opacity-90"
+          >
+            Login / Join the Club
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  const userData = {
+    ...fallbackData,
+    name: user.name || user.phone || 'Fashion Fan',
+    email: user.email,
+    loyaltyPoints:
+      typeof user.loyaltyPoints === 'number' ? user.loyaltyPoints : fallbackData.loyaltyPoints,
+  };
+
   const progressPercentage = (userData.loyaltyPoints / userData.pointsToNextTier) * 100;
 
   return (

@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Req,
   UnauthorizedException,
@@ -59,11 +61,22 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Req() req: AuthRequest) {
-    const { id } = req.user;
+    const id = req.user?.id || req.user?.sub;
     if (!id) {
       throw new UnauthorizedException();
     }
     return this.authService.logout(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  async getMe(@Req() req: AuthRequest) {
+    const id = req.user?.id || req.user?.sub;
+    if (!id) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.getProfile(id);
   }
 
   @UseGuards(RefreshTokenGuard, ThrottlerGuard)
@@ -77,5 +90,16 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     return this.authService.refreshTokens(sub, refreshToken);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  @HttpCode(HttpStatus.OK)
+  async updateProfile(@Req() req: AuthRequest, @Body() body: any) {
+    const id = req.user?.id || req.user?.sub;
+    if (!id) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.updateProfile(id, body);
   }
 }
