@@ -8,6 +8,7 @@ import { ArrowLeftIcon, ChevronRightIcon, VerifiedUserIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
 import { authApi } from '@/lib/api-client';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AuthPage() {
   const [step, setStep] = useState<'PHONE' | 'OTP' | 'PROFILE'>('PHONE');
@@ -21,6 +22,7 @@ export default function AuthPage() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
+  const { user, loading: authLoading, login: authLogin } = useAuth();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -33,6 +35,12 @@ export default function AuthPage() {
       clearInterval(interval);
     };
   }, [timer]);
+
+  useEffect(() => {
+    if (user && !authLoading) {
+      router.replace('/account');
+    }
+  }, [user, authLoading, router]);
 
   const startTimer = () => {
     setTimer(30);
@@ -116,14 +124,12 @@ export default function AuthPage() {
           setStep('PROFILE');
         } else {
           // Normal login
-          if (response.accessToken) {
-            localStorage.setItem('accessToken', response.accessToken);
+          if (response.accessToken && response.refreshToken && response.user) {
+            authLogin(response.accessToken, response.refreshToken, response.user);
+            toast.success('Login successful!');
+          } else {
+            toast.error('Invalid response from server');
           }
-          if (response.refreshToken) {
-            localStorage.setItem('refreshToken', response.refreshToken);
-          }
-          toast.success('Login successful!');
-          router.push('/');
         }
       } else {
         // Step === PROFILE
@@ -133,10 +139,8 @@ export default function AuthPage() {
           profile.email,
           otpToken,
         );
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('refreshToken', response.refreshToken);
+        authLogin(response.accessToken, response.refreshToken, response.user);
         toast.success('Welcome to Fashion Friday!');
-        router.push('/');
       }
     } catch (error: any) {
       console.error('Auth Error:', error);
