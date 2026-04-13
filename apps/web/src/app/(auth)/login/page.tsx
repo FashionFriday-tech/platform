@@ -259,7 +259,7 @@ export default function AuthPage() {
 
         {step === 'OTP' && (
           <div className="mb-10 space-y-6">
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-1 sm:gap-3 md:gap-4">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -279,7 +279,7 @@ export default function AuthPage() {
                       inputRefs.current[index - 1]?.focus();
                     }
                   }}
-                  className={`h-16 w-16 rounded-full border-2 bg-transparent text-center text-2xl font-black text-white transition-all outline-none ${
+                  className={`h-9 w-9 text-base sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl rounded-full border-2 bg-transparent text-center font-bold text-white transition-all outline-none ${
                     errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                   }`}
                 />
