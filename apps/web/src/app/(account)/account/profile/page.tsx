@@ -8,6 +8,7 @@ import {
   CameraIcon,
   CheckCircleIcon,
   ChevronRightIcon,
+  CloseIcon,
   GiftIcon,
   LoaderIcon,
   MapPinIcon,
@@ -16,10 +17,12 @@ import {
   SparklesIcon,
   UserIcon,
 } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/context/AuthContext';
+import { authApi } from '@/lib/api-client';
 
 // --- Types ---
 
@@ -62,7 +65,7 @@ const ProfileSection = ({ title, icon: Icon, children, badge }: ProfileSectionPr
 );
 
 export default function EcommerceProfile() {
-  const { user, loading, updateProfile } = useAuth();
+  const { user, loading, updateProfile, refreshUser } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -72,6 +75,12 @@ export default function EcommerceProfile() {
     phone: true,
     email: false,
   });
+
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [otpError, setOtpError] = useState('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -109,8 +118,8 @@ export default function EcommerceProfile() {
         loyaltyPoints: user.loyaltyPoints || 0,
       });
       setVerifiedStatus({
-        phone: !!user.phone,
-        email: !!user.email,
+        phone: user.isPhoneVerified ?? !!user.phone,
+        email: user.isEmailVerified ?? false,
       });
     }
   }, [user]);
@@ -129,10 +138,85 @@ export default function EcommerceProfile() {
   }
 
   const handleVerifyField = async (field: 'phone' | 'email') => {
-    setVerifyingField(field);
-    await new Promise((r) => setTimeout(r, 2000));
-    setVerifiedStatus((p) => ({ ...p, [field]: true }));
-    setVerifyingField(null);
+    if (field === 'phone') {
+      setVerifyingField(field);
+      await new Promise((r) => setTimeout(r, 2000));
+      setVerifiedStatus((p) => ({ ...p, [field]: true }));
+      setVerifyingField(null);
+      return;
+    }
+
+    if (field === 'email') {
+      try {
+        setVerifyingField(field);
+        
+        // Send OTP
+        await authApi.sendEmailOtp();
+        toast.info('OTP securely generated. Please check server console.');
+        
+        setShowOtpModal(true);
+      } catch (error: any) {
+        console.error('Email verification error:', error);
+        toast.error(error.response?.data?.message || 'Failed to send OTP');
+      } finally {
+        setVerifyingField(null);
+      }
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    const pasteData = e.clipboardData.getData('text').trim();
+    if (!/^\d+$/.test(pasteData)) return;
+
+    const digits = pasteData.slice(0, 6).split('');
+    const newOtp = [...otp];
+
+    for (const [index, char] of digits.entries()) {
+      if (index < 6) newOtp[index] = char;
+    }
+
+    setOtp(newOtp);
+    setOtpError('');
+
+    const nextIndex = digits.length >= 6 ? 5 : digits.length;
+    otpInputRefs.current[nextIndex]?.focus();
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (isNaN(Number(value))) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
+
+    if (value && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+    setOtpError('');
+  };
+
+  const submitOtpVerify = async () => {
+    const otpString = otp.join('');
+    if (otpString.length < 6) {
+      setOtpError('Please enter the 6-digit OTP');
+      return;
+    }
+
+    try {
+      setIsVerifyingOtp(true);
+      await authApi.verifyEmailOtp(otpString);
+      toast.success('Email verified successfully!');
+
+      setVerifiedStatus((p) => ({ ...p, email: true }));
+      await refreshUser();
+      
+      setShowOtpModal(false);
+      setOtp(['', '', '', '', '', '']);
+    } catch (error: any) {
+      setOtpError(error.response?.data?.message || 'Invalid OTP');
+    } finally {
+      setIsVerifyingOtp(false);
+    }
   };
 
   return (
@@ -391,6 +475,90 @@ export default function EcommerceProfile() {
           </form>
         </div>
       </main>
+
+      <AnimatePresence>
+        {showOtpModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowOtpModal(false)}
+              className="bg-background/80 fixed inset-0 z-[100] backdrop-blur-xl"
+            />
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="bg-background border-border fixed bottom-0 left-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:top-1/2 lg:left-1/2 lg:bottom-auto lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
+            >
+              <div className="mb-8 flex items-start justify-between">
+                <div className="bg-brand/10 text-brand rounded-3xl p-4">
+                  <ShieldCheckIcon size={32} />
+                </div>
+                <button
+                  onClick={() => setShowOtpModal(false)}
+                  className="hover:bg-background-muted rounded-full p-2 transition-colors"
+                >
+                  <CloseIcon size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <h3 className="text-3xl font-black tracking-tighter uppercase italic">
+                  Verify Email
+                </h3>
+                <p className="text-foreground-subtle text-[10px] leading-loose font-bold tracking-widest uppercase">
+                  Please enter the 6-digit verification code sent to your email.
+                </p>
+
+                <div className="flex justify-center gap-2 sm:gap-4 py-4">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      ref={(el) => {
+                        otpInputRefs.current[index] = el;
+                      }}
+                      onPaste={index === 0 ? handleOtpPaste : undefined}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Backspace' && !otp[index] && index > 0) {
+                          otpInputRefs.current[index - 1]?.focus();
+                        }
+                      }}
+                      className={`h-11 w-11 text-xl sm:h-16 sm:w-16 sm:text-2xl rounded-full border-2 bg-transparent text-center font-bold text-foreground transition-all outline-none ${
+                        otpError ? 'border-red-500' : 'border-border focus:border-brand'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className="h-4 text-center">
+                  {otpError && (
+                    <p className="animate-in fade-in text-[10px] font-bold tracking-widest text-red-500 uppercase">
+                      {otpError}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-3 pt-4">
+                  <button
+                    onClick={submitOtpVerify}
+                    disabled={isVerifyingOtp}
+                    className="bg-brand text-brand-foreground w-full rounded-full py-5 text-[10px] font-black tracking-widest uppercase shadow-2xl transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    {isVerifyingOtp ? 'Verifying...' : 'Confirm OTP'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
