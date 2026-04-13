@@ -7,6 +7,22 @@ const api = axios.create({
   },
 });
 
+// Add a request interceptor
+api.interceptors.request.use(
+  (config) => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
+
 export interface SendOtpResponse {
   message: string;
 }
@@ -53,6 +69,27 @@ export const authApi = {
       otpToken,
     });
     return response.data;
+  },
+
+  logout: async (): Promise<{ success: boolean; message: string }> => {
+    try {
+      const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+      if (!accessToken) {
+        return { success: true, message: 'Already logged out' };
+      }
+      const response = await api.post('/auth/logout', {});
+      return response.data;
+    } catch (error: unknown) {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        (error as any).response?.status === 401
+      ) {
+        return { success: true, message: 'Logged out (Session already expired)' };
+      }
+      throw error;
+    }
   },
 };
 
