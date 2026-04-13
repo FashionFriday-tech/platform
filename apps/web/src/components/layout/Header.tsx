@@ -117,16 +117,14 @@ export function Header() {
                   2
                 </span>
               </Link>
-              <Link href="/account" className="hover:text-brand flex items-center transition-colors">
+              <Link
+                href="/account"
+                className="hover:text-brand flex items-center transition-colors"
+              >
                 {user ? (
                   user.avatarUrl && user.avatarUrl !== '' ? (
-                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-border transition-transform hover:scale-110">
-                      <Image
-                        src={user.avatarUrl}
-                        alt={user.name}
-                        fill
-                        className="object-cover"
-                      />
+                    <div className="border-border relative h-8 w-8 overflow-hidden rounded-full border transition-transform hover:scale-110">
+                      <Image src={user.avatarUrl} alt={user.name} fill className="object-cover" />
                     </div>
                   ) : (
                     <div className="bg-foreground text-background flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-black uppercase transition-transform hover:scale-110">
@@ -159,7 +157,10 @@ export function Header() {
 
       {/* MOBILE UI */}
       <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-3 lg:hidden">
-        <Link href="/account" className="border-foreground flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 bg-zinc-100 transition-transform active:scale-95 dark:bg-zinc-800">
+        <Link
+          href="/account"
+          className="border-foreground flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 bg-zinc-100 transition-transform active:scale-95 dark:bg-zinc-800"
+        >
           {user ? (
             user.avatarUrl && user.avatarUrl !== '' ? (
               <div className="relative h-full w-full">

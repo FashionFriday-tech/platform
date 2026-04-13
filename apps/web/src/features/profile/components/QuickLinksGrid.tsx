@@ -27,7 +27,8 @@ export function QuickLinksGrid() {
       {quickLinks.map((link, _index) => {
         const isLogoutLink = 'action' in link && link.action === 'logout';
         const displayLabel = isLogoutLink && !user ? 'Login' : link.label;
-        const displayDescription = isLogoutLink && !user ? 'Sign in to your account' : link.description;
+        const displayDescription =
+          isLogoutLink && !user ? 'Sign in to your account' : link.description;
         const Icon = isLogoutLink && !user ? UIIcon : link.icon;
         const targetHref = isLogoutLink && !user ? '/login' : link.href;
 
