@@ -1,6 +1,7 @@
 import {
   GiftIcon,
   HandshakeIcon,
+  LogOutIcon,
   MapPinIcon,
   PackageIcon,
   SettingsIcon,
@@ -69,6 +70,13 @@ export const quickLinks = [
     description: 'Manage your account settings',
     icon: SettingsIcon,
     href: '/account/settings',
+  },
+
+  {
+    label: 'Logout',
+    description: 'Sign out of your account',
+    icon: LogOutIcon,
+    action: 'logout',
   },
 ];
 
