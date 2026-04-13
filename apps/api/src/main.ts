@@ -14,3 +14,4 @@ async function bootstrap() {
 bootstrap().catch(() => {
   // Silent fail or use logger
 });
+// Triggering recompile for new endpoints

@@ -27,7 +27,7 @@ enum PaymentMethod {
 model Order {
   id              String         @id @default(uuid())
   userId          String
-  user            User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   orderNumber     String         @unique // Customer facing reference
   

@@ -251,7 +251,9 @@ export class AuthService {
       return { success: true, message: 'Account deleted successfully' };
     } catch (error) {
       this.logger.error(`Failed to delete account for user ${userId}:`, error);
-      throw new BadRequestException('Failed to delete account due to existing dependencies or database error');
+      throw new BadRequestException(
+        'Failed to delete account due to existing dependencies or database error',
+      );
     }
   }
 }
