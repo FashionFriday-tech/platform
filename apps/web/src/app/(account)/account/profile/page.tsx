@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -16,6 +16,10 @@ import {
   SparklesIcon,
   UserIcon,
 } from '@ff/ui';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+
+import { useAuth } from '@/context/AuthContext';
 
 // --- Types ---
 
@@ -58,25 +62,71 @@ const ProfileSection = ({ title, icon: Icon, children, badge }: ProfileSectionPr
 );
 
 export default function EcommerceProfile() {
+  const { user, loading, updateProfile } = useAuth();
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [completion] = useState(75);
   const [verifyingField, setVerifyingField] = useState<string | null>(null);
   const [verifiedStatus, setVerifiedStatus] = useState({
-    phone: false,
+    phone: true,
     email: false,
   });
 
   const [formData, setFormData] = useState({
-    name: 'Ajmal',
-    phone: '7558969093',
-    email: 'ajmal@gmail.com',
+    name: '',
+    phone: '',
+    email: '',
     dob: '',
     anniversary: '',
     gender: 'Male',
     stylePreference: ['Streetwear'],
-    avatarUrl: '/images/model/aj.png',
+    avatarUrl: '/images/placeholders/user.png',
+    loyaltyPoints: 0,
   });
+
+  // Calculate completion percentage
+  const calculateCompletion = () => {
+    const fields = [formData.name, formData.phone, formData.email, formData.dob, formData.avatarUrl];
+    const filled = fields.filter((f) => !!f).length;
+    return Math.round((filled / fields.length) * 100);
+  };
+
+  const completionPercent = calculateCompletion();
+
+  // Effect to sync user data into form
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        phone: user.phone || '',
+        email: user.email || '',
+        dob: '',
+        anniversary: '',
+        gender: 'Male',
+        stylePreference: ['Streetwear'],
+        avatarUrl: user.avatarUrl || '/images/placeholders/user.png',
+        loyaltyPoints: user.loyaltyPoints || 0,
+      });
+      setVerifiedStatus({
+        phone: !!user.phone,
+        email: !!user.email,
+      });
+    }
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <LoaderIcon className="animate-spin text-brand" size={40} />
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push('/login');
+    return null;
+  }
 
   const handleVerifyField = async (field: 'phone' | 'email') => {
     setVerifyingField(field);
@@ -120,19 +170,21 @@ export default function EcommerceProfile() {
                 </button>
 
                 <h2 className="mt-4 text-lg font-bold">{formData.name}</h2>
-                <p className="text-foreground-muted mb-4 text-sm">Gold Member</p>
+                <p className="text-foreground-muted mb-4 text-xs font-bold tracking-widest uppercase">
+                  {formData.loyaltyPoints} Loyalty Points
+                </p>
 
                 <div className="bg-background-muted rounded-4xl p-4 text-left">
                   <div className="mb-2 flex items-end justify-between">
                     <span className="text-xs font-bold tracking-tighter uppercase">
                       Profile Strength
                     </span>
-                    <span className="text-sm font-bold">{completion}%</span>
+                    <span className="text-sm font-bold">{completionPercent}%</span>
                   </div>
                   <div className="bg-border h-1.5 w-full rounded-full">
                     <div
                       className="bg-brand h-1.5 rounded-full transition-all duration-500"
-                      style={{ width: `${completion}%` }}
+                      style={{ width: `${completionPercent}%` }}
                     />
                   </div>
                 </div>
@@ -170,8 +222,18 @@ export default function EcommerceProfile() {
 
           {/* MAIN FORM */}
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
+              setIsSaving(true);
+              try {
+                await updateProfile(formData);
+                toast.success('Profile updated successfully');
+              } catch (error) {
+                console.error('Update error:', error);
+                toast.error('Failed to update profile');
+              } finally {
+                setIsSaving(false);
+              }
             }}
             className="space-y-6 md:col-span-8"
           >
@@ -313,10 +375,10 @@ export default function EcommerceProfile() {
                 </button>
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={isSaving}
                   className="bg-background text-foreground flex items-center gap-2 rounded-4xl px-8 py-3 font-semibold transition-all hover:opacity-90"
                 >
-                  {loading ? (
+                  {isSaving ? (
                     <LoaderIcon className="animate-spin" size={18} />
                   ) : (
                     <>
