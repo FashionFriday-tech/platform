@@ -256,4 +256,58 @@ export class AuthService {
       );
     }
   }
+
+  async sendEmailVerificationOtp(userId: string) {
+    const user = await this.prisma.db.user.findUnique({ where: { id: userId } });
+    if (!user || !user.email) {
+      throw new BadRequestException('User or email not found');
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    this.logger.log(`[SECURE EMAIL OTP MOCK] Sending OTP ${otp} to email ${user.email}`);
+
+    const otpHash = await argon2.hash(otp);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    await this.prisma.db.otp.upsert({
+      where: { email: user.email },
+      update: { otpHash, expiresAt },
+      create: { email: user.email, otpHash, expiresAt },
+    });
+
+    return { success: true, message: 'Email OTP sent successfully' };
+  }
+
+  async verifyEmailOtp(userId: string, otp: string) {
+    const user = await this.prisma.db.user.findUnique({ where: { id: userId } });
+    if (!user || !user.email) {
+      throw new BadRequestException('User or email not found');
+    }
+
+    const otpEntry = await this.prisma.db.otp.findUnique({
+      where: { email: user.email },
+    });
+
+    if (!otpEntry) {
+      throw new BadRequestException('OTP not requested for this email');
+    }
+
+    if (new Date() > otpEntry.expiresAt) {
+      throw new BadRequestException('OTP has expired');
+    }
+
+    const isValid = await argon2.verify(otpEntry.otpHash, otp);
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+
+    await this.prisma.db.otp.delete({ where: { email: user.email } });
+
+    const updatedUser = await this.prisma.db.user.update({
+      where: { id: userId },
+      data: { isEmailVerified: true },
+    });
+
+    return { success: true, message: 'Email verified successfully', user: updatedUser };
+  }
 }

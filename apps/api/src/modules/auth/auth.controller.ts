@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -113,5 +114,32 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     return this.authService.deleteAccount(id);
+  }
+
+  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Post('email/send-otp')
+  @HttpCode(HttpStatus.OK)
+  async sendEmailOtp(@Req() req: AuthRequest) {
+    const id = req.user?.id || req.user?.sub;
+    if (!id) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.sendEmailVerificationOtp(id);
+  }
+
+  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('email/verify-otp')
+  @HttpCode(HttpStatus.OK)
+  async verifyEmailOtp(@Req() req: AuthRequest, @Body() body: any) {
+    const id = req.user?.id || req.user?.sub;
+    if (!id) {
+      throw new UnauthorizedException();
+    }
+    if (!body?.otp) {
+      throw new BadRequestException('OTP is required');
+    }
+    return this.authService.verifyEmailOtp(id, body.otp);
   }
 }
