@@ -242,4 +242,16 @@ export class AuthService {
       throw new BadRequestException('Failed to update profile');
     }
   }
+
+  async deleteAccount(userId: string) {
+    try {
+      await this.prisma.db.user.delete({
+        where: { id: userId },
+      });
+      return { success: true, message: 'Account deleted successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to delete account for user ${userId}:`, error);
+      throw new BadRequestException('Failed to delete account due to existing dependencies or database error');
+    }
+  }
 }

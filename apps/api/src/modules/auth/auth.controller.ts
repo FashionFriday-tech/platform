@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -101,5 +102,16 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     return this.authService.updateProfile(id, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('account')
+  @HttpCode(HttpStatus.OK)
+  async deleteAccount(@Req() req: AuthRequest) {
+    const id = req.user?.id || req.user?.sub;
+    if (!id) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.deleteAccount(id);
   }
 }

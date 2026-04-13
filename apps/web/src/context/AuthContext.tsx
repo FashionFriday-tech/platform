@@ -24,6 +24,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   updateProfile: (data: any) => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -86,8 +87,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(updatedUser);
   };
 
+  const deleteAccount = async () => {
+    try {
+      await authApi.deleteAccount();
+    } catch (error) {
+      console.error('API account deletion failed:', error);
+      // We still proceed to logout the user locally if the API fails,
+      // or we can choose to re-throw if the user MUST know it didn't delete on DB.
+      // For now, let's re-throw so the Settings page can show the toast error.
+      throw error;
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      setUser(null);
+      router.replace('/');
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser, updateProfile }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, logout, refreshUser, updateProfile, deleteAccount }}
+    >
       {children}
     </AuthContext.Provider>
   );

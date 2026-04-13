@@ -141,6 +141,11 @@ export const authApi = {
     return response.data;
   },
 
+  deleteAccount: async (): Promise<{ success: boolean; message: string }> => {
+    const response = await api.delete('/auth/account');
+    return response.data;
+  },
+
   updateProfile: async (data: any): Promise<SignupResponse['user']> => {
     const response = await api.patch('/auth/profile', data);
     return response.data;
