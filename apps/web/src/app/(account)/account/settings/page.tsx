@@ -22,6 +22,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
 import { useSettings } from '@/context/SettingsContext';
+import { authApi } from '@/lib/api-client';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -36,6 +38,22 @@ export default function SettingsPage() {
   const scrollLevel = settings.autoScrollLevel;
 
   const speedLabels = ['Lvl 1', 'Lvl 2', 'Lvl 3', 'Lvl 4', 'Lvl 5'];
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      toast.success('Logged out successfully');
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      toast.success('Logged out successfully');
+      router.push('/login');
+    }
+  };
+
   return (
     <div className="text-foreground min-h-screen bg-[#F9F9F9] pb-20 transition-colors duration-500 dark:bg-black">
       <main className="mx-auto max-w-2xl space-y-10 px-4 pt-12">
@@ -173,7 +191,10 @@ export default function SettingsPage() {
 
         {/* Destructive Options */}
         <div className="space-y-4 pt-4">
-          <button className="bg-background border-border group flex w-full items-center justify-between rounded-4xl border p-4 transition-all active:scale-[0.98]">
+          <button
+            onClick={handleLogout}
+            className="bg-background border-border group flex w-full items-center justify-between rounded-4xl border p-4 transition-all active:scale-[0.98]"
+          >
             <div className="flex items-center gap-4 text-left">
               <div className="bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background rounded-2xl p-3 transition-all">
                 <LogOutIcon size={20} />
