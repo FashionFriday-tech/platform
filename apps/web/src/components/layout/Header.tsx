@@ -55,7 +55,7 @@ const navStructure = [
 ];
 
 export function Header() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -225,7 +225,7 @@ export function Header() {
         )}
       </AnimatePresence>
 
-      <style jsx global>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         @keyframes marquee {
           0% {
             transform: translateX(0);
@@ -237,7 +237,7 @@ export function Header() {
         .animate-marquee {
           animation: marquee 30s linear infinite;
         }
-      `}</style>
+      `}} />
     </>
   );
 }
