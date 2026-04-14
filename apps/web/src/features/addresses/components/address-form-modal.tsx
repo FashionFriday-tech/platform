@@ -1,16 +1,9 @@
 import React from 'react';
 
-import {
-  AlertIcon,
-  BriefcaseIcon,
-  CheckIcon,
-  CloseIcon,
-  HomeIcon,
-  LoaderIcon,
-} from '@ff/ui';
+import { AlertIcon, BriefcaseIcon, CheckIcon, CloseIcon, HomeIcon, LoaderIcon } from '@ff/ui';
 
 import { useAddressForm } from '../hooks/use-address-form';
-import { Address } from '../types';
+import { type Address } from '../types';
 import { FormInput } from './form-input';
 
 interface AddressFormModalProps {

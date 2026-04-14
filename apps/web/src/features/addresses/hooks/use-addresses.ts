@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { Address } from '../types';
+import { type Address } from '../types';
 
 export function useAddresses() {
   const [addresses, setAddresses] = useState<Address[]>([]);

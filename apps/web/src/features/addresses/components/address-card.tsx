@@ -1,15 +1,8 @@
 import React from 'react';
 
-import {
-  BriefcaseIcon,
-  EditIcon,
-  HomeIcon,
-  PhoneIcon,
-  StarIcon,
-  TrashIcon,
-} from '@ff/ui';
+import { BriefcaseIcon, EditIcon, HomeIcon, PhoneIcon, StarIcon, TrashIcon } from '@ff/ui';
 
-import { Address } from '../types';
+import { type Address } from '../types';
 
 interface AddressCardProps {
   address: Address;
