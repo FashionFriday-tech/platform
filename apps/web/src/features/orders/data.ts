@@ -1,27 +1,5 @@
-// types/order.ts or inside your component file
-export type OrderStatus = 'shipping' | 'arrived' | 'canceled';
+import { type Order } from './types';
 
-export interface OrderItem {
-  id: string;
-  name: string;
-  price: number;
-  size: string;
-  image: string;
-  quantity: number;
-}
-
-export interface Order {
-  id: string;
-  status: OrderStatus;
-  statusLabel: string; // e.g., "On Delivery"
-  date: string; // Estimated arrival or delivered date
-  origin: string;
-  destination: string;
-  items: OrderItem[];
-  totalPrice: number;
-}
-
-// Mock Data matching your image
 export const orders: Order[] = [
   {
     id: '#7812657',
@@ -110,7 +88,6 @@ export const orders: Order[] = [
       },
     ],
   },
-  // Add an arrived order for testing
   {
     id: '#1234567',
     status: 'arrived',
