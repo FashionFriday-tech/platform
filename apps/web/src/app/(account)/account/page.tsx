@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { HeartIcon, HistoryIcon, LoaderIcon, ShieldCheckIcon, StarIcon } from '@ff/ui';
 import Link from 'next/link';
 
+import { HeartIcon, HistoryIcon, LoaderIcon, ShieldCheckIcon, StarIcon } from '@ff/ui';
 
 import { useAuth } from '@/context/AuthContext';
 import { ProfileHero, QuickLinksGrid } from '@/features/profile';
@@ -14,7 +14,7 @@ export default function AccountDashboardPage() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <LoaderIcon className="animate-spin text-brand" size={40} />
+        <LoaderIcon className="text-brand animate-spin" size={40} />
       </div>
     );
   }
@@ -35,8 +35,9 @@ export default function AccountDashboardPage() {
                 <h1 className="mb-4 text-3xl font-black tracking-tighter uppercase md:text-5xl">
                   Member Area
                 </h1>
-                <p className="text-foreground-muted mb-8 mx-auto max-w-lg text-xs font-bold tracking-widest uppercase leading-relaxed">
-                  Join the club to track orders, manage your profile, and access exclusive loyalty perks.
+                <p className="text-foreground-muted mx-auto mb-8 max-w-lg text-xs leading-relaxed font-bold tracking-widest uppercase">
+                  Join the club to track orders, manage your profile, and access exclusive loyalty
+                  perks.
                 </p>
                 <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                   <Link

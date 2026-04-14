@@ -21,6 +21,11 @@ export default [
     rules: {
       'react/no-unescaped-entities': 'off',
       'security/detect-object-injection': 'off',
+      'no-console': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-promise-reject-errors': 'off',
+      '@typescript-eslint/return-await': 'off',
     },
   },
 ];

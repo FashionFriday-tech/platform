@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import {
   BellIcon,
@@ -17,11 +17,14 @@ import {
 import { AnimatePresence } from 'framer-motion';
 
 import { useAuth } from '@/context/AuthContext';
+
 import { SearchOverlay } from './SearchOverlay/SearchOverlay';
 
 // --- Helper Functions ---
 const getInitials = (name: string) => {
-  if (!name) return '';
+  if (!name) {
+    return '';
+  }
   const parts = name.trim().split(' ');
   if (parts.length >= 2) {
     return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
@@ -225,7 +228,9 @@ export function Header() {
         )}
       </AnimatePresence>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes marquee {
           0% {
             transform: translateX(0);
@@ -237,7 +242,9 @@ export function Header() {
         .animate-marquee {
           animation: marquee 30s linear infinite;
         }
-      `}} />
+      `,
+        }}
+      />
     </>
   );
 }

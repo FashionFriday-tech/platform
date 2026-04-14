@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import {
   CameraIcon,
@@ -18,7 +19,6 @@ import {
   UserIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/context/AuthContext';
@@ -96,15 +96,23 @@ export default function EcommerceProfile() {
 
   // Calculate completion percentage
   const calculateCompletion = () => {
-    const fields = [formData.name, formData.phone, formData.email, formData.dob, formData.avatarUrl];
+    const fields = [
+      formData.name,
+      formData.phone,
+      formData.email,
+      formData.dob,
+      formData.avatarUrl,
+    ];
     const filled = fields.filter((f) => !!f).length;
     return Math.round((filled / fields.length) * 100);
   };
 
   const completionPercent = calculateCompletion();
-  
+
   const initialData = useMemo(() => {
-    if (!user) return null;
+    if (!user) {
+      return null;
+    }
     return {
       name: user.name || '',
       phone: user.phone || '',
@@ -119,7 +127,9 @@ export default function EcommerceProfile() {
   }, [user]);
 
   const hasChanges = useMemo(() => {
-    if (!initialData) return false;
+    if (!initialData) {
+      return false;
+    }
     return JSON.stringify(formData) !== JSON.stringify(initialData);
   }, [formData, initialData]);
 
@@ -133,6 +143,7 @@ export default function EcommerceProfile() {
   // Effect to sync user data into form
   useEffect(() => {
     if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: user.name || '',
         phone: user.phone || '',
@@ -154,7 +165,7 @@ export default function EcommerceProfile() {
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <LoaderIcon className="animate-spin text-brand" size={40} />
+        <LoaderIcon className="text-brand animate-spin" size={40} />
       </div>
     );
   }
@@ -176,11 +187,11 @@ export default function EcommerceProfile() {
     if (field === 'email') {
       try {
         setVerifyingField(field);
-        
+
         // Send OTP
         await authApi.sendEmailOtp();
         toast.info('OTP securely generated. Please check server console.');
-        
+
         setShowOtpModal(true);
       } catch (error: any) {
         console.error('Email verification error:', error);
@@ -193,13 +204,17 @@ export default function EcommerceProfile() {
 
   const handleOtpPaste = (e: React.ClipboardEvent) => {
     const pasteData = e.clipboardData.getData('text').trim();
-    if (!/^\d+$/.test(pasteData)) return;
+    if (!/^\d+$/.test(pasteData)) {
+      return;
+    }
 
     const digits = pasteData.slice(0, 6).split('');
     const newOtp = [...otp];
 
     for (const [index, char] of digits.entries()) {
-      if (index < 6) newOtp[index] = char;
+      if (index < 6) {
+        newOtp[index] = char;
+      }
     }
 
     setOtp(newOtp);
@@ -210,7 +225,9 @@ export default function EcommerceProfile() {
   };
 
   const handleOtpChange = (index: number, value: string) => {
-    if (isNaN(Number(value))) return;
+    if (isNaN(Number(value))) {
+      return;
+    }
 
     const newOtp = [...otp];
     newOtp[index] = value.substring(value.length - 1);
@@ -236,7 +253,7 @@ export default function EcommerceProfile() {
 
       setVerifiedStatus((p) => ({ ...p, email: true }));
       await refreshUser();
-      
+
       setShowOtpModal(false);
       setOtp(['', '', '', '', '', '']);
     } catch (error: any) {
@@ -520,21 +537,25 @@ export default function EcommerceProfile() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setShowOtpModal(false)}
+              onClick={() => {
+                setShowOtpModal(false);
+              }}
               className="bg-background/80 fixed inset-0 z-[100] backdrop-blur-xl"
             />
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="bg-background border-border fixed bottom-0 left-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:top-1/2 lg:left-1/2 lg:bottom-auto lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
+              className="bg-background border-border fixed bottom-0 left-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:top-1/2 lg:bottom-auto lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
             >
               <div className="mb-8 flex items-start justify-between">
                 <div className="bg-brand/10 text-brand rounded-3xl p-4">
                   <ShieldCheckIcon size={32} />
                 </div>
                 <button
-                  onClick={() => setShowOtpModal(false)}
+                  onClick={() => {
+                    setShowOtpModal(false);
+                  }}
                   className="hover:bg-background-muted rounded-full p-2 transition-colors"
                 >
                   <CloseIcon size={24} />
@@ -549,7 +570,7 @@ export default function EcommerceProfile() {
                   Please enter the 6-digit verification code sent to your email.
                 </p>
 
-                <div className="flex justify-center gap-2 sm:gap-4 py-4">
+                <div className="flex justify-center gap-2 py-4 sm:gap-4">
                   {otp.map((digit, index) => (
                     <input
                       key={index}
@@ -561,13 +582,15 @@ export default function EcommerceProfile() {
                         otpInputRefs.current[index] = el;
                       }}
                       onPaste={index === 0 ? handleOtpPaste : undefined}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onChange={(e) => {
+                        handleOtpChange(index, e.target.value);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Backspace' && !otp[index] && index > 0) {
                           otpInputRefs.current[index - 1]?.focus();
                         }
                       }}
-                      className={`h-11 w-11 text-xl sm:h-16 sm:w-16 sm:text-2xl rounded-full border-2 bg-transparent text-center font-bold text-foreground transition-all outline-none ${
+                      className={`text-foreground h-11 w-11 rounded-full border-2 bg-transparent text-center text-xl font-bold transition-all outline-none sm:h-16 sm:w-16 sm:text-2xl ${
                         otpError ? 'border-red-500' : 'border-border focus:border-brand'
                       }`}
                     />

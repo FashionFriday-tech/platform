@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeftIcon, ChevronRightIcon, VerifiedUserIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
-import { authApi } from '@/lib/api-client';
 import { useAuth } from '@/context/AuthContext';
+import { authApi } from '@/lib/api-client';
 
 export default function AuthPage() {
   const [step, setStep] = useState<'PHONE' | 'OTP' | 'PROFILE'>('PHONE');
@@ -133,12 +133,7 @@ export default function AuthPage() {
         }
       } else {
         // Step === PROFILE
-        const response = await authApi.signup(
-          phoneNumber,
-          profile.name,
-          profile.email,
-          otpToken,
-        );
+        const response = await authApi.signup(phoneNumber, profile.name, profile.email, otpToken);
         authLogin(response.accessToken, response.refreshToken, response.user);
         toast.success('Welcome to Fashion Friday!');
       }
@@ -279,7 +274,7 @@ export default function AuthPage() {
                       inputRefs.current[index - 1]?.focus();
                     }
                   }}
-                  className={`h-9 w-9 text-base sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl rounded-full border-2 bg-transparent text-center font-bold text-white transition-all outline-none ${
+                  className={`h-9 w-9 rounded-full border-2 bg-transparent text-center text-base font-bold text-white transition-all outline-none sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl ${
                     errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                   }`}
                 />
