@@ -1,0 +1,26 @@
+{
+  "name": "@ff/database",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "generate": "prisma generate --schema ./prisma/schema",
+    "migrate": "prisma migrate dev --schema ./prisma/schema",
+    "db:push": "prisma db push --schema ./prisma/schema"
+  },
+  "include": [
+    "src"
+  ],
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/pg": "^8.20.0",
+    "prisma": "5.22.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^5.22.0",
+    "@prisma/client": "5.22.0",
+    "pg": "^8.20.0"
+  }
+}

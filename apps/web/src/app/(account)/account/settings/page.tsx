@@ -22,10 +22,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
 import { useSettings } from '@/context/SettingsContext';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const router = useRouter();
-
+  const { user, logout, deleteAccount } = useAuth();
+  const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [notifications, setNotifications] = useState({
     orders: true,
@@ -34,8 +37,32 @@ export default function SettingsPage() {
 
   const { settings, updateSettings } = useSettings();
   const scrollLevel = settings.autoScrollLevel;
-
   const speedLabels = ['Lvl 1', 'Lvl 2', 'Lvl 3', 'Lvl 4', 'Lvl 5'];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Failed to logout');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteAccount();
+      toast.success('Account deleted successfully');
+    } catch (error) {
+      console.error('Deletion error:', error);
+      toast.error('Failed to delete account');
+      setIsDeleting(false);
+    }
+  };
+
+  const initials = user ? (user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U') : 'G';
+
   return (
     <div className="text-foreground min-h-screen bg-[#F9F9F9] pb-20 transition-colors duration-500 dark:bg-black">
       <main className="mx-auto max-w-2xl space-y-10 px-4 pt-12">
@@ -47,14 +74,14 @@ export default function SettingsPage() {
           className="bg-background border-border/40 flex cursor-pointer items-center gap-5 rounded-[2.5rem] border p-8 shadow-sm"
         >
           <div className="bg-foreground text-background flex h-20 w-20 items-center justify-center rounded-full text-3xl font-black uppercase italic">
-            AF
+            {initials}
           </div>
-          <div className="flex-1">
+          <div className="flex-1 text-left">
             <h2 className="text-xl leading-none font-black tracking-tight uppercase italic">
-              Ajmal Faris
+              {user ? user.name || user.phone : 'Guest User'}
             </h2>
             <p className="text-foreground-subtle mt-2 text-[10px] font-bold tracking-widest uppercase opacity-60">
-              ajmalfaris@gmail.com
+              {user ? user.email || user.phone : 'Sign in to sync account'}
             </p>
           </div>
           <ChevronRightIcon size={20} className="text-foreground-subtle/30" />
@@ -172,27 +199,34 @@ export default function SettingsPage() {
         </div>
 
         {/* Destructive Options */}
-        <div className="space-y-4 pt-4">
-          <button className="bg-background border-border group flex w-full items-center justify-between rounded-4xl border p-4 transition-all active:scale-[0.98]">
-            <div className="flex items-center gap-4 text-left">
-              <div className="bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background rounded-2xl p-3 transition-all">
-                <LogOutIcon size={20} />
+        {user && (
+          <div className="space-y-4 pt-4">
+            <button
+              onClick={handleLogout}
+              className="bg-background border-border group flex w-full items-center justify-between rounded-4xl border p-4 transition-all active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-4 text-left">
+                <div className="bg-foreground/5 text-foreground group-hover:bg-foreground group-hover:text-background rounded-2xl p-3 transition-all">
+                  <LogOutIcon size={20} />
+                </div>
+                <span className="text-sm font-black tracking-tight uppercase italic">Log Out</span>
               </div>
-              <span className="text-sm font-black tracking-tight uppercase italic">Log Out</span>
-            </div>
-            <ChevronRightIcon size={18} className="opacity-20" />
-          </button>
+              <ChevronRightIcon size={18} className="opacity-20" />
+            </button>
 
-          <button
-            onClick={() => {
-              setShowDeleteModal(true);
-            }}
-            className="flex w-full items-center justify-center gap-3 rounded-4xl border border-red-500/20 bg-red-500/5 p-6 text-red-600 transition-all active:scale-[0.98]"
-          >
-            <TrashIcon size={18} />
-            <span className="text-[10px] font-black tracking-widest uppercase">Delete Account</span>
-          </button>
-        </div>
+            <button
+              onClick={() => {
+                setShowDeleteModal(true);
+              }}
+              className="flex w-full items-center justify-center gap-3 rounded-4xl border border-red-500/20 bg-red-500/5 p-6 text-red-600 transition-all active:scale-[0.98]"
+            >
+              <TrashIcon size={18} />
+              <span className="text-[10px] font-black tracking-widest uppercase">
+                Delete Account
+              </span>
+            </button>
+          </div>
+        )}
 
         {/* Platform Info */}
         <div className="space-y-2 py-10 text-center opacity-30">
@@ -219,13 +253,13 @@ export default function SettingsPage() {
               onClick={() => {
                 setShowDeleteModal(false);
               }}
-              className="bg-background/80 fixed inset-0 z-100 backdrop-blur-xl"
+              className="bg-background/80 fixed inset-0 z-[100] backdrop-blur-xl"
             />
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="bg-background border-border fixed bottom-0 z-110 w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:bottom-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
+              className="bg-background border-border fixed bottom-0 left-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:top-1/2 lg:left-1/2 lg:bottom-auto lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
             >
               <div className="mb-8 flex items-start justify-between">
                 <div className="rounded-3xl bg-red-600 p-4 text-white shadow-xl shadow-red-600/20">
@@ -270,8 +304,12 @@ export default function SettingsPage() {
                 </ul>
 
                 <div className="space-y-3 pt-8">
-                  <button className="w-full rounded-full bg-red-600 py-5 text-[10px] font-black tracking-widest text-white uppercase shadow-2xl shadow-red-600/30 transition-all active:scale-95">
-                    I Understand, Delete All Data
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={isDeleting}
+                    className="w-full rounded-full bg-red-600 py-5 text-[10px] font-black tracking-widest text-white uppercase shadow-2xl shadow-red-600/30 transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    {isDeleting ? 'Wiping Data...' : 'I Understand, Delete All Data'}
                   </button>
                   <button
                     onClick={() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -8,6 +8,7 @@ import {
   CameraIcon,
   CheckCircleIcon,
   ChevronRightIcon,
+  CloseIcon,
   GiftIcon,
   LoaderIcon,
   MapPinIcon,
@@ -16,6 +17,12 @@ import {
   SparklesIcon,
   UserIcon,
 } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+
+import { useAuth } from '@/context/AuthContext';
+import { authApi } from '@/lib/api-client';
 
 // --- Types ---
 
@@ -58,31 +65,185 @@ const ProfileSection = ({ title, icon: Icon, children, badge }: ProfileSectionPr
 );
 
 export default function EcommerceProfile() {
+  const { user, loading, updateProfile, refreshUser } = useAuth();
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [completion] = useState(75);
   const [verifyingField, setVerifyingField] = useState<string | null>(null);
   const [verifiedStatus, setVerifiedStatus] = useState({
-    phone: false,
+    phone: true,
     email: false,
   });
 
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [otpError, setOtpError] = useState('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+
   const [formData, setFormData] = useState({
-    name: 'Ajmal',
-    phone: '7558969093',
-    email: 'ajmal@gmail.com',
+    name: '',
+    phone: '',
+    email: '',
     dob: '',
     anniversary: '',
     gender: 'Male',
     stylePreference: ['Streetwear'],
-    avatarUrl: '/images/model/aj.png',
+    avatarUrl: '/images/placeholders/user.png',
+    loyaltyPoints: 0,
   });
 
+  // Calculate completion percentage
+  const calculateCompletion = () => {
+    const fields = [formData.name, formData.phone, formData.email, formData.dob, formData.avatarUrl];
+    const filled = fields.filter((f) => !!f).length;
+    return Math.round((filled / fields.length) * 100);
+  };
+
+  const completionPercent = calculateCompletion();
+  
+  const initialData = useMemo(() => {
+    if (!user) return null;
+    return {
+      name: user.name || '',
+      phone: user.phone || '',
+      email: user.email || '',
+      dob: '',
+      anniversary: '',
+      gender: 'Male',
+      stylePreference: ['Streetwear'],
+      avatarUrl: user.avatarUrl || '/images/placeholders/user.png',
+      loyaltyPoints: user.loyaltyPoints || 0,
+    };
+  }, [user]);
+
+  const hasChanges = useMemo(() => {
+    if (!initialData) return false;
+    return JSON.stringify(formData) !== JSON.stringify(initialData);
+  }, [formData, initialData]);
+
+  const handleDiscard = () => {
+    if (initialData) {
+      setFormData(initialData);
+      toast.info('Changes discarded');
+    }
+  };
+
+  // Effect to sync user data into form
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        phone: user.phone || '',
+        email: user.email || '',
+        dob: '',
+        anniversary: '',
+        gender: 'Male',
+        stylePreference: ['Streetwear'],
+        avatarUrl: user.avatarUrl || '/images/placeholders/user.png',
+        loyaltyPoints: user.loyaltyPoints || 0,
+      });
+      setVerifiedStatus({
+        phone: user.isPhoneVerified ?? !!user.phone,
+        email: user.isEmailVerified ?? false,
+      });
+    }
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <LoaderIcon className="animate-spin text-brand" size={40} />
+      </div>
+    );
+  }
+
+  if (!user) {
+    router.push('/login');
+    return null;
+  }
+
   const handleVerifyField = async (field: 'phone' | 'email') => {
-    setVerifyingField(field);
-    await new Promise((r) => setTimeout(r, 2000));
-    setVerifiedStatus((p) => ({ ...p, [field]: true }));
-    setVerifyingField(null);
+    if (field === 'phone') {
+      setVerifyingField(field);
+      await new Promise((r) => setTimeout(r, 2000));
+      setVerifiedStatus((p) => ({ ...p, [field]: true }));
+      setVerifyingField(null);
+      return;
+    }
+
+    if (field === 'email') {
+      try {
+        setVerifyingField(field);
+        
+        // Send OTP
+        await authApi.sendEmailOtp();
+        toast.info('OTP securely generated. Please check server console.');
+        
+        setShowOtpModal(true);
+      } catch (error: any) {
+        console.error('Email verification error:', error);
+        toast.error(error.response?.data?.message || 'Failed to send OTP');
+      } finally {
+        setVerifyingField(null);
+      }
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    const pasteData = e.clipboardData.getData('text').trim();
+    if (!/^\d+$/.test(pasteData)) return;
+
+    const digits = pasteData.slice(0, 6).split('');
+    const newOtp = [...otp];
+
+    for (const [index, char] of digits.entries()) {
+      if (index < 6) newOtp[index] = char;
+    }
+
+    setOtp(newOtp);
+    setOtpError('');
+
+    const nextIndex = digits.length >= 6 ? 5 : digits.length;
+    otpInputRefs.current[nextIndex]?.focus();
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (isNaN(Number(value))) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1);
+    setOtp(newOtp);
+
+    if (value && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+    setOtpError('');
+  };
+
+  const submitOtpVerify = async () => {
+    const otpString = otp.join('');
+    if (otpString.length < 6) {
+      setOtpError('Please enter the 6-digit OTP');
+      return;
+    }
+
+    try {
+      setIsVerifyingOtp(true);
+      await authApi.verifyEmailOtp(otpString);
+      toast.success('Email verified successfully!');
+
+      setVerifiedStatus((p) => ({ ...p, email: true }));
+      await refreshUser();
+      
+      setShowOtpModal(false);
+      setOtp(['', '', '', '', '', '']);
+    } catch (error: any) {
+      setOtpError(error.response?.data?.message || 'Invalid OTP');
+    } finally {
+      setIsVerifyingOtp(false);
+    }
   };
 
   return (
@@ -120,19 +281,21 @@ export default function EcommerceProfile() {
                 </button>
 
                 <h2 className="mt-4 text-lg font-bold">{formData.name}</h2>
-                <p className="text-foreground-muted mb-4 text-sm">Gold Member</p>
+                <p className="text-foreground-muted mb-4 text-xs font-bold tracking-widest uppercase">
+                  {formData.loyaltyPoints} Loyalty Points
+                </p>
 
                 <div className="bg-background-muted rounded-4xl p-4 text-left">
                   <div className="mb-2 flex items-end justify-between">
                     <span className="text-xs font-bold tracking-tighter uppercase">
                       Profile Strength
                     </span>
-                    <span className="text-sm font-bold">{completion}%</span>
+                    <span className="text-sm font-bold">{completionPercent}%</span>
                   </div>
                   <div className="bg-border h-1.5 w-full rounded-full">
                     <div
                       className="bg-brand h-1.5 rounded-full transition-all duration-500"
-                      style={{ width: `${completion}%` }}
+                      style={{ width: `${completionPercent}%` }}
                     />
                   </div>
                 </div>
@@ -170,8 +333,18 @@ export default function EcommerceProfile() {
 
           {/* MAIN FORM */}
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
+              setIsSaving(true);
+              try {
+                await updateProfile(formData);
+                toast.success('Profile updated successfully');
+              } catch (error) {
+                console.error('Update error:', error);
+                toast.error('Failed to update profile');
+              } finally {
+                setIsSaving(false);
+              }
             }}
             className="space-y-6 md:col-span-8"
           >
@@ -303,32 +476,126 @@ export default function EcommerceProfile() {
               </div>
             </ProfileSection>
 
-            <div className="sticky bottom-16 z-20 flex w-full items-center justify-center pt-4 md:bottom-4">
-              <div className="bg-foreground flex gap-3 rounded-4xl p-2 shadow-xl backdrop-blur-xl">
-                <button
-                  type="button"
-                  className="text-background hover:bg-background rounded-4xl px-6 py-3 font-medium transition-colors"
+            <AnimatePresence>
+              {hasChanges && (
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 20, opacity: 0 }}
+                  className="sticky bottom-16 z-20 flex w-full items-center justify-center pt-4 md:bottom-4"
                 >
-                  Discard
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-background text-foreground flex items-center gap-2 rounded-4xl px-8 py-3 font-semibold transition-all hover:opacity-90"
-                >
-                  {loading ? (
-                    <LoaderIcon className="animate-spin" size={18} />
-                  ) : (
-                    <>
-                      <SaveIcon size={18} /> Save All
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+                  <div className="bg-foreground flex gap-3 rounded-4xl p-2 shadow-xl backdrop-blur-xl">
+                    <button
+                      type="button"
+                      onClick={handleDiscard}
+                      className="text-background hover:bg-background rounded-4xl px-6 py-3 font-medium transition-colors"
+                    >
+                      Discard
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSaving}
+                      className="bg-background text-foreground flex items-center gap-2 rounded-4xl px-8 py-3 font-semibold transition-all hover:opacity-90"
+                    >
+                      {isSaving ? (
+                        <LoaderIcon className="animate-spin" size={18} />
+                      ) : (
+                        <>
+                          <SaveIcon size={18} /> Save All
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </form>
         </div>
       </main>
+
+      <AnimatePresence>
+        {showOtpModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowOtpModal(false)}
+              className="bg-background/80 fixed inset-0 z-[100] backdrop-blur-xl"
+            />
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="bg-background border-border fixed bottom-0 left-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:top-1/2 lg:left-1/2 lg:bottom-auto lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
+            >
+              <div className="mb-8 flex items-start justify-between">
+                <div className="bg-brand/10 text-brand rounded-3xl p-4">
+                  <ShieldCheckIcon size={32} />
+                </div>
+                <button
+                  onClick={() => setShowOtpModal(false)}
+                  className="hover:bg-background-muted rounded-full p-2 transition-colors"
+                >
+                  <CloseIcon size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <h3 className="text-3xl font-black tracking-tighter uppercase italic">
+                  Verify Email
+                </h3>
+                <p className="text-foreground-subtle text-[10px] leading-loose font-bold tracking-widest uppercase">
+                  Please enter the 6-digit verification code sent to your email.
+                </p>
+
+                <div className="flex justify-center gap-2 sm:gap-4 py-4">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      ref={(el) => {
+                        otpInputRefs.current[index] = el;
+                      }}
+                      onPaste={index === 0 ? handleOtpPaste : undefined}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Backspace' && !otp[index] && index > 0) {
+                          otpInputRefs.current[index - 1]?.focus();
+                        }
+                      }}
+                      className={`h-11 w-11 text-xl sm:h-16 sm:w-16 sm:text-2xl rounded-full border-2 bg-transparent text-center font-bold text-foreground transition-all outline-none ${
+                        otpError ? 'border-red-500' : 'border-border focus:border-brand'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className="h-4 text-center">
+                  {otpError && (
+                    <p className="animate-in fade-in text-[10px] font-bold tracking-widest text-red-500 uppercase">
+                      {otpError}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-3 pt-4">
+                  <button
+                    onClick={submitOtpVerify}
+                    disabled={isVerifyingOtp}
+                    className="bg-brand text-brand-foreground w-full rounded-full py-5 text-[10px] font-black tracking-widest uppercase shadow-2xl transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    {isVerifyingOtp ? 'Verifying...' : 'Confirm OTP'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

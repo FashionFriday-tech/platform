@@ -5,18 +5,24 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { ArrowLeftIcon, ChevronRightIcon, VerifiedUserIcon } from '@ff/ui';
+import { toast } from 'sonner';
+
+import { authApi } from '@/lib/api-client';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AuthPage() {
   const [step, setStep] = useState<'PHONE' | 'OTP' | 'PROFILE'>('PHONE');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState(['', '', '', '']);
-  const [profile, setProfile] = useState({ fullName: '', email: '' });
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [profile, setProfile] = useState({ name: '', email: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [otpToken, setOtpToken] = useState('');
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
+  const { user, loading: authLoading, login: authLogin } = useAuth();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -30,6 +36,12 @@ export default function AuthPage() {
     };
   }, [timer]);
 
+  useEffect(() => {
+    if (user && !authLoading) {
+      router.replace('/account');
+    }
+  }, [user, authLoading, router]);
+
   const startTimer = () => {
     setTimer(30);
   };
@@ -41,11 +53,11 @@ export default function AuthPage() {
       return;
     }
 
-    const digits = pasteData.slice(0, 4).split('');
+    const digits = pasteData.slice(0, 6).split('');
     const newOtp = [...otp];
 
     for (const [index, char] of digits.entries()) {
-      if (index < 4) {
+      if (index < 6) {
         newOtp[index] = char;
       }
     }
@@ -53,8 +65,8 @@ export default function AuthPage() {
     setOtp(newOtp);
     clearError('otp');
 
-    // Focus the last filled input or the 4th input
-    const nextIndex = digits.length >= 4 ? 3 : digits.length;
+    // Focus the last filled input or the 6th input
+    const nextIndex = digits.length >= 6 ? 5 : digits.length;
     inputRefs.current[nextIndex]?.focus();
   };
 
@@ -66,17 +78,17 @@ export default function AuthPage() {
         newErrors.phone = 'Enter a valid 10-digit WhatsApp number';
       }
     } else if (step === 'OTP') {
-      if (otp.join('').length < 4) {
-        newErrors.otp = 'Please enter the 4-digit code';
+      if (otp.join('').length < 6) {
+        newErrors.otp = 'Please enter the 6-digit code';
       }
     } else {
-      if (!profile.fullName.trim()) {
+      if (!profile.name.trim()) {
         newErrors.name = 'Full name is required';
-      } else if (!/^[\sA-Za-z]+$/.test(profile.fullName)) {
+      } else if (!/^[\sA-Za-z]+$/.test(profile.name)) {
         newErrors.name = 'Only letters are allowed.';
-      } else if (profile.fullName.length > 25) {
+      } else if (profile.name.length > 25) {
         newErrors.name = 'Name cannot exceed 25 characters';
-      } else if (profile.fullName.length < 4) {
+      } else if (profile.name.length < 4) {
         newErrors.name = 'Name is too short';
       }
 
@@ -92,31 +104,69 @@ export default function AuthPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!validate()) {
       return;
     }
     setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
+    try {
       if (step === 'PHONE') {
+        await authApi.sendOtp(phoneNumber);
         setStep('OTP');
         startTimer();
+        toast.success('OTP sent successfully!');
       } else if (step === 'OTP') {
-        setStep('PROFILE');
+        const response = await authApi.verifyOtp(phoneNumber, otp.join(''));
+        setOtpToken(response.otpToken);
+
+        if (response.isNewUser) {
+          setStep('PROFILE');
+        } else {
+          // Normal login
+          if (response.accessToken && response.refreshToken && response.user) {
+            authLogin(response.accessToken, response.refreshToken, response.user);
+            toast.success('Login successful!');
+          } else {
+            toast.error('Invalid response from server');
+          }
+        }
       } else {
-        router.push('/');
+        // Step === PROFILE
+        const response = await authApi.signup(
+          phoneNumber,
+          profile.name,
+          profile.email,
+          otpToken,
+        );
+        authLogin(response.accessToken, response.refreshToken, response.user);
+        toast.success('Welcome to Fashion Friday!');
       }
-    }, 1000);
+    } catch (error: any) {
+      console.error('Auth Error:', error);
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleResendOTP = () => {
+  const handleResendOTP = async () => {
     if (timer > 0) {
       return;
     }
-    setOtp(['', '', '', '']);
-    startTimer();
+    setLoading(true);
+    try {
+      await authApi.sendOtp(phoneNumber);
+      setOtp(['', '', '', '', '', '']);
+      startTimer();
+      toast.success('OTP resent successfully!');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Failed to resend OTP';
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearError = (key: string) => {
@@ -135,7 +185,7 @@ export default function AuthPage() {
     const newOtp = [...otp];
     newOtp[index] = value.substring(value.length - 1);
     setOtp(newOtp);
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
     clearError('otp');
@@ -209,7 +259,7 @@ export default function AuthPage() {
 
         {step === 'OTP' && (
           <div className="mb-10 space-y-6">
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-1 sm:gap-3 md:gap-4">
               {otp.map((digit, index) => (
                 <input
                   key={index}
@@ -229,7 +279,7 @@ export default function AuthPage() {
                       inputRefs.current[index - 1]?.focus();
                     }
                   }}
-                  className={`h-16 w-16 rounded-full border-2 bg-transparent text-center text-2xl font-black text-white transition-all outline-none ${
+                  className={`h-9 w-9 text-base sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl rounded-full border-2 bg-transparent text-center font-bold text-white transition-all outline-none ${
                     errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'
                   }`}
                 />
@@ -272,9 +322,9 @@ export default function AuthPage() {
               <input
                 type="text"
                 placeholder="Full Name"
-                value={profile.fullName}
+                value={profile.name}
                 onChange={(e) => {
-                  setProfile({ ...profile, fullName: e.target.value });
+                  setProfile({ ...profile, name: e.target.value });
                   clearError('name');
                 }}
                 className={`w-full rounded-full border-2 bg-transparent px-8 py-4 text-white transition-all outline-none ${

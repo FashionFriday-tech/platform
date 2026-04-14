@@ -3,55 +3,35 @@
   "private": true,
   "packageManager": "pnpm@10.18.3",
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "lint": "turbo run lint --parallel",
-    "lint:fix": "turbo run lint --parallel -- --fix",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
     "format": "prettier --write .",
-    "prepare": "husky || true",
-    "typecheck": "turbo typecheck",
+    "prepare": "husky",
+    "typecheck": "turbo run typecheck",
     "clean": "pnpm dlx rimraf node_modules .turbo",
-    "ci": "pnpm typecheck && pnpm lint && pnpm build"
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@tailwindcss/postcss": "^4.2.1",
-    "baseline-browser-mapping": "latest",
-    "critters": "^0.0.25",
-    "eslint": "^9",
-    "eslint-config-next": "16.0.10",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-jest": "^29.15.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-prettier": "^5.5.5",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-security": "^4.0.0",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-tailwindcss": "^3.18.2",
-    "eslint-plugin-testing-library": "^7.16.0",
-    "eslint-plugin-unicorn": "^63.0.0",
-    "globals": "^16.4.0",
+    "@types/node": "^25.4.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "prettier": "^3",
+    "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "tailwindcss": "^4.2.1",
     "turbo": "2.8.14",
-    "typescript": "5.9.3",
-    "typescript-eslint": "^8.50.0"
+    "typescript": "5.9.3"
   },
   "lint-staged": {
     "*.{js,ts,tsx,jsx}": [
       "prettier --write",
       "eslint --fix"
     ],
-    "*.{json,md}": [
+    "*.{json,md,css,scss}": [
       "prettier --write"
     ]
   },
   "engines": {
-    "node": "^22.17.0",
-    "pnpm": "^10.18.3"
+    "node": ">=22.17.0"
   }
 }
