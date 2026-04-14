@@ -17,7 +17,11 @@ export default [
 
   {
     rules: {
-      '@typescript-eslint/no-extraneous-class': 'off', // NestJS AppModule-ന് വേണ്ടി
+      '@typescript-eslint/no-extraneous-class': 'off', // NestJS AppModule
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-console': 'off',
+      '@typescript-eslint/use-unknown-in-catch-callback-variable': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
     },
   },
 ];
