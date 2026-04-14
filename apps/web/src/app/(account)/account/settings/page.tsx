@@ -19,11 +19,11 @@ import {
   TrashIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
-import { useSettings } from '@/context/SettingsContext';
 import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -61,7 +61,16 @@ export default function SettingsPage() {
     }
   };
 
-  const initials = user ? (user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U') : 'G';
+  const initials = user
+    ? user.name
+      ? user.name
+          .split(' ')
+          .map((n) => n[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2)
+      : 'U'
+    : 'G';
 
   return (
     <div className="text-foreground min-h-screen bg-[#F9F9F9] pb-20 transition-colors duration-500 dark:bg-black">
@@ -259,7 +268,7 @@ export default function SettingsPage() {
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="bg-background border-border fixed bottom-0 left-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:top-1/2 lg:left-1/2 lg:bottom-auto lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
+              className="bg-background border-border fixed bottom-0 left-0 z-[110] w-full max-w-xl rounded-t-[3.5rem] border-t p-10 shadow-2xl lg:top-1/2 lg:bottom-auto lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:rounded-[3rem] lg:border lg:p-12"
             >
               <div className="mb-8 flex items-start justify-between">
                 <div className="rounded-3xl bg-red-600 p-4 text-white shadow-xl shadow-red-600/20">

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+
 import { ArrowUpRightIcon, CrownIcon, SmartphoneIcon, SparklesIcon, ZapIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
 

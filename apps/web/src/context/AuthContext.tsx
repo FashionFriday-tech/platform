@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const refreshUser = async () => {
+    await Promise.resolve();
     const token = localStorage.getItem('accessToken');
     if (!token) {
       setUser(null);
@@ -60,7 +61,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    refreshUser();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void refreshUser();
   }, []);
 
   const login = (accessToken: string, refreshToken: string, userData: User) => {

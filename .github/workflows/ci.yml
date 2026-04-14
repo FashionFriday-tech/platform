@@ -36,12 +36,12 @@ jobs:
       # Enable pnpm store caching (proper way)
       - name: Get pnpm store directory
         id: pnpm-cache
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Restore pnpm store
         uses: actions/cache@v4
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             pnpm-${{ runner.os }}-
