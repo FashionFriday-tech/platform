@@ -249,6 +249,7 @@ const AddressFormModal = ({
       void fetchRegion();
     } else {
       if (formData.district || formData.state) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData((prev) => ({ ...prev, state: '', district: '' }));
       }
     }
