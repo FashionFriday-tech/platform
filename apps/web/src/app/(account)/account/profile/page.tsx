@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -102,6 +102,33 @@ export default function EcommerceProfile() {
   };
 
   const completionPercent = calculateCompletion();
+  
+  const initialData = useMemo(() => {
+    if (!user) return null;
+    return {
+      name: user.name || '',
+      phone: user.phone || '',
+      email: user.email || '',
+      dob: '',
+      anniversary: '',
+      gender: 'Male',
+      stylePreference: ['Streetwear'],
+      avatarUrl: user.avatarUrl || '/images/placeholders/user.png',
+      loyaltyPoints: user.loyaltyPoints || 0,
+    };
+  }, [user]);
+
+  const hasChanges = useMemo(() => {
+    if (!initialData) return false;
+    return JSON.stringify(formData) !== JSON.stringify(initialData);
+  }, [formData, initialData]);
+
+  const handleDiscard = () => {
+    if (initialData) {
+      setFormData(initialData);
+      toast.info('Changes discarded');
+    }
+  };
 
   // Effect to sync user data into form
   useEffect(() => {
@@ -449,29 +476,39 @@ export default function EcommerceProfile() {
               </div>
             </ProfileSection>
 
-            <div className="sticky bottom-16 z-20 flex w-full items-center justify-center pt-4 md:bottom-4">
-              <div className="bg-foreground flex gap-3 rounded-4xl p-2 shadow-xl backdrop-blur-xl">
-                <button
-                  type="button"
-                  className="text-background hover:bg-background rounded-4xl px-6 py-3 font-medium transition-colors"
+            <AnimatePresence>
+              {hasChanges && (
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 20, opacity: 0 }}
+                  className="sticky bottom-16 z-20 flex w-full items-center justify-center pt-4 md:bottom-4"
                 >
-                  Discard
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="bg-background text-foreground flex items-center gap-2 rounded-4xl px-8 py-3 font-semibold transition-all hover:opacity-90"
-                >
-                  {isSaving ? (
-                    <LoaderIcon className="animate-spin" size={18} />
-                  ) : (
-                    <>
-                      <SaveIcon size={18} /> Save All
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+                  <div className="bg-foreground flex gap-3 rounded-4xl p-2 shadow-xl backdrop-blur-xl">
+                    <button
+                      type="button"
+                      onClick={handleDiscard}
+                      className="text-background hover:bg-background rounded-4xl px-6 py-3 font-medium transition-colors"
+                    >
+                      Discard
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSaving}
+                      className="bg-background text-foreground flex items-center gap-2 rounded-4xl px-8 py-3 font-semibold transition-all hover:opacity-90"
+                    >
+                      {isSaving ? (
+                        <LoaderIcon className="animate-spin" size={18} />
+                      ) : (
+                        <>
+                          <SaveIcon size={18} /> Save All
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </form>
         </div>
       </main>
