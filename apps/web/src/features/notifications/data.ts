@@ -1,0 +1,88 @@
+import { type Notification } from './types';
+
+export const MOCK_NOTIFICATIONS: Notification[] = [
+  {
+    id: '1',
+    type: 'order',
+    title: 'Order Shipped',
+    message: 'Your order #FF-2025 has been shipped.',
+    timestamp: '2 mins ago',
+  },
+  {
+    id: '2',
+    type: 'promo',
+    title: 'Flash Sale Alert',
+    message: 'The Monochrome Collection is now 40% off.',
+    timestamp: '1 hour ago',
+  },
+  {
+    id: '3',
+    type: 'order',
+    title: 'Order Delivered',
+    message: 'Order #FF-2023 has been delivered.',
+    timestamp: '2 days ago',
+  },
+  {
+    id: '4',
+    type: 'promo',
+    title: 'Exclusive Access',
+    message: 'Early access to our anniversary sale.',
+    timestamp: '3 days ago',
+  },
+  {
+    id: '5',
+    type: 'order',
+    title: 'Order Confirmed',
+    message: 'We’ve received your order #FF-2031.',
+    timestamp: '5 days ago',
+  },
+  {
+    id: '6',
+    type: 'promo',
+    title: 'Free Shipping',
+    message: 'Enjoy free shipping on all orders.',
+    timestamp: '1 week ago',
+  },
+  {
+    id: '7',
+    type: 'order',
+    title: 'Order Shipped',
+    message: 'Your order #FF-2025 has been shipped.',
+    timestamp: '2 mins ago',
+  },
+  {
+    id: '8',
+    type: 'promo',
+    title: 'Flash Sale Alert',
+    message: 'The Monochrome Collection is now 40% off.',
+    timestamp: '1 hour ago',
+  },
+  {
+    id: '9',
+    type: 'order',
+    title: 'Order Delivered',
+    message: 'Order #FF-2023 has been delivered.',
+    timestamp: '2 days ago',
+  },
+  {
+    id: '10',
+    type: 'promo',
+    title: 'Exclusive Access',
+    message: 'Early access to our anniversary sale.',
+    timestamp: '3 days ago',
+  },
+  {
+    id: '11',
+    type: 'order',
+    title: 'Order Confirmed',
+    message: 'We’ve received your order #FF-2031.',
+    timestamp: '5 days ago',
+  },
+  {
+    id: '12',
+    type: 'promo',
+    title: 'Free Shipping',
+    message: 'Enjoy free shipping on all orders.',
+    timestamp: '1 week ago',
+  },
+];
