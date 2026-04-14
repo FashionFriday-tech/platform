@@ -69,7 +69,7 @@ export default function EcommerceProfile() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const [completion] = useState(75);
+
   const [verifyingField, setVerifyingField] = useState<string | null>(null);
   const [verifiedStatus, setVerifiedStatus] = useState({
     phone: true,
