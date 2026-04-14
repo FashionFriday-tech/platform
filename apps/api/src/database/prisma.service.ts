@@ -12,7 +12,6 @@ export class PrismaService implements OnModuleInit {
       console.log('Successfully connected to database');
     } catch (error) {
       console.error('Failed to connect to database:', error);
-
     }
   }
 }

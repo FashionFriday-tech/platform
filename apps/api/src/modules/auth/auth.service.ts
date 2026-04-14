@@ -57,7 +57,10 @@ export class AuthService {
         create: { phone, otpHash, expiresAt },
       });
     } catch (error) {
-      this.logger.error(`Database error while saving OTP for ${phone}, using memory fallback:`, error);
+      this.logger.error(
+        `Database error while saving OTP for ${phone}, using memory fallback:`,
+        error,
+      );
       // Fallback to memory for development
       this.otpMap.set(phone, { otpHash, expiresAt });
     }
@@ -75,7 +78,9 @@ export class AuthService {
         where: { phone },
       });
     } catch (error) {
-      this.logger.warn(`Database unreachable during OTP verification for ${phone}, checking memory fallback`);
+      this.logger.warn(
+        `Database unreachable during OTP verification for ${phone}, checking memory fallback`,
+      );
       otpEntry = this.otpMap.get(phone);
     }
 
@@ -227,12 +232,12 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_SECRET'),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRES_IN', '15m') as any,
       }),
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN', '90d') as any,
       }),
     ]);
@@ -258,7 +263,9 @@ export class AuthService {
         where: { id: userId },
       });
     } catch {
-      this.logger.warn(`Database unreachable during profile fetch for ${userId}, checking memory fallback`);
+      this.logger.warn(
+        `Database unreachable during profile fetch for ${userId}, checking memory fallback`,
+      );
       user = this.userMap.get(userId);
     }
 
@@ -270,7 +277,6 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { refreshToken, ...userWithoutToken } = user;
     return userWithoutToken;
   }
@@ -307,7 +313,6 @@ export class AuthService {
         },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { refreshToken, ...userWithoutToken } = updatedUser;
       return userWithoutToken;
     } catch {
@@ -331,7 +336,7 @@ export class AuthService {
 
   async sendEmailVerificationOtp(userId: string) {
     const user = await this.prisma.db.user.findUnique({ where: { id: userId } });
-    if (!user || !user.email) {
+    if (!user?.email) {
       throw new BadRequestException('User or email not found');
     }
 
@@ -357,7 +362,7 @@ export class AuthService {
 
   async verifyEmailOtp(userId: string, otp: string) {
     const user = await this.prisma.db.user.findUnique({ where: { id: userId } });
-    if (!user || !user.email) {
+    if (!user?.email) {
       throw new BadRequestException('User or email not found');
     }
 
