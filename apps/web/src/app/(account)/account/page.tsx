@@ -3,14 +3,13 @@
 import React from 'react';
 import { HeartIcon, HistoryIcon, LoaderIcon, ShieldCheckIcon, StarIcon } from '@ff/ui';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+
 
 import { useAuth } from '@/context/AuthContext';
 import { ProfileHero, QuickLinksGrid } from '@/features/profile';
 
 export default function AccountDashboardPage() {
   const { user, loading, logout } = useAuth();
-  const router = useRouter();
 
   if (loading) {
     return (
