@@ -11,7 +11,7 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3001);
 }
 
-bootstrap().catch(() => {
-  // Silent fail or use logger
+bootstrap().catch((err) => {
+  console.error('API Bootstrap Error:', err);
 });
 // Triggering recompile for new endpoints
