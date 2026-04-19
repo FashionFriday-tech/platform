@@ -1,11 +1,13 @@
 'use client';
 
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { BellIcon, HeartMinusIcon, ShoppingBagIcon } from '@ff/ui';
 
-import { type Product } from '@/types/wishlist';
+import { type Product } from '../types';
+
 interface WishlistCardProps {
   product: Product;
 }
