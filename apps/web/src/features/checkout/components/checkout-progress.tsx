@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import { CheckIcon } from '@ff/ui';
 
 interface CheckoutStagesProps {
@@ -12,7 +14,7 @@ const stages = [
   { id: 3, name: 'Pay' },
 ];
 
-export default function CheckoutStages({ currentStage }: CheckoutStagesProps) {
+export function CheckoutProgress({ currentStage }: CheckoutStagesProps) {
   return (
     <nav className="bg-background border-border/40 sticky top-16 z-60 w-full border-b py-2 transition-colors md:top-24">
       <div className="relative mx-auto max-w-4xl px-6">
