@@ -1,2 +1,3 @@
-export { EmptyWishlist } from './components/EmptyWishlist';
-export { WishlistCard } from './components/WishlistCard';
+export { WishlistPage } from './components/wishlist-page';
+export { useWishlist } from './hooks/use-wishlist';
+export type { Product } from './types';
