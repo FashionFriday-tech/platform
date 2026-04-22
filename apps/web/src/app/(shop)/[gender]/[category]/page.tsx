@@ -1,5 +1,5 @@
 import React from 'react';
-import { CategoryPage } from '@/features/gender';
+import { CategoryPage } from '@/features/categories';
 
 interface Props {
   params: Promise<{ gender: string; category: string }>;
