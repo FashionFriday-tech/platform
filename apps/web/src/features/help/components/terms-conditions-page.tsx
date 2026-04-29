@@ -3,7 +3,7 @@ import React from 'react';
 
 import { EyeIcon, GlobeIcon, LockIcon, MessageSquareIcon, ScaleIcon } from '@ff/ui';
 
-import { termsData } from '@/data/terms';
+import { termsData } from '@/features/help/data/terms';
 
 // 1. Define the structure of a single Term Item
 interface TermSector {
