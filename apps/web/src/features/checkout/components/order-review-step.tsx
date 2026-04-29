@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ChevronRightIcon, ChevronUpIcon, MapPinIcon, PlusIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { bagItems } from '@/data/bag-items';
+import { bagItems } from '@/features/cart';
 
 import { useCheckoutReview } from '../hooks/use-checkout-review';
 import { AddressFormDrawer } from './address-form-drawer';
