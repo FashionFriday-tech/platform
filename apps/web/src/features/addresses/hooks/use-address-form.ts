@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { type Address, type PincodeAPIResponse } from '../types';
@@ -74,3 +75,4 @@ export function useAddressForm(initialData: Address | null, isFirstAddress: bool
     isFormValid,
   };
 }
+
