@@ -12,7 +12,7 @@ import {
   ShirtIcon,
 } from '@ff/ui';
 
-import { sizeData } from '@/data/sizes';
+import { sizeData } from '@/features/help/data/sizes';
 
 // --- 1. DEFINE TYPES ---
 type CategoryKey = keyof typeof sizeData;
