@@ -1,3 +1,4 @@
+'use client';
 import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -90,3 +91,4 @@ export function useSettingsFlow() {
     initials,
   };
 }
+

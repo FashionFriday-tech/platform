@@ -1,3 +1,4 @@
+'use client';
 import { useMemo, useState } from 'react';
 
 import type { Transaction, TransactionType } from '../types';
@@ -70,3 +71,4 @@ export function useWallet() {
     sortedLedger,
   };
 }
+

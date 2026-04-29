@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ReferralsPage } from '@/features/referrals/components/referrals-page';
+import { ReferralsPage } from '@/features/referrals';
 
 export default function Page() {
   return <ReferralsPage />;

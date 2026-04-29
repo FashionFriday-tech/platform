@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AuthPage } from '@/features/auth/components/auth-page';
+import { AuthPage } from '@/features/auth';
 
 export default function Page() {
   return <AuthPage />;

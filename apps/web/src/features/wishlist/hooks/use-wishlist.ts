@@ -1,3 +1,4 @@
+'use client';
 import { useMemo } from 'react';
 
 import { type Product } from '../types';
@@ -66,3 +67,4 @@ export function useWishlist() {
     hasItems,
   };
 }
+
