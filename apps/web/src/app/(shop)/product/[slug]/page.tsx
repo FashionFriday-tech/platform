@@ -1,18 +1,14 @@
 import { type Metadata } from 'next';
 
 import { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
-import ProductPageMaster from '@/features/product';
-import EditorialError from '@/features/product/components/editorial-error';
+import ProductPageMaster, { EditorialError } from '@/features/product';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // params MUST be awaited in Next.js 15
   const { slug } = await params;
-
-  // REMOVED await: getProductBySlug is synchronous
   const product = getProductBySlug(slug);
 
   if (!product) {
@@ -34,18 +30,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Props) {
-  // params MUST be awaited in Next.js 15
   const { slug } = await params;
-
-  // REMOVED await: This is a synchronous lookup in your dummy data
   const product = getProductBySlug(slug);
 
-  // 2. High-end Error Handling
   if (!product) {
     return <EditorialError slug={slug} />;
   }
 
-  // 3. REMOVED await: Logic moved to synchronous execution
   const similarProducts = getSimilarProducts(product.category, product.id);
 
   return <ProductPageMaster product={product} similarProducts={similarProducts} />;
