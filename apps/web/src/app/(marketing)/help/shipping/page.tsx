@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 
 import { ShippingPage } from '@/features/help';
