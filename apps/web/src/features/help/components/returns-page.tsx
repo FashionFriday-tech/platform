@@ -3,7 +3,7 @@ import React from 'react';
 
 import { ArrowRightIcon, CameraIcon, HistoryIcon, InfoIcon, NavigationIcon } from '@ff/ui';
 
-import { returnsData } from '@/data/returns';
+import { returnsData } from '@/features/help/data/returns';
 
 // --- 1. DEFINE POLICY TYPES ---
 interface ReturnSection {
