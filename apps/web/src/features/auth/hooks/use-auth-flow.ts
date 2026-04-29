@@ -1,3 +1,4 @@
+'use client';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -215,3 +216,4 @@ export function useAuthFlow() {
     clearError,
   };
 }
+
