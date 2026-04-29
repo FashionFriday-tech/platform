@@ -1,8 +1,6 @@
-'use client';
-
 import React from 'react';
 
-import { WalletPage } from '@/features/wallet';
+import { WalletPage } from '@/features/wallet/components/wallet-page';
 
 export default function Page() {
   return <WalletPage />;

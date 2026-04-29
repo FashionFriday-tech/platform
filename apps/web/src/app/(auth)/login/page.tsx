@@ -1,8 +1,6 @@
-'use client';
-
 import React from 'react';
 
-import { AuthPage } from '@/features/auth';
+import { AuthPage } from '@/features/auth/components/auth-page';
 
 export default function Page() {
   return <AuthPage />;
