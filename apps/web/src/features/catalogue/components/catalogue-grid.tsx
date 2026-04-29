@@ -4,7 +4,7 @@ import React from 'react'; // Fix: Explicitly import React to resolve UMD global
 import Image from 'next/image';
 
 import { type Product } from '@ff/schemas';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
 

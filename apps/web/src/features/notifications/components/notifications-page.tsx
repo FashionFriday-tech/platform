@@ -3,7 +3,7 @@
 import React from 'react';
 
 import { MenuIcon, ShoppingBagIcon, TagIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 

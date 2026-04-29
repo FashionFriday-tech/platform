@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { ChevronDownIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 // Import the correct filter object from your data engine
 import { CATEGORY_FILTERS } from '@/data/filter-engine';

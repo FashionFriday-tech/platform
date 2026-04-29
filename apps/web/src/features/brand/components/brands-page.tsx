@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { ChevronDownIcon, SlidersIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import brandsData from '../data/brand-logos';
 import type { Brand, BrandCategory } from '../types/brand';

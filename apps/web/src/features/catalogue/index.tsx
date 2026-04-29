@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { type Product } from '@ff/schemas';
 import { ArrowUpDownIcon, PlayIcon, SlidersIcon, StopIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { CatalogueGrid } from './components/catalogue-grid';
 // Sub-component Imports

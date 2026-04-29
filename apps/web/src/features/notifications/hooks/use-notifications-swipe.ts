@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-  animate,
-  type PanInfo,
-  type Transition,
-  useMotionValue,
-  useTransform,
-} from 'framer-motion';
+import { animate, type PanInfo, type Transition, useMotionValue, useTransform } from 'motion/react';
 
 import { type TabType } from '../types';
 

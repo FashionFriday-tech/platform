@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
 import { ChevronRightIcon } from '@ff/ui';
-import { AnimatePresence, motion, type PanInfo } from 'framer-motion';
+import { AnimatePresence, motion, type PanInfo } from 'motion/react';
 
 const GENDERS = ['men', 'women'] as const;
 type Gender = (typeof GENDERS)[number];

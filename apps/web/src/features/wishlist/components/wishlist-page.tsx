@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { wishlistItems } from '../data';
 import { EmptyWishlist } from './empty-wishlist';

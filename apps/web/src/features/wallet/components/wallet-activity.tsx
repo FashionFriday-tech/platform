@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ArrowDownLeftIcon, ArrowUpRightIcon, HistoryIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 

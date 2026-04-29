@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { ArrowLeftIcon, ArrowRightIcon, PlayIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 /* ---------------- TYPES ---------------- */
 interface Product {

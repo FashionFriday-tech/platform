@@ -14,7 +14,7 @@ import {
   UserIcon,
   WishlistIcon,
 } from '@ff/ui';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 
 import { useAuth } from '@/context/AuthContext';
 

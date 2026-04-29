@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowUpRightIcon, CloseIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { HighlightText } from './HighlightText';
 

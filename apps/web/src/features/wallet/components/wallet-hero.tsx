@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ShieldCheckIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface WalletHeroProps {
   totalBalance: number;

@@ -12,7 +12,7 @@ import {
   TruckIcon,
   ZapIcon,
 } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { useCheckoutPayment } from '../hooks/use-checkout-payment';
 import { CheckoutProgress } from './checkout-progress';

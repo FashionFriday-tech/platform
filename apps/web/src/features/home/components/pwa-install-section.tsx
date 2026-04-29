@@ -13,7 +13,7 @@ import {
   ShieldIcon,
   ZapIcon,
 } from '@ff/ui';
-import { AnimatePresence, motion, type Variants } from 'framer-motion';
+import { AnimatePresence, motion, type Variants } from 'motion/react';
 
 import { Iphone } from '@/components/ui/magicUi/iphone';
 

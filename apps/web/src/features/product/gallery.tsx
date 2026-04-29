@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import Image from 'next/image';
 
 import { ImageIcon, PauseIcon, PlayIcon } from '@ff/ui';
-import { AnimatePresence, motion, type PanInfo } from 'framer-motion';
+import { AnimatePresence, motion, type PanInfo } from 'motion/react';
 
 export default function MediaStage({ images, videoUrl }: { images: string[]; videoUrl?: string }) {
   const [index, setIndex] = useState(0);

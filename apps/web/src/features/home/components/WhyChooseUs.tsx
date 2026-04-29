@@ -4,7 +4,7 @@ import { type CSSProperties } from 'react';
 import Image from 'next/image';
 
 import { ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 // --- Data ---
 

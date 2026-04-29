@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 
 import { ArrowUpRightIcon, CrownIcon, SmartphoneIcon, SparklesIcon, ZapIcon } from '@ff/ui';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { useAuth } from '@/context/AuthContext';
 

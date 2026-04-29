@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 
 import { ChevronRightIcon, ChevronUpIcon, MapPinIcon, PlusIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { bagItems } from '@/features/cart';
 

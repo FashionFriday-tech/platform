@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { CloseIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { QuickDiscovery } from './QuickDiscovery';
 import { RecentSearches } from './RecentSearches';

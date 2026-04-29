@@ -17,7 +17,7 @@ import {
   TrashIcon,
   VerifiedIcon,
 } from '@ff/ui';
-import { AnimatePresence, motion, useAnimationFrame, useMotionValue, wrap } from 'framer-motion';
+import { AnimatePresence, motion, useAnimationFrame, useMotionValue, wrap } from 'motion/react';
 
 interface Review {
   name: string;
