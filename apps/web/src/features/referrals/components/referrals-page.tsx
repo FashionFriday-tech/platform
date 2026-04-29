@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 import { useReferral } from '../hooks/use-referral';
