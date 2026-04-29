@@ -1,3 +1,4 @@
+'use client';
 import { useMemo, useState } from 'react';
 
 import { orders } from '../data';
@@ -31,3 +32,4 @@ export function useOrders() {
     getCount,
   };
 }
+
