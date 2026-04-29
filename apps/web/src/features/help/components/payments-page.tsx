@@ -12,7 +12,7 @@ import {
   ZapIcon,
 } from '@ff/ui';
 
-import { paymentData } from '@/data/payments';
+import { paymentData } from '@/features/help/data/payments';
 
 export function PaymentsPage() {
   return (
