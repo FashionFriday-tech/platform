@@ -1,3 +1,4 @@
+'use client';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { ClockIcon, UsersIcon, WalletIcon } from '@ff/ui';
@@ -122,3 +123,4 @@ export function useReferral() {
     onShareClick,
   };
 }
+
