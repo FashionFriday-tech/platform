@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { animate, type PanInfo, type Transition, useMotionValue, useTransform } from 'motion/react';
@@ -71,3 +72,4 @@ export function useNotificationsSwipe(tabs: readonly TabType[]) {
     handleDragEnd,
   };
 }
+
