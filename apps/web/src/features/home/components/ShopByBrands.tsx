@@ -1,4 +1,4 @@
-import brandLogos from '@/data/brand-logos';
+import { brandLogos } from '@/features/brand';
 const brands = brandLogos;
 import Link from 'next/link';
 
