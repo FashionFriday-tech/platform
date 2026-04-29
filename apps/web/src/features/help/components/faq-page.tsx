@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { ArrowUpRightIcon, ChevronRightIcon, MailIcon, SearchIcon, SendIcon } from '@ff/ui';
 
-import { faqData } from '@/data/faq';
+import { faqData } from '@/features/help/data/faq';
 
 export function FaqPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
