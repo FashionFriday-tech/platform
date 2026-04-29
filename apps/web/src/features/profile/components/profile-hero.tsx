@@ -7,6 +7,7 @@ import { ArrowUpRightIcon, CrownIcon, SmartphoneIcon, SparklesIcon, ZapIcon } fr
 import { motion } from 'framer-motion';
 
 import { useAuth } from '@/context/AuthContext';
+
 import { userData as fallbackData } from '../data/profile';
 
 export function ProfileHero() {

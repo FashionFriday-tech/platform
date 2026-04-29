@@ -7,7 +7,7 @@ interface BrandCatalogProps {
   brandName: string;
 }
 
-export async function BrandCatalog({ brandName }: BrandCatalogProps) {
+export function BrandCatalog({ brandName }: BrandCatalogProps) {
   if (!brandName) {
     return notFound();
   }

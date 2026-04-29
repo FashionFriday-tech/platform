@@ -1,11 +1,8 @@
 import React from 'react';
-import {
-  FacebookIcon,
-  InstagramIcon,
-  TwitterIcon,
-  YoutubeIcon,
-} from '@ff/ui';
-import type { SocialTask, Milestone } from './types';
+
+import { FacebookIcon, InstagramIcon, TwitterIcon, YoutubeIcon } from '@ff/ui';
+
+import type { Milestone, SocialTask } from './types';
 
 export const initialSocialTasks: SocialTask[] = [
   {

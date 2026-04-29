@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 
 import {
   ArrowDownLeftIcon,
@@ -11,6 +10,7 @@ import {
   ShieldCheckIcon,
   TicketPercentIcon,
 } from '@ff/ui';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
 

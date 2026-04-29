@@ -19,7 +19,7 @@ import {
   TrophyIcon,
 } from '@ff/ui';
 
-import { initialSocialTasks, initialMilestones } from './constants';
+import { initialMilestones, initialSocialTasks } from './constants';
 import type { SocialTask } from './types';
 
 export function GiftCardsPage() {

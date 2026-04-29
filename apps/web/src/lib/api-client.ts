@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
@@ -6,6 +6,11 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Extend AxiosRequestConfig to include our custom _retry flag
+interface RetryableRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 // Add a request interceptor
 api.interceptors.request.use(
@@ -26,11 +31,11 @@ api.interceptors.request.use(
 // Add a response interceptor for handling token expiration
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryableRequestConfig | undefined;
 
     // If the error is 401 and not already retried
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
@@ -40,7 +45,7 @@ api.interceptors.response.use(
         }
 
         // Call the refresh endpoint
-        const response = await axios.post(
+        const response = await axios.post<{ accessToken: string; refreshToken: string }>(
           `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/refresh`,
           {},
           {
@@ -112,24 +117,28 @@ export interface SignupResponse {
 
 export const authApi = {
   sendOtp: async (phone: string): Promise<SendOtpResponse> => {
-    const response = await api.post('/auth/send-otp', { phone });
+    const response = await api.post<SendOtpResponse>('/auth/send-otp', { phone });
     return response.data;
   },
 
   verifyOtp: async (phone: string, otp: string): Promise<VerifyOtpResponse> => {
-    const response = await api.post('/auth/verify-otp', { phone, otp });
+    const response = await api.post<VerifyOtpResponse>('/auth/verify-otp', { phone, otp });
     return response.data;
   },
 
   sendEmailOtp: async (): Promise<SendOtpResponse> => {
-    const response = await api.post('/auth/email/send-otp');
+    const response = await api.post<SendOtpResponse>('/auth/email/send-otp');
     return response.data;
   },
 
   verifyEmailOtp: async (
     otp: string,
   ): Promise<{ success: boolean; message: string; user: SignupResponse['user'] }> => {
-    const response = await api.post('/auth/email/verify-otp', { otp });
+    const response = await api.post<{
+      success: boolean;
+      message: string;
+      user: SignupResponse['user'];
+    }>('/auth/email/verify-otp', { otp });
     return response.data;
   },
 
@@ -139,7 +148,7 @@ export const authApi = {
     email: string,
     otpToken: string,
   ): Promise<SignupResponse> => {
-    const response = await api.post('/auth/signup', {
+    const response = await api.post<SignupResponse>('/auth/signup', {
       phone,
       name,
       email,
@@ -149,17 +158,19 @@ export const authApi = {
   },
 
   getMe: async (): Promise<SignupResponse['user']> => {
-    const response = await api.get('/auth/me');
+    const response = await api.get<SignupResponse['user']>('/auth/me');
     return response.data;
   },
 
   deleteAccount: async (): Promise<{ success: boolean; message: string }> => {
-    const response = await api.delete('/auth/account');
+    const response = await api.delete<{ success: boolean; message: string }>('/auth/account');
     return response.data;
   },
 
-  updateProfile: async (data: any): Promise<SignupResponse['user']> => {
-    const response = await api.patch('/auth/profile', data);
+  updateProfile: async (
+    data: Partial<{ name: string; email: string; phone: string; avatarUrl: string }>,
+  ): Promise<SignupResponse['user']> => {
+    const response = await api.patch<SignupResponse['user']>('/auth/profile', data);
     return response.data;
   },
 
@@ -170,15 +181,10 @@ export const authApi = {
       if (!accessToken) {
         return { success: true, message: 'Already logged out' };
       }
-      const response = await api.post('/auth/logout', {});
+      const response = await api.post<{ success: boolean; message: string }>('/auth/logout', {});
       return response.data;
     } catch (error: unknown) {
-      if (
-        error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        (error as any).response?.status === 401
-      ) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
         return { success: true, message: 'Logged out (Session already expired)' };
       }
       throw error;

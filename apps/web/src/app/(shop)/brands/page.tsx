@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { BrandsPage } from '@/features/brand';
 
 export default function Page() {

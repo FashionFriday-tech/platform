@@ -7,7 +7,7 @@ interface CategoryCatalogProps {
   category: string;
 }
 
-export async function CategoryCatalog({ category }: CategoryCatalogProps) {
+export function CategoryCatalog({ category }: CategoryCatalogProps) {
   // Map URL slugs to exact Data Categories
   const categoryMap: Record<string, string> = {
     watches: 'Watches',

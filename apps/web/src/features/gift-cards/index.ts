@@ -1,2 +1,2 @@
 export { GiftCardsPage } from './gift-cards-page';
-export type { SocialTask, Milestone, ClaimStatus } from './types';
+export type { ClaimStatus, Milestone, SocialTask } from './types';

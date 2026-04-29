@@ -1,9 +1,8 @@
-export { helpSections, type HelpSection } from './constants';
-export { HelpLayout } from './components/help-layout';
-export { HelpHub } from './components/help-hub';
 export { AboutPage } from './components/about-page';
 export { ContactPage } from './components/contact-page';
 export { FaqPage } from './components/faq-page';
+export { HelpHub } from './components/help-hub';
+export { HelpLayout } from './components/help-layout';
 export { PaymentsPage } from './components/payments-page';
 export { PrivacyPolicyPage } from './components/privacy-policy-page';
 export { QualityGuidePage } from './components/quality-guide-page';
@@ -11,3 +10,4 @@ export { ReturnsPage } from './components/returns-page';
 export { ShippingPage } from './components/shipping-page';
 export { SizeGuidePage } from './components/size-guide-page';
 export { TermsConditionsPage } from './components/terms-conditions-page';
+export { type HelpSection, helpSections } from './constants';

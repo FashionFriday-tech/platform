@@ -6,9 +6,10 @@ import Link from 'next/link';
 import { HeartIcon, HistoryIcon, LoaderIcon, ShieldCheckIcon, StarIcon } from '@ff/ui';
 
 import { useAuth } from '@/context/AuthContext';
+
+import { ActivityItem } from './activity-item';
 import { ProfileHero } from './profile-hero';
 import { QuickLinksGrid } from './quick-links-grid';
-import { ActivityItem } from './activity-item';
 
 export function AccountDashboard() {
   const { user, loading, logout } = useAuth();

@@ -84,7 +84,7 @@ export function useReferral() {
         url: referralLink,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-optional-chain
+      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
       if (navigator.canShare && navigator.canShare({ files: [] })) {
         try {
           const response = await fetch('/images/refferal/hero.png');
@@ -96,7 +96,6 @@ export function useReferral() {
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (navigator.share) {
         try {
           await navigator.share(shareData);

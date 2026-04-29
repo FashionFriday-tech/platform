@@ -6,8 +6,8 @@ import { ChevronDownIcon, SlidersIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import brandsData from '../data/brand-logos';
-import { BrandCard } from './BrandCard';
 import type { Brand, BrandCategory } from '../types/brand';
+import { BrandCard } from './BrandCard';
 
 const ALL_CATEGORIES: (BrandCategory | 'All')[] = [
   'All',
