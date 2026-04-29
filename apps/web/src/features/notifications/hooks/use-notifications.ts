@@ -1,3 +1,4 @@
+'use client';
 import { useMemo } from 'react';
 
 import { MOCK_NOTIFICATIONS } from '../data';
@@ -15,3 +16,4 @@ export function useNotifications(type: TabType) {
 
   return { notifications };
 }
+
