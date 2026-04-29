@@ -1,3 +1,4 @@
+'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { type Product } from '@ff/schemas';
@@ -134,3 +135,4 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
     toggleAutoScroll,
   };
 };
+
