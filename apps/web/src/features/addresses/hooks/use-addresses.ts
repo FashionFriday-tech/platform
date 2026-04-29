@@ -1,3 +1,4 @@
+'use client';
 import { useMemo, useState } from 'react';
 
 import { type Address } from '../types';
@@ -71,3 +72,4 @@ export function useAddresses() {
     handleCloseModal,
   };
 }
+
