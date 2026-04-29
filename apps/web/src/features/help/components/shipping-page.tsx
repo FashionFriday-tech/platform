@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { AlertTriangleIcon, CameraIcon, LifeBuoyIcon, NavigationIcon } from '@ff/ui';
 
-import { shippingData } from '@/data/shipping';
+import { shippingData } from '@/features/help/data/shipping';
 
 export function ShippingPage() {
   return (
