@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { ActivityIcon, ArrowDownIconIOS, FootprintsIcon, ShieldCheckIcon, WatchIcon } from '@ff/ui';
 
-import { ProductQuality } from '@/data/quality';
+import { ProductQuality } from '@/features/help/data/quality';
 
 // 1. Define the valid keys strictly based on your data
 type QualityCategory = keyof typeof ProductQuality;
