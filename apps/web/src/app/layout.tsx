@@ -3,8 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 
 import { Header } from '@/components/layout/Header';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
-import { AuthProvider } from '@/context/AuthContext';
-import { SettingsProvider } from '@/context/SettingsContext';
+import { StoreInitializer } from '@/components/layout/StoreInitializer';
 
 import { ThemeProvider } from './providers/theme-provider';
 
@@ -52,15 +51,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={` ${geistSans.variable} ${geistMono.variable} bg-background text-foreground min-h-screen antialiased`}
         suppressHydrationWarning
       >
-        <SettingsProvider>
-          <AuthProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <ServiceWorkerRegister />
-              <Header />
-              {children}
-            </ThemeProvider>
-          </AuthProvider>
-        </SettingsProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <StoreInitializer />
+          <ServiceWorkerRegister />
+          <Header />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
