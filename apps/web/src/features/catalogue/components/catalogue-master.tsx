@@ -7,10 +7,10 @@ import { type Product } from '@ff/schemas';
 import { ArrowUpDownIcon, PlayIcon, SlidersIcon, StopIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
-import { CatalogueGrid } from './components/catalogue-grid';
+import { CatalogueGrid } from './catalogue-grid';
 // Sub-component Imports
-import { CatalogueSidebar } from './components/catalogue-sidebar';
-import { useCatalogue } from './hooks/use-catalogue';
+import { CatalogueSidebar } from './catalogue-sidebar';
+import { useCatalogue } from '../hooks/use-catalogue';
 
 // Sort Options
 const SORT_OPTIONS = [
@@ -28,7 +28,7 @@ interface CatalogueClientProps {
 }
 
 // --- UPDATED FUNCTION PARAMS ---
-export default function CatalogueClient({ initialProducts, categorySlug }: CatalogueClientProps) {
+export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClientProps) {
   const {
     products,
     activeFilters,
