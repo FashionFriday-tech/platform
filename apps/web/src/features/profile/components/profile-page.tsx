@@ -20,15 +20,18 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuthStore } from '@/store/auth-store';
 import { authApi } from '@/lib/api-client';
 
 import { ModernInput } from './modern-input';
 import { ProfileSection } from './profile-section';
 
 export function ProfilePage() {
-  const { user, loading, updateProfile, refreshUser } = useAuth();
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  const updateProfile = useAuthStore((state) => state.updateProfile);
+  const refreshUser = useAuthStore((state) => state.refreshUser);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSaving, setIsSaving] = useState(false);
 
