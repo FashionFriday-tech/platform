@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authApi } from '@/lib/api-client';
+import { getMeAction, logoutAction, updateProfileAction, deleteAccountAction } from '@/features/auth/services/auth.actions';
 
 export interface User {
   id: string;
@@ -18,7 +18,7 @@ export interface User {
 interface AuthState {
   user: User | null;
   loading: boolean;
-  login: (accessToken: string, refreshToken: string, userData: User) => void;
+  login: (userData: User) => void;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   updateProfile: (data: Partial<{ name: string; email: string; phone: string; avatarUrl: string }>) => Promise<void>;
@@ -30,66 +30,50 @@ export const useAuthStore = create<AuthState>((set) => ({
   loading: true,
 
   refreshUser: async () => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-    if (!token) {
-      set({ user: null, loading: false });
-      return;
-    }
-
     try {
-      const data = await authApi.getMe();
+      const data = await getMeAction();
       set({ user: data });
     } catch (error) {
       console.error('Failed to fetch user:', error);
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-      }
       set({ user: null });
     } finally {
       set({ loading: false });
     }
   },
 
-  login: (accessToken: string, refreshToken: string, userData: User) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-    }
+  login: (userData: User) => {
     set({ user: userData, loading: false });
   },
 
   logout: async () => {
     try {
-      await authApi.logout();
+      await logoutAction();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-      }
       set({ user: null });
     }
   },
 
   updateProfile: async (data) => {
-    const updatedUser = await authApi.updateProfile(data);
-    set({ user: updatedUser });
+    try {
+      const updatedUser = await updateProfileAction(data);
+      if (updatedUser) {
+        set({ user: updatedUser });
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      throw error;
+    }
   },
 
   deleteAccount: async () => {
     try {
-      await authApi.deleteAccount();
+      await deleteAccountAction();
+      set({ user: null });
     } catch (error) {
       console.error('API account deletion failed:', error);
       throw error;
-    } finally {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-      }
-      set({ user: null });
     }
   },
 }));
