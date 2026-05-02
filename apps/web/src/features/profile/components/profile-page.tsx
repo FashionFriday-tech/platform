@@ -21,7 +21,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
 import { useAuthStore } from '@/store/auth-store';
-import { authApi } from '@/lib/api-client';
+import { sendEmailOtpAction, verifyEmailOtpAction } from '@/features/auth/services/auth.actions';
 
 import { ModernInput } from './modern-input';
 import { ProfileSection } from './profile-section';
@@ -154,7 +154,7 @@ export function ProfilePage() {
         setVerifyingField(field);
 
         // Send OTP
-        await authApi.sendEmailOtp();
+        await sendEmailOtpAction();
         toast.info('OTP securely generated. Please check server console.');
 
         setShowOtpModal(true);
@@ -213,7 +213,7 @@ export function ProfilePage() {
 
     try {
       setIsVerifyingOtp(true);
-      await authApi.verifyEmailOtp(otpString);
+      await verifyEmailOtpAction(otpString);
       toast.success('Email verified successfully!');
 
       setVerifiedStatus((p) => ({ ...p, email: true }));
