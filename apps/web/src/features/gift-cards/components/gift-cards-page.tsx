@@ -19,8 +19,8 @@ import {
   TrophyIcon,
 } from '@ff/ui';
 
-import { initialMilestones, initialSocialTasks } from './constants';
-import type { SocialTask } from './types';
+import { initialMilestones, initialSocialTasks } from '../constants';
+import type { SocialTask } from '../types';
 
 export function GiftCardsPage() {
   const [socials, setSocials] = useState(initialSocialTasks);
