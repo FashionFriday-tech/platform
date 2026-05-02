@@ -4,16 +4,29 @@ import React from 'react';
 import Link from 'next/link';
 
 import { HeartIcon, HistoryIcon, LoaderIcon, ShieldCheckIcon, StarIcon } from '@ff/ui';
+import { toast } from 'sonner';
 
-import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/auth-store';
 
 import { ActivityItem } from './activity-item';
 import { ProfileHero } from './profile-hero';
 import { QuickLinksGrid } from './quick-links-grid';
 
 export function AccountDashboard() {
-  const { user, loading, logout } = useAuth();
-
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  const logout = useAuthStore((state) => state.logout);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace('/');
+      toast.success('Logged out successfully');
+    } catch (error) {
+      toast.error('Failed to logout');
+    }
+  };
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -77,7 +90,7 @@ export function AccountDashboard() {
                 </button>
                 {user ? (
                   <button
-                    onClick={() => void logout()}
+                    onClick={() => void handleLogout()}
                     className="border-foreground text-foreground hover:bg-foreground hover:text-background flex items-center gap-2 rounded-full border px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all"
                   >
                     Logout
