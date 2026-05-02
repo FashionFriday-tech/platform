@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuthStore } from '@/store/auth-store';
 import { authApi } from '@/lib/api-client';
 
 export type AuthStep = 'PHONE' | 'OTP' | 'PROFILE';
@@ -22,7 +22,10 @@ export function useAuthFlow() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
-  const { user, loading: authLoading, login: authLogin } = useAuth();
+  
+  const user = useAuthStore((state) => state.user);
+  const authLoading = useAuthStore((state) => state.loading);
+  const authLogin = useAuthStore((state) => state.login);
 
   // Timer interval countdown
   useEffect(() => {
