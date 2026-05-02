@@ -6,20 +6,24 @@ import Link from 'next/link';
 import { ExternalLinkIcon, UserIcon as UIIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
-import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/auth-store';
 
 import { quickLinks } from '../data/profile';
 
 export function QuickLinksGrid() {
-  const { user, logout } = useAuth();
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
 
   const handleLogout = async () => {
     try {
       await logout();
+      router.replace('/');
       toast.success('Logged out successfully');
     } catch (error) {
       console.error('Logout error:', error);
-      toast.error('Failed to logout cleanly');
+      toast.error('Failed to logout');
     }
   };
 
