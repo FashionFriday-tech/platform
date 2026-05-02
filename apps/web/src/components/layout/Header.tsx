@@ -16,7 +16,7 @@ import {
 } from '@ff/ui';
 import { AnimatePresence } from 'motion/react';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuthStore } from '@/store/auth-store';
 
 import { SearchOverlay } from './SearchOverlay/SearchOverlay';
 
@@ -58,7 +58,7 @@ const navStructure = [
 ];
 
 export function Header() {
-  const { user } = useAuth();
+  const user = useAuthStore((state) => state.user);
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
