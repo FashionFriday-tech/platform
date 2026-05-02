@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { DUMMY_PRODUCTS } from '@/data/products';
-import CatalogueClient from '@/features/catalogue';
+import { CatalogueClient } from '@/features/catalogue';
 
 interface BrandCatalogProps {
   brandName: string;
