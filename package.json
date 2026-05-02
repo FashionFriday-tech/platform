@@ -4,6 +4,7 @@
   "packageManager": "pnpm@10.18.3",
   "scripts": {
     "build": "turbo run build",
+    "test": "turbo run test",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write .",
