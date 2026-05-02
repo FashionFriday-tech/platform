@@ -4,13 +4,16 @@ import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
-import { useAuth } from '@/context/AuthContext';
-import { useSettings } from '@/context/SettingsContext';
+import { useAuthStore } from '@/store/auth-store';
+import { useSettingsStore } from '@/store/settings-store';
 
 export function useSettingsFlow() {
   const router = useRouter();
-  const { user, logout, deleteAccount } = useAuth();
-  const { settings, updateSettings } = useSettings();
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const deleteAccount = useAuthStore((state) => state.deleteAccount);
+  const settings = useSettingsStore((state) => state.settings);
+  const updateSettings = useSettingsStore((state) => state.updateSettings);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -25,24 +28,26 @@ export function useSettingsFlow() {
   const handleLogout = useCallback(async () => {
     try {
       await logout();
+      router.replace('/');
       toast.success('Logged out successfully');
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Failed to logout');
     }
-  }, [logout]);
+  }, [logout, router]);
 
   const handleDeleteAccount = useCallback(async () => {
     try {
       setIsDeleting(true);
       await deleteAccount();
+      router.replace('/');
       toast.success('Account deleted successfully');
     } catch (error) {
       console.error('Deletion error:', error);
       toast.error('Failed to delete account');
       setIsDeleting(false);
     }
-  }, [deleteAccount]);
+  }, [deleteAccount, router]);
 
   const handleToggleNotification = useCallback((key: 'orders' | 'promos') => {
     setNotifications((prev) => ({
