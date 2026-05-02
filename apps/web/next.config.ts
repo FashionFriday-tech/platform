@@ -28,9 +28,9 @@ const nextConfig: NextConfig = {
 
   transpilePackages: ['@ff/ui'],
 
-  experimental: {
-    optimizePackageImports: ['@ff/ui', 'motion/react', 'lucide-react'],
-  },
+  // experimental: {
+  //   optimizePackageImports: ['@ff/ui', 'motion/react', 'lucide-react'],
+  // },
 };
 
 export default nextConfig;
