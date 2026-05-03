@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { Product, ColumnId } from "../types";
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export function ProductTable({ products, isLoading, onToggleStatus, selectedIds, onToggleSelection, onToggleAllSelection, sortOption, setSortOption, visibleColumns }: Props) {
+  const router = useRouter();
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
@@ -90,13 +93,17 @@ export function ProductTable({ products, isLoading, onToggleStatus, selectedIds,
           {products.map((product) => {
             const isSelected = selectedIds.has(product.id);
             return (
-              <tr key={product.id} className={`group transition-colors whitespace-nowrap ${isSelected ? 'bg-black/[0.03] dark:bg-white/[0.05]' : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'}`}>
+              <tr 
+                key={product.id} 
+                onClick={() => router.push(`/products/${product.id}`)}
+                className={`group transition-colors whitespace-nowrap cursor-pointer ${isSelected ? 'bg-black/[0.03] dark:bg-white/[0.05]' : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'}`}
+              >
                 
                 {/* Sticky Left: Select & Product Info */}
                 <td className={`sticky left-0 z-10 py-4 px-4 border-r border-black/5 dark:border-white/5 shadow-[4px_0_12px_rgba(0,0,0,0.03)] dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)] transition-colors ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#141414]' : 'bg-white dark:bg-[#0a0a0a] group-hover:bg-[#fafafa] dark:group-hover:bg-[#111111]'}`}>
                   <div className="flex items-center space-x-4">
                     <div 
-                      onClick={() => onToggleSelection(product.id)}
+                      onClick={(e) => { e.stopPropagation(); onToggleSelection(product.id); }}
                       className={`w-5 h-5 rounded-md border flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 ${isSelected ? 'bg-black dark:bg-white border-black dark:border-white' : 'border-black/20 dark:border-white/20 group-hover:border-black/50 dark:group-hover:border-white/50'}`}
                     >
                       {isSelected && <svg className="w-3.5 h-3.5 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
@@ -194,7 +201,7 @@ export function ProductTable({ products, isLoading, onToggleStatus, selectedIds,
                 {/* Sticky Right: Activation */}
                 <td className={`sticky right-0 z-10 py-4 px-6 text-right border-l border-black/5 dark:border-white/5 shadow-[-4px_0_12px_rgba(0,0,0,0.03)] dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)] transition-colors ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#141414]' : 'bg-white dark:bg-[#0a0a0a] group-hover:bg-[#fafafa] dark:group-hover:bg-[#111111]'}`}>
                   <button 
-                    onClick={() => product.status !== "Draft" && onToggleStatus(product.id)}
+                    onClick={(e) => { e.stopPropagation(); product.status !== "Draft" && onToggleStatus(product.id); }}
                     disabled={product.status === "Draft"}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${product.status === "Active" ? 'bg-black/90 dark:bg-white/90' : 'bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20'} ${product.status === "Draft" ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
                   >
