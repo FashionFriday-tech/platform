@@ -66,7 +66,7 @@ export function ProductFilters({
   };
   
   const clearFilters = () => {
-    const empty = { categories: new Set<string>(), statuses: new Set<ProductStatus>(), minPrice: "", maxPrice: "" };
+    const empty = { categories: new Set<string>(), statuses: new Set<ProductStatus>(), stores: new Set<string>(), minPrice: "", maxPrice: "" };
     setLocalFilters(empty);
     setAppliedAdvancedFilters(empty);
     setIsOpen(false);
