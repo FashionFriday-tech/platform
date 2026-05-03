@@ -1,5 +1,6 @@
 import { ViewMode, ColumnId, AdvancedFilters, ProductStatus } from "../types";
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 
 interface Props {
   searchQuery: string;
@@ -275,10 +276,13 @@ export function ProductActionBar({
           )}
         </div>
 
-        <button className="flex items-center space-x-2 whitespace-nowrap text-sm bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full font-medium hover:bg-black/90 dark:hover:bg-white/90 transition-colors shadow-lg">
+        <Link 
+          href="/products/add"
+          className="flex items-center space-x-2 whitespace-nowrap text-sm bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full font-medium hover:bg-black/90 dark:hover:bg-white/90 transition-colors shadow-lg"
+        >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
           <span>Add new product</span>
-        </button>
+        </Link>
       </div>
     </div>
   );
