@@ -16,6 +16,23 @@ const mockProducts: Product[] = [
     variants: ["S", "M", "L", "XL"],
     sales: 1245,
     dateAdded: "2023-11-12",
+    description: "Premium oversized heritage washed jacket featuring a relaxed fit, dropped shoulders, and distinctive pocket detailing. Perfect for layering in colder weather. Crafted from high-quality sustainable materials with a worn-in aesthetic.",
+    quality: "Premium",
+    brand: "Heritage",
+    color: "Washed Black",
+    gender: "Unisex",
+    tags: ["jacket", "oversized", "winter", "streetwear", "vintage"],
+    seoTitle: "Buy Oversized Heritage Washed Jacket Online",
+    seoDesc: "Shop the Oversized Heritage Washed Jacket. A premium, comfortable outerwear piece perfect for layering. Available in multiple sizes.",
+    seoSlug: "oversized-heritage-washed",
+    videoLink: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    images: [
+      "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1520975954732-57dd22299614?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1559551409-dadc959f76b8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1516257984-b1b4d707412e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+    ],
+    imageUrl: "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
   },
   {
     id: "07642MS",
@@ -153,5 +170,27 @@ export async function fetchProducts(): Promise<Product[]> {
     setTimeout(() => {
       resolve([...mockProducts]);
     }, 800);
+  });
+}
+
+export async function fetchProductById(id: string): Promise<Product | undefined> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(mockProducts.find(p => p.id === id));
+    }, 400);
+  });
+}
+
+export async function updateProduct(id: string, data: Partial<Product>): Promise<Product> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const index = mockProducts.findIndex(p => p.id === id);
+      if (index === -1) {
+        reject(new Error("Product not found"));
+        return;
+      }
+      mockProducts[index] = { ...mockProducts[index], ...data };
+      resolve(mockProducts[index]);
+    }, 500);
   });
 }
