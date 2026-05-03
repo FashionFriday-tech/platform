@@ -5,8 +5,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon, SlidersIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
-import brandsData from '../data/brand-logos';
-import type { Brand, BrandCategory } from '../types/brand';
+import { brandLogos as brandsData } from '@/features/brand';
+import type { Brand, BrandCategory } from '@/features/brand';
 import { BrandCard } from './BrandCard';
 
 const ALL_CATEGORIES: (BrandCategory | 'All')[] = [
