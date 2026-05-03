@@ -19,7 +19,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@ff/ui": ["../../packages/ui/src/index.tsx"],
+      "@ff/ui/*": ["../../packages/ui/src/*"],
+      "@ff/schemas": ["../../packages/schemas/src/index.ts"]
     }
   },
   "include": [
