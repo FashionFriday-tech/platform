@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { Product } from "../types";
 
 interface Props {
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export function ProductGrid({ products, isLoading, onToggleStatus, selectedIds, onToggleSelection, onToggleAllSelection }: Props) {
+  const router = useRouter();
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
@@ -51,11 +54,12 @@ export function ProductGrid({ products, isLoading, onToggleStatus, selectedIds, 
           return (
             <div 
               key={product.id} 
-              className={`flex flex-row relative group rounded-2xl border transition-all duration-300 overflow-hidden h-40 ${isSelected ? 'border-black/40 dark:border-white/40 ring-2 ring-black/10 dark:ring-white/10 bg-black/[0.03] dark:bg-white/[0.05]' : 'border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/20 hover:border-black/30 dark:hover:border-white/30 hover:shadow-xl hover:-translate-y-1'}`}
+              onClick={() => router.push(`/products/${product.id}`)}
+              className={`flex flex-row relative group rounded-2xl border transition-all duration-300 overflow-hidden h-40 cursor-pointer ${isSelected ? 'border-black/40 dark:border-white/40 ring-2 ring-black/10 dark:ring-white/10 bg-black/[0.03] dark:bg-white/[0.05]' : 'border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/20 hover:border-black/30 dark:hover:border-white/30 hover:shadow-xl hover:-translate-y-1'}`}
             >
               {/* Checkbox */}
               <div 
-                onClick={() => onToggleSelection(product.id)}
+                onClick={(e) => { e.stopPropagation(); onToggleSelection(product.id); }}
                 className={`absolute top-3 left-3 z-10 w-6 h-6 rounded-md border flex items-center justify-center cursor-pointer transition-all backdrop-blur-md shadow-sm ${isSelected ? 'bg-black dark:bg-white border-black dark:border-white' : 'bg-white/80 dark:bg-black/80 border-black/30 dark:border-white/30 group-hover:border-black/60 dark:group-hover:border-white/60'}`}
               >
                 {isSelected && <svg className="w-4 h-4 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
@@ -110,7 +114,7 @@ export function ProductGrid({ products, isLoading, onToggleStatus, selectedIds, 
                   </div>
 
                   <button 
-                    onClick={() => product.status !== "Draft" && onToggleStatus(product.id)}
+                    onClick={(e) => { e.stopPropagation(); product.status !== "Draft" && onToggleStatus(product.id); }}
                     disabled={product.status === "Draft"}
                     className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full transition-colors ${product.status === "Active" ? 'bg-black/90 dark:bg-white/90 shadow-inner' : 'bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20'} ${product.status === "Draft" ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
                     title={product.status === "Draft" ? "Cannot activate drafted products" : "Toggle Active Status"}
