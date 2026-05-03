@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="scrollbar-hide">
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-black text-black dark:text-white min-h-screen flex scrollbar-hide`}
       >
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
