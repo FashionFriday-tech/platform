@@ -16,6 +16,17 @@ export interface Product {
   sales: number;
   dateAdded: string;
   imageUrl?: string;
+  description?: string;
+  quality?: string;
+  brand?: string;
+  color?: string;
+  gender?: string;
+  tags?: string[];
+  seoTitle?: string;
+  seoDesc?: string;
+  seoSlug?: string;
+  images?: string[];
+  videoLink?: string;
 }
 
 export type SortOption = "Default" | "Price: Low to High" | "Price: High to Low" | "Name: A to Z" | "Name: Z to A";
