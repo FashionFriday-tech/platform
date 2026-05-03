@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { BRAND_LOGOS, MAJOR_COLORS, type BrandCategory } from "@ff/schemas";
+import { BRAND_LOGOS, MAJOR_COLORS, type BrandCategory, type Product } from "@ff/schemas";
 import { SIZE_MAP } from "../utils/constants";
 
-export function useAddProductForm() {
+export function useAddProductForm(initialData?: Product) {
   const [sizes, setSizes] = useState<string[]>(["S"]);
   const [gender, setGender] = useState<string>("Woman");
   const [category, setCategory] = useState<string>("Jacket");
@@ -20,6 +20,7 @@ export function useAddProductForm() {
 
   const [videoLink, setVideoLink] = useState("");
   const [embedUrl, setEmbedUrl] = useState<string | null>(null);
+  const [videoId, setVideoId] = useState<string | null>(null);
 
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isQualityOpen, setIsQualityOpen] = useState(false);
@@ -47,6 +48,32 @@ export function useAddProductForm() {
   const qualityRef = useRef<HTMLDivElement>(null);
   const colorRef = useRef<HTMLDivElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
+
+  // Prepopulate data if editing
+  useEffect(() => {
+    if (initialData) {
+      setProductName(initialData.name || "");
+      setProductDesc(initialData.description || "");
+      setCategory(initialData.category || "Jacket");
+      setQuality(initialData.attributes?.quality || "Original");
+      setBrandInput(initialData.brand?.[0] || "");
+      setBasePrice(initialData.price?.sellingPrice?.toString() || "");
+      setOgPrice(initialData.price?.ogPrice?.toString() || "");
+      setStock(initialData.inventory?.totalStock?.toString() || "");
+      setSku(initialData.inventory?.sku || "");
+      setSizes(initialData.attributes?.sizes || ["S"]);
+      setTags(initialData.marketing?.collections || []);
+      setSeoTitle(initialData.marketing?.seoTitle || "");
+      setSeoDesc(initialData.marketing?.seoDescription || "");
+      setSeoSlug(initialData.slug || "");
+      
+      if (initialData.media?.liveImages && initialData.media.liveImages.length > 0) {
+        setImages(initialData.media.liveImages.map((url, i) => ({ id: `init-${i}`, url })));
+      } else if (initialData.media?.mainImage) {
+        setImages([{ id: "init-main", url: initialData.media.mainImage }]);
+      }
+    }
+  }, [initialData]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -76,8 +103,10 @@ export function useAddProductForm() {
     else if (videoLink.match(youtuBeRegex)) id = videoLink.match(youtuBeRegex)![1];
     
     if (id) {
-      setEmbedUrl(`https://www.youtube.com/embed/${id}`);
+      setVideoId(id);
+      setEmbedUrl(`https://www.youtube.com/embed/${id}?controls=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1&autoplay=1`);
     } else {
+      setVideoId(null);
       setEmbedUrl(null);
     }
   }, [videoLink]);
@@ -148,8 +177,9 @@ export function useAddProductForm() {
   const handleReorder = (fromIndex: number, toIndex: number) => {
     setImages(prev => {
       const newImages = [...prev];
-      const [movedItem] = newImages.splice(fromIndex, 1);
-      newImages.splice(toIndex, 0, movedItem);
+      const temp = newImages[fromIndex];
+      newImages[fromIndex] = newImages[toIndex];
+      newImages[toIndex] = temp;
       return newImages;
     });
   };
@@ -172,8 +202,9 @@ export function useAddProductForm() {
 
     setImages(prev => {
       const newImages = [...prev];
-      const [movedItem] = newImages.splice(draggedIndex, 1);
-      newImages.splice(toIndex, 0, movedItem);
+      const temp = newImages[draggedIndex];
+      newImages[draggedIndex] = newImages[toIndex];
+      newImages[toIndex] = temp;
       return newImages;
     });
     setDraggedIndex(null);
@@ -222,7 +253,7 @@ export function useAddProductForm() {
     tags, setTags, tagInput, setTagInput, handleTagKeyDown, removeTag,
     brandInput, setBrandInput, selectedBrandLogo, setSelectedBrandLogo, isBrandOpen, setIsBrandOpen,
     colorInput, setColorInput, selectedColorHex, setSelectedColorHex, isColorOpen, setIsColorOpen,
-    videoLink, setVideoLink, embedUrl,
+    videoLink, setVideoLink, embedUrl, videoId,
     isCategoryOpen, setIsCategoryOpen,
     isQualityOpen, setIsQualityOpen,
     productName, setProductName,
