@@ -4,6 +4,7 @@ import {
   SettingsIcon, ShieldCheckIcon, LifeBuoyIcon 
 } from "@ff/ui";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import Link from "next/link";
 
 export function Sidebar() {
   return (
@@ -42,10 +43,10 @@ export function Sidebar() {
               </div>
               <span className="bg-black/10 dark:bg-white/10 text-black dark:text-white text-xs py-0.5 px-2 rounded-full font-medium">16</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-black dark:bg-white text-white dark:text-black transition-all">
+            <Link href="/products" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-black dark:bg-white text-white dark:text-black transition-all">
               <PackageIcon className="w-5 h-5" />
               <span className="font-medium text-sm">Products</span>
-            </a>
+            </Link>
             <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
               <CategoryIcon className="w-5 h-5 opacity-70" />
               <span className="font-medium text-sm">Categories</span>
