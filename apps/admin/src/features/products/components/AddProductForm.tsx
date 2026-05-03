@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { BRAND_LOGOS, MAJOR_COLORS, type BrandCategory } from "@ff/schemas";
 
 const CATEGORIES = ["Jacket", "Shirts", "Sneakers", "Pants"];
 const QUALITIES = ["Original", "10A", "7A", "5A", "Premium", "Standard"];
@@ -13,18 +14,7 @@ const SIZE_MAP: Record<string, string[]> = {
   "Sneakers": ["UK 6", "UK 7", "UK 8", "UK 9", "UK 10", "UK 11"]
 };
 
-const MAJOR_COLORS = [
-  { name: "Black", hex: "#000000" },
-  { name: "White", hex: "#FFFFFF" },
-  { name: "Green", hex: "#008000" },
-  { name: "Blue", hex: "#0000FF" },
-  { name: "Red", hex: "#FF0000" },
-  { name: "Grey", hex: "#808080" },
-  { name: "Yellow", hex: "#FFFF00" },
-  { name: "Pink", hex: "#FFC0CB" },
-  { name: "Purple", hex: "#800080" },
-  { name: "Beige", hex: "#F5F5DC" }
-];
+
 
 const LabelWithTick = ({ label, status, subtitle, rightElement }: { label: string, status: "default" | "valid" | "empty", subtitle?: string, rightElement?: React.ReactNode }) => {
   const iconColor = status === "valid" ? "text-[#22c55e]" : status === "default" ? "text-[#3b82f6]" : "text-black/20 dark:text-white/20";
@@ -51,6 +41,10 @@ export function AddProductForm() {
   const [quality, setQuality] = useState<string>("Original");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+
+  const [brandInput, setBrandInput] = useState("");
+  const [selectedBrandLogo, setSelectedBrandLogo] = useState<string | null>(null);
+  const [isBrandOpen, setIsBrandOpen] = useState(false);
 
   const [colorInput, setColorInput] = useState("");
   const [selectedColorHex, setSelectedColorHex] = useState<string | null>(null);
@@ -84,6 +78,7 @@ export function AddProductForm() {
   const categoryRef = useRef<HTMLDivElement>(null);
   const qualityRef = useRef<HTMLDivElement>(null);
   const colorRef = useRef<HTMLDivElement>(null);
+  const brandRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -91,6 +86,7 @@ export function AddProductForm() {
       if (categoryRef.current && !categoryRef.current.contains(event.target as Node)) setIsCategoryOpen(false);
       if (qualityRef.current && !qualityRef.current.contains(event.target as Node)) setIsQualityOpen(false);
       if (colorRef.current && !colorRef.current.contains(event.target as Node)) setIsColorOpen(false);
+      if (brandRef.current && !brandRef.current.contains(event.target as Node)) setIsBrandOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -122,6 +118,8 @@ export function AddProductForm() {
     setCategory(c);
     setIsCategoryOpen(false);
     setSizes([]);
+    setBrandInput(""); // Reset brand when category changes
+    setSelectedBrandLogo(null);
   };
 
   const toggleSize = (s: string) => {
@@ -146,7 +144,7 @@ export function AddProductForm() {
 
   const generateSEO = () => {
     if (!productName.trim() || !productDesc.trim()) {
-      setSeoError("enough Info not available to create SEO info.");
+      setSeoError("Info not available.");
       return;
     }
     setSeoError("");
@@ -158,6 +156,7 @@ export function AddProductForm() {
     // Auto-generate tags based on general info
     const newTags = new Set([...tags, category.toLowerCase(), quality.toLowerCase(), "fashion", "trendy"]);
     if (colorInput.trim()) newTags.add(colorInput.toLowerCase().trim());
+    if (brandInput.trim()) newTags.add(brandInput.toLowerCase().trim());
     setTags(Array.from(newTags));
   };
 
@@ -222,11 +221,20 @@ export function AddProductForm() {
 
   const filteredColors = MAJOR_COLORS.filter(c => c.name.toLowerCase().includes(colorInput.toLowerCase()));
   const availableSizes = SIZE_MAP[category] || SIZE_MAP["Jacket"];
+  
+  const categoryToBrandCategory: Record<string, BrandCategory[]> = {
+    "Jacket": ["fashion", "streetwear", "sportswear", "luxury"],
+    "Shirts": ["fashion", "streetwear", "luxury"],
+    "Sneakers": ["sneakers", "sportswear", "footwear", "luxury"],
+    "Pants": ["fashion", "streetwear", "luxury"]
+  };
+  const availableBrands = BRAND_LOGOS.filter(b => b.categories.some(c => categoryToBrandCategory[category]?.includes(c)));
+  const filteredBrands = availableBrands.filter(b => b.name.toLowerCase().includes(brandInput.toLowerCase()));
 
   // Progress tracking
   const getProgress = () => {
     const fields = [
-      productName, productDesc, colorInput,
+      productName, productDesc, brandInput, colorInput,
       basePrice, ogPrice, stock, sku,
       images.length > 0 ? "filled" : "",
       videoLink, tags.length > 0 ? "filled" : "",
@@ -363,48 +371,98 @@ export function AddProductForm() {
               </div>
 
               {/* Extra E-commerce Info */}
-              <div ref={colorRef} className="relative">
-                <LabelWithTick label="Color" status={colorInput.trim().length >= 3 ? "valid" : "empty"} />
-                <div className="relative flex items-center">
-                  {selectedColorHex && (
-                    <div className="absolute left-3 w-4 h-4 rounded-full shadow-sm border border-black/10 dark:border-white/20" style={{ backgroundColor: selectedColorHex }}></div>
-                  )}
-                  <input 
-                    type="text" 
-                    value={colorInput}
-                    onChange={(e) => {
-                      setColorInput(e.target.value);
-                      setSelectedColorHex(null); // Clear selected hex if typing
-                      setIsColorOpen(true);
-                    }}
-                    onFocus={() => setIsColorOpen(true)}
-                    placeholder="e.g. Black"
-                    className={`w-full bg-black/5 dark:bg-white/5 border-transparent focus:border-black/20 dark:focus:border-white/20 text-black dark:text-white rounded-xl ${selectedColorHex ? 'pl-10' : 'px-4'} py-3.5 outline-none transition-all text-sm font-medium`}
-                  />
-                </div>
-                
-                {isColorOpen && colorInput.length > 0 && (
-                  <div className="absolute z-10 w-full mt-2 bg-white dark:bg-[#1a1a1a] border border-black/10 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden py-1">
-                    {filteredColors.length > 0 ? filteredColors.map(c => (
-                      <button
-                        key={c.name}
-                        onClick={() => {
-                          setColorInput(c.name);
-                          setSelectedColorHex(c.hex);
-                          setIsColorOpen(false);
-                        }}
-                        className="w-full flex items-center space-x-3 text-left px-4 py-2.5 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                      >
-                        <div className="w-4 h-4 rounded-full shadow-sm border border-black/10 dark:border-white/20" style={{ backgroundColor: c.hex }}></div>
-                        <span className="text-sm font-medium text-black/80 dark:text-white/80">{c.name}</span>
-                      </button>
-                    )) : (
-                      <div className="px-4 py-3 text-sm text-black/50 dark:text-white/50 text-center font-medium">
-                        No colors found. Hit enter to add "{colorInput}"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+                <div ref={brandRef} className="relative">
+                  <LabelWithTick label="Brand" status={brandInput.trim().length >= 2 ? "valid" : "empty"} />
+                  <div className="relative flex items-center">
+                    {selectedBrandLogo && (
+                      <div className="absolute left-3 w-5 h-5 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-[10px] font-bold text-black dark:text-white">
+                        {selectedBrandLogo}
                       </div>
                     )}
+                    <input 
+                      type="text" 
+                      value={brandInput}
+                      onChange={(e) => {
+                        setBrandInput(e.target.value);
+                        setSelectedBrandLogo(null); // Clear selected logo if typing
+                        setIsBrandOpen(true);
+                      }}
+                      onFocus={() => setIsBrandOpen(true)}
+                      placeholder="e.g. Nike"
+                      className={`w-full bg-black/5 dark:bg-white/5 border-transparent focus:border-black/20 dark:focus:border-white/20 text-black dark:text-white rounded-xl ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 outline-none transition-all text-sm font-medium`}
+                    />
                   </div>
-                )}
+                  
+                  {isBrandOpen && brandInput.length > 0 && (
+                    <div className="absolute z-10 w-full mt-2 bg-white dark:bg-[#1a1a1a] border border-black/10 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden py-1">
+                      {filteredBrands.length > 0 ? filteredBrands.map(b => (
+                        <button
+                          key={b.name}
+                          onClick={() => {
+                            setBrandInput(b.name);
+                            setSelectedBrandLogo(b.name.charAt(0).toUpperCase());
+                            setIsBrandOpen(false);
+                          }}
+                          className="w-full flex items-center space-x-3 text-left px-4 py-2.5 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+                        >
+                          <div className="w-6 h-6 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-xs font-bold text-black/80 dark:text-white/80">
+                            {b.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="text-sm font-medium text-black/80 dark:text-white/80">{b.name}</span>
+                        </button>
+                      )) : (
+                        <div className="px-4 py-3 text-sm text-black/50 dark:text-white/50 text-center font-medium">
+                          No brands found. Hit enter to add "{brandInput}"
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div ref={colorRef} className="relative">
+                  <LabelWithTick label="Color" status={colorInput.trim().length >= 3 ? "valid" : "empty"} />
+                  <div className="relative flex items-center">
+                    {selectedColorHex && (
+                      <div className="absolute left-3 w-4 h-4 rounded-full shadow-sm border border-black/10 dark:border-white/20" style={{ backgroundColor: selectedColorHex }}></div>
+                    )}
+                    <input 
+                      type="text" 
+                      value={colorInput}
+                      onChange={(e) => {
+                        setColorInput(e.target.value);
+                        setSelectedColorHex(null); // Clear selected hex if typing
+                        setIsColorOpen(true);
+                      }}
+                      onFocus={() => setIsColorOpen(true)}
+                      placeholder="e.g. Black"
+                      className={`w-full bg-black/5 dark:bg-white/5 border-transparent focus:border-black/20 dark:focus:border-white/20 text-black dark:text-white rounded-xl ${selectedColorHex ? 'pl-10' : 'px-4'} py-3.5 outline-none transition-all text-sm font-medium`}
+                    />
+                  </div>
+                  
+                  {isColorOpen && colorInput.length > 0 && (
+                    <div className="absolute z-10 w-full mt-2 bg-white dark:bg-[#1a1a1a] border border-black/10 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden py-1">
+                      {filteredColors.length > 0 ? filteredColors.map(c => (
+                        <button
+                          key={c.name}
+                          onClick={() => {
+                            setColorInput(c.name);
+                            setSelectedColorHex(c.hex);
+                            setIsColorOpen(false);
+                          }}
+                          className="w-full flex items-center space-x-3 text-left px-4 py-2.5 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+                        >
+                          <div className="w-4 h-4 rounded-full shadow-sm border border-black/10 dark:border-white/20" style={{ backgroundColor: c.hex }}></div>
+                          <span className="text-sm font-medium text-black/80 dark:text-white/80">{c.name}</span>
+                        </button>
+                      )) : (
+                        <div className="px-4 py-3 text-sm text-black/50 dark:text-white/50 text-center font-medium">
+                          No colors found. Hit enter to add "{colorInput}"
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
