@@ -1,11 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { CATEGORIES, QUALITIES } from "../utils/constants";
 import { LabelWithTick } from "./LabelWithTick";
 import { useAddProductForm } from "../hooks/useAddProductForm";
+import { type Product } from "@ff/schemas";
 
-export function AddProductForm() {
+interface AddProductFormProps {
+  initialData?: Product;
+}
+
+export function AddProductForm({ initialData }: AddProductFormProps) {
   const {
     sizes, toggleSize,
     gender, setGender,
@@ -14,7 +20,7 @@ export function AddProductForm() {
     tags, tagInput, setTagInput, handleTagKeyDown, removeTag,
     brandInput, setBrandInput, selectedBrandLogo, setSelectedBrandLogo, isBrandOpen, setIsBrandOpen,
     colorInput, setColorInput, selectedColorHex, setSelectedColorHex, isColorOpen, setIsColorOpen,
-    videoLink, setVideoLink, embedUrl,
+    videoLink, setVideoLink, embedUrl, videoId,
     isCategoryOpen, setIsCategoryOpen,
     isQualityOpen, setIsQualityOpen,
     productName, setProductName,
@@ -32,7 +38,27 @@ export function AddProductForm() {
     handleImageUpload, handleReorder, handleDragStart, handleDragOver, handleDrop, handleDragEnd, removeImage,
     filteredColors, availableSizes, filteredBrands,
     progress
-  } = useAddProductForm();
+  } = useAddProductForm(initialData);
+
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const markTouched = (field: string) => setTouched(p => ({ ...p, [field]: true }));
+
+  const getStatus = (val: string | number, initVal: string | number | undefined, minLen: number, fieldName?: string): "empty" | "default" | "valid" | "error" => {
+    const valStr = String(val);
+    if (valStr.trim().length < minLen) return hasSubmitted ? "error" : "empty";
+    if (initialData && valStr === String(initVal || "")) return "default";
+    if (!initialData && fieldName && !touched[fieldName]) return "default";
+    return "valid";
+  };
+
+  const getArrayStatus = (val: string[], initVal: string[] | undefined, fieldName?: string): "empty" | "default" | "valid" | "error" => {
+    if (val.length === 0) return hasSubmitted ? "error" : "empty";
+    if (initialData && initVal && val.length === initVal.length && [...val].sort().join(',') === [...initVal].sort().join(',')) return "default";
+    if (!initialData && fieldName && !touched[fieldName]) return "default";
+    return "valid";
+  };
 
   return (
     <div className="w-full h-full overflow-y-auto scrollbar-hide pb-20">
@@ -45,7 +71,7 @@ export function AddProductForm() {
           <div className="w-8 h-8 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-md">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
           </div>
-          <h1 className="text-xl font-bold text-black dark:text-white tracking-tight">Add New Product</h1>
+          <h1 className="text-xl font-bold text-black dark:text-white tracking-tight">{initialData ? 'Edit Product' : 'Add New Product'}</h1>
         </div>
         
         <div className="flex items-center">
@@ -54,13 +80,21 @@ export function AddProductForm() {
             <span className="text-sm font-black text-black dark:text-white">{progress.filled}/{progress.total}</span>
           </div>
           <div className="flex items-center space-x-3">
+            {initialData && (
+              <button className="flex items-center space-x-2 px-5 py-2.5 rounded-full border border-black/10 dark:border-white/10 text-sm font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-colors bg-white dark:bg-[#111111] shadow-sm text-black/60 dark:text-white/60">
+                <span>Cancel</span>
+              </button>
+            )}
             <button className="flex items-center space-x-2 px-5 py-2.5 rounded-full border border-black/10 dark:border-white/10 text-sm font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-colors bg-white dark:bg-[#111111] shadow-sm">
               <svg className="w-4 h-4 text-black/60 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
               <span>Save Draft</span>
             </button>
-            <button className="flex items-center space-x-2 px-6 py-2.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-bold hover:opacity-90 transition-opacity shadow-lg">
+            <button 
+              onClick={() => setHasSubmitted(true)}
+              className="flex items-center space-x-2 px-6 py-2.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
+            >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-              <span>Add Product</span>
+              <span>{initialData ? 'Save Changes' : 'Add Product'}</span>
             </button>
           </div>
         </div>
@@ -76,7 +110,7 @@ export function AddProductForm() {
             
             <div className="space-y-5">
               <div>
-                <LabelWithTick label="Name Product" status={productName.trim().length >= 3 ? "valid" : "empty"} />
+                <LabelWithTick label="Name Product" status={getStatus(productName, initialData?.name, 3)} />
                 <input 
                   type="text" 
                   value={productName}
@@ -87,7 +121,7 @@ export function AddProductForm() {
               </div>
 
               <div>
-                <LabelWithTick label="Description Product" status={productDesc.trim().length >= 10 ? "valid" : "empty"} />
+                <LabelWithTick label="Description Product" status={getStatus(productDesc, initialData?.description, 10)} />
                 <textarea 
                   rows={4}
                   value={productDesc}
@@ -99,9 +133,12 @@ export function AddProductForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
                 <div ref={categoryRef} className="relative">
-                  <LabelWithTick label="Product Category" status={category === "Jacket" ? "default" : "valid"} />
+                  <LabelWithTick label="Product Category" status={getStatus(category, initialData?.category, 1, "category")} />
                   <button 
-                    onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                    onClick={() => {
+                      setIsCategoryOpen(!isCategoryOpen);
+                      markTouched("category");
+                    }}
                     className={`w-full flex items-center justify-between text-left border rounded-xl px-4 py-3.5 outline-none transition-all text-sm font-medium ${isCategoryOpen ? 'bg-transparent border-black/20 dark:border-white/20 text-black dark:text-white' : 'bg-black/5 dark:bg-white/5 border-transparent text-black dark:text-white'}`}
                   >
                     <span>{category}</span>
@@ -115,7 +152,10 @@ export function AddProductForm() {
                       {CATEGORIES.map(c => (
                         <button
                           key={c}
-                          onClick={() => handleCategorySelect(c)}
+                          onClick={() => {
+                            handleCategorySelect(c);
+                            markTouched("category");
+                          }}
                           className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${category === c ? 'text-black dark:text-white bg-black/5 dark:bg-white/5' : 'text-black/70 dark:text-white/70'}`}
                         >
                           {c}
@@ -131,9 +171,12 @@ export function AddProductForm() {
                 </div>
 
                 <div ref={qualityRef} className="relative">
-                  <LabelWithTick label="Quality" status={quality === "Original" ? "default" : "valid"} />
+                  <LabelWithTick label="Quality" status={getStatus(quality, initialData?.attributes?.quality, 1, "quality")} />
                   <button 
-                    onClick={() => setIsQualityOpen(!isQualityOpen)}
+                    onClick={() => {
+                      setIsQualityOpen(!isQualityOpen);
+                      markTouched("quality");
+                    }}
                     className={`w-full flex items-center justify-between text-left border rounded-xl px-4 py-3.5 outline-none transition-all text-sm font-medium ${isQualityOpen ? 'bg-transparent border-black/20 dark:border-white/20 text-black dark:text-white' : 'bg-black/5 dark:bg-white/5 border-transparent text-black dark:text-white'}`}
                   >
                     <span>{quality}</span>
@@ -147,7 +190,7 @@ export function AddProductForm() {
                       {QUALITIES.map(q => (
                         <button
                           key={q}
-                          onClick={() => { setQuality(q); setIsQualityOpen(false); }}
+                          onClick={() => { setQuality(q); setIsQualityOpen(false); markTouched("quality"); }}
                           className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${quality === q ? 'text-black dark:text-white bg-black/5 dark:bg-white/5' : 'text-black/70 dark:text-white/70'}`}
                         >
                           {q}
@@ -161,7 +204,7 @@ export function AddProductForm() {
               {/* Extra E-commerce Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
                 <div ref={brandRef} className="relative">
-                  <LabelWithTick label="Brand" status={brandInput.trim().length >= 2 ? "valid" : "empty"} />
+                  <LabelWithTick label="Brand" status={getStatus(brandInput, initialData?.brand?.[0], 2)} />
                   <div className="relative flex items-center">
                     {selectedBrandLogo && (
                       <div className="absolute left-3 w-5 h-5 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-[10px] font-bold text-black dark:text-white">
@@ -209,7 +252,7 @@ export function AddProductForm() {
                 </div>
 
                 <div ref={colorRef} className="relative">
-                  <LabelWithTick label="Color" status={colorInput.trim().length >= 3 ? "valid" : "empty"} />
+                  <LabelWithTick label="Color" status={getStatus(colorInput, initialData?.attributes?.colors?.[0], 3)} />
                   <div className="relative flex items-center">
                     {selectedColorHex && (
                       <div className="absolute left-3 w-4 h-4 rounded-full shadow-sm border border-black/10 dark:border-white/20" style={{ backgroundColor: selectedColorHex }}></div>
@@ -255,12 +298,12 @@ export function AddProductForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
                 <div>
-                  <LabelWithTick label="Size" status={sizes.length === 1 && sizes[0] === "S" ? "default" : sizes.length > 0 ? "valid" : "empty"} subtitle="Pick Available Sizes" />
+                  <LabelWithTick label="Size" status={getArrayStatus(sizes, initialData?.attributes?.sizes, "sizes")} subtitle="Pick Available Sizes" />
                   <div className="flex flex-wrap gap-2">
                     {availableSizes.map(s => (
                       <button 
                         key={s} 
-                        onClick={() => toggleSize(s)}
+                        onClick={() => { toggleSize(s); markTouched("sizes"); }}
                         className={`min-w-[44px] px-3 h-10 rounded-xl text-sm font-bold flex items-center justify-center transition-colors ${sizes.includes(s) ? 'bg-black dark:bg-white text-white dark:text-black shadow-md' : 'bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 hover:bg-black/10 dark:hover:bg-white/10'}`}
                       >
                         {s}
@@ -270,10 +313,10 @@ export function AddProductForm() {
                 </div>
 
                 <div>
-                  <LabelWithTick label="Gender" status={gender === "Woman" ? "default" : "valid"} subtitle="Pick Available Gender" />
+                  <LabelWithTick label="Gender" status={getStatus(gender, initialData?.gender, 1, "gender")} subtitle="Pick Available Gender" />
                   <div className="flex items-center space-x-6 h-10">
                     {["Men", "Woman", "Unisex"].map(g => (
-                      <button key={g} onClick={() => setGender(g)} className="flex items-center space-x-2.5 cursor-pointer group">
+                      <button key={g} onClick={() => { setGender(g); markTouched("gender"); }} className="flex items-center space-x-2.5 cursor-pointer group">
                         <div className={`w-4 h-4 rounded-full border-[2px] flex items-center justify-center transition-colors ${gender === g ? 'border-black dark:border-white' : 'border-black/20 dark:border-white/20 group-hover:border-black/40 dark:group-hover:border-white/40'}`}>
                           {gender === g && <div className="w-2 h-2 rounded-full bg-black dark:bg-white"></div>}
                         </div>
@@ -292,7 +335,7 @@ export function AddProductForm() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <LabelWithTick label="Original Price" status={ogPrice.trim().length > 0 ? "valid" : "empty"} />
+                <LabelWithTick label="Original Price" status={getStatus(ogPrice, initialData?.price?.ogPrice, 1)} />
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <span className="text-black/50 dark:text-white/50 text-sm font-bold">₹</span>
@@ -308,7 +351,7 @@ export function AddProductForm() {
               </div>
 
               <div>
-                <LabelWithTick label="Selling Price" status={basePrice.trim().length > 0 ? "valid" : "empty"} />
+                <LabelWithTick label="Selling Price" status={getStatus(basePrice, initialData?.price?.sellingPrice, 1)} />
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <span className="text-black/50 dark:text-white/50 text-sm font-bold">₹</span>
@@ -324,7 +367,7 @@ export function AddProductForm() {
               </div>
               
               <div>
-                <LabelWithTick label="Stock" status={stock.trim().length > 0 ? "valid" : "empty"} />
+                <LabelWithTick label="Stock" status={getStatus(stock, initialData?.inventory?.totalStock, 1)} />
                 <input 
                   type="text" 
                   value={stock}
@@ -335,7 +378,7 @@ export function AddProductForm() {
               </div>
 
               <div>
-                <LabelWithTick label="SKU" status={sku.trim().length >= 3 ? "valid" : "empty"} />
+                <LabelWithTick label="SKU" status={getStatus(sku, initialData?.inventory?.sku, 3)} />
                 <input 
                   type="text" 
                   value={sku}
@@ -365,7 +408,7 @@ export function AddProductForm() {
             
             <div className="space-y-6">
               <div>
-                <LabelWithTick label="Tags / Keywords" status={tags.length > 0 ? "valid" : "empty"} />
+                <LabelWithTick label="Tags / Keywords" status={getArrayStatus(tags, initialData?.marketing?.collections)} />
                 <div className="w-full bg-black/5 dark:bg-white/5 border border-transparent focus-within:border-black/20 dark:focus-within:border-white/20 rounded-xl px-3 py-2 transition-all flex flex-wrap gap-2 items-center min-h-[52px]">
                   {tags.map(tag => (
                     <span key={tag} className="flex items-center space-x-1 px-2.5 py-1 bg-black/10 dark:bg-white/10 text-black dark:text-white text-xs font-bold rounded-md shadow-sm">
@@ -388,7 +431,7 @@ export function AddProductForm() {
               </div>
 
               <div className="border-t border-black/5 dark:border-white/5 pt-5">
-                <LabelWithTick label="URL Slug" status={seoSlug.trim().length >= 3 ? "valid" : "empty"} />
+                <LabelWithTick label="URL Slug" status={getStatus(seoSlug, initialData?.slug, 3)} />
                 <div className="relative flex items-center">
                   <span className="absolute left-4 text-black/40 dark:text-white/40 text-sm font-medium">fashionfriday.in/product/</span>
                   <input 
@@ -404,7 +447,7 @@ export function AddProductForm() {
               <div>
                 <LabelWithTick 
                   label="Meta Title" 
-                  status={seoTitle.trim().length >= 5 ? "valid" : "empty"} 
+                  status={getStatus(seoTitle, initialData?.marketing?.seoTitle, 5)} 
                   rightElement={<span className="text-xs text-black/40 dark:text-white/40 font-medium">50-60 chars</span>} 
                 />
                 <input 
@@ -419,7 +462,7 @@ export function AddProductForm() {
               <div>
                 <LabelWithTick 
                   label="Meta Description" 
-                  status={seoDesc.trim().length >= 10 ? "valid" : "empty"} 
+                  status={getStatus(seoDesc, initialData?.marketing?.seoDescription, 10)} 
                   rightElement={<span className="text-xs text-black/40 dark:text-white/40 font-medium">150-160 chars</span>} 
                 />
                 <textarea 
@@ -457,7 +500,7 @@ export function AddProductForm() {
             {images.length === 0 ? (
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full aspect-square rounded-2xl bg-black/5 dark:bg-white/5 flex flex-col items-center justify-center overflow-hidden mb-4 relative hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer border border-dashed border-black/20 dark:border-white/20 hover:border-black/40 dark:hover:border-white/40 group"
+                className="w-full aspect-[3/4] rounded-2xl bg-black/5 dark:bg-white/5 flex flex-col items-center justify-center overflow-hidden mb-4 relative hover:bg-black/10 dark:hover:bg-white/10 transition-colors cursor-pointer border border-dashed border-black/20 dark:border-white/20 hover:border-black/40 dark:hover:border-white/40 group"
               >
                 <div className="w-12 h-12 rounded-full bg-white dark:bg-black shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <svg className="w-5 h-5 text-black dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
@@ -474,7 +517,7 @@ export function AddProductForm() {
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, 0)}
                   onDragEnd={handleDragEnd}
-                  className={`w-full aspect-square rounded-2xl bg-black/5 dark:bg-white/5 overflow-hidden mb-4 relative border border-black/5 dark:border-white/5 group cursor-move transition-all ${draggedIndex === 0 ? 'opacity-50 scale-95 border-black/20 dark:border-white/20' : ''}`}
+                  className={`w-full aspect-[3/4] rounded-2xl bg-black/5 dark:bg-white/5 overflow-hidden mb-4 relative border border-black/5 dark:border-white/5 group cursor-move transition-all ${draggedIndex === 0 ? 'opacity-50 scale-95 border-black/20 dark:border-white/20' : ''}`}
                 >
                   <img src={images[0].url} alt="Main product" className="w-full h-full object-cover pointer-events-none" />
                   <div className="absolute top-3 left-3 bg-white/90 dark:bg-black/90 backdrop-blur-md px-3 py-1.5 rounded-lg shadow-sm border border-black/5 dark:border-white/5 pointer-events-none">
@@ -486,7 +529,7 @@ export function AddProductForm() {
                 </div>
 
                 {/* Grid Previews */}
-                <div className="grid grid-cols-4 gap-3 mb-6">
+                <div className="grid grid-cols-3 gap-3 mb-6">
                   {images.slice(1).map((img, index) => {
                     const actualIndex = index + 1; // 1-based index in the array for the dropdown (0 is main)
                     return (
@@ -497,7 +540,7 @@ export function AddProductForm() {
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, actualIndex)}
                         onDragEnd={handleDragEnd}
-                        className={`aspect-square rounded-xl bg-black/5 dark:bg-white/5 relative overflow-hidden group border border-black/5 dark:border-white/5 cursor-move transition-all ${draggedIndex === actualIndex ? 'opacity-50 scale-95 border-black/20 dark:border-white/20' : ''}`}
+                        className={`aspect-[3/4] rounded-xl bg-black/5 dark:bg-white/5 relative overflow-hidden group border border-black/5 dark:border-white/5 cursor-move transition-all ${draggedIndex === actualIndex ? 'opacity-50 scale-95 border-black/20 dark:border-white/20' : ''}`}
                       >
                         <img src={img.url} alt={`Preview ${actualIndex}`} className="w-full h-full object-cover pointer-events-none" />
                         
@@ -527,7 +570,7 @@ export function AddProductForm() {
                   {images.length < 10 && (
                     <div 
                       onClick={() => fileInputRef.current?.click()}
-                      className="aspect-square rounded-xl border border-dashed border-black/20 dark:border-white/20 flex flex-col items-center justify-center cursor-pointer hover:border-black/40 dark:hover:border-white/40 hover:bg-black/5 dark:hover:bg-white/5 transition-colors group"
+                      className="aspect-[3/4] rounded-xl border border-dashed border-black/20 dark:border-white/20 flex flex-col items-center justify-center cursor-pointer hover:border-black/40 dark:hover:border-white/40 hover:bg-black/5 dark:hover:bg-white/5 transition-colors group"
                     >
                       <div className="w-7 h-7 rounded-full bg-black/5 dark:bg-white/10 text-black/60 dark:text-white/80 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
@@ -543,18 +586,34 @@ export function AddProductForm() {
               <LabelWithTick label="Embed Video" status={videoLink.trim().length >= 10 ? "valid" : "empty"} />
               
               {/* Embed Preview */}
-              {embedUrl && (
-                <div className="w-full aspect-[9/16] max-h-[250px] bg-black/5 dark:bg-white/5 rounded-xl overflow-hidden mb-3 border border-black/5 dark:border-white/5 flex items-center justify-center">
-                  <iframe 
-                    width="100%" 
-                    height="100%" 
-                    src={embedUrl} 
-                    title="YouTube video player" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen
-                    className="max-h-[250px]"
-                  ></iframe>
+              {videoId && (
+                <div className="w-full aspect-[3/4] bg-black/5 dark:bg-white/5 rounded-xl overflow-hidden shadow-sm border border-black/5 dark:border-white/5 mb-4 relative group">
+                  {!isPlaying ? (
+                    <div 
+                      className="w-full h-full cursor-pointer relative"
+                      onClick={() => setIsPlaying(true)}
+                    >
+                      <img 
+                        src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`} 
+                        alt="Video Thumbnail" 
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-white/90 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <svg className="w-8 h-8 text-black ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <iframe 
+                      className="w-full aspect-[9/16] absolute top-1/2 left-0 -translate-y-1/2"
+                      src={embedUrl || ""} 
+                      title="YouTube Shorts player" 
+                      frameBorder="0" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowFullScreen
+                    ></iframe>
+                  )}
                 </div>
               )}
 
@@ -565,7 +624,10 @@ export function AddProductForm() {
                 <input 
                   type="text"
                   value={videoLink}
-                  onChange={(e) => setVideoLink(e.target.value)}
+                  onChange={(e) => {
+                    setVideoLink(e.target.value);
+                    setIsPlaying(false);
+                  }}
                   placeholder="Paste YouTube URL"
                   className="w-full bg-black/5 dark:bg-white/5 border border-transparent focus:border-black/20 dark:focus:border-white/20 text-black dark:text-white rounded-xl pl-9 pr-4 py-3 outline-none transition-all text-sm font-medium"
                 />
