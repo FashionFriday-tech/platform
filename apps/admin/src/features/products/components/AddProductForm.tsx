@@ -1,250 +1,38 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { BRAND_LOGOS, MAJOR_COLORS, type BrandCategory } from "@ff/schemas";
-
-const CATEGORIES = ["Jacket", "Shirts", "Sneakers", "Pants"];
-const QUALITIES = ["Original", "10A", "7A", "5A", "Premium", "Standard"];
-
-const SIZE_MAP: Record<string, string[]> = {
-  "Jacket": ["XS", "S", "M", "L", "XL", "XXL"],
-  "Shirts": ["XS", "S", "M", "L", "XL", "XXL"],
-  "Pants": ["28", "30", "32", "34", "36", "38"],
-  "Sneakers": ["UK 6", "UK 7", "UK 8", "UK 9", "UK 10", "UK 11"]
-};
-
-
-
-const LabelWithTick = ({ label, status, subtitle, rightElement }: { label: string, status: "default" | "valid" | "empty", subtitle?: string, rightElement?: React.ReactNode }) => {
-  const iconColor = status === "valid" ? "text-[#22c55e]" : status === "default" ? "text-[#3b82f6]" : "text-black/20 dark:text-white/20";
-  return (
-    <div className={subtitle ? "mb-3" : "mb-2"}>
-      <div className="flex justify-between items-center w-full">
-        <div className="flex items-center space-x-2">
-          <label className="block text-sm font-bold text-black/90 dark:text-white/90 leading-none">{label}</label>
-          <svg className={`w-4 h-4 transition-colors duration-300 ${iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-        </div>
-        {rightElement && <div>{rightElement}</div>}
-      </div>
-      {subtitle && <span className="block text-[11px] font-medium text-black/40 dark:text-white/40 mt-1 leading-none">{subtitle}</span>}
-    </div>
-  );
-};
+import { CATEGORIES, QUALITIES } from "../utils/constants";
+import { LabelWithTick } from "./LabelWithTick";
+import { useAddProductForm } from "../hooks/useAddProductForm";
 
 export function AddProductForm() {
-  const [sizes, setSizes] = useState<string[]>(["S"]);
-  const [gender, setGender] = useState<string>("Woman");
-  const [category, setCategory] = useState<string>("Jacket");
-  const [quality, setQuality] = useState<string>("Original");
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
-
-  const [brandInput, setBrandInput] = useState("");
-  const [selectedBrandLogo, setSelectedBrandLogo] = useState<string | null>(null);
-  const [isBrandOpen, setIsBrandOpen] = useState(false);
-
-  const [colorInput, setColorInput] = useState("");
-  const [selectedColorHex, setSelectedColorHex] = useState<string | null>(null);
-  const [isColorOpen, setIsColorOpen] = useState(false);
-
-  const [videoLink, setVideoLink] = useState("");
-  const [embedUrl, setEmbedUrl] = useState<string | null>(null);
-
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const [isQualityOpen, setIsQualityOpen] = useState(false);
-
-  // Form Fields
-  const [productName, setProductName] = useState("");
-  const [productDesc, setProductDesc] = useState("");
-  const [basePrice, setBasePrice] = useState("");
-  const [ogPrice, setOgPrice] = useState("");
-  const [stock, setStock] = useState("");
-  const [sku, setSku] = useState("");
-  
-  // SEO
-  const [seoTitle, setSeoTitle] = useState("");
-  const [seoSlug, setSeoSlug] = useState("");
-  const [seoDesc, setSeoDesc] = useState("");
-  const [seoError, setSeoError] = useState("");
-
-  // Media
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [images, setImages] = useState<{id: string, url: string}[]>([]);
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-
-  const categoryRef = useRef<HTMLDivElement>(null);
-  const qualityRef = useRef<HTMLDivElement>(null);
-  const colorRef = useRef<HTMLDivElement>(null);
-  const brandRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdowns on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (categoryRef.current && !categoryRef.current.contains(event.target as Node)) setIsCategoryOpen(false);
-      if (qualityRef.current && !qualityRef.current.contains(event.target as Node)) setIsQualityOpen(false);
-      if (colorRef.current && !colorRef.current.contains(event.target as Node)) setIsColorOpen(false);
-      if (brandRef.current && !brandRef.current.contains(event.target as Node)) setIsBrandOpen(false);
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Sync YouTube Video link dynamically
-  useEffect(() => {
-    if (!videoLink.trim()) {
-      setEmbedUrl(null);
-      return;
-    }
-    const shortsRegex = /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/;
-    const watchRegex = /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
-    const youtuBeRegex = /youtu\.be\/([a-zA-Z0-9_-]+)/;
-    
-    let id = null;
-    if (videoLink.match(shortsRegex)) id = videoLink.match(shortsRegex)![1];
-    else if (videoLink.match(watchRegex)) id = videoLink.match(watchRegex)![1];
-    else if (videoLink.match(youtuBeRegex)) id = videoLink.match(youtuBeRegex)![1];
-    
-    if (id) {
-      setEmbedUrl(`https://www.youtube.com/embed/${id}`);
-    } else {
-      setEmbedUrl(null);
-    }
-  }, [videoLink]);
-
-  const handleCategorySelect = (c: string) => {
-    setCategory(c);
-    setIsCategoryOpen(false);
-    setSizes([]);
-    setBrandInput(""); // Reset brand when category changes
-    setSelectedBrandLogo(null);
-  };
-
-  const toggleSize = (s: string) => {
-    setSizes(prev => 
-      prev.includes(s) ? prev.filter(sz => sz !== s) : [...prev, s]
-    );
-  };
-
-  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && tagInput.trim()) {
-      e.preventDefault();
-      if (!tags.includes(tagInput.trim())) {
-        setTags([...tags, tagInput.trim()]);
-      }
-      setTagInput("");
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter(t => t !== tagToRemove));
-  };
-
-  const generateSEO = () => {
-    if (!productName.trim() || !productDesc.trim()) {
-      setSeoError("Info not available.");
-      return;
-    }
-    setSeoError("");
-    const slug = productName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    setSeoSlug(slug);
-    setSeoTitle(`Buy ${productName} - Fashion Friday`);
-    setSeoDesc(`Shop the latest ${productName}. ${productDesc.substring(0, 50)}... Fast shipping, great deals, and premium materials. Buy now at Fashion Friday.`);
-    
-    // Auto-generate tags based on general info
-    const newTags = new Set([...tags, category.toLowerCase(), quality.toLowerCase(), "fashion", "trendy"]);
-    if (colorInput.trim()) newTags.add(colorInput.toLowerCase().trim());
-    if (brandInput.trim()) newTags.add(brandInput.toLowerCase().trim());
-    setTags(Array.from(newTags));
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      const newImages = newFiles.map(file => ({
-        id: Math.random().toString(36).substring(7),
-        url: URL.createObjectURL(file)
-      }));
-      
-      setImages(prev => {
-        const combined = [...prev, ...newImages];
-        return combined.slice(0, 10);
-      });
-      // reset input
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  const handleReorder = (fromIndex: number, toIndex: number) => {
-    setImages(prev => {
-      const newImages = [...prev];
-      const [movedItem] = newImages.splice(fromIndex, 1);
-      newImages.splice(toIndex, 0, movedItem);
-      return newImages;
-    });
-  };
-
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedIndex(index);
-    // Firefox requires setting data in dragStart
-    e.dataTransfer.setData('text/plain', index.toString());
-    e.dataTransfer.effectAllowed = "move";
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault(); // Necessary to allow dropping
-    e.dataTransfer.dropEffect = "move";
-  };
-
-  const handleDrop = (e: React.DragEvent, toIndex: number) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === toIndex) return;
-
-    setImages(prev => {
-      const newImages = [...prev];
-      const [movedItem] = newImages.splice(draggedIndex, 1);
-      newImages.splice(toIndex, 0, movedItem);
-      return newImages;
-    });
-    setDraggedIndex(null);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-  };
-
-  const removeImage = (idToRemove: string) => {
-    setImages(prev => prev.filter(img => img.id !== idToRemove));
-  };
-
-  const filteredColors = MAJOR_COLORS.filter(c => c.name.toLowerCase().includes(colorInput.toLowerCase()));
-  const availableSizes = SIZE_MAP[category] || SIZE_MAP["Jacket"];
-  
-  const categoryToBrandCategory: Record<string, BrandCategory[]> = {
-    "Jacket": ["fashion", "streetwear", "sportswear", "luxury"],
-    "Shirts": ["fashion", "streetwear", "luxury"],
-    "Sneakers": ["sneakers", "sportswear", "footwear", "luxury"],
-    "Pants": ["fashion", "streetwear", "luxury"]
-  };
-  const availableBrands = BRAND_LOGOS.filter(b => b.categories.some(c => categoryToBrandCategory[category]?.includes(c)));
-  const filteredBrands = availableBrands.filter(b => b.name.toLowerCase().includes(brandInput.toLowerCase()));
-
-  // Progress tracking
-  const getProgress = () => {
-    const fields = [
-      productName, productDesc, brandInput, colorInput,
-      basePrice, ogPrice, stock, sku,
-      images.length > 0 ? "filled" : "",
-      videoLink, tags.length > 0 ? "filled" : "",
-      seoSlug, seoTitle, seoDesc
-    ];
-    const filled = fields.filter(f => typeof f === 'string' ? f.trim() !== "" : f !== "").length;
-    return { filled, total: fields.length };
-  };
-
-  const progress = getProgress();
+  const {
+    sizes, toggleSize,
+    gender, setGender,
+    category, handleCategorySelect,
+    quality, setQuality,
+    tags, tagInput, setTagInput, handleTagKeyDown, removeTag,
+    brandInput, setBrandInput, selectedBrandLogo, setSelectedBrandLogo, isBrandOpen, setIsBrandOpen,
+    colorInput, setColorInput, selectedColorHex, setSelectedColorHex, isColorOpen, setIsColorOpen,
+    videoLink, setVideoLink, embedUrl,
+    isCategoryOpen, setIsCategoryOpen,
+    isQualityOpen, setIsQualityOpen,
+    productName, setProductName,
+    productDesc, setProductDesc,
+    basePrice, setBasePrice,
+    ogPrice, setOgPrice,
+    stock, setStock,
+    sku, setSku,
+    seoTitle, setSeoTitle,
+    seoSlug, setSeoSlug,
+    seoDesc, setSeoDesc,
+    seoError, generateSEO,
+    fileInputRef, images, draggedIndex,
+    categoryRef, qualityRef, colorRef, brandRef,
+    handleImageUpload, handleReorder, handleDragStart, handleDragOver, handleDrop, handleDragEnd, removeImage,
+    filteredColors, availableSizes, filteredBrands,
+    progress
+  } = useAddProductForm();
 
   return (
     <div className="w-full h-full overflow-y-auto scrollbar-hide pb-20">
