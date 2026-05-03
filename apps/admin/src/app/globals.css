@@ -1,22 +1,25 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for next-themes in Tailwind v4 */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 :root {
+  --background: #f9fafb; /* light gray/white */
+  --foreground: #000000;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
+}
+
+.dark {
   --background: #000000;
   --foreground: #ffffff;
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #ffffff;
-  }
 }
 
 body {
@@ -27,22 +30,38 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Glassmorphism Utilities */
 @layer utilities {
+  /* Hide scrollbar utility */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   .glass-panel {
     background: var(--glass-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--glass-border);
     border-radius: 1rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  }
+  
+  .dark .glass-panel {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   }
   
   .glass-header {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--glass-border);
+  }
+
+  .dark .glass-header {
+    background: rgba(0, 0, 0, 0.7);
   }
 
   .glass-button {
@@ -52,7 +71,11 @@ body {
   }
   
   .glass-button:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.05);
     transform: translateY(-1px);
+  }
+
+  .dark .glass-button:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 }
