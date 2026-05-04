@@ -156,6 +156,7 @@ export const InstagramIcon = SiInstagram;
 export const TwitterIcon = SiX;
 export const YoutubeIcon = SiYoutube;
 export const FacebookIcon = SiFacebook;
+export { SiWhatsapp as WhatsAppIcon } from 'react-icons/si';
 
 // USER & ACCOUNT
 export const UserIcon = BiUser;
