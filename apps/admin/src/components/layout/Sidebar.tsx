@@ -1,3 +1,5 @@
+'use client';
+
 import {
   HomeIcon,
   ActivityIcon,
@@ -16,8 +18,18 @@ import {
 } from '@ff/ui';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export function Sidebar() {
+  const pathname = usePathname() || '';
+
+  const getLinkClass = (path: string) => {
+    const isActive = pathname.startsWith(path);
+    return isActive
+      ? 'flex items-center space-x-3 rounded-lg bg-black px-3 py-2.5 text-white transition-all dark:bg-white dark:text-black'
+      : 'flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white';
+  };
+
   return (
     <aside className="glass-panel relative sticky top-4 z-10 my-4 mr-2 ml-4 flex hidden h-[calc(100vh-2rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-2xl border-black/5 md:flex dark:border-white/5">
       <div className="flex items-center space-x-3 p-6 pb-2">
@@ -57,9 +69,9 @@ export function Sidebar() {
             E-Commerce
           </p>
           <div className="space-y-1">
-            <a
-              href="#"
-              className="flex items-center justify-between rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            <Link
+              href="/orders"
+              className={getLinkClass('/orders').replace('space-x-3', 'justify-between')}
             >
               <div className="flex items-center space-x-3">
                 <ShoppingBagIcon className="h-5 w-5 opacity-70" />
@@ -68,11 +80,8 @@ export function Sidebar() {
               <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs font-medium text-black dark:bg-white/10 dark:text-white">
                 16
               </span>
-            </a>
-            <Link
-              href="/products"
-              className="flex items-center space-x-3 rounded-lg bg-black px-3 py-2.5 text-white transition-all dark:bg-white dark:text-black"
-            >
+            </Link>
+            <Link href="/products" className={getLinkClass('/products')}>
               <PackageIcon className="h-5 w-5" />
               <span className="text-sm font-medium">Products</span>
             </Link>
