@@ -527,17 +527,15 @@ export const BRAND_LOGOS: Brand[] = [
   },
 ];
 
-
-
 export const MAJOR_COLORS = [
-  { name: "Black", hex: "#000000" },
-  { name: "White", hex: "#FFFFFF" },
-  { name: "Green", hex: "#008000" },
-  { name: "Blue", hex: "#0000FF" },
-  { name: "Red", hex: "#FF0000" },
-  { name: "Grey", hex: "#808080" },
-  { name: "Yellow", hex: "#FFFF00" },
-  { name: "Pink", hex: "#FFC0CB" },
-  { name: "Purple", hex: "#800080" },
-  { name: "Beige", hex: "#F5F5DC" }
+  { name: 'Black', hex: '#000000' },
+  { name: 'White', hex: '#FFFFFF' },
+  { name: 'Green', hex: '#008000' },
+  { name: 'Blue', hex: '#0000FF' },
+  { name: 'Red', hex: '#FF0000' },
+  { name: 'Grey', hex: '#808080' },
+  { name: 'Yellow', hex: '#FFFF00' },
+  { name: 'Pink', hex: '#FFC0CB' },
+  { name: 'Purple', hex: '#800080' },
+  { name: 'Beige', hex: '#F5F5DC' },
 ];
