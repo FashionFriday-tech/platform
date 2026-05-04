@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import { getMeAction, logoutAction, updateProfileAction, deleteAccountAction } from '@/features/auth/services/auth.actions';
+import {
+  getMeAction,
+  logoutAction,
+  updateProfileAction,
+  deleteAccountAction,
+} from '@/features/auth/services/auth.actions';
 
 export interface User {
   id: string;
@@ -21,7 +26,9 @@ interface AuthState {
   login: (userData: User) => void;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
-  updateProfile: (data: Partial<{ name: string; email: string; phone: string; avatarUrl: string }>) => Promise<void>;
+  updateProfile: (
+    data: Partial<{ name: string; email: string; phone: string; avatarUrl: string }>,
+  ) => Promise<void>;
   deleteAccount: () => Promise<void>;
 }
 
