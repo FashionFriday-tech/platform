@@ -10,16 +10,11 @@ import { CustomSelect } from '../../../components/ui/CustomSelect';
 import { WhatsAppIcon, PhoneIcon } from '@ff/ui/icons';
 
 function OrderStatusTracker({ status }: { status: string }) {
-  const steps = ['pending', 'processing', 'shipped', 'delivered'];
+  const isCancelledFlow = ['cancelled', 'refunding', 'refunded'].includes(status);
+  const steps = isCancelledFlow 
+    ? ['cancelled', 'refunding', 'refunded']
+    : ['pending', 'inquiry', 'confirmed', 'shipped', 'delivered'];
   
-  if (status === 'cancelled') {
-    return (
-      <div className="flex w-full items-center justify-center rounded-xl bg-red-500/10 p-4 text-center dark:bg-red-500/20">
-        <span className="text-sm font-bold uppercase tracking-widest text-red-600 dark:text-red-400">Order Cancelled</span>
-      </div>
-    );
-  }
-
   const currentStepIndex = steps.indexOf(status) >= 0 ? steps.indexOf(status) : 0;
 
   return (
@@ -38,7 +33,7 @@ function OrderStatusTracker({ status }: { status: string }) {
         const isActive = idx === currentStepIndex;
         return (
           <div key={step} className="relative z-10 flex flex-col items-center gap-2">
-            <div className={`flex h-6 w-6 items-center justify-center rounded-full transition-all duration-500 ${isCompleted ? 'bg-black text-white dark:bg-white dark:text-black' : 'bg-gray-200 dark:bg-gray-800'}`}>
+            <div className={`flex h-6 w-6 items-center justify-center rounded-full transition-all duration-500 ${isCompleted ? 'bg-black text-white dark:bg-white dark:text-black' : 'bg-gray-200 dark:bg-gray-900/80'}`}>
                {isCompleted ? (
                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -66,10 +61,17 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   const [courierService, setCourierService] = useState<string>(
     order.tracking?.courierService || 'Delhivery',
   );
-  const [orderStatus, setOrderStatus] = useState(order.status);
+  const [assignedSeller, setAssignedSeller] = useState('Seller A');
+  const [orderStatus, setOrderStatus] = useState<string>(order.status);
   const [isTrackingSaved, setIsTrackingSaved] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [contactMode, setContactMode] = useState<'none' | 'call' | 'whatsapp'>('none');
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<string>(order.status);
+  const [tempCourier, setTempCourier] = useState<string>(order.tracking?.courierService || 'Delhivery');
+  const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId || '');
+  const [tempSeller, setTempSeller] = useState('Seller A');
+  const [isEditingMeta, setIsEditingMeta] = useState(false);
 
   const handleContactClick = (mode: 'call' | 'whatsapp') => {
     if (order.customer.altPhone) {
@@ -173,36 +175,39 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
   };
 
+  const handleInquiryWhatsApp = async () => {
+    if (order.items.length === 0) return;
+    const item = order.items[0];
+    const text = encodeURIComponent(`*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size || 'N/A'}\n*Color:* ${item.color || 'N/A'} \n\n*Order ID:* ${order.orderNumber}`);
+    
+    if (item.productImage) {
+      await copyImageToClipboard(item.productImage);
+    }
+
+    window.open(`https://api.whatsapp.com/send?phone=917558969093&text=${text}`, '_blank');
+  };
+
   const courierOptions = COURIER_SERVICES.map(c => ({ label: c, value: c }));
 
   return (
     <div className="mx-auto flex h-full w-full max-w-6xl flex-col gap-6 overflow-y-auto p-4 scrollbar-hide md:p-8">
       
-      {/* Header section */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <button
-          onClick={handleWhatsApp}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#20bd5a] active:scale-95 sm:w-auto"
-        >
-          <WhatsAppIcon className="h-5 w-5" />
-          Place Order (WhatsApp Group)
-        </button>
-      </div>
-
       {/* Top Section Tracker Box */}
-      <div className="flex flex-col gap-10 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#111] md:p-8 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
+      <div className="flex flex-col gap-8 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#111] md:p-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
         
-        {/* Left side: Order Info */}
-        <div className="flex shrink-0 flex-col gap-1.5">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-black/50 dark:text-white/50">Order Date</p>
-          <p className="text-sm font-bold text-black dark:text-white">
-            {new Date(order.createdAt).toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short' })}
-          </p>
+        {/* Middle: Status Bar Tracker */}
+        <div className="flex-1 w-full lg:max-w-xl lg:px-4">
+           <OrderStatusTracker status={orderStatus} />
         </div>
 
-        {/* Right side: Status Bar Tracker */}
-        <div className="flex-1 w-full lg:max-w-xl pb-4 lg:pb-0">
-           <OrderStatusTracker status={orderStatus} />
+        {/* Right side: Actions */}
+        <div className="flex shrink-0">
+          <button
+            onClick={() => setIsUpdateModalOpen(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 text-sm font-bold text-white shadow-lg shadow-black/20 transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:shadow-white/20 dark:hover:bg-white/80 sm:w-auto"
+          >
+            Update
+          </button>
         </div>
       </div>
 
@@ -277,7 +282,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         )}
                       </div>
                     </div>
-                    <div className="mt-4 flex flex-col gap-4 border-t border-black/5 pt-4 sm:mt-0 dark:border-white/5">
+                    <div className="mt-4 flex flex-col gap-4 pt-4 sm:mt-0 dark:border-white/5">
                        <div className="flex items-center justify-between">
                          <span className="text-sm font-bold text-black/50 dark:text-white/50">{item.quantity} × ₹{item.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                          <span className="text-xl font-black text-black dark:text-white sm:text-2xl">₹{(item.price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
@@ -461,75 +466,206 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
             </div>
           </div>
 
-          {/* Fulfillment Card */}
+          {/* Order Meta / Tracking Info Box */}
           <div className="rounded-2xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111]">
-            <div className="border-b border-black/5 px-6 py-4 dark:border-white/5">
-              <h2 className="text-base font-bold text-black dark:text-white">Fulfillment</h2>
+            <div className="flex items-center justify-between border-b border-black/5 px-6 py-4 dark:border-white/5">
+              <h2 className="text-base font-bold text-black dark:text-white">Order Meta</h2>
+              {!isEditingMeta ? (
+                <button
+                  onClick={() => setIsEditingMeta(true)}
+                  className="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Edit
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsEditingMeta(false)}
+                  className="text-sm font-bold text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white"
+                >
+                  Cancel
+                </button>
+              )}
             </div>
             
             <div className="flex flex-col gap-4 p-6">
-              <div className="border-b border-black/5 pb-5 dark:border-white/5">
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Order Status</label>
-                <CustomSelect
-                  options={[
-                    { label: 'Pending', value: 'pending' },
-                    { label: 'Processing', value: 'processing' },
-                    { label: 'Shipped', value: 'shipped' },
-                    { label: 'Delivered', value: 'delivered' },
-                    { label: 'Cancelled', value: 'cancelled' },
-                  ]}
-                  value={orderStatus}
-                  onChange={(val: string) => setOrderStatus(val as any)}
-                  placeholder="Select Status"
-                />
+              <div className="flex justify-between items-center border-b border-black/5 pb-3 dark:border-white/5">
+                <span className="text-sm text-black/50 dark:text-white/50">Order Date</span>
+                <span className="text-sm font-bold text-black dark:text-white">
+                  {new Date(order.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                </span>
               </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Courier Partner</label>
-                <CustomSelect
-                  options={courierOptions}
-                  value={courierService}
-                  onChange={(val: string) => setCourierService(val)}
-                  placeholder="Select Courier"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Tracking Number</label>
-                <input
-                  type="text"
-                  value={trackingId}
-                  onChange={(e) => setTrackingId(e.target.value)}
-                  placeholder="Enter tracking ID"
-                  className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-black placeholder-black/20 outline-none transition-all focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white dark:placeholder-white/20 dark:focus:border-white/30"
-                />
-              </div>
-
-              <div className="mt-2 flex flex-col gap-3">
-                <button
-                  onClick={handleSaveTracking}
-                  className="w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
-                >
-                  {isTrackingSaved ? '✓ Saved' : 'Update Fulfillment'}
-                </button>
-                {trackingId && (
-                  <a
-                    href={trackingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => navigator.clipboard.writeText(trackingId)}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 active:scale-95"
+              {!isEditingMeta ? (
+                <>
+                  <div className="flex justify-between items-center border-b border-black/5 pb-3 dark:border-white/5">
+                    <span className="text-sm text-black/50 dark:text-white/50">Seller</span>
+                    <span className="text-sm font-bold text-black dark:text-white">{assignedSeller}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-black/5 pb-3 dark:border-white/5">
+                    <span className="text-sm text-black/50 dark:text-white/50">Courier</span>
+                    <span className="text-sm font-bold text-black dark:text-white">{courierService || 'Not Assigned'}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-b border-black/5 pb-3 dark:border-white/5">
+                    <span className="text-sm text-black/50 dark:text-white/50">Tracking ID</span>
+                    <span className="text-sm font-bold text-black dark:text-white">{trackingId || 'Not Assigned'}</span>
+                  </div>
+                  {trackingId && (
+                    <a
+                      href={trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-3 text-sm font-bold text-black transition-all hover:bg-black/10 active:scale-95 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                    >
+                      Track Package Live
+                    </a>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Seller</label>
+                    <CustomSelect
+                      options={[
+                        { label: 'Seller A', value: 'Seller A' },
+                        { label: 'Seller B', value: 'Seller B' },
+                        { label: 'Seller C', value: 'Seller C' },
+                      ]}
+                      value={assignedSeller}
+                      onChange={setAssignedSeller}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Courier Partner</label>
+                    <CustomSelect
+                      options={courierOptions}
+                      value={courierService}
+                      onChange={setCourierService}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Tracking Number</label>
+                    <input
+                      type="text"
+                      value={trackingId}
+                      onChange={(e) => setTrackingId(e.target.value)}
+                      placeholder="Enter tracking ID"
+                      className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-black placeholder-black/20 outline-none transition-all focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white dark:placeholder-white/20 dark:focus:border-white/30"
+                    />
+                  </div>
+                  <button
+                    onClick={() => {
+                      handleSaveTracking();
+                      setIsEditingMeta(false);
+                    }}
+                    className="mt-2 w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
                   >
-                    Track Package Live
-                  </a>
-                )}
-              </div>
+                    {isTrackingSaved ? '✓ Saved' : 'Update Fulfillment'}
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
           </div>
         </div>
       </div>
+
+      {/* Update Status Modal */}
+      {isUpdateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-[#111] border border-black/10 dark:border-white/10">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-black dark:text-white">Update Order Status</h3>
+              <button onClick={() => setIsUpdateModalOpen(false)} className="text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Status</label>
+                <CustomSelect
+                  options={[
+                    { label: 'Pending', value: 'pending' },
+                    { label: 'Inquiry', value: 'inquiry' },
+                    { label: 'Confirmed', value: 'confirmed' },
+                    { label: 'Shipped', value: 'shipped' },
+                    { label: 'Delivered', value: 'delivered' },
+                    { label: 'Cancelled', value: 'cancelled' },
+                    { label: 'Refunding', value: 'refunding' },
+                    { label: 'Refunded', value: 'refunded' },
+                  ]}
+                  value={pendingStatus}
+                  onChange={setPendingStatus}
+                />
+              </div>
+
+              {pendingStatus === 'confirmed' && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex flex-col gap-4 p-4 mt-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Assign Seller</label>
+                    <CustomSelect
+                      options={[
+                        { label: 'Seller A', value: 'Seller A' },
+                        { label: 'Seller B', value: 'Seller B' },
+                        { label: 'Seller C', value: 'Seller C' },
+                      ]}
+                      value={tempSeller}
+                      onChange={setTempSeller}
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              {pendingStatus === 'shipped' && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="flex flex-col gap-4 p-4 mt-2 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Courier Service</label>
+                    <CustomSelect
+                      options={courierOptions}
+                      value={tempCourier}
+                      onChange={setTempCourier}
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">Tracking ID</label>
+                    <input
+                      type="text"
+                      value={tempTracking}
+                      onChange={(e) => setTempTracking(e.target.value)}
+                      placeholder="Enter Tracking ID"
+                      className="w-full rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm font-semibold text-black outline-none transition-all focus:border-black/30 focus:ring-4 focus:ring-black/5 dark:border-white/10 dark:bg-[#111] dark:text-white dark:focus:border-white/30 dark:focus:ring-white/5"
+                    />
+                  </div>
+                </motion.div>
+              )}
+
+              <button
+                onClick={() => {
+                  if (pendingStatus === 'shipped' && (!tempCourier || !tempTracking)) {
+                     alert('Please enter both Courier Service and Tracking ID');
+                     return;
+                  }
+                  if (pendingStatus === 'inquiry') {
+                    handleInquiryWhatsApp();
+                  }
+                  if (pendingStatus === 'shipped') {
+                    setCourierService(tempCourier);
+                    setTrackingId(tempTracking);
+                  }
+                  if (pendingStatus === 'confirmed') {
+                    setAssignedSeller(tempSeller);
+                  }
+                  setOrderStatus(pendingStatus);
+                  setIsUpdateModalOpen(false);
+                }}
+                className="mt-4 w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
