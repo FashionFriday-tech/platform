@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from "react";
-import { AdvancedFilters, ProductStatus } from "../types";
+import { useState, useRef, useEffect } from 'react';
+import { AdvancedFilters, ProductStatus } from '../types';
 
 export function useProductActionBar(
   appliedAdvancedFilters: AdvancedFilters,
-  setAppliedAdvancedFilters: (val: AdvancedFilters) => void
+  setAppliedAdvancedFilters: (val: AdvancedFilters) => void,
 ) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<AdvancedFilters>(appliedAdvancedFilters);
@@ -15,8 +15,8 @@ export function useProductActionBar(
         setIsFilterOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -50,22 +50,38 @@ export function useProductActionBar(
     setAppliedAdvancedFilters(localFilters);
     setIsFilterOpen(false);
   };
-  
+
   const clearFilters = () => {
-    const empty = { categories: new Set<string>(), statuses: new Set<ProductStatus>(), stores: new Set<string>(), minPrice: "", maxPrice: "" };
+    const empty = {
+      categories: new Set<string>(),
+      statuses: new Set<ProductStatus>(),
+      stores: new Set<string>(),
+      minPrice: '',
+      maxPrice: '',
+    };
     setLocalFilters(empty);
     setAppliedAdvancedFilters(empty);
     setIsFilterOpen(false);
   };
 
-  const isAdvancedActive = appliedAdvancedFilters.categories.size > 0 || appliedAdvancedFilters.statuses.size > 0 || appliedAdvancedFilters.stores?.size > 0 || appliedAdvancedFilters.minPrice !== "" || appliedAdvancedFilters.maxPrice !== "";
+  const isAdvancedActive =
+    appliedAdvancedFilters.categories.size > 0 ||
+    appliedAdvancedFilters.statuses.size > 0 ||
+    appliedAdvancedFilters.stores?.size > 0 ||
+    appliedAdvancedFilters.minPrice !== '' ||
+    appliedAdvancedFilters.maxPrice !== '';
 
   return {
-    isFilterOpen, setIsFilterOpen,
-    localFilters, setLocalFilters,
+    isFilterOpen,
+    setIsFilterOpen,
+    localFilters,
+    setLocalFilters,
     popupRef,
-    toggleCategory, toggleStore, toggleStatus,
-    applyFilters, clearFilters,
-    isAdvancedActive
+    toggleCategory,
+    toggleStore,
+    toggleStatus,
+    applyFilters,
+    clearFilters,
+    isAdvancedActive,
   };
 }
