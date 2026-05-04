@@ -7,7 +7,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 async function setAuthCookies(accessToken: string, refreshToken: string) {
   const cookieStore = await cookies();
-  
+
   // Set access token cookie
   cookieStore.set('accessToken', accessToken, {
     httpOnly: true,
@@ -89,12 +89,12 @@ export async function sendOtpAction(phone: string): Promise<SendOtpResponse> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ phone }),
   });
-  
+
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
     throw new Error(error.message || 'Failed to send OTP');
   }
-  
+
   return res.json();
 }
 
@@ -123,7 +123,7 @@ export async function signupAction(
   phone: string,
   name: string,
   email: string,
-  otpToken: string
+  otpToken: string,
 ): Promise<SignupResponse> {
   const res = await fetch(`${API_URL}/auth/signup`, {
     method: 'POST',
@@ -147,17 +147,17 @@ export async function signupAction(
 
 export async function sendEmailOtpAction(): Promise<SendOtpResponse> {
   const res = await fetchWithAuth('/auth/email/send-otp', { method: 'POST' });
-  
+
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
     throw new Error(error.message || 'Failed to send email OTP');
   }
-  
+
   return res.json();
 }
 
 export async function verifyEmailOtpAction(
-  otp: string
+  otp: string,
 ): Promise<{ success: boolean; message: string; user: SignupResponse['user'] }> {
   const res = await fetchWithAuth('/auth/email/verify-otp', {
     method: 'POST',
@@ -174,16 +174,16 @@ export async function verifyEmailOtpAction(
 
 export async function getMeAction(): Promise<SignupResponse['user'] | null> {
   const res = await fetchWithAuth('/auth/me', { method: 'GET' });
-  
+
   if (!res.ok) {
     return null;
   }
-  
+
   return res.json();
 }
 
 export async function updateProfileAction(
-  data: Partial<{ name: string; email: string; phone: string; avatarUrl: string }>
+  data: Partial<{ name: string; email: string; phone: string; avatarUrl: string }>,
 ): Promise<SignupResponse['user']> {
   const res = await fetchWithAuth('/auth/profile', {
     method: 'PATCH',
@@ -221,6 +221,6 @@ export async function logoutAction(): Promise<{ success: boolean; message: strin
   const cookieStore = await cookies();
   cookieStore.delete('accessToken');
   cookieStore.delete('refreshToken');
-  
+
   return { success: true, message: 'Logged out successfully' };
 }
