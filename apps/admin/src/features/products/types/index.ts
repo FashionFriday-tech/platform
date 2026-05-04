@@ -1,4 +1,4 @@
-export type ProductStatus = "Active" | "Inactive" | "Draft";
+export type ProductStatus = 'Active' | 'Inactive' | 'Draft';
 
 export interface Product {
   id: string;
@@ -29,10 +29,22 @@ export interface Product {
   videoLink?: string;
 }
 
-export type SortOption = "Default" | "Price: Low to High" | "Price: High to Low" | "Name: A to Z" | "Name: Z to A";
-export type StatusFilter = "All Status" | "Active" | "Inactive" | "Draft";
-export type ViewMode = "list" | "grid";
-export type ColumnId = "Category" | "Cost Price" | "OG Price" | "Variants" | "Sales" | "Date Added" | "Stock";
+export type SortOption =
+  | 'Default'
+  | 'Price: Low to High'
+  | 'Price: High to Low'
+  | 'Name: A to Z'
+  | 'Name: Z to A';
+export type StatusFilter = 'All Status' | 'Active' | 'Inactive' | 'Draft';
+export type ViewMode = 'list' | 'grid';
+export type ColumnId =
+  | 'Category'
+  | 'Cost Price'
+  | 'OG Price'
+  | 'Variants'
+  | 'Sales'
+  | 'Date Added'
+  | 'Stock';
 
 export interface AdvancedFilters {
   categories: Set<string>;
