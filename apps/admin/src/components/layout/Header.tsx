@@ -1,4 +1,29 @@
+'use client';
+
+import { usePathname, useRouter } from 'next/navigation';
+
 export function Header() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const getPageInfo = () => {
+    if (pathname === '/') return { title: 'Dashboard', showBack: false };
+    if (pathname.startsWith('/orders/')) return { title: 'Order Details', showBack: true };
+    if (pathname === '/orders') return { title: 'All Orders', showBack: false };
+    if (pathname === '/products') return { title: 'Products', showBack: false };
+    if (pathname === '/customers') return { title: 'Customers', showBack: false };
+    
+    // Fallback logic
+    const segments = pathname.split('/').filter(Boolean);
+    const title = segments.length > 0 
+      ? segments[0].charAt(0).toUpperCase() + segments[0].slice(1) 
+      : 'Dashboard';
+      
+    return { title, showBack: segments.length > 1 };
+  };
+
+  const { title, showBack } = getPageInfo();
+
   return (
     <header className="glass-panel sticky top-4 z-30 mt-4 mr-4 mb-4 ml-2 flex h-20 flex-shrink-0 items-center justify-between rounded-2xl px-8">
       <div className="flex flex-1 items-center">
@@ -13,34 +38,18 @@ export function Header() {
           </svg>
         </button>
 
-        <div className="hidden max-w-md flex-1 items-center md:flex">
-          <div className="relative w-full">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <svg
-                className="h-4 w-4 text-black/40 dark:text-white/40"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
+        <div className="flex flex-1 items-center gap-4">
+          {showBack && (
+            <button 
+              onClick={() => router.back()}
+              className="flex h-10 w-10 items-center justify-center text-black transition-all active:scale-95 dark:text-white"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search..."
-              className="block w-full rounded-full border border-black/10 bg-black/5 py-2 pr-12 pl-10 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/30 focus:ring-black/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-white/30 dark:focus:border-white/30 dark:focus:ring-white/20"
-            />
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <span className="rounded border border-black/10 px-1.5 font-mono text-xs text-black/30 dark:border-white/10 dark:text-white/30">
-                ⌘K
-              </span>
-            </div>
-          </div>
+            </button>
+          )}
+          <h1 className="text-xl font-bold text-black dark:text-white">{title}</h1>
         </div>
       </div>
 

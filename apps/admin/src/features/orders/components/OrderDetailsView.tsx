@@ -180,12 +180,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
       
       {/* Header section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Link
-          href="/orders"
-          className="inline-flex items-center text-sm font-bold text-black/50 transition-colors hover:text-black dark:text-white/50 dark:hover:text-white"
-        >
-          ← Back to Orders
-        </Link>
         <button
           onClick={handleWhatsApp}
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#20bd5a] active:scale-95 sm:w-auto"
