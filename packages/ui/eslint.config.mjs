@@ -16,7 +16,7 @@ export default [
   {
     files: ['src/**/*.{ts,tsx}'],
     rules: {
-      "react/no-unescaped-entities": "off"
+      'react/no-unescaped-entities': 'off',
     },
   },
 ];
