@@ -1,105 +1,168 @@
-import { 
-  HomeIcon, ActivityIcon, ShoppingBagIcon, PackageIcon, CategoryIcon, 
-  StarBadgeIcon, LayersIcon, UsersIcon, StarIcon, ZapIcon, TagIcon, 
-  SettingsIcon, ShieldCheckIcon, LifeBuoyIcon 
-} from "@ff/ui";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import Link from "next/link";
+import {
+  HomeIcon,
+  ActivityIcon,
+  ShoppingBagIcon,
+  PackageIcon,
+  CategoryIcon,
+  StarBadgeIcon,
+  LayersIcon,
+  UsersIcon,
+  StarIcon,
+  ZapIcon,
+  TagIcon,
+  SettingsIcon,
+  ShieldCheckIcon,
+  LifeBuoyIcon,
+} from '@ff/ui';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import Link from 'next/link';
 
 export function Sidebar() {
   return (
-    <aside className="w-64 flex-shrink-0 glass-panel ml-4 my-4 mr-2 flex flex-col hidden md:flex rounded-2xl overflow-hidden relative z-10 border-black/5 dark:border-white/5 sticky top-4 h-[calc(100vh-2rem)]">
-      <div className="p-6 pb-2 flex items-center space-x-3">
-        <div className="w-8 h-8 rounded-lg bg-black text-white dark:bg-white dark:text-black flex items-center justify-center font-bold text-lg shadow-lg">
+    <aside className="glass-panel relative sticky top-4 z-10 my-4 mr-2 ml-4 flex hidden h-[calc(100vh-2rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-2xl border-black/5 md:flex dark:border-white/5">
+      <div className="flex items-center space-x-3 p-6 pb-2">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-lg font-bold text-white shadow-lg dark:bg-white dark:text-black">
           F
         </div>
         <h1 className="text-xl font-bold tracking-tight">FashionFriday</h1>
       </div>
-      
-      <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-6 scrollbar-hide">
+
+      <nav className="scrollbar-hide flex-1 space-y-6 overflow-y-auto px-4 py-6">
         {/* Overview Section */}
         <div>
-          <p className="px-3 text-xs font-bold text-black/40 dark:text-white/40 uppercase tracking-wider mb-2">Overview</p>
+          <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+            Overview
+          </p>
           <div className="space-y-1">
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <HomeIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Dashboard</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <HomeIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Dashboard</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <ActivityIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Analytics</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <ActivityIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Analytics</span>
             </a>
           </div>
         </div>
 
         {/* E-Commerce Section */}
         <div>
-          <p className="px-3 text-xs font-bold text-black/40 dark:text-white/40 uppercase tracking-wider mb-2">E-Commerce</p>
+          <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+            E-Commerce
+          </p>
           <div className="space-y-1">
-            <a href="#" className="flex items-center justify-between px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
+            <a
+              href="#"
+              className="flex items-center justify-between rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
               <div className="flex items-center space-x-3">
-                <ShoppingBagIcon className="w-5 h-5 opacity-70" />
-                <span className="font-medium text-sm">Orders</span>
+                <ShoppingBagIcon className="h-5 w-5 opacity-70" />
+                <span className="text-sm font-medium">Orders</span>
               </div>
-              <span className="bg-black/10 dark:bg-white/10 text-black dark:text-white text-xs py-0.5 px-2 rounded-full font-medium">16</span>
+              <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs font-medium text-black dark:bg-white/10 dark:text-white">
+                16
+              </span>
             </a>
-            <Link href="/products" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-black dark:bg-white text-white dark:text-black transition-all">
-              <PackageIcon className="w-5 h-5" />
-              <span className="font-medium text-sm">Products</span>
+            <Link
+              href="/products"
+              className="flex items-center space-x-3 rounded-lg bg-black px-3 py-2.5 text-white transition-all dark:bg-white dark:text-black"
+            >
+              <PackageIcon className="h-5 w-5" />
+              <span className="text-sm font-medium">Products</span>
             </Link>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <CategoryIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Categories</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <CategoryIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Categories</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <StarBadgeIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Brands</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <StarBadgeIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Brands</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <LayersIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Collections</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <LayersIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Collections</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <UsersIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Customers</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <UsersIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Customers</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <StarIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Reviews</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <StarIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Reviews</span>
             </a>
           </div>
         </div>
 
         {/* Marketing Section */}
         <div>
-          <p className="px-3 text-xs font-bold text-black/40 dark:text-white/40 uppercase tracking-wider mb-2">Marketing</p>
+          <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+            Marketing
+          </p>
           <div className="space-y-1">
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <ZapIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Campaigns</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <ZapIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Campaigns</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <TagIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Discounts</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <TagIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Discounts</span>
             </a>
           </div>
         </div>
 
         {/* Settings Section */}
         <div>
-          <p className="px-3 text-xs font-bold text-black/40 dark:text-white/40 uppercase tracking-wider mb-2">System</p>
+          <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+            System
+          </p>
           <div className="space-y-1">
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <SettingsIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Settings</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <SettingsIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Settings</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <ShieldCheckIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Security</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <ShieldCheckIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Security</span>
             </a>
-            <a href="#" className="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-black/60 dark:text-white/60 hover:text-black hover:bg-black/5 dark:hover:text-white dark:hover:bg-white/5 transition-all">
-              <LifeBuoyIcon className="w-5 h-5 opacity-70" />
-              <span className="font-medium text-sm">Get Help</span>
+            <a
+              href="#"
+              className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <LifeBuoyIcon className="h-5 w-5 opacity-70" />
+              <span className="text-sm font-medium">Get Help</span>
             </a>
             <ThemeToggle />
           </div>
