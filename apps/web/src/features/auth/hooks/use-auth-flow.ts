@@ -6,7 +6,11 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { useAuthStore } from '@/store/auth-store';
-import { sendOtpAction, verifyOtpAction, signupAction } from '@/features/auth/services/auth.actions';
+import {
+  sendOtpAction,
+  verifyOtpAction,
+  signupAction,
+} from '@/features/auth/services/auth.actions';
 
 export type AuthStep = 'PHONE' | 'OTP' | 'PROFILE';
 
@@ -22,7 +26,7 @@ export function useAuthFlow() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
-  
+
   const user = useAuthStore((state) => state.user);
   const authLoading = useAuthStore((state) => state.loading);
   const authLogin = useAuthStore((state) => state.login);
@@ -219,4 +223,3 @@ export function useAuthFlow() {
     clearError,
   };
 }
-
