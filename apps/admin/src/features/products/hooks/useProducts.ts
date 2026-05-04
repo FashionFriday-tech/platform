@@ -1,26 +1,28 @@
-import { useState, useEffect, useMemo } from "react";
-import { Product, SortOption, StatusFilter, ViewMode, ColumnId, AdvancedFilters } from "../types";
-import { fetchProducts } from "../services/api";
+import { useState, useEffect, useMemo } from 'react';
+import { Product, SortOption, StatusFilter, ViewMode, ColumnId, AdvancedFilters } from '../types';
+import { fetchProducts } from '../services/api';
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState<SortOption>("Default");
-  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOption, setSortOption] = useState<SortOption>('Default');
+
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<AdvancedFilters>({
     categories: new Set(),
     statuses: new Set(),
     stores: new Set(),
-    minPrice: "",
-    maxPrice: ""
+    minPrice: '',
+    maxPrice: '',
   });
 
-  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  
+
   // Column Visibility
-  const [visibleColumns, setVisibleColumns] = useState<Set<ColumnId>>(new Set(["Category", "Stock"]));
+  const [visibleColumns, setVisibleColumns] = useState<Set<ColumnId>>(
+    new Set(['Category', 'Stock']),
+  );
 
   const toggleColumn = (col: ColumnId) => {
     setVisibleColumns((prev) => {
@@ -40,7 +42,7 @@ export function useProducts() {
         const data = await fetchProducts();
         setProducts(data);
       } catch (error) {
-        console.error("Failed to load products", error);
+        console.error('Failed to load products', error);
       } finally {
         setIsLoading(false);
       }
@@ -49,13 +51,15 @@ export function useProducts() {
   }, []);
 
   const toggleProductStatus = (id: string) => {
-    setProducts(products.map(p => {
-      if (p.id === id) {
-        if (p.status === "Draft") return p; // Never activate drafted products
-        return { ...p, status: p.status === "Active" ? "Inactive" : "Active" };
-      }
-      return p;
-    }));
+    setProducts(
+      products.map((p) => {
+        if (p.id === id) {
+          if (p.status === 'Draft') return p; // Never activate drafted products
+          return { ...p, status: p.status === 'Active' ? 'Inactive' : 'Active' };
+        }
+        return p;
+      }),
+    );
   };
 
   const toggleSelection = (id: string) => {
@@ -82,7 +86,7 @@ export function useProducts() {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
-        (p) => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
+        (p) => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q),
       );
     }
 
@@ -96,13 +100,13 @@ export function useProducts() {
     if (appliedAdvancedFilters.stores.size > 0) {
       result = result.filter((p) => appliedAdvancedFilters.stores.has(p.store));
     }
-    if (appliedAdvancedFilters.minPrice !== "") {
+    if (appliedAdvancedFilters.minPrice !== '') {
       const min = parseFloat(appliedAdvancedFilters.minPrice);
       if (!isNaN(min)) {
         result = result.filter((p) => p.sellingPrice >= min);
       }
     }
-    if (appliedAdvancedFilters.maxPrice !== "") {
+    if (appliedAdvancedFilters.maxPrice !== '') {
       const max = parseFloat(appliedAdvancedFilters.maxPrice);
       if (!isNaN(max)) {
         result = result.filter((p) => p.sellingPrice <= max);
@@ -111,16 +115,16 @@ export function useProducts() {
 
     // Sorting
     switch (sortOption) {
-      case "Price: Low to High":
+      case 'Price: Low to High':
         result.sort((a, b) => a.sellingPrice - b.sellingPrice);
         break;
-      case "Price: High to Low":
+      case 'Price: High to Low':
         result.sort((a, b) => b.sellingPrice - a.sellingPrice);
         break;
-      case "Name: A to Z":
+      case 'Name: A to Z':
         result.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      case "Name: Z to A":
+      case 'Name: Z to A':
         result.sort((a, b) => b.name.localeCompare(a.name));
         break;
       default:
@@ -146,6 +150,6 @@ export function useProducts() {
     visibleColumns,
     toggleColumn,
     appliedAdvancedFilters,
-    setAppliedAdvancedFilters
+    setAppliedAdvancedFilters,
   };
 }
