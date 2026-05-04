@@ -1,6 +1,9 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+import { useAuth, Role } from '@/contexts/AuthContext';
+import Link from 'next/link';
+import { useState, useRef, useEffect } from 'react';
 
 export function Header() {
   const pathname = usePathname();
@@ -23,6 +26,19 @@ export function Header() {
   };
 
   const { title, showBack } = getPageInfo();
+  const { user, setRole } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="glass-panel sticky top-4 z-30 mt-4 mr-4 mb-4 ml-2 flex h-20 flex-shrink-0 items-center justify-between rounded-2xl px-8">
@@ -90,17 +106,51 @@ export function Header() {
 
         <div className="mx-2 h-6 w-px bg-black/10 dark:bg-white/10"></div>
 
-        <div className="group flex cursor-pointer items-center space-x-3">
-          <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black/10 dark:bg-white/20">
-            <span className="text-xs font-bold text-black dark:text-white">JS</span>
-            <div className="absolute inset-0 bg-black/5 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-white/10"></div>
+        <div className="relative" ref={dropdownRef}>
+          <div 
+            className="group flex cursor-pointer items-center space-x-3"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          >
+            <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black/10 dark:bg-white/20">
+              <span className="text-xs font-bold text-black dark:text-white">{user.initials}</span>
+              <div className="absolute inset-0 bg-black/5 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-white/10"></div>
+            </div>
+            <div className="hidden md:block">
+              <p className="text-sm font-medium text-black group-hover:text-black/80 dark:text-white dark:group-hover:text-white/90">
+                {user.name}
+              </p>
+              <p className="text-xs text-black/50 dark:text-white/50">{user.role.replace('_', ' ')}</p>
+            </div>
           </div>
-          <div className="hidden md:block">
-            <p className="text-sm font-medium text-black group-hover:text-black/80 dark:text-white dark:group-hover:text-white/90">
-              Jimmy Sullivan
-            </p>
-            <p className="text-xs text-black/50 dark:text-white/50">Odama Store</p>
-          </div>
+
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-black/10 bg-white p-2 shadow-xl dark:border-white/10 dark:bg-[#111]">
+              <div className="mb-2 border-b border-black/5 pb-2 dark:border-white/5">
+                <p className="px-3 text-xs font-bold text-black/40 uppercase dark:text-white/40">Switch Role</p>
+                {(['SUPER_ADMIN', 'PRODUCT_MANAGER', 'SALES_MANAGER'] as Role[]).map(r => (
+                  <button
+                    key={r}
+                    onClick={() => {
+                      setRole(r);
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`mt-1 flex w-full items-center rounded-lg px-3 py-2 text-left text-xs font-semibold transition-colors ${user.role === r ? 'bg-black/5 text-black dark:bg-white/10 dark:text-white' : 'text-black/70 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/5'}`}
+                  >
+                    {r.replace('_', ' ')}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <Link 
+                  href="/profile"
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="flex w-full items-center rounded-lg px-3 py-2 text-left text-xs font-semibold text-black/70 hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/5"
+                >
+                  My Profile
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
