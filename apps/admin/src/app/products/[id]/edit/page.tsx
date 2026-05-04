@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { AddProductForm } from "@/features/products/components/AddProductForm";
-import { fetchProductById } from "@/features/products/services/api";
-import { type Product } from "@ff/schemas";
-import { useParams } from "next/navigation";
+import { useEffect, useState } from 'react';
+import { AddProductForm } from '@/features/products/components/AddProductForm';
+import { fetchProductById } from '@/features/products/services/api';
+import { type Product } from '@ff/schemas';
+import { useParams } from 'next/navigation';
 
 export default function EditProductPage() {
   const params = useParams();
   const productId = params.id as string;
-  
+
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,58 +25,58 @@ export default function EditProductPage() {
             id: data.id,
             name: data.name,
             slug: data.seoSlug || data.name.toLowerCase().replace(/\s+/g, '-'),
-            description: data.description || "",
+            description: data.description || '',
             brand: data.brand ? [data.brand] : [],
-            status: "Published",
-            category: "Clothing",
+            status: 'Published',
+            category: 'Clothing',
             price: {
               basePrice: data.costPrice,
               sellingPrice: data.sellingPrice,
               ogPrice: data.originalPrice,
               discountPercentage: 0,
-              currency: "INR"
+              currency: 'INR',
             },
             inventory: {
               sku: data.sku,
-              barcode: "",
+              barcode: '',
               totalStock: data.stock,
               availableStock: data.stock,
               trackInventory: true,
               lowStockThreshold: 10,
-              allowBackorder: false
+              allowBackorder: false,
             },
             media: {
-              mainImage: data.imageUrl || "",
+              mainImage: data.imageUrl || '',
               gallery: data.images || [],
-              videoUrl: data.videoLink
+              videoUrl: data.videoLink,
             },
             attributes: {
               sizes: data.variants,
-              colors: data.color ? [{ name: data.color, hex: "#000000" }] : [],
+              colors: data.color ? [{ name: data.color, hex: '#000000' }] : [],
               materials: [],
               careInstructions: [],
-              fit: "Regular",
-              style: "",
-              quality: data.quality || "Standard"
+              fit: 'Regular',
+              style: '',
+              quality: data.quality || 'Standard',
             },
-            gender: (data.gender as any) || "Unisex",
+            gender: (data.gender as any) || 'Unisex',
             marketing: {
-              seoTitle: data.seoTitle || "",
-              seoDescription: data.seoDesc || "",
+              seoTitle: data.seoTitle || '',
+              seoDescription: data.seoDesc || '',
               collections: data.tags || [],
               tags: data.tags || [],
               isFeatured: false,
-              isNewArrival: false
+              isNewArrival: false,
             },
             shipping: {
               weight: 0,
-              dimensions: { length: 0, width: 0, height: 0, unit: "cm" },
+              dimensions: { length: 0, width: 0, height: 0, unit: 'cm' },
               isFragile: false,
-              processingTime: "1-2 days"
+              processingTime: '1-2 days',
             },
             variants: [],
             createdAt: new Date(data.dateAdded),
-            updatedAt: new Date()
+            updatedAt: new Date(),
           } as any;
           setProduct(mappedProduct);
         }
@@ -91,17 +91,19 @@ export default function EditProductPage() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex justify-center py-20">
-        <div className="w-10 h-10 border-4 border-black/10 dark:border-white/10 border-t-black dark:border-t-white rounded-full animate-spin"></div>
+      <div className="flex flex-1 justify-center py-20">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-black/10 border-t-black dark:border-white/10 dark:border-t-white"></div>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center py-20">
-        <h2 className="text-2xl font-bold mb-2">Product Not Found</h2>
-        <p className="text-black/50 dark:text-white/50">Could not load product details for editing.</p>
+      <div className="flex flex-1 flex-col items-center justify-center py-20">
+        <h2 className="mb-2 text-2xl font-bold">Product Not Found</h2>
+        <p className="text-black/50 dark:text-white/50">
+          Could not load product details for editing.
+        </p>
       </div>
     );
   }
