@@ -75,4 +75,3 @@ export function useAddressForm(initialData: Address | null, isFirstAddress: bool
     isFormValid,
   };
 }
-
