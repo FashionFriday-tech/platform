@@ -1,5 +1,5 @@
-import { useRouter } from "next/navigation";
-import { Product, ColumnId } from "../types";
+import { useRouter } from 'next/navigation';
+import { Product, ColumnId } from '../types';
 
 interface Props {
   products: Product[];
@@ -8,25 +8,35 @@ interface Props {
   selectedIds: Set<string>;
   onToggleSelection: (id: string) => void;
   onToggleAllSelection: (ids: string[]) => void;
-  sortOption: import("../types").SortOption;
-  setSortOption: (val: import("../types").SortOption) => void;
+  sortOption: import('../types').SortOption;
+  setSortOption: (val: import('../types').SortOption) => void;
   visibleColumns: Set<ColumnId>;
 }
 
-export function ProductTable({ products, isLoading, onToggleStatus, selectedIds, onToggleSelection, onToggleAllSelection, sortOption, setSortOption, visibleColumns }: Props) {
+export function ProductTable({
+  products,
+  isLoading,
+  onToggleStatus,
+  selectedIds,
+  onToggleSelection,
+  onToggleAllSelection,
+  sortOption,
+  setSortOption,
+  visibleColumns,
+}: Props) {
   const router = useRouter();
 
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="w-8 h-8 border-4 border-black/20 dark:border-white/20 border-t-black dark:border-t-white rounded-full animate-spin"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-black/20 border-t-black dark:border-white/20 dark:border-t-white"></div>
       </div>
     );
   }
 
   if (products.length === 0) {
     return (
-      <div className="text-center py-20 text-black/50 dark:text-white/50 border border-dashed border-black/10 dark:border-white/10 rounded-2xl">
+      <div className="rounded-2xl border border-dashed border-black/10 py-20 text-center text-black/50 dark:border-white/10 dark:text-white/50">
         No products found.
       </div>
     );
@@ -35,56 +45,108 @@ export function ProductTable({ products, isLoading, onToggleStatus, selectedIds,
   const allSelected = products.length > 0 && selectedIds.size === products.length;
 
   return (
-    <div className="w-full h-full overflow-auto pb-4 scrollbar-hide relative border border-black/5 dark:border-white/5 rounded-xl">
-      <table className="w-full text-left border-collapse min-w-[1200px]">
-        <thead className="sticky top-0 z-30 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-md">
-          <tr className="border-b border-black/10 dark:border-white/10 text-xs font-medium text-black/50 dark:text-white/50 whitespace-nowrap">
+    <div className="scrollbar-hide relative h-full w-full overflow-auto rounded-xl border border-black/5 pb-4 dark:border-white/5">
+      <table className="w-full min-w-[1200px] border-collapse text-left">
+        <thead className="sticky top-0 z-30 bg-white/95 backdrop-blur-md dark:bg-[#0a0a0a]/95">
+          <tr className="border-b border-black/10 text-xs font-medium whitespace-nowrap text-black/50 dark:border-white/10 dark:text-white/50">
             {/* Sticky Left: Select & Product Info */}
-            <th className="sticky left-0 top-0 z-40 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-md py-4 px-4 border-r border-black/5 dark:border-white/5 shadow-[4px_0_12px_rgba(0,0,0,0.03)] dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)]">
+            <th className="sticky top-0 left-0 z-40 border-r border-black/5 bg-white/95 px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] backdrop-blur-md dark:border-white/5 dark:bg-[#0a0a0a]/95 dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)]">
               <div className="flex items-center space-x-4">
-                <div 
-                  onClick={() => onToggleAllSelection(products.map(p => p.id))}
-                  className={`w-5 h-5 rounded-md border flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 ${allSelected ? 'bg-black dark:bg-white border-black dark:border-white' : 'border-black/20 dark:border-white/20 hover:border-black/50 dark:hover:border-white/50'}`}
+                <div
+                  onClick={() => onToggleAllSelection(products.map((p) => p.id))}
+                  className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${allSelected ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 hover:border-black/50 dark:border-white/20 dark:hover:border-white/50'}`}
                 >
-                  {allSelected && <svg className="w-3.5 h-3.5 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                  {allSelected && (
+                    <svg
+                      className="h-3.5 w-3.5 text-white dark:text-black"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
                 </div>
-                <div 
-                  className="flex items-center space-x-1 cursor-pointer hover:text-black dark:hover:text-white"
-                  onClick={() => setSortOption(sortOption === "Name: A to Z" ? "Name: Z to A" : "Name: A to Z")}
+                <div
+                  className="flex cursor-pointer items-center space-x-1 hover:text-black dark:hover:text-white"
+                  onClick={() =>
+                    setSortOption(sortOption === 'Name: A to Z' ? 'Name: Z to A' : 'Name: A to Z')
+                  }
                 >
-                  <span className={sortOption.includes("Name") ? "text-black dark:text-white" : ""}>Product info</span>
-                  <svg className={`w-3 h-3 transition-transform ${sortOption === "Name: Z to A" ? "rotate-180 text-black dark:text-white" : sortOption === "Name: A to Z" ? "text-black dark:text-white" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                  <span className={sortOption.includes('Name') ? 'text-black dark:text-white' : ''}>
+                    Product info
+                  </span>
+                  <svg
+                    className={`h-3 w-3 transition-transform ${sortOption === 'Name: Z to A' ? 'rotate-180 text-black dark:text-white' : sortOption === 'Name: A to Z' ? 'text-black dark:text-white' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
-              </div>
-            </th>
-            
-            {visibleColumns.has("Category") && <th className="py-4 px-4 font-medium">Category</th>}
-            
-            {visibleColumns.has("Cost Price") && <th className="py-4 px-4 font-medium">Cost Price</th>}
-            {visibleColumns.has("OG Price") && <th className="py-4 px-4 font-medium">OG Price</th>}
-            
-            {/* Always show Selling Price */}
-            <th 
-              className="py-4 px-4 font-medium cursor-pointer hover:text-black dark:hover:text-white"
-              onClick={() => setSortOption(sortOption === "Price: Low to High" ? "Price: High to Low" : "Price: Low to High")}
-            >
-              <div className="flex items-center space-x-1">
-                <span className={sortOption.includes("Price") ? "text-black dark:text-white" : ""}>Selling Price</span>
-                <svg className={`w-3 h-3 transition-transform ${sortOption === "Price: High to Low" ? "rotate-180 text-black dark:text-white" : sortOption === "Price: Low to High" ? "text-black dark:text-white" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </div>
             </th>
 
-            {visibleColumns.has("Variants") && <th className="py-4 px-4 font-medium">Variants</th>}
-            {visibleColumns.has("Sales") && <th className="py-4 px-4 font-medium">Sales</th>}
-            {visibleColumns.has("Date Added") && <th className="py-4 px-4 font-medium">Date Added</th>}
-            
+            {visibleColumns.has('Category') && <th className="px-4 py-4 font-medium">Category</th>}
+
+            {visibleColumns.has('Cost Price') && (
+              <th className="px-4 py-4 font-medium">Cost Price</th>
+            )}
+            {visibleColumns.has('OG Price') && <th className="px-4 py-4 font-medium">OG Price</th>}
+
+            {/* Always show Selling Price */}
+            <th
+              className="cursor-pointer px-4 py-4 font-medium hover:text-black dark:hover:text-white"
+              onClick={() =>
+                setSortOption(
+                  sortOption === 'Price: Low to High' ? 'Price: High to Low' : 'Price: Low to High',
+                )
+              }
+            >
+              <div className="flex items-center space-x-1">
+                <span className={sortOption.includes('Price') ? 'text-black dark:text-white' : ''}>
+                  Selling Price
+                </span>
+                <svg
+                  className={`h-3 w-3 transition-transform ${sortOption === 'Price: High to Low' ? 'rotate-180 text-black dark:text-white' : sortOption === 'Price: Low to High' ? 'text-black dark:text-white' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </th>
+
+            {visibleColumns.has('Variants') && <th className="px-4 py-4 font-medium">Variants</th>}
+            {visibleColumns.has('Sales') && <th className="px-4 py-4 font-medium">Sales</th>}
+            {visibleColumns.has('Date Added') && (
+              <th className="px-4 py-4 font-medium">Date Added</th>
+            )}
+
             {/* Always show Status */}
-            <th className="py-4 px-4 font-medium">Status</th>
-            
-            {visibleColumns.has("Stock") && <th className="py-4 px-4 font-medium">Stock</th>}
-            
+            <th className="px-4 py-4 font-medium">Status</th>
+
+            {visibleColumns.has('Stock') && <th className="px-4 py-4 font-medium">Stock</th>}
+
             {/* Sticky Right: Activation */}
-            <th className="sticky right-0 top-0 z-40 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-md py-4 px-6 font-medium text-right border-l border-black/5 dark:border-white/5 shadow-[-4px_0_12px_rgba(0,0,0,0.03)] dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)]">
+            <th className="sticky top-0 right-0 z-40 border-l border-black/5 bg-white/95 px-6 py-4 text-right font-medium shadow-[-4px_0_12px_rgba(0,0,0,0.03)] backdrop-blur-md dark:border-white/5 dark:bg-[#0a0a0a]/95 dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)]">
               Active
             </th>
           </tr>
@@ -93,72 +155,108 @@ export function ProductTable({ products, isLoading, onToggleStatus, selectedIds,
           {products.map((product) => {
             const isSelected = selectedIds.has(product.id);
             return (
-              <tr 
-                key={product.id} 
+              <tr
+                key={product.id}
                 onClick={() => router.push(`/products/${product.id}`)}
-                className={`group transition-colors whitespace-nowrap cursor-pointer ${isSelected ? 'bg-black/[0.03] dark:bg-white/[0.05]' : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'}`}
+                className={`group cursor-pointer whitespace-nowrap transition-colors ${isSelected ? 'bg-black/[0.03] dark:bg-white/[0.05]' : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'}`}
               >
-                
                 {/* Sticky Left: Select & Product Info */}
-                <td className={`sticky left-0 z-10 py-4 px-4 border-r border-black/5 dark:border-white/5 shadow-[4px_0_12px_rgba(0,0,0,0.03)] dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)] transition-colors ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#141414]' : 'bg-white dark:bg-[#0a0a0a] group-hover:bg-[#fafafa] dark:group-hover:bg-[#111111]'}`}>
+                <td
+                  className={`sticky left-0 z-10 border-r border-black/5 px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] transition-colors dark:border-white/5 dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)] ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#141414]' : 'bg-white group-hover:bg-[#fafafa] dark:bg-[#0a0a0a] dark:group-hover:bg-[#111111]'}`}
+                >
                   <div className="flex items-center space-x-4">
-                    <div 
-                      onClick={(e) => { e.stopPropagation(); onToggleSelection(product.id); }}
-                      className={`w-5 h-5 rounded-md border flex items-center justify-center cursor-pointer transition-colors flex-shrink-0 ${isSelected ? 'bg-black dark:bg-white border-black dark:border-white' : 'border-black/20 dark:border-white/20 group-hover:border-black/50 dark:group-hover:border-white/50'}`}
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleSelection(product.id);
+                      }}
+                      className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${isSelected ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 group-hover:border-black/50 dark:border-white/20 dark:group-hover:border-white/50'}`}
                     >
-                      {isSelected && <svg className="w-3.5 h-3.5 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                      {isSelected && (
+                        <svg
+                          className="h-3.5 w-3.5 text-white dark:text-black"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
                     </div>
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-lg bg-black/5 dark:bg-white/10 flex-shrink-0 flex items-center justify-center overflow-hidden border border-black/5 dark:border-white/5">
-                         {product.imageUrl ? (
-                           <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-                         ) : (
-                           <span className="text-xs font-bold text-black/30 dark:text-white/30">IMG</span>
-                         )}
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/10">
+                        {product.imageUrl ? (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs font-bold text-black/30 dark:text-white/30">
+                            IMG
+                          </span>
+                        )}
                       </div>
                       <div className="min-w-[180px]">
-                        <p className="text-sm font-medium text-black/90 dark:text-white/90 truncate max-w-[220px]" title={product.name}>
+                        <p
+                          className="max-w-[220px] truncate text-sm font-medium text-black/90 dark:text-white/90"
+                          title={product.name}
+                        >
                           {product.name}
                         </p>
-                        <p className="text-xs text-black/40 dark:text-white/40 mt-1">ID: {product.sku}</p>
+                        <p className="mt-1 text-xs text-black/40 dark:text-white/40">
+                          ID: {product.sku}
+                        </p>
                       </div>
                     </div>
                   </div>
                 </td>
 
-                {visibleColumns.has("Category") && (
-                  <td className="py-4 px-4">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-black/5 dark:bg-white/5 text-black/70 dark:text-white/70">
+                {visibleColumns.has('Category') && (
+                  <td className="px-4 py-4">
+                    <span className="inline-flex items-center rounded-md bg-black/5 px-2.5 py-1 text-xs font-medium text-black/70 dark:bg-white/5 dark:text-white/70">
                       {product.category}
                     </span>
                   </td>
                 )}
 
-                {visibleColumns.has("Cost Price") && (
-                  <td className="py-4 px-4 text-sm text-black/70 dark:text-white/70">
+                {visibleColumns.has('Cost Price') && (
+                  <td className="px-4 py-4 text-sm text-black/70 dark:text-white/70">
                     ₹{product.costPrice.toFixed(2)}
                   </td>
                 )}
 
-                {visibleColumns.has("OG Price") && (
-                  <td className="py-4 px-4 text-sm text-black/70 dark:text-white/70">
+                {visibleColumns.has('OG Price') && (
+                  <td className="px-4 py-4 text-sm text-black/70 dark:text-white/70">
                     ₹{product.originalPrice.toFixed(2)}
                   </td>
                 )}
 
-                <td className="py-4 px-4 text-sm font-medium">
+                <td className="px-4 py-4 text-sm font-medium">
                   {product.sellingPrice < product.originalPrice ? (
-                    <span className="text-red-500 font-bold">₹{product.sellingPrice.toFixed(2)}</span>
+                    <span className="font-bold text-red-500">
+                      ₹{product.sellingPrice.toFixed(2)}
+                    </span>
                   ) : (
-                    <span className="text-black dark:text-white">₹{product.sellingPrice.toFixed(2)}</span>
+                    <span className="text-black dark:text-white">
+                      ₹{product.sellingPrice.toFixed(2)}
+                    </span>
                   )}
                 </td>
 
-                {visibleColumns.has("Variants") && (
-                  <td className="py-4 px-4">
+                {visibleColumns.has('Variants') && (
+                  <td className="px-4 py-4">
                     <div className="flex items-center gap-1">
-                      {product.variants?.map(v => (
-                        <span key={v} className="text-[10px] px-1.5 py-0.5 border border-black/10 dark:border-white/10 rounded text-black/60 dark:text-white/60 whitespace-nowrap">
+                      {product.variants?.map((v) => (
+                        <span
+                          key={v}
+                          className="rounded border border-black/10 px-1.5 py-0.5 text-[10px] whitespace-nowrap text-black/60 dark:border-white/10 dark:text-white/60"
+                        >
                           {v}
                         </span>
                       )) || <span className="text-xs text-black/30 dark:text-white/30">-</span>}
@@ -166,49 +264,59 @@ export function ProductTable({ products, isLoading, onToggleStatus, selectedIds,
                   </td>
                 )}
 
-                {visibleColumns.has("Sales") && (
-                  <td className="py-4 px-4 text-sm font-medium text-black/80 dark:text-white/80">
+                {visibleColumns.has('Sales') && (
+                  <td className="px-4 py-4 text-sm font-medium text-black/80 dark:text-white/80">
                     {product.sales ? product.sales.toLocaleString() : '0'}
                   </td>
                 )}
 
-                {visibleColumns.has("Date Added") && (
-                  <td className="py-4 px-4 text-sm text-black/60 dark:text-white/60">
+                {visibleColumns.has('Date Added') && (
+                  <td className="px-4 py-4 text-sm text-black/60 dark:text-white/60">
                     {product.dateAdded || 'N/A'}
                   </td>
                 )}
 
-                <td className="py-4 px-4 text-sm">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${product.status === "Active" ? 'bg-black/5 border-black/10 text-black dark:bg-white/10 dark:border-white/20 dark:text-white' : product.status === "Draft" ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-700 dark:text-yellow-500' : 'bg-black/5 border-transparent text-black/50 dark:bg-white/5 dark:text-white/50'}`}>
+                <td className="px-4 py-4 text-sm">
+                  <span
+                    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${product.status === 'Active' ? 'border-black/10 bg-black/5 text-black dark:border-white/20 dark:bg-white/10 dark:text-white' : product.status === 'Draft' ? 'border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-500' : 'border-transparent bg-black/5 text-black/50 dark:bg-white/5 dark:text-white/50'}`}
+                  >
                     {product.status}
                   </span>
                 </td>
 
-                {visibleColumns.has("Stock") && (
-                  <td className="py-4 px-4">
-                    <div className="w-24 flex flex-col justify-center">
-                      <div className="w-full h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden mb-1">
-                        <div 
+                {visibleColumns.has('Stock') && (
+                  <td className="px-4 py-4">
+                    <div className="flex w-24 flex-col justify-center">
+                      <div className="mb-1 h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                        <div
                           className={`h-full rounded-full ${product.stock > 700 ? 'bg-black dark:bg-white' : 'bg-black/50 dark:bg-white/50'}`}
                           style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
                         ></div>
                       </div>
-                      <p className="text-[10px] text-black/40 dark:text-white/40 text-right">{product.stock}/{product.maxStock}</p>
+                      <p className="text-right text-[10px] text-black/40 dark:text-white/40">
+                        {product.stock}/{product.maxStock}
+                      </p>
                     </div>
                   </td>
                 )}
 
                 {/* Sticky Right: Activation */}
-                <td className={`sticky right-0 z-10 py-4 px-6 text-right border-l border-black/5 dark:border-white/5 shadow-[-4px_0_12px_rgba(0,0,0,0.03)] dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)] transition-colors ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#141414]' : 'bg-white dark:bg-[#0a0a0a] group-hover:bg-[#fafafa] dark:group-hover:bg-[#111111]'}`}>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); product.status !== "Draft" && onToggleStatus(product.id); }}
-                    disabled={product.status === "Draft"}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${product.status === "Active" ? 'bg-black/90 dark:bg-white/90' : 'bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20'} ${product.status === "Draft" ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
+                <td
+                  className={`sticky right-0 z-10 border-l border-black/5 px-6 py-4 text-right shadow-[-4px_0_12px_rgba(0,0,0,0.03)] transition-colors dark:border-white/5 dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)] ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#141414]' : 'bg-white group-hover:bg-[#fafafa] dark:bg-[#0a0a0a] dark:group-hover:bg-[#111111]'}`}
+                >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      product.status !== 'Draft' && onToggleStatus(product.id);
+                    }}
+                    disabled={product.status === 'Draft'}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${product.status === 'Active' ? 'bg-black/90 dark:bg-white/90' : 'border border-black/20 bg-black/10 dark:border-white/20 dark:bg-white/10'} ${product.status === 'Draft' ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
                   >
-                    <span className={`inline-block h-4 w-4 transform rounded-full transition-transform ${product.status === "Active" ? 'translate-x-6 bg-white dark:bg-black' : 'translate-x-1 bg-black/50 dark:bg-white/50'}`} />
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full transition-transform ${product.status === 'Active' ? 'translate-x-6 bg-white dark:bg-black' : 'translate-x-1 bg-black/50 dark:bg-white/50'}`}
+                    />
                   </button>
                 </td>
-
               </tr>
             );
           })}
