@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Enable class-based dark mode for next-themes in Tailwind v4 */
 @variant dark (&:where(.dark, .dark *));
@@ -48,11 +48,11 @@ body {
     border-radius: 1rem;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
   }
-  
+
   .dark .glass-panel {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   }
-  
+
   .glass-header {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(16px);
@@ -69,7 +69,7 @@ body {
     border: 1px solid var(--glass-border);
     transition: all 0.2s ease;
   }
-  
+
   .glass-button:hover {
     background: rgba(0, 0, 0, 0.05);
     transform: translateY(-1px);
