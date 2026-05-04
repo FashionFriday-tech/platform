@@ -1,0 +1,142 @@
+import { Order } from '../types';
+
+export const mockOrders: Order[] = [
+  {
+    id: 'ord_1',
+    orderNumber: 'FF-2026-8921',
+    createdAt: '2026-05-04T10:30:00Z',
+    status: 'pending',
+    paymentStatus: 'paid',
+    paymentMethod: 'UPI (GPay)',
+    paymentType: 'prepaid',
+    tracking: {
+      trackingId: '1Z99999999',
+      courierService: 'Delhivery',
+    },
+    customer: {
+      id: 'cust_1',
+      name: 'Aarav Sharma',
+      email: 'aarav@example.com',
+      phone: '+91 9876543210',
+      altPhone: '+91 9876543211',
+      avatar: 'https://i.pravatar.cc/150?u=aarav',
+    },
+    shippingAddress: {
+      street: '12, MG Road, 2nd Floor',
+      city: 'Bangalore',
+      district: 'Bengaluru Urban',
+      state: 'Karnataka',
+      pincode: '560001',
+    },
+    items: [
+      {
+        id: 'item_1',
+        productId: 'prod_1',
+        productName: 'Oversized Vintage Wash Tee',
+        productImage:
+          'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=200&auto=format&fit=crop',
+        quantity: 2,
+        price: 999.0,
+        size: 'L',
+        color: 'Faded Black',
+        sku: 'VTG-TEE-BLK-L'
+      },
+    ],
+    total: 1998.0,
+  },
+  {
+    id: 'ord_2',
+    orderNumber: 'FF-2026-8922',
+    createdAt: '2026-05-04T11:15:00Z',
+    status: 'processing',
+    paymentStatus: 'unpaid',
+    paymentMethod: 'Cash',
+    paymentType: 'cod',
+    tracking: {
+      trackingId: 'D123456789',
+      courierService: 'DTDC',
+    },
+    customer: {
+      id: 'cust_2',
+      name: 'Priya Patel',
+      email: 'priya@example.com',
+      phone: '+91 9988776655',
+    },
+    shippingAddress: {
+      street: '45, Fashion Street, Andheri West',
+      city: 'Mumbai',
+      district: 'Mumbai Suburban',
+      state: 'Maharashtra',
+      pincode: '400053',
+    },
+    items: [
+      {
+        id: 'item_2',
+        productId: 'prod_2',
+        productName: 'Raw Denim Jacket',
+        productImage:
+          'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?q=80&w=200&auto=format&fit=crop',
+        quantity: 1,
+        price: 3499.0,
+        size: 'M',
+        color: 'Indigo',
+        sku: 'DNM-JKT-IND-M'
+      },
+      {
+        id: 'item_3',
+        productId: 'prod_3',
+        productName: 'Classic White Sneakers',
+        productImage:
+          'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=200&auto=format&fit=crop',
+        quantity: 1,
+        price: 2499.0,
+        size: '10',
+        color: 'White',
+        sku: 'SNK-WHT-10'
+      },
+    ],
+    total: 5998.0,
+  },
+  {
+    id: 'ord_3',
+    orderNumber: 'FF-2026-8923',
+    createdAt: '2026-05-03T15:45:00Z',
+    status: 'shipped',
+    paymentStatus: 'paid',
+    paymentMethod: 'Credit Card',
+    paymentType: 'prepaid',
+    tracking: {
+      trackingId: 'BD987654321',
+      courierService: 'Blue Dart',
+    },
+    customer: {
+      id: 'cust_3',
+      name: 'Rohan Gupta',
+      email: 'rohan@example.com',
+      phone: '+91 9871234567',
+      avatar: 'https://i.pravatar.cc/150?u=rohan',
+    },
+    shippingAddress: {
+      street: '78, Trend Avenue, Connaught Place',
+      city: 'New Delhi',
+      district: 'New Delhi',
+      state: 'Delhi',
+      pincode: '110001',
+    },
+    items: [
+      {
+        id: 'item_4',
+        productId: 'prod_4',
+        productName: 'Pleated Wool Trousers',
+        productImage:
+          'https://images.unsplash.com/photo-1594938298596-70f594f7428d?q=80&w=200&auto=format&fit=crop',
+        quantity: 1,
+        price: 2999.0,
+        size: '32',
+        color: 'Charcoal',
+        sku: 'TRS-CHR-32'
+      },
+    ],
+    total: 2999.0,
+  },
+];
