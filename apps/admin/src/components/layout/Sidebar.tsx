@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  HomeIcon,
   ActivityIcon,
+  TrendingUpIcon,
   ShoppingBagIcon,
   PackageIcon,
   CategoryIcon,
@@ -37,7 +37,7 @@ export function Sidebar() {
 
   return (
     <aside className="glass-panel relative sticky top-4 z-10 my-4 mr-2 ml-4 flex hidden h-[calc(100vh-2rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-2xl border-black/5 md:flex dark:border-white/5">
-      <div className="flex items-center space-x-3 p-6 pb-2">
+      <div className="flex items-center space-x-2 p-6 pb-2">
         <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
           <img src="/images/logos/ff-logo.png" alt="Fashion Friday" className="h-full w-full object-contain" />
         </div>
@@ -54,14 +54,14 @@ export function Sidebar() {
             </p>
             <div className="space-y-1">
               <Link href="/" className={getLinkClass('/')}>
-                <HomeIcon className="h-5 w-5 opacity-70" />
+                <ActivityIcon className="h-5 w-5 opacity-70" />
                 <span className="text-sm font-medium">Dashboard</span>
               </Link>
               {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
-                <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                  <ActivityIcon className="h-5 w-5 opacity-70" />
+                <Link href="/analytics" className={getLinkClass('/analytics')}>
+                  <TrendingUpIcon className="h-5 w-5 opacity-70" />
                   <span className="text-sm font-medium">Analytics</span>
-                </a>
+                </Link>
               )}
             </div>
           </div>
