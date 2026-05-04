@@ -4,17 +4,23 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth, Role } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
+import {
+  ActivityIcon,
+  ShoppingBagIcon,
+  PackageIcon,
+  UsersIcon,
+} from '@ff/ui';
 
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
 
   const getPageInfo = () => {
-    if (pathname === '/') return { title: 'Dashboard', showBack: false };
-    if (pathname.startsWith('/orders/')) return { title: 'Order Details', showBack: true };
-    if (pathname === '/orders') return { title: 'All Orders', showBack: false };
-    if (pathname === '/products') return { title: 'Products', showBack: false };
-    if (pathname === '/customers') return { title: 'Customers', showBack: false };
+    if (pathname === '/') return { title: 'Dashboard', showBack: false, icon: ActivityIcon };
+    if (pathname.startsWith('/orders/')) return { title: 'Order Details', showBack: true, icon: ShoppingBagIcon };
+    if (pathname === '/orders') return { title: 'Orders Management', showBack: false, icon: ShoppingBagIcon };
+    if (pathname === '/products') return { title: 'Products', showBack: false, icon: PackageIcon };
+    if (pathname === '/customers') return { title: 'Customers', showBack: false, icon: UsersIcon };
     
     // Fallback logic
     const segments = pathname.split('/').filter(Boolean);
@@ -22,10 +28,10 @@ export function Header() {
       ? segments[0].charAt(0).toUpperCase() + segments[0].slice(1) 
       : 'Dashboard';
       
-    return { title, showBack: segments.length > 1 };
+    return { title, showBack: segments.length > 1, icon: ActivityIcon };
   };
 
-  const { title, showBack } = getPageInfo();
+  const { title, showBack, icon: Icon } = getPageInfo();
   const { user, setRole } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -41,7 +47,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="glass-panel sticky top-4 z-30 mt-4 mr-4 mb-4 ml-2 flex h-20 flex-shrink-0 items-center justify-between rounded-2xl px-8">
+    <header className="glass-panel sticky top-4 z-30 mt-4 mr-4 mb-4 ml-2 flex h-20 flex-shrink-0 items-center justify-between rounded-2xl px-6">
       <div className="flex flex-1 items-center">
         <button className="mr-4 text-black/70 hover:text-black md:hidden dark:text-white/70 dark:hover:text-white">
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,7 +71,10 @@ export function Header() {
               </svg>
             </button>
           )}
-          <h1 className="text-xl font-bold text-black dark:text-white">{title}</h1>
+          <div className="flex items-center gap-3">
+            <Icon className="h-6 w-6 text-black dark:text-white" />
+            <h1 className="text-2xl font-[800] uppercase text-black tracking-[-0.05rem] dark:text-white">{title}</h1>
+          </div>
         </div>
       </div>
 
