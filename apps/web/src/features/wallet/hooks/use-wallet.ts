@@ -71,4 +71,3 @@ export function useWallet() {
     sortedLedger,
   };
 }
-
