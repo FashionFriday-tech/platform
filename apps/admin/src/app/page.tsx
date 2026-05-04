@@ -11,17 +11,7 @@ export default function Home() {
   const hasAccess = (allowedRoles: string[]) => allowedRoles.includes(role);
 
   return (
-    <div className="flex h-full w-full flex-col gap-8 overflow-y-auto p-4 scrollbar-hide md:p-8">
-      {/* Welcome Banner */}
-      <div className="flex flex-col gap-2 rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#111] md:p-8">
-        <h1 className="text-2xl font-bold text-black dark:text-white">
-          Welcome back, {user.name}!
-        </h1>
-        <p className="text-black/50 dark:text-white/50">
-          Here is what's happening with your store today.
-        </p>
-      </div>
-
+    <div className="flex h-full w-full flex-col gap-8 overflow-y-auto scrollbar-hide">
       {/* Role Specific Content */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
