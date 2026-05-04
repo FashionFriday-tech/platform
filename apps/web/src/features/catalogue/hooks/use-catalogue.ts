@@ -135,4 +135,3 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
     toggleAutoScroll,
   };
 };
-
