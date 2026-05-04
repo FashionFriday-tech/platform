@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@ff/ui", "@ff/schemas"],
+  transpilePackages: ['@ff/ui', '@ff/schemas'],
 };
 
 export default nextConfig;
