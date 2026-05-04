@@ -1,18 +1,14 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Mulish } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { AuthProvider } from '@/contexts/AuthContext';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const mulish = Mulish({
+  style: ['normal', 'italic'],
+  variable: '--font-mulish',
   subsets: ['latin'],
 });
 
@@ -30,7 +26,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className="scrollbar-hide">
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} scrollbar-hide flex min-h-screen bg-gray-50 text-black antialiased dark:bg-black dark:text-white`}
+        className={`${mulish.variable} font-sans scrollbar-hide flex min-h-screen bg-gray-50 text-black antialiased dark:bg-black dark:text-white`}
       >
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
