@@ -9,6 +9,5 @@ export default {
   ],
 
   // Format MarkDown, JSON, and CSS
-  '**/*.(md|json|css|yaml|yml)': (filenames) =>
-    `prettier --write ${filenames.join(' ')}`,
+  '**/*.(md|json|css|yaml|yml)': (filenames) => `prettier --write ${filenames.join(' ')}`,
 };
