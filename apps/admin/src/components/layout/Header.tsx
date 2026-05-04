@@ -79,6 +79,25 @@ export function Header() {
       </div>
 
       <div className="flex items-center space-x-4">
+        <button 
+          onClick={() => {
+            if (!document.fullscreenElement) {
+              document.documentElement.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+              });
+            } else {
+              if (document.exitFullscreen) {
+                document.exitFullscreen();
+              }
+            }
+          }}
+          className="group relative flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-black/5 transition-colors hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+        >
+          <svg className="h-4 w-4 text-black/70 group-hover:text-black dark:text-white/70 dark:group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+        </button>
+
         <button className="group relative flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-black/5 transition-colors hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
           <svg
             className="h-4 w-4 text-black/70 group-hover:text-black dark:text-white/70 dark:group-hover:text-white"
@@ -120,9 +139,8 @@ export function Header() {
             className="group flex cursor-pointer items-center space-x-3"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
-            <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black/10 dark:bg-white/20">
-              <span className="text-xs font-bold text-black dark:text-white">{user.initials}</span>
-              <div className="absolute inset-0 bg-black/5 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-white/10"></div>
+            <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black dark:bg-white">
+              <span className="text-xs font-bold text-white dark:text-black">{user.initials}</span>
             </div>
             <div className="hidden md:block">
               <p className="text-sm font-medium text-black group-hover:text-black/80 dark:text-white dark:group-hover:text-white/90">
