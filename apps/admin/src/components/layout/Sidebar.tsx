@@ -38,8 +38,8 @@ export function Sidebar() {
   return (
     <aside className="glass-panel relative sticky top-4 z-10 my-4 mr-2 ml-4 flex hidden h-[calc(100vh-2rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-2xl border-black/5 md:flex dark:border-white/5">
       <div className="flex items-center space-x-3 p-6 pb-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-lg font-bold text-white shadow-lg dark:bg-white dark:text-black">
-          F
+        <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
+          <img src="/images/logos/ff-logo.png" alt="Fashion Friday" className="h-full w-full object-contain" />
         </div>
         <h1 className="text-xl font-bold tracking-tight">FashionFriday</h1>
       </div>
