@@ -16,4 +16,3 @@ export function useNotifications(type: TabType) {
 
   return { notifications };
 }
-
