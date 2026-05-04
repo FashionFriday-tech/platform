@@ -72,4 +72,3 @@ export function useNotificationsSwipe(tabs: readonly TabType[]) {
     handleDragEnd,
   };
 }
-
