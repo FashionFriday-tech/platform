@@ -41,7 +41,7 @@ export function Sidebar() {
         <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
           <img src="/images/logos/ff-logo.png" alt="Fashion Friday" className="h-full w-full object-contain" />
         </div>
-        <h1 className="text-xl font-bold tracking-tight">FashionFriday</h1>
+        <h1 className="text-lg font-black uppercase">FashionFriday</h1>
       </div>
 
       <nav className="scrollbar-hide flex-1 space-y-6 overflow-y-auto px-4 py-6">
