@@ -34,10 +34,10 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-black/5 bg-white/50 shadow-xl backdrop-blur-xl dark:border-white/5 dark:bg-black/50">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-black/70 dark:text-white/70">
-          <thead className="bg-black/5 text-xs text-black/60 uppercase dark:bg-white/5 dark:text-white/60">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/5 dark:bg-[#111111]">
+      <div className="flex-1 overflow-auto scrollbar-hide">
+        <table className="w-full text-left text-sm text-black/70 dark:text-white/70 relative">
+          <thead className="sticky top-0 z-30 bg-[#f8f9fa] text-xs text-black/60 uppercase dark:bg-[#1a1a1a] dark:text-white/60">
             <tr>
               <th
                 scope="col"
