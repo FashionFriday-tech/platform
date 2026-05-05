@@ -122,22 +122,13 @@ export function ProductDetailView({ productId }: Props) {
                 </span>
               )}
               {product.quality && (
-                <span className="flex items-center gap-1.5 rounded-full border border-blue-500/10 bg-blue-50 px-3 py-1.5 text-blue-600 shadow-sm transition-transform hover:-translate-y-0.5 dark:bg-blue-500/10 dark:text-blue-400">
+                <span className="flex items-center gap-1.5 rounded-full border border-yellow-500/10 bg-yellow-50 px-3 py-1.5 text-yellow-600 shadow-sm transition-transform hover:-translate-y-0.5 dark:bg-yellow-500/10 dark:text-yellow-500">
                   <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
                   {product.quality}
                 </span>
               )}
-              <span className="flex items-center gap-1.5 rounded-full border border-yellow-500/10 bg-yellow-50 px-3 py-1.5 text-yellow-600 shadow-sm transition-transform hover:-translate-y-0.5 dark:bg-yellow-500/10 dark:text-yellow-500">
-                <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-                {averageRating}
-              </span>
-              <span className="animate-pulse rounded-full bg-red-500/10 px-3 py-1.5 text-red-500">
-                Live
-              </span>
             </div>
 
             <button
