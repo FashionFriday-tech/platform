@@ -7,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function OrdersPage() {
-  return <OrdersFeature />;
+  return (
+    <div className="flex flex-1 min-h-0 flex-col overflow-hidden p-6">
+      <OrdersFeature />
+    </div>
+  );
 }
