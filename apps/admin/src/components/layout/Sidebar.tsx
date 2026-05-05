@@ -29,15 +29,15 @@ export function Sidebar() {
   const getLinkClass = (path: string) => {
     const isActive = pathname === path || (path !== '/' && pathname.startsWith(path));
     return isActive
-      ? 'flex items-center space-x-3 rounded-lg bg-black px-3 py-2.5 text-white transition-all dark:bg-white dark:text-black'
-      : 'flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white';
+      ? 'group is-active flex items-center space-x-3 rounded-full bg-black p-1.5 pr-4 text-white transition-all dark:bg-white dark:text-black'
+      : 'group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white';
   };
 
   const hasAccess = (allowedRoles: string[]) => allowedRoles.includes(role);
 
   return (
-    <aside className="glass-panel relative sticky top-4 z-10 my-4 mr-2 ml-4 flex hidden h-[calc(100vh-2rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-2xl border-black/5 md:flex dark:border-white/5">
-      <div className="flex items-center space-x-2 p-6 pb-2">
+    <aside className="glass-panel relative sticky top-4 z-10 my-4 mx-2 pb-2 flex hidden h-[calc(100vh-2rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-2xl md:flex">
+      <div className="flex items-center space-x-2 p-6 pb-0.5">
         <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
           <img src="/images/logos/ff-logo.png" alt="Fashion Friday" className="h-full w-full object-contain" />
         </div>
@@ -54,12 +54,12 @@ export function Sidebar() {
             </p>
             <div className="space-y-1">
               <Link href="/" className={getLinkClass('/')}>
-                <ActivityIcon className="h-5 w-5 opacity-70" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ActivityIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Dashboard</span>
               </Link>
               {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
                 <Link href="/analytics" className={getLinkClass('/analytics')}>
-                  <TrendingUpIcon className="h-5 w-5 opacity-70" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><TrendingUpIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                   <span className="text-sm font-medium">Analytics</span>
                 </Link>
               )}
@@ -76,7 +76,7 @@ export function Sidebar() {
             <div className="space-y-1">
               <Link href="/orders" className={getLinkClass('/orders').replace('space-x-3', 'justify-between')}>
                 <div className="flex items-center space-x-3">
-                  <ShoppingBagIcon className="h-5 w-5 opacity-70" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ShoppingBagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                   <span className="text-sm font-medium">Orders</span>
                 </div>
                 <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs font-medium text-black dark:bg-white/10 dark:text-white">
@@ -84,11 +84,11 @@ export function Sidebar() {
                 </span>
               </Link>
               <Link href="/customers" className={getLinkClass('/customers')}>
-                <UsersIcon className="h-5 w-5 opacity-70" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Customers</span>
               </Link>
-              <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                <StarIcon className="h-5 w-5 opacity-70" />
+              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Reviews</span>
               </a>
             </div>
@@ -103,19 +103,19 @@ export function Sidebar() {
             </p>
             <div className="space-y-1">
               <Link href="/products" className={getLinkClass('/products')}>
-                <PackageIcon className="h-5 w-5" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><PackageIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Products</span>
               </Link>
-              <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                <CategoryIcon className="h-5 w-5 opacity-70" />
+              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><CategoryIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Categories</span>
               </a>
-              <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                <StarBadgeIcon className="h-5 w-5 opacity-70" />
+              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><StarBadgeIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Brands</span>
               </a>
-              <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                <LayersIcon className="h-5 w-5 opacity-70" />
+              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><LayersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Collections</span>
               </a>
             </div>
@@ -129,12 +129,12 @@ export function Sidebar() {
               Marketing
             </p>
             <div className="space-y-1">
-              <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                <ZapIcon className="h-5 w-5 opacity-70" />
+              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ZapIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Campaigns</span>
               </a>
-              <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                <TagIcon className="h-5 w-5 opacity-70" />
+              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><TagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Discounts</span>
               </a>
             </div>
@@ -149,18 +149,18 @@ export function Sidebar() {
           <div className="space-y-1">
             {hasAccess(['SUPER_ADMIN']) && (
               <>
-                <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                  <SettingsIcon className="h-5 w-5 opacity-70" />
+                <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><SettingsIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                   <span className="text-sm font-medium">Settings</span>
                 </a>
-                <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                  <ShieldCheckIcon className="h-5 w-5 opacity-70" />
+                <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ShieldCheckIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                   <span className="text-sm font-medium">Security</span>
                 </a>
               </>
             )}
-            <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-              <LifeBuoyIcon className="h-5 w-5 opacity-70" />
+            <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><LifeBuoyIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
               <span className="text-sm font-medium">Get Help</span>
             </a>
             <ThemeToggle />

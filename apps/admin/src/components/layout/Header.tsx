@@ -47,7 +47,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="glass-panel sticky top-4 z-30 mt-4 mr-4 mb-4 ml-2 flex h-20 flex-shrink-0 items-center justify-between rounded-2xl px-6">
+    <header className="sticky top-0 z-30 flex h-24 flex-shrink-0 items-center justify-between px-8 bg-transparent">
       <div className="flex flex-1 items-center">
         <button className="mr-4 text-black/70 hover:text-black md:hidden dark:text-white/70 dark:hover:text-white">
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,8 +72,8 @@ export function Header() {
             </button>
           )}
           <div className="flex items-center gap-3">
-            <Icon className="h-6 w-6 text-black dark:text-white" />
-            <h1 className="text-2xl font-[800] uppercase text-black tracking-[-0.05rem] dark:text-white">{title}</h1>
+            <Icon className="h-8 w-8 text-black dark:text-white" />
+            <h1 className="text-2xl font-bold uppercase text-black tracking-[-0.05rem] dark:text-white">{title}</h1>
           </div>
         </div>
       </div>
@@ -91,14 +91,14 @@ export function Header() {
               }
             }
           }}
-          className="group relative flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-black/5 transition-colors hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+          className="group relative flex h-9 w-9 items-center justify-center rounded-full bg-black/5 transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"
         >
           <svg className="h-4 w-4 text-black/70 group-hover:text-black dark:text-white/70 dark:group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
           </svg>
         </button>
 
-        <button className="group relative flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-black/5 transition-colors hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
+        <button className="group relative flex h-9 w-9 items-center justify-center rounded-full bg-black/5 transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10">
           <svg
             className="h-4 w-4 text-black/70 group-hover:text-black dark:text-white/70 dark:group-hover:text-white"
             fill="none"
@@ -115,7 +115,7 @@ export function Header() {
           <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-black ring-2 ring-white dark:bg-white dark:ring-black"></span>
         </button>
 
-        <button className="group relative flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-black/5 transition-colors hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
+        <button className="group relative flex h-9 w-9 items-center justify-center rounded-full bg-black/5 transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10">
           <svg
             className="h-4 w-4 text-black/70 group-hover:text-black dark:text-white/70 dark:group-hover:text-white"
             fill="none"
