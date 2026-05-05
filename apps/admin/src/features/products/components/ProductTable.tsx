@@ -45,12 +45,13 @@ export function ProductTable({
   const allSelected = products.length > 0 && selectedIds.size === products.length;
 
   return (
-    <div className="scrollbar-hide relative h-full w-full overflow-auto rounded-xl border border-black/5 pb-4 dark:border-white/5">
-      <table className="w-full min-w-[1200px] border-collapse text-left">
-        <thead className="sticky top-0 z-30 bg-white/95 backdrop-blur-md dark:bg-[#0a0a0a]/95">
-          <tr className="border-b border-black/10 text-xs font-medium whitespace-nowrap text-black/50 dark:border-white/10 dark:text-white/50">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/5 dark:bg-[#111111]">
+      <div className="scrollbar-hide relative flex-1 overflow-auto pb-4">
+        <table className="w-full min-w-[1200px] border-collapse text-left relative">
+          <thead className="sticky top-0 z-30 border-b border-black/5 bg-[#f8f9fa] dark:bg-[#1a1a1a]">
+          <tr className="text-xs font-medium whitespace-nowrap text-black/50 dark:border-white/10 dark:text-white/50">
             {/* Sticky Left: Select & Product Info */}
-            <th className="sticky top-0 left-0 z-40 border-r border-black/5 bg-white/95 px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] backdrop-blur-md dark:border-white/5 dark:bg-[#0a0a0a]/95 dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)]">
+            <th className="sticky top-0 left-0 z-40 border-r border-black/5 bg-[#f8f9fa] px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] dark:border-white/5 dark:bg-[#1a1a1a] dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)]">
               <div className="flex items-center space-x-4">
                 <div
                   onClick={() => onToggleAllSelection(products.map((p) => p.id))}
@@ -146,7 +147,7 @@ export function ProductTable({
             {visibleColumns.has('Stock') && <th className="px-4 py-4 font-medium">Stock</th>}
 
             {/* Sticky Right: Activation */}
-            <th className="sticky top-0 right-0 z-40 border-l border-black/5 bg-white/95 px-6 py-4 text-right font-medium shadow-[-4px_0_12px_rgba(0,0,0,0.03)] backdrop-blur-md dark:border-white/5 dark:bg-[#0a0a0a]/95 dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)]">
+            <th className="sticky top-0 right-0 z-40 border-l border-black/5 bg-[#f8f9fa] px-6 py-4 text-right font-medium shadow-[-4px_0_12px_rgba(0,0,0,0.03)] dark:border-white/5 dark:bg-[#1a1a1a] dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)]">
               Active
             </th>
           </tr>
@@ -162,7 +163,7 @@ export function ProductTable({
               >
                 {/* Sticky Left: Select & Product Info */}
                 <td
-                  className={`sticky left-0 z-10 border-r border-black/5 px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] transition-colors dark:border-white/5 dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)] ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#141414]' : 'bg-white group-hover:bg-[#fafafa] dark:bg-[#0a0a0a] dark:group-hover:bg-[#111111]'}`}
+                  className={`sticky left-0 z-10 border-r border-black/5 px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] transition-colors dark:border-white/5 dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)] ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#222]' : 'bg-white group-hover:bg-[#fafafa] dark:bg-[#111111] dark:group-hover:bg-[#1a1a1a]'}`}
                 >
                   <div className="flex items-center space-x-4">
                     <div
@@ -302,7 +303,7 @@ export function ProductTable({
 
                 {/* Sticky Right: Activation */}
                 <td
-                  className={`sticky right-0 z-10 border-l border-black/5 px-6 py-4 text-right shadow-[-4px_0_12px_rgba(0,0,0,0.03)] transition-colors dark:border-white/5 dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)] ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#141414]' : 'bg-white group-hover:bg-[#fafafa] dark:bg-[#0a0a0a] dark:group-hover:bg-[#111111]'}`}
+                  className={`sticky right-0 z-10 border-l border-black/5 px-6 py-4 text-right shadow-[-4px_0_12px_rgba(0,0,0,0.03)] transition-colors dark:border-white/5 dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)] ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#222]' : 'bg-white group-hover:bg-[#fafafa] dark:bg-[#111111] dark:group-hover:bg-[#1a1a1a]'}`}
                 >
                   <button
                     onClick={(e) => {
@@ -322,6 +323,7 @@ export function ProductTable({
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
