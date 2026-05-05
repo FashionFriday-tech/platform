@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { JacketCategoryIcon, ShirtCategoryIcon, ShoeCategoryIcon, HangerCategoryIcon } from '@ff/ui';
 import { Product, ColumnId } from '../types';
 
 interface Props {
@@ -12,6 +13,23 @@ interface Props {
   setSortOption: (val: import('../types').SortOption) => void;
   visibleColumns: Set<ColumnId>;
 }
+
+const getCategoryIcon = (category: string) => {
+  switch (category.toLowerCase()) {
+    case 'outerwear':
+    case 'jacket':
+      return <JacketCategoryIcon className="mr-1.5 h-3.5 w-3.5" />;
+    case 'footwear':
+    case 'sneakers':
+    case 'shoes':
+      return <ShoeCategoryIcon className="mr-1.5 h-3.5 w-3.5" />;
+    case 'shirts':
+    case 't-shirts':
+      return <ShirtCategoryIcon className="mr-1.5 h-3.5 w-3.5" />;
+    default:
+      return <HangerCategoryIcon className="mr-1.5 h-3.5 w-3.5" />;
+  }
+};
 
 export function ProductTable({
   products,
@@ -220,7 +238,8 @@ export function ProductTable({
 
                 {visibleColumns.has('Category') && (
                   <td className="px-4 py-4">
-                    <span className="inline-flex items-center rounded-md bg-black/5 px-2.5 py-1 text-xs font-medium text-black/70 dark:bg-white/5 dark:text-white/70">
+                    <span className="inline-flex min-w-[100px] items-center justify-center rounded-md bg-black/5 px-2.5 py-1 text-xs font-medium text-black/70 dark:bg-white/5 dark:text-white/70">
+                      {getCategoryIcon(product.category)}
                       {product.category}
                     </span>
                   </td>
@@ -252,11 +271,11 @@ export function ProductTable({
 
                 {visibleColumns.has('Variants') && (
                   <td className="px-4 py-4">
-                    <div className="flex items-center gap-1">
+                    <div className="grid grid-rows-2 grid-flow-col gap-1 w-max">
                       {product.variants?.map((v) => (
                         <span
                           key={v}
-                          className="rounded border border-black/10 px-1.5 py-0.5 text-[10px] whitespace-nowrap text-black/60 dark:border-white/10 dark:text-white/60"
+                          className="flex h-[18px] min-w-[24px] items-center justify-center rounded border border-black/10 px-1 text-[9px] font-medium text-black/60 dark:border-white/10 dark:text-white/60"
                         >
                           {v}
                         </span>
@@ -279,7 +298,7 @@ export function ProductTable({
 
                 <td className="px-4 py-4 text-sm">
                   <span
-                    className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${product.status === 'Active' ? 'border-black/10 bg-black/5 text-black dark:border-white/20 dark:bg-white/10 dark:text-white' : product.status === 'Draft' ? 'border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-500' : 'border-transparent bg-black/5 text-black/50 dark:bg-white/5 dark:text-white/50'}`}
+                    className={`inline-flex min-w-[100px] items-center justify-center rounded-md border px-2.5 py-1 text-xs font-medium ${product.status === 'Active' ? 'border-black/10 bg-black/5 text-black dark:border-white/20 dark:bg-white/10 dark:text-white' : product.status === 'Draft' ? 'border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-500' : 'border-transparent bg-black/5 text-black/50 dark:bg-white/5 dark:text-white/50'}`}
                   >
                     {product.status}
                   </span>
@@ -288,13 +307,13 @@ export function ProductTable({
                 {visibleColumns.has('Stock') && (
                   <td className="px-4 py-4">
                     <div className="flex w-24 flex-col justify-center">
-                      <div className="mb-1 h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                      <div className="mb-1 h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
                         <div
-                          className={`h-full rounded-full ${product.stock > 700 ? 'bg-black dark:bg-white' : 'bg-black/50 dark:bg-white/50'}`}
+                          className={`h-full rounded-full transition-all duration-1000 ease-out ${product.stock < 100 ? 'bg-red-500' : product.stock < 500 ? 'bg-yellow-500' : 'bg-green-500'}`}
                           style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
                         ></div>
                       </div>
-                      <p className="text-right text-[10px] text-black/40 dark:text-white/40">
+                      <p className={`text-right text-[10px] font-medium ${product.stock < 100 ? 'text-red-500' : product.stock < 500 ? 'text-yellow-600 dark:text-yellow-500' : 'text-green-600 dark:text-green-500'}`}>
                         {product.stock}/{product.maxStock}
                       </p>
                     </div>
