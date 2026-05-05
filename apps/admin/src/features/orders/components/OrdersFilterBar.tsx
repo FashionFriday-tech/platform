@@ -34,12 +34,12 @@ export function OrdersFilterBar({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col gap-4 rounded-2xl border border-black/5 bg-white/30 p-4 backdrop-blur-md xl:flex-row xl:items-center xl:justify-between dark:border-white/5 dark:bg-black/30"
+      className="flex flex-col gap-4 rounded-2xl border border-black/5 bg-white p-4 xl:flex-row xl:items-center xl:justify-between dark:border-white/5 dark:bg-[#111111]"
     >
       <div className="relative max-w-sm flex-1">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
           <svg
-            className="h-4 w-4 text-black/40 dark:text-white/40"
+            className="h-4 w-4 text-black/30 dark:text-white/30"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -54,7 +54,7 @@ export function OrdersFilterBar({
         </div>
         <input
           type="text"
-          className="block w-full rounded-xl border border-black/10 bg-black/5 py-2 pr-3 pl-10 text-sm placeholder-black/40 transition-all outline-none focus:border-black/30 focus:ring-1 focus:ring-black/30 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-white/40 dark:focus:border-white/30 dark:focus:ring-white/30"
+          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
           placeholder="Search by order ID or phone..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
