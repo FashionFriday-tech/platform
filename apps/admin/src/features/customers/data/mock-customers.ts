@@ -60,5 +60,17 @@ export const mockCustomers: Customer[] = [
     totalSpent: 28600.00,
     joinDate: '2025-06-18T14:10:00Z',
     lastOrderDate: '2026-03-15T16:55:00Z',
+  },
+  {
+    id: 'CUST-006',
+    name: 'Robert Fox',
+    email: 'robert.fox@example.com',
+    phone: '+91 43210 98765',
+    avatar: 'https://i.pravatar.cc/150?u=robert',
+    status: 'active',
+    ordersCount: 0,
+    totalSpent: 0,
+    joinDate: '2026-06-01T09:00:00Z',
+    lastOrderDate: '',
   }
 ];
