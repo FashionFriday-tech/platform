@@ -24,82 +24,76 @@ export function OrderStats() {
     {
       name: 'Total Orders',
       value: totalOrders.toString(),
-      filterValue: 'all',
       icon: ShoppingBagIcon,
-      color: 'text-blue-600 dark:text-blue-400',
-      bgColor: 'bg-blue-500/10 dark:bg-blue-400/10',
-      borderColor: 'border-blue-500/20 dark:border-blue-400/10',
-      glow: 'bg-blue-500',
+      bg: 'bg-gradient-to-br from-[#4b8bee] to-[#3a75d5]', // Blue
+      subLabel: 'ALL TIME',
     },
     {
       name: 'Pending',
       value: pendingOrders.toString(),
-      filterValue: 'pending',
       icon: ClockIcon,
-      color: 'text-yellow-600 dark:text-yellow-400',
-      bgColor: 'bg-yellow-500/10 dark:bg-yellow-400/10',
-      borderColor: 'border-yellow-500/20 dark:border-yellow-400/10',
-      glow: 'bg-yellow-500',
+      bg: 'bg-gradient-to-br from-[#f59e0b] to-[#d97706]', // Yellow/Orange
+      subLabel: 'AWAITING',
     },
     {
       name: 'In Transit',
       value: transitOrders.toString(),
-      filterValue: 'shipped',
       icon: TruckIcon,
-      color: 'text-purple-600 dark:text-purple-400',
-      bgColor: 'bg-purple-500/10 dark:bg-purple-400/10',
-      borderColor: 'border-purple-500/20 dark:border-purple-400/10',
-      glow: 'bg-purple-500',
+      bg: 'bg-gradient-to-br from-[#7d52cc] to-[#633ba8]', // Purple
+      subLabel: 'ON THE WAY',
     },
     {
       name: 'Delivered',
       value: deliveredOrders.toString(),
-      filterValue: 'delivered',
       icon: CheckCircleIcon,
-      color: 'text-green-600 dark:text-green-400',
-      bgColor: 'bg-green-500/10 dark:bg-green-400/10',
-      borderColor: 'border-green-500/20 dark:border-green-400/10',
-      glow: 'bg-green-500',
+      bg: 'bg-gradient-to-br from-[#5db951] to-[#45a339]', // Green
+      subLabel: 'COMPLETED',
     },
     {
       name: 'Cancelled',
       value: nonPlacedOrders.toString(),
-      filterValue: 'cancelled',
       icon: AlertCircleIcon,
-      color: 'text-red-600 dark:text-red-400',
-      bgColor: 'bg-red-500/10 dark:bg-red-400/10',
-      borderColor: 'border-red-500/20 dark:border-red-400/10',
-      glow: 'bg-red-500',
+      bg: 'bg-gradient-to-br from-[#e04545] to-[#c73232]', // Red
+      subLabel: 'FAILED/CANCELLED',
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
       {stats.map((stat, i) => (
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: i * 0.05, ease: 'easeOut' }}
           key={stat.name}
-          className={`group relative overflow-hidden rounded-2xl border bg-white/70 p-6 backdrop-blur-xl transition-all duration-300 dark:bg-[#111111]/80 ${stat.borderColor}`}
+          className={`group relative overflow-hidden rounded-[20px] p-6 text-white shadow-lg aspect-[1.586] ${stat.bg}`}
         >
-          {/* Subtle background glow effect */}
-          <div className={`absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-5 transition-transform duration-500  dark:opacity-[0.03] ${stat.glow}`} />
-          
-          <div className="flex items-center justify-between relative z-10">
-            <dt className="text-xs font-bold tracking-widest text-black/50 uppercase dark:text-white/50">
-              {stat.name}
-            </dt>
-            <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-300 ${stat.bgColor} ${stat.color}`}>
-              <stat.icon className="h-5 w-5" />
-            </div>
+          {/* Abstract Waves Background */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <svg className="absolute h-full w-full" viewBox="0 0 400 250" preserveAspectRatio="none" fill="none">
+              <path d="M-50 250 C 100 100, 250 200, 450 0" stroke="white" strokeWidth="2" strokeOpacity="0.15" />
+              <path d="M-50 280 C 120 120, 230 180, 450 20" stroke="white" strokeWidth="1" strokeOpacity="0.15" />
+              <path d="M-50 310 C 140 140, 210 160, 450 40" stroke="white" strokeWidth="0.5" strokeOpacity="0.15" />
+            </svg>
+            <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white opacity-[0.08] blur-2xl"></div>
           </div>
           
-          <dd className="mt-4 flex items-baseline relative z-10">
-            <span className={`text-4xl font-[900] tracking-tight ${stat.color}`}>
+          <div className="relative z-10 flex h-full flex-col justify-between">
+            {/* Top row: Title and Icon */}
+            <div className="flex items-start justify-between">
+              <dt className="text-base font-extrabold tracking-wider text-white drop-shadow-sm pr-2">
+                {stat.name}
+              </dt>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <stat.icon className="h-5 w-5 text-white" />
+              </div>
+            </div>
+            
+            {/* Middle: Big Number */}
+            <dd className="text-3xl font-bold tracking-tight md:text-4xl">
               {stat.value}
-            </span>
-          </dd>
+            </dd>
+          </div>
         </motion.div>
       ))}
     </div>
