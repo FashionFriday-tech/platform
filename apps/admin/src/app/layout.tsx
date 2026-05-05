@@ -26,19 +26,25 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className="scrollbar-hide">
       <body
         suppressHydrationWarning
-        className={`${mulish.variable} font-sans scrollbar-hide flex min-h-screen bg-gray-50 text-black antialiased dark:bg-black dark:text-white`}
+        className={`${mulish.variable} font-sans scrollbar-hide flex min-h-screen bg-slate-50 text-black antialiased dark:bg-slate-950 dark:text-white`}
       >
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            {/* Mesh Gradient Background */}
+            <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+              <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-teal-100/50 blur-[120px] dark:bg-teal-900/20"></div>
+              <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-rose-100/50 blur-[120px] dark:bg-rose-900/20"></div>
+              <div className="absolute -bottom-40 left-1/4 h-[600px] w-[600px] rounded-full bg-violet-100/50 blur-[120px] dark:bg-violet-900/20"></div>
+              <div className="absolute -bottom-40 -right-40 h-[600px] w-[600px] rounded-full bg-amber-100/40 blur-[120px] dark:bg-amber-900/20"></div>
+            </div>
+
             <Sidebar />
 
             <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
-              {/* Subtle background glow */}
-              <div className="pointer-events-none absolute top-0 right-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-black/5 blur-[120px] dark:bg-white/5"></div>
 
               <Header />
 
-              <div className="z-10 mr-4 mb-4 ml-2 flex min-h-0 flex-1 flex-col overflow-hidden">
+              <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
                 {children}
               </div>
             </main>
