@@ -4,6 +4,7 @@ import { useProducts } from './hooks/useProducts';
 import { ProductActionBar } from './components/ProductActionBar';
 import { ProductTable } from './components/ProductTable';
 import { ProductGrid } from './components/ProductGrid';
+import { ProductStats } from './components/ProductStats';
 
 export function ProductListView() {
   const {
@@ -26,8 +27,10 @@ export function ProductListView() {
   } = useProducts();
 
   return (
-    <div className="animate-in fade-in flex h-full min-h-0 w-full flex-col duration-700">
-      <div className="glass-panel flex min-h-0 flex-1 flex-col p-6">
+    <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
+      <ProductStats />
+
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
         <ProductActionBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -39,7 +42,7 @@ export function ProductListView() {
           setAppliedAdvancedFilters={setAppliedAdvancedFilters}
         />
 
-        <div className="-mx-6 min-h-0 flex-1 px-6 pb-2">
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
           {viewMode === 'list' ? (
             <ProductTable
               products={products}
