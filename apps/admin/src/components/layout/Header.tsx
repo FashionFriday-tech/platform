@@ -47,7 +47,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 flex h-24 flex-shrink-0 items-center justify-between px-8 bg-transparent">
+    <header className="sticky top-0 z-30 flex h-16 mt-4 flex-shrink-0 items-center justify-between px-6 bg-transparent">
       <div className="flex flex-1 items-center">
         <button className="mr-4 text-black/70 hover:text-black md:hidden dark:text-white/70 dark:hover:text-white">
           <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
