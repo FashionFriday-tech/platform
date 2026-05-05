@@ -68,25 +68,17 @@ export function OrderStats() {
           key={stat.name}
           className={`group relative overflow-hidden rounded-[20px] p-6 text-white shadow-lg aspect-[1.586] ${stat.bg}`}
         >
-          {/* Abstract Waves Background */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <svg className="absolute h-full w-full" viewBox="0 0 400 250" preserveAspectRatio="none" fill="none">
-              <path d="M-50 250 C 100 100, 250 200, 450 0" stroke="white" strokeWidth="2" strokeOpacity="0.15" />
-              <path d="M-50 280 C 120 120, 230 180, 450 20" stroke="white" strokeWidth="1" strokeOpacity="0.15" />
-              <path d="M-50 310 C 140 140, 210 160, 450 40" stroke="white" strokeWidth="0.5" strokeOpacity="0.15" />
-            </svg>
+            <stat.icon className="absolute -bottom-4 -right-4 h-28 w-28 text-white opacity-[0.1]" />
             <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white opacity-[0.08] blur-2xl"></div>
           </div>
           
           <div className="relative z-10 flex h-full flex-col justify-between">
-            {/* Top row: Title and Icon */}
+            {/* Top row: Title */}
             <div className="flex items-start justify-between">
               <dt className="text-base font-extrabold tracking-wider text-white drop-shadow-sm pr-2">
                 {stat.name}
               </dt>
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                <stat.icon className="h-5 w-5 text-white" />
-              </div>
             </div>
             
             {/* Middle: Big Number */}
