@@ -36,7 +36,7 @@ export function Sidebar() {
   const hasAccess = (allowedRoles: string[]) => allowedRoles.includes(role);
 
   return (
-    <aside className="glass-panel relative sticky top-4 z-10 my-4 mx-2 pb-2 flex hidden h-[calc(100vh-2rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-2xl md:flex">
+    <aside className="bg-transparent relative sticky top-0 z-10 flex hidden h-screen w-64 flex-shrink-0 flex-col md:flex">
       <div className="flex items-center space-x-2 p-6 pb-0.5">
         <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
           <img src="/images/logos/ff-logo.png" alt="Fashion Friday" className="h-full w-full object-contain" />
