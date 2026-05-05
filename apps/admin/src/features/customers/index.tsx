@@ -14,10 +14,13 @@ export default function CustomersFeature() {
     setSearchQuery,
     statusFilter,
     setStatusFilter,
+    ordersFilter,
+    setOrdersFilter,
     sortField,
     sortDirection,
     handleSort,
     toggleCustomerStatus,
+    handleExport,
   } = useCustomers();
 
   return (
@@ -30,6 +33,9 @@ export default function CustomersFeature() {
           onSearchChange={setSearchQuery}
           statusFilter={statusFilter}
           onStatusChange={setStatusFilter}
+          ordersFilter={ordersFilter}
+          onOrdersChange={setOrdersFilter}
+          onExport={handleExport}
         />
 
         <AnimatePresence mode="wait">
