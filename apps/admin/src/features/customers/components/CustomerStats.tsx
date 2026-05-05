@@ -21,28 +21,28 @@ export function CustomerStats() {
       name: 'Total Customers',
       value: totalCustomers.toString(),
       icon: UsersIcon,
-      bg: 'bg-gradient-to-br from-[#4b8bee] to-[#3a75d5]', // Blue
+      bg: 'bg-gradient-to-br from-blue-400 to-blue-600', // Blue
       subLabel: 'ALL TIME',
     },
     {
       name: 'Active Users',
       value: activeCustomers.toString(),
       icon: ActivityIcon,
-      bg: 'bg-gradient-to-br from-[#5db951] to-[#45a339]', // Green
+      bg: 'bg-gradient-to-br from-green-400 to-green-600', // Green
       subLabel: 'CURRENT',
     },
     {
       name: 'Purchased',
       value: purchasedCustomers.toString(),
       icon: ShoppingBagIcon,
-      bg: 'bg-gradient-to-br from-[#7d52cc] to-[#633ba8]', // Purple
+      bg: 'bg-gradient-to-br from-purple-400 to-purple-600', // Purple
       subLabel: 'WITH ORDERS',
     },
     {
       name: 'Blocked Users',
       value: blockedCustomers.toString(),
       icon: AlertCircleIcon,
-      bg: 'bg-gradient-to-br from-[#e04545] to-[#c73232]', // Red
+      bg: 'bg-gradient-to-br from-red-400 to-red-600', // Red
       subLabel: 'RESTRICTED',
     },
   ];
