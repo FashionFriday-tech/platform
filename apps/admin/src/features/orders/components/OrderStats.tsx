@@ -25,35 +25,35 @@ export function OrderStats() {
       name: 'Total Orders',
       value: totalOrders.toString(),
       icon: ShoppingBagIcon,
-      bg: 'bg-gradient-to-br from-[#4b8bee] to-[#3a75d5]', // Blue
+      bg: 'bg-gradient-to-br from-blue-400 to-blue-600', // Blue
       subLabel: 'ALL TIME',
     },
     {
       name: 'Pending',
       value: pendingOrders.toString(),
       icon: ClockIcon,
-      bg: 'bg-gradient-to-br from-[#f59e0b] to-[#d97706]', // Yellow/Orange
+      bg: 'bg-gradient-to-br from-orange-400 to-orange-600', // Yellow/Orange
       subLabel: 'AWAITING',
     },
     {
       name: 'In Transit',
       value: transitOrders.toString(),
       icon: TruckIcon,
-      bg: 'bg-gradient-to-br from-[#7d52cc] to-[#633ba8]', // Purple
+      bg: 'bg-gradient-to-br from-purple-400 to-purple-600', // Purple
       subLabel: 'ON THE WAY',
     },
     {
       name: 'Delivered',
       value: deliveredOrders.toString(),
       icon: CheckCircleIcon,
-      bg: 'bg-gradient-to-br from-[#5db951] to-[#45a339]', // Green
+      bg: 'bg-gradient-to-br from-green-400 to-green-600', // Green
       subLabel: 'COMPLETED',
     },
     {
       name: 'Cancelled',
       value: nonPlacedOrders.toString(),
       icon: AlertCircleIcon,
-      bg: 'bg-gradient-to-br from-[#e04545] to-[#c73232]', // Red
+      bg: 'bg-gradient-to-br from-red-400 to-red-600', // Red
       subLabel: 'FAILED/CANCELLED',
     },
   ];
