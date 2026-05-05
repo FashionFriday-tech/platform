@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CustomersFilterBar } from './components/CustomersFilterBar';
+import { CustomerStats } from './components/CustomerStats';
 import { CustomersTable } from './components/CustomersTable';
 import { useCustomers } from './hooks/useCustomers';
 
@@ -20,8 +21,10 @@ export default function CustomersFeature() {
   } = useCustomers();
 
   return (
-    <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-y-auto">
-      <div className="flex flex-1 flex-col gap-4">
+    <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
+      <CustomerStats />
+
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
         <CustomersFilterBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -36,6 +39,7 @@ export default function CustomersFeature() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
+            className="flex-1 min-h-0 overflow-hidden flex flex-col"
           >
             <CustomersTable
               customers={customers}
