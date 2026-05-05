@@ -83,10 +83,10 @@ export function Sidebar() {
                   16
                 </span>
               </Link>
-              <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+              <Link href="/customers" className={getLinkClass('/customers')}>
                 <UsersIcon className="h-5 w-5 opacity-70" />
                 <span className="text-sm font-medium">Customers</span>
-              </a>
+              </Link>
               <a href="#" className="flex items-center space-x-3 rounded-lg px-3 py-2.5 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
                 <StarIcon className="h-5 w-5 opacity-70" />
                 <span className="text-sm font-medium">Reviews</span>
