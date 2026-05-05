@@ -1,39 +1,45 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { mockProducts } from '../services/api';
-import { ShoppingBagIcon, ActivityIcon, AlertCircleIcon } from '@ff/ui';
+import { ShoppingBagIcon, ActivityIcon, AlertCircleIcon, ClockIcon } from '@ff/ui';
 
 export function ProductStats() {
   const totalProducts = mockProducts.length;
   const activeProducts = mockProducts.filter((p) => p.status === 'Active').length;
-  const inactiveProducts = mockProducts.filter((p) => p.status === 'Inactive' || p.status === 'Draft').length;
+  const inactiveProducts = mockProducts.filter((p) => p.status === 'Inactive').length;
+  const draftProducts = mockProducts.filter((p) => p.status === 'Draft').length;
 
   const stats = [
     { 
       name: 'Total Products', 
       value: totalProducts, 
-      bg: 'bg-gradient-to-br from-[#7d52cc] to-[#633ba8]', // Purple
+      bg: 'bg-gradient-to-br from-purple-400 to-purple-600', 
       subLabel: 'ALL INVENTORY',
       icon: ShoppingBagIcon,
     },
     { 
       name: 'Active Products', 
       value: activeProducts, 
-      bg: 'bg-gradient-to-br from-[#5db951] to-[#45a339]', // Green
+      bg: 'bg-gradient-to-br from-green-400 to-green-600', 
       subLabel: 'CURRENTLY LISTED',
       icon: ActivityIcon,
     },
     { 
-      name: 'Inactive / Draft', 
+      name: 'Inactive', 
       value: inactiveProducts, 
-      bg: 'bg-gradient-to-br from-[#e04545] to-[#c73232]', // Red
-      subLabel: 'NOT PUBLISHED',
+      bg: 'bg-gradient-to-br from-red-400 to-red-600', 
       icon: AlertCircleIcon,
+    },
+    { 
+      name: 'Draft', 
+      value: draftProducts, 
+      bg: 'bg-gradient-to-br from-orange-400 to-orange-600', 
+      icon: ClockIcon,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat, i) => (
         <motion.div
           key={stat.name}
