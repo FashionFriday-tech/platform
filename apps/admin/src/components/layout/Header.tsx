@@ -19,6 +19,7 @@ export function Header() {
     if (pathname === '/') return { title: 'Dashboard', showBack: false, icon: ActivityIcon };
     if (pathname.startsWith('/orders/')) return { title: 'Order Details', showBack: true, icon: ShoppingBagIcon };
     if (pathname === '/orders') return { title: 'Orders Management', showBack: false, icon: ShoppingBagIcon };
+    if (pathname.startsWith('/products/')) return { title: 'Product Details', showBack: true, icon: PackageIcon };
     if (pathname === '/products') return { title: 'Products', showBack: false, icon: PackageIcon };
     if (pathname === '/customers') return { title: 'Customers', showBack: false, icon: UsersIcon };
     
