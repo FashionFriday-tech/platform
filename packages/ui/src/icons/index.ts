@@ -114,7 +114,7 @@ import {
 } from 'react-icons/ri';
 import { RxHamburgerMenu, RxStar, RxStarFilled } from 'react-icons/rx';
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from 'react-icons/si';
-import { TbHeartMinus, TbHeartPlus } from 'react-icons/tb';
+import { TbHeartMinus, TbHeartPlus, TbJacket, TbShirt, TbShoe, TbHanger } from 'react-icons/tb';
 import { TfiCrown } from 'react-icons/tfi';
 import { TiThMenuOutline } from 'react-icons/ti';
 
@@ -270,6 +270,10 @@ export const ShirtIcon = MdCheckroom;
 export const FootprintsIcon = MdDirectionsWalk;
 export const WatchIcon = MdWatch;
 export const SmartphoneIcon = MdOutlinePhone;
+export const JacketCategoryIcon = TbJacket;
+export const ShirtCategoryIcon = TbShirt;
+export const ShoeCategoryIcon = TbShoe;
+export const HangerCategoryIcon = TbHanger;
 
 // BUSINESS
 export const StoreIcon = MdStore;
