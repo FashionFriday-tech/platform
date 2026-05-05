@@ -48,10 +48,10 @@ export function CustomersTable({
   };
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-black/5 bg-white/50 backdrop-blur-xl dark:border-white/5 dark:bg-[#111111]/80">
-      <div className="overflow-x-auto scrollbar-hide">
-        <table className="w-full text-left text-sm text-black dark:text-white">
-          <thead className="border-b border-black/5 bg-black/5 text-xs font-medium text-black/60 uppercase dark:border-white/5 dark:bg-white/5 dark:text-white/60">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/5 dark:bg-[#111111]">
+      <div className="flex-1 overflow-auto scrollbar-hide">
+        <table className="w-full text-left text-sm text-black dark:text-white relative">
+          <thead className="sticky top-0 z-30 border-b border-black/5 bg-[#f8f9fa] text-xs font-medium text-black/60 uppercase dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/60">
             <tr>
               <th
                 className="sticky left-0 z-20 min-w-[250px] bg-white px-6 py-4 dark:bg-[#111111] cursor-pointer transition-colors hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap"
