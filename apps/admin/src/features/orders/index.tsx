@@ -27,10 +27,10 @@ export default function OrdersFeature() {
   } = useOrders();
 
   return (
-    <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-y-auto">
+    <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
       <OrderStats />
 
-      <div className="flex flex-1 flex-col gap-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
         <OrdersFilterBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -51,6 +51,7 @@ export default function OrdersFeature() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
+            className="flex-1 min-h-0 overflow-hidden flex flex-col"
           >
             {viewMode === 'table' ? (
               <OrdersTable
