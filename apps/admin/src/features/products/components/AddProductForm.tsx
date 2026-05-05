@@ -122,28 +122,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   };
 
   return (
-    <div className="scrollbar-hide h-full w-full overflow-y-auto pb-20">
+    <div className="scrollbar-hide h-full w-full overflow-y-auto pb-20 rounded-2xl">
       {/* Top Bar */}
-      <div className="sticky top-0 z-30 mb-6 flex flex-col justify-between gap-4 border-b border-black/5 bg-gray-50/90 py-2 backdrop-blur-md md:flex-row md:items-center dark:border-white/5 dark:bg-black/90">
+      <div className="sticky top-0 rounded-2xl z-30 mb-6 px-4 flex flex-col justify-between gap-4 border-b border-black/5 bg-gray-50/90 py-2 backdrop-blur-md md:flex-row md:items-center dark:border-white/5 dark:bg-black/90">
         <div className="flex items-center space-x-3">
-          <Link
-            href="/"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"
-          >
-            <svg
-              className="h-4 w-4 text-black dark:text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-          </Link>
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-white shadow-md dark:bg-white dark:text-black">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -208,11 +190,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Left Column */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-4 lg:col-span-2">
           {/* General Information */}
-          <div className="rounded-[2rem] border border-black/5 bg-white p-7 shadow-sm dark:border-white/5 dark:bg-[#111]">
+          <div className="rounded-[2rem] bg-white p-7 shadow-sm dark:bg-[#111]">
             <h2 className="mb-6 text-lg font-bold text-black dark:text-white">
               General Information
             </h2>
@@ -535,7 +517,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           </div>
 
           {/* Pricing And Stock */}
-          <div className="rounded-[2rem] border border-black/5 bg-white p-7 shadow-sm dark:border-white/5 dark:bg-[#111]">
+          <div className="rounded-[2rem] bg-white p-7 shadow-sm dark:bg-[#111]">
             <h2 className="mb-6 text-lg font-bold text-black dark:text-white">Pricing And Stock</h2>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -608,7 +590,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           </div>
 
           {/* Search Engine Optimization */}
-          <div className="rounded-[2rem] border border-black/5 bg-white p-7 shadow-sm dark:border-white/5 dark:bg-[#111]">
+          <div className="rounded-[2rem] bg-white p-7 shadow-sm dark:bg-[#111]">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <h2 className="text-lg font-bold text-black dark:text-white">
@@ -743,7 +725,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         {/* Right Column */}
         <div className="space-y-6">
           {/* Upload Img */}
-          <div className="rounded-[2rem] border border-black/5 bg-white p-7 shadow-sm dark:border-white/5 dark:bg-[#111]">
+          <div className="rounded-[2rem] bg-white p-7 shadow-sm dark:bg-[#111]">
             <div className="mb-6 flex items-center justify-between">
               <h2 className="text-lg font-bold text-black dark:text-white">Upload Media</h2>
               <span className="text-xs font-bold text-black/50 dark:text-white/50">
