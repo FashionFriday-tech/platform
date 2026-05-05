@@ -75,7 +75,7 @@ export function ProductDetailView({ productId }: Props) {
       <div className="mb-20 grid grid-cols-1 items-start gap-16 lg:grid-cols-12">
         {/* Left Column: Gallery (Sticky, 5 cols) */}
         <div className="lg:sticky lg:top-24 lg:col-span-5">
-          <div className="group relative aspect-[3/4] w-full overflow-hidden rounded-[2.5rem] bg-black/5 shadow-2xl dark:bg-white/5">
+          <div className="group relative aspect-[3/4] w-full overflow-hidden rounded-[2.5rem] bg-black/5 dark:bg-white/5">
             {displayImages.length > 0 ? (
               <img
                 src={displayImages[activeImageIndex]}
@@ -93,12 +93,12 @@ export function ProductDetailView({ productId }: Props) {
 
             {/* Floating Thumbnails Dock */}
             {displayImages.length > 1 && (
-              <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-3xl bg-white/70 p-3 shadow-xl backdrop-blur-xl dark:bg-black/70">
+              <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-3xl bg-white p-3 shadow-xl backdrop-blur-xl dark:bg-black/70">
                 {displayImages.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl transition-all duration-300 ${activeImageIndex === idx ? 'scale-110 shadow-lg ring-2 ring-white dark:ring-black' : 'opacity-60 hover:scale-105 hover:opacity-100'}`}
+                    className={`relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl transition-all duration-300 ${activeImageIndex === idx ? 'scale-110 shadow-lg ring-2 ring-white dark:ring-black' : 'opacity-80 hover:scale-105 hover:opacity-100'}`}
                   >
                     <img src={img} alt={`Thumbnail ${idx}`} className="h-full w-full object-cover" />
                   </button>
@@ -235,13 +235,13 @@ export function ProductDetailView({ productId }: Props) {
             </div>
 
             <div className="mb-8 rounded-2xl border border-black/5 bg-black/5 p-6 transition-colors group-hover:bg-black/10 dark:border-white/5 dark:bg-white/5 dark:group-hover:bg-white/10">
-              <div className="mb-2 truncate text-xs font-medium text-black/60 dark:text-white/60">
+              <div className="mb-2 break-all text-xs font-medium text-black/60 dark:text-white/60">
                 fashionfriday.in &rsaquo; product &rsaquo; {product.seoSlug || 'item'}
               </div>
-              <div className="mb-2 line-clamp-1 cursor-pointer text-xl leading-tight font-medium text-blue-600 hover:underline dark:text-blue-400">
+              <div className="mb-2 cursor-pointer text-xl leading-tight font-medium text-blue-600 hover:underline dark:text-blue-400">
                 {product.seoTitle || product.name}
               </div>
-              <div className="line-clamp-3 text-sm leading-relaxed text-black/70 dark:text-white/70">
+              <div className="text-sm leading-relaxed text-black/70 dark:text-white/70">
                 {product.seoDesc ||
                   product.description ||
                   'View this product on Fashion Friday. Discover the best styles and premium quality items.'}
