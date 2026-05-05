@@ -54,7 +54,7 @@ export function CustomersTable({
           <thead className="sticky top-0 z-30 border-b border-black/5 bg-[#f8f9fa] text-xs font-medium text-black/60 uppercase dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/60">
             <tr>
               <th
-                className="sticky left-0 z-20 min-w-[250px] bg-white px-6 py-4 dark:bg-[#111111] cursor-pointer transition-colors hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap"
+                className="sticky left-0 z-20 min-w-[250px] cursor-pointer whitespace-nowrap bg-[#f8f9fa] px-6 py-4 transition-colors hover:bg-[#e9ecef] dark:bg-[#1a1a1a] dark:hover:bg-[#2a2a2a]"
                 onClick={() => onSort('name')}
               >
                 Customer <SortIcon field="name" />
