@@ -1,6 +1,6 @@
 import { Product } from '../types';
 
-const mockProducts: Product[] = [
+export const mockProducts: Product[] = [
   {
     id: '081794MT',
     name: 'Oversized Heritage Washed',
