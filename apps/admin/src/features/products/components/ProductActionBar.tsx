@@ -40,12 +40,12 @@ export function ProductActionBar({
   } = useProductActionBar(appliedAdvancedFilters, setAppliedAdvancedFilters);
 
   return (
-    <div className="flex flex-col justify-between gap-4 rounded-2xl border border-black/5 bg-white p-4 md:flex-row md:items-center dark:border-white/5 dark:bg-[#111111]">
-      <div className="flex items-center space-x-2">
-        <div className="flex rounded-lg border border-black/10 bg-black/5 p-1 dark:border-white/10 dark:bg-white/5">
+    <div className="relative z-50 flex flex-col gap-4 rounded-2xl border border-black/5 bg-white p-4 xl:flex-row xl:items-center xl:justify-between dark:border-white/5 dark:bg-[#111111]">
+      <div className="flex flex-1 items-center gap-3">
+        <div className="flex rounded-xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#1a1a1a]">
           <button
             onClick={() => setViewMode('list')}
-            className={`rounded-md p-1.5 shadow-sm transition-colors ${viewMode === 'list' ? 'bg-black/10 text-black dark:bg-white/10 dark:text-white' : 'text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white'}`}
+            className={`rounded-lg p-1.5 transition-all duration-200 ${viewMode === 'list' ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white' : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white'}`}
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -58,7 +58,7 @@ export function ProductActionBar({
           </button>
           <button
             onClick={() => setViewMode('grid')}
-            className={`rounded-md p-1.5 transition-colors ${viewMode === 'grid' ? 'bg-black/10 text-black shadow-sm dark:bg-white/10 dark:text-white' : 'text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white'}`}
+            className={`rounded-lg p-1.5 transition-all duration-200 ${viewMode === 'grid' ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white' : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white'}`}
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -71,7 +71,7 @@ export function ProductActionBar({
           </button>
         </div>
 
-        <div className="relative hidden w-full max-w-xs md:block md:w-64">
+        <div className="relative max-w-md flex-1">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
             <svg
               className="h-4 w-4 text-black/30 dark:text-white/30"
@@ -89,7 +89,7 @@ export function ProductActionBar({
           </div>
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Search products by name, SKU or category..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
@@ -97,9 +97,9 @@ export function ProductActionBar({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 pb-2 md:pb-0">
+      <div className="flex flex-wrap items-center gap-3">
         {/* Columns Dropdown */}
-        <div className="group relative z-50 flex cursor-pointer items-center space-x-2 rounded-full border border-black/10 bg-black/5 px-3 py-2 text-sm whitespace-nowrap text-black/60 transition-colors hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10">
+        <div className="group relative z-50 flex cursor-pointer items-center space-x-2 rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm font-medium whitespace-nowrap text-black/70 transition-colors hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white">
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
@@ -142,7 +142,7 @@ export function ProductActionBar({
         <div className="relative z-40" ref={popupRef}>
           <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className={`flex items-center space-x-2 rounded-full border px-4 py-2 text-sm transition-all ${isAdvancedActive ? 'border-transparent bg-black text-white shadow-md dark:bg-white dark:text-black' : 'border-black/10 bg-black/5 text-black/80 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10'}`}
+            className={`flex items-center space-x-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${isAdvancedActive ? 'border-transparent bg-black text-white shadow-md dark:bg-white dark:text-black' : 'border-black/5 bg-[#f8f9fa] text-black/70 hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white'}`}
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -358,7 +358,7 @@ export function ProductActionBar({
 
         <Link
           href="/products/add"
-          className="flex items-center space-x-2 rounded-full bg-black px-4 py-2 text-sm font-medium whitespace-nowrap text-white shadow-lg transition-colors hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
+          className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 whitespace-nowrap dark:bg-white dark:text-black dark:hover:bg-white/90"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
