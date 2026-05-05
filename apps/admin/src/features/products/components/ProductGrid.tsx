@@ -161,11 +161,11 @@ export function ProductGrid({
                   <div className="mb-1 flex-1">
                     <div className="mb-1.5 flex items-center justify-between text-[9px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                       <span>Stock</span>
-                      <span className={product.stock < 100 ? "text-red-500" : ""}>{product.stock}</span>
+                      <span className={product.stock < 100 ? "text-red-500" : product.stock < 500 ? "text-yellow-500" : "text-green-500"}>{product.stock}</span>
                     </div>
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
                       <div
-                        className={`h-full rounded-full transition-all duration-1000 ease-out ${product.stock < 100 ? 'bg-red-500' : product.stock > 700 ? 'bg-green-500' : 'bg-black dark:bg-white'}`}
+                        className={`h-full rounded-full transition-all duration-1000 ease-out ${product.stock < 100 ? 'bg-red-500' : product.stock < 500 ? 'bg-yellow-500' : 'bg-green-500'}`}
                         style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
                       ></div>
                     </div>
