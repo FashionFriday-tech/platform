@@ -84,11 +84,11 @@ export function CustomersTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-black/5 dark:divide-white/5">
-            {customers.map((customer) => (
+            {customers.map((customer, index) => (
               <tr
                 key={customer.id}
                 onClick={() => router.push(`/customers/${customer.id}`)}
-                className="group cursor-pointer"
+                className={twMerge("group cursor-pointer relative transition-colors", openDropdown === customer.id ? "z-20 bg-gray-50 dark:bg-white/5" : "")}
               >
                 <td className="sticky left-0 z-10 min-w-[250px] bg-white px-6 py-4 dark:bg-[#111111] whitespace-nowrap group-hover:bg-gray-50 dark:group-hover:bg-[#1a1a1a]">
                   <div className="flex items-center gap-3">
@@ -129,7 +129,10 @@ export function CustomersTable({
                   {openDropdown === customer.id && (
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
-                      <div className="absolute right-6 top-10 z-20 w-48 rounded-xl border border-black/10 bg-white p-1 shadow-lg dark:border-white/10 dark:bg-[#1a1a1a]">
+                      <div className={twMerge(
+                        "absolute right-6 z-20 w-48 rounded-xl border border-black/10 bg-white p-1 shadow-lg dark:border-white/10 dark:bg-[#1a1a1a]",
+                        index >= customers.length - 2 ? "bottom-10" : "top-10"
+                      )}>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
