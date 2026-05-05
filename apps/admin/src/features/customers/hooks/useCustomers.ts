@@ -5,6 +5,7 @@ import { mockCustomers } from '../data/mock-customers';
 export function useCustomers() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [ordersFilter, setOrdersFilter] = useState('all');
   const [sortField, setSortField] = useState<SortField>('joinDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [customersData, setCustomersData] = useState<Customer[]>(mockCustomers);
@@ -37,12 +38,21 @@ export function useCustomers() {
         (c) =>
           c.name.toLowerCase().includes(query) ||
           c.email.toLowerCase().includes(query) ||
-          c.phone.includes(query)
+          c.phone.includes(query) ||
+          c.id.toLowerCase().includes(query)
       );
     }
 
     if (statusFilter !== 'all') {
       result = result.filter((c) => c.status === statusFilter);
+    }
+
+    if (ordersFilter !== 'all') {
+      if (ordersFilter === 'with-orders') {
+        result = result.filter((c) => c.ordersCount > 0);
+      } else if (ordersFilter === 'no-orders') {
+        result = result.filter((c) => c.ordersCount === 0);
+      }
     }
 
     result.sort((a, b) => {
@@ -62,15 +72,46 @@ export function useCustomers() {
     return result;
   }, [customersData, searchQuery, statusFilter, sortField, sortDirection]);
 
+  const handleExport = () => {
+    const headers = ['ID', 'Name', 'Email', 'Phone', 'Status', 'Orders', 'Total Spent', 'Join Date'];
+    const rows = filteredAndSortedCustomers.map(c => [
+      `"${c.id}"`,
+      `"${c.name}"`,
+      `"${c.email}"`,
+      `"${c.phone}"`,
+      `"${c.status}"`,
+      `"${c.ordersCount}"`,
+      `"${c.totalSpent}"`,
+      `"${new Date(c.joinDate).toLocaleDateString()}"`
+    ]);
+    
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(e => e.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'customers_export.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return {
     customers: filteredAndSortedCustomers,
     searchQuery,
     setSearchQuery,
     statusFilter,
     setStatusFilter,
+    ordersFilter,
+    setOrdersFilter,
     sortField,
     sortDirection,
     handleSort,
-    toggleCustomerStatus
+    toggleCustomerStatus,
+    handleExport,
   };
 }
