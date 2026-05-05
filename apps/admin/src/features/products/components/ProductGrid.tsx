@@ -78,7 +78,7 @@ export function ProductGrid({
             <div
               key={product.id}
               onClick={() => router.push(`/products/${product.id}`)}
-              className={`group relative flex h-40 cursor-pointer flex-row overflow-hidden rounded-2xl border transition-all duration-300 ${isSelected ? 'border-black/40 bg-black/[0.03] ring-2 ring-black/10 dark:border-white/40 dark:bg-white/[0.05] dark:ring-white/10' : 'border-black/10 bg-white/60 hover:-translate-y-1 hover:border-black/30 hover:shadow-xl dark:border-white/10 dark:bg-black/20 dark:hover:border-white/30'}`}
+              className={`group relative flex h-[180px] cursor-pointer flex-row overflow-hidden rounded-[24px] transition-all duration-300 ${isSelected ? 'bg-black/5 ring-2 ring-black/20 dark:bg-white/5 dark:ring-white/20 shadow-md' : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1.5 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:bg-[#161616] dark:shadow-[0_8px_30px_rgb(255,255,255,0.02)] dark:hover:shadow-[0_12px_40px_rgb(255,255,255,0.04)]'}`}
             >
               {/* Checkbox */}
               <div
@@ -86,42 +86,43 @@ export function ProductGrid({
                   e.stopPropagation();
                   onToggleSelection(product.id);
                 }}
-                className={`absolute top-3 left-3 z-10 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md border shadow-sm backdrop-blur-md transition-all ${isSelected ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/30 bg-white/80 group-hover:border-black/60 dark:border-white/30 dark:bg-black/80 dark:group-hover:border-white/60'}`}
+                className={`absolute top-4 left-4 z-20 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md backdrop-blur-md transition-all ${isSelected ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' : 'bg-white/90 text-transparent hover:bg-white shadow-[0_2px_10px_rgba(0,0,0,0.1)] dark:bg-black/80 dark:hover:bg-black dark:shadow-[0_2px_10px_rgba(255,255,255,0.05)] group-hover:text-black/20 dark:group-hover:text-white/20'}`}
               >
-                {isSelected && (
-                  <svg
-                    className="h-4 w-4 text-white dark:text-black"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
               </div>
 
               {/* Status Badge */}
-              <div className="absolute bottom-3 left-3 z-10">
+              <div className="absolute bottom-4 left-4 z-20">
                 <span
-                  className={`inline-flex items-center rounded-md border px-2 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md ${product.status === 'Active' ? 'border-black/20 bg-black/10 text-black dark:border-white/30 dark:bg-white/20 dark:text-white' : product.status === 'Draft' ? 'border-yellow-500/30 bg-yellow-500/20 text-yellow-800 dark:text-yellow-400' : 'border-black/10 bg-white/80 text-black/50 dark:border-white/10 dark:bg-black/80 dark:text-white/50'}`}
+                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-extrabold tracking-widest uppercase shadow-lg backdrop-blur-md transition-colors ${product.status === 'Active' ? 'bg-black/90 text-white dark:bg-white/90 dark:text-black' : product.status === 'Draft' ? 'bg-yellow-400 text-yellow-900 dark:bg-yellow-500' : 'bg-white/90 text-black/60 dark:bg-black/90 dark:text-white/60'}`}
                 >
                   {product.status}
                 </span>
               </div>
 
               {/* Image Area - Left side */}
-              <div className="relative flex h-full w-[120px] flex-shrink-0 items-center justify-center overflow-hidden bg-black/5 dark:bg-white/5">
+              <div className="relative flex h-full w-[110px] flex-shrink-0 items-center justify-center overflow-hidden bg-black/5 dark:bg-white/5">
                 {product.imageUrl ? (
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="h-full w-full object-cover"
-                  />
+                  <>
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
+                  </>
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10">
                     <span className="text-xs font-bold tracking-widest text-black/30 uppercase dark:text-white/30">
@@ -135,36 +136,36 @@ export function ProductGrid({
               <div className="flex min-w-0 flex-1 flex-col justify-between p-4">
                 <div>
                   <h3
-                    className="mb-1.5 line-clamp-2 text-base leading-tight font-semibold text-black dark:text-white"
+                    className="mb-1 line-clamp-2 text-base leading-tight font-bold text-black dark:text-white"
                     title={product.name}
                   >
                     {product.name}
                   </h3>
-                  <p className="mb-2 font-mono text-xs text-black/50 dark:text-white/50">
+                  <p className="mb-2 font-mono text-[10px] font-medium text-black/40 dark:text-white/40">
                     ID: {product.sku}
                   </p>
 
                   <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-bold text-black dark:text-white">
+                    <span className="text-lg font-extrabold text-black dark:text-white">
                       ₹{product.sellingPrice.toFixed(2)}
                     </span>
                     {product.sellingPrice < product.originalPrice && (
-                      <span className="text-xs text-black/40 line-through dark:text-white/40">
+                      <span className="text-xs font-semibold text-black/30 line-through dark:text-white/30">
                         ₹{product.originalPrice.toFixed(2)}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-2 flex items-end justify-between gap-4">
+                <div className="mt-2 flex items-end justify-between gap-3">
                   <div className="mb-1 flex-1">
-                    <div className="mb-1.5 flex items-center justify-between text-[10px] font-semibold tracking-wider text-black/50 uppercase dark:text-white/50">
+                    <div className="mb-1.5 flex items-center justify-between text-[9px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                       <span>Stock</span>
-                      <span>{product.stock}</span>
+                      <span className={product.stock < 100 ? "text-red-500" : ""}>{product.stock}</span>
                     </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${product.stock > 700 ? 'bg-black dark:bg-white' : 'bg-black/40 dark:bg-white/40'}`}
+                        className={`h-full rounded-full transition-all duration-1000 ease-out ${product.stock < 100 ? 'bg-red-500' : product.stock > 700 ? 'bg-green-500' : 'bg-black dark:bg-white'}`}
                         style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
                       ></div>
                     </div>
@@ -176,7 +177,7 @@ export function ProductGrid({
                       product.status !== 'Draft' && onToggleStatus(product.id);
                     }}
                     disabled={product.status === 'Draft'}
-                    className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full transition-colors ${product.status === 'Active' ? 'bg-black/90 shadow-inner dark:bg-white/90' : 'border border-black/20 bg-black/10 dark:border-white/20 dark:bg-white/10'} ${product.status === 'Draft' ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-all duration-300 ${product.status === 'Active' ? 'bg-black shadow-md dark:bg-white' : 'bg-black/10 hover:bg-black/20 dark:bg-white/10 dark:hover:bg-white/20'} ${product.status === 'Draft' ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
                     title={
                       product.status === 'Draft'
                         ? 'Cannot activate drafted products'
@@ -184,7 +185,7 @@ export function ProductGrid({
                     }
                   >
                     <span
-                      className={`inline-block h-5 w-5 transform rounded-full shadow-md transition-transform ${product.status === 'Active' ? 'translate-x-6 bg-white dark:bg-black' : 'translate-x-1 bg-white dark:bg-white/80'}`}
+                      className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-300 ease-out ${product.status === 'Active' ? 'translate-x-6 bg-white dark:bg-black' : 'translate-x-1 bg-white'}`}
                     />
                   </button>
                 </div>
