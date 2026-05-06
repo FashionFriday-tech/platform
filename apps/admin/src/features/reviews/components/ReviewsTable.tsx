@@ -6,6 +6,7 @@ import { ChevronDownIcon, ChevronUpIcon, FilledStarIcon, VerifiedIcon, SparklesI
 import { twMerge } from 'tailwind-merge';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface ReviewsTableProps {
   reviews: Review[];
@@ -87,7 +88,7 @@ export function ReviewsTable({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap font-medium">
                   <div className="flex items-center gap-3">
-                    <img 
+                    <Image width={500} height={500} 
                       src={review.productImage} 
                       alt={review.productName} 
                       className="h-10 w-10 rounded-lg object-cover bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5" 
