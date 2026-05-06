@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Order } from '../types';
 import { OrderStatusBadge } from './OrderStatusBadge';
 import { getTrackingUrl } from '../utils/courier';
+import Image from 'next/image';
 
 interface OrdersTableProps {
   orders: Order[];
@@ -94,7 +95,7 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
-                    <img
+                    <Image width={500} height={500}
                       src={order.items[0]?.productImage}
                       alt=""
                       className="h-10 w-10 rounded-lg bg-black/5 object-cover dark:bg-white/5"
