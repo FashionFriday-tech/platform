@@ -7,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function CategoriesPage() {
-  return <CategoriesFeature />;
+  return (
+    <div className="flex flex-1 min-h-0 flex-col overflow-hidden p-6">
+      <CategoriesFeature />
+    </div>
+  );
 }
