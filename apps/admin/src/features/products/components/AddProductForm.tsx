@@ -6,6 +6,7 @@ import { CATEGORIES, QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 import { useAddProductForm } from '../hooks/useAddProductForm';
 import { type Product } from '@ff/schemas';
+import Image from 'next/image';
 
 interface AddProductFormProps {
   initialData?: Product;
@@ -780,7 +781,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   onDragEnd={handleDragEnd}
                   className={`group relative mb-4 aspect-[3/4] w-full cursor-move overflow-hidden rounded-2xl border border-black/5 bg-black/5 transition-all dark:border-white/5 dark:bg-white/5 ${draggedIndex === 0 ? 'scale-95 border-black/20 opacity-50 dark:border-white/20' : ''}`}
                 >
-                  <img
+                  <Image width={500} height={500}
                     src={images[0].url}
                     alt="Main product"
                     className="pointer-events-none h-full w-full object-cover"
@@ -817,7 +818,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         onDragEnd={handleDragEnd}
                         className={`group relative aspect-[3/4] cursor-move overflow-hidden rounded-xl border border-black/5 bg-black/5 transition-all dark:border-white/5 dark:bg-white/5 ${draggedIndex === actualIndex ? 'scale-95 border-black/20 opacity-50 dark:border-white/20' : ''}`}
                       >
-                        <img
+                        <Image width={500} height={500}
                           src={img.url}
                           alt={`Preview ${actualIndex}`}
                           className="pointer-events-none h-full w-full object-cover"
@@ -910,7 +911,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       className="relative h-full w-full cursor-pointer"
                       onClick={() => setIsPlaying(true)}
                     >
-                      <img
+                      <Image width={500} height={500}
                         src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
                         alt="Video Thumbnail"
                         className="h-full w-full object-cover"
