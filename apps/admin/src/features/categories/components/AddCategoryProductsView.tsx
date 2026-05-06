@@ -21,7 +21,7 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
   // Simulate existing assigned products based on category slug
   const existingAssignedProductIds = useMemo(() => {
     return new Set(mockProducts
-      .filter(p => parseInt(p.id.replace(/\D/g, '')) % 4 === (category.gender === 'Men' ? 0 : category.gender === 'Women' ? 1 : category.gender === 'Kids' ? 2 : 3))
+      .filter(p => parseInt(p.id.replace(/\D/g, '')) % 2 === (category.gender === 'Men' ? 0 : 1))
       .slice(0, 10)
       .map(p => p.id));
   }, [category.gender]);
