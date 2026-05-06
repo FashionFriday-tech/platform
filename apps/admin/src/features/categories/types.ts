@@ -4,7 +4,7 @@ export interface ProductCategory {
   slug: string;
   image: string;
   productCount: number;
-  gender: 'Men' | 'Women' | 'Kids' | 'Unisex';
+  gender: 'Men' | 'Women';
 }
 
 export const MOCK_CATEGORIES: ProductCategory[] = [
@@ -65,23 +65,5 @@ export const MOCK_CATEGORIES: ProductCategory[] = [
     image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?q=80&w=1000&auto=format&fit=crop',
     productCount: 40,
     gender: 'Women'
-  },
-  // Kids
-  {
-    id: 'cat_kids_clothing',
-    name: 'Clothing',
-    slug: 'kids-clothing',
-    image: 'https://images.unsplash.com/photo-1514090281788-b77823b7e716?q=80&w=1000&auto=format&fit=crop',
-    productCount: 89,
-    gender: 'Kids'
-  },
-  // Unisex
-  {
-    id: 'cat_unisex_other',
-    name: 'Other',
-    slug: 'unisex-other',
-    image: 'https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?q=80&w=1000&auto=format&fit=crop',
-    productCount: 20,
-    gender: 'Unisex'
   }
 ];
