@@ -6,6 +6,7 @@ import { mockCustomers } from '../data/mock-customers';
 import { mockOrders } from '../../orders/data/mock-orders';
 import { mockReviews } from '../data/mock-reviews';
 import { ChevronLeftIcon, ShoppingBagIcon, StarIcon } from '@ff/ui';
+import Image from 'next/image';
 
 interface CustomerDetailsFeatureProps {
   customerId: string;
@@ -35,7 +36,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
         {/* Top Section */}
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
-            <img 
+            <Image width={500} height={500} 
               src={customer.avatar} 
               alt={customer.name} 
               className="h-24 w-24 rounded-2xl object-cover shadow-sm" 
