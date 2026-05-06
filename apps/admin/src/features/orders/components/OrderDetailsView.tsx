@@ -9,6 +9,7 @@ import { OrderStatusBadge } from './OrderStatusBadge';
 import { COURIER_SERVICES, getTrackingUrl } from '../utils/courier';
 import { CustomSelect } from '../../../components/ui/CustomSelect';
 import { WhatsAppIcon, PhoneIcon } from '@ff/ui/icons';
+import Image from 'next/image';
 
 function OrderStatusTracker({ status }: { status: string }) {
   const isCancelledFlow = ['cancelled', 'refunding', 'refunded'].includes(status);
@@ -262,7 +263,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                   </div>
 
                   <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-xl shadow-sm sm:h-40 sm:w-40">
-                    <img src={item.productImage} alt={item.productName} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <Image width={500} height={500} src={item.productImage} alt={item.productName} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   </div>
                   <div className="flex w-full flex-col justify-between sm:h-40">
                     <div>
