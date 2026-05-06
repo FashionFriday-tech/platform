@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation';
 import { Product } from '../types';
+import Image from 'next/image';
 
 interface Props {
   products: Product[];
@@ -116,7 +117,7 @@ export function ProductGrid({
               <div className="relative flex h-full w-[110px] flex-shrink-0 items-center justify-center overflow-hidden bg-black/5 dark:bg-white/5">
                 {product.imageUrl ? (
                   <>
-                    <img
+                    <Image width={500} height={500}
                       src={product.imageUrl}
                       alt={product.name}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
