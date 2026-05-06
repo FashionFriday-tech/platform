@@ -4,6 +4,7 @@ import { ChevronDownIcon, ChevronUpIcon } from '@ff/ui';
 import { twMerge } from 'tailwind-merge';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface CustomersTableProps {
   customers: Customer[];
@@ -92,7 +93,7 @@ export function CustomersTable({
               >
                 <td className="sticky left-0 z-10 min-w-[250px] bg-white px-6 py-4 dark:bg-[#111111] whitespace-nowrap group-hover:bg-gray-50 dark:group-hover:bg-[#1a1a1a]">
                   <div className="flex items-center gap-3">
-                    <img src={customer.avatar} alt={customer.name} className="h-10 w-10 rounded-full object-cover border border-black/10 dark:border-white/10" />
+                    <Image width={500} height={500} src={customer.avatar} alt={customer.name} className="h-10 w-10 rounded-full object-cover border border-black/10 dark:border-white/10" />
                     <div className="flex flex-col">
                       <span className="font-medium">{customer.name}</span>
                       <span className="text-xs text-black/50 dark:text-white/50">{customer.id}</span>
