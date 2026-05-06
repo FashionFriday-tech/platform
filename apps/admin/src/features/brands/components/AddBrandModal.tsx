@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ImageIcon } from '@ff/ui';
 import { Brand, BrandCategory } from '@ff/schemas';
+import Image from 'next/image';
 
 interface AddBrandModalProps {
   isOpen: boolean;
@@ -161,7 +162,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                     {logoUrl ? (
                       <div className="flex w-full items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <img src={logoUrl} alt="Logo preview" className="h-6 w-6 rounded-md object-contain bg-black/5 dark:bg-white/5 p-0.5" />
+                          <Image width={500} height={500} src={logoUrl} alt="Logo preview" className="h-6 w-6 rounded-md object-contain bg-black/5 dark:bg-white/5 p-0.5" />
                           <span className="truncate text-black dark:text-white">Image selected</span>
                         </div>
                         <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">Change</span>
