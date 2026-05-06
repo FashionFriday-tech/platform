@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Review } from '../../customers/data/mock-reviews';
-import { ChevronDownIcon, ChevronUpIcon, FilledStarIcon } from '@ff/ui';
+import { ChevronDownIcon, ChevronUpIcon, FilledStarIcon, VerifiedIcon, SparklesIcon } from '@ff/ui';
 import { twMerge } from 'tailwind-merge';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,9 @@ interface ReviewsTableProps {
   sortDirection: 'asc' | 'desc';
   onSort: (field: string) => void;
   onDelete: (reviewId: string) => void;
+  onToggleVerified: (reviewId: string) => void;
+  onToggleFeatured: (reviewId: string) => void;
+  onEditReview: (reviewId: string) => void;
 }
 
 export function ReviewsTable({
@@ -21,6 +24,9 @@ export function ReviewsTable({
   sortDirection,
   onSort,
   onDelete,
+  onToggleVerified,
+  onToggleFeatured,
+  onEditReview,
 }: ReviewsTableProps) {
   const router = useRouter();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -66,7 +72,18 @@ export function ReviewsTable({
             {reviews.map((review, index) => (
               <tr key={review.id} className="group relative transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]">
                 <td className="px-6 py-4 whitespace-nowrap text-black/60 dark:text-white/60">
-                  {new Date(review.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  <div className="flex items-center gap-2">
+                    {review.isVerified ? (
+                      <div title="Verified Purchase" className="flex h-5 w-5 shrink-0 items-center justify-center text-blue-700 dark:text-blue-400">
+                        <VerifiedIcon className="h-5 w-5" />
+                      </div>
+                    ) : (
+                      <div title="Not Verified" className="flex h-5 w-5 shrink-0 items-center justify-center text-red-500 dark:text-red-400">
+                        <VerifiedIcon className="h-5 w-5" />
+                      </div>
+                    )}
+                    <span>{new Date(review.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap font-medium">
                   <div className="flex items-center gap-3">
@@ -75,7 +92,14 @@ export function ReviewsTable({
                       alt={review.productName} 
                       className="h-10 w-10 rounded-lg object-cover bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5" 
                     />
-                    <span>{review.productName}</span>
+                    <div className="flex flex-col gap-1">
+                      <span>{review.productName}</span>
+                      {review.isFeatured && (
+                        <div title="Featured Review" className="flex h-5 w-5 items-center justify-center rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-500/20 dark:text-yellow-400">
+                          <SparklesIcon className="h-3 w-3" />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-black/60 dark:text-white/60">
@@ -106,9 +130,36 @@ export function ReviewsTable({
                     <>
                       <div className="fixed inset-0 z-10" onClick={() => setOpenDropdown(null)} />
                       <div className={twMerge(
-                        "absolute right-6 z-20 w-48 rounded-xl border border-black/10 bg-white p-1 shadow-lg dark:border-white/10 dark:bg-[#1a1a1a]",
+                        "absolute right-6 z-20 flex w-48 flex-col gap-1 rounded-xl border border-black/10 bg-white p-1.5 shadow-lg dark:border-white/10 dark:bg-[#1a1a1a]",
                         index >= reviews.length - 2 ? "bottom-10" : "top-10"
                       )}>
+                        <button
+                          onClick={() => {
+                            onEditReview(review.id);
+                            setOpenDropdown(null);
+                          }}
+                          className="w-full rounded-lg px-3 py-2 text-left text-sm text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
+                        >
+                          Edit Review
+                        </button>
+                        <button
+                          onClick={() => {
+                            onToggleFeatured(review.id);
+                            setOpenDropdown(null);
+                          }}
+                          className="w-full rounded-lg px-3 py-2 text-left text-sm text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
+                        >
+                          {review.isFeatured ? 'Unfeature' : 'Feature'} Review
+                        </button>
+                        <button
+                          onClick={() => {
+                            onToggleVerified(review.id);
+                            setOpenDropdown(null);
+                          }}
+                          className="w-full rounded-lg px-3 py-2 text-left text-sm text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/10"
+                        >
+                          Mark as {review.isVerified ? 'Unverified' : 'Verified'}
+                        </button>
                         <button
                           onClick={() => {
                             onDelete(review.id);
