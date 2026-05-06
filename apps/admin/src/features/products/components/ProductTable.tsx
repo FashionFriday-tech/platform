@@ -1,6 +1,7 @@
 import { useRouter } from 'next/navigation';
 import { JacketCategoryIcon, ShirtCategoryIcon, ShoeCategoryIcon, HangerCategoryIcon } from '@ff/ui';
 import { Product, ColumnId } from '../types';
+import Image from 'next/image';
 
 interface Props {
   products: Product[];
@@ -210,7 +211,7 @@ export function ProductTable({
                     <div className="flex items-center space-x-4">
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/10">
                         {product.imageUrl ? (
-                          <img
+                          <Image width={500} height={500}
                             src={product.imageUrl}
                             alt={product.name}
                             className="h-full w-full object-cover"
