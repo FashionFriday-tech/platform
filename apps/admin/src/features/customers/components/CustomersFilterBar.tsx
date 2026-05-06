@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { SearchIcon, FilterIcon, DownloadIcon } from '@ff/ui';
+import { SearchIcon, DownloadIcon } from '@ff/ui';
 import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface CustomersFilterBarProps {
@@ -55,11 +55,6 @@ export function CustomersFilterBar({
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2 text-sm text-black/60 dark:text-white/60">
-          <FilterIcon className="h-4 w-4" />
-          <span className="hidden sm:inline">Filters:</span>
-        </div>
-
         <CustomSelect
           options={statusOptions}
           value={statusFilter}
