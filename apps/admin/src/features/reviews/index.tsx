@@ -6,7 +6,7 @@ import { ReviewStats } from './components/ReviewStats';
 import { ReviewsTable } from './components/ReviewsTable';
 import { EditReviewModal } from './components/EditReviewModal';
 import { mockReviews, Review } from '../customers/data/mock-reviews';
-import { SearchIcon, FilterIcon } from '@ff/ui';
+import { SearchIcon } from '@ff/ui';
 import { CustomSelect } from '../../components/ui/CustomSelect';
 
 export default function ReviewsFeature() {
@@ -134,11 +134,6 @@ export default function ReviewsFeature() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-black/60 dark:text-white/60">
-              <FilterIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Filters:</span>
-            </div>
-
             <CustomSelect
               options={verifiedOptions}
               value={verifiedFilter}
