@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Brand } from '@ff/schemas';
+import Image from 'next/image';
 
 interface BrandDetailsModalProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ export function BrandDetailsModal({ isOpen, onClose, brand, onEdit, onDelete }: 
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
-            <img 
+            <Image width={500} height={500} 
               src={brand.logo} 
               alt={brand.name} 
               className="max-h-full max-w-full object-contain filter drop-shadow-md brightness-0 invert" 
