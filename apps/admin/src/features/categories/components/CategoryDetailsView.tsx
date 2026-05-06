@@ -23,7 +23,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   useEffect(() => {
     // In a real app, we'd fetch products by category ID.
     const initialProducts = mockProducts.filter(p => 
-      parseInt(p.id.replace(/\D/g, '')) % 4 === (category.gender === 'Men' ? 0 : category.gender === 'Women' ? 1 : category.gender === 'Kids' ? 2 : 3)
+      parseInt(p.id.replace(/\D/g, '')) % 2 === (category.gender === 'Men' ? 0 : 1)
     ).slice(0, 10);
     setCategoryProducts(initialProducts);
   }, [category.gender]);
