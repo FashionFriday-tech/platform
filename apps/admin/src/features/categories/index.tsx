@@ -8,9 +8,9 @@ import { SearchIcon } from '@ff/ui';
 
 export default function CategoriesFeature() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGender, setSelectedGender] = useState<'All' | 'Men' | 'Women' | 'Kids' | 'Unisex'>('All');
+  const [selectedGender, setSelectedGender] = useState<'All' | 'Men' | 'Women'>('All');
 
-  const genders = ['All', 'Men', 'Women', 'Kids', 'Unisex'] as const;
+  const genders = ['All', 'Men', 'Women'] as const;
 
   const filteredCategories = useMemo(() => {
     return MOCK_CATEGORIES.filter(cat => {
