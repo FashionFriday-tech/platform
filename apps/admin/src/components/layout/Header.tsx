@@ -9,6 +9,7 @@ import {
   ShoppingBagIcon,
   PackageIcon,
   UsersIcon,
+  StarIcon,
 } from '@ff/ui';
 
 export function Header() {
@@ -22,6 +23,7 @@ export function Header() {
     if (pathname.startsWith('/products/')) return { title: 'Product Details', showBack: true, icon: PackageIcon };
     if (pathname === '/products') return { title: 'Products', showBack: false, icon: PackageIcon };
     if (pathname === '/customers') return { title: 'Customers', showBack: false, icon: UsersIcon };
+    if (pathname === '/reviews') return { title: 'Reviews', showBack: false, icon: StarIcon };
     
     // Fallback logic
     const segments = pathname.split('/').filter(Boolean);

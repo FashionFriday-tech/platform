@@ -87,10 +87,10 @@ export function Sidebar() {
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Customers</span>
               </Link>
-              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+              <Link href="/reviews" className={getLinkClass('/reviews')}>
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Reviews</span>
-              </a>
+              </Link>
             </div>
           </div>
         )}
