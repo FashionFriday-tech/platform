@@ -20,6 +20,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
 
 export function Sidebar() {
   const pathname = usePathname() || '';
@@ -39,7 +40,7 @@ export function Sidebar() {
     <aside className="bg-transparent relative sticky top-0 z-10 flex hidden h-screen w-64 flex-shrink-0 flex-col md:flex">
       <div className="flex items-center space-x-2 p-6 pb-0.5">
         <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
-          <img src="/images/logos/ff-logo.png" alt="Fashion Friday" className="h-full w-full object-contain" />
+          <Image width={500} height={500} src="/images/logos/ff-logo.png" alt="Fashion Friday" className="h-full w-full object-contain" />
         </div>
         <h1 className="text-lg font-black uppercase">FashionFriday</h1>
       </div>
