@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Brand } from '@ff/schemas';
+import Image from 'next/image';
 
 interface BrandCardProps {
   brand: Brand;
@@ -19,7 +20,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       >
         {/* Glow effect on hover */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity bg-white mix-blend-overlay"></div>
-        <img 
+        <Image width={500} height={500} 
           src={brand.logo} 
           alt={brand.name} 
           className="max-h-full max-w-full object-contain filter drop-shadow-md brightness-0 invert" 
