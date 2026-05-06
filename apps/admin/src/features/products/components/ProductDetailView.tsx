@@ -6,6 +6,7 @@ import { Product } from '../types';
 import { fetchProductById } from '../services/api';
 import { ProductReviews } from './ProductReviews';
 import { ProductPerformance } from './ProductPerformance';
+import Image from 'next/image';
 
 interface Props {
   productId: string;
@@ -77,7 +78,7 @@ export function ProductDetailView({ productId }: Props) {
         <div className="lg:sticky lg:top-24 lg:col-span-5">
           <div className="group relative aspect-[3/4] w-full overflow-hidden rounded-[2.5rem] bg-black/5 dark:bg-white/5">
             {displayImages.length > 0 ? (
-              <img
+              <Image width={500} height={500}
                 src={displayImages[activeImageIndex]}
                 alt={product.name}
                 className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
@@ -100,7 +101,7 @@ export function ProductDetailView({ productId }: Props) {
                     onClick={() => setActiveImageIndex(idx)}
                     className={`relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-xl transition-all duration-300 ${activeImageIndex === idx ? 'scale-110 shadow-lg ring-2 ring-white dark:ring-black' : 'opacity-80 hover:scale-105 hover:opacity-100'}`}
                   >
-                    <img src={img} alt={`Thumbnail ${idx}`} className="h-full w-full object-cover" />
+                    <Image width={500} height={500} src={img} alt={`Thumbnail ${idx}`} className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>
