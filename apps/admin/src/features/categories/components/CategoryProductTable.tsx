@@ -23,7 +23,7 @@ export function CategoryProductTable({ products, onRemoveProduct }: CategoryProd
   return (
     <div className="w-full">
       <table className="w-full min-w-[800px] text-left text-sm relative">
-        <thead className="sticky top-0 z-10 border-b border-black/5 bg-black/5 text-xs font-semibold uppercase tracking-wider text-black/60 dark:border-white/5 dark:bg-white/5 dark:text-white/60">
+        <thead className="sticky top-0 z-10 border-b border-black/5 bg-[#f8f9fa] text-xs font-semibold uppercase tracking-wider text-black/60 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/60">
           <tr>
             <th className="px-6 py-4">Product</th>
             <th className="px-6 py-4">Status</th>
