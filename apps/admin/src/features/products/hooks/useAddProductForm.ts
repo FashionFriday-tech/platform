@@ -239,10 +239,10 @@ export function useAddProductForm(initialData?: Product) {
   const availableSizes = SIZE_MAP[category] || SIZE_MAP['Jacket'];
 
   const categoryToBrandCategory: Record<string, BrandCategory[]> = {
-    Jacket: ['fashion', 'streetwear', 'sportswear', 'luxury'],
-    Shirts: ['fashion', 'streetwear', 'luxury'],
-    Sneakers: ['sneakers', 'sportswear', 'footwear', 'luxury'],
-    Pants: ['fashion', 'streetwear', 'luxury'],
+    Jacket: ['clothing'],
+    Shirts: ['clothing'],
+    Sneakers: ['footwear'],
+    Pants: ['clothing'],
   };
   const availableBrands = BRAND_LOGOS.filter((b) =>
     b.categories.some((c) => categoryToBrandCategory[category]?.includes(c)),
