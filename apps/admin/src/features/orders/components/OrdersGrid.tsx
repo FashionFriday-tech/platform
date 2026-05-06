@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { Order } from '../types';
 import { OrderStatusBadge } from './OrderStatusBadge';
+import Image from 'next/image';
 
 interface OrdersGridProps {
   orders: Order[];
@@ -48,7 +49,7 @@ export function OrdersGrid({ orders }: OrdersGridProps) {
           
           <div className="mb-5 flex items-start justify-between relative z-10">
             <div className="flex items-center gap-3">
-              <img
+              <Image width={500} height={500}
                 src={order.items[0]?.productImage}
                 alt=""
                 className="h-12 w-12 rounded-xl bg-black/5 object-cover shadow-sm dark:bg-white/5"
