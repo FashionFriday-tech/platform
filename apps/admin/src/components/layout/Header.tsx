@@ -11,6 +11,7 @@ import {
   UsersIcon,
   StarIcon,
   StarBadgeIcon,
+  CategoryIcon,
 } from '@ff/ui';
 
 export function Header() {
@@ -26,6 +27,8 @@ export function Header() {
     if (pathname === '/customers') return { title: 'Customers', showBack: false, icon: UsersIcon };
     if (pathname === '/reviews') return { title: 'Reviews', showBack: false, icon: StarIcon };
     if (pathname === '/brands') return { title: 'Brands', showBack: false, icon: StarBadgeIcon };
+    if (pathname.startsWith('/categories/')) return { title: 'Category Details', showBack: true, icon: CategoryIcon };
+    if (pathname === '/categories') return { title: 'Categories', showBack: false, icon: CategoryIcon };
     
     // Fallback logic
     const segments = pathname.split('/').filter(Boolean);
