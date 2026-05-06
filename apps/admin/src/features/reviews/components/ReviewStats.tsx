@@ -7,73 +7,64 @@ import {
   StarIcon, 
   MessageSquareIcon, 
   ActivityIcon,
-  StarFilledIcon
+  VerifiedUserIcon,
+  UserIcon
 } from '@ff/ui';
 
 export function ReviewStats() {
   const totalReviews = mockReviews.length;
   const avgRating = (mockReviews.reduce((acc, curr) => acc + curr.rating, 0) / (totalReviews || 1)).toFixed(1);
-  const fiveStarReviews = mockReviews.filter(r => r.rating === 5).length;
   const recentReviews = mockReviews.filter(r => new Date(r.date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length;
+  const verifiedReviews = mockReviews.filter(r => r.isVerified).length;
+  const unverifiedReviews = totalReviews - verifiedReviews;
 
   const stats = [
     {
       name: 'Total Reviews',
       value: totalReviews.toString(),
       icon: MessageSquareIcon,
-      bg: 'bg-gradient-to-br from-blue-400 to-blue-600',
-      subLabel: 'ALL TIME',
+      color: 'text-blue-600 dark:text-blue-400',
+      bg: 'bg-blue-50 dark:bg-blue-500/10',
     },
     {
       name: 'Average Rating',
       value: avgRating,
       icon: StarIcon,
-      bg: 'bg-gradient-to-br from-yellow-400 to-yellow-600',
-      subLabel: 'OUT OF 5.0',
-    },
-    {
-      name: '5-Star Ratings',
-      value: fiveStarReviews.toString(),
-      icon: StarFilledIcon,
-      bg: 'bg-gradient-to-br from-purple-400 to-purple-600',
-      subLabel: 'EXCELLENT',
+      color: 'text-yellow-600 dark:text-yellow-400',
+      bg: 'bg-yellow-50 dark:bg-yellow-500/10',
     },
     {
       name: 'Recent Reviews',
       value: recentReviews.toString(),
       icon: ActivityIcon,
-      bg: 'bg-gradient-to-br from-green-400 to-green-600',
-      subLabel: 'LAST 30 DAYS',
+      color: 'text-green-600 dark:text-green-400',
+      bg: 'bg-green-50 dark:bg-green-500/10',
+    },
+    {
+      name: 'Not Verified',
+      value: unverifiedReviews.toString(),
+      icon: VerifiedUserIcon,
+      color: 'text-red-600 dark:text-red-400',
+      bg: 'bg-red-50 dark:bg-red-500/10',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
       {stats.map((stat, i) => (
         <motion.div
           key={stat.name}
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: i * 0.05, ease: 'easeOut' }}
-          className={`group relative overflow-hidden rounded-[20px] p-6 text-white shadow-lg aspect-[1.586] ${stat.bg}`}
+          transition={{ duration: 0.4, delay: i * 0.1 }}
+          className="flex items-center gap-4 rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]"
         >
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <stat.icon className="absolute -bottom-4 -right-4 h-24 w-24 sm:h-28 sm:w-28 text-white opacity-[0.1]" />
-            <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white opacity-[0.08] blur-2xl"></div>
+          <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.bg} ${stat.color}`}>
+            <stat.icon className="h-6 w-6" />
           </div>
-          
-          <div className="relative z-10 flex h-full flex-col justify-between">
-            {/* Top row: Title */}
-            <div className="flex items-start justify-between">
-              <dt className="text-base font-extrabold tracking-wider text-white drop-shadow-sm pr-2">
-                {stat.name}
-              </dt>
-            </div>
-            
-            {/* Middle: Big Number */}
-            <dd className="text-3xl font-bold tracking-tight md:text-4xl">
-              {stat.value}
-            </dd>
+          <div>
+            <p className="text-sm font-medium text-black/60 dark:text-white/60">{stat.name}</p>
+            <p className="text-2xl font-bold tracking-tight text-black dark:text-white">{stat.value}</p>
           </div>
         </motion.div>
       ))}
