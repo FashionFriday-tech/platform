@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { Review } from '@ff/schemas';
+import Image from 'next/image';
 
 interface Props {
   productId: string;
@@ -269,7 +270,7 @@ export function ProductReviews({ productId }: Props) {
               <div className="flex items-center gap-4">
                 {newReview.productImage && (
                   <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-black/10 dark:border-white/10">
-                    <img
+                    <Image width={500} height={500}
                       src={newReview.productImage}
                       alt="Preview"
                       className="h-full w-full object-cover"
@@ -423,7 +424,7 @@ export function ProductReviews({ productId }: Props) {
                   <div className="flex items-center gap-3">
                     {editData.productImage && (
                       <div className="relative h-12 w-12 overflow-hidden rounded-lg border border-black/10 dark:border-white/10">
-                        <img
+                        <Image width={500} height={500}
                           src={editData.productImage}
                           alt="Preview"
                           className="h-full w-full object-cover"
@@ -511,7 +512,7 @@ export function ProductReviews({ productId }: Props) {
                   {/* Image Section (Matches web app) */}
                   {review.productImage && (
                     <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[2rem] bg-black/5 shadow-sm md:w-32 lg:w-40 dark:bg-white/5">
-                      <img
+                      <Image width={500} height={500}
                         src={review.productImage}
                         alt="review"
                         className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
