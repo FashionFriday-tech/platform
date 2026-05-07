@@ -12,6 +12,7 @@ import {
   StarIcon,
   StarBadgeIcon,
   CategoryIcon,
+  LayersIcon,
 } from '@ff/ui';
 
 export function Header() {
@@ -29,6 +30,8 @@ export function Header() {
     if (pathname === '/brands') return { title: 'Brands', showBack: false, icon: StarBadgeIcon };
     if (pathname.startsWith('/categories/')) return { title: 'Category Details', showBack: true, icon: CategoryIcon };
     if (pathname === '/categories') return { title: 'Categories', showBack: false, icon: CategoryIcon };
+    if (pathname.startsWith('/collections/')) return { title: 'Collection Details', showBack: true, icon: LayersIcon };
+    if (pathname === '/collections') return { title: 'Collections', showBack: false, icon: LayersIcon };
     
     // Fallback logic
     const segments = pathname.split('/').filter(Boolean);
