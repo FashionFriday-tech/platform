@@ -27,16 +27,16 @@ export function CampaignBannerCard({ banner, onUpdate, onEdit }: CampaignBannerC
   const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[banner.placement] || 'aspect-video';
 
   return (
-    <div className={`flex flex-col overflow-hidden rounded-2xl border transition-all ${banner.isActive ? 'border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111111]' : 'border-black/5 bg-black/5 opacity-70 dark:border-white/5 dark:bg-white/5'}`}>
-      <div className={`relative w-full bg-black/5 dark:bg-white/5 group ${aspectRatioClass}`}>
+    <div className={`group flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-lg ${banner.isActive ? 'border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111111]' : 'border-black/5 bg-black/5 opacity-70 dark:border-white/5 dark:bg-white/5'}`}>
+      <div className={`relative w-full bg-black/5 dark:bg-white/5 ${aspectRatioClass}`}>
         {banner.mediaType === 'image' ? (
           <Image src={banner.mediaUrl} alt={banner.title} fill className="object-cover" />
         ) : (
           <video src={banner.mediaUrl} className="h-full w-full object-cover" muted loop playsInline />
         )}
-        <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100 flex items-center justify-center gap-4">
-          <button onClick={() => onEdit(banner)} className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-white/90">Edit</button>
-          <button onClick={handleDelete} className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"><TrashIcon className="h-5 w-5" /></button>
+        <div className="absolute inset-0 bg-black/50 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100 flex items-center justify-center gap-3">
+          <button onClick={() => onEdit(banner)} className="flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-black shadow-xl transition-all hover:scale-105 hover:bg-gray-50">Edit Banner</button>
+          <button onClick={handleDelete} className="flex items-center justify-center rounded-xl bg-red-500 p-2.5 text-white shadow-xl transition-all hover:scale-105 hover:bg-red-600"><TrashIcon className="h-5 w-5" /></button>
         </div>
         <div className="absolute left-3 top-3 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-md">
           {banner.mediaType === 'image' ? <ImageIcon className="h-3 w-3" /> : <PlayIcon className="h-3 w-3" />}
