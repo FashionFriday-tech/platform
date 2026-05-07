@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { PlusIcon, SearchIcon, ShieldCheckIcon, MailIcon } from '@ff/ui';
 import { TeamMember, ROLE_LABELS } from './types';
 import { InviteMemberModal } from './components/InviteMemberModal';
@@ -55,9 +56,17 @@ const MOCK_TEAM: TeamMember[] = [
 type SortField = 'name' | 'role' | 'status' | 'joinedAt' | 'updatedAt';
 
 export function TeamManagementView() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [team, setTeam] = useState<TeamMember[]>(MOCK_TEAM);
   const [searchQuery, setSearchQuery] = useState('');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('action') === 'invite') {
+      setIsInviteModalOpen(true);
+    }
+  }, [searchParams]);
   const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
   
   const [sortField, setSortField] = useState<SortField>('joinedAt');

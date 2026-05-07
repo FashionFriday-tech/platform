@@ -1,16 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { MOCK_BANNERS, CampaignBanner, addBanner, updateBanner, BannerPlacement, PLACEMENT_LABELS, PLACEMENT_ASPECT_RATIOS } from './types';
 import { CampaignBannerCard } from './components/CampaignBannerCard';
 import { BannerEditorModal } from './components/BannerEditorModal';
 import { PlusIcon } from '@ff/ui';
 
 export function CampaignsFeature() {
+  const searchParams = useSearchParams();
   const [banners, setBanners] = useState(MOCK_BANNERS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<CampaignBanner | null>(null);
   const [targetPlacement, setTargetPlacement] = useState<BannerPlacement>('home-carousel');
+
+  useEffect(() => {
+    if (searchParams.get('action') === 'new') {
+      setEditingBanner(null);
+      setTargetPlacement('home-carousel');
+      setIsModalOpen(true);
+    }
+  }, [searchParams]);
 
   const refreshBanners = () => setBanners([...MOCK_BANNERS]);
 
