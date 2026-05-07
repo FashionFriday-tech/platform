@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, Variants } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { ActivityIcon, ShoppingBagIcon, PackageIcon, UsersIcon } from '@ff/ui';
 import { StatCard } from './components/StatCard';
@@ -15,7 +15,7 @@ export function DashboardView() {
   const hasAccess = (allowedRoles: string[]) => allowedRoles.includes(role);
 
   // Animation variants
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -23,7 +23,7 @@ export function DashboardView() {
     }
   };
 
-  const item = {
+  const item: Variants = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
   };
