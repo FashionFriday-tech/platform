@@ -45,30 +45,39 @@ export function CampaignsFeature() {
     refreshBanners();
     setIsModalOpen(false);
   };
-
   const renderSection = (placement: BannerPlacement) => {
     const sectionBanners = banners.filter(b => b.placement === placement);
     const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[placement] || 'aspect-video';
 
+    let cardWidthClass = "w-[300px]";
+    if (placement === 'home-carousel' || placement === 'products-list') {
+      cardWidthClass = "w-[450px] md:w-[600px]";
+    } else if (placement === 'trending-products') {
+      cardWidthClass = "w-[220px] md:w-[260px]";
+    } else if (placement === 'home-grid-small-1' || placement === 'home-grid-small-2') {
+      cardWidthClass = "w-[320px] md:w-[400px]";
+    }
+
     return (
-      <section key={placement} className="mb-10">
+      <section key={placement} className="mb-10 w-full overflow-hidden">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-black dark:text-white">{PLACEMENT_LABELS[placement]}</h2>
         </div>
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="flex gap-6 overflow-x-auto pb-4 snap-x scrollbar-hide">
           {sectionBanners.map(banner => (
-            <CampaignBannerCard 
-              key={banner.id} 
-              banner={banner} 
-              onUpdate={refreshBanners} 
-              onEdit={handleOpenEdit} 
-            />
+            <div key={banner.id} className={`${cardWidthClass} shrink-0 snap-start`}>
+              <CampaignBannerCard 
+                banner={banner} 
+                onUpdate={refreshBanners} 
+                onEdit={handleOpenEdit} 
+              />
+            </div>
           ))}
           
           {/* Dedicated Add Box for this placement */}
           <div 
             onClick={() => handleOpenCreate(placement)}
-            className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-dashed border-black/20 transition-all hover:border-black/50 hover:bg-black/5 dark:border-white/20 dark:hover:border-white/50 dark:hover:bg-white/5"
+            className={`group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-dashed border-black/20 transition-all hover:border-black/50 hover:bg-black/5 dark:border-white/20 dark:hover:border-white/50 dark:hover:bg-white/5 ${cardWidthClass} shrink-0 snap-start`}
           >
             <div className={`flex w-full items-center justify-center ${aspectRatioClass} bg-black/2 dark:bg-white/2`}>
               <div className="flex flex-col items-center gap-2 text-black/40 transition-colors group-hover:text-black dark:text-white/40 dark:group-hover:text-white">
