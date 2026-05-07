@@ -13,6 +13,7 @@ import {
   StarBadgeIcon,
   CategoryIcon,
   LayersIcon,
+  ZapIcon,
 } from '@ff/ui';
 
 export function Header() {
@@ -32,6 +33,7 @@ export function Header() {
     if (pathname === '/categories') return { title: 'Categories', showBack: false, icon: CategoryIcon };
     if (pathname.startsWith('/collections/')) return { title: 'Collection Details', showBack: true, icon: LayersIcon };
     if (pathname === '/collections') return { title: 'Collections', showBack: false, icon: LayersIcon };
+    if (pathname === '/campaigns') return { title: 'Campaigns', showBack: false, icon: ZapIcon };
     
     // Fallback logic
     const segments = pathname.split('/').filter(Boolean);
