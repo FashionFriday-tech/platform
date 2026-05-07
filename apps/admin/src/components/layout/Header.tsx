@@ -34,6 +34,7 @@ export function Header() {
     if (pathname.startsWith('/collections/')) return { title: 'Collection Details', showBack: true, icon: LayersIcon };
     if (pathname === '/collections') return { title: 'Collections', showBack: false, icon: LayersIcon };
     if (pathname === '/campaigns') return { title: 'Campaigns', showBack: false, icon: ZapIcon };
+    if (pathname === '/team') return { title: 'Team & Roles', showBack: false, icon: UsersIcon };
     
     // Fallback logic
     const segments = pathname.split('/').filter(Boolean);

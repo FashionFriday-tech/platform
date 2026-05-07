@@ -142,6 +142,21 @@ export function Sidebar() {
           </div>
         )}
 
+        {/* Administration Section */}
+        {hasAccess(['SUPER_ADMIN']) && (
+          <div>
+            <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+              Administration
+            </p>
+            <div className="space-y-1">
+              <Link href="/team" className={getLinkClass('/team')}>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <span className="text-sm font-medium">Team & Roles</span>
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* System Section */}
         <div>
           <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
