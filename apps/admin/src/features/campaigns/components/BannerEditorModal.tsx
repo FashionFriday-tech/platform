@@ -54,20 +54,34 @@ export function BannerEditorModal({ isOpen, onClose, onSave, initialData, fixedP
     }
   };
 
-  const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[placement] || 'aspect-video';
+  const getResponsiveClasses = (p: BannerPlacement) => {
+    switch (p) {
+      case 'home-carousel':
+      case 'products-list':
+        return 'w-full aspect-[21/9]';
+      case 'home-grid-small-1':
+      case 'home-grid-small-2':
+        return 'w-full aspect-video';
+      case 'trending-products':
+        return 'h-[300px] md:h-[350px] w-auto aspect-[3/4]';
+      case 'home-grid-large':
+        return 'h-[300px] md:h-[350px] w-auto aspect-square';
+      default:
+        return 'w-full aspect-video';
+    }
+  };
+
+  const responsiveClass = getResponsiveClasses(placement);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="flex w-full max-w-5xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl md:flex-row dark:bg-[#111111]">
+      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl md:flex-row dark:bg-[#111111]">
         
         {/* Left Side: Preview & Upload */}
         <div className="flex w-full flex-col items-center justify-center border-b border-black/5 bg-black/5 p-8 md:w-1/2 md:border-b-0 md:border-r dark:border-white/5 dark:bg-white/5">
-          <p className="mb-4 text-sm font-semibold text-black/60 dark:text-white/60">
-            Preview & Upload
-          </p>
           <div 
             onClick={() => fileInputRef.current?.click()}
-            className={`group relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black/20 bg-white transition-all hover:border-black/50 dark:border-white/20 dark:bg-[#111111] dark:hover:border-white/50 ${aspectRatioClass}`}
+            className={`group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black/20 bg-white transition-all hover:border-black/50 dark:border-white/20 dark:bg-[#111111] dark:hover:border-white/50 ${responsiveClass}`}
           >
             {mediaUrl ? (
               <>
@@ -98,13 +112,10 @@ export function BannerEditorModal({ isOpen, onClose, onSave, initialData, fixedP
               className="hidden" 
             />
           </div>
-          <p className="mt-4 text-center text-xs text-black/40 dark:text-white/40">
-            Aspect ratio is locked to the selected placement.
-          </p>
         </div>
 
         {/* Right Side: Form */}
-        <div className="flex w-full flex-col md:w-1/2">
+        <div className="flex w-full flex-col overflow-y-auto md:w-1/2">
           <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
             <h2 className="text-xl font-bold text-black dark:text-white">
               {initialData ? 'Edit Banner' : 'Create Banner'}
