@@ -130,10 +130,10 @@ export function Sidebar() {
               Marketing
             </p>
             <div className="space-y-1">
-              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
+              <Link href="/campaigns" className={getLinkClass('/campaigns')}>
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ZapIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Campaigns</span>
-              </a>
+              </Link>
               <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><TagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
                 <span className="text-sm font-medium">Discounts</span>
