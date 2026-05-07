@@ -93,16 +93,21 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         
         {/* Right: Details & Toolbar */}
         <div className="flex flex-1 flex-col justify-between">
-          <div>
-            <div className="mb-2 inline-flex items-center rounded-full bg-black/5 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-widest text-black/60 dark:bg-white/5 dark:text-white/60 w-fit">
-              {category.gender}
-            </div>
-            <h1 className="text-3xl font-black text-black dark:text-white md:text-4xl">{category.name}</h1>
+          <div className='flex w-full items-center justify-between'>
+            <div>
+              <h1 className="text-3xl font-black text-black dark:text-white md:text-4xl">{category.name}</h1>
             <div className="mt-4 flex items-center gap-2 text-sm font-medium text-black/60 dark:text-white/60">
               <PackageIcon className="h-5 w-5" />
               <span>{category.productCount} Total Products Assigned</span>
             </div>
+            </div>
+
+            <div className="inline-flex items-center rounded-lg bg-black/5 px-4 py-2 text-sm font-semibold uppercase tracking-widest text-black/60 dark:bg-white/5 dark:text-white/60">
+              {category.gender}
+            </div>
+
           </div>
+          
 
           <div className="mt-6 flex flex-col gap-4 border-t border-black/5 pt-6 xl:flex-row xl:items-center xl:justify-between dark:border-white/5">
             <div className="flex flex-1 items-center gap-3">
