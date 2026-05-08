@@ -32,6 +32,7 @@ const NAME_MAPPINGS: Record<string, string> = {
 export function RegionalOrdersMap() {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [isMapHovered, setIsMapHovered] = useState<boolean>(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const top5 = useMemo(() => sortedStates.slice(0, 5), []);
 
@@ -50,7 +51,7 @@ export function RegionalOrdersMap() {
       {/* ─── Top: Map + Top States Side-by-Side ─── */}
       <div className="flex flex-col lg:flex-row">
         {/* Map Section */}
-        <div className="flex flex-1 flex-col p-6">
+        <div className="flex flex-col p-6 lg:w-1/2">
           <div className="mb-5 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-black dark:text-white">🇮🇳 Regional Orders</h2>
@@ -66,11 +67,19 @@ export function RegionalOrdersMap() {
           </div>
 
           {/* Map area */}
-          <div className="relative flex-1 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/30 dark:from-slate-900/50 dark:via-purple-950/20 dark:to-blue-950/20" style={{ minHeight: 480 }}>
+          <div 
+            className="relative flex-1 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/30 dark:from-slate-900/50 dark:via-purple-950/20 dark:to-blue-950/20" 
+            style={{ minHeight: 480 }}
+            onMouseEnter={() => setIsMapHovered(true)}
+            onMouseLeave={() => {
+              setIsMapHovered(false);
+              setHoveredState(null);
+            }}
+          >
             <ComposableMap
               projection="geoMercator"
               projectionConfig={{
-                scale: 850,
+                scale: 1100,
                 center: [82.5, 22.5]
               }}
               className="h-full w-full outline-none"
@@ -109,7 +118,11 @@ export function RegionalOrdersMap() {
                           onMouseMove={(e: React.MouseEvent<SVGPathElement>) => {
                             setTooltipPos({ x: e.clientX, y: e.clientY });
                           }}
-                          onMouseLeave={() => setHoveredState(null)}
+                          onMouseLeave={() => {
+                            if (hoveredState === mappedStateName) {
+                              setHoveredState(null);
+                            }
+                          }}
                           onClick={() => setSelectedState(selectedState === mappedStateName ? null : mappedStateName)}
                         />
                       );
@@ -118,10 +131,10 @@ export function RegionalOrdersMap() {
                 </Geographies>
             </ComposableMap>
 
-            {/* Hover / Selected tooltip overlay attached to mouse pos for a better interactive feel */}
+            {/* Hover tooltip overlay attached to mouse pos for a better interactive feel */}
             <AnimatePresence>
-              {(hoveredState || selectedState) && (() => {
-                const activeState = hoveredState || selectedState;
+              {(isMapHovered && hoveredState) && (() => {
+                const activeState = hoveredState;
                 const data = MOCK_STATE_ORDERS.find(s => s.state === activeState);
                 if (!data) return null;
                 
@@ -171,7 +184,7 @@ export function RegionalOrdersMap() {
         </div>
 
         {/* Right Sidebar — All States Table */}
-        <div className="flex w-full flex-col border-t border-black/[0.06] dark:border-white/[0.06] lg:w-[450px] xl:w-[500px] 2xl:w-[560px] lg:border-l lg:border-t-0">
+        <div className="flex w-full flex-col border-t border-black/[0.06] dark:border-white/[0.06] lg:w-1/2 lg:border-l lg:border-t-0">
           <div className="flex items-center justify-between p-6 pb-4">
             <div>
               <h3 className="text-sm font-bold text-black dark:text-white">
