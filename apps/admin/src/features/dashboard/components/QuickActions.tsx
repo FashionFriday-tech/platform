@@ -43,7 +43,7 @@ const ACTIONS: QuickActionProps[] = [
 
   export function QuickActions() {
     return (
-      <div className="flex flex-col gap-6 rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
+      <div className="flex h-full flex-col gap-6 rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
         <div>
           <h2 className="text-xl font-bold text-black dark:text-white">Quick Actions</h2>
           <p className="mt-1 text-sm font-medium text-black/70 dark:text-white/70">Common operational tasks</p>

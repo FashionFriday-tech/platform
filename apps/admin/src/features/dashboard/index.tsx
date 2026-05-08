@@ -39,7 +39,7 @@ export function DashboardView() {
       >
         {/* Welcome Section */}
         <motion.div variants={item} className="flex flex-col gap-2">
-          <h1 className="text-3xl font-black text-black dark:text-white">
+          <h1 className="text-3xl font-bold text-black dark:text-white">
             Welcome back, {user.name.split(' ')[0]}
           </h1>
           <p className="text-black/60 dark:text-white/60">
@@ -101,7 +101,7 @@ export function DashboardView() {
         </motion.div>
 
         {/* Operational Grid */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <motion.div variants={item} className="lg:col-span-2">
             <ActivityFeed />
           </motion.div>
