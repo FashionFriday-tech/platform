@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { ShoppingBagIcon, TagIcon, PackageIcon } from '@ff/ui';
 
 interface Activity {
@@ -45,13 +46,13 @@ const MOCK_ACTIVITY: Activity[] = [
 
 export function ActivityFeed() {
   return (
-    <div className="flex flex-col gap-6 rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-black dark:text-white">Activity Feed</h2>
           <p className="mt-1 text-sm font-medium text-black/70 dark:text-white/70">Live operational updates</p>
         </div>
-        <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400">View All</button>
+        <Link href="/activity" className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400">View All</Link>
       </div>
       
       <div className="relative mt-4 flex flex-col gap-8 before:absolute before:left-[19px] before:top-4 before:h-[calc(100%-32px)] before:w-[2px] before:bg-black/10 dark:before:bg-white/10">
