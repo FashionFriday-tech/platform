@@ -1,24 +1,19 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { MOCK_CATEGORIES } from './types';
 import { CategoryCard } from './components/CategoryCard';
 import { SearchIcon } from '@ff/ui';
+import { useCategories } from './hooks/useCategories';
 
 export default function CategoriesFeature() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGender, setSelectedGender] = useState<'All' | 'Men' | 'Women'>('All');
-
-  const genders = ['All', 'Men', 'Women'] as const;
-
-  const filteredCategories = useMemo(() => {
-    return MOCK_CATEGORIES.filter(cat => {
-      const matchesSearch = cat.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesGender = selectedGender === 'All' || cat.gender === selectedGender;
-      return matchesSearch && matchesGender;
-    });
-  }, [searchQuery, selectedGender]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    selectedGender,
+    setSelectedGender,
+    genders,
+    filteredCategories,
+  } = useCategories();
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
