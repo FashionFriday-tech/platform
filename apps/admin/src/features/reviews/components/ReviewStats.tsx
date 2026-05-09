@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { mockReviews } from '../../customers/data/mock-reviews';
+import { mockReviews } from '../services/mock-reviews';
 import { 
   StarIcon, 
   MessageSquareIcon, 
