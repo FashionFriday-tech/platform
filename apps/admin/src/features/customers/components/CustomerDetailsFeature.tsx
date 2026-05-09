@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { mockCustomers } from '../data/mock-customers';
-import { mockOrders } from '../../orders/data/mock-orders';
-import { mockReviews } from '../data/mock-reviews';
+import { mockCustomers } from '../services/mock-customers';
+import { mockOrders } from '../../orders/services/mock-orders';
+import { mockReviews } from '../../reviews/services/mock-reviews';
 import { ChevronLeftIcon, ShoppingBagIcon, StarIcon } from '@ff/ui';
 import Image from 'next/image';
 
