@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { mockOrders } from '../data/mock-orders';
+import { mockOrders } from '../services/mock-orders';
 import { 
   ShoppingBagIcon, 
   ClockIcon, 
