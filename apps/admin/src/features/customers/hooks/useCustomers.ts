@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Customer, SortField, SortDirection } from '../types';
-import { mockCustomers } from '../data/mock-customers';
+import { mockCustomers } from '../services/mock-customers';
 
 export function useCustomers() {
   const [searchQuery, setSearchQuery] = useState('');
