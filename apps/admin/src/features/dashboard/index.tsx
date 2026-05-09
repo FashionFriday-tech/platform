@@ -1,32 +1,15 @@
 'use client';
 
 import React from 'react';
-import { motion, Variants } from 'motion/react';
-import { useAuth } from '@/contexts/AuthContext';
+import { motion } from 'motion/react';
 import { ActivityIcon, ShoppingBagIcon, PackageIcon, UsersIcon } from '@ff/ui';
 import { StatCard } from './components/StatCard';
 import { QuickActions } from './components/QuickActions';
 import { ActivityFeed } from './components/ActivityFeed';
+import { useDashboard } from './hooks/useDashboard';
 
 export function DashboardView() {
-  const { user } = useAuth();
-  const role = user.role;
-
-  const hasAccess = (allowedRoles: string[]) => allowedRoles.includes(role);
-
-  // Animation variants
-  const container: Variants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const item: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
-  };
+  const { user, hasAccess, container, item } = useDashboard();
 
   return (
     <div className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden px-6 pb-12 pt-6 scrollbar-hide">
