@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Review } from '../../customers/data/mock-reviews';
+import { Review } from '../types';
 
 interface EditReviewModalProps {
   isOpen: boolean;
