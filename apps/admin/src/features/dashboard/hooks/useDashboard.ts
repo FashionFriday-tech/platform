@@ -5,9 +5,11 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export function useDashboard() {
   const { user } = useAuth();
-  const role = user.role;
 
-  const hasAccess = (allowedRoles: string[]) => allowedRoles.includes(role);
+  const hasAccess = (allowedRoles: string[]) => {
+    if (!user) return false;
+    return allowedRoles.includes(user.role);
+  };
 
   // Animation variants
   const container: Variants = {
@@ -24,7 +26,7 @@ export function useDashboard() {
   };
 
   return {
-    user,
+    user: user!,
     hasAccess,
     container,
     item,

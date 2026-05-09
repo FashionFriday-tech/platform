@@ -25,6 +25,7 @@ import Image from 'next/image';
 export function Sidebar() {
   const pathname = usePathname() || '';
   const { user } = useAuth();
+  if (!user) return null;
   const role = user.role;
 
   const getLinkClass = (path: string) => {

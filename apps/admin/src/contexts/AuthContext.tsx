@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type Role = 'SUPER_ADMIN' | 'PRODUCT_MANAGER' | 'SALES_MANAGER';
 
@@ -13,27 +13,57 @@ export interface User {
 }
 
 interface AuthContextType {
-  user: User;
+  user: User | null;
+  isLoading: boolean;
+  login: (user: User) => void;
+  logout: () => void;
   setRole: (role: Role) => void;
   updateUser: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'ff_admin_user';
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User>({
-    name: 'Jimmy Sullivan',
-    role: 'SUPER_ADMIN',
-    initials: 'JS',
-    phone: '+1 (555) 123-4567',
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem(STORAGE_KEY);
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        console.error('Error parsing stored user:', e);
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  const login = (newUser: User) => {
+    setUser(newUser);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem(STORAGE_KEY);
+  };
 
   const setRole = (role: Role) => {
-    setUser((prev) => ({ ...prev, role }));
+    setUser((prev) => {
+      if (!prev) return null;
+      const updated = { ...prev, role };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const updateUser = (updates: Partial<User>) => {
     setUser((prev) => {
+      if (!prev) return null;
       const updated = { ...prev, ...updates };
       if (updates.name && updates.name !== prev.name) {
         const parts = updates.name.split(' ').filter(Boolean);
@@ -45,12 +75,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           updated.initials = '';
         }
       }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
     });
   };
 
   return (
-    <AuthContext.Provider value={{ user, setRole, updateUser }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, setRole, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
@@ -63,3 +94,4 @@ export function useAuth() {
   }
   return context;
 }
+

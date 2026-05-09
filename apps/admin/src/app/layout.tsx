@@ -2,9 +2,8 @@ import type { Metadata } from 'next';
 import { Mulish } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { Sidebar } from '@/components/layout/Sidebar';
-import { Header } from '@/components/layout/Header';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { AdminLayoutContent } from '@/components/layout/AdminLayoutContent';
 
 const mulish = Mulish({
   style: ['normal', 'italic'],
@@ -38,19 +37,11 @@ export default function RootLayout({
               <div className="absolute -bottom-40 -right-40 h-[600px] w-[600px] rounded-full bg-amber-100/40 blur-[120px] dark:bg-amber-900/20"></div>
             </div>
 
-            <Sidebar />
-
-            <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
-
-              <Header />
-
-              <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
-                {children}
-              </div>
-            </main>
+            <AdminLayoutContent>{children}</AdminLayoutContent>
           </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
   );
 }
+
