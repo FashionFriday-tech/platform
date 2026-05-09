@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Review } from '../../customers/data/mock-reviews';
+import { Review } from '../types';
 import { ChevronDownIcon, ChevronUpIcon, FilledStarIcon, VerifiedIcon, SparklesIcon } from '@ff/ui';
 import { twMerge } from 'tailwind-merge';
 import clsx from 'clsx';
