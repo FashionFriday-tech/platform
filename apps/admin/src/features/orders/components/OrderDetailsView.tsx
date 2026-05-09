@@ -134,7 +134,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
   const copyImageToClipboard = async (imageUrl: string) => {
     try {
       // The Clipboard API only accepts 'image/png'. We must convert the image (which might be jpeg/webp) to png via Canvas.
-      const img = new Image();
+      const img = new globalThis.Image();
       img.crossOrigin = 'anonymous';
       img.src = imageUrl;
       
