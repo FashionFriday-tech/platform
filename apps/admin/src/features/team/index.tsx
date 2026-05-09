@@ -1,176 +1,37 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useTeam } from './hooks/useTeam';
+import { ROLE_LABELS } from './types';
 import { PlusIcon, SearchIcon, ShieldCheckIcon, MailIcon } from '@ff/ui';
-import { TeamMember, ROLE_LABELS } from './types';
 import { InviteMemberModal } from './components/InviteMemberModal';
 import { EditMemberModal } from './components/EditMemberModal';
 import { TeamStats } from './components/TeamStats';
-import { Role } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { CustomSelect } from '../../components/ui/CustomSelect';
 
-// Mock initial data
-const MOCK_TEAM: TeamMember[] = [
-  {
-    id: '1',
-    name: 'Jimmy Sullivan',
-    email: 'jimmy@fashionfriday.com',
-    role: 'SUPER_ADMIN',
-    status: 'ACTIVE',
-    joinedAt: '2025-01-15T00:00:00Z',
-    updatedAt: '2026-05-01T10:30:00Z',
-    avatarUrl: 'https://i.pravatar.cc/150?u=jimmy',
-  },
-  {
-    id: '2',
-    name: 'Sarah Chen',
-    email: 'sarah.c@fashionfriday.com',
-    role: 'PRODUCT_MANAGER',
-    status: 'ACTIVE',
-    joinedAt: '2025-02-20T00:00:00Z',
-    updatedAt: '2026-04-12T09:15:00Z',
-    avatarUrl: 'https://i.pravatar.cc/150?u=sarah',
-  },
-  {
-    id: '3',
-    name: 'Marcus Johnson',
-    email: 'marcus@fashionfriday.com',
-    role: 'SALES_MANAGER',
-    status: 'ACTIVE',
-    joinedAt: '2025-03-10T00:00:00Z',
-    updatedAt: '2026-03-10T14:20:00Z',
-  },
-  {
-    id: '4',
-    name: 'Emma Williams',
-    email: 'emma.w@fashionfriday.com',
-    role: 'SALES_MANAGER',
-    status: 'PENDING',
-    joinedAt: '2026-05-01T00:00:00Z',
-    updatedAt: '2026-05-01T00:00:00Z',
-  },
-];
-
-type SortField = 'name' | 'role' | 'status' | 'joinedAt' | 'updatedAt';
-
 export function TeamManagementView() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const [team, setTeam] = useState<TeamMember[]>(MOCK_TEAM);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (searchParams.get('action') === 'invite') {
-      setIsInviteModalOpen(true);
-    }
-  }, [searchParams]);
-  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
-  
-  const [sortField, setSortField] = useState<SortField>('joinedAt');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-
-  const [roleFilter, setRoleFilter] = useState<'all' | Role>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'ACTIVE' | 'PENDING' | 'SUSPENDED'>('all');
-
-  const roleOptions = [
-    { label: 'All Roles', value: 'all' },
-    { label: 'Super Admins', value: 'SUPER_ADMIN' },
-    { label: 'Product Managers', value: 'PRODUCT_MANAGER' },
-    { label: 'Sales Managers', value: 'SALES_MANAGER' },
-  ];
-
-  const statusOptions = [
-    { label: 'All Status', value: 'all' },
-    { label: 'Active', value: 'ACTIVE' },
-    { label: 'Pending', value: 'PENDING' },
-    { label: 'Suspended', value: 'SUSPENDED' },
-  ];
-
-  const handleSort = (field: SortField) => {
-    if (field === 'role' || field === 'status') return; // Disable sorting for role and status headers
-    
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-
-  const filteredAndSortedTeam = useMemo(() => {
-    let result = team.filter(
-      (member) =>
-        member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        member.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-    if (roleFilter !== 'all') {
-      result = result.filter(m => m.role === roleFilter);
-    }
-
-    if (statusFilter !== 'all') {
-      result = result.filter(m => m.status === statusFilter);
-    }
-
-    return result.sort((a, b) => {
-      if (sortField === 'name') {
-        return sortDirection === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-      }
-      if (sortField === 'joinedAt') {
-        return sortDirection === 'asc' 
-          ? new Date(a.joinedAt).getTime() - new Date(b.joinedAt).getTime()
-          : new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime();
-      }
-      if (sortField === 'updatedAt') {
-        const timeA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
-        const timeB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
-        return sortDirection === 'asc' ? timeA - timeB : timeB - timeA;
-      }
-      return 0;
-    });
-  }, [team, searchQuery, roleFilter, statusFilter, sortField, sortDirection]);
-
-  const handleInvite = (email: string, role: Role) => {
-    const now = new Date().toISOString();
-    const newMember: TeamMember = {
-      id: Math.random().toString(),
-      name: email.split('@')[0],
-      email,
-      role,
-      status: 'PENDING',
-      joinedAt: now,
-      updatedAt: now,
-    };
-    setTeam([...team, newMember]);
-    setIsInviteModalOpen(false);
-  };
-
-  const handleEditSave = (id: string, newRole: Role, newStatus: 'ACTIVE' | 'PENDING' | 'SUSPENDED') => {
-    setTeam(team.map(member => 
-      member.id === id 
-        ? { ...member, role: newRole, status: newStatus, updatedAt: new Date().toISOString() } 
-        : member
-    ));
-    setEditingMemberId(null);
-  };
-
-  const getRoleBadgeColor = (role: Role) => {
-    switch (role) {
-      case 'SUPER_ADMIN':
-        return 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400 border-orange-500/20';
-      case 'PRODUCT_MANAGER':
-        return 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 border-blue-500/20';
-      case 'SALES_MANAGER':
-        return 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400 border-green-500/20';
-      default:
-        return 'bg-black/5 text-black dark:bg-white/5 dark:text-white border-black/10 dark:border-white/10';
-    }
-  };
-
-  const editingMember = team.find(m => m.id === editingMemberId) || null;
+  const {
+    team,
+    searchQuery,
+    setSearchQuery,
+    isInviteModalOpen,
+    setIsInviteModalOpen,
+    setEditingMemberId,
+    sortField,
+    sortDirection,
+    roleFilter,
+    setRoleFilter,
+    statusFilter,
+    setStatusFilter,
+    roleOptions,
+    statusOptions,
+    handleSort,
+    filteredAndSortedTeam,
+    handleInvite,
+    handleEditSave,
+    getRoleBadgeColor,
+    editingMember,
+  } = useTeam();
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden px-6 pb-6">
