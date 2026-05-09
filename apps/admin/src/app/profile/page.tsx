@@ -5,7 +5,8 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, logout } = useAuth();
+  if (!user) return null;
   
   const [isEditingName, setIsEditingName] = useState(false);
   const [editName, setEditName] = useState(user.name);
@@ -115,6 +116,15 @@ export default function ProfilePage() {
                   </p>
                 </div>
               </div>
+            </div>
+            
+            <div className="mb-1">
+              <button
+                onClick={() => logout()}
+                className="group flex items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/5 px-6 py-3 text-xs font-black tracking-widest text-red-600 uppercase transition-all duration-300 hover:bg-red-600 hover:text-white dark:border-red-500/10 dark:bg-red-950/20 dark:text-red-400 dark:hover:bg-red-600 dark:hover:text-white active:scale-[0.98]"
+              >
+                Log Out
+              </button>
             </div>
           </div>
 
