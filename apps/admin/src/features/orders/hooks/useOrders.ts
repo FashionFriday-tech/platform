@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { mockOrders } from '../data/mock-orders';
+import { mockOrders } from '../services/mock-orders';
 import { Order } from '../types';
 
 export type SortField =
