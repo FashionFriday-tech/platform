@@ -1,32 +1,20 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { MOCK_COLLECTIONS, addCollection, ProductCollection } from './types';
 import { CollectionCard } from './components/CollectionCard';
 import { AddCollectionModal } from './components/AddCollectionModal';
 import { SearchIcon, PlusIcon } from '@ff/ui';
+import { useCollections } from './hooks/useCollections';
 
 export default function CollectionsFeature() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [collections, setCollections] = useState<ProductCollection[]>(MOCK_COLLECTIONS);
-
-  // Sync state if MOCK_COLLECTIONS changes (e.g. from deletion in another view)
-  useEffect(() => {
-    setCollections(MOCK_COLLECTIONS);
-  }, []);
-
-  const handleAddCollection = (name: string, image: string, slug: string) => {
-    const newCol = addCollection({ name, image, slug });
-    setCollections([...MOCK_COLLECTIONS]);
-  };
-
-  const filteredCollections = useMemo(() => {
-    return collections.filter(col => {
-      return col.name.toLowerCase().includes(searchQuery.toLowerCase());
-    });
-  }, [searchQuery, collections]);
+  const {
+    searchQuery,
+    setSearchQuery,
+    isAddModalOpen,
+    setIsAddModalOpen,
+    filteredCollections,
+    handleAddCollection,
+  } = useCollections();
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
