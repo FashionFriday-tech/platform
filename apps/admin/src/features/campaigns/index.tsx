@@ -1,60 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { MOCK_BANNERS, CampaignBanner, addBanner, updateBanner, BannerPlacement, PLACEMENT_LABELS, PLACEMENT_ASPECT_RATIOS } from './types';
+import React from 'react';
+import { BannerPlacement, PLACEMENT_LABELS, PLACEMENT_ASPECT_RATIOS } from './types';
 import { CampaignBannerCard } from './components/CampaignBannerCard';
 import { BannerEditorModal } from './components/BannerEditorModal';
 import { PlusIcon } from '@ff/ui';
+import { useCampaigns } from './hooks/useCampaigns';
 
 export function CampaignsFeature() {
-  const searchParams = useSearchParams();
-  const [banners, setBanners] = useState(MOCK_BANNERS);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingBanner, setEditingBanner] = useState<CampaignBanner | null>(null);
-  const [targetPlacement, setTargetPlacement] = useState<BannerPlacement>('home-carousel');
+  const {
+    banners,
+    isModalOpen,
+    setIsModalOpen,
+    editingBanner,
+    targetPlacement,
+    handleOpenCreate,
+    handleOpenEdit,
+    handleSaveBanner,
+    refreshBanners,
+  } = useCampaigns();
 
-  useEffect(() => {
-    if (searchParams.get('action') === 'new') {
-      setEditingBanner(null);
-      setTargetPlacement('home-carousel');
-      setIsModalOpen(true);
-    }
-  }, [searchParams]);
-
-  const refreshBanners = () => setBanners([...MOCK_BANNERS]);
-
-  const handleOpenCreate = (placement: BannerPlacement) => {
-    setEditingBanner(null);
-    setTargetPlacement(placement);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenEdit = (banner: CampaignBanner) => {
-    setEditingBanner(banner);
-    setTargetPlacement(banner.placement);
-    setIsModalOpen(true);
-  };
-
-  const handleSaveBanner = (data: Partial<CampaignBanner>) => {
-    if (editingBanner) {
-      updateBanner(editingBanner.id, data);
-    } else {
-      const newBanner: CampaignBanner = {
-        id: `b${Date.now()}`,
-        title: data.title!,
-        mediaUrl: data.mediaUrl!,
-        mediaType: data.mediaType!,
-        linkUrl: data.linkUrl!,
-        placement: data.placement!,
-        isActive: true,
-        createdAt: new Date().toISOString(),
-      };
-      addBanner(newBanner);
-    }
-    refreshBanners();
-    setIsModalOpen(false);
-  };
   const renderSection = (placement: BannerPlacement) => {
     const sectionBanners = banners.filter(b => b.placement === placement);
     const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[placement] || 'aspect-video';
