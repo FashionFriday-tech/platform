@@ -33,11 +33,9 @@ export const CatalogueSidebar = ({
   });
 
   // Fetch the filters based on the capitalized category name
-  const filters: FilterSection[] = (
-    Object.prototype.hasOwnProperty.call(CATEGORY_FILTERS, category)
-      ? CATEGORY_FILTERS[category]
-      : []
-  ) as FilterSection[];
+  const filters: FilterSection[] = Object.prototype.hasOwnProperty.call(CATEGORY_FILTERS, category)
+    ? CATEGORY_FILTERS[category]
+    : [];
 
   const toggleSection = (id: string) => {
     setOpenSections((prev) => ({
