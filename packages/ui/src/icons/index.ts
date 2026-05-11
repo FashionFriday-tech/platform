@@ -114,7 +114,7 @@ import {
 } from 'react-icons/ri';
 import { RxHamburgerMenu, RxStar, RxStarFilled } from 'react-icons/rx';
 import { SiFacebook, SiInstagram, SiX, SiYoutube } from 'react-icons/si';
-import { TbHeartMinus, TbHeartPlus, TbJacket, TbShirt, TbShoe, TbHanger } from 'react-icons/tb';
+import { TbHanger, TbHeartMinus, TbHeartPlus, TbJacket, TbShirt, TbShoe } from 'react-icons/tb';
 import { TfiCrown } from 'react-icons/tfi';
 import { TiThMenuOutline } from 'react-icons/ti';
 
