@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { type Product } from '@ff/schemas';
 
-import { useSettingsStore } from '@/store/settings-store';
 import { filterProducts } from '@/data/filter-engine';
+import { useSettingsStore } from '@/store/settings-store';
 
 interface UseCatalogueProps {
   initialProducts: Product[];
