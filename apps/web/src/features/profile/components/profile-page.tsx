@@ -20,8 +20,8 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
-import { useAuthStore } from '@/store/auth-store';
 import { sendEmailOtpAction, verifyEmailOtpAction } from '@/features/auth/services/auth.actions';
+import { useAuthStore } from '@/store/auth-store';
 
 import { ModernInput } from './modern-input';
 import { ProfileSection } from './profile-section';
