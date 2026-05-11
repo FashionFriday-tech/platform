@@ -27,7 +27,7 @@ export default function SourcingSection() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSourceSubmit = (e: React.FormEvent) => {
+  const handleSourceSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) {
       return;
