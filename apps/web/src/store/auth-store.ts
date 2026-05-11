@@ -1,9 +1,10 @@
 import { create } from 'zustand';
+
 import {
+  deleteAccountAction,
   getMeAction,
   logoutAction,
   updateProfileAction,
-  deleteAccountAction,
 } from '@/features/auth/services/auth.actions';
 
 export interface User {
