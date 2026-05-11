@@ -7,10 +7,10 @@ import { type Product } from '@ff/schemas';
 import { ArrowUpDownIcon, PlayIcon, SlidersIcon, StopIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
+import { useCatalogue } from '../hooks/use-catalogue';
 import { CatalogueGrid } from './catalogue-grid';
 // Sub-component Imports
 import { CatalogueSidebar } from './catalogue-sidebar';
-import { useCatalogue } from '../hooks/use-catalogue';
 
 // Sort Options
 const SORT_OPTIONS = [
