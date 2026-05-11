@@ -2,11 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { ExternalLinkIcon, UserIcon as UIIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
-import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 
 import { quickLinks } from '../data/profile';
