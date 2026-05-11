@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { DEFAULT_SETTINGS } from '@/config/default-settings.';
 
 const STORAGE_KEY = 'app_settings';
@@ -15,7 +16,9 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   settings: DEFAULT_SETTINGS,
 
   syncSettings: () => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
