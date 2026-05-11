@@ -1,4 +1,4 @@
-import { Role } from '@/contexts/AuthContext';
+import { type Role } from '@/contexts/AuthContext';
 
 export interface TeamMember {
   id: string;
