@@ -1,5 +1,6 @@
 import React from 'react';
-import { Order } from '../types';
+
+import { type Order } from '../types';
 
 export function OrderPaymentSummary({ order }: { order: Order }) {
   return (
@@ -26,12 +27,14 @@ export function OrderPaymentSummary({ order }: { order: Order }) {
         </div>
       </div>
       <div className="rounded-b-2xl bg-black/5 px-6 py-4 dark:bg-white/5">
-         <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-black/50 dark:text-white/50">Mode</span>
-            <span className={`rounded-md px-2.5 py-1 text-xs font-bold uppercase ${order.paymentType === 'cod' ? 'bg-orange-500/20 text-orange-700 dark:bg-orange-500/30 dark:text-orange-300' : 'bg-blue-500/20 text-blue-700 dark:bg-blue-500/30 dark:text-blue-300'}`}>
-              {order.paymentType === 'cod' ? 'Cash on Delivery' : 'Prepaid'}
-            </span>
-         </div>
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-bold text-black/50 dark:text-white/50">Mode</span>
+          <span
+            className={`rounded-md px-2.5 py-1 text-xs font-bold uppercase ${order.paymentType === 'cod' ? 'bg-orange-500/20 text-orange-700 dark:bg-orange-500/30 dark:text-orange-300' : 'bg-blue-500/20 text-blue-700 dark:bg-blue-500/30 dark:text-blue-300'}`}
+          >
+            {order.paymentType === 'cod' ? 'Cash on Delivery' : 'Prepaid'}
+          </span>
+        </div>
       </div>
     </div>
   );

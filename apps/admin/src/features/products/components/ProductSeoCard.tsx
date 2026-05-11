@@ -1,29 +1,36 @@
-import { Product } from '../types';
+import { type Product } from '../types';
 
 export function ProductSeoCard({ product }: { product: Product }) {
   return (
     <div className="group flex flex-col justify-between rounded-[2.5rem] border border-black/5 bg-white p-8 shadow-[0_20px_50px_rgba(0,0,0,0.03)] transition-all hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] dark:border-white/5 dark:bg-black">
       <div>
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-sm font-black tracking-widest uppercase">
-            Search Engine Visibility
-          </h3>
+          <h3 className="text-sm font-black tracking-widest uppercase">Search Engine Visibility</h3>
           <div className="rounded-full bg-green-500/10 p-2 text-green-500">
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
         </div>
 
         <div className="mb-8 rounded-2xl border border-black/5 bg-black/5 p-6 transition-colors group-hover:bg-black/10 dark:border-white/5 dark:bg-white/5 dark:group-hover:bg-white/10">
-          <div className="mb-2 break-all text-xs font-medium text-black/60 dark:text-white/60">
+          <div className="mb-2 text-xs font-medium break-all text-black/60 dark:text-white/60">
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             fashionfriday.in &rsaquo; product &rsaquo; {product.seoSlug || 'item'}
           </div>
           <div className="mb-2 cursor-pointer text-xl leading-tight font-medium text-blue-600 hover:underline dark:text-blue-400">
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             {product.seoTitle || product.name}
           </div>
           <div className="text-sm leading-relaxed text-black/70 dark:text-white/70">
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             {product.seoDesc ||
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               product.description ||
               'View this product on Fashion Friday. Discover the best styles and premium quality items.'}
           </div>

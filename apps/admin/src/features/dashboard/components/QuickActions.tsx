@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { PlusIcon, ShoppingBagIcon, PackageIcon, TagIcon } from '@ff/ui';
+
+import { PackageIcon, PlusIcon, ShoppingBagIcon, TagIcon } from '@ff/ui';
 
 interface QuickActionProps {
   title: string;
@@ -41,14 +42,16 @@ const ACTIONS: QuickActionProps[] = [
   },
 ];
 
-  export function QuickActions() {
-    return (
-      <div className="flex h-full flex-col gap-6 rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
-        <div>
-          <h2 className="text-xl font-bold text-black dark:text-white">Quick Actions</h2>
-          <p className="mt-1 text-sm font-medium text-black/70 dark:text-white/70">Common operational tasks</p>
-        </div>
-      
+export function QuickActions() {
+  return (
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
+      <div>
+        <h2 className="text-xl font-bold text-black dark:text-white">Quick Actions</h2>
+        <p className="mt-1 text-sm font-medium text-black/70 dark:text-white/70">
+          Common operational tasks
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {ACTIONS.map((action, idx) => (
           <Link
@@ -56,13 +59,17 @@ const ACTIONS: QuickActionProps[] = [
             href={action.href}
             className="group flex flex-col gap-4 rounded-2xl border border-black/5 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/5 dark:bg-[#1a1a1a]"
           >
-            <div className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-lg transition-transform group-hover:scale-110 ${action.colorClass}`}>
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-lg transition-transform group-hover:scale-110 ${action.colorClass}`}
+            >
               <action.icon className="h-6 w-6" />
             </div>
-              <div>
-                <h3 className="font-bold text-black dark:text-white">{action.title}</h3>
-                <p className="mt-1 text-xs font-medium text-black/60 dark:text-white/60">{action.description}</p>
-              </div>
+            <div>
+              <h3 className="font-bold text-black dark:text-white">{action.title}</h3>
+              <p className="mt-1 text-xs font-medium text-black/60 dark:text-white/60">
+                {action.description}
+              </p>
+            </div>
           </Link>
         ))}
       </div>

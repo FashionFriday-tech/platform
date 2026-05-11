@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'motion/react';
-import { useRouter } from 'next/navigation';
-import { Order } from '../types';
-import { OrderStatusBadge } from './OrderStatusBadge';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+import { motion } from 'motion/react';
+
+import { type Order } from '../types';
+import { OrderStatusBadge } from './OrderStatusBadge';
 
 interface OrdersGridProps {
   orders: Order[];
@@ -13,12 +15,18 @@ interface OrdersGridProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'pending': return 'bg-yellow-500';
-    case 'processing': return 'bg-blue-500';
-    case 'shipped': return 'bg-purple-500';
-    case 'delivered': return 'bg-green-500';
-    case 'cancelled': return 'bg-red-500';
-    default: return 'bg-black dark:bg-white';
+    case 'pending':
+      return 'bg-yellow-500';
+    case 'processing':
+      return 'bg-blue-500';
+    case 'shipped':
+      return 'bg-purple-500';
+    case 'delivered':
+      return 'bg-green-500';
+    case 'cancelled':
+      return 'bg-red-500';
+    default:
+      return 'bg-black dark:bg-white';
   }
 };
 
@@ -41,14 +49,20 @@ export function OrdersGrid({ orders }: OrdersGridProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: i * 0.05, ease: 'easeOut' }}
           key={order.id}
-          onClick={() => router.push(`/orders/${order.id}`)}
-          className="group relative flex cursor-pointer flex-row gap-5 overflow-hidden rounded-2xl border bg-white/70 p-4 backdrop-blur-xl shadow-sm transition-all duration-300 dark:border-white/5 dark:bg-[#111111]/80 border-black/5"
+          onClick={() => {
+            router.push(`/orders/${order.id}`);
+          }}
+          className="group relative flex cursor-pointer flex-row gap-5 overflow-hidden rounded-2xl border border-black/5 bg-white/70 p-4 shadow-sm backdrop-blur-xl transition-all duration-300 dark:border-white/5 dark:bg-[#111111]/80"
         >
           {/* Status-colored background glow effect */}
-          <div className={`absolute -right-20 top-1/2 h-[250px] w-[250px] -translate-y-1/2 rounded-full opacity-[0.06] transition-transform duration-700 group-hover:scale-125 group-hover:opacity-[0.08] dark:opacity-[0.04] dark:group-hover:opacity-[0.06] ${getStatusColor(order.status)}`} />
-          
+          <div
+            className={`absolute top-1/2 -right-20 h-[250px] w-[250px] -translate-y-1/2 rounded-full opacity-[0.06] transition-transform duration-700 group-hover:scale-125 group-hover:opacity-[0.08] dark:opacity-[0.04] dark:group-hover:opacity-[0.06] ${getStatusColor(order.status)}`}
+          />
+
           <div className="relative z-10 w-28 shrink-0">
-            <Image width={500} height={500}
+            <Image
+              width={500}
+              height={500}
               src={order.items[0]?.productImage}
               alt=""
               className="aspect-[3/4] w-full rounded-xl bg-black/5 object-cover shadow-sm dark:bg-white/5"
@@ -58,13 +72,14 @@ export function OrdersGrid({ orders }: OrdersGridProps) {
           <div className="relative z-10 flex flex-1 flex-col justify-between py-1">
             <div className="mb-2 flex items-start justify-between">
               <div className="pr-2">
-                <div className="text-sm font-bold text-black dark:text-white line-clamp-1">
+                <div className="line-clamp-1 text-sm font-bold text-black dark:text-white">
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   {order.customer?.name || order.orderNumber}
                 </div>
-                <div className="text-xs font-medium text-black/70 dark:text-white/70 line-clamp-1 mt-0.5">
+                <div className="mt-0.5 line-clamp-1 text-xs font-medium text-black/70 dark:text-white/70">
                   {order.items[0]?.productName}
                 </div>
-                <div className="text-[10px] text-black/50 dark:text-white/50 mt-1">
+                <div className="mt-1 text-[10px] text-black/50 dark:text-white/50">
                   {new Date(order.createdAt).toLocaleDateString()}
                 </div>
               </div>
@@ -73,7 +88,7 @@ export function OrdersGrid({ orders }: OrdersGridProps) {
 
             <div className="mt-2 flex flex-col gap-2">
               <div className="flex items-center justify-between border-t border-black/5 pt-2 dark:border-white/5">
-                <span className="text-[10px] font-semibold text-black/50 dark:text-white/50 uppercase tracking-widest">
+                <span className="text-[10px] font-semibold tracking-widest text-black/50 uppercase dark:text-white/50">
                   Amount
                 </span>
                 <div className="text-sm font-black text-black dark:text-white">
@@ -81,15 +96,15 @@ export function OrdersGrid({ orders }: OrdersGridProps) {
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold text-black/50 dark:text-white/50 uppercase tracking-widest">
+                <span className="text-[10px] font-semibold tracking-widest text-black/50 uppercase dark:text-white/50">
                   Payment
                 </span>
                 {order.paymentType === 'cod' ? (
-                  <span className="inline-flex justify-center min-w-[80px] items-center rounded-md bg-orange-50 px-2 py-0.5 text-[10px] font-medium text-orange-700 ring-1 ring-orange-600/20 ring-inset dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/20">
+                  <span className="inline-flex min-w-[80px] items-center justify-center rounded-md bg-orange-50 px-2 py-0.5 text-[10px] font-medium text-orange-700 ring-1 ring-orange-600/20 ring-inset dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/20">
                     COD
                   </span>
                 ) : (
-                  <span className="inline-flex justify-center min-w-[80px] items-center rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20">
+                  <span className="inline-flex min-w-[80px] items-center justify-center rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20">
                     Prepaid
                   </span>
                 )}

@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
+
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { OrderStatus } from '../types';
+
+import { type OrderStatus } from '../types';
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;
@@ -38,13 +40,14 @@ export function OrderStatusBadge({ status, className }: OrderStatusBadgeProps) {
     },
   };
 
+  // eslint-disable-next-line security/detect-object-injection
   const config = statusConfig[status];
 
   return (
     <span
       className={twMerge(
         clsx(
-          'inline-flex justify-center items-center rounded-md border px-2 py-0.5 text-[10px] font-medium backdrop-blur-sm transition-all',
+          'inline-flex items-center justify-center rounded-md border px-2 py-0.5 text-[10px] font-medium backdrop-blur-sm transition-all',
           config.classes,
         ),
         className,

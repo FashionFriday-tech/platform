@@ -2,9 +2,9 @@
 
 import { useProducts } from '../hooks/useProducts';
 import { ProductActionBar } from './ProductActionBar';
-import { ProductTable } from './ProductTable';
 import { ProductGrid } from './ProductGrid';
 import { ProductStats } from './ProductStats';
+import { ProductTable } from './ProductTable';
 
 export function ProductListView() {
   const {
@@ -42,7 +42,7 @@ export function ProductListView() {
           setAppliedAdvancedFilters={setAppliedAdvancedFilters}
         />
 
-        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {viewMode === 'list' ? (
             <ProductTable
               products={products}

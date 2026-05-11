@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Brand, BrandCategory } from '@ff/schemas';
+// eslint-disable-next-line unicorn/filename-case
+import { useEffect, useState } from 'react';
+
+import { type Brand, type BrandCategory } from '@ff/schemas';
 
 interface UseAddBrandModalProps {
   initialData?: Brand | null;
@@ -16,16 +18,22 @@ export function useAddBrandModal({ initialData, isOpen, onClose, onSave }: UseAd
 
   useEffect(() => {
     if (initialData && isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(initialData.name);
       setColor(initialData.color);
       setLogoUrl(initialData.logo);
-      
+
       const categoryMap: Record<string, string> = {
-        'sneakers': 'footwear', 'fashion': 'clothing', 'luxury': 'clothing',
-        'watches': 'watch', 'electronics': 'accessories', 'streetwear': 'clothing',
-        'sportswear': 'clothing'
+        sneakers: 'footwear',
+        fashion: 'clothing',
+        luxury: 'clothing',
+        watches: 'watch',
+        electronics: 'accessories',
+        streetwear: 'clothing',
+        sportswear: 'clothing',
       };
-      const mapped = initialData.categories.map(c => categoryMap[c] || c);
+      // eslint-disable-next-line security/detect-object-injection
+      const mapped = initialData.categories.map((c) => categoryMap[c] || c);
       setCategories([...new Set(mapped)] as BrandCategory[]);
     } else if (isOpen) {
       setName('');
@@ -36,17 +44,26 @@ export function useAddBrandModal({ initialData, isOpen, onClose, onSave }: UseAd
   }, [initialData, isOpen]);
 
   const handleSave = () => {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      return;
+    }
 
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
 
-    onSave({
-      name: name.trim(),
-      slug,
-      color,
-      logo: logoUrl.trim() || '/images/brand-logos/zara.png', // Default fallback
-      categories: categories.length > 0 ? categories : ['clothing'],
-    }, !!initialData, initialData?.slug);
+    onSave(
+      {
+        name: name.trim(),
+        slug,
+        color,
+        logo: logoUrl.trim() || '/images/brand-logos/zara.png', // Default fallback
+        categories: categories.length > 0 ? categories : ['clothing'],
+      },
+      !!initialData,
+      initialData?.slug,
+    );
 
     // Reset form
     setName('');
@@ -57,9 +74,7 @@ export function useAddBrandModal({ initialData, isOpen, onClose, onSave }: UseAd
   };
 
   const toggleCategory = (cat: BrandCategory) => {
-    setCategories(prev => 
-      prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
-    );
+    setCategories((prev) => (prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]));
   };
 
   return {
@@ -71,6 +86,6 @@ export function useAddBrandModal({ initialData, isOpen, onClose, onSave }: UseAd
     setLogoUrl,
     categories,
     handleSave,
-    toggleCategory
+    toggleCategory,
   };
 }

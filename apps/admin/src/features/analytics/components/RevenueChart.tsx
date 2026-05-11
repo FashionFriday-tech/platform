@@ -1,17 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
+
 import {
-  AreaChart,
   Area,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  AreaChart,
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Line,
-  ComposedChart,
 } from 'recharts';
+
 import { MOCK_REVENUE_7D, MOCK_REVENUE_30D } from '../types';
 
 const RANGE_OPTIONS = [
@@ -21,6 +24,7 @@ const RANGE_OPTIONS = [
 
 export function RevenueChart() {
   const [activeRange, setActiveRange] = useState(0);
+  // eslint-disable-next-line security/detect-object-injection
   const data = RANGE_OPTIONS[activeRange].data;
 
   // Calculate summary metrics
@@ -38,14 +42,18 @@ export function RevenueChart() {
           </p>
           <div className="mt-3 flex items-center gap-6">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-black/30 dark:text-white/30">Revenue</p>
+              <p className="text-[11px] font-semibold tracking-wider text-black/30 uppercase dark:text-white/30">
+                Revenue
+              </p>
               <p className="text-xl font-black text-black dark:text-white">
                 ₹{(totalRevenue / 100000).toFixed(1)}L
               </p>
             </div>
             <div className="h-8 w-px bg-black/[0.06] dark:bg-white/[0.06]" />
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-black/30 dark:text-white/30">Orders</p>
+              <p className="text-[11px] font-semibold tracking-wider text-black/30 uppercase dark:text-white/30">
+                Orders
+              </p>
               <p className="text-xl font-black text-black dark:text-white">
                 {totalOrders.toLocaleString('en-IN')}
               </p>
@@ -58,7 +66,9 @@ export function RevenueChart() {
             {RANGE_OPTIONS.map((opt, i) => (
               <button
                 key={opt.label}
-                onClick={() => setActiveRange(i)}
+                onClick={() => {
+                  setActiveRange(i);
+                }}
                 className={`rounded-lg px-4 py-1.5 text-xs font-bold transition-all ${
                   activeRange === i
                     ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-purple-500/25'
@@ -72,17 +82,21 @@ export function RevenueChart() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-violet-500 to-purple-500" />
-              <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">Revenue</span>
+              <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">
+                Revenue
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full bg-pink-500" />
-              <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">Orders</span>
+              <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">
+                Orders
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="h-full w-full min-h-0 flex-1 p-6 pt-4">
+      <div className="h-full min-h-0 w-full flex-1 p-6 pt-4">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
             <defs>
@@ -131,7 +145,9 @@ export function RevenueChart() {
               labelStyle={{ color: 'rgba(255,255,255,0.5)', marginBottom: 6, fontSize: 11 }}
               formatter={(value, name) => {
                 const v = Number(value);
-                if (name === 'revenue') return [`₹${v.toLocaleString('en-IN')}`, 'Revenue'];
+                if (name === 'revenue') {
+                  return [`₹${v.toLocaleString('en-IN')}`, 'Revenue'];
+                }
                 return [v.toLocaleString('en-IN'), 'Orders'];
               }}
             />

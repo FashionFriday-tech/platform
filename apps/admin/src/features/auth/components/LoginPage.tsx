@@ -2,10 +2,12 @@
 
 import React from 'react';
 import Image from 'next/image';
+
 import { ArrowLeftIcon, ChevronRightIcon } from '@ff/ui';
+
 import { useAuthFlow } from '../hooks/useAuthFlow';
-import { PhoneStep } from './PhoneStep';
 import { OtpStep } from './OtpStep';
+import { PhoneStep } from './PhoneStep';
 
 export function LoginPage() {
   const {
@@ -27,11 +29,10 @@ export function LoginPage() {
   } = useAuthFlow();
 
   return (
-    <div className="fixed inset-0 z-50 flex h-screen w-screen items-center justify-center bg-black p-6 text-white selection:bg-white selection:text-black overflow-y-auto">
-      <div className="w-full max-w-md animate-in fade-in duration-500">
-        
+    <div className="fixed inset-0 z-50 flex h-screen w-screen items-center justify-center overflow-y-auto bg-black p-6 text-white selection:bg-white selection:text-black">
+      <div className="animate-in fade-in w-full max-w-md duration-500">
         {/* Logo and Brand Header */}
-        <div className="mb-10 flex items-center gap-3 pointer-events-none">
+        <div className="pointer-events-none mb-10 flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
             <Image
               src="/images/logos/ff-logo.png"
@@ -41,7 +42,7 @@ export function LoginPage() {
               className="invert"
             />
           </div>
-          <span className="text-xs font-black tracking-[0.25em] uppercase text-zinc-400">
+          <span className="text-xs font-black tracking-[0.25em] text-zinc-400 uppercase">
             Fashion Friday Admin
           </span>
         </div>
@@ -62,7 +63,7 @@ export function LoginPage() {
         )}
 
         {/* Dynamic Titles */}
-        <div className="mb-10 space-y-3 pointer-events-none">
+        <div className="pointer-events-none mb-10 space-y-3">
           <h1 className="text-4xl font-black tracking-tight text-white uppercase">
             {step === 'PHONE' ? 'Admin Portal' : 'Confirm OTP'}
           </h1>
@@ -77,6 +78,7 @@ export function LoginPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             handleNext();
           }}
           className="space-y-6"
@@ -105,7 +107,9 @@ export function LoginPage() {
             disabled={loading}
             className="group flex w-full items-center justify-center rounded-full bg-white py-5 text-sm font-black tracking-widest text-black uppercase transition-all hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50"
           >
-            <span>{loading ? 'Processing...' : step === 'PHONE' ? 'Continue' : 'Verify & Enter'}</span>
+            <span>
+              {loading ? 'Processing...' : step === 'PHONE' ? 'Continue' : 'Verify & Enter'}
+            </span>
             {!loading && (
               <ChevronRightIcon className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
             )}
@@ -113,8 +117,8 @@ export function LoginPage() {
         </form>
 
         {/* Footer Security Sign */}
-        <div className="mt-12 text-zinc-600 pointer-events-none">
-          <p className="text-[10px] tracking-widest uppercase font-semibold">
+        <div className="pointer-events-none mt-12 text-zinc-600">
+          <p className="text-[10px] font-semibold tracking-widest uppercase">
             🔒 Connection is encrypted. Access restricted.
           </p>
         </div>

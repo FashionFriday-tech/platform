@@ -1,5 +1,6 @@
+import { type Metadata } from 'next';
+
 import CategoriesFeature from '../../features/categories';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Categories | Fashion Friday Admin',
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function CategoriesPage() {
   return (
-    <div className="flex flex-1 min-h-0 flex-col overflow-hidden p-6">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
       <CategoriesFeature />
     </div>
   );

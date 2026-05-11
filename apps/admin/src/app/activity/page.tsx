@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ActivityLogView } from '../../features/activity';
 
 export const metadata = {

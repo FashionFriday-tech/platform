@@ -1,16 +1,19 @@
+// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import React from 'react';
+
 import {
+  Area,
+  CartesianGrid,
+  ComposedChart,
   Line,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Area,
-  ComposedChart,
 } from 'recharts';
+
 import { MOCK_AOV_DATA } from '../types';
 
 export function AOVTrendChart() {
@@ -33,7 +36,13 @@ export function AOVTrendChart() {
           </span>
           <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
             <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
-              <path d="M6 2.5V9.5M6 2.5L9 5.5M6 2.5L3 5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M6 2.5V9.5M6 2.5L9 5.5M6 2.5L3 5.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             +{delta}%
           </span>
@@ -43,15 +52,19 @@ export function AOVTrendChart() {
       <div className="flex items-center gap-5 px-6 pt-4">
         <div className="flex items-center gap-2">
           <div className="h-0.5 w-5 rounded-full bg-[#6a4fbb]" />
-          <span className="text-[11px] font-semibold text-black/40 dark:text-white/40">Current</span>
+          <span className="text-[11px] font-semibold text-black/40 dark:text-white/40">
+            Current
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <div className="h-0 w-5 border-t border-dashed border-black/25 dark:border-white/25" />
-          <span className="text-[11px] font-semibold text-black/40 dark:text-white/40">Previous</span>
+          <span className="text-[11px] font-semibold text-black/40 dark:text-white/40">
+            Previous
+          </span>
         </div>
       </div>
 
-      <div className="h-full w-full min-h-0 flex-1 p-6 pt-3">
+      <div className="h-full min-h-0 w-full flex-1 p-6 pt-3">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={MOCK_AOV_DATA} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
             <defs>

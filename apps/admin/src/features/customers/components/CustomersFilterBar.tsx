@@ -1,6 +1,8 @@
 import React from 'react';
+
+import { DownloadIcon, SearchIcon } from '@ff/ui';
 import { motion } from 'motion/react';
-import { SearchIcon, DownloadIcon } from '@ff/ui';
+
 import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 interface CustomersFilterBarProps {
@@ -49,7 +51,9 @@ export function CustomersFilterBar({
           type="text"
           placeholder="Search customers by name, ID, email or phone..."
           value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e) => {
+            onSearchChange(e.target.value);
+          }}
           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
         />
       </div>
@@ -59,17 +63,17 @@ export function CustomersFilterBar({
           options={statusOptions}
           value={statusFilter}
           onChange={onStatusChange}
-          className="w-40 z-50"
+          className="z-50 w-40"
         />
 
         <CustomSelect
           options={ordersOptions}
           value={ordersFilter}
           onChange={onOrdersChange}
-          className="w-40 z-50"
+          className="z-50 w-40"
         />
-        
-        <button 
+
+        <button
           onClick={onExport}
           className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
         >

@@ -22,7 +22,7 @@ export function OtpStep({
   handleResendOTP,
 }: OtpStepProps) {
   return (
-    <div className="mb-10 space-y-6 animate-in fade-in duration-300">
+    <div className="animate-in fade-in mb-10 space-y-6 duration-300">
       <div className="flex justify-center gap-1.5 sm:gap-3 md:gap-4">
         {otp.map((digit, index) => (
           <input
@@ -32,16 +32,20 @@ export function OtpStep({
             maxLength={1}
             value={digit}
             ref={(el) => {
+              // eslint-disable-next-line security/detect-object-injection
               inputRefs.current[index] = el;
             }}
             onPaste={index === 0 ? handlePaste : undefined}
-            onChange={(e) => handleOtpChange(index, e.target.value)}
+            onChange={(e) => {
+              handleOtpChange(index, e.target.value);
+            }}
             onKeyDown={(e) => {
+              // eslint-disable-next-line security/detect-object-injection
               if (e.key === 'Backspace' && !otp[index] && index > 0) {
                 inputRefs.current[index - 1]?.focus();
               }
             }}
-            className={`h-10 w-10 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full border-2 bg-transparent text-center text-lg sm:text-xl md:text-2xl font-bold text-white transition-all outline-none ${
+            className={`h-10 w-10 rounded-full border-2 bg-transparent text-center text-lg font-bold text-white transition-all outline-none sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl ${
               errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'
             }`}
           />
@@ -50,7 +54,7 @@ export function OtpStep({
 
       <div className="h-6 text-center">
         {errors.otp ? (
-          <p className="animate-in fade-in text-[10px] font-bold tracking-widest text-red-500 uppercase leading-none">
+          <p className="animate-in fade-in text-[10px] leading-none font-bold tracking-widest text-red-500 uppercase">
             {errors.otp}
           </p>
         ) : (

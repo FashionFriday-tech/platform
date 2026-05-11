@@ -1,11 +1,11 @@
+// eslint-disable-next-line unicorn/filename-case
 'use client';
 
-import { useState, useMemo } from 'react';
-import { BRAND_LOGOS, Brand, BrandCategory } from '@ff/schemas';
+import { useMemo, useState } from 'react';
 
-const ALL_CATEGORIES: BrandCategory[] = [
-  'footwear', 'clothing', 'watch', 'accessories', 'eyewear'
-];
+import { type Brand, BRAND_LOGOS, type BrandCategory } from '@ff/schemas';
+
+const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
 export function useBrands() {
   const [brands, setBrands] = useState<Brand[]>(BRAND_LOGOS);
@@ -17,10 +17,10 @@ export function useBrands() {
 
   const categoryOptions = [
     { label: 'All Categories', value: 'all' },
-    ...ALL_CATEGORIES.map(cat => ({
+    ...ALL_CATEGORIES.map((cat) => ({
       label: cat.charAt(0).toUpperCase() + cat.slice(1),
-      value: cat
-    }))
+      value: cat,
+    })),
   ];
 
   const filteredBrands = useMemo(() => {
@@ -28,11 +28,11 @@ export function useBrands() {
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(b => b.name.toLowerCase().includes(q));
+      result = result.filter((b) => b.name.toLowerCase().includes(q));
     }
 
     if (categoryFilter !== 'all') {
-      result = result.filter(b => b.categories.includes(categoryFilter));
+      result = result.filter((b) => b.categories.includes(categoryFilter));
     }
 
     // Sort alphabetically by default
@@ -41,19 +41,21 @@ export function useBrands() {
 
   const handleSaveBrand = (savedBrand: Brand, isEdit: boolean, originalSlug?: string) => {
     if (isEdit && originalSlug) {
-      setBrands(prev => prev.map(b => b.slug === originalSlug ? savedBrand : b));
+      setBrands((prev) => prev.map((b) => (b.slug === originalSlug ? savedBrand : b)));
       if (selectedBrand?.slug === originalSlug) {
         setSelectedBrand(savedBrand);
       }
     } else {
-      setBrands(prev => [savedBrand, ...prev]);
+      setBrands((prev) => [savedBrand, ...prev]);
     }
     setBrandToEdit(null);
   };
 
   const handleDeleteBrand = () => {
-    if (!selectedBrand) return;
-    setBrands(prev => prev.filter(b => b.slug !== selectedBrand.slug));
+    if (!selectedBrand) {
+      return;
+    }
+    setBrands((prev) => prev.filter((b) => b.slug !== selectedBrand.slug));
     setSelectedBrand(null);
   };
 

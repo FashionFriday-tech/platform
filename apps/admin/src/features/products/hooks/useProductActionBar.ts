@@ -1,5 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
-import { AdvancedFilters, ProductStatus } from '../types';
+// eslint-disable-next-line unicorn/filename-case
+import { useEffect, useRef, useState } from 'react';
+
+import { type AdvancedFilters, type ProductStatus } from '../types';
 
 export function useProductActionBar(
   appliedAdvancedFilters: AdvancedFilters,
@@ -16,33 +18,45 @@ export function useProductActionBar(
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   useEffect(() => {
     if (isFilterOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalFilters(appliedAdvancedFilters);
     }
   }, [isFilterOpen, appliedAdvancedFilters]);
 
   const toggleCategory = (cat: string) => {
     const next = new Set(localFilters.categories);
-    if (next.has(cat)) next.delete(cat);
-    else next.add(cat);
+    if (next.has(cat)) {
+      next.delete(cat);
+    } else {
+      next.add(cat);
+    }
     setLocalFilters({ ...localFilters, categories: next });
   };
 
   const toggleStore = (store: string) => {
     const next = new Set(localFilters.stores);
-    if (next.has(store)) next.delete(store);
-    else next.add(store);
+    if (next.has(store)) {
+      next.delete(store);
+    } else {
+      next.add(store);
+    }
     setLocalFilters({ ...localFilters, stores: next });
   };
 
   const toggleStatus = (status: ProductStatus) => {
     const next = new Set(localFilters.statuses);
-    if (next.has(status)) next.delete(status);
-    else next.add(status);
+    if (next.has(status)) {
+      next.delete(status);
+    } else {
+      next.add(status);
+    }
     setLocalFilters({ ...localFilters, statuses: next });
   };
 
@@ -67,6 +81,7 @@ export function useProductActionBar(
   const isAdvancedActive =
     appliedAdvancedFilters.categories.size > 0 ||
     appliedAdvancedFilters.statuses.size > 0 ||
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     appliedAdvancedFilters.stores?.size > 0 ||
     appliedAdvancedFilters.minPrice !== '' ||
     appliedAdvancedFilters.maxPrice !== '';

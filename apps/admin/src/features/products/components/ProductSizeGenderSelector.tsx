@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
   sizes: string[];
   availableSizes: string[];
@@ -9,21 +11,36 @@ interface Props {
   gender: string;
   setGender: (val: string) => void;
   markTouched: (field: string) => void;
-  getStatus: (val: string | number, initVal: string | number | undefined, minLen: number, fieldName?: string) => 'empty' | 'default' | 'valid' | 'error';
-  getArrayStatus: (val: string[], initVal: string[] | undefined, fieldName?: string) => 'empty' | 'default' | 'valid' | 'error';
+  getStatus: (
+    val: string | number,
+    initVal: string | number | undefined,
+    minLen: number,
+    fieldName?: string,
+  ) => 'empty' | 'default' | 'valid' | 'error';
+  getArrayStatus: (
+    val: string[],
+    initVal: string[] | undefined,
+    fieldName?: string,
+  ) => 'empty' | 'default' | 'valid' | 'error';
 }
 
 export function ProductSizeGenderSelector({
   initialData,
-  sizes, availableSizes, toggleSize,
-  gender, setGender,
-  markTouched, getStatus, getArrayStatus
+  sizes,
+  availableSizes,
+  toggleSize,
+  gender,
+  setGender,
+  markTouched,
+  getStatus,
+  getArrayStatus,
 }: Props) {
   return (
     <div className="grid grid-cols-1 gap-8 pt-2 md:grid-cols-2">
       <div>
         <LabelWithTick
           label="Size"
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
           subtitle="Pick Available Sizes"
         />
@@ -46,6 +63,7 @@ export function ProductSizeGenderSelector({
       <div>
         <LabelWithTick
           label="Gender"
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getStatus(gender, initialData?.gender, 1, 'gender')}
           subtitle="Pick Available Gender"
         />
@@ -62,13 +80,9 @@ export function ProductSizeGenderSelector({
               <div
                 className={`flex h-4 w-4 items-center justify-center rounded-full border-[2px] transition-colors ${gender === g ? 'border-black dark:border-white' : 'border-black/20 group-hover:border-black/40 dark:border-white/20 dark:group-hover:border-white/40'}`}
               >
-                {gender === g && (
-                  <div className="h-2 w-2 rounded-full bg-black dark:bg-white"></div>
-                )}
+                {gender === g && <div className="h-2 w-2 rounded-full bg-black dark:bg-white" />}
               </div>
-              <span className="text-sm font-medium text-black/80 dark:text-white/80">
-                {g}
-              </span>
+              <span className="text-sm font-medium text-black/80 dark:text-white/80">{g}</span>
             </button>
           ))}
         </div>

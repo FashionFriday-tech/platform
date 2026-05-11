@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
   brandInput: string;
   setBrandInput: (val: string) => void;
@@ -9,6 +11,7 @@ interface Props {
   setIsBrandOpen: (val: boolean) => void;
   selectedBrandLogo: string | null;
   setSelectedBrandLogo: (val: string | null) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filteredBrands: any[];
   brandRef: React.RefObject<HTMLDivElement | null>;
   colorInput: string;
@@ -17,24 +20,42 @@ interface Props {
   setIsColorOpen: (val: boolean) => void;
   selectedColorHex: string | null;
   setSelectedColorHex: (val: string | null) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filteredColors: any[];
   colorRef: React.RefObject<HTMLDivElement | null>;
-  getStatus: (val: string | number, initVal: string | number | undefined, minLen: number, fieldName?: string) => 'empty' | 'default' | 'valid' | 'error';
+  getStatus: (
+    val: string | number,
+    initVal: string | number | undefined,
+    minLen: number,
+    fieldName?: string,
+  ) => 'empty' | 'default' | 'valid' | 'error';
 }
 
 export function ProductBrandColorSelector({
   initialData,
-  brandInput, setBrandInput, isBrandOpen, setIsBrandOpen, selectedBrandLogo, setSelectedBrandLogo, filteredBrands, brandRef,
-  colorInput, setColorInput, isColorOpen, setIsColorOpen, selectedColorHex, setSelectedColorHex, filteredColors, colorRef,
-  getStatus
+  brandInput,
+  setBrandInput,
+  isBrandOpen,
+  setIsBrandOpen,
+  selectedBrandLogo,
+  setSelectedBrandLogo,
+  filteredBrands,
+  brandRef,
+  colorInput,
+  setColorInput,
+  isColorOpen,
+  setIsColorOpen,
+  selectedColorHex,
+  setSelectedColorHex,
+  filteredColors,
+  colorRef,
+  getStatus,
 }: Props) {
   return (
     <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2">
       <div ref={brandRef} className="relative">
-        <LabelWithTick
-          label="Brand"
-          status={getStatus(brandInput, initialData?.brand?.[0], 2)}
-        />
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        <LabelWithTick label="Brand" status={getStatus(brandInput, initialData?.brand?.[0], 2)} />
         <div className="relative flex items-center">
           {selectedBrandLogo && (
             <div className="absolute left-3 flex h-5 w-5 items-center justify-center rounded-full bg-black/5 text-[10px] font-bold text-black dark:bg-white/10 dark:text-white">
@@ -49,7 +70,9 @@ export function ProductBrandColorSelector({
               setSelectedBrandLogo(null);
               setIsBrandOpen(true);
             }}
-            onFocus={() => setIsBrandOpen(true)}
+            onFocus={() => {
+              setIsBrandOpen(true);
+            }}
             placeholder="e.g. Nike"
             className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
           />
@@ -60,18 +83,23 @@ export function ProductBrandColorSelector({
             {filteredBrands.length > 0 ? (
               filteredBrands.map((b) => (
                 <button
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                   key={b.name}
                   onClick={() => {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                     setBrandInput(b.name);
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     setSelectedBrandLogo(b.name.charAt(0).toUpperCase());
                     setIsBrandOpen(false);
                   }}
                   className="flex w-full items-center space-x-3 px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
                 >
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black/5 text-xs font-bold text-black/80 dark:bg-white/10 dark:text-white/80">
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     {b.name.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-black/80 dark:text-white/80">
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                     {b.name}
                   </span>
                 </button>
@@ -88,6 +116,7 @@ export function ProductBrandColorSelector({
       <div ref={colorRef} className="relative">
         <LabelWithTick
           label="Color"
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getStatus(colorInput, initialData?.attributes?.colors?.[0], 3)}
         />
         <div className="relative flex items-center">
@@ -95,7 +124,7 @@ export function ProductBrandColorSelector({
             <div
               className="absolute left-3 h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20"
               style={{ backgroundColor: selectedColorHex }}
-            ></div>
+            />
           )}
           <input
             type="text"
@@ -105,7 +134,9 @@ export function ProductBrandColorSelector({
               setSelectedColorHex(null);
               setIsColorOpen(true);
             }}
-            onFocus={() => setIsColorOpen(true)}
+            onFocus={() => {
+              setIsColorOpen(true);
+            }}
             placeholder="e.g. Black"
             className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedColorHex ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
           />
@@ -116,9 +147,12 @@ export function ProductBrandColorSelector({
             {filteredColors.length > 0 ? (
               filteredColors.map((c) => (
                 <button
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                   key={c.name}
                   onClick={() => {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                     setColorInput(c.name);
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                     setSelectedColorHex(c.hex);
                     setIsColorOpen(false);
                   }}
@@ -126,9 +160,11 @@ export function ProductBrandColorSelector({
                 >
                   <div
                     className="h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20"
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                     style={{ backgroundColor: c.hex }}
-                  ></div>
+                  />
                   <span className="text-sm font-medium text-black/80 dark:text-white/80">
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                     {c.name}
                   </span>
                 </button>

@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShoppingBagIcon, TagIcon, PackageIcon } from '@ff/ui';
+
+import { PackageIcon, ShoppingBagIcon, TagIcon } from '@ff/ui';
 
 interface Activity {
   id: string;
@@ -50,12 +51,19 @@ export function ActivityFeed() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-black dark:text-white">Activity Feed</h2>
-          <p className="mt-1 text-sm font-medium text-black/70 dark:text-white/70">Live operational updates</p>
+          <p className="mt-1 text-sm font-medium text-black/70 dark:text-white/70">
+            Live operational updates
+          </p>
         </div>
-        <Link href="/activity" className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400">View All</Link>
+        <Link
+          href="/activity"
+          className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+        >
+          View All
+        </Link>
       </div>
-      
-      <div className="relative mt-4 flex flex-col gap-8 before:absolute before:left-[19px] before:top-4 before:h-[calc(100%-32px)] before:w-[2px] before:bg-black/10 dark:before:bg-white/10">
+
+      <div className="relative mt-4 flex flex-col gap-8 before:absolute before:top-4 before:left-[19px] before:h-[calc(100%-32px)] before:w-[2px] before:bg-black/10 dark:before:bg-white/10">
         {MOCK_ACTIVITY.map((activity) => (
           <div key={activity.id} className="relative z-10 flex gap-6">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-md ring-4 ring-white dark:bg-[#1a1a1a] dark:ring-[#111]">
@@ -63,12 +71,19 @@ export function ActivityFeed() {
               {activity.type === 'campaign' && <TagIcon className="h-4 w-4 text-purple-500" />}
               {activity.type === 'product' && <PackageIcon className="h-4 w-4 text-blue-500" />}
             </div>
-            
+
             <div className="flex flex-1 flex-col gap-2 rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#1a1a1a]">
               <p className="text-sm font-semibold text-black dark:text-white">{activity.title}</p>
               <div className="flex items-center gap-2">
-                <img src={activity.user.avatar} alt={activity.user.name} className="h-5 w-5 rounded-full object-cover" />
-                <p className="text-xs font-medium text-black/60 dark:text-white/60">{activity.user.name} • {activity.time}</p>
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={activity.user.avatar}
+                  alt={activity.user.name}
+                  className="h-5 w-5 rounded-full object-cover"
+                />
+                <p className="text-xs font-medium text-black/60 dark:text-white/60">
+                  {activity.user.name} • {activity.time}
+                </p>
               </div>
             </div>
           </div>

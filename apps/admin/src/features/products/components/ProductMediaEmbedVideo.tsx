@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
+
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
@@ -9,12 +10,7 @@ interface Props {
   embedUrl: string | null;
 }
 
-export function ProductMediaEmbedVideo({
-  videoLink,
-  setVideoLink,
-  videoId,
-  embedUrl
-}: Props) {
+export function ProductMediaEmbedVideo({ videoLink, setVideoLink, videoId, embedUrl }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
@@ -30,20 +26,20 @@ export function ProductMediaEmbedVideo({
           {!isPlaying ? (
             <div
               className="relative h-full w-full cursor-pointer"
-              onClick={() => setIsPlaying(true)}
+              onClick={() => {
+                setIsPlaying(true);
+              }}
             >
-              <Image width={500} height={500}
+              <Image
+                width={500}
+                height={500}
                 src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
                 alt="Video Thumbnail"
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110">
-                  <svg
-                    className="ml-1 h-8 w-8 text-black"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="ml-1 h-8 w-8 text-black" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
@@ -52,12 +48,14 @@ export function ProductMediaEmbedVideo({
           ) : (
             <iframe
               className="absolute top-1/2 left-0 aspect-[9/16] w-full -translate-y-1/2"
+              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               src={embedUrl || ''}
               title="YouTube Shorts player"
+              // eslint-disable-next-line @typescript-eslint/no-deprecated
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-            ></iframe>
+            />
           )}
         </div>
       )}

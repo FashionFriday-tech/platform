@@ -8,8 +8,13 @@ export const COURIER_SERVICES: CourierService[] = [
   'Amazon Shipping',
 ];
 
-export function getTrackingUrl(courier: string | undefined, trackingId: string | undefined): string {
-  if (!trackingId) return '#';
+export function getTrackingUrl(
+  courier: string | undefined,
+  trackingId: string | undefined,
+): string {
+  if (!trackingId) {
+    return '#';
+  }
 
   // Routing all requests through a universal aggregator (ParcelsApp).
   // It automatically detects the courier (Delhivery, DTDC, BlueDart, IndiaPost, Amazon)

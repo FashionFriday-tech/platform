@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+
 import type { Product } from '../types';
 
 interface Props {
@@ -54,7 +55,9 @@ export function ProductPerformance({ product }: Props) {
             : timeframe === 'monthly'
               ? 0.1
               : 0.5;
+      // eslint-disable-next-line security/detect-object-injection
       const sVal = Math.max(1, Math.floor(baseSales * salesMultipliers[idx] * scale));
+      // eslint-disable-next-line security/detect-object-injection
       const vVal = Math.max(sVal + 10, Math.floor(baseViews * viewsMultipliers[idx] * scale));
       return { label, sales: sVal, views: vVal };
     });
@@ -94,7 +97,9 @@ export function ProductPerformance({ product }: Props) {
           {(['daily', 'weekly', 'monthly', 'yearly'] as Timeframe[]).map((t) => (
             <button
               key={t}
-              onClick={() => setTimeframe(t)}
+              onClick={() => {
+                setTimeframe(t);
+              }}
               className={`rounded-full px-4 py-1.5 text-xs font-bold capitalize transition-colors ${timeframe === t ? 'bg-black text-white shadow-sm dark:bg-white dark:text-black' : 'text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white'}`}
             >
               {t}
@@ -106,7 +111,7 @@ export function ProductPerformance({ product }: Props) {
       <div className="mb-6 grid grid-cols-2 gap-4">
         <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-black">
           <span className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
-            <div className="h-2 w-2 rounded-full bg-black dark:bg-white"></div>
+            <div className="h-2 w-2 rounded-full bg-black dark:bg-white" />
             Total {timeframe} Sales
           </span>
           <span className="text-3xl font-black text-black dark:text-white">
@@ -115,7 +120,7 @@ export function ProductPerformance({ product }: Props) {
         </div>
         <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-black">
           <span className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
-            <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+            <div className="h-2 w-2 rounded-full bg-blue-500" />
             Total {timeframe} Views
           </span>
           <span className="text-3xl font-black text-black dark:text-white">

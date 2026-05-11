@@ -1,7 +1,9 @@
+// eslint-disable-next-line unicorn/filename-case
 'use client';
 
-import { useState, useMemo } from 'react';
-import { MOCK_COLLECTIONS, ProductCollection } from '../types';
+import { useMemo, useState } from 'react';
+
+import { MOCK_COLLECTIONS, type ProductCollection } from '../types';
 
 export function useCollections() {
   const [collections, setCollections] = useState<ProductCollection[]>(MOCK_COLLECTIONS);
@@ -13,10 +15,12 @@ export function useCollections() {
       id: `col_${Date.now()}`,
       name,
       slug,
-      image: image || 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=1000&auto=format&fit=crop',
+      image:
+        image ||
+        'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=1000&auto=format&fit=crop',
       productCount: 0,
     };
-    setCollections(prev => [newCol, ...prev]);
+    setCollections((prev) => [newCol, ...prev]);
     setIsAddModalOpen(false);
   };
 
@@ -24,7 +28,7 @@ export function useCollections() {
     let result = [...collections];
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(col => col.name.toLowerCase().includes(q));
+      result = result.filter((col) => col.name.toLowerCase().includes(q));
     }
     return result;
   }, [collections, searchQuery]);

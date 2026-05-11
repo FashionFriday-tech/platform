@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react';
+// eslint-disable-next-line unicorn/filename-case
+import { useMemo, useState } from 'react';
+
 import { mockOrders } from '../services/mock-orders';
-import { Order } from '../types';
+import { type Order } from '../types';
 
 export type SortField =
   | 'orderNumber'
@@ -68,7 +70,9 @@ export function useOrders() {
 
     // Sorting
     result = result.sort((a, b) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
       let aValue: any = a[sortField];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
       let bValue: any = b[sortField];
 
       if (sortField === 'customer') {
@@ -76,8 +80,12 @@ export function useOrders() {
         bValue = b.customer.name;
       }
 
-      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      if (aValue < bValue) {
+        return sortDirection === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortDirection === 'asc' ? 1 : -1;
+      }
       return 0;
     });
 

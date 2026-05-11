@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+// eslint-disable-next-line unicorn/filename-case
+import { useMemo, useState } from 'react';
+
 import type { Review } from '@ff/schemas';
+import { v4 as uuidv4 } from 'uuid';
 
 const INITIAL_MOCK_REVIEWS: Review[] = [
   {
@@ -39,7 +41,9 @@ const INITIAL_MOCK_REVIEWS: Review[] = [
 
 export function useProductReviews(productId: string) {
   const [reviews, setReviews] = useState<Review[]>(INITIAL_MOCK_REVIEWS);
-  const [sortOption, setSortOption] = useState<'newest' | 'oldest' | 'highest' | 'lowest'>('newest');
+  const [sortOption, setSortOption] = useState<'newest' | 'oldest' | 'highest' | 'lowest'>(
+    'newest',
+  );
   const [isSortOpen, setIsSortOpen] = useState(false);
 
   const [isAdding, setIsAdding] = useState(false);
@@ -77,13 +81,17 @@ export function useProductReviews(productId: string) {
   }, [reviews, sortOption]);
 
   const averageRating = useMemo(() => {
-    if (reviews.length === 0) return '0.0';
+    if (reviews.length === 0) {
+      return '0.0';
+    }
     const total = reviews.reduce((acc, rev) => acc + rev.rating, 0);
     return (total / reviews.length).toFixed(1);
   }, [reviews]);
 
   const handleAddSubmit = () => {
-    if (!newReview.userName || !newReview.comment) return;
+    if (!newReview.userName || !newReview.comment) {
+      return;
+    }
     const review: Review = {
       id: uuidv4(),
       productId,
@@ -100,7 +108,9 @@ export function useProductReviews(productId: string) {
   };
 
   const handleEditSubmit = () => {
-    if (!editingId || !editData.userName || !editData.comment) return;
+    if (!editingId || !editData.userName || !editData.comment) {
+      return;
+    }
     setReviews((prev) =>
       prev.map((rev) =>
         rev.id === editingId
@@ -128,6 +138,7 @@ export function useProductReviews(productId: string) {
       userName: review.userName,
       rating: review.rating,
       comment: review.comment,
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       productImage: review.productImage || '',
     });
     setMenuOpenId(null);
@@ -154,6 +165,6 @@ export function useProductReviews(productId: string) {
     handleAddSubmit,
     handleEditSubmit,
     handleDelete,
-    startEdit
+    startEdit,
   };
 }

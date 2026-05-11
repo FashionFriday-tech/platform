@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { RadialBarChart, RadialBar, ResponsiveContainer } from 'recharts';
+
+import { RadialBar, RadialBarChart, ResponsiveContainer } from 'recharts';
 
 const DATA = [
   { name: 'Women', sales: 4568, fill: '#ec4899', trend: '-1.08%', emoji: '👗' },

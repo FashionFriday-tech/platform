@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import type { Review } from '@ff/schemas';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
+
+import type { Review } from '@ff/schemas';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Props {
   productId: string;
@@ -86,13 +87,17 @@ export function ProductReviews({ productId }: Props) {
   }, [reviews, sortOption]);
 
   const averageRating = useMemo(() => {
-    if (reviews.length === 0) return 0;
+    if (reviews.length === 0) {
+      return 0;
+    }
     const total = reviews.reduce((acc, rev) => acc + rev.rating, 0);
     return (total / reviews.length).toFixed(1);
   }, [reviews]);
 
   const handleAddSubmit = () => {
-    if (!newReview.userName || !newReview.comment) return;
+    if (!newReview.userName || !newReview.comment) {
+      return;
+    }
     const review: Review = {
       id: uuidv4(),
       productId,
@@ -109,7 +114,9 @@ export function ProductReviews({ productId }: Props) {
   };
 
   const handleEditSubmit = () => {
-    if (!editingId || !editData.userName || !editData.comment) return;
+    if (!editingId || !editData.userName || !editData.comment) {
+      return;
+    }
     setReviews((prev) =>
       prev.map((rev) =>
         rev.id === editingId
@@ -137,6 +144,7 @@ export function ProductReviews({ productId }: Props) {
       userName: review.userName,
       rating: review.rating,
       comment: review.comment,
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       productImage: review.productImage || '',
     });
     setMenuOpenId(null);
@@ -175,7 +183,9 @@ export function ProductReviews({ productId }: Props) {
         <div className="flex items-center gap-3">
           <div className="relative">
             <button
-              onClick={() => setIsSortOpen(!isSortOpen)}
+              onClick={() => {
+                setIsSortOpen(!isSortOpen);
+              }}
               className="flex items-center gap-2 rounded-full border border-black/10 bg-transparent px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
             >
               {sortOption === 'newest' && 'Newest First'}
@@ -207,6 +217,7 @@ export function ProductReviews({ productId }: Props) {
                   <button
                     key={opt.id}
                     onClick={() => {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                       setSortOption(opt.id as any);
                       setIsSortOpen(false);
                     }}
@@ -219,7 +230,9 @@ export function ProductReviews({ productId }: Props) {
             )}
           </div>
           <button
-            onClick={() => setIsAdding(true)}
+            onClick={() => {
+              setIsAdding(true);
+            }}
             className="rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white transition-transform hover:scale-105 dark:bg-white dark:text-black"
           >
             Add Review
@@ -242,7 +255,9 @@ export function ProductReviews({ productId }: Props) {
                 <input
                   type="text"
                   value={newReview.userName}
-                  onChange={(e) => setNewReview({ ...newReview, userName: e.target.value })}
+                  onChange={(e) => {
+                    setNewReview({ ...newReview, userName: e.target.value });
+                  }}
                   className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                   placeholder="John Doe"
                 />
@@ -256,9 +271,9 @@ export function ProductReviews({ productId }: Props) {
                   min="1"
                   max="5"
                   value={newReview.rating}
-                  onChange={(e) =>
-                    setNewReview({ ...newReview, rating: parseInt(e.target.value) || 1 })
-                  }
+                  onChange={(e) => {
+                    setNewReview({ ...newReview, rating: parseInt(e.target.value) || 1 });
+                  }}
                   className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                 />
               </div>
@@ -270,13 +285,17 @@ export function ProductReviews({ productId }: Props) {
               <div className="flex items-center gap-4">
                 {newReview.productImage && (
                   <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-black/10 dark:border-white/10">
-                    <Image width={500} height={500}
+                    <Image
+                      width={500}
+                      height={500}
                       src={newReview.productImage}
                       alt="Preview"
                       className="h-full w-full object-cover"
                     />
                     <button
-                      onClick={() => setNewReview({ ...newReview, productImage: '' })}
+                      onClick={() => {
+                        setNewReview({ ...newReview, productImage: '' });
+                      }}
                       className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white hover:bg-black"
                     >
                       <svg
@@ -323,8 +342,9 @@ export function ProductReviews({ productId }: Props) {
                       const file = e.target.files?.[0];
                       if (file) {
                         const reader = new FileReader();
-                        reader.onloadend = () =>
+                        reader.onloadend = () => {
                           setNewReview({ ...newReview, productImage: reader.result as string });
+                        };
                         reader.readAsDataURL(file);
                       }
                     }}
@@ -338,11 +358,13 @@ export function ProductReviews({ productId }: Props) {
               </label>
               <textarea
                 value={newReview.comment}
-                onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                onChange={(e) => {
+                  setNewReview({ ...newReview, comment: e.target.value });
+                }}
                 rows={3}
                 className="w-full resize-none rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                 placeholder="Write the review here..."
-              ></textarea>
+              />
             </div>
             <div className="flex items-center gap-3 pt-2">
               <button
@@ -352,7 +374,9 @@ export function ProductReviews({ productId }: Props) {
                 Submit Review
               </button>
               <button
-                onClick={() => setIsAdding(false)}
+                onClick={() => {
+                  setIsAdding(false);
+                }}
                 className="rounded-full border border-black/10 px-6 py-2.5 text-sm font-bold text-black hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
               >
                 Cancel
@@ -377,7 +401,9 @@ export function ProductReviews({ productId }: Props) {
               {/* Context Menu */}
               <div className="absolute top-4 right-4 z-10">
                 <button
-                  onClick={() => setMenuOpenId(menuOpenId === review.id ? null : review.id)}
+                  onClick={() => {
+                    setMenuOpenId(menuOpenId === review.id ? null : review.id);
+                  }}
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-black/50 shadow-sm backdrop-blur-md transition-colors hover:bg-black/10 dark:bg-black/80 dark:text-white/50 dark:hover:bg-white/10"
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -387,13 +413,17 @@ export function ProductReviews({ productId }: Props) {
                 {menuOpenId === review.id && (
                   <div className="absolute right-0 mt-1 w-32 overflow-hidden rounded-xl border border-black/10 bg-white shadow-xl dark:border-white/10 dark:bg-[#1a1a1a]">
                     <button
-                      onClick={() => startEdit(review)}
+                      onClick={() => {
+                        startEdit(review);
+                      }}
                       className="w-full px-4 py-2.5 text-left text-xs font-bold text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5"
                     >
                       Edit Review
                     </button>
                     <button
-                      onClick={() => handleDelete(review.id)}
+                      onClick={() => {
+                        handleDelete(review.id);
+                      }}
                       className="w-full px-4 py-2.5 text-left text-xs font-bold text-red-500 hover:bg-red-500/10"
                     >
                       Delete Review
@@ -408,7 +438,9 @@ export function ProductReviews({ productId }: Props) {
                   <input
                     type="text"
                     value={editData.userName}
-                    onChange={(e) => setEditData({ ...editData, userName: e.target.value })}
+                    onChange={(e) => {
+                      setEditData({ ...editData, userName: e.target.value });
+                    }}
                     className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-bold text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                   />
                   <input
@@ -416,21 +448,25 @@ export function ProductReviews({ productId }: Props) {
                     min="1"
                     max="5"
                     value={editData.rating}
-                    onChange={(e) =>
-                      setEditData({ ...editData, rating: parseInt(e.target.value) || 1 })
-                    }
+                    onChange={(e) => {
+                      setEditData({ ...editData, rating: parseInt(e.target.value) || 1 });
+                    }}
                     className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-bold text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                   />
                   <div className="flex items-center gap-3">
                     {editData.productImage && (
                       <div className="relative h-12 w-12 overflow-hidden rounded-lg border border-black/10 dark:border-white/10">
-                        <Image width={500} height={500}
+                        <Image
+                          width={500}
+                          height={500}
                           src={editData.productImage}
                           alt="Preview"
                           className="h-full w-full object-cover"
                         />
                         <button
-                          onClick={() => setEditData({ ...editData, productImage: '' })}
+                          onClick={() => {
+                            setEditData({ ...editData, productImage: '' });
+                          }}
                           className="absolute top-0.5 right-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black"
                         >
                           <svg
@@ -478,8 +514,9 @@ export function ProductReviews({ productId }: Props) {
                           const file = e.target.files?.[0];
                           if (file) {
                             const reader = new FileReader();
-                            reader.onloadend = () =>
+                            reader.onloadend = () => {
                               setEditData({ ...editData, productImage: reader.result as string });
+                            };
                             reader.readAsDataURL(file);
                           }
                         }}
@@ -488,10 +525,12 @@ export function ProductReviews({ productId }: Props) {
                   </div>
                   <textarea
                     value={editData.comment}
-                    onChange={(e) => setEditData({ ...editData, comment: e.target.value })}
+                    onChange={(e) => {
+                      setEditData({ ...editData, comment: e.target.value });
+                    }}
                     rows={3}
                     className="w-full resize-none rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-medium text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
-                  ></textarea>
+                  />
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleEditSubmit}
@@ -500,7 +539,9 @@ export function ProductReviews({ productId }: Props) {
                       Save
                     </button>
                     <button
-                      onClick={() => setEditingId(null)}
+                      onClick={() => {
+                        setEditingId(null);
+                      }}
                       className="rounded-lg border border-black/10 px-4 py-1.5 text-xs font-bold text-black hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
                     >
                       Cancel
@@ -512,7 +553,9 @@ export function ProductReviews({ productId }: Props) {
                   {/* Image Section (Matches web app) */}
                   {review.productImage && (
                     <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[2rem] bg-black/5 shadow-sm md:w-32 lg:w-40 dark:bg-white/5">
-                      <Image width={500} height={500}
+                      <Image
+                        width={500}
+                        height={500}
                         src={review.productImage}
                         alt="review"
                         className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
@@ -523,6 +566,7 @@ export function ProductReviews({ productId }: Props) {
                   {/* Content Section */}
                   <div className="flex flex-1 flex-col items-start pt-2 pr-4">
                     <div className="mb-3 flex items-center text-yellow-500">
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                       {[...Array(5)].map((_, idx) => (
                         <svg
                           key={idx}

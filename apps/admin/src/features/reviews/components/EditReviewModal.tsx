@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Review } from '../types';
+import React, { useEffect, useState } from 'react';
+
+import { AnimatePresence, motion } from 'motion/react';
+
+import { type Review } from '../types';
 
 interface EditReviewModalProps {
   isOpen: boolean;
@@ -16,11 +18,14 @@ export function EditReviewModal({ isOpen, onClose, review, onSave }: EditReviewM
 
   useEffect(() => {
     if (review) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setComment(review.comment);
     }
   }, [review]);
 
-  if (!isOpen || !review) return null;
+  if (!isOpen || !review) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
@@ -36,7 +41,7 @@ export function EditReviewModal({ isOpen, onClose, review, onSave }: EditReviewM
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#111111] dark:border dark:border-white/10"
+          className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white p-6 shadow-2xl dark:border dark:border-white/10 dark:bg-[#111111]"
         >
           <h2 className="mb-1 text-xl font-bold text-black dark:text-white">Edit Review</h2>
           <p className="mb-6 text-sm text-black/60 dark:text-white/60">
@@ -45,9 +50,11 @@ export function EditReviewModal({ isOpen, onClose, review, onSave }: EditReviewM
 
           <textarea
             value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            onChange={(e) => {
+              setComment(e.target.value);
+            }}
             rows={4}
-            className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] p-4 text-sm text-black outline-none transition-colors focus:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-white/30"
+            className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] p-4 text-sm text-black transition-colors outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-white/30"
             placeholder="Review comment..."
           />
 

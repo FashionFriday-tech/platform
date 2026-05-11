@@ -1,5 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+
 import { OrderDetailsView } from '../../../features/orders/components/OrderDetailsView';
 import { mockOrders } from '../../../features/orders/services/mock-orders';
 

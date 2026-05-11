@@ -1,8 +1,10 @@
 import React from 'react';
-import { LabelWithTick } from './LabelWithTick';
+
 import { CATEGORIES, QUALITIES } from '../utils/constants';
+import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
   category: string;
   isCategoryOpen: boolean;
@@ -15,20 +17,35 @@ interface Props {
   setQuality: (val: string) => void;
   qualityRef: React.RefObject<HTMLDivElement | null>;
   markTouched: (field: string) => void;
-  getStatus: (val: string | number, initVal: string | number | undefined, minLen: number, fieldName?: string) => 'empty' | 'default' | 'valid' | 'error';
+  getStatus: (
+    val: string | number,
+    initVal: string | number | undefined,
+    minLen: number,
+    fieldName?: string,
+  ) => 'empty' | 'default' | 'valid' | 'error';
 }
 
 export function ProductCategorySelector({
   initialData,
-  category, isCategoryOpen, setIsCategoryOpen, handleCategorySelect, categoryRef,
-  quality, isQualityOpen, setIsQualityOpen, setQuality, qualityRef,
-  markTouched, getStatus
+  category,
+  isCategoryOpen,
+  setIsCategoryOpen,
+  handleCategorySelect,
+  categoryRef,
+  quality,
+  isQualityOpen,
+  setIsQualityOpen,
+  setQuality,
+  qualityRef,
+  markTouched,
+  getStatus,
 }: Props) {
   return (
     <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2">
       <div ref={categoryRef} className="relative">
         <LabelWithTick
           label="Product Category"
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getStatus(category, initialData?.category, 1, 'category')}
         />
         <button
@@ -46,7 +63,12 @@ export function ProductCategorySelector({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </button>
@@ -65,10 +87,15 @@ export function ProductCategorySelector({
                 {c}
               </button>
             ))}
-            <div className="my-1 border-t border-black/10 dark:border-white/10"></div>
+            <div className="my-1 border-t border-black/10 dark:border-white/10" />
             <button className="flex w-full items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5">
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
               </svg>
               <span>Add Category</span>
             </button>
@@ -79,6 +106,7 @@ export function ProductCategorySelector({
       <div ref={qualityRef} className="relative">
         <LabelWithTick
           label="Quality"
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
         />
         <button
@@ -96,7 +124,12 @@ export function ProductCategorySelector({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </button>

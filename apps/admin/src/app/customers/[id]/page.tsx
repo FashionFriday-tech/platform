@@ -1,4 +1,5 @@
-import { Metadata } from 'next';
+import { type Metadata } from 'next';
+
 import { CustomerDetailsFeature } from '../../../features/customers/components/CustomerDetailsFeature';
 
 export const metadata: Metadata = {
@@ -7,15 +8,11 @@ export const metadata: Metadata = {
 };
 
 // Use the standard App Router page signature where params is a Promise
-export default async function CustomerDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function CustomerDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  
+
   return (
-    <div className="flex h-full flex-col overflow-y-auto p-6 scrollbar-hide">
+    <div className="scrollbar-hide flex h-full flex-col overflow-y-auto p-6">
       <CustomerDetailsFeature customerId={id} />
     </div>
   );

@@ -140,15 +140,51 @@ export interface RealtimeOrder {
 }
 
 export const MOCK_REALTIME_ORDERS: RealtimeOrder[] = [
-  { id: 'ORD-9841', product: 'Classic White Sneaker', city: 'Mumbai', amount: 4999, timeAgo: '12s ago' },
+  {
+    id: 'ORD-9841',
+    product: 'Classic White Sneaker',
+    city: 'Mumbai',
+    amount: 4999,
+    timeAgo: '12s ago',
+  },
   { id: 'ORD-9840', product: 'Denim Jacket', city: 'Bangalore', amount: 6999, timeAgo: '34s ago' },
-  { id: 'ORD-9839', product: 'Leather Crossbody Bag', city: 'Delhi', amount: 7999, timeAgo: '1m ago' },
-  { id: 'ORD-9838', product: 'Summer Floral Dress', city: 'Chennai', amount: 3499, timeAgo: '2m ago' },
-  { id: 'ORD-9837', product: 'Aviator Sunglasses', city: 'Hyderabad', amount: 2499, timeAgo: '3m ago' },
+  {
+    id: 'ORD-9839',
+    product: 'Leather Crossbody Bag',
+    city: 'Delhi',
+    amount: 7999,
+    timeAgo: '1m ago',
+  },
+  {
+    id: 'ORD-9838',
+    product: 'Summer Floral Dress',
+    city: 'Chennai',
+    amount: 3499,
+    timeAgo: '2m ago',
+  },
+  {
+    id: 'ORD-9837',
+    product: 'Aviator Sunglasses',
+    city: 'Hyderabad',
+    amount: 2499,
+    timeAgo: '3m ago',
+  },
   { id: 'ORD-9836', product: 'Cotton Kurta Set', city: 'Pune', amount: 1999, timeAgo: '4m ago' },
-  { id: 'ORD-9835', product: 'Running Shoes Pro', city: 'Kolkata', amount: 5499, timeAgo: '5m ago' },
+  {
+    id: 'ORD-9835',
+    product: 'Running Shoes Pro',
+    city: 'Kolkata',
+    amount: 5499,
+    timeAgo: '5m ago',
+  },
   { id: 'ORD-9834', product: 'Slim Fit Chinos', city: 'Jaipur', amount: 2799, timeAgo: '6m ago' },
-  { id: 'ORD-9833', product: 'Silk Saree Collection', city: 'Ahmedabad', amount: 8999, timeAgo: '7m ago' },
+  {
+    id: 'ORD-9833',
+    product: 'Silk Saree Collection',
+    city: 'Ahmedabad',
+    amount: 8999,
+    timeAgo: '7m ago',
+  },
   { id: 'ORD-9832', product: 'Graphic Hoodie', city: 'Lucknow', amount: 3299, timeAgo: '8m ago' },
 ];
 
@@ -190,16 +226,16 @@ export const MOCK_AOV_DATA: AOVData[] = [
 // ─── Stat Sparkline Data ────────────────────────────────────────────────────
 
 export const STAT_SPARKLINES = {
-  revenue: [
-    { v: 42 }, { v: 38 }, { v: 51 }, { v: 47 }, { v: 63 }, { v: 58 }, { v: 72 },
-  ],
-  orders: [
-    { v: 312 }, { v: 287 }, { v: 398 }, { v: 356 }, { v: 472 }, { v: 431 }, { v: 538 },
-  ],
+  revenue: [{ v: 42 }, { v: 38 }, { v: 51 }, { v: 47 }, { v: 63 }, { v: 58 }, { v: 72 }],
+  orders: [{ v: 312 }, { v: 287 }, { v: 398 }, { v: 356 }, { v: 472 }, { v: 431 }, { v: 538 }],
   visits: [
-    { v: 2100 }, { v: 2340 }, { v: 2050 }, { v: 2280 }, { v: 2190 }, { v: 2050 }, { v: 1987 },
+    { v: 2100 },
+    { v: 2340 },
+    { v: 2050 },
+    { v: 2280 },
+    { v: 2190 },
+    { v: 2050 },
+    { v: 1987 },
   ],
-  units: [
-    { v: 180 }, { v: 195 }, { v: 210 }, { v: 198 }, { v: 230 }, { v: 215 }, { v: 245 },
-  ],
+  units: [{ v: 180 }, { v: 195 }, { v: 210 }, { v: 198 }, { v: 230 }, { v: 215 }, { v: 245 }],
 };

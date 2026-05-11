@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
+
+import { PackageIcon, ShoppingBagIcon, TagIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import { ShoppingBagIcon, TagIcon, UsersIcon, PackageIcon } from '@ff/ui';
+import { Area, AreaChart, ResponsiveContainer } from 'recharts';
+
 import { STAT_SPARKLINES } from '../types';
 
 const STATS = [
@@ -78,7 +80,7 @@ export function AnalyticsStats() {
         >
           {/* Decorative gradient orb */}
           <div
-            className={`absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-20 blur-2xl ${
+            className={`absolute -top-6 -right-6 h-24 w-24 rounded-full opacity-20 blur-2xl ${
               stat.isPrimary ? 'bg-white' : ''
             }`}
             style={!stat.isPrimary ? { backgroundColor: stat.accentColor } : undefined}
@@ -87,11 +89,16 @@ export function AnalyticsStats() {
           <div className="relative flex items-start justify-between">
             <div
               className={`flex h-11 w-11 items-center justify-center rounded-xl shadow-md ${
-                stat.isPrimary
-                  ? 'bg-white/20 shadow-black/10'
-                  : 'shadow-sm'
+                stat.isPrimary ? 'bg-white/20 shadow-black/10' : 'shadow-sm'
               }`}
-              style={!stat.isPrimary ? { backgroundColor: `${stat.accentColor}15`, boxShadow: `0 4px 12px ${stat.accentColor}15` } : undefined}
+              style={
+                !stat.isPrimary
+                  ? {
+                      backgroundColor: `${stat.accentColor}15`,
+                      boxShadow: `0 4px 12px ${stat.accentColor}15`,
+                    }
+                  : undefined
+              }
             >
               <stat.icon
                 className={`h-5 w-5 ${stat.isPrimary ? 'text-white' : ''}`}
@@ -127,14 +134,18 @@ export function AnalyticsStats() {
           </div>
 
           <div className="relative mt-4">
-            <p className={`text-[13px] font-semibold ${
-              stat.isPrimary ? 'text-white/70' : 'text-black/50 dark:text-white/50'
-            }`}>
+            <p
+              className={`text-[13px] font-semibold ${
+                stat.isPrimary ? 'text-white/70' : 'text-black/50 dark:text-white/50'
+              }`}
+            >
               {stat.title}
             </p>
-            <p className={`mt-1 text-[28px] font-black tracking-tight leading-tight ${
-              stat.isPrimary ? 'text-white' : 'text-black dark:text-white'
-            }`}>
+            <p
+              className={`mt-1 text-[28px] leading-tight font-black tracking-tight ${
+                stat.isPrimary ? 'text-white' : 'text-black dark:text-white'
+              }`}
+            >
               {stat.value}
             </p>
           </div>
@@ -145,8 +156,16 @@ export function AnalyticsStats() {
               <AreaChart data={stat.sparkData} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id={`spark-${stat.id}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={stat.isPrimary ? '#ffffff' : stat.accentColor} stopOpacity={0.4} />
-                    <stop offset="100%" stopColor={stat.isPrimary ? '#ffffff' : stat.accentColor} stopOpacity={0} />
+                    <stop
+                      offset="0%"
+                      stopColor={stat.isPrimary ? '#ffffff' : stat.accentColor}
+                      stopOpacity={0.4}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={stat.isPrimary ? '#ffffff' : stat.accentColor}
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
                 <Area
@@ -162,9 +181,11 @@ export function AnalyticsStats() {
             </ResponsiveContainer>
           </div>
 
-          <p className={`mt-1 text-[11px] font-medium ${
-            stat.isPrimary ? 'text-white/50' : 'text-black/35 dark:text-white/35'
-          }`}>
+          <p
+            className={`mt-1 text-[11px] font-medium ${
+              stat.isPrimary ? 'text-white/50' : 'text-black/35 dark:text-white/35'
+            }`}
+          >
             {stat.description}
           </p>
         </motion.div>

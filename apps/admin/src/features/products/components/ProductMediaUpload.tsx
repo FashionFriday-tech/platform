@@ -1,8 +1,10 @@
 import React from 'react';
-import { ProductMediaUploadGrid } from './ProductMediaUploadGrid';
+
 import { ProductMediaEmbedVideo } from './ProductMediaEmbedVideo';
+import { ProductMediaUploadGrid } from './ProductMediaUploadGrid';
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   images: any[];
   draggedIndex: number | null;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -33,7 +35,7 @@ export function ProductMediaUpload({
   videoLink,
   setVideoLink,
   videoId,
-  embedUrl
+  embedUrl,
 }: Props) {
   return (
     <div className="rounded-[2rem] bg-white p-7 shadow-sm dark:bg-[#111]">

@@ -1,6 +1,7 @@
-import { useRouter } from 'next/navigation';
-import { Product } from '../types';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+import { type Product } from '../types';
 
 interface Props {
   products: Product[];
@@ -24,7 +25,7 @@ export function ProductGrid({
   if (isLoading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-black/20 border-t-black dark:border-white/20 dark:border-t-white"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
       </div>
     );
   }
@@ -46,7 +47,9 @@ export function ProductGrid({
           Showing {products.length} products
         </div>
         <div
-          onClick={() => onToggleAllSelection(products.map((p) => p.id))}
+          onClick={() => {
+            onToggleAllSelection(products.map((p) => p.id));
+          }}
           className="flex cursor-pointer items-center space-x-2 text-sm font-medium transition-colors hover:text-black/80 dark:hover:text-white/80"
         >
           <div
@@ -78,8 +81,10 @@ export function ProductGrid({
           return (
             <div
               key={product.id}
-              onClick={() => router.push(`/products/${product.id}`)}
-              className={`group relative flex h-[180px] cursor-pointer flex-row overflow-hidden rounded-[24px] transition-all duration-300 ${isSelected ? 'bg-black/5 ring-2 ring-black/20 dark:bg-white/5 dark:ring-white/20 shadow-md' : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1.5 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:bg-[#161616] dark:shadow-[0_8px_30px_rgb(255,255,255,0.02)] dark:hover:shadow-[0_12px_40px_rgb(255,255,255,0.04)]'}`}
+              onClick={() => {
+                router.push(`/products/${product.id}`);
+              }}
+              className={`group relative flex h-[180px] cursor-pointer flex-row overflow-hidden rounded-[24px] transition-all duration-300 ${isSelected ? 'bg-black/5 shadow-md ring-2 ring-black/20 dark:bg-white/5 dark:ring-white/20' : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1.5 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:bg-[#161616] dark:shadow-[0_8px_30px_rgb(255,255,255,0.02)] dark:hover:shadow-[0_12px_40px_rgb(255,255,255,0.04)]'}`}
             >
               {/* Checkbox */}
               <div
@@ -87,14 +92,9 @@ export function ProductGrid({
                   e.stopPropagation();
                   onToggleSelection(product.id);
                 }}
-                className={`absolute top-4 left-4 z-20 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md backdrop-blur-md transition-all ${isSelected ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' : 'bg-white/90 text-transparent hover:bg-white shadow-[0_2px_10px_rgba(0,0,0,0.1)] dark:bg-black/80 dark:hover:bg-black dark:shadow-[0_2px_10px_rgba(255,255,255,0.05)] group-hover:text-black/20 dark:group-hover:text-white/20'}`}
+                className={`absolute top-4 left-4 z-20 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md backdrop-blur-md transition-all ${isSelected ? 'bg-black text-white shadow-md dark:bg-white dark:text-black' : 'bg-white/90 text-transparent shadow-[0_2px_10px_rgba(0,0,0,0.1)] group-hover:text-black/20 hover:bg-white dark:bg-black/80 dark:shadow-[0_2px_10px_rgba(255,255,255,0.05)] dark:group-hover:text-white/20 dark:hover:bg-black'}`}
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -117,12 +117,14 @@ export function ProductGrid({
               <div className="relative flex h-full w-[110px] flex-shrink-0 items-center justify-center overflow-hidden bg-black/5 dark:bg-white/5">
                 {product.imageUrl ? (
                   <>
-                    <Image width={500} height={500}
+                    <Image
+                      width={500}
+                      height={500}
                       src={product.imageUrl}
                       alt={product.name}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
                   </>
                 ) : (
                   <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10">
@@ -162,19 +164,30 @@ export function ProductGrid({
                   <div className="mb-1 flex-1">
                     <div className="mb-1.5 flex items-center justify-between text-[9px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                       <span>Stock</span>
-                      <span className={product.stock < 100 ? "text-red-500" : product.stock < 500 ? "text-yellow-500" : "text-green-500"}>{product.stock}</span>
+                      <span
+                        className={
+                          product.stock < 100
+                            ? 'text-red-500'
+                            : product.stock < 500
+                              ? 'text-yellow-500'
+                              : 'text-green-500'
+                        }
+                      >
+                        {product.stock}
+                      </span>
                     </div>
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
                       <div
                         className={`h-full rounded-full transition-all duration-1000 ease-out ${product.stock < 100 ? 'bg-red-500' : product.stock < 500 ? 'bg-yellow-500' : 'bg-green-500'}`}
                         style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
-                      ></div>
+                      />
                     </div>
                   </div>
 
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                       product.status !== 'Draft' && onToggleStatus(product.id);
                     }}
                     disabled={product.status === 'Draft'}

@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'motion/react';
+
 import { DownloadIcon } from '@ff/ui';
-import { ViewMode } from '../hooks/useOrders';
+import { motion } from 'motion/react';
+
+import { type ViewMode } from '../hooks/useOrders';
 
 interface OrdersFilterBarProps {
   searchQuery: string;
@@ -58,7 +60,9 @@ export function OrdersFilterBar({
           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
           placeholder="Search by order ID or phone..."
           value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e) => {
+            onSearchChange(e.target.value);
+          }}
         />
       </div>
 
@@ -67,7 +71,9 @@ export function OrdersFilterBar({
           <input
             type="date"
             value={dateFilter}
-            onChange={(e) => onDateChange(e.target.value)}
+            onChange={(e) => {
+              onDateChange(e.target.value);
+            }}
             className="cursor-pointer rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-sm text-black/70 transition-all outline-none hover:bg-black/5 focus:border-black/30 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:focus:border-white/30"
             title="Filter by date"
           />
@@ -75,7 +81,9 @@ export function OrdersFilterBar({
 
         <select
           value={statusFilter}
-          onChange={(e) => onStatusChange(e.target.value)}
+          onChange={(e) => {
+            onStatusChange(e.target.value);
+          }}
           className="cursor-pointer appearance-none rounded-xl border border-black/5 bg-[#f8f9fa] py-2 pr-8 pl-3 text-sm text-black/70 transition-all outline-none hover:bg-black/5 focus:border-black/30 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:focus:border-white/30"
         >
           <option value="all">All Statuses</option>
@@ -88,7 +96,9 @@ export function OrdersFilterBar({
 
         <select
           value={paymentTypeFilter}
-          onChange={(e) => onPaymentTypeChange(e.target.value)}
+          onChange={(e) => {
+            onPaymentTypeChange(e.target.value);
+          }}
           className="cursor-pointer appearance-none rounded-xl border border-black/5 bg-[#f8f9fa] py-2 pr-8 pl-3 text-sm text-black/70 transition-all outline-none hover:bg-black/5 focus:border-black/30 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:focus:border-white/30"
         >
           <option value="all">All Payment Types</option>
@@ -98,7 +108,9 @@ export function OrdersFilterBar({
 
         <div className="flex items-center rounded-xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#1a1a1a]">
           <button
-            onClick={() => onViewModeChange('table')}
+            onClick={() => {
+              onViewModeChange('table');
+            }}
             className={`rounded-lg p-1.5 transition-all duration-200 ${
               viewMode === 'table'
                 ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white'
@@ -116,7 +128,9 @@ export function OrdersFilterBar({
             </svg>
           </button>
           <button
-            onClick={() => onViewModeChange('grid')}
+            onClick={() => {
+              onViewModeChange('grid');
+            }}
             className={`rounded-lg p-1.5 transition-all duration-200 ${
               viewMode === 'grid'
                 ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white'
@@ -135,7 +149,7 @@ export function OrdersFilterBar({
           </button>
         </div>
 
-        <button className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 whitespace-nowrap dark:bg-white dark:text-black dark:hover:bg-white/90">
+        <button className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90">
           <DownloadIcon className="h-4 w-4" />
           Export CSV
         </button>

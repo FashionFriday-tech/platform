@@ -1,4 +1,4 @@
-import { Order } from '../types';
+import { type Order } from '../types';
 
 export const mockOrders: Order[] = [
   {
@@ -39,7 +39,7 @@ export const mockOrders: Order[] = [
         price: 999.0,
         size: 'L',
         color: 'Faded Black',
-        sku: 'VTG-TEE-BLK-L'
+        sku: 'VTG-TEE-BLK-L',
       },
     ],
     total: 1998.0,
@@ -80,7 +80,7 @@ export const mockOrders: Order[] = [
         price: 3499.0,
         size: 'M',
         color: 'Indigo',
-        sku: 'DNM-JKT-IND-M'
+        sku: 'DNM-JKT-IND-M',
       },
       {
         id: 'item_3',
@@ -92,7 +92,7 @@ export const mockOrders: Order[] = [
         price: 2499.0,
         size: '10',
         color: 'White',
-        sku: 'SNK-WHT-10'
+        sku: 'SNK-WHT-10',
       },
     ],
     total: 5998.0,
@@ -134,7 +134,7 @@ export const mockOrders: Order[] = [
         price: 2999.0,
         size: '32',
         color: 'Charcoal',
-        sku: 'TRS-CHR-32'
+        sku: 'TRS-CHR-32',
       },
     ],
     total: 2999.0,

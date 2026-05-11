@@ -11,5 +11,11 @@ export interface Customer {
   lastOrderDate: string;
 }
 
-export type SortField = 'name' | 'email' | 'joinDate' | 'totalSpent' | 'ordersCount' | 'lastOrderDate';
+export type SortField =
+  | 'name'
+  | 'email'
+  | 'joinDate'
+  | 'totalSpent'
+  | 'ordersCount'
+  | 'lastOrderDate';
 export type SortDirection = 'asc' | 'desc';

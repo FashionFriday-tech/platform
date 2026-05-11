@@ -1,5 +1,6 @@
+import { type Metadata } from 'next';
+
 import { CampaignsFeature } from '../../features/campaigns';
-import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Campaigns | Fashion Friday Admin',

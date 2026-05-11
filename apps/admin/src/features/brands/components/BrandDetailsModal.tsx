@@ -1,7 +1,8 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Brand } from '@ff/schemas';
 import Image from 'next/image';
+
+import { type Brand } from '@ff/schemas';
+import { AnimatePresence, motion } from 'motion/react';
 
 interface BrandDetailsModalProps {
   isOpen: boolean;
@@ -11,8 +12,16 @@ interface BrandDetailsModalProps {
   onDelete: () => void;
 }
 
-export function BrandDetailsModal({ isOpen, onClose, brand, onEdit, onDelete }: BrandDetailsModalProps) {
-  if (!isOpen || !brand) return null;
+export function BrandDetailsModal({
+  isOpen,
+  onClose,
+  brand,
+  onEdit,
+  onDelete,
+}: BrandDetailsModalProps) {
+  if (!isOpen || !brand) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
@@ -28,37 +37,49 @@ export function BrandDetailsModal({ isOpen, onClose, brand, onEdit, onDelete }: 
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[#111] border border-black/5 dark:border-white/5"
+          className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-black/5 bg-white shadow-2xl dark:border-white/5 dark:bg-[#111]"
         >
           {/* Header Image Area */}
-          <div 
-            className="h-32 w-full p-6 flex items-center justify-center transition-colors relative"
+          <div
+            className="relative flex h-32 w-full items-center justify-center p-6 transition-colors"
             style={{ backgroundColor: brand.color || '#000000' }}
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 rounded-full bg-black/20 p-2 text-white hover:bg-black/40 backdrop-blur-sm transition-colors z-10"
+              className="absolute top-4 right-4 z-10 rounded-full bg-black/20 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/40"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
-            <Image width={500} height={500} 
-              src={brand.logo} 
-              alt={brand.name} 
-              className="max-h-full max-w-full object-contain filter drop-shadow-md brightness-0 invert" 
+            <Image
+              width={500}
+              height={500}
+              src={brand.logo}
+              alt={brand.name}
+              className="max-h-full max-w-full object-contain brightness-0 drop-shadow-md invert filter"
             />
           </div>
 
           {/* Body */}
-          <div className="p-6 space-y-4">
+          <div className="space-y-4 p-6">
             <div>
               <h2 className="text-2xl font-bold text-black dark:text-white">{brand.name}</h2>
-              <div className="flex flex-wrap gap-1.5 mt-2">
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 {brand.categories.map((cat) => (
-                  <span 
-                    key={cat} 
+                  <span
+                    key={cat}
                     className="inline-flex rounded bg-black/5 px-2 py-0.5 text-xs font-semibold text-black/70 capitalize dark:bg-white/5 dark:text-white/70"
                   >
                     {cat}
@@ -67,11 +88,16 @@ export function BrandDetailsModal({ isOpen, onClose, brand, onEdit, onDelete }: 
               </div>
             </div>
 
-            <div className="pt-2 border-t border-black/5 dark:border-white/5">
-              <p className="text-sm text-black/60 dark:text-white/60 mb-1">Brand Color</p>
+            <div className="border-t border-black/5 pt-2 dark:border-white/5">
+              <p className="mb-1 text-sm text-black/60 dark:text-white/60">Brand Color</p>
               <div className="flex items-center gap-2">
-                <div className="h-6 w-6 rounded-full border border-black/10 dark:border-white/10" style={{ backgroundColor: brand.color }}></div>
-                <span className="text-sm font-medium uppercase text-black dark:text-white">{brand.color}</span>
+                <div
+                  className="h-6 w-6 rounded-full border border-black/10 dark:border-white/10"
+                  style={{ backgroundColor: brand.color }}
+                />
+                <span className="text-sm font-medium text-black uppercase dark:text-white">
+                  {brand.color}
+                </span>
               </div>
             </div>
           </div>

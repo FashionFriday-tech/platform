@@ -1,31 +1,35 @@
 'use client';
 
-import {
-  ActivityIcon,
-  TrendingUpIcon,
-  ShoppingBagIcon,
-  PackageIcon,
-  CategoryIcon,
-  StarBadgeIcon,
-  LayersIcon,
-  UsersIcon,
-  StarIcon,
-  ZapIcon,
-  TagIcon,
-  SettingsIcon,
-  ShieldCheckIcon,
-  LifeBuoyIcon,
-} from '@ff/ui';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
+import {
+  ActivityIcon,
+  CategoryIcon,
+  LayersIcon,
+  LifeBuoyIcon,
+  PackageIcon,
+  SettingsIcon,
+  ShieldCheckIcon,
+  ShoppingBagIcon,
+  StarBadgeIcon,
+  StarIcon,
+  TagIcon,
+  TrendingUpIcon,
+  UsersIcon,
+  ZapIcon,
+} from '@ff/ui';
+
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
-import Image from 'next/image';
 
 export function Sidebar() {
   const pathname = usePathname() || '';
   const { user } = useAuth();
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
   const role = user.role;
 
   const getLinkClass = (path: string) => {
@@ -38,16 +42,21 @@ export function Sidebar() {
   const hasAccess = (allowedRoles: string[]) => allowedRoles.includes(role);
 
   return (
-    <aside className="bg-transparent relative sticky top-0 z-10 flex hidden h-screen w-64 flex-shrink-0 flex-col md:flex">
+    <aside className="relative sticky top-0 z-10 flex hidden h-screen w-64 flex-shrink-0 flex-col bg-transparent md:flex">
       <div className="flex items-center space-x-2 p-6 pb-0.5">
         <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
-          <Image width={500} height={500} src="/images/logos/ff-logo.png" alt="Fashion Friday" className="h-full w-full object-contain dark:invert" />
+          <Image
+            width={500}
+            height={500}
+            src="/images/logos/ff-logo.png"
+            alt="Fashion Friday"
+            className="h-full w-full object-contain dark:invert"
+          />
         </div>
         <h1 className="text-lg font-black uppercase">FashionFriday</h1>
       </div>
 
       <nav className="scrollbar-hide flex-1 space-y-6 overflow-y-auto px-4 py-6">
-        
         {/* Overview Section */}
         {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'PRODUCT_MANAGER']) && (
           <div>
@@ -56,12 +65,16 @@ export function Sidebar() {
             </p>
             <div className="space-y-1">
               <Link href="/" className={getLinkClass('/')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ActivityIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <ActivityIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Dashboard</span>
               </Link>
               {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
                 <Link href="/analytics" className={getLinkClass('/analytics')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><TrendingUpIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                    <TrendingUpIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                  </div>
                   <span className="text-sm font-medium">Analytics</span>
                 </Link>
               )}
@@ -76,9 +89,14 @@ export function Sidebar() {
               Sales
             </p>
             <div className="space-y-1">
-              <Link href="/orders" className={getLinkClass('/orders').replace('space-x-3', 'justify-between')}>
+              <Link
+                href="/orders"
+                className={getLinkClass('/orders').replace('space-x-3', 'justify-between')}
+              >
                 <div className="flex items-center space-x-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ShoppingBagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                    <ShoppingBagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                  </div>
                   <span className="text-sm font-medium">Orders</span>
                 </div>
                 <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs font-medium text-black dark:bg-white/10 dark:text-white">
@@ -86,11 +104,15 @@ export function Sidebar() {
                 </span>
               </Link>
               <Link href="/customers" className={getLinkClass('/customers')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Customers</span>
               </Link>
               <Link href="/reviews" className={getLinkClass('/reviews')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Reviews</span>
               </Link>
             </div>
@@ -105,19 +127,27 @@ export function Sidebar() {
             </p>
             <div className="space-y-1">
               <Link href="/products" className={getLinkClass('/products')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><PackageIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <PackageIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Products</span>
               </Link>
               <Link href="/categories" className={getLinkClass('/categories')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><CategoryIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <CategoryIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Categories</span>
               </Link>
               <Link href="/brands" className={getLinkClass('/brands')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><StarBadgeIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <StarBadgeIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Brands</span>
               </Link>
               <Link href="/collections" className={getLinkClass('/collections')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><LayersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <LayersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Collections</span>
               </Link>
             </div>
@@ -132,11 +162,18 @@ export function Sidebar() {
             </p>
             <div className="space-y-1">
               <Link href="/campaigns" className={getLinkClass('/campaigns')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ZapIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <ZapIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Campaigns</span>
               </Link>
-              <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><TagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+              <a
+                href="#"
+                className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <TagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Discounts</span>
               </a>
             </div>
@@ -151,7 +188,9 @@ export function Sidebar() {
             </p>
             <div className="space-y-1">
               <Link href="/team" className={getLinkClass('/team')}>
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
                 <span className="text-sm font-medium">Team & Roles</span>
               </Link>
             </div>
@@ -166,18 +205,33 @@ export function Sidebar() {
           <div className="space-y-1">
             {hasAccess(['SUPER_ADMIN']) && (
               <>
-                <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><SettingsIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <a
+                  href="#"
+                  className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                    <SettingsIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                  </div>
                   <span className="text-sm font-medium">Settings</span>
                 </a>
-                <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><ShieldCheckIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+                <a
+                  href="#"
+                  className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                    <ShieldCheckIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                  </div>
                   <span className="text-sm font-medium">Security</span>
                 </a>
               </>
             )}
-            <a href="#" className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20"><LifeBuoyIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" /></div>
+            <a
+              href="#"
+              className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                <LifeBuoyIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+              </div>
               <span className="text-sm font-medium">Get Help</span>
             </a>
             <ThemeToggle />

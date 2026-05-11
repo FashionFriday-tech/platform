@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { Product, ColumnId } from '../types';
+
+import { type ColumnId, type Product } from '../types';
 
 interface Props {
   product: Product;
@@ -18,7 +19,7 @@ export function ProductTableRow({
   onToggleStatus,
   visibleColumns,
   onClick,
-  getCategoryIcon
+  getCategoryIcon,
 }: Props) {
   return (
     <tr
@@ -44,22 +45,27 @@ export function ProductTableRow({
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             )}
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/10">
               {product.imageUrl ? (
-                <Image width={500} height={500}
+                <Image
+                  width={500}
+                  height={500}
                   src={product.imageUrl}
                   alt={product.name}
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <span className="text-xs font-bold text-black/30 dark:text-white/30">
-                  IMG
-                </span>
+                <span className="text-xs font-bold text-black/30 dark:text-white/30">IMG</span>
               )}
             </div>
             <div className="min-w-[180px]">
@@ -69,9 +75,7 @@ export function ProductTableRow({
               >
                 {product.name}
               </p>
-              <p className="mt-1 text-xs text-black/40 dark:text-white/40">
-                ID: {product.sku}
-              </p>
+              <p className="mt-1 text-xs text-black/40 dark:text-white/40">ID: {product.sku}</p>
             </div>
           </div>
         </div>
@@ -100,19 +104,16 @@ export function ProductTableRow({
 
       <td className="px-4 py-4 text-sm font-medium">
         {product.sellingPrice < product.originalPrice ? (
-          <span className="font-bold text-red-500">
-            ₹{product.sellingPrice.toFixed(2)}
-          </span>
+          <span className="font-bold text-red-500">₹{product.sellingPrice.toFixed(2)}</span>
         ) : (
-          <span className="text-black dark:text-white">
-            ₹{product.sellingPrice.toFixed(2)}
-          </span>
+          <span className="text-black dark:text-white">₹{product.sellingPrice.toFixed(2)}</span>
         )}
       </td>
 
       {visibleColumns.has('Variants') && (
         <td className="px-4 py-4">
-          <div className="grid grid-rows-2 grid-flow-col gap-1 w-max">
+          <div className="grid w-max grid-flow-col grid-rows-2 gap-1">
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             {product.variants?.map((v) => (
               <span
                 key={v}
@@ -152,9 +153,11 @@ export function ProductTableRow({
               <div
                 className={`h-full rounded-full transition-all duration-1000 ease-out ${product.stock < 100 ? 'bg-red-500' : product.stock < 500 ? 'bg-yellow-500' : 'bg-green-500'}`}
                 style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
-              ></div>
+              />
             </div>
-            <p className={`text-right text-[10px] font-medium ${product.stock < 100 ? 'text-red-500' : product.stock < 500 ? 'text-yellow-600 dark:text-yellow-500' : 'text-green-600 dark:text-green-500'}`}>
+            <p
+              className={`text-right text-[10px] font-medium ${product.stock < 100 ? 'text-red-500' : product.stock < 500 ? 'text-yellow-600 dark:text-yellow-500' : 'text-green-600 dark:text-green-500'}`}
+            >
               {product.stock}/{product.maxStock}
             </p>
           </div>
@@ -168,6 +171,7 @@ export function ProductTableRow({
         <button
           onClick={(e) => {
             e.stopPropagation();
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             product.status !== 'Draft' && onToggleStatus(product.id);
           }}
           disabled={product.status === 'Draft'}

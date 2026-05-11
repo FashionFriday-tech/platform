@@ -1,17 +1,29 @@
 'use client';
 
 import React, { useState } from 'react';
+
 import { motion } from 'motion/react';
+
 import { MOCK_RETENTION_DATA } from '../types';
 
 const MONTH_LABELS = ['M0', 'M1', 'M2', 'M3', 'M4', 'M5'];
 
 function getCellStyle(value: number) {
-  if (value === 0) return { bg: 'transparent', text: 'transparent', glow: '' };
-  if (value >= 70) return { bg: 'rgba(34, 197, 94, 0.18)', text: '#16a34a', glow: '#22c55e' };
-  if (value >= 50) return { bg: 'rgba(132, 204, 22, 0.18)', text: '#65a30d', glow: '#84cc16' };
-  if (value >= 35) return { bg: 'rgba(245, 158, 11, 0.18)', text: '#d97706', glow: '#f59e0b' };
-  if (value >= 20) return { bg: 'rgba(249, 115, 22, 0.18)', text: '#ea580c', glow: '#f97316' };
+  if (value === 0) {
+    return { bg: 'transparent', text: 'transparent', glow: '' };
+  }
+  if (value >= 70) {
+    return { bg: 'rgba(34, 197, 94, 0.18)', text: '#16a34a', glow: '#22c55e' };
+  }
+  if (value >= 50) {
+    return { bg: 'rgba(132, 204, 22, 0.18)', text: '#65a30d', glow: '#84cc16' };
+  }
+  if (value >= 35) {
+    return { bg: 'rgba(245, 158, 11, 0.18)', text: '#d97706', glow: '#f59e0b' };
+  }
+  if (value >= 20) {
+    return { bg: 'rgba(249, 115, 22, 0.18)', text: '#ea580c', glow: '#f97316' };
+  }
   return { bg: 'rgba(239, 68, 68, 0.15)', text: '#dc2626', glow: '#ef4444' };
 }
 
@@ -31,13 +43,13 @@ export function CustomerRetentionHeatmap() {
         <table className="w-full">
           <thead>
             <tr>
-              <th className="pb-3 text-left text-[11px] font-bold uppercase tracking-wider text-black/30 dark:text-white/30">
+              <th className="pb-3 text-left text-[11px] font-bold tracking-wider text-black/30 uppercase dark:text-white/30">
                 Cohort
               </th>
               {MONTH_LABELS.map((label) => (
                 <th
                   key={label}
-                  className="pb-3 text-center text-[11px] font-bold uppercase tracking-wider text-black/30 dark:text-white/30"
+                  className="pb-3 text-center text-[11px] font-bold tracking-wider text-black/30 uppercase dark:text-white/30"
                 >
                   {label}
                 </th>
@@ -47,10 +59,11 @@ export function CustomerRetentionHeatmap() {
           <tbody>
             {MOCK_RETENTION_DATA.map((cohort, rowIdx) => (
               <tr key={cohort.cohort}>
-                <td className="py-1.5 pr-4 text-xs font-semibold text-black/60 dark:text-white/60 whitespace-nowrap">
+                <td className="py-1.5 pr-4 text-xs font-semibold whitespace-nowrap text-black/60 dark:text-white/60">
                   {cohort.cohort}
                 </td>
                 {cohort.months.map((value, colIdx) => {
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
                   const isEmpty = value === 0 && colIdx > 0;
                   const style = getCellStyle(value);
@@ -67,8 +80,12 @@ export function CustomerRetentionHeatmap() {
                           delay: 0.025 * (rowIdx * MONTH_LABELS.length + colIdx),
                           duration: 0.2,
                         }}
-                        onMouseEnter={() => setHoveredCell({ row: rowIdx, col: colIdx })}
-                        onMouseLeave={() => setHoveredCell(null)}
+                        onMouseEnter={() => {
+                          setHoveredCell({ row: rowIdx, col: colIdx });
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredCell(null);
+                        }}
                         className="flex h-10 items-center justify-center rounded-lg text-[12px] font-bold transition-shadow"
                         style={{
                           backgroundColor: isEmpty ? 'rgba(0,0,0,0.02)' : style.bg,
@@ -90,7 +107,7 @@ export function CustomerRetentionHeatmap() {
 
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-3 border-t border-black/[0.04] px-6 py-4 dark:border-white/[0.04]">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-black/30 dark:text-white/30">
+        <span className="text-[10px] font-bold tracking-wider text-black/30 uppercase dark:text-white/30">
           Retention:
         </span>
         {[

@@ -1,13 +1,14 @@
 'use client';
 
-import { motion, AnimatePresence } from 'motion/react';
-import { SearchIcon, PlusIcon } from '@ff/ui';
+import { PlusIcon, SearchIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
+
 import { CustomSelect } from '../../../components/ui/CustomSelect';
-import { BrandCard } from './BrandCard';
+import { useBrands } from '../hooks/useBrands';
 import { AddBrandModal } from './AddBrandModal';
+import { BrandCard } from './BrandCard';
 import { BrandDetailsModal } from './BrandDetailsModal';
 import { BrandStats } from './BrandStats';
-import { useBrands } from '../hooks/useBrands';
 
 export default function BrandsFeature() {
   const {
@@ -31,7 +32,7 @@ export default function BrandsFeature() {
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
       <BrandStats brands={brands} />
-      
+
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         {/* Top Action Bar */}
         <motion.div
@@ -48,7 +49,9 @@ export default function BrandsFeature() {
               type="text"
               placeholder="Search brands..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
               className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
             />
           </div>
@@ -57,11 +60,14 @@ export default function BrandsFeature() {
             <CustomSelect
               options={categoryOptions}
               value={categoryFilter}
-              onChange={(val) => setCategoryFilter(val as any)}
-              className="w-48 z-50"
+              onChange={(val) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+                setCategoryFilter(val as any);
+              }}
+              className="z-50 w-48"
             />
 
-            <button 
+            <button
               onClick={() => {
                 setBrandToEdit(null);
                 setIsAddModalOpen(true);
@@ -82,7 +88,7 @@ export default function BrandsFeature() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="flex-1 min-h-0 overflow-auto scrollbar-hide pb-6"
+            className="scrollbar-hide min-h-0 flex-1 overflow-auto pb-6"
           >
             {filteredBrands.length === 0 ? (
               <div className="flex h-full items-center justify-center text-black/40 dark:text-white/40">
@@ -97,9 +103,11 @@ export default function BrandsFeature() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: idx * 0.02 }}
                   >
-                    <BrandCard 
-                      brand={brand} 
-                      onClick={() => setSelectedBrand(brand)} 
+                    <BrandCard
+                      brand={brand}
+                      onClick={() => {
+                        setSelectedBrand(brand);
+                      }}
                     />
                   </motion.div>
                 ))}
@@ -109,19 +117,21 @@ export default function BrandsFeature() {
         </AnimatePresence>
       </div>
 
-      <AddBrandModal 
-        isOpen={isAddModalOpen} 
+      <AddBrandModal
+        isOpen={isAddModalOpen}
         onClose={() => {
           setIsAddModalOpen(false);
           setBrandToEdit(null);
-        }} 
+        }}
         onSave={handleSaveBrand}
         initialData={brandToEdit}
       />
 
       <BrandDetailsModal
         isOpen={!!selectedBrand}
-        onClose={() => setSelectedBrand(null)}
+        onClose={() => {
+          setSelectedBrand(null);
+        }}
         brand={selectedBrand}
         onDelete={handleDeleteBrand}
         onEdit={() => {

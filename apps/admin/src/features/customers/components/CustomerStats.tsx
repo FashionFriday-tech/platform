@@ -1,14 +1,11 @@
 'use client';
 
 import React from 'react';
+
+import { ActivityIcon, AlertCircleIcon, ShoppingBagIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+
 import { mockCustomers } from '../services/mock-customers';
-import { 
-  UsersIcon, 
-  ShoppingBagIcon, 
-  AlertCircleIcon, 
-  ActivityIcon
-} from '@ff/ui';
 
 export function CustomerStats() {
   const totalCustomers = mockCustomers.length;
@@ -55,25 +52,23 @@ export function CustomerStats() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: i * 0.05, ease: 'easeOut' }}
           key={stat.name}
-          className={`group relative overflow-hidden rounded-[20px] p-6 text-white shadow-lg aspect-[1.586] ${stat.bg}`}
+          className={`group relative aspect-[1.586] overflow-hidden rounded-[20px] p-6 text-white shadow-lg ${stat.bg}`}
         >
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <stat.icon className="absolute -bottom-4 -right-4 h-24 w-24 sm:h-28 sm:w-28 text-white opacity-[0.1]" />
-            <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white opacity-[0.08] blur-2xl"></div>
+            <stat.icon className="absolute -right-4 -bottom-4 h-24 w-24 text-white opacity-[0.1] sm:h-28 sm:w-28" />
+            <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white opacity-[0.08] blur-2xl" />
           </div>
-          
+
           <div className="relative z-10 flex h-full flex-col justify-between">
             {/* Top row: Title */}
             <div className="flex items-start justify-between">
-              <dt className="text-base font-extrabold tracking-wider text-white drop-shadow-sm pr-2">
+              <dt className="pr-2 text-base font-extrabold tracking-wider text-white drop-shadow-sm">
                 {stat.name}
               </dt>
             </div>
-            
+
             {/* Middle: Big Number */}
-            <dd className="text-3xl font-bold tracking-tight md:text-4xl">
-              {stat.value}
-            </dd>
+            <dd className="text-3xl font-bold tracking-tight md:text-4xl">{stat.value}</dd>
           </div>
         </motion.div>
       ))}

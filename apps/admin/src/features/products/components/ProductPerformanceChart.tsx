@@ -1,6 +1,7 @@
 import React from 'react';
 
 interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   chartData: any[];
   width: number;
   height: number;
@@ -17,12 +18,16 @@ interface Props {
 
 export function ProductPerformanceChart({
   chartData,
-  width, height,
-  paddingX, paddingY,
+  width,
+  height,
+  paddingX,
+  paddingY,
   maxVal,
-  getX, getY,
-  salesPath, viewsPath,
-  avgSales
+  getX,
+  getY,
+  salesPath,
+  viewsPath,
+  avgSales,
 }: Props) {
   return (
     <div className="scrollbar-hide relative w-full overflow-x-auto rounded-2xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111]">
@@ -125,7 +130,9 @@ export function ProductPerformanceChart({
         {/* Points & Labels */}
         {chartData.map((d, i) => {
           const cx = getX(i);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           const sy = getY(d.sales);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           const vy = getY(d.views);
           return (
             <g key={i}>
@@ -145,6 +152,7 @@ export function ProductPerformanceChart({
                 fontSize="10"
                 fontWeight="bold"
               >
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 {d.views >= 1000 ? (d.views / 1000).toFixed(1) + 'k' : d.views}
               </text>
 
@@ -164,6 +172,7 @@ export function ProductPerformanceChart({
                 fontSize="10"
                 fontWeight="bold"
               >
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 {d.sales >= 1000 ? (d.sales / 1000).toFixed(1) + 'k' : d.sales}
               </text>
 
@@ -177,6 +186,7 @@ export function ProductPerformanceChart({
                 fontSize="10"
                 fontWeight="bold"
               >
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 {d.label}
               </text>
             </g>

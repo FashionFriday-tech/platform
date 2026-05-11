@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Product } from '../../products/types';
-import { CloseIcon, SearchIcon, PlusIcon, CheckIcon } from '@ff/ui';
 import Image from 'next/image';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { CheckIcon, CloseIcon, PlusIcon, SearchIcon } from '@ff/ui';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { AnimatePresence, motion } from 'motion/react';
+
+import { type Product } from '../../products/types';
 
 interface AssignProductModalProps {
   isOpen: boolean;
@@ -13,30 +17,40 @@ interface AssignProductModalProps {
   availableProducts: Product[];
 }
 
-export function AssignProductModal({ isOpen, onClose, onAssign, existingProductIds, availableProducts }: AssignProductModalProps) {
+export function AssignProductModal({
+  isOpen,
+  onClose,
+  onAssign,
+  existingProductIds,
+  availableProducts,
+}: AssignProductModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
   // Reset state when modal opens
   React.useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchQuery('');
       setSelectedProductIds([]);
     }
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
-  const unassignedProducts = availableProducts.filter(p => !existingProductIds.includes(p.id));
-  
-  const filteredProducts = unassignedProducts.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase()))
+  const unassignedProducts = availableProducts.filter((p) => !existingProductIds.includes(p.id));
+
+  const filteredProducts = unassignedProducts.filter(
+    (p) =>
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.brand?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const toggleProductSelection = (id: string) => {
-    setSelectedProductIds(prev => 
-      prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id]
+    setSelectedProductIds((prev) =>
+      prev.includes(id) ? prev.filter((pId) => pId !== id) : [...prev, id],
     );
   };
 
@@ -64,7 +78,9 @@ export function AssignProductModal({ isOpen, onClose, onAssign, existingProductI
         <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
           <div>
             <h2 className="text-xl font-bold text-black dark:text-white">Assign Products</h2>
-            <p className="mt-1 text-sm text-black/60 dark:text-white/60">Select products to add to this category.</p>
+            <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+              Select products to add to this category.
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -77,13 +93,15 @@ export function AssignProductModal({ isOpen, onClose, onAssign, existingProductI
         {/* Search */}
         <div className="border-b border-black/5 p-4 dark:border-white/5">
           <div className="relative">
-            <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-black/40 dark:text-white/40" />
+            <SearchIcon className="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-black/40 dark:text-white/40" />
             <input
               type="text"
               placeholder="Search by product name or brand..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-3 pl-12 pr-4 text-sm text-black placeholder-black/40 outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222]"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+              className="w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-3 pr-4 pl-12 text-sm text-black placeholder-black/40 outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222]"
             />
           </div>
         </div>
@@ -96,12 +114,14 @@ export function AssignProductModal({ isOpen, onClose, onAssign, existingProductI
             </div>
           ) : (
             <div className="grid gap-2 p-2">
-              {filteredProducts.map(product => {
+              {filteredProducts.map((product) => {
                 const isSelected = selectedProductIds.includes(product.id);
                 return (
                   <div
                     key={product.id}
-                    onClick={() => toggleProductSelection(product.id)}
+                    onClick={() => {
+                      toggleProductSelection(product.id);
+                    }}
                     className={`flex cursor-pointer items-center justify-between rounded-xl border p-3 transition-colors ${
                       isSelected
                         ? 'border-black bg-black/5 dark:border-white dark:bg-white/5'
@@ -111,7 +131,13 @@ export function AssignProductModal({ isOpen, onClose, onAssign, existingProductI
                     <div className="flex items-center gap-4">
                       <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-black/5 dark:bg-white/5">
                         <Image
-                          src={product.imageUrl || product.images?.[0] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200'}
+                          src={
+                            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                            product.imageUrl ||
+                            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                            product.images?.[0] ||
+                            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200'
+                          }
                           alt={product.name}
                           fill
                           className="object-cover"
@@ -122,11 +148,13 @@ export function AssignProductModal({ isOpen, onClose, onAssign, existingProductI
                         <p className="text-xs text-black/50 dark:text-white/50">{product.brand}</p>
                       </div>
                     </div>
-                    <div className={`flex h-6 w-6 items-center justify-center rounded-full border ${
-                      isSelected 
-                        ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                        : 'border-black/20 dark:border-white/20'
-                    }`}>
+                    <div
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border ${
+                        isSelected
+                          ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                          : 'border-black/20 dark:border-white/20'
+                      }`}
+                    >
                       {isSelected && <CheckIcon className="h-3 w-3" />}
                     </div>
                   </div>

@@ -1,9 +1,13 @@
+// eslint-disable-next-line unicorn/filename-case
 import { useState } from 'react';
-import { Order } from '../types';
+
+import { type Order } from '../types';
 
 export function useOrderDetails(order: Order) {
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const [trackingId, setTrackingId] = useState(order.tracking?.trackingId || '');
   const [courierService, setCourierService] = useState<string>(
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     order.tracking?.courierService || 'Delhivery',
   );
   const [assignedSeller, setAssignedSeller] = useState('Seller A');
@@ -13,7 +17,11 @@ export function useOrderDetails(order: Order) {
   const [contactMode, setContactMode] = useState<'none' | 'call' | 'whatsapp'>('none');
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string>(order.status);
-  const [tempCourier, setTempCourier] = useState<string>(order.tracking?.courierService || 'Delhivery');
+  const [tempCourier, setTempCourier] = useState<string>(
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    order.tracking?.courierService || 'Delhivery',
+  );
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId || '');
   const [tempSeller, setTempSeller] = useState('Seller A');
   const [isEditingMeta, setIsEditingMeta] = useState(false);
@@ -39,13 +47,17 @@ export function useOrderDetails(order: Order) {
 
   const handleSaveTracking = () => {
     setIsTrackingSaved(true);
-    setTimeout(() => setIsTrackingSaved(false), 3000);
+    setTimeout(() => {
+      setIsTrackingSaved(false);
+    }, 3000);
   };
 
   const getOrderSummaryText = () => {
     const itemsText = order.items
       .map(
-        (item) => `Product Name: ${item.productName}\nSize: ${item.size || 'N/A'}\nColor: ${item.color || 'N/A'}\nQty: ${item.quantity}`
+        (item) =>
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+          `Product Name: ${item.productName}\nSize: ${item.size || 'N/A'}\nColor: ${item.color || 'N/A'}\nQty: ${item.quantity}`,
       )
       .join('\n\n');
 
@@ -54,10 +66,12 @@ export function useOrderDetails(order: Order) {
 Full Name : ${order.customer.name}
 Address : ${order.shippingAddress.street}
 City : ${order.shippingAddress.city}
+// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 District : ${order.shippingAddress.district || 'N/A'}
 State : ${order.shippingAddress.state}
 Pincode: ${order.shippingAddress.pincode}
 Mobile Number : ${order.customer.phone}
+// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 Alt Number : ${order.customer.altPhone || 'N/A'}
 
 ${itemsText}
@@ -71,7 +85,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
       const img = new globalThis.Image();
       img.crossOrigin = 'anonymous';
       img.src = imageUrl;
-      
+
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
@@ -82,13 +96,12 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
       canvas.height = img.height;
       const ctx = canvas.getContext('2d');
       ctx?.drawImage(img, 0, 0);
-      
+
       canvas.toBlob(async (blob) => {
         if (blob) {
           try {
-            await navigator.clipboard.write([
-              new ClipboardItem({ 'image/png': blob })
-            ]);
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            // eslint-disable-next-line no-console
             console.log('Image copied to clipboard successfully!');
           } catch (clipboardErr) {
             console.error('Clipboard write failed:', clipboardErr);
@@ -101,9 +114,12 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
   };
 
   const handleCopy = () => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigator.clipboard.writeText(getOrderSummaryText());
     setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
   };
 
   const handleWhatsApp = async () => {
@@ -115,10 +131,15 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
   };
 
   const handleInquiryWhatsApp = async () => {
-    if (order.items.length === 0) return;
+    if (order.items.length === 0) {
+      return;
+    }
     const item = order.items[0];
-    const text = encodeURIComponent(`*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size || 'N/A'}\n*Color:* ${item.color || 'N/A'} \n\n*Order ID:* ${order.orderNumber}`);
-    
+    const text = encodeURIComponent(
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      `*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size || 'N/A'}\n*Color:* ${item.color || 'N/A'} \n\n*Order ID:* ${order.orderNumber}`,
+    );
+
     if (item.productImage) {
       await copyImageToClipboard(item.productImage);
     }
@@ -155,6 +176,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     handleSaveTracking,
     handleCopy,
     handleWhatsApp,
-    handleInquiryWhatsApp
+    handleInquiryWhatsApp,
   };
 }

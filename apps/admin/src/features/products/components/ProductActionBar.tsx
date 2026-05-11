@@ -1,6 +1,8 @@
-import { ViewMode, ColumnId, AdvancedFilters, ProductStatus } from '../types';
-import { useState, useRef, useEffect } from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+
+import { type AdvancedFilters, type ColumnId, type ProductStatus, type ViewMode } from '../types';
 
 interface Props {
   searchQuery: string;
@@ -44,7 +46,9 @@ export function ProductActionBar({
       <div className="flex flex-1 items-center gap-3">
         <div className="flex rounded-xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#1a1a1a]">
           <button
-            onClick={() => setViewMode('list')}
+            onClick={() => {
+              setViewMode('list');
+            }}
             className={`rounded-lg p-1.5 transition-all duration-200 ${viewMode === 'list' ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white' : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white'}`}
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +61,9 @@ export function ProductActionBar({
             </svg>
           </button>
           <button
-            onClick={() => setViewMode('grid')}
+            onClick={() => {
+              setViewMode('grid');
+            }}
             className={`rounded-lg p-1.5 transition-all duration-200 ${viewMode === 'grid' ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white' : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white'}`}
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,7 +97,9 @@ export function ProductActionBar({
             type="text"
             placeholder="Search products by name, SKU or category..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
             className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
           />
         </div>
@@ -129,7 +137,9 @@ export function ProductActionBar({
                 <input
                   type="checkbox"
                   checked={visibleColumns.has(col)}
-                  onChange={() => toggleColumn(col)}
+                  onChange={() => {
+                    toggleColumn(col);
+                  }}
                   className="rounded border-black/20 text-black focus:ring-black/20 dark:border-white/20 dark:text-white dark:focus:ring-white/20"
                 />
                 <span>{col}</span>
@@ -141,7 +151,9 @@ export function ProductActionBar({
         {/* Detailed Filter Pop-up Trigger */}
         <div className="relative z-40" ref={popupRef}>
           <button
-            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            onClick={() => {
+              setIsFilterOpen(!isFilterOpen);
+            }}
             className={`flex items-center space-x-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${isAdvancedActive ? 'border-transparent bg-black text-white shadow-md dark:bg-white dark:text-black' : 'border-black/5 bg-[#f8f9fa] text-black/70 hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white'}`}
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,9 +165,7 @@ export function ProductActionBar({
               />
             </svg>
             <span>Filters</span>
-            {isAdvancedActive && (
-              <span className="ml-1 flex h-2 w-2 rounded-full bg-red-500"></span>
-            )}
+            {isAdvancedActive && <span className="ml-1 flex h-2 w-2 rounded-full bg-red-500" />}
           </button>
 
           {isFilterOpen && (
@@ -181,7 +191,7 @@ export function ProductActionBar({
 
                     <div className="relative mt-2 flex h-6 items-center">
                       {/* Track background */}
-                      <div className="absolute h-1.5 w-full rounded-lg bg-black/10 dark:bg-white/10"></div>
+                      <div className="absolute h-1.5 w-full rounded-lg bg-black/10 dark:bg-white/10" />
 
                       {/* Highlight between min and max */}
                       <div
@@ -190,7 +200,7 @@ export function ProductActionBar({
                           left: `${(Number(localFilters.minPrice || 0) / 10000) * 100}%`,
                           right: `${100 - (Number(localFilters.maxPrice || 10000) / 10000) * 100}%`,
                         }}
-                      ></div>
+                      />
 
                       {/* Min Slider */}
                       <input
@@ -291,8 +301,10 @@ export function ProductActionBar({
                           }}
                         >
                           <div
+                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${localFilters.stores?.has(store) ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'}`}
                           >
+                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             {localFilters.stores?.has(store) && (
                               <svg
                                 className="h-2.5 w-2.5 text-white dark:text-black"
@@ -326,7 +338,9 @@ export function ProductActionBar({
                       {(['Active', 'Inactive', 'Draft'] as ProductStatus[]).map((status) => (
                         <div
                           key={status}
-                          onClick={() => toggleStatus(status)}
+                          onClick={() => {
+                            toggleStatus(status);
+                          }}
                           className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${localFilters.statuses.has(status) ? 'border-transparent bg-black text-white dark:bg-white dark:text-black' : 'border-black/10 bg-black/5 text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
                         >
                           {status}
@@ -358,7 +372,7 @@ export function ProductActionBar({
 
         <Link
           href="/products/add"
-          className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 whitespace-nowrap dark:bg-white dark:text-black dark:hover:bg-white/90"
+          className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

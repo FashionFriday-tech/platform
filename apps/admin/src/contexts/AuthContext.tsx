@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 
 export type Role = 'SUPER_ADMIN' | 'PRODUCT_MANAGER' | 'SALES_MANAGER';
 
@@ -33,6 +33,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem(STORAGE_KEY);
     if (storedUser) {
       try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect, @typescript-eslint/no-unsafe-argument
+        // eslint-disable-next-line react-hooks/set-state-in-effect, @typescript-eslint/no-unsafe-argument
         setUser(JSON.parse(storedUser));
       } catch (e) {
         console.error('Error parsing stored user:', e);
@@ -54,7 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const setRole = (role: Role) => {
     setUser((prev) => {
-      if (!prev) return null;
+      if (!prev) {
+        return null;
+      }
       const updated = { ...prev, role };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       return updated;
@@ -63,7 +67,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const updateUser = (updates: Partial<User>) => {
     setUser((prev) => {
-      if (!prev) return null;
+      if (!prev) {
+        return null;
+      }
       const updated = { ...prev, ...updates };
       if (updates.name && updates.name !== prev.name) {
         const parts = updates.name.split(' ').filter(Boolean);
@@ -94,4 +100,3 @@ export function useAuth() {
   }
   return context;
 }
-

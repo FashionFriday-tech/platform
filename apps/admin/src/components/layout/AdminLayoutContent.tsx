@@ -2,11 +2,14 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import { useAuth, Role } from '@/contexts/AuthContext';
-import { Sidebar } from './Sidebar';
-import { Header } from './Header';
-import { LoginPage } from '@/features/auth';
+
 import { LoaderIcon, LockIcon } from '@ff/ui';
+
+import { type Role, useAuth } from '@/contexts/AuthContext';
+import { LoginPage } from '@/features/auth';
+
+import { Header } from './Header';
+import { Sidebar } from './Sidebar';
 
 // Route prefix permission rules
 const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
@@ -51,9 +54,9 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
     }
 
     const rule = ROUTE_PERMISSIONS.find(
-      (r) => pathname === r.prefix || pathname.startsWith(r.prefix + '/')
+      (r) => pathname === r.prefix || pathname.startsWith(r.prefix + '/'),
     );
-    
+
     if (!rule) {
       return true; // NextJS fallback 404 page handler
     }
@@ -71,14 +74,24 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
             <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-red-500/20 bg-red-500/10 text-red-500 dark:border-red-500/10 dark:bg-red-950/20 dark:text-red-400">
               <LockIcon className="h-10 w-10 animate-pulse" />
             </div>
-            
-            <h1 className="text-3xl font-black uppercase text-black tracking-tight dark:text-white mb-2">
+
+            <h1 className="mb-2 text-3xl font-black tracking-tight text-black uppercase dark:text-white">
               Access Denied
             </h1>
-            <p className="text-sm font-semibold text-black/60 dark:text-white/60 max-w-md mb-6 leading-relaxed">
-              Your security role (<span className="text-black dark:text-white font-bold">{user.role.replace('_', ' ')}</span>) is not authorized to access <span className="font-mono text-xs bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">{pathname}</span>.
+            <p className="mb-6 max-w-md text-sm leading-relaxed font-semibold text-black/60 dark:text-white/60">
+              Your security role (
+              <span className="font-bold text-black dark:text-white">
+                {user.role.replace('_', ' ')}
+              </span>
+              ) is not authorized to access{' '}
+              <span className="rounded bg-black/5 px-1.5 py-0.5 font-mono text-xs dark:bg-white/10">
+                {pathname}
+              </span>
+              .
             </p>
 
+            // eslint-disable-next-line @next/next/no-html-link-for-pages
+            // eslint-disable-next-line @next/next/no-html-link-for-pages
             <a
               href="/"
               className="inline-flex items-center justify-center rounded-2xl bg-black px-6 py-3 text-xs font-black tracking-wider text-white uppercase transition-all duration-300 hover:bg-black/85 active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-white/90"
@@ -96,9 +109,7 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
       <Sidebar />
       <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
         <Header />
-        <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
-          {children}
-        </div>
+        <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </main>
     </>
   );

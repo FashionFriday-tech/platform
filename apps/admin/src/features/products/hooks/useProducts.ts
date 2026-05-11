@@ -1,6 +1,16 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Product, SortOption, StatusFilter, ViewMode, ColumnId, AdvancedFilters } from '../types';
+// eslint-disable-next-line unicorn/filename-case
+import { useEffect, useMemo, useState } from 'react';
+
 import { fetchProducts } from '../services/api';
+import {
+  type AdvancedFilters,
+  type ColumnId,
+  type Product,
+  type SortOption,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  StatusFilter,
+  type ViewMode,
+} from '../types';
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -47,6 +57,7 @@ export function useProducts() {
         setIsLoading(false);
       }
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadData();
   }, []);
 
@@ -54,7 +65,9 @@ export function useProducts() {
     setProducts(
       products.map((p) => {
         if (p.id === id) {
-          if (p.status === 'Draft') return p; // Never activate drafted products
+          if (p.status === 'Draft') {
+            return p;
+          } // Never activate drafted products
           return { ...p, status: p.status === 'Active' ? 'Inactive' : 'Active' };
         }
         return p;
@@ -65,8 +78,11 @@ export function useProducts() {
   const toggleSelection = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
   };

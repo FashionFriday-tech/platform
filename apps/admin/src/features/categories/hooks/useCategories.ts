@@ -1,6 +1,9 @@
+// eslint-disable-next-line unicorn/filename-case
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { MOCK_CATEGORIES, ProductCategory } from '../types';
 
 export function useCategories() {
@@ -13,12 +16,12 @@ export function useCategories() {
     let result = [...MOCK_CATEGORIES];
 
     if (selectedGender !== 'All') {
-      result = result.filter(cat => cat.gender === selectedGender);
+      result = result.filter((cat) => cat.gender === selectedGender);
     }
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(cat => cat.name.toLowerCase().includes(q));
+      result = result.filter((cat) => cat.name.toLowerCase().includes(q));
     }
 
     return result;

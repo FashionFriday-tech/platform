@@ -1,7 +1,8 @@
-import { ColumnId, SortOption } from '../types';
+import { type ColumnId, type SortOption } from '../types';
 
 interface Props {
   allSelected: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products: any[];
   onToggleAllSelection: (ids: string[]) => void;
   sortOption: SortOption;
@@ -24,7 +25,10 @@ export function ProductTableHeader({
         <th className="sticky top-0 left-0 z-40 border-r border-black/5 bg-[#f8f9fa] px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] dark:border-white/5 dark:bg-[#1a1a1a] dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)]">
           <div className="flex items-center space-x-4">
             <div
-              onClick={() => onToggleAllSelection(products.map((p) => p.id))}
+              onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+                onToggleAllSelection(products.map((p) => p.id));
+              }}
               className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${allSelected ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 hover:border-black/50 dark:border-white/20 dark:hover:border-white/50'}`}
             >
               {allSelected && (
@@ -34,15 +38,20 @@ export function ProductTableHeader({
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               )}
             </div>
             <div
               className="flex cursor-pointer items-center space-x-1 hover:text-black dark:hover:text-white"
-              onClick={() =>
-                setSortOption(sortOption === 'Name: A to Z' ? 'Name: Z to A' : 'Name: A to Z')
-              }
+              onClick={() => {
+                setSortOption(sortOption === 'Name: A to Z' ? 'Name: Z to A' : 'Name: A to Z');
+              }}
             >
               <span className={sortOption.includes('Name') ? 'text-black dark:text-white' : ''}>
                 Product info
@@ -53,7 +62,12 @@ export function ProductTableHeader({
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
@@ -61,19 +75,17 @@ export function ProductTableHeader({
 
         {visibleColumns.has('Category') && <th className="px-4 py-4 font-medium">Category</th>}
 
-        {visibleColumns.has('Cost Price') && (
-          <th className="px-4 py-4 font-medium">Cost Price</th>
-        )}
+        {visibleColumns.has('Cost Price') && <th className="px-4 py-4 font-medium">Cost Price</th>}
         {visibleColumns.has('OG Price') && <th className="px-4 py-4 font-medium">OG Price</th>}
 
         {/* Always show Selling Price */}
         <th
           className="cursor-pointer px-4 py-4 font-medium hover:text-black dark:hover:text-white"
-          onClick={() =>
+          onClick={() => {
             setSortOption(
               sortOption === 'Price: Low to High' ? 'Price: High to Low' : 'Price: Low to High',
-            )
-          }
+            );
+          }}
         >
           <div className="flex items-center space-x-1">
             <span className={sortOption.includes('Price') ? 'text-black dark:text-white' : ''}>
@@ -85,16 +97,19 @@ export function ProductTableHeader({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </th>
 
         {visibleColumns.has('Variants') && <th className="px-4 py-4 font-medium">Variants</th>}
         {visibleColumns.has('Sales') && <th className="px-4 py-4 font-medium">Sales</th>}
-        {visibleColumns.has('Date Added') && (
-          <th className="px-4 py-4 font-medium">Date Added</th>
-        )}
+        {visibleColumns.has('Date Added') && <th className="px-4 py-4 font-medium">Date Added</th>}
 
         {/* Always show Status */}
         <th className="px-4 py-4 font-medium">Status</th>

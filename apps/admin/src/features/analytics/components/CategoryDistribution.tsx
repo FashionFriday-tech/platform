@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+
+import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
+
 import { MOCK_CATEGORY_DATA } from '../types';
 
 const total = MOCK_CATEGORY_DATA.reduce((sum, d) => sum + d.value, 0);
@@ -31,6 +33,7 @@ export function CategoryDistribution() {
               cornerRadius={6}
             >
               {MOCK_CATEGORY_DATA.map((entry, index) => (
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>

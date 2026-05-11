@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Link from 'next/link';
+
+import { type Product } from '@ff/schemas';
+
+import { useAddProductForm } from '../hooks/useAddProductForm';
 import { CATEGORIES, QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
-import { useAddProductForm } from '../hooks/useAddProductForm';
-import { type Product } from '@ff/schemas';
-import Image from 'next/image';
 
 interface AddProductFormProps {
   initialData?: Product;
@@ -90,7 +93,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const markTouched = (field: string) => setTouched((p) => ({ ...p, [field]: true }));
+  const markTouched = (field: string) => {
+    setTouched((p) => ({ ...p, [field]: true }));
+  };
 
   const getStatus = (
     val: string | number,
@@ -99,9 +104,17 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     fieldName?: string,
   ): 'empty' | 'default' | 'valid' | 'error' => {
     const valStr = String(val);
-    if (valStr.trim().length < minLen) return hasSubmitted ? 'error' : 'empty';
-    if (initialData && valStr === String(initVal || '')) return 'default';
-    if (!initialData && fieldName && !touched[fieldName]) return 'default';
+    if (valStr.trim().length < minLen) {
+      return hasSubmitted ? 'error' : 'empty';
+    }
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    if (initialData && valStr === String(initVal || '')) {
+      return 'default';
+    }
+    // eslint-disable-next-line security/detect-object-injection
+    if (!initialData && fieldName && !touched[fieldName]) {
+      return 'default';
+    }
     return 'valid';
   };
 
@@ -110,22 +123,27 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     initVal: string[] | undefined,
     fieldName?: string,
   ): 'empty' | 'default' | 'valid' | 'error' => {
-    if (val.length === 0) return hasSubmitted ? 'error' : 'empty';
+    if (val.length === 0) {
+      return hasSubmitted ? 'error' : 'empty';
+    }
     if (
       initialData &&
-      initVal &&
-      val.length === initVal.length &&
+      val.length === initVal?.length &&
       [...val].sort().join(',') === [...initVal].sort().join(',')
-    )
+    ) {
       return 'default';
-    if (!initialData && fieldName && !touched[fieldName]) return 'default';
+    }
+    // eslint-disable-next-line security/detect-object-injection
+    if (!initialData && fieldName && !touched[fieldName]) {
+      return 'default';
+    }
     return 'valid';
   };
 
   return (
-    <div className="scrollbar-hide h-full w-full overflow-y-auto pb-20 rounded-2xl">
+    <div className="scrollbar-hide h-full w-full overflow-y-auto rounded-2xl pb-20">
       {/* Top Bar */}
-      <div className="sticky top-0 rounded-2xl z-30 mb-6 px-4 flex flex-col justify-between gap-4 border-b border-black/5 bg-gray-50/90 py-2 backdrop-blur-md md:flex-row md:items-center dark:border-white/5 dark:bg-black/90">
+      <div className="sticky top-0 z-30 mb-6 flex flex-col justify-between gap-4 rounded-2xl border-b border-black/5 bg-gray-50/90 px-4 py-2 backdrop-blur-md md:flex-row md:items-center dark:border-white/5 dark:bg-black/90">
         <div className="flex items-center space-x-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-white shadow-md dark:bg-white dark:text-black">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,7 +192,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <span>Save Draft</span>
             </button>
             <button
-              onClick={() => setHasSubmitted(true)}
+              onClick={() => {
+                setHasSubmitted(true);
+              }}
               className="flex items-center space-x-2 rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -209,7 +229,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <input
                   type="text"
                   value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
+                  onChange={(e) => {
+                    setProductName(e.target.value);
+                  }}
                   placeholder="Puffer Jacket With Pocket Detail"
                   className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                 />
@@ -223,10 +245,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <textarea
                   rows={4}
                   value={productDesc}
-                  onChange={(e) => setProductDesc(e.target.value)}
+                  onChange={(e) => {
+                    setProductDesc(e.target.value);
+                  }}
                   placeholder="Cropped puffer jacket made of technical fabric. High neck and long sleeves..."
                   className="w-full resize-none rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm leading-relaxed font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                ></textarea>
+                />
               </div>
 
               <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2">
@@ -274,7 +298,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           {c}
                         </button>
                       ))}
-                      <div className="my-1 border-t border-black/10 dark:border-white/10"></div>
+                      <div className="my-1 border-t border-black/10 dark:border-white/10" />
                       <button className="flex w-full items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5">
                         <svg
                           className="h-4 w-4"
@@ -298,6 +322,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={qualityRef} className="relative">
                   <LabelWithTick
                     label="Quality"
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     status={getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
                   />
                   <button
@@ -350,6 +375,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={brandRef} className="relative">
                   <LabelWithTick
                     label="Brand"
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     status={getStatus(brandInput, initialData?.brand?.[0], 2)}
                   />
                   <div className="relative flex items-center">
@@ -366,7 +392,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         setSelectedBrandLogo(null); // Clear selected logo if typing
                         setIsBrandOpen(true);
                       }}
-                      onFocus={() => setIsBrandOpen(true)}
+                      onFocus={() => {
+                        setIsBrandOpen(true);
+                      }}
                       placeholder="e.g. Nike"
                       className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
                     />
@@ -405,6 +433,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={colorRef} className="relative">
                   <LabelWithTick
                     label="Color"
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     status={getStatus(colorInput, initialData?.attributes?.colors?.[0], 3)}
                   />
                   <div className="relative flex items-center">
@@ -412,7 +441,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       <div
                         className="absolute left-3 h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20"
                         style={{ backgroundColor: selectedColorHex }}
-                      ></div>
+                      />
                     )}
                     <input
                       type="text"
@@ -422,7 +451,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         setSelectedColorHex(null); // Clear selected hex if typing
                         setIsColorOpen(true);
                       }}
-                      onFocus={() => setIsColorOpen(true)}
+                      onFocus={() => {
+                        setIsColorOpen(true);
+                      }}
                       placeholder="e.g. Black"
                       className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedColorHex ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
                     />
@@ -444,7 +475,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             <div
                               className="h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20"
                               style={{ backgroundColor: c.hex }}
-                            ></div>
+                            />
                             <span className="text-sm font-medium text-black/80 dark:text-white/80">
                               {c.name}
                             </span>
@@ -464,6 +495,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div>
                   <LabelWithTick
                     label="Size"
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     status={getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
                     subtitle="Pick Available Sizes"
                   />
@@ -503,7 +535,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           className={`flex h-4 w-4 items-center justify-center rounded-full border-[2px] transition-colors ${gender === g ? 'border-black dark:border-white' : 'border-black/20 group-hover:border-black/40 dark:border-white/20 dark:group-hover:border-white/40'}`}
                         >
                           {gender === g && (
-                            <div className="h-2 w-2 rounded-full bg-black dark:bg-white"></div>
+                            <div className="h-2 w-2 rounded-full bg-black dark:bg-white" />
                           )}
                         </div>
                         <span className="text-sm font-medium text-black/80 dark:text-white/80">
@@ -525,6 +557,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Original Price"
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(ogPrice, initialData?.price?.ogPrice, 1)}
                 />
                 <div className="relative">
@@ -534,7 +567,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <input
                     type="text"
                     value={ogPrice}
-                    onChange={(e) => setOgPrice(e.target.value)}
+                    onChange={(e) => {
+                      setOgPrice(e.target.value);
+                    }}
                     placeholder="4,999"
                     className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black line-through decoration-black/30 transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:decoration-white/30 dark:focus:border-white/20"
                   />
@@ -544,6 +579,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Selling Price"
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(basePrice, initialData?.price?.sellingPrice, 1)}
                 />
                 <div className="relative">
@@ -553,7 +589,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <input
                     type="text"
                     value={basePrice}
-                    onChange={(e) => setBasePrice(e.target.value)}
+                    onChange={(e) => {
+                      setBasePrice(e.target.value);
+                    }}
                     placeholder="3,999"
                     className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                   />
@@ -563,12 +601,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Stock"
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(stock, initialData?.inventory?.totalStock, 1)}
                 />
                 <input
                   type="text"
                   value={stock}
-                  onChange={(e) => setStock(e.target.value)}
+                  onChange={(e) => {
+                    setStock(e.target.value);
+                  }}
                   placeholder="77"
                   className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                 />
@@ -577,12 +618,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="SKU"
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(sku, initialData?.inventory?.sku, 3)}
                 />
                 <input
                   type="text"
                   value={sku}
-                  onChange={(e) => setSku(e.target.value)}
+                  onChange={(e) => {
+                    setSku(e.target.value);
+                  }}
                   placeholder="JAC-WIN-001"
                   className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black uppercase transition-all outline-none placeholder:normal-case focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                 />
@@ -623,6 +667,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Tags / Keywords"
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getArrayStatus(tags, initialData?.marketing?.collections)}
                 />
                 <div className="flex min-h-[52px] w-full flex-wrap items-center gap-2 rounded-xl border border-transparent bg-black/5 px-3 py-2 transition-all focus-within:border-black/20 dark:bg-white/5 dark:focus-within:border-white/20">
@@ -633,7 +678,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     >
                       <span>{tag}</span>
                       <button
-                        onClick={() => removeTag(tag)}
+                        onClick={() => {
+                          removeTag(tag);
+                        }}
                         className="text-black/50 transition-colors hover:text-black dark:text-white/50 dark:hover:text-white"
                       >
                         <svg
@@ -655,7 +702,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <input
                     type="text"
                     value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
+                    onChange={(e) => {
+                      setTagInput(e.target.value);
+                    }}
                     onKeyDown={handleTagKeyDown}
                     placeholder={tags.length === 0 ? 'Type and press enter' : ''}
                     className="min-w-[120px] flex-1 bg-transparent text-sm font-medium text-black outline-none placeholder:text-black/30 dark:text-white dark:placeholder:text-white/30"
@@ -675,7 +724,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <input
                     type="text"
                     value={seoSlug}
-                    onChange={(e) => setSeoSlug(e.target.value)}
+                    onChange={(e) => {
+                      setSeoSlug(e.target.value);
+                    }}
                     placeholder="product-name"
                     className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-[175px] text-sm font-medium text-black lowercase transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                   />
@@ -685,6 +736,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Meta Title"
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(seoTitle, initialData?.marketing?.seoTitle, 5)}
                   rightElement={
                     <span className="text-xs font-medium text-black/40 dark:text-white/40">
@@ -695,7 +747,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <input
                   type="text"
                   value={seoTitle}
-                  onChange={(e) => setSeoTitle(e.target.value)}
+                  onChange={(e) => {
+                    setSeoTitle(e.target.value);
+                  }}
                   placeholder="Buy Puffer Jacket With Pocket Detail - Fashion Friday"
                   className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                 />
@@ -704,6 +758,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Meta Description"
+                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(seoDesc, initialData?.marketing?.seoDescription, 10)}
                   rightElement={
                     <span className="text-xs font-medium text-black/40 dark:text-white/40">
@@ -714,10 +769,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <textarea
                   rows={3}
                   value={seoDesc}
-                  onChange={(e) => setSeoDesc(e.target.value)}
+                  onChange={(e) => {
+                    setSeoDesc(e.target.value);
+                  }}
                   placeholder="Shop the latest Puffer Jacket with pocket details. Fast shipping, great deals, and premium materials. Buy now at Fashion Friday."
                   className="w-full resize-none rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm leading-relaxed font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                ></textarea>
+                />
               </div>
             </div>
           </div>
@@ -775,13 +832,19 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 {/* Main Image Preview */}
                 <div
                   draggable
-                  onDragStart={(e) => handleDragStart(e, 0)}
+                  onDragStart={(e) => {
+                    handleDragStart(e, 0);
+                  }}
                   onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, 0)}
+                  onDrop={(e) => {
+                    handleDrop(e, 0);
+                  }}
                   onDragEnd={handleDragEnd}
                   className={`group relative mb-4 aspect-[3/4] w-full cursor-move overflow-hidden rounded-2xl border border-black/5 bg-black/5 transition-all dark:border-white/5 dark:bg-white/5 ${draggedIndex === 0 ? 'scale-95 border-black/20 opacity-50 dark:border-white/20' : ''}`}
                 >
-                  <Image width={500} height={500}
+                  <Image
+                    width={500}
+                    height={500}
                     src={images[0].url}
                     alt="Main product"
                     className="pointer-events-none h-full w-full object-cover"
@@ -790,7 +853,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     <span className="text-xs font-bold text-black dark:text-white">Main Image</span>
                   </div>
                   <button
-                    onClick={() => removeImage(images[0].id)}
+                    onClick={() => {
+                      removeImage(images[0].id);
+                    }}
                     className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-black/5 bg-white text-red-500 opacity-0 shadow-sm transition-transform group-hover:opacity-100 hover:scale-110 dark:border-white/5 dark:bg-black"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -812,13 +877,19 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       <div
                         key={img.id}
                         draggable
-                        onDragStart={(e) => handleDragStart(e, actualIndex)}
+                        onDragStart={(e) => {
+                          handleDragStart(e, actualIndex);
+                        }}
                         onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, actualIndex)}
+                        onDrop={(e) => {
+                          handleDrop(e, actualIndex);
+                        }}
                         onDragEnd={handleDragEnd}
                         className={`group relative aspect-[3/4] cursor-move overflow-hidden rounded-xl border border-black/5 bg-black/5 transition-all dark:border-white/5 dark:bg-white/5 ${draggedIndex === actualIndex ? 'scale-95 border-black/20 opacity-50 dark:border-white/20' : ''}`}
                       >
-                        <Image width={500} height={500}
+                        <Image
+                          width={500}
+                          height={500}
                           src={img.url}
                           alt={`Preview ${actualIndex}`}
                           className="pointer-events-none h-full w-full object-cover"
@@ -828,7 +899,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         <div className="pointer-events-auto absolute top-1.5 left-1.5 flex items-center overflow-hidden rounded-md bg-black/60 shadow-sm backdrop-blur-md">
                           <select
                             value={actualIndex}
-                            onChange={(e) => handleReorder(actualIndex, parseInt(e.target.value))}
+                            onChange={(e) => {
+                              handleReorder(actualIndex, parseInt(e.target.value));
+                            }}
                             className="cursor-pointer appearance-none bg-transparent px-1.5 py-0.5 text-center text-[10px] font-bold text-white outline-none"
                             style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                           >
@@ -846,7 +919,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
                         {/* Remove button */}
                         <button
-                          onClick={() => removeImage(img.id)}
+                          onClick={() => {
+                            removeImage(img.id);
+                          }}
                           className="absolute top-1.5 right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-black/5 bg-white text-red-500 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 dark:border-white/5 dark:bg-black"
                         >
                           <svg
@@ -909,9 +984,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   {!isPlaying ? (
                     <div
                       className="relative h-full w-full cursor-pointer"
-                      onClick={() => setIsPlaying(true)}
+                      onClick={() => {
+                        setIsPlaying(true);
+                      }}
                     >
-                      <Image width={500} height={500}
+                      <Image
+                        width={500}
+                        height={500}
                         src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
                         alt="Video Thumbnail"
                         className="h-full w-full object-cover"
@@ -931,12 +1010,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   ) : (
                     <iframe
                       className="absolute top-1/2 left-0 aspect-[9/16] w-full -translate-y-1/2"
+                      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                       src={embedUrl || ''}
                       title="YouTube Shorts player"
+                      // eslint-disable-next-line @typescript-eslint/no-deprecated
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
-                    ></iframe>
+                    />
                   )}
                 </div>
               )}

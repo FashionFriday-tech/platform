@@ -1,18 +1,20 @@
 'use client';
 
 import React from 'react';
-import { motion, Variants } from 'motion/react';
+
+import { motion, type Variants } from 'motion/react';
+
 import { AnalyticsStats } from './AnalyticsStats';
-import { RevenueChart } from './RevenueChart';
-import { ConversionGauge } from './ConversionGauge';
-import { RegionalOrdersMap } from './RegionalOrdersMap';
-import { CustomerActivityRadial } from './CustomerActivityRadial';
+import { AOVTrendChart } from './AOVTrendChart';
 import { CategoryDistribution } from './CategoryDistribution';
+import { ConversionGauge } from './ConversionGauge';
+import { CustomerActivityRadial } from './CustomerActivityRadial';
+import { CustomerRetentionHeatmap } from './CustomerRetentionHeatmap';
+import { RealtimeOrderTicker } from './RealtimeOrderTicker';
+import { RegionalOrdersMap } from './RegionalOrdersMap';
+import { RevenueChart } from './RevenueChart';
 import { TopProductsChart } from './TopProductsChart';
 import { TrafficSourcesFunnel } from './TrafficSourcesFunnel';
-import { RealtimeOrderTicker } from './RealtimeOrderTicker';
-import { CustomerRetentionHeatmap } from './CustomerRetentionHeatmap';
-import { AOVTrendChart } from './AOVTrendChart';
 
 export function AnalyticsView() {
   const container: Variants = {
@@ -38,10 +40,8 @@ export function AnalyticsView() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="flex w-full flex-col gap-6 pb-12 px-6 pt-2"
+        className="flex w-full flex-col gap-6 px-6 pt-2 pb-12"
       >
-    
-
         {/* ──── KPI Cards ──── */}
         <motion.div variants={item}>
           <AnalyticsStats />
@@ -61,7 +61,7 @@ export function AnalyticsView() {
         <motion.div variants={item} className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="h-1 w-6 rounded-full bg-[#6a4fbb]" />
-            <span className="text-xs font-bold uppercase tracking-widest text-black/30 dark:text-white/30">
+            <span className="text-xs font-bold tracking-widest text-black/30 uppercase dark:text-white/30">
               Geographic Insights
             </span>
           </div>
@@ -88,7 +88,7 @@ export function AnalyticsView() {
         <motion.div variants={item} className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="h-1 w-6 rounded-full bg-[#ec4899]" />
-            <span className="text-xs font-bold uppercase tracking-widest text-black/30 dark:text-white/30">
+            <span className="text-xs font-bold tracking-widest text-black/30 uppercase dark:text-white/30">
               Product & Retention
             </span>
           </div>
@@ -115,7 +115,7 @@ export function AnalyticsView() {
               <div className="absolute h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
             </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-black/30 dark:text-white/30">
+            <span className="text-xs font-bold tracking-widest text-black/30 uppercase dark:text-white/30">
               Live Activity
             </span>
           </div>

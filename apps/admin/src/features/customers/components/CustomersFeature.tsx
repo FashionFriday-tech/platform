@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { CustomersFilterBar } from './CustomersFilterBar';
-import { CustomerStats } from './CustomerStats';
-import { CustomersTable } from './CustomersTable';
+
+import { AnimatePresence, motion } from 'motion/react';
+
 import { useCustomers } from '../hooks/useCustomers';
+import { CustomersFilterBar } from './CustomersFilterBar';
+import { CustomersTable } from './CustomersTable';
+import { CustomerStats } from './CustomerStats';
 
 export default function CustomersFeature() {
   const {
@@ -45,7 +47,7 @@ export default function CustomersFeature() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="flex-1 min-h-0 overflow-hidden flex flex-col"
+            className="flex min-h-0 flex-1 flex-col overflow-hidden"
           >
             <CustomersTable
               customers={customers}

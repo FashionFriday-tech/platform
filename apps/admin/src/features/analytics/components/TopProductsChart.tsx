@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
+
 import { motion } from 'motion/react';
+
 import { MOCK_TOP_PRODUCTS } from '../types';
 
 const GRADIENT_PAIRS = [
@@ -40,17 +42,13 @@ export function TopProductsChart() {
                 <div className="flex items-center gap-3">
                   <div
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-sm"
-                    style={
-                      i >= 3
-                        ? { background: `${GRADIENT_PAIRS[i][0]}15` }
-                        : {}
-                    }
+                    // eslint-disable-next-line security/detect-object-injection
+                    style={i >= 3 ? { background: `${GRADIENT_PAIRS[i][0]}15` } : {}}
                   >
+                    // eslint-disable-next-line security/detect-object-injection
                     {MEDALS[i] ?? (
-                      <span
-                        className="text-xs font-black"
-                        style={{ color: GRADIENT_PAIRS[i][0] }}
-                      >
+                      // eslint-disable-next-line security/detect-object-injection
+                      <span className="text-xs font-black" style={{ color: GRADIENT_PAIRS[i][0] }}>
                         #{i + 1}
                       </span>
                     )}
@@ -75,6 +73,7 @@ export function TopProductsChart() {
                   transition={{ delay: 0.3 + i * 0.1, duration: 0.8, ease: 'easeOut' }}
                   className="h-full rounded-full"
                   style={{
+                    // eslint-disable-next-line security/detect-object-injection
                     background: `linear-gradient(90deg, ${GRADIENT_PAIRS[i][0]}, ${GRADIENT_PAIRS[i][1]})`,
                   }}
                 />

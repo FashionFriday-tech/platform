@@ -1,4 +1,4 @@
-import { Customer } from '../types';
+import { type Customer } from '../types';
 
 export const mockCustomers: Customer[] = [
   {
@@ -9,7 +9,7 @@ export const mockCustomers: Customer[] = [
     avatar: 'https://i.pravatar.cc/150?u=emily',
     status: 'active',
     ordersCount: 12,
-    totalSpent: 45999.00,
+    totalSpent: 45999.0,
     joinDate: '2025-08-14T10:30:00Z',
     lastOrderDate: '2026-04-22T14:20:00Z',
   },
@@ -21,7 +21,7 @@ export const mockCustomers: Customer[] = [
     avatar: 'https://i.pravatar.cc/150?u=michael',
     status: 'active',
     ordersCount: 5,
-    totalSpent: 12450.50,
+    totalSpent: 12450.5,
     joinDate: '2025-11-02T09:15:00Z',
     lastOrderDate: '2026-05-01T11:45:00Z',
   },
@@ -33,7 +33,7 @@ export const mockCustomers: Customer[] = [
     avatar: 'https://i.pravatar.cc/150?u=sarah',
     status: 'blocked',
     ordersCount: 2,
-    totalSpent: 3200.00,
+    totalSpent: 3200.0,
     joinDate: '2026-01-15T16:45:00Z',
     lastOrderDate: '2026-02-10T08:30:00Z',
   },
@@ -45,7 +45,7 @@ export const mockCustomers: Customer[] = [
     avatar: 'https://i.pravatar.cc/150?u=david',
     status: 'active',
     ordersCount: 28,
-    totalSpent: 184500.00,
+    totalSpent: 184500.0,
     joinDate: '2024-03-22T11:00:00Z',
     lastOrderDate: '2026-05-03T09:20:00Z',
   },
@@ -57,7 +57,7 @@ export const mockCustomers: Customer[] = [
     avatar: 'https://i.pravatar.cc/150?u=aisha',
     status: 'active',
     ordersCount: 7,
-    totalSpent: 28600.00,
+    totalSpent: 28600.0,
     joinDate: '2025-06-18T14:10:00Z',
     lastOrderDate: '2026-03-15T16:55:00Z',
   },
@@ -72,5 +72,5 @@ export const mockCustomers: Customer[] = [
     totalSpent: 0,
     joinDate: '2026-06-01T09:00:00Z',
     lastOrderDate: '',
-  }
+  },
 ];

@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+
+import { AnimatePresence, motion } from 'motion/react';
+
 import { MOCK_REALTIME_ORDERS } from '../types';
 
 export function RealtimeOrderTicker() {
@@ -21,14 +23,21 @@ export function RealtimeOrderTicker() {
         return newOrders;
       });
     }, 4000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
     if (visibleOrders[0]) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHighlightId(visibleOrders[0].id);
-      const timer = setTimeout(() => setHighlightId(null), 1500);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => {
+        setHighlightId(null);
+      }, 1500);
+      return () => {
+        clearTimeout(timer);
+      };
     }
   }, [visibleOrders]);
 

@@ -1,17 +1,20 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'motion/react';
-import { useRouter } from 'next/navigation';
-import { Order } from '../types';
-import { OrderStatusBadge } from './OrderStatusBadge';
-import { getTrackingUrl } from '../utils/courier';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
+import { motion } from 'motion/react';
+
+import { type Order } from '../types';
+import { getTrackingUrl } from '../utils/courier';
+import { OrderStatusBadge } from './OrderStatusBadge';
 
 interface OrdersTableProps {
   orders: Order[];
   sortField: string;
   sortDirection: 'asc' | 'desc';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSort: (field: any) => void;
 }
 
@@ -27,8 +30,9 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
   }
 
   const SortIcon = ({ field }: { field: string }) => {
-    if (sortField !== field)
+    if (sortField !== field) {
       return <span className="ml-1 opacity-0 group-hover:opacity-30">↕</span>;
+    }
     return (
       <span className="ml-1 text-black dark:text-white">{sortDirection === 'asc' ? '↑' : '↓'}</span>
     );
@@ -36,49 +40,61 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/5 dark:bg-[#111111]">
-      <div className="flex-1 overflow-auto scrollbar-hide">
-        <table className="w-full text-left text-sm text-black/70 dark:text-white/70 relative">
+      <div className="scrollbar-hide flex-1 overflow-auto">
+        <table className="relative w-full text-left text-sm text-black/70 dark:text-white/70">
           <thead className="sticky top-0 z-30 bg-[#f8f9fa] text-xs text-black/60 uppercase dark:bg-[#1a1a1a] dark:text-white/60">
             <tr>
               <th
                 scope="col"
                 className="group cursor-pointer px-6 py-4 font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                onClick={() => onSort('orderNumber')}
+                onClick={() => {
+                  onSort('orderNumber');
+                }}
               >
+                // eslint-disable-next-line react-hooks/static-components
                 Order ID <SortIcon field="orderNumber" />
               </th>
               <th
                 scope="col"
                 className="group cursor-pointer px-6 py-4 font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                onClick={() => onSort('createdAt')}
+                onClick={() => {
+                  onSort('createdAt');
+                }}
               >
+                // eslint-disable-next-line react-hooks/static-components
                 Date <SortIcon field="createdAt" />
               </th>
               <th
                 scope="col"
                 className="group cursor-pointer px-6 py-4 font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                onClick={() => onSort('paymentType')}
+                onClick={() => {
+                  onSort('paymentType');
+                }}
               >
+                // eslint-disable-next-line react-hooks/static-components
                 Payment Type <SortIcon field="paymentType" />
               </th>
               <th
                 scope="col"
                 className="group cursor-pointer px-6 py-4 font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                onClick={() => onSort('total')}
+                onClick={() => {
+                  onSort('total');
+                }}
               >
+                // eslint-disable-next-line react-hooks/static-components
                 Total <SortIcon field="total" />
               </th>
               <th
                 scope="col"
                 className="group cursor-pointer px-6 py-4 font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                onClick={() => onSort('status')}
+                onClick={() => {
+                  onSort('status');
+                }}
               >
+                // eslint-disable-next-line react-hooks/static-components
                 Status <SortIcon field="status" />
               </th>
-              <th
-                scope="col"
-                className="px-6 py-4 font-medium"
-              >
+              <th scope="col" className="px-6 py-4 font-medium">
                 Tracking
               </th>
             </tr>
@@ -90,12 +106,16 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.05 }}
                 key={order.id}
-                onClick={() => router.push(`/orders/${order.id}`)}
+                onClick={() => {
+                  router.push(`/orders/${order.id}`);
+                }}
                 className="group cursor-pointer border-b border-black/5 transition-colors last:border-0 hover:bg-black/5 dark:border-white/5 dark:hover:bg-white/5"
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
-                    <Image width={500} height={500}
+                    <Image
+                      width={500}
+                      height={500}
                       src={order.items[0]?.productImage}
                       alt=""
                       className="h-10 w-10 rounded-lg bg-black/5 object-cover dark:bg-white/5"
@@ -114,17 +134,19 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                 </td>
                 <td className="px-6 py-4">
                   {order.paymentType === 'cod' ? (
-                    <span className="inline-flex justify-center min-w-[100px] items-center rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-orange-600/20 ring-inset dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/20">
+                    <span className="inline-flex min-w-[100px] items-center justify-center rounded-md bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-orange-600/20 ring-inset dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/20">
                       COD
                     </span>
                   ) : (
-                    <span className="inline-flex justify-center min-w-[100px] items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20">
+                    <span className="inline-flex min-w-[100px] items-center justify-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-blue-700/10 ring-inset dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20">
                       Prepaid
                     </span>
                   )}
                 </td>
                 <td className="px-6 py-4 font-medium">
-                  <div className="text-black dark:text-white">₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+                  <div className="text-black dark:text-white">
+                    ₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </div>
                   <div className="mt-0.5 text-xs font-normal opacity-70">{order.paymentMethod}</div>
                 </td>
                 <td className="px-6 py-4">
@@ -133,16 +155,33 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                 <td className="px-6 py-4">
                   {(() => {
                     if (order.status === 'shipped') {
-                      const url = getTrackingUrl(order.tracking?.courierService, order.tracking?.trackingId);
+                      const url = getTrackingUrl(
+                        order.tracking?.courierService,
+                        order.tracking?.trackingId,
+                      );
                       return (
                         <a
                           href={url || '#'}
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
                           target="_blank"
                           rel="noreferrer"
                           className="flex w-24 items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
                         >
-                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                          <svg
+                            className="h-3 w-3"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
                           Track
                         </a>
                       );

@@ -1,20 +1,21 @@
 'use client';
 
 import React from 'react';
+
+import { ActivityIcon, PackageIcon, ShoppingBagIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
-import { ActivityIcon, ShoppingBagIcon, PackageIcon, UsersIcon } from '@ff/ui';
-import { StatCard } from './StatCard';
-import { QuickActions } from './QuickActions';
-import { ActivityFeed } from './ActivityFeed';
+
 import { useDashboard } from '../hooks/useDashboard';
+import { ActivityFeed } from './ActivityFeed';
+import { QuickActions } from './QuickActions';
+import { StatCard } from './StatCard';
 
 export function DashboardView() {
   const { user, hasAccess, container, item } = useDashboard();
 
   return (
-    <div className="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden px-6 pb-12 pt-6 scrollbar-hide">
-      
-      <motion.div 
+    <div className="scrollbar-hide flex h-full w-full flex-col overflow-x-hidden overflow-y-auto px-6 pt-6 pb-12">
+      <motion.div
         variants={container}
         initial="hidden"
         animate="show"
@@ -31,7 +32,10 @@ export function DashboardView() {
         </motion.div>
 
         {/* Stats Grid */}
-        <motion.div variants={item} className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <motion.div
+          variants={item}
+          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+        >
           {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
             <StatCard
               title="Total Sales"
@@ -92,7 +96,6 @@ export function DashboardView() {
             <QuickActions />
           </motion.div>
         </div>
-
       </motion.div>
     </div>
   );
