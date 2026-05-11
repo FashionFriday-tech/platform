@@ -1,19 +1,21 @@
+// eslint-disable-next-line unicorn/filename-case
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
+
 import { mockReviews } from '../services/mock-reviews';
-import { Review } from '../types';
+import { type Review } from '../types';
 
 export function useReviews() {
   const [reviews, setReviews] = useState<Review[]>(mockReviews);
   const [sortField, setSortField] = useState<string>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [ratingFilter, setRatingFilter] = useState<number | 'all'>('all');
   const [verifiedFilter, setVerifiedFilter] = useState<'all' | 'verified' | 'unverified'>('all');
   const [featuredFilter, setFeaturedFilter] = useState<'all' | 'featured' | 'unfeatured'>('all');
-  
+
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
 
   const ratingOptions = [
@@ -51,21 +53,15 @@ export function useReviews() {
   };
 
   const handleToggleVerified = (reviewId: string) => {
-    setReviews(reviews.map((r) => 
-      r.id === reviewId ? { ...r, isVerified: !r.isVerified } : r
-    ));
+    setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, isVerified: !r.isVerified } : r)));
   };
 
   const handleToggleFeatured = (reviewId: string) => {
-    setReviews(reviews.map((r) => 
-      r.id === reviewId ? { ...r, isFeatured: !r.isFeatured } : r
-    ));
+    setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, isFeatured: !r.isFeatured } : r)));
   };
 
   const handleEditSave = (reviewId: string, newComment: string) => {
-    setReviews(reviews.map((r) => 
-      r.id === reviewId ? { ...r, comment: newComment } : r
-    ));
+    setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, comment: newComment } : r)));
   };
 
   const filteredAndSortedReviews = useMemo(() => {
@@ -73,36 +69,53 @@ export function useReviews() {
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(r => 
-        r.productName.toLowerCase().includes(q) || 
-        r.comment.toLowerCase().includes(q)
+      result = result.filter(
+        (r) => r.productName.toLowerCase().includes(q) || r.comment.toLowerCase().includes(q),
       );
     }
 
     if (ratingFilter !== 'all') {
-      result = result.filter(r => r.rating === Number(ratingFilter));
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
+      result = result.filter((r) => r.rating === Number(ratingFilter));
     }
 
-    if (verifiedFilter === 'verified') result = result.filter(r => r.isVerified);
-    if (verifiedFilter === 'unverified') result = result.filter(r => !r.isVerified);
-    
-    if (featuredFilter === 'featured') result = result.filter(r => r.isFeatured);
-    if (featuredFilter === 'unfeatured') result = result.filter(r => !r.isFeatured);
+    if (verifiedFilter === 'verified') {
+      result = result.filter((r) => r.isVerified);
+    }
+    if (verifiedFilter === 'unverified') {
+      result = result.filter((r) => !r.isVerified);
+    }
+
+    if (featuredFilter === 'featured') {
+      result = result.filter((r) => r.isFeatured);
+    }
+    if (featuredFilter === 'unfeatured') {
+      result = result.filter((r) => !r.isFeatured);
+    }
 
     return result.sort((a, b) => {
       if (sortField === 'rating') {
         return sortDirection === 'asc' ? a.rating - b.rating : b.rating - a.rating;
       }
       if (sortField === 'date') {
-        return sortDirection === 'asc' 
+        return sortDirection === 'asc'
           ? new Date(a.date).getTime() - new Date(b.date).getTime()
           : new Date(b.date).getTime() - new Date(a.date).getTime();
       }
       return 0;
     });
-  }, [reviews, searchQuery, ratingFilter, verifiedFilter, featuredFilter, sortField, sortDirection]);
+  }, [
+    reviews,
+    searchQuery,
+    ratingFilter,
+    verifiedFilter,
+    featuredFilter,
+    sortField,
+    sortDirection,
+  ]);
 
-  const editingReview = reviews.find(r => r.id === editingReviewId) || null;
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const editingReview = reviews.find((r) => r.id === editingReviewId) || null;
 
   return {
     reviews,
