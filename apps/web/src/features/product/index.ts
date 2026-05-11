@@ -1,12 +1,12 @@
 export { default as CTAStickyButtons } from './components/cta-sticky-buttons';
-export { reviews } from './data/reviews';
 export { default as EditorialError } from './components/editorial-error';
 export { default as Gallery } from './components/gallery';
 export { default } from './components/product-page-master';
 export { default as ProductPerks } from './components/product-perks';
 export { default as RelatedProducts } from './components/related-products';
 export { default as ReviewSection } from './components/review-section';
-export { getGlobalSlot, getPageSlot } from './utils/time';
-export { useLiveProductMetric } from './hooks/use-live-product-metric';
 export { default as VariantDropdown } from './components/variant-dropdown';
+export { reviews } from './data/reviews';
+export { useLiveProductMetric } from './hooks/use-live-product-metric';
+export { getGlobalSlot, getPageSlot } from './utils/time';
 export { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
