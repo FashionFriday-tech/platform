@@ -1,7 +1,8 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import type { SendOtpResponse, VerifyOtpResponse, SignupResponse } from '@/lib/api-client';
+
+import type { SendOtpResponse, SignupResponse, VerifyOtpResponse } from '@/lib/api-client';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -27,7 +28,7 @@ async function setAuthCookies(accessToken: string, refreshToken: string) {
   });
 }
 
-async function getAuthHeaders(): Promise<HeadersInit> {
+async function getAuthHeaders(): Promise<Record<string, string>> {
   const cookieStore = await cookies();
   const token = cookieStore.get('accessToken')?.value;
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -35,14 +36,22 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 
 // Function to handle authenticated requests, including refresh token logic
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
-  let headers = await getAuthHeaders();
+  let authHeaders = await getAuthHeaders();
+
+  const buildHeaders = (baseAuthHeaders: Record<string, string>) => {
+    const h = new Headers(options.headers);
+    if (!h.has('Content-Type')) {
+      h.set('Content-Type', 'application/json');
+    }
+    for (const [key, value] of Object.entries(baseAuthHeaders)) {
+      h.set(key, value);
+    }
+    return h;
+  };
+
   let response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers,
-      ...options.headers,
-    },
+    headers: buildHeaders(authHeaders),
   });
 
   if (response.status === 401) {
@@ -64,14 +73,10 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
         await setAuthCookies(data.accessToken, data.refreshToken);
 
         // Retry original request
-        headers = await getAuthHeaders();
+        authHeaders = await getAuthHeaders();
         response = await fetch(`${API_URL}${endpoint}`, {
           ...options,
-          headers: {
-            'Content-Type': 'application/json',
-            ...headers,
-            ...options.headers,
-          },
+          headers: buildHeaders(authHeaders),
         });
       } else {
         // Refresh failed, clear cookies
@@ -213,8 +218,8 @@ export async function deleteAccountAction(): Promise<{ success: boolean; message
 export async function logoutAction(): Promise<{ success: boolean; message: string }> {
   try {
     // Attempt backend logout, but don't fail if it doesn't work
-    await fetchWithAuth('/auth/logout', { method: 'POST' }).catch(() => {});
-  } catch (error) {
+    await fetchWithAuth('/auth/logout', { method: 'POST' });
+  } catch (_error) {
     // Ignore server error for logout
   }
 
