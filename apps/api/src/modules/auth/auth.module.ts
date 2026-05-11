@@ -18,7 +18,7 @@ import { RefreshTokenStrategy } from './strategies/refresh.strategy';
       useFactory: (configService: ConfigService): JwtModuleOptions => ({
         secret: configService.get<string>('JWT_SECRET', 'super-secret-default-key'),
         signOptions: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           expiresIn: configService.get<string>('JWT_EXPIRES_IN', '30d') as any,
         },
       }),
