@@ -37,7 +37,7 @@ export function GiftCardsPage() {
     }
   };
 
-  const handleSubmitClaim = (e: React.FormEvent) => {
+  const handleSubmitClaim = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const performSubmit = async () => {
