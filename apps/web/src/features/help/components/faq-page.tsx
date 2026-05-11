@@ -38,7 +38,7 @@ export function FaqPage() {
 
   const categories = ['All', 'Shipping', 'Orders', 'Returns', 'Sizing', 'Partnerships'];
 
-  const handleGmailRedirect = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleGmailRedirect = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const question = formData.get('question') as string;
