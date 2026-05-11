@@ -28,7 +28,7 @@ export function OrdersPage() {
                 label={tab === 'shipping' ? 'Shipping' : tab.charAt(0).toUpperCase() + tab.slice(1)}
                 count={tab !== 'canceled' ? getCount(tab as OrderStatus) : undefined}
                 onClick={() => {
-                  setActiveTab(tab as OrderStatus);
+                  setActiveTab(tab);
                 }}
               />
             ))}
