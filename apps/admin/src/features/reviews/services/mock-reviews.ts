@@ -1,4 +1,4 @@
-import { Review } from '../types';
+import { type Review } from '../types';
 
 export const mockReviews: Review[] = [
   {
@@ -54,7 +54,8 @@ export const mockReviews: Review[] = [
     productName: 'Heavyweight Hoodie',
     productImage: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&q=80',
     rating: 5,
-    comment: 'The perfect hoodie for winter. Thick, cozy, and the drop shoulder is exactly what I wanted.',
+    comment:
+      'The perfect hoodie for winter. Thick, cozy, and the drop shoulder is exactly what I wanted.',
     date: '2026-05-15T08:20:00Z',
     isVerified: true,
   },
@@ -79,5 +80,5 @@ export const mockReviews: Review[] = [
     comment: 'Amazing texture and it fits perfectly. Worth every penny.',
     date: '2026-05-28T12:00:00Z',
     isVerified: true,
-  }
+  },
 ];
