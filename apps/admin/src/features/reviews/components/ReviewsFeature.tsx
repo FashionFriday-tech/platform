@@ -1,12 +1,13 @@
 'use client';
 
-import { motion, AnimatePresence } from 'motion/react';
-import { ReviewStats } from './ReviewStats';
-import { ReviewsTable } from './ReviewsTable';
-import { EditReviewModal } from './EditReviewModal';
 import { SearchIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
+
 import { CustomSelect } from '../../../components/ui/CustomSelect';
 import { useReviews } from '../hooks/useReviews';
+import { EditReviewModal } from './EditReviewModal';
+import { ReviewsTable } from './ReviewsTable';
+import { ReviewStats } from './ReviewStats';
 
 export default function ReviewsFeature() {
   const {
@@ -54,7 +55,9 @@ export default function ReviewsFeature() {
               type="text"
               placeholder="Search by product or comment..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
               className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
             />
           </div>
@@ -63,22 +66,30 @@ export default function ReviewsFeature() {
             <CustomSelect
               options={verifiedOptions}
               value={verifiedFilter}
-              onChange={(val) => setVerifiedFilter(val as any)}
-              className="w-40 z-50"
+              onChange={(val) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+                setVerifiedFilter(val as any);
+              }}
+              className="z-50 w-40"
             />
 
             <CustomSelect
               options={featuredOptions}
               value={featuredFilter}
-              onChange={(val) => setFeaturedFilter(val as any)}
-              className="w-36 z-50"
+              onChange={(val) => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+                setFeaturedFilter(val as any);
+              }}
+              className="z-50 w-36"
             />
 
             <CustomSelect
               options={ratingOptions}
               value={ratingFilter.toString()}
-              onChange={(val) => setRatingFilter(val === 'all' ? 'all' : Number(val))}
-              className="w-36 z-50"
+              onChange={(val) => {
+                setRatingFilter(val === 'all' ? 'all' : Number(val));
+              }}
+              className="z-50 w-36"
             />
           </div>
         </motion.div>
@@ -90,9 +101,9 @@ export default function ReviewsFeature() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="flex-1 min-h-0 overflow-hidden flex flex-col"
+            className="flex min-h-0 flex-1 flex-col overflow-hidden"
           >
-            <ReviewsTable 
+            <ReviewsTable
               reviews={filteredAndSortedReviews}
               sortField={sortField}
               sortDirection={sortDirection}
@@ -100,15 +111,19 @@ export default function ReviewsFeature() {
               onDelete={handleDelete}
               onToggleVerified={handleToggleVerified}
               onToggleFeatured={handleToggleFeatured}
-              onEditReview={(id) => setEditingReviewId(id)}
+              onEditReview={(id) => {
+                setEditingReviewId(id);
+              }}
             />
           </motion.div>
         </AnimatePresence>
       </div>
 
-      <EditReviewModal 
+      <EditReviewModal
         isOpen={!!editingReview}
-        onClose={() => setEditingReviewId(null)}
+        onClose={() => {
+          setEditingReviewId(null);
+        }}
         review={editingReview}
         onSave={handleEditSave}
       />
