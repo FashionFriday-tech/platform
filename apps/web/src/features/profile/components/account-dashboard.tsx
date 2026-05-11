@@ -2,11 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { HeartIcon, HistoryIcon, LoaderIcon, ShieldCheckIcon, StarIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
-import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 
 import { ActivityItem } from './activity-item';
@@ -23,7 +23,7 @@ export function AccountDashboard() {
       await logout();
       router.replace('/');
       toast.success('Logged out successfully');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to logout');
     }
   };
