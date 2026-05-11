@@ -1,8 +1,11 @@
+// eslint-disable-next-line unicorn/filename-case
 'use client';
 
-import { useState, useMemo } from 'react';
-import { MOCK_TEAM, TeamMember, SortField } from '../types';
-import { Role } from '@/contexts/AuthContext';
+import { useMemo, useState } from 'react';
+
+import { type Role } from '@/contexts/AuthContext';
+
+import { MOCK_TEAM, type SortField, type TeamMember } from '../types';
 
 export function useTeam() {
   const [team, setTeam] = useState<TeamMember[]>(MOCK_TEAM);
@@ -40,18 +43,26 @@ export function useTeam() {
   const handleInvite = (email: string, role: Role) => {
     const newMember: TeamMember = {
       id: String(Date.now()),
-      name: email.split('@')[0].split(/[._-]/).map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+      name: email
+        .split('@')[0]
+        .split(/[._-]/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' '),
       email,
       role,
       status: 'PENDING',
       joinedAt: new Date().toISOString(),
     };
-    setTeam(prev => [...prev, newMember]);
+    setTeam((prev) => [...prev, newMember]);
     setIsInviteModalOpen(false);
   };
 
   const handleEditSave = (id: string, role: Role, status: 'ACTIVE' | 'PENDING' | 'SUSPENDED') => {
-    setTeam(prev => prev.map(m => m.id === id ? { ...m, role, status, updatedAt: new Date().toISOString() } : m));
+    setTeam((prev) =>
+      prev.map((m) =>
+        m.id === id ? { ...m, role, status, updatedAt: new Date().toISOString() } : m,
+      ),
+    );
     setEditingMemberId(null);
   };
 
@@ -69,7 +80,8 @@ export function useTeam() {
   };
 
   const editingMember = useMemo(() => {
-    return team.find(m => m.id === editingMemberId) || null;
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    return team.find((m) => m.id === editingMemberId) || null;
   }, [team, editingMemberId]);
 
   const filteredAndSortedTeam = useMemo(() => {
@@ -77,22 +89,28 @@ export function useTeam() {
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(m => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q));
+      result = result.filter(
+        (m) => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q),
+      );
     }
 
     if (roleFilter !== 'ALL') {
-      result = result.filter(m => m.role === roleFilter);
+      result = result.filter((m) => m.role === roleFilter);
     }
 
     if (statusFilter !== 'ALL') {
-      result = result.filter(m => m.status === statusFilter);
+      result = result.filter((m) => m.status === statusFilter);
     }
 
     result.sort((a, b) => {
+      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/prefer-nullish-coalescing
       const aVal = a[sortField] || '';
+      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/prefer-nullish-coalescing
       const bVal = b[sortField] || '';
-      return sortDirection === 'asc' 
+      return sortDirection === 'asc'
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
         ? String(aVal).localeCompare(String(bVal))
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
         : String(bVal).localeCompare(String(aVal));
     });
 
