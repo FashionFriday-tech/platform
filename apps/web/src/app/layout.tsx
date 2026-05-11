@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import { Header } from '@/components/layout/Header';
-import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 import { StoreInitializer } from '@/components/layout/StoreInitializer';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
 import { ThemeProvider } from './providers/theme-provider';
 
