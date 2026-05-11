@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
-import { useAuthStore } from '@/store/auth-store';
 import {
   sendOtpAction,
-  verifyOtpAction,
   signupAction,
+  verifyOtpAction,
 } from '@/features/auth/services/auth.actions';
+import { useAuthStore } from '@/store/auth-store';
 
 export type AuthStep = 'PHONE' | 'OTP' | 'PROFILE';
 
