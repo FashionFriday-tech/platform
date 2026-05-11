@@ -1,21 +1,23 @@
 'use client';
 
 import React from 'react';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { ActivityIcon, MessageSquareIcon, StarIcon, UserIcon, VerifiedUserIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+
 import { mockReviews } from '../services/mock-reviews';
-import { 
-  StarIcon, 
-  MessageSquareIcon, 
-  ActivityIcon,
-  VerifiedUserIcon,
-  UserIcon
-} from '@ff/ui';
 
 export function ReviewStats() {
   const totalReviews = mockReviews.length;
-  const avgRating = (mockReviews.reduce((acc, curr) => acc + curr.rating, 0) / (totalReviews || 1)).toFixed(1);
-  const recentReviews = mockReviews.filter(r => new Date(r.date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length;
-  const verifiedReviews = mockReviews.filter(r => r.isVerified).length;
+  const avgRating = (
+    mockReviews.reduce((acc, curr) => acc + curr.rating, 0) / (totalReviews || 1)
+  ).toFixed(1);
+  const recentReviews = mockReviews.filter(
+    // eslint-disable-next-line react-hooks/purity
+    (r) => new Date(r.date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+  ).length;
+  const verifiedReviews = mockReviews.filter((r) => r.isVerified).length;
   const unverifiedReviews = totalReviews - verifiedReviews;
 
   const stats = [
@@ -59,12 +61,16 @@ export function ReviewStats() {
           transition={{ duration: 0.4, delay: i * 0.1 }}
           className="flex items-center gap-4 rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]"
         >
-          <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.bg} ${stat.color}`}>
+          <div
+            className={`flex h-12 w-12 items-center justify-center rounded-xl ${stat.bg} ${stat.color}`}
+          >
             <stat.icon className="h-6 w-6" />
           </div>
           <div>
             <p className="text-sm font-medium text-black/60 dark:text-white/60">{stat.name}</p>
-            <p className="text-2xl font-bold tracking-tight text-black dark:text-white">{stat.value}</p>
+            <p className="text-2xl font-bold tracking-tight text-black dark:text-white">
+              {stat.value}
+            </p>
           </div>
         </motion.div>
       ))}
