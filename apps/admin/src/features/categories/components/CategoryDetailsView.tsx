@@ -27,7 +27,6 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     const initialProducts = mockProducts
       .filter((p) => parseInt(p.id.replace(/\D/g, '')) % 2 === (category.gender === 'Men' ? 0 : 1))
       .slice(0, 10);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCategoryProducts(initialProducts);
   }, [category.gender]);
 
@@ -54,10 +53,8 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     return categoryProducts.filter((p) => {
       const matchesSearch =
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         p.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
         (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -149,7 +146,6 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                     <div
                       key={status}
                       onClick={() => {
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                         setStatusFilter(status as any);
                       }}
                       className={`cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors ${statusFilter === status ? 'bg-black/5 font-semibold text-black dark:bg-white/10 dark:text-white' : 'text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/10'}`}
