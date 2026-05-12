@@ -1,11 +1,7 @@
-// eslint-disable-next-line unicorn/filename-case
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import { useState } from 'react';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ActivityType, MOCK_ACTIVITY_LOG } from '../types';
 
 export function useActivityLog() {
