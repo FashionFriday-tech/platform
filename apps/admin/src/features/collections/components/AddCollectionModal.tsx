@@ -16,7 +16,6 @@ export function AddCollectionModal({ isOpen, onClose, onSave }: AddCollectionMod
 
   React.useEffect(() => {
     if (isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName('');
       setImageUrl('');
     }
@@ -113,7 +112,6 @@ export function AddCollectionModal({ isOpen, onClose, onSave }: AddCollectionMod
                   type="file"
                   accept="image/*"
                   onChange={(e) => {
-                    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain, @typescript-eslint/no-unnecessary-condition
                     if (e.target.files && e.target.files[0]) {
                       setImageUrl(URL.createObjectURL(e.target.files[0]));
                     }
