@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 
 import {
   Area,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   AreaChart,
   CartesianGrid,
   ComposedChart,
@@ -24,7 +23,6 @@ const RANGE_OPTIONS = [
 
 export function RevenueChart() {
   const [activeRange, setActiveRange] = useState(0);
-  // eslint-disable-next-line security/detect-object-injection
   const data = RANGE_OPTIONS[activeRange].data;
 
   // Calculate summary metrics
