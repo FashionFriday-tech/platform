@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useEffect, useState } from 'react';
 
 import { type Brand, type BrandCategory } from '@ff/schemas';
@@ -18,7 +17,6 @@ export function useAddBrandModal({ initialData, isOpen, onClose, onSave }: UseAd
 
   useEffect(() => {
     if (initialData && isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(initialData.name);
       setColor(initialData.color);
       setLogoUrl(initialData.logo);
@@ -32,7 +30,6 @@ export function useAddBrandModal({ initialData, isOpen, onClose, onSave }: UseAd
         streetwear: 'clothing',
         sportswear: 'clothing',
       };
-      // eslint-disable-next-line security/detect-object-injection
       const mapped = initialData.categories.map((c) => categoryMap[c] || c);
       setCategories([...new Set(mapped)] as BrandCategory[]);
     } else if (isOpen) {
