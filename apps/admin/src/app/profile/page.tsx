@@ -11,13 +11,8 @@ export default function ProfilePage() {
     return null;
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [isEditingName, setIsEditingName] = useState(false);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [editName, setEditName] = useState(user.name);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarClick = () => {
@@ -105,11 +100,9 @@ export default function ProfilePage() {
                     <input
                       type="text"
                       value={editName}
-                      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
                       onChange={(e) => {
                         setEditName(e.target.value);
                       }}
-                      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
                       onKeyDown={(e) => e.key === 'Enter' && saveName()}
                       className="rounded-xl border border-black/20 bg-white/50 px-4 py-2 text-3xl font-extrabold text-black shadow-inner backdrop-blur-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none dark:border-white/20 dark:bg-black/50 dark:text-white"
                       autoFocus
@@ -228,12 +221,10 @@ export default function ProfilePage() {
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/10" />
                 <div className="flex flex-col gap-1">
-                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                   <label className="text-xs font-semibold tracking-wider text-black/40 uppercase dark:text-white/40">
                     Contact Number
                   </label>
                   <p className="text-lg font-medium text-black dark:text-white">
-                    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                     {user.phone || '+1 (555) 000-0000'}
                   </p>
                 </div>
