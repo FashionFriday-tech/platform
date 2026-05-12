@@ -17,7 +17,6 @@ interface BrandStatsProps {
 
 export function BrandStats({ brands }: BrandStatsProps) {
   const getCategoryCount = (category: string) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     brands.filter((b) => b.categories.includes(category as any)).length;
 
   const stats = [
