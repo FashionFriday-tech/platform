@@ -30,7 +30,6 @@ export function RealtimeOrderTicker() {
 
   useEffect(() => {
     if (visibleOrders[0]) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHighlightId(visibleOrders[0].id);
       const timer = setTimeout(() => {
         setHighlightId(null);
