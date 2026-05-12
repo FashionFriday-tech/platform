@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -21,7 +20,6 @@ export function useCampaigns() {
 
   useEffect(() => {
     if (searchParams.get('action') === 'new') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEditingBanner(null);
       setTargetPlacement('home-carousel');
       setIsModalOpen(true);
@@ -50,15 +48,10 @@ export function useCampaigns() {
     } else {
       const newBanner: CampaignBanner = {
         id: `b${Date.now()}`,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         title: data.title!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         mediaUrl: data.mediaUrl!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         mediaType: data.mediaType!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         linkUrl: data.linkUrl!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         placement: data.placement!,
         isActive: true,
         createdAt: new Date().toISOString(),
