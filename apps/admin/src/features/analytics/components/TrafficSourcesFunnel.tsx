@@ -41,7 +41,6 @@ export function TrafficSourcesFunnel() {
             >
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  // eslint-disable-next-line security/detect-object-injection
                   <span className="text-sm">{EMOJIS[i]}</span>
                   <span className="text-xs font-bold text-black dark:text-white">
                     {source.source}
