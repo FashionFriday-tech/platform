@@ -78,7 +78,6 @@ export function LoginPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             handleNext();
           }}
           className="space-y-6"
