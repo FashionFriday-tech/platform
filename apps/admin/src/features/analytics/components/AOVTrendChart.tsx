@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import React from 'react';
