@@ -30,7 +30,6 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   useEffect(() => {
     // In a real app, we'd fetch products by collection ID.
     const initialProducts = mockProducts.slice(0, 10);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCollectionProducts(initialProducts);
   }, [collection.id]);
 
@@ -75,10 +74,8 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     return collectionProducts.filter((p) => {
       const matchesSearch =
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
         p.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
         (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -130,7 +127,6 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
                       setEditNameValue(e.target.value);
                     }}
                     onBlur={handleSaveName}
-                    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
                     onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
                     autoFocus
                     className="border-b border-black/20 bg-transparent text-3xl font-black text-black outline-none md:text-4xl dark:border-white/20 dark:text-white"
@@ -200,7 +196,6 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
                     <div
                       key={status}
                       onClick={() => {
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                         setStatusFilter(status as any);
                       }}
                       className={`cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors ${statusFilter === status ? 'bg-black/5 font-semibold text-black dark:bg-white/10 dark:text-white' : 'text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/10'}`}
