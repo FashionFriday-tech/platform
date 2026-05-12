@@ -61,7 +61,6 @@ export default function BrandsFeature() {
               options={categoryOptions}
               value={categoryFilter}
               onChange={(val) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                 setCategoryFilter(val as any);
               }}
               className="z-50 w-48"
