@@ -24,7 +24,6 @@ export function CampaignsFeature() {
 
   const renderSection = (placement: BannerPlacement) => {
     const sectionBanners = banners.filter((b) => b.placement === placement);
-    // eslint-disable-next-line security/detect-object-injection
     const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[placement] || 'aspect-video';
 
     let cardWidthClass = 'w-[300px]';
@@ -40,7 +39,6 @@ export function CampaignsFeature() {
       <section key={placement} className="mb-10 w-full overflow-hidden">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-black dark:text-white">
-            // eslint-disable-next-line security/detect-object-injection
             {PLACEMENT_LABELS[placement]}
           </h2>
         </div>
@@ -67,7 +65,6 @@ export function CampaignsFeature() {
             >
               <div className="flex flex-col items-center gap-2 text-black/40 transition-colors group-hover:text-black dark:text-white/40 dark:group-hover:text-white">
                 <PlusIcon className="h-8 w-8" />
-                // eslint-disable-next-line security/detect-object-injection
                 <span className="text-sm font-semibold">Add {PLACEMENT_LABELS[placement]}</span>
               </div>
             </div>
