@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -78,7 +77,6 @@ export function useAuthFlow() {
 
       for (const [index, char] of digits.entries()) {
         if (index < 6) {
-          // eslint-disable-next-line security/detect-object-injection
           newOtp[index] = char;
         }
       }
@@ -87,7 +85,6 @@ export function useAuthFlow() {
       clearError('otp');
 
       const nextIndex = Math.min(digits.length, 5);
-      // eslint-disable-next-line security/detect-object-injection
       inputRefs.current[nextIndex]?.focus();
     },
     [otp, clearError],
@@ -99,11 +96,9 @@ export function useAuthFlow() {
     if (step === 'PHONE') {
       if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
         newErrors.phone = 'Enter a valid 10-digit phone number';
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, security/detect-object-injection
       } else if (!ADMIN_DATABASE[phoneNumber]) {
         newErrors.phone = 'This phone number is not registered as an administrator.';
       }
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } else if (step === 'OTP') {
       const code = otp.join('');
       if (code.length < 6) {
@@ -131,11 +126,8 @@ export function useAuthFlow() {
         setStep('OTP');
         startTimer();
         toast.success('Mock OTP code sent successfully! Use 123456 to verify.');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       } else if (step === 'OTP') {
-        // eslint-disable-next-line security/detect-object-injection
         const adminInfo = ADMIN_DATABASE[phoneNumber];
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (adminInfo) {
           authLogin({
             ...adminInfo,
@@ -153,7 +145,6 @@ export function useAuthFlow() {
     } finally {
       setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, phoneNumber, otp, validate, startTimer, authLogin]);
 
   const handleResendOTP = useCallback(async () => {
@@ -167,7 +158,6 @@ export function useAuthFlow() {
       setOtp(['', '', '', '', '', '']);
       startTimer();
       toast.success('OTP code resent successfully! Use 123456.');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error('Failed to resend OTP');
     } finally {
@@ -182,7 +172,6 @@ export function useAuthFlow() {
       }
       setOtp((prev) => {
         const nextOtp = [...prev];
-        // eslint-disable-next-line security/detect-object-injection
         nextOtp[index] = value.substring(value.length - 1);
         return nextOtp;
       });
