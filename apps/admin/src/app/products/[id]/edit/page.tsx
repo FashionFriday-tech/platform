@@ -25,16 +25,10 @@ export default function EditProductPage() {
         const data = await fetchProductById(productId);
         if (data) {
           // Map local product to schema product structure
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const mappedProduct: Product = {
             id: data.id,
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             name: data.name,
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             slug: data.seoSlug || data.name.toLowerCase().replace(/\s+/g, '-'),
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             description: data.description || '',
             brand: data.brand ? [data.brand] : [],
             status: 'Published',
@@ -53,45 +47,29 @@ export default function EditProductPage() {
               availableStock: data.stock,
               trackInventory: true,
               lowStockThreshold: 10,
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               allowBackorder: false,
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             },
             media: {
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               mainImage: data.imageUrl || '',
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               gallery: data.images || [],
               videoUrl: data.videoLink,
             },
             attributes: {
               sizes: data.variants,
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               colors: data.color ? [{ name: data.color, hex: '#000000' }] : [],
               materials: [],
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/prefer-nullish-coalescing
               careInstructions: [],
               fit: 'Regular',
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               style: '',
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               quality: data.quality || 'Standard',
-            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
             },
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/prefer-nullish-coalescing
             gender: (data.gender as any) || 'Unisex',
             marketing: {
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               seoTitle: data.seoTitle || '',
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               seoDescription: data.seoDesc || '',
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               collections: data.tags || [],
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               tags: data.tags || [],
               isFeatured: false,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               isNewArrival: false,
             },
             shipping: {
@@ -101,10 +79,8 @@ export default function EditProductPage() {
               processingTime: '1-2 days',
             },
             variants: [],
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             createdAt: new Date(data.dateAdded),
             updatedAt: new Date(),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } as any;
           setProduct(mappedProduct);
         }
@@ -114,8 +90,7 @@ export default function EditProductPage() {
         setIsLoading(false);
       }
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    load();
+    void load();
   }, [productId]);
 
   if (isLoading) {
