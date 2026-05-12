@@ -48,8 +48,6 @@ export function ActivityTimeline({ activities }: ActivityTimelineProps) {
                   <p className="text-sm text-black/60 dark:text-white/60">{activity.description}</p>
                 )}
                 <div className="mt-2 flex items-center gap-2">
-                  // eslint-disable-next-line @next/next/no-img-element
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={activity.user.avatar}
                     alt={activity.user.name}
