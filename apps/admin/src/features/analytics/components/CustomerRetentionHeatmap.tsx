@@ -63,7 +63,6 @@ export function CustomerRetentionHeatmap() {
                   {cohort.cohort}
                 </td>
                 {cohort.months.map((value, colIdx) => {
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   const isHovered = hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx;
                   const isEmpty = value === 0 && colIdx > 0;
                   const style = getCellStyle(value);
