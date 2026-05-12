@@ -22,7 +22,6 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
 
   React.useEffect(() => {
     if (initialData && isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setName(initialData.name);
       setColor(initialData.color);
       setLogoUrl(initialData.logo);
@@ -36,7 +35,6 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
         streetwear: 'clothing',
         sportswear: 'clothing',
       };
-      // eslint-disable-next-line security/detect-object-injection
       const mapped = initialData.categories.map((c) => categoryMap[c] || c);
       setCategories([...new Set(mapped)] as BrandCategory[]);
     } else if (isOpen) {
@@ -179,7 +177,6 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
-                      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain, @typescript-eslint/no-unnecessary-condition
                       if (e.target.files && e.target.files[0]) {
                         setLogoUrl(URL.createObjectURL(e.target.files[0]));
                       }
