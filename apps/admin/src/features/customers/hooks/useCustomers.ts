@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useMemo, useState } from 'react';
 
 import { mockCustomers } from '../services/mock-customers';
@@ -56,15 +55,11 @@ export function useCustomers() {
     }
 
     result.sort((a, b) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
       let aVal: any = a[sortField];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
       let bVal: any = b[sortField];
 
       if (sortField === 'joinDate' || sortField === 'lastOrderDate') {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         aVal = new Date(aVal).getTime();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         bVal = new Date(bVal).getTime();
       }
 
@@ -78,7 +73,6 @@ export function useCustomers() {
     });
 
     return result;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customersData, searchQuery, statusFilter, sortField, sortDirection]);
 
   const handleExport = () => {
