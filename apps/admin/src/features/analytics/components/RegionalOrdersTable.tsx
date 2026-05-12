@@ -1,7 +1,6 @@
 import React from 'react';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sortedStates: any[];
   maxOrders: number;
   totalOrders: number;
@@ -64,22 +63,17 @@ export function RegionalOrdersTable({
           </thead>
           <tbody>
             {sortedStates.map((state, i) => {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               const pct = (state.orders / maxOrders) * 100;
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               const sharePct = ((state.orders / totalOrders) * 100).toFixed(1);
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               const isActive = hoveredState === state.state || selectedState === state.state;
 
               return (
                 <tr
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                   key={state.state}
                   className={`group border-b border-black/[0.03] transition-colors hover:bg-[#6a4fbb]/[0.03] dark:border-white/[0.03] dark:hover:bg-[#6a4fbb]/[0.06] ${
                     isActive ? 'bg-[#6a4fbb]/[0.06]' : ''
                   }`}
                   onMouseEnter={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                     setHoveredState(state.state);
                   }}
                   onMouseLeave={() => {
@@ -87,28 +81,23 @@ export function RegionalOrdersTable({
                   }}
                 >
                   <td className="py-2.5 text-xs font-bold text-black/30 dark:text-white/30">
-                    // eslint-disable-next-line security/detect-object-injection
                     {i < 3 ? ['🥇', '🥈', '🥉'][i] : `#${i + 1}`}
                   </td>
                   <td className="py-2.5">
                     <div className="flex items-center gap-2">
                       <div
                         className="h-2 w-2 shrink-0 rounded-sm"
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                         style={{ backgroundColor: getHeatColor(state.orders) }}
                       />
                       <span className="truncate text-xs font-semibold text-black xl:text-sm dark:text-white">
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                         {state.state}
                       </span>
                     </div>
                   </td>
                   <td className="py-2.5 text-right text-xs font-black text-black xl:text-sm dark:text-white">
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     {state.orders.toLocaleString('en-IN')}
                   </td>
                   <td className="py-2.5 text-right text-xs font-semibold text-emerald-600 xl:text-sm dark:text-emerald-400">
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                     ₹{(state.revenue / 100000).toFixed(1)}L
                   </td>
                   <td className="py-2.5 text-right text-[11px] font-semibold text-black/50 dark:text-white/50">
@@ -118,7 +107,6 @@ export function RegionalOrdersTable({
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/[0.04] dark:bg-white/[0.04]">
                       <div
                         className="h-full rounded-full transition-all"
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                         style={{ width: `${pct}%`, backgroundColor: getHeatColor(state.orders) }}
                       />
                     </div>
