@@ -33,7 +33,6 @@ export function CategoryDistribution() {
               cornerRadius={6}
             >
               {MOCK_CATEGORY_DATA.map((entry, index) => (
-                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
