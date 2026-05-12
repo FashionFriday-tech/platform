@@ -15,7 +15,6 @@ interface Props {
   setSelectedState: (state: string | null) => void;
   setIsMapHovered: (hovered: boolean) => void;
   setTooltipPos: (pos: { x: number; y: number }) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getStateData: (rawName: string) => any;
   getHeatColor: (orders: number) => string;
 }
@@ -70,33 +69,24 @@ export function RegionalMapDisplay({
           style={{ width: '100%', height: '100%' }}
         >
           <Geographies geography="/india.json">
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             {({ geographies }: { geographies: any[] }) =>
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               geographies.map((geo: any) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
                 const stateName = geo.properties.name || geo.properties.NAME_1 || '';
                 if (!stateName) {
                   return null;
                 }
 
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
                 const data = getStateData(stateName);
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                 const orders = data?.orders ?? 0;
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
                 const mappedStateName = data?.state || stateName;
 
                 const isHovered = hoveredState === mappedStateName;
                 const isSelected = selectedState === mappedStateName;
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 const fillColor = getHeatColor(orders);
 
                 return (
                   <Geography
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                     key={geo.rsmKey}
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     geography={geo}
                     fill={isHovered || isSelected ? '#ec4899' : fillColor}
                     stroke={isHovered || isSelected ? '#be185d' : 'rgba(255,255,255,0.8)'}
@@ -107,7 +97,6 @@ export function RegionalMapDisplay({
                       pressed: { outline: 'none' },
                     }}
                     onMouseEnter={(e: React.MouseEvent<SVGPathElement>) => {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                       setHoveredState(mappedStateName);
                       setTooltipPos({ x: e.clientX, y: e.clientY });
                     }}
@@ -120,7 +109,6 @@ export function RegionalMapDisplay({
                       }
                     }}
                     onClick={() => {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                       setSelectedState(selectedState === mappedStateName ? null : mappedStateName);
                     }}
                   />
