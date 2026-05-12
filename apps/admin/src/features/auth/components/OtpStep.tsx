@@ -32,7 +32,6 @@ export function OtpStep({
             maxLength={1}
             value={digit}
             ref={(el) => {
-              // eslint-disable-next-line security/detect-object-injection
               inputRefs.current[index] = el;
             }}
             onPaste={index === 0 ? handlePaste : undefined}
@@ -40,7 +39,6 @@ export function OtpStep({
               handleOtpChange(index, e.target.value);
             }}
             onKeyDown={(e) => {
-              // eslint-disable-next-line security/detect-object-injection
               if (e.key === 'Backspace' && !otp[index] && index > 0) {
                 inputRefs.current[index - 1]?.focus();
               }
