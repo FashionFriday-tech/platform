@@ -4,7 +4,6 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ChevronLeftIcon, ShoppingBagIcon, StarIcon } from '@ff/ui';
 
 import { mockOrders } from '../../orders/services/mock-orders';
