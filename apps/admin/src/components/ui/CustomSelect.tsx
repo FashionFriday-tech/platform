@@ -27,8 +27,6 @@ export function CustomSelect({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const selectedOption = options.find((o) => o.value.toLowerCase() === value?.toLowerCase());
 
   useEffect(() => {
@@ -86,9 +84,7 @@ export function CustomSelect({
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 className={`w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors ${
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   value?.toLowerCase() === option.value.toLowerCase()
                     ? 'bg-black text-white dark:bg-white dark:text-black'
                     : 'text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/10'
