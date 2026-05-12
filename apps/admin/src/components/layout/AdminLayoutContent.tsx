@@ -90,8 +90,6 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
               .
             </p>
 
-            // eslint-disable-next-line @next/next/no-html-link-for-pages
-            // eslint-disable-next-line @next/next/no-html-link-for-pages
             <a
               href="/"
               className="inline-flex items-center justify-center rounded-2xl bg-black px-6 py-3 text-xs font-black tracking-wider text-white uppercase transition-all duration-300 hover:bg-black/85 active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-white/90"
