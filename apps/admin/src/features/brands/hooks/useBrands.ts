@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import { useMemo, useState } from 'react';
