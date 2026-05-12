@@ -50,14 +50,12 @@ export function RegionalOrdersMap() {
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [isMapHovered, setIsMapHovered] = useState<boolean>(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const top5 = useMemo(() => sortedStates.slice(0, 5), []);
 
   const getStateData = (rawName: string) => {
     if (!rawName) {
       return null;
     }
-    // eslint-disable-next-line security/detect-object-injection
     const normalizedName = NAME_MAPPINGS[rawName] || rawName;
     return MOCK_STATE_ORDERS.find(
       (s) =>
@@ -109,20 +107,15 @@ export function RegionalOrdersMap() {
               style={{ width: '100%', height: '100%' }}
             >
               <Geographies geography="/india.json">
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 {({ geographies }: { geographies: any[] }) =>
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   geographies.map((geo: any) => {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
                     const stateName = geo.properties.name || geo.properties.NAME_1 || '';
                     if (!stateName) {
                       return null;
                     }
 
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     const data = getStateData(stateName);
                     const orders = data?.orders ?? 0;
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/prefer-nullish-coalescing
                     const mappedStateName = data?.state || stateName;
 
                     const isHovered = hoveredState === mappedStateName;
@@ -131,9 +124,7 @@ export function RegionalOrdersMap() {
 
                     return (
                       <Geography
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                         key={geo.rsmKey}
-                        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                         geography={geo}
                         fill={isHovered || isSelected ? '#ec4899' : fillColor}
                         stroke={isHovered || isSelected ? '#be185d' : 'rgba(255,255,255,0.8)'}
@@ -144,7 +135,6 @@ export function RegionalOrdersMap() {
                           pressed: { outline: 'none' },
                         }}
                         onMouseEnter={(e: React.MouseEvent<SVGPathElement>) => {
-                          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                           setHoveredState(mappedStateName);
                           setTooltipPos({ x: e.clientX, y: e.clientY });
                         }}
@@ -158,7 +148,6 @@ export function RegionalOrdersMap() {
                         }}
                         onClick={() => {
                           setSelectedState(
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                             selectedState === mappedStateName ? null : mappedStateName,
                           );
                         }}
@@ -289,7 +278,6 @@ export function RegionalOrdersMap() {
                       }}
                     >
                       <td className="py-2.5 text-xs font-bold text-black/30 dark:text-white/30">
-                        // eslint-disable-next-line security/detect-object-injection
                         {i < 3 ? ['🥇', '🥈', '🥉'][i] : `#${i + 1}`}
                       </td>
                       <td className="py-2.5">
