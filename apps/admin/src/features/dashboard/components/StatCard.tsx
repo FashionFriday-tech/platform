@@ -27,7 +27,6 @@ export function StatCard({
 
   return (
     <CardWrapper
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       {...(wrapperProps as any)}
       className={`group relative overflow-hidden rounded-3xl border border-white/50 bg-white/90 p-6 shadow-xl backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-white/10 dark:bg-[#111111]/90 ${
         href ? 'cursor-pointer hover:bg-white dark:hover:bg-[#1a1a1a]' : ''
