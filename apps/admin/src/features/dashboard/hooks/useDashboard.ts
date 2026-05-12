@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import { type Variants } from 'motion/react';
@@ -30,7 +29,6 @@ export function useDashboard() {
   };
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     user: user!,
     hasAccess,
     container,
