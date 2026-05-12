@@ -64,7 +64,6 @@ export function CustomersTable({
                   onSort('name');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Customer <SortIcon field="name" />
               </th>
               <th className="px-6 py-4 whitespace-nowrap">Email</th>
@@ -75,7 +74,6 @@ export function CustomersTable({
                   onSort('joinDate');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Joined Date <SortIcon field="joinDate" />
               </th>
               <th
@@ -84,7 +82,6 @@ export function CustomersTable({
                   onSort('totalSpent');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Total Spent <SortIcon field="totalSpent" />
               </th>
               <th
@@ -93,7 +90,6 @@ export function CustomersTable({
                   onSort('ordersCount');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Orders <SortIcon field="ordersCount" />
               </th>
               <th className="px-6 py-4 whitespace-nowrap">Status</th>
