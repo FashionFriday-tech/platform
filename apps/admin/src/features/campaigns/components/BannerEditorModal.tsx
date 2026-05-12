@@ -9,7 +9,6 @@ import {
   type BannerPlacement,
   type CampaignBanner,
   type MediaType,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   PLACEMENT_ASPECT_RATIOS,
 } from '../types';
 
@@ -38,7 +37,6 @@ export function BannerEditorModal({
 
   useEffect(() => {
     if (initialData) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(initialData.title);
       setMediaUrl(initialData.mediaUrl);
       setMediaType(initialData.mediaType);
@@ -49,7 +47,6 @@ export function BannerEditorModal({
       setMediaUrl('');
       setMediaType('image');
       setLinkUrl('');
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       setPlacement(fixedPlacement || 'home-carousel');
     }
   }, [initialData, isOpen, fixedPlacement]);
@@ -58,7 +55,6 @@ export function BannerEditorModal({
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({ title, mediaUrl, mediaType, linkUrl, placement });
