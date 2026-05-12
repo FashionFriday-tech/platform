@@ -8,7 +8,6 @@ import { CheckIcon, SearchIcon } from '@ff/ui';
 
 // We simulate fetching all products using the products feature mock
 import { mockProducts } from '../../products/services/api';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Product } from '../../products/types';
 import { type ProductCollection } from '../types';
 
@@ -24,7 +23,6 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
   // Simulate existing assigned products based on collection id
   const existingAssignedProductIds = useMemo(() => {
     return new Set(mockProducts.slice(0, 10).map((p) => p.id));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection.id]);
 
   const unassignedProducts = mockProducts.filter((p) => !existingAssignedProductIds.has(p.id));
@@ -32,10 +30,8 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
   const filteredProducts = unassignedProducts.filter(
     (p) =>
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       p.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
       (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
@@ -123,9 +119,7 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
                   <div className="relative aspect-square w-full bg-black/5 dark:bg-white/5">
                     <Image
                       src={
-                        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                         product.imageUrl ||
-                        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                         product.images?.[0] ||
                         'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200'
                       }
