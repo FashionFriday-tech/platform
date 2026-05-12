@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CheckIcon, CloseIcon, PlusIcon, SearchIcon } from '@ff/ui';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { AnimatePresence, motion } from 'motion/react';
 
 import { type Product } from '../../products/types';
@@ -30,7 +28,6 @@ export function AssignProductModal({
   // Reset state when modal opens
   React.useEffect(() => {
     if (isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchQuery('');
       setSelectedProductIds([]);
     }
@@ -132,9 +129,7 @@ export function AssignProductModal({
                       <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-black/5 dark:bg-white/5">
                         <Image
                           src={
-                            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                             product.imageUrl ||
-                            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                             product.images?.[0] ||
                             'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200'
                           }
