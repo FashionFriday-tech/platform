@@ -2,9 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { EditIcon, PackageIcon } from '@ff/ui';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { motion } from 'motion/react';
 
 import { type ProductCategory } from '../types';
