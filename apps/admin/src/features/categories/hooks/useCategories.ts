@@ -1,9 +1,7 @@
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import { useMemo, useState } from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { MOCK_CATEGORIES, ProductCategory } from '../types';
 
 export function useCategories() {
