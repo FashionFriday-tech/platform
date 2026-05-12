@@ -1,7 +1,5 @@
 'use client';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -17,9 +15,7 @@ import {
   UsersIcon,
   ZapIcon,
 } from '@ff/ui';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Role, useAuth } from '@/contexts/AuthContext';
 
 export function Header() {
@@ -130,20 +126,13 @@ export function Header() {
 
       <div className="flex items-center space-x-4">
         <button
-          // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
           onClick={() => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             if (!document.fullscreenElement) {
-              // eslint-disable-next-line @typescript-eslint/use-unknown-in-catch-callback-variable
               document.documentElement.requestFullscreen().catch((err) => {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-floating-promises
                 console.error(`Error attempting to enable fullscreen: ${err.message}`);
               });
             } else {
-              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
               if (document.exitFullscreen) {
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 document.exitFullscreen();
               }
             }
