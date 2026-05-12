@@ -75,7 +75,6 @@ export function ActivityFeed() {
             <div className="flex flex-1 flex-col gap-2 rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#1a1a1a]">
               <p className="text-sm font-semibold text-black dark:text-white">{activity.title}</p>
               <div className="flex items-center gap-2">
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={activity.user.avatar}
                   alt={activity.user.name}
