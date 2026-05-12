@@ -67,9 +67,7 @@ export function ConversionGauge() {
               animationDuration={1500}
               animationBegin={200}
             >
-              // eslint-disable-next-line @typescript-eslint/no-deprecated
               <Cell fill="url(#gaugeGrad2)" />
-              // eslint-disable-next-line @typescript-eslint/no-deprecated
               <Cell fill="rgba(0,0,0,0.03)" className="dark:fill-white/[0.04]" />
             </Pie>
           </PieChart>
