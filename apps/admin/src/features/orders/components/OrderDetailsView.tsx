@@ -1,10 +1,8 @@
 'use client';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Link from 'next/link';
 
 import { PhoneIcon, WhatsAppIcon } from '@ff/ui/icons';
@@ -13,7 +11,6 @@ import { motion } from 'motion/react';
 import { CustomSelect } from '../../../components/ui/CustomSelect';
 import { type Order } from '../types';
 import { COURIER_SERVICES, getTrackingUrl } from '../utils/courier';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { OrderStatusBadge } from './OrderStatusBadge';
 
 function OrderStatusTracker({ status }: { status: string }) {
@@ -73,10 +70,8 @@ interface OrderDetailsViewProps {
 }
 
 export function OrderDetailsView({ order }: OrderDetailsViewProps) {
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const [trackingId, setTrackingId] = useState(order.tracking?.trackingId || '');
   const [courierService, setCourierService] = useState<string>(
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     order.tracking?.courierService || 'Delhivery',
   );
   const [assignedSeller, setAssignedSeller] = useState('Seller A');
@@ -87,10 +82,8 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string>(order.status);
   const [tempCourier, setTempCourier] = useState<string>(
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     order.tracking?.courierService || 'Delhivery',
   );
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId || '');
   const [tempSeller, setTempSeller] = useState('Seller A');
   const [isEditingMeta, setIsEditingMeta] = useState(false);
@@ -127,7 +120,6 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     const itemsText = order.items
       .map(
         (item) =>
-          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           `Product Name: ${item.productName}\nSize: ${item.size || 'N/A'}\nColor: ${item.color || 'N/A'}\nQty: ${item.quantity}`,
       )
       .join('\n\n');
@@ -137,12 +129,10 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
 Full Name : ${order.customer.name}
 Address : ${order.shippingAddress.street}
 City : ${order.shippingAddress.city}
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 District : ${order.shippingAddress.district || 'N/A'}
 State : ${order.shippingAddress.state}
 Pincode: ${order.shippingAddress.pincode}
 Mobile Number : ${order.customer.phone}
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 Alt Number : ${order.customer.altPhone || 'N/A'}
 
 ${itemsText}
@@ -152,7 +142,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
   };
 
   const handleCopy = () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigator.clipboard.writeText(getOrderSummaryText());
     setIsCopied(true);
     setTimeout(() => {
@@ -182,7 +171,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
         if (blob) {
           try {
             await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-            // eslint-disable-next-line no-console
             console.log('Image copied to clipboard successfully!');
           } catch (clipboardErr) {
             console.error('Clipboard write failed:', clipboardErr);
@@ -194,7 +182,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleWhatsApp = async () => {
     const text = encodeURIComponent(getOrderSummaryText());
 
@@ -212,7 +199,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     }
     const item = order.items[0];
     const text = encodeURIComponent(
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       `*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size || 'N/A'}\n*Color:* ${item.color || 'N/A'} \n\n*Order ID:* ${order.orderNumber}`,
     );
 
@@ -304,7 +290,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                           disabled
                           className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-lg bg-black/5 px-4 py-2 text-xs font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
                         >
-                          // eslint-disable-next-line security/detect-object-injection
                           {labels[orderStatus] || orderStatus}
                         </button>
                       );
@@ -326,7 +311,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         {item.productName}
                       </h3>
                       <p className="mt-1 text-sm font-semibold text-black/40 dark:text-white/40">
-                        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                         SKU: {item.sku || 'N/A'}
                       </p>
                       <div className="mt-4 flex flex-wrap gap-3">
@@ -405,7 +389,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                               disabled
                               className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-3 text-sm font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
                             >
-                              // eslint-disable-next-line security/detect-object-injection
                               {labels[orderStatus] || orderStatus}
                             </button>
                           );
@@ -478,7 +461,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
                   <span className="text-black/50 dark:text-white/50">District :</span>
-                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                   <span>{order.shippingAddress.district || 'N/A'}</span>
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
@@ -495,7 +477,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-center gap-2">
                   <span className="text-black/50 dark:text-white/50">Alt Number :</span>
-                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                   <span>{order.customer.altPhone || 'N/A'}</span>
                 </div>
 
@@ -577,7 +558,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       {order.customer.altPhone && (
                         <button
                           onClick={() => {
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             executeContact(contactMode, order.customer.altPhone!);
                           }}
                           className="flex items-center justify-between rounded-lg bg-black/5 px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
@@ -826,7 +806,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       return;
                     }
                     if (pendingStatus === 'inquiry') {
-                      // eslint-disable-next-line @typescript-eslint/no-floating-promises
                       handleInquiryWhatsApp();
                     }
                     if (pendingStatus === 'shipped') {
