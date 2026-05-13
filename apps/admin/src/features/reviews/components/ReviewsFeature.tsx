@@ -67,7 +67,6 @@ export default function ReviewsFeature() {
               options={verifiedOptions}
               value={verifiedFilter}
               onChange={(val) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                 setVerifiedFilter(val as any);
               }}
               className="z-50 w-40"
@@ -77,7 +76,6 @@ export default function ReviewsFeature() {
               options={featuredOptions}
               value={featuredFilter}
               onChange={(val) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                 setFeaturedFilter(val as any);
               }}
               className="z-50 w-36"
