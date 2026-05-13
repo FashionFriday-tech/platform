@@ -29,7 +29,6 @@ interface Props {
   setIsBrandOpen: (val: boolean) => void;
   selectedBrandLogo: string | null;
   setSelectedBrandLogo: (val: string | null) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filteredBrands: any[];
   brandRef: React.RefObject<HTMLDivElement | null>;
   colorInput: string;
@@ -38,7 +37,6 @@ interface Props {
   setIsColorOpen: (val: boolean) => void;
   selectedColorHex: string | null;
   setSelectedColorHex: (val: string | null) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filteredColors: any[];
   colorRef: React.RefObject<HTMLDivElement | null>;
   sizes: string[];
