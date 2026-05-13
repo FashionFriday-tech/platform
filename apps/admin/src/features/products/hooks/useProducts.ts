@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useEffect, useMemo, useState } from 'react';
 
 import { fetchProducts } from '../services/api';
@@ -7,7 +6,6 @@ import {
   type ColumnId,
   type Product,
   type SortOption,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   StatusFilter,
   type ViewMode,
 } from '../types';
@@ -57,7 +55,6 @@ export function useProducts() {
         setIsLoading(false);
       }
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadData();
   }, []);
 
