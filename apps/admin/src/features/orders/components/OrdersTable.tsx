@@ -14,7 +14,6 @@ interface OrdersTableProps {
   orders: Order[];
   sortField: string;
   sortDirection: 'asc' | 'desc';
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSort: (field: any) => void;
 }
 
@@ -51,7 +50,6 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('orderNumber');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Order ID <SortIcon field="orderNumber" />
               </th>
               <th
@@ -61,7 +59,6 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('createdAt');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Date <SortIcon field="createdAt" />
               </th>
               <th
@@ -71,7 +68,6 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('paymentType');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Payment Type <SortIcon field="paymentType" />
               </th>
               <th
@@ -81,7 +77,6 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('total');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Total <SortIcon field="total" />
               </th>
               <th
@@ -91,7 +86,6 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('status');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Status <SortIcon field="status" />
               </th>
               <th scope="col" className="px-6 py-4 font-medium">
