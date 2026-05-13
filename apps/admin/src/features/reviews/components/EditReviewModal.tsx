@@ -18,7 +18,6 @@ export function EditReviewModal({ isOpen, onClose, review, onSave }: EditReviewM
 
   useEffect(() => {
     if (review) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setComment(review.comment);
     }
   }, [review]);
