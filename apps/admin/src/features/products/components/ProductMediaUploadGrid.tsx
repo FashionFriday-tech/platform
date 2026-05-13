@@ -2,7 +2,6 @@ import React from 'react';
 import Image from 'next/image';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   images: any[];
   draggedIndex: number | null;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -19,7 +18,6 @@ export function ProductMediaUploadGrid({
   images,
   draggedIndex,
   fileInputRef,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleImageUpload,
   handleDragStart,
   handleDragOver,
@@ -46,7 +44,6 @@ export function ProductMediaUploadGrid({
         <Image
           width={500}
           height={500}
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
           src={images[0].url}
           alt="Main product"
           className="pointer-events-none h-full w-full object-cover"
@@ -56,7 +53,6 @@ export function ProductMediaUploadGrid({
         </div>
         <button
           onClick={() => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             removeImage(images[0].id);
           }}
           className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-black/5 bg-white text-red-500 opacity-0 shadow-sm transition-transform group-hover:opacity-100 hover:scale-110 dark:border-white/5 dark:bg-black"
@@ -78,7 +74,6 @@ export function ProductMediaUploadGrid({
           const actualIndex = index + 1; // 1-based index in the array for the dropdown (0 is main)
           return (
             <div
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
               key={img.id}
               draggable
               onDragStart={(e) => {
@@ -94,7 +89,6 @@ export function ProductMediaUploadGrid({
               <Image
                 width={500}
                 height={500}
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                 src={img.url}
                 alt={`Preview ${actualIndex}`}
                 className="pointer-events-none h-full w-full object-cover"
@@ -125,7 +119,6 @@ export function ProductMediaUploadGrid({
               {/* Remove button */}
               <button
                 onClick={() => {
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                   removeImage(img.id);
                 }}
                 className="absolute top-1.5 right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-black/5 bg-white text-red-500 opacity-0 shadow-sm transition-opacity group-hover:opacity-100 dark:border-white/5 dark:bg-black"
