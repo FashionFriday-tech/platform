@@ -40,7 +40,6 @@ export function OrderStatusBadge({ status, className }: OrderStatusBadgeProps) {
     },
   };
 
-  // eslint-disable-next-line security/detect-object-injection
   const config = statusConfig[status];
 
   return (
