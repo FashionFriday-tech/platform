@@ -4,7 +4,6 @@ import { ProductMediaEmbedVideo } from './ProductMediaEmbedVideo';
 import { ProductMediaUploadGrid } from './ProductMediaUploadGrid';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   images: any[];
   draggedIndex: number | null;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
