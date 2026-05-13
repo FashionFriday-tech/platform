@@ -3,7 +3,6 @@ import React from 'react';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
   sizes: string[];
   availableSizes: string[];
@@ -40,7 +39,6 @@ export function ProductSizeGenderSelector({
       <div>
         <LabelWithTick
           label="Size"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
           subtitle="Pick Available Sizes"
         />
@@ -63,7 +61,6 @@ export function ProductSizeGenderSelector({
       <div>
         <LabelWithTick
           label="Gender"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getStatus(gender, initialData?.gender, 1, 'gender')}
           subtitle="Pick Available Gender"
         />
