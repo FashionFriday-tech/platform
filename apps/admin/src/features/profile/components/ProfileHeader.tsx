@@ -2,7 +2,6 @@ import React from 'react';
 import Image from 'next/image';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
   isEditingName: boolean;
   setIsEditingName: (val: boolean) => void;
@@ -38,12 +37,9 @@ export function ProfileHeader({
             onClick={handleAvatarClick}
             title="Change Profile Picture"
           >
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             {user.avatar ? (
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
               <Image src={user.avatar} alt={user.name} fill className="object-cover" />
             ) : (
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               user.initials
             )}
 
@@ -88,7 +84,6 @@ export function ProfileHeader({
                 onChange={(e) => {
                   setEditName(e.target.value);
                 }}
-                // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
                 onKeyDown={(e) => e.key === 'Enter' && saveName()}
                 className="rounded-xl border border-black/20 bg-white/50 px-4 py-2 text-3xl font-extrabold text-black shadow-inner backdrop-blur-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none dark:border-white/20 dark:bg-black/50 dark:text-white"
                 autoFocus
@@ -111,7 +106,6 @@ export function ProfileHeader({
               <button
                 onClick={() => {
                   setIsEditingName(false);
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                   setEditName(user.name);
                 }}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-black transition-all hover:scale-105 hover:bg-black/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
@@ -131,7 +125,6 @@ export function ProfileHeader({
           ) : (
             <div className="flex items-center gap-3">
               <h1 className="bg-gradient-to-br from-zinc-900 to-zinc-500 bg-clip-text text-4xl font-extrabold text-transparent dark:from-white dark:to-zinc-400">
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 {user.name}
               </h1>
               <button
@@ -159,7 +152,6 @@ export function ProfileHeader({
           )}
           <div className="mt-2 inline-flex w-fit items-center rounded-full border border-black/5 bg-black/[0.03] px-3 py-1 dark:border-white/5 dark:bg-white/[0.03]">
             <p className="text-sm font-bold tracking-wider text-black/60 uppercase dark:text-white/60">
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
               {user.role.replace('_', ' ')}
             </p>
           </div>
