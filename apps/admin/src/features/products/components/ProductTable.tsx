@@ -17,9 +17,7 @@ interface Props {
   selectedIds: Set<string>;
   onToggleSelection: (id: string) => void;
   onToggleAllSelection: (ids: string[]) => void;
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   sortOption: import('../types').SortOption;
-  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   setSortOption: (val: import('../types').SortOption) => void;
   visibleColumns: Set<ColumnId>;
 }
@@ -302,7 +300,6 @@ export function ProductTable({
                   {visibleColumns.has('Variants') && (
                     <td className="px-4 py-4">
                       <div className="grid w-max grid-flow-col grid-rows-2 gap-1">
-                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                         {product.variants?.map((v) => (
                           <span
                             key={v}
@@ -360,7 +357,6 @@ export function ProductTable({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                         product.status !== 'Draft' && onToggleStatus(product.id);
                       }}
                       disabled={product.status === 'Draft'}
