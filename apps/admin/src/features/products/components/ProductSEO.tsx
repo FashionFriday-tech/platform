@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import React from 'react';
 
 import { type Product } from '@ff/schemas';
@@ -84,7 +83,6 @@ export function ProductSEO({
         <div>
           <LabelWithTick
             label="Tags / Keywords"
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             status={getArrayStatus(tags, initialData?.marketing?.collections)}
           />
           <div className="flex min-h-[52px] w-full flex-wrap items-center gap-2 rounded-xl border border-transparent bg-black/5 px-3 py-2 transition-all focus-within:border-black/20 dark:bg-white/5 dark:focus-within:border-white/20">
@@ -148,7 +146,6 @@ export function ProductSEO({
         <div>
           <LabelWithTick
             label="Meta Title"
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             status={getStatus(seoTitle, initialData?.marketing?.seoTitle, 5)}
             rightElement={
               <span className="text-xs font-medium text-black/40 dark:text-white/40">
@@ -170,7 +167,6 @@ export function ProductSEO({
         <div>
           <LabelWithTick
             label="Meta Description"
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             status={getStatus(seoDesc, initialData?.marketing?.seoDescription, 10)}
             rightElement={
               <span className="text-xs font-medium text-black/40 dark:text-white/40">
