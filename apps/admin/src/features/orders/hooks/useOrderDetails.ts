@@ -1,13 +1,10 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useState } from 'react';
 
 import { type Order } from '../types';
 
 export function useOrderDetails(order: Order) {
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const [trackingId, setTrackingId] = useState(order.tracking?.trackingId || '');
   const [courierService, setCourierService] = useState<string>(
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     order.tracking?.courierService || 'Delhivery',
   );
   const [assignedSeller, setAssignedSeller] = useState('Seller A');
@@ -18,10 +15,8 @@ export function useOrderDetails(order: Order) {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string>(order.status);
   const [tempCourier, setTempCourier] = useState<string>(
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     order.tracking?.courierService || 'Delhivery',
   );
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId || '');
   const [tempSeller, setTempSeller] = useState('Seller A');
   const [isEditingMeta, setIsEditingMeta] = useState(false);
@@ -56,7 +51,6 @@ export function useOrderDetails(order: Order) {
     const itemsText = order.items
       .map(
         (item) =>
-          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           `Product Name: ${item.productName}\nSize: ${item.size || 'N/A'}\nColor: ${item.color || 'N/A'}\nQty: ${item.quantity}`,
       )
       .join('\n\n');
@@ -66,12 +60,10 @@ export function useOrderDetails(order: Order) {
 Full Name : ${order.customer.name}
 Address : ${order.shippingAddress.street}
 City : ${order.shippingAddress.city}
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 District : ${order.shippingAddress.district || 'N/A'}
 State : ${order.shippingAddress.state}
 Pincode: ${order.shippingAddress.pincode}
 Mobile Number : ${order.customer.phone}
-// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 Alt Number : ${order.customer.altPhone || 'N/A'}
 
 ${itemsText}
@@ -101,7 +93,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
         if (blob) {
           try {
             await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-            // eslint-disable-next-line no-console
             console.log('Image copied to clipboard successfully!');
           } catch (clipboardErr) {
             console.error('Clipboard write failed:', clipboardErr);
@@ -114,7 +105,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
   };
 
   const handleCopy = () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigator.clipboard.writeText(getOrderSummaryText());
     setIsCopied(true);
     setTimeout(() => {
@@ -136,7 +126,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     }
     const item = order.items[0];
     const text = encodeURIComponent(
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       `*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size || 'N/A'}\n*Color:* ${item.color || 'N/A'} \n\n*Order ID:* ${order.orderNumber}`,
     );
 
