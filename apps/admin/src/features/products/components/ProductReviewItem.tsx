@@ -10,9 +10,7 @@ interface Props {
   handleDelete: (id: string) => void;
   editingId: string | null;
   setEditingId: (id: string | null) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   editData: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setEditData: (val: any) => void;
   handleEditSubmit: () => void;
 }
@@ -70,7 +68,6 @@ export function ProductReviewItem({
         <div className="mt-1 w-full space-y-3">
           <input
             type="text"
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             value={editData.userName}
             onChange={(e) => {
               setEditData({ ...editData, userName: e.target.value });
@@ -81,7 +78,6 @@ export function ProductReviewItem({
             type="number"
             min="1"
             max="5"
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             value={editData.rating}
             onChange={(e) => {
               setEditData({ ...editData, rating: parseInt(e.target.value) || 1 });
@@ -89,13 +85,11 @@ export function ProductReviewItem({
             className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-bold text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
           />
           <div className="flex items-center gap-3">
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             {editData.productImage && (
               <div className="relative h-12 w-12 overflow-hidden rounded-lg border border-black/10 dark:border-white/10">
                 <Image
                   width={500}
                   height={500}
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                   src={editData.productImage}
                   alt="Preview"
                   className="h-full w-full object-cover"
@@ -151,7 +145,6 @@ export function ProductReviewItem({
             </label>
           </div>
           <textarea
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             value={editData.comment}
             onChange={(e) => {
               setEditData({ ...editData, comment: e.target.value });
@@ -194,7 +187,6 @@ export function ProductReviewItem({
           {/* Content Section */}
           <div className="flex flex-1 flex-col items-start pt-2 pr-4">
             <div className="mb-3 flex items-center text-yellow-500">
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               {[...Array(5)].map((_, idx) => (
                 <svg
                   key={idx}
