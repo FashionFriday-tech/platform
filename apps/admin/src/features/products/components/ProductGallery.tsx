@@ -18,7 +18,6 @@ export function ProductGallery({ productName, displayImages }: Props) {
           <Image
             width={500}
             height={500}
-            // eslint-disable-next-line security/detect-object-injection
             src={displayImages[activeImageIndex]}
             alt={productName}
             className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
