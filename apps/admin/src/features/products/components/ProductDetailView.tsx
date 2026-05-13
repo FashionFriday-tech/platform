@@ -33,7 +33,6 @@ export function ProductDetailView({ productId }: Props) {
         setIsLoading(false);
       }
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     load();
   }, [productId]);
 
@@ -72,7 +71,6 @@ export function ProductDetailView({ productId }: Props) {
 
   // Mock Data for specific UI sections
   const liveSold = 142;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const averageRating = 4.8;
 
   return (
@@ -86,7 +84,6 @@ export function ProductDetailView({ productId }: Props) {
               <Image
                 width={500}
                 height={500}
-                // eslint-disable-next-line security/detect-object-injection
                 src={displayImages[activeImageIndex]}
                 alt={product.name}
                 className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
@@ -182,7 +179,6 @@ export function ProductDetailView({ productId }: Props) {
               {product.name}
             </h1>
             <p className="pr-4 text-base leading-relaxed font-medium text-black/60 md:text-lg dark:text-white/60">
-              // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
               {product.description ||
                 'Premium quality product featuring stunning design and top-tier materials. Fits perfectly into your modern wardrobe.'}
             </p>
@@ -242,7 +238,6 @@ export function ProductDetailView({ productId }: Props) {
           </div>
 
           {/* Variants / Sizes */}
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           {product.variants && product.variants.length > 0 && (
             <div className="space-y-4 pt-4">
               <span className="text-sm font-black tracking-widest text-black/80 uppercase dark:text-white/80">
@@ -287,17 +282,13 @@ export function ProductDetailView({ productId }: Props) {
 
             <div className="mb-8 rounded-2xl border border-black/5 bg-black/5 p-6 transition-colors group-hover:bg-black/10 dark:border-white/5 dark:bg-white/5 dark:group-hover:bg-white/10">
               <div className="mb-2 text-xs font-medium break-all text-black/60 dark:text-white/60">
-                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                 fashionfriday.in &rsaquo; product &rsaquo; {product.seoSlug || 'item'}
               </div>
               <div className="mb-2 cursor-pointer text-xl leading-tight font-medium text-blue-600 hover:underline dark:text-blue-400">
-                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                 {product.seoTitle || product.name}
               </div>
               <div className="text-sm leading-relaxed text-black/70 dark:text-white/70">
-                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                 {product.seoDesc ||
-                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                   product.description ||
                   'View this product on Fashion Friday. Discover the best styles and premium quality items.'}
               </div>
