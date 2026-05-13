@@ -1,9 +1,7 @@
 import Image from 'next/image';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   newReview: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setNewReview: (val: any) => void;
   handleAddSubmit: () => void;
   setIsAdding: (val: boolean) => void;
@@ -28,7 +26,6 @@ export function ProductReviewForm({
             </label>
             <input
               type="text"
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
               value={newReview.userName}
               onChange={(e) => {
                 setNewReview({ ...newReview, userName: e.target.value });
@@ -45,7 +42,6 @@ export function ProductReviewForm({
               type="number"
               min="1"
               max="5"
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
               value={newReview.rating}
               onChange={(e) => {
                 setNewReview({ ...newReview, rating: parseInt(e.target.value) || 1 });
@@ -59,13 +55,11 @@ export function ProductReviewForm({
             Add Image (Optional)
           </label>
           <div className="flex items-center gap-4">
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             {newReview.productImage && (
               <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-black/10 dark:border-white/10">
                 <Image
                   width={500}
                   height={500}
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                   src={newReview.productImage}
                   alt="Preview"
                   className="h-full w-full object-cover"
@@ -130,7 +124,6 @@ export function ProductReviewForm({
             Comment
           </label>
           <textarea
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             value={newReview.comment}
             onChange={(e) => {
               setNewReview({ ...newReview, comment: e.target.value });
