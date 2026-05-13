@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -75,7 +74,6 @@ export function useReviews() {
     }
 
     if (ratingFilter !== 'all') {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
       result = result.filter((r) => r.rating === Number(ratingFilter));
     }
 
@@ -114,7 +112,6 @@ export function useReviews() {
     sortDirection,
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const editingReview = reviews.find((r) => r.id === editingReviewId) || null;
 
   return {
