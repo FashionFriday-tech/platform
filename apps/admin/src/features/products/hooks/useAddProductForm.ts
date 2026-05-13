@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useEffect, useRef, useState } from 'react';
 
 import { BRAND_LOGOS, type BrandCategory, MAJOR_COLORS, type Product } from '@ff/schemas';
@@ -55,37 +54,23 @@ export function useAddProductForm(initialData?: Product) {
   // Prepopulate data if editing
   useEffect(() => {
     if (initialData) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProductName(initialData.name || '');
       setProductDesc(initialData.description || '');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       setCategory(initialData.category || 'Jacket');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       setQuality(initialData.attributes?.quality || 'Original');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       setBrandInput(initialData.brand?.[0] || '');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       setBasePrice(initialData.price?.sellingPrice?.toString() || '');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       setOgPrice(initialData.price?.ogPrice?.toString() || '');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       setStock(initialData.inventory?.totalStock?.toString() || '');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing
       setSku(initialData.inventory?.sku || '');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       setSizes(initialData.attributes?.sizes || ['S']);
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       setTags(initialData.marketing?.collections || []);
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing
       setSeoTitle(initialData.marketing?.seoTitle || '');
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/prefer-nullish-coalescing
       setSeoDesc(initialData.marketing?.seoDescription || '');
       setSeoSlug(initialData.slug || '');
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (initialData.media?.liveImages && initialData.media.liveImages.length > 0) {
         setImages(initialData.media.liveImages.map((url, i) => ({ id: `init-${i}`, url })));
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       } else if (initialData.media?.mainImage) {
         setImages([{ id: 'init-main', url: initialData.media.mainImage }]);
       }
@@ -117,7 +102,6 @@ export function useAddProductForm(initialData?: Product) {
   // Sync YouTube Video link dynamically
   useEffect(() => {
     if (!videoLink.trim()) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEmbedUrl(null);
       return;
     }
@@ -127,13 +111,10 @@ export function useAddProductForm(initialData?: Product) {
 
     let id = null;
     if (shortsRegex.exec(videoLink)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       id = shortsRegex.exec(videoLink)![1];
     } else if (watchRegex.exec(videoLink)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       id = watchRegex.exec(videoLink)![1];
     } else if (youtuBeRegex.exec(videoLink)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       id = youtuBeRegex.exec(videoLink)![1];
     }
 
@@ -229,11 +210,8 @@ export function useAddProductForm(initialData?: Product) {
   const handleReorder = (fromIndex: number, toIndex: number) => {
     setImages((prev) => {
       const newImages = [...prev];
-      // eslint-disable-next-line security/detect-object-injection
       const temp = newImages[fromIndex];
-      // eslint-disable-next-line security/detect-object-injection
       newImages[fromIndex] = newImages[toIndex];
-      // eslint-disable-next-line security/detect-object-injection
       newImages[toIndex] = temp;
       return newImages;
     });
@@ -259,11 +237,8 @@ export function useAddProductForm(initialData?: Product) {
 
     setImages((prev) => {
       const newImages = [...prev];
-      // eslint-disable-next-line security/detect-object-injection
       const temp = newImages[draggedIndex];
-      // eslint-disable-next-line security/detect-object-injection
       newImages[draggedIndex] = newImages[toIndex];
-      // eslint-disable-next-line security/detect-object-injection
       newImages[toIndex] = temp;
       return newImages;
     });
@@ -281,7 +256,6 @@ export function useAddProductForm(initialData?: Product) {
   const filteredColors = MAJOR_COLORS.filter((c) =>
     c.name.toLowerCase().includes(colorInput.toLowerCase()),
   );
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, security/detect-object-injection
   const availableSizes = SIZE_MAP[category] || SIZE_MAP.Jacket;
 
   const categoryToBrandCategory: Record<string, BrandCategory[]> = {
@@ -291,7 +265,6 @@ export function useAddProductForm(initialData?: Product) {
     Pants: ['clothing'],
   };
   const availableBrands = BRAND_LOGOS.filter((b) =>
-    // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-unnecessary-condition
     b.categories.some((c) => categoryToBrandCategory[category]?.includes(c)),
   );
   const filteredBrands = availableBrands.filter((b) =>
