@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useMemo, useState } from 'react';
 
 import { mockOrders } from '../services/mock-orders';
@@ -70,9 +69,7 @@ export function useOrders() {
 
     // Sorting
     result = result.sort((a, b) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
       let aValue: any = a[sortField];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, security/detect-object-injection
       let bValue: any = b[sortField];
 
       if (sortField === 'customer') {
