@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useEffect, useRef, useState } from 'react';
 
 import { type AdvancedFilters, type ProductStatus } from '../types';
@@ -25,7 +24,6 @@ export function useProductActionBar(
 
   useEffect(() => {
     if (isFilterOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalFilters(appliedAdvancedFilters);
     }
   }, [isFilterOpen, appliedAdvancedFilters]);
@@ -81,7 +79,6 @@ export function useProductActionBar(
   const isAdvancedActive =
     appliedAdvancedFilters.categories.size > 0 ||
     appliedAdvancedFilters.statuses.size > 0 ||
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     appliedAdvancedFilters.stores?.size > 0 ||
     appliedAdvancedFilters.minPrice !== '' ||
     appliedAdvancedFilters.maxPrice !== '';
