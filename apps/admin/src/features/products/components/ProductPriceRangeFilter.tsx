@@ -1,9 +1,7 @@
 import React from 'react';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   localFilters: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setLocalFilters: (val: any) => void;
 }
 
@@ -15,10 +13,8 @@ export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props
           Price Range (₹)
         </label>
         <div className="flex items-center space-x-1 rounded-md bg-black/5 px-2 py-0.5 text-xs font-bold text-black dark:bg-white/10 dark:text-white">
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
           <span>{localFilters.minPrice || '0'}</span>
           <span className="text-black/30 dark:text-white/30">-</span>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
           <span>{localFilters.maxPrice || '10000'}</span>
         </div>
       </div>
@@ -31,9 +27,7 @@ export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props
         <div
           className="absolute h-1.5 rounded-lg bg-black dark:bg-white"
           style={{
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
             left: `${(Number(localFilters.minPrice || 0) / 10000) * 100}%`,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
             right: `${100 - (Number(localFilters.maxPrice || 10000) / 10000) * 100}%`,
           }}
         />
@@ -44,12 +38,10 @@ export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props
           min="0"
           max="10000"
           step="100"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
           value={localFilters.minPrice || '0'}
           onChange={(e) => {
             const val = Math.min(
               Number(e.target.value),
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
               Number(localFilters.maxPrice || 10000) - 100,
             );
             setLocalFilters({ ...localFilters, minPrice: val.toString() });
@@ -63,10 +55,8 @@ export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props
           min="0"
           max="10000"
           step="100"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
           value={localFilters.maxPrice || '10000'}
           onChange={(e) => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
             const val = Math.max(Number(e.target.value), Number(localFilters.minPrice || 0) + 100);
             setLocalFilters({ ...localFilters, maxPrice: val.toString() });
           }}
