@@ -192,9 +192,7 @@ export async function updateProduct(id: string, data: Partial<Product>): Promise
         reject(new Error('Product not found'));
         return;
       }
-      // eslint-disable-next-line security/detect-object-injection
       mockProducts[index] = { ...mockProducts[index], ...data };
-      // eslint-disable-next-line security/detect-object-injection
       resolve(mockProducts[index]);
     }, 500);
   });
