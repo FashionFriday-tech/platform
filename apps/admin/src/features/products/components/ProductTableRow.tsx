@@ -113,7 +113,6 @@ export function ProductTableRow({
       {visibleColumns.has('Variants') && (
         <td className="px-4 py-4">
           <div className="grid w-max grid-flow-col grid-rows-2 gap-1">
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             {product.variants?.map((v) => (
               <span
                 key={v}
@@ -171,7 +170,6 @@ export function ProductTableRow({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             product.status !== 'Draft' && onToggleStatus(product.id);
           }}
           disabled={product.status === 'Draft'}
