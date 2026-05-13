@@ -23,7 +23,6 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
   const roles: Role[] = ['SUPER_ADMIN', 'PRODUCT_MANAGER', 'SALES_MANAGER'];
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     if (member) {
       setSelectedRole(member.role);
@@ -31,7 +30,6 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
     }
   }, [member]);
 
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (member) {
@@ -137,7 +135,6 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-black dark:text-white">
-                        // eslint-disable-next-line security/detect-object-injection
                         {ROLE_LABELS[role]}
                       </span>
                       {role === 'SUPER_ADMIN' && (
@@ -145,7 +142,6 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
                       )}
                     </div>
                     <p className="mt-1 text-xs text-black/60 dark:text-white/60">
-                      // eslint-disable-next-line security/detect-object-injection
                       {ROLE_DESCRIPTIONS[role]}
                     </p>
                   </div>
