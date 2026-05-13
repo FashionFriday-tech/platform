@@ -73,7 +73,6 @@ export function OrdersGrid({ orders }: OrdersGridProps) {
             <div className="mb-2 flex items-start justify-between">
               <div className="pr-2">
                 <div className="line-clamp-1 text-sm font-bold text-black dark:text-white">
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   {order.customer?.name || order.orderNumber}
                 </div>
                 <div className="mt-0.5 line-clamp-1 text-xs font-medium text-black/70 dark:text-white/70">
