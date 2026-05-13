@@ -2,7 +2,6 @@ import { type ColumnId, type SortOption } from '../types';
 
 interface Props {
   allSelected: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products: any[];
   onToggleAllSelection: (ids: string[]) => void;
   sortOption: SortOption;
@@ -26,7 +25,6 @@ export function ProductTableHeader({
           <div className="flex items-center space-x-4">
             <div
               onClick={() => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
                 onToggleAllSelection(products.map((p) => p.id));
               }}
               className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${allSelected ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 hover:border-black/50 dark:border-white/20 dark:hover:border-white/50'}`}
