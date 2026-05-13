@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
@@ -301,10 +300,8 @@ export function ProductActionBar({
                           }}
                         >
                           <div
-                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${localFilters.stores?.has(store) ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'}`}
                           >
-                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             {localFilters.stores?.has(store) && (
                               <svg
                                 className="h-2.5 w-2.5 text-white dark:text-black"
