@@ -144,7 +144,6 @@ export function ProductReviews({ productId }: Props) {
       userName: review.userName,
       rating: review.rating,
       comment: review.comment,
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       productImage: review.productImage || '',
     });
     setMenuOpenId(null);
@@ -217,7 +216,6 @@ export function ProductReviews({ productId }: Props) {
                   <button
                     key={opt.id}
                     onClick={() => {
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                       setSortOption(opt.id as any);
                       setIsSortOpen(false);
                     }}
@@ -566,7 +564,6 @@ export function ProductReviews({ productId }: Props) {
                   {/* Content Section */}
                   <div className="flex flex-1 flex-col items-start pt-2 pr-4">
                     <div className="mb-3 flex items-center text-yellow-500">
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                       {[...Array(5)].map((_, idx) => (
                         <svg
                           key={idx}
