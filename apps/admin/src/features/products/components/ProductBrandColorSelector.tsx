@@ -3,7 +3,6 @@ import React from 'react';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
   brandInput: string;
   setBrandInput: (val: string) => void;
@@ -11,7 +10,6 @@ interface Props {
   setIsBrandOpen: (val: boolean) => void;
   selectedBrandLogo: string | null;
   setSelectedBrandLogo: (val: string | null) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filteredBrands: any[];
   brandRef: React.RefObject<HTMLDivElement | null>;
   colorInput: string;
@@ -20,7 +18,6 @@ interface Props {
   setIsColorOpen: (val: boolean) => void;
   selectedColorHex: string | null;
   setSelectedColorHex: (val: string | null) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filteredColors: any[];
   colorRef: React.RefObject<HTMLDivElement | null>;
   getStatus: (
@@ -54,7 +51,6 @@ export function ProductBrandColorSelector({
   return (
     <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2">
       <div ref={brandRef} className="relative">
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         <LabelWithTick label="Brand" status={getStatus(brandInput, initialData?.brand?.[0], 2)} />
         <div className="relative flex items-center">
           {selectedBrandLogo && (
@@ -83,23 +79,18 @@ export function ProductBrandColorSelector({
             {filteredBrands.length > 0 ? (
               filteredBrands.map((b) => (
                 <button
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                   key={b.name}
                   onClick={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                     setBrandInput(b.name);
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     setSelectedBrandLogo(b.name.charAt(0).toUpperCase());
                     setIsBrandOpen(false);
                   }}
                   className="flex w-full items-center space-x-3 px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
                 >
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black/5 text-xs font-bold text-black/80 dark:bg-white/10 dark:text-white/80">
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     {b.name.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-black/80 dark:text-white/80">
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                     {b.name}
                   </span>
                 </button>
@@ -116,7 +107,6 @@ export function ProductBrandColorSelector({
       <div ref={colorRef} className="relative">
         <LabelWithTick
           label="Color"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getStatus(colorInput, initialData?.attributes?.colors?.[0], 3)}
         />
         <div className="relative flex items-center">
@@ -147,12 +137,9 @@ export function ProductBrandColorSelector({
             {filteredColors.length > 0 ? (
               filteredColors.map((c) => (
                 <button
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                   key={c.name}
                   onClick={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                     setColorInput(c.name);
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                     setSelectedColorHex(c.hex);
                     setIsColorOpen(false);
                   }}
@@ -160,11 +147,9 @@ export function ProductBrandColorSelector({
                 >
                   <div
                     className="h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20"
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
                     style={{ backgroundColor: c.hex }}
                   />
                   <span className="text-sm font-medium text-black/80 dark:text-white/80">
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                     {c.name}
                   </span>
                 </button>
