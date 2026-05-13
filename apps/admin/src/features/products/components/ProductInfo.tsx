@@ -52,7 +52,6 @@ export function ProductInfo({ product, onEdit, liveSold }: Props) {
           {product.name}
         </h1>
         <p className="pr-4 text-base leading-relaxed font-medium text-black/60 md:text-lg dark:text-white/60">
-          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           {product.description ||
             'Premium quality product featuring stunning design and top-tier materials. Fits perfectly into your modern wardrobe.'}
         </p>
@@ -107,7 +106,6 @@ export function ProductInfo({ product, onEdit, liveSold }: Props) {
       </div>
 
       {/* Variants / Sizes */}
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       {product.variants && product.variants.length > 0 && (
         <div className="space-y-4 pt-4">
           <span className="text-sm font-black tracking-widest text-black/80 uppercase dark:text-white/80">
