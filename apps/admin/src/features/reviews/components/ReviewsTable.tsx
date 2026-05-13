@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { ChevronDownIcon, ChevronUpIcon, FilledStarIcon, SparklesIcon, VerifiedIcon } from '@ff/ui';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -32,7 +31,6 @@ export function ReviewsTable({
   onToggleFeatured,
   onEditReview,
 }: ReviewsTableProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -50,7 +48,6 @@ export function ReviewsTable({
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-0.5 text-yellow-500">
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         {[...Array(5)].map((_, i) => (
           <FilledStarIcon
             key={i}
@@ -73,7 +70,6 @@ export function ReviewsTable({
                   onSort('date');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Date <SortIcon field="date" />
               </th>
               <th className="px-6 py-4 whitespace-nowrap">Product</th>
@@ -84,7 +80,6 @@ export function ReviewsTable({
                   onSort('rating');
                 }}
               >
-                // eslint-disable-next-line react-hooks/static-components
                 Rating <SortIcon field="rating" />
               </th>
               <th className="min-w-[200px] px-6 py-4 whitespace-nowrap">Comment</th>
