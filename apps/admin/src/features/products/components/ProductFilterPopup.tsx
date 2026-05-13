@@ -2,9 +2,7 @@ import { type ProductStatus } from '../types';
 import { ProductPriceRangeFilter } from './ProductPriceRangeFilter';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   localFilters: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setLocalFilters: (val: any) => void;
   toggleCategory: (cat: string) => void;
   toggleStore: (store: string) => void;
@@ -28,7 +26,6 @@ export function ProductFilterPopup({
         <h3 className="mb-4 text-lg font-semibold text-black dark:text-white">Detailed Filters</h3>
 
         <div className="space-y-5">
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           <ProductPriceRangeFilter localFilters={localFilters} setLocalFilters={setLocalFilters} />
 
           {/* Categories */}
@@ -47,10 +44,8 @@ export function ProductFilterPopup({
                   }}
                 >
                   <div
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${localFilters.categories.has(cat) ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'}`}
                   >
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     {localFilters.categories.has(cat) && (
                       <svg
                         className="h-2.5 w-2.5 text-white dark:text-black"
@@ -91,10 +86,8 @@ export function ProductFilterPopup({
                   }}
                 >
                   <div
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${localFilters.stores?.has(store) ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'}`}
                   >
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     {localFilters.stores?.has(store) && (
                       <svg
                         className="h-2.5 w-2.5 text-white dark:text-black"
@@ -131,7 +124,6 @@ export function ProductFilterPopup({
                   onClick={() => {
                     toggleStatus(status);
                   }}
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                   className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${localFilters.statuses.has(status) ? 'border-transparent bg-black text-white dark:bg-white dark:text-black' : 'border-black/10 bg-black/5 text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
                 >
                   {status}
