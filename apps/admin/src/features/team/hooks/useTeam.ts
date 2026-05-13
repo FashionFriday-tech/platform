@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -80,7 +79,6 @@ export function useTeam() {
   };
 
   const editingMember = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     return team.find((m) => m.id === editingMemberId) || null;
   }, [team, editingMemberId]);
 
@@ -103,14 +101,10 @@ export function useTeam() {
     }
 
     result.sort((a, b) => {
-      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/prefer-nullish-coalescing
       const aVal = a[sortField] || '';
-      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/prefer-nullish-coalescing
       const bVal = b[sortField] || '';
       return sortDirection === 'asc'
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
         ? String(aVal).localeCompare(String(bVal))
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
         : String(bVal).localeCompare(String(aVal));
     });
 
