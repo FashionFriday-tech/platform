@@ -31,7 +31,6 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                 if (orderStatus === 'shipped') {
                   return (
                     <a
-                      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                       href={trackingUrl || '#'}
                       target="_blank"
                       rel="noreferrer"
@@ -65,7 +64,6 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                     disabled
                     className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-lg bg-black/5 px-4 py-2 text-xs font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
                   >
-                    // eslint-disable-next-line security/detect-object-injection
                     {labels[orderStatus] || orderStatus}
                   </button>
                 );
@@ -87,7 +85,6 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                   {item.productName}
                 </h3>
                 <p className="mt-1 text-sm font-semibold text-black/40 dark:text-white/40">
-                  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                   SKU: {item.sku || 'N/A'}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -133,7 +130,6 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                     if (orderStatus === 'shipped') {
                       return (
                         <a
-                          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                           href={trackingUrl || '#'}
                           target="_blank"
                           rel="noreferrer"
@@ -167,7 +163,6 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                         disabled
                         className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-3 text-sm font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
                       >
-                        // eslint-disable-next-line security/detect-object-injection
                         {labels[orderStatus] || orderStatus}
                       </button>
                     );
