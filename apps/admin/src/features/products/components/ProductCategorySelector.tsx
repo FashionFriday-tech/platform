@@ -4,7 +4,6 @@ import { CATEGORIES, QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any;
   category: string;
   isCategoryOpen: boolean;
@@ -45,7 +44,6 @@ export function ProductCategorySelector({
       <div ref={categoryRef} className="relative">
         <LabelWithTick
           label="Product Category"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getStatus(category, initialData?.category, 1, 'category')}
         />
         <button
@@ -106,7 +104,6 @@ export function ProductCategorySelector({
       <div ref={qualityRef} className="relative">
         <LabelWithTick
           label="Quality"
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
           status={getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
         />
         <button
