@@ -67,7 +67,6 @@ export function TeamManagementView() {
               options={roleOptions}
               value={roleFilter}
               onChange={(val) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                 setRoleFilter(val as any);
               }}
               className="z-50 w-48"
@@ -77,7 +76,6 @@ export function TeamManagementView() {
               options={statusOptions}
               value={statusFilter}
               onChange={(val) => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
                 setStatusFilter(val as any);
               }}
               className="z-50 w-40"
@@ -147,7 +145,6 @@ export function TeamManagementView() {
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/10 font-bold text-black dark:bg-white/10 dark:text-white">
                             {member.avatarUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
                               <img
                                 src={member.avatarUrl}
                                 alt={member.name}
