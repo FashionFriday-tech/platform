@@ -2,7 +2,6 @@
 
 import React from 'react';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ActivityIcon, MessageSquareIcon, StarIcon, UserIcon, VerifiedUserIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
@@ -14,7 +13,6 @@ export function ReviewStats() {
     mockReviews.reduce((acc, curr) => acc + curr.rating, 0) / (totalReviews || 1)
   ).toFixed(1);
   const recentReviews = mockReviews.filter(
-    // eslint-disable-next-line react-hooks/purity
     (r) => new Date(r.date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
   ).length;
   const verifiedReviews = mockReviews.filter((r) => r.isVerified).length;
