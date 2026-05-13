@@ -42,7 +42,6 @@ export function OrderShippingCard({
         </div>
         <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
           <span className="text-black/50 dark:text-white/50">District :</span>
-          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           <span>{order.shippingAddress.district || 'N/A'}</span>
         </div>
         <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
@@ -59,7 +58,6 @@ export function OrderShippingCard({
         </div>
         <div className="grid grid-cols-[130px_1fr] items-center gap-2">
           <span className="text-black/50 dark:text-white/50">Alt Number :</span>
-          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           <span>{order.customer.altPhone || 'N/A'}</span>
         </div>
 
@@ -134,7 +132,6 @@ export function OrderShippingCard({
               {order.customer.altPhone && (
                 <button
                   onClick={() => {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     executeContact(contactMode, order.customer.altPhone!);
                   }}
                   className="flex items-center justify-between rounded-lg bg-black/5 px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
