@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useMemo, useState } from 'react';
 
 import type { Review } from '@ff/schemas';
@@ -138,7 +137,6 @@ export function useProductReviews(productId: string) {
       userName: review.userName,
       rating: review.rating,
       comment: review.comment,
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       productImage: review.productImage || '',
     });
     setMenuOpenId(null);
