@@ -1,7 +1,6 @@
 import React from 'react';
 
 interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
 }
 
@@ -27,7 +26,6 @@ export function AccountInformation({ user }: Props) {
             Email Address
           </label>
           <p className="text-lg font-medium text-black dark:text-white">
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             {user.name.split(' ')[0].toLowerCase()}@fashionfriday.com
           </p>
         </div>
@@ -37,7 +35,6 @@ export function AccountInformation({ user }: Props) {
             Contact Number
           </label>
           <p className="text-lg font-medium text-black dark:text-white">
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/prefer-nullish-coalescing
             {user.phone || '+1 (555) 000-0000'}
           </p>
         </div>
@@ -47,7 +44,6 @@ export function AccountInformation({ user }: Props) {
             Role Access
           </label>
           <div className="inline-flex items-center text-lg font-medium text-black dark:text-white">
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             {user.role.replace('_', ' ')}
           </div>
         </div>
