@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Link from 'next/link';
 
 import { type Product } from '@ff/schemas';
@@ -107,11 +106,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     if (valStr.trim().length < minLen) {
       return hasSubmitted ? 'error' : 'empty';
     }
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     if (initialData && valStr === String(initVal || '')) {
       return 'default';
     }
-    // eslint-disable-next-line security/detect-object-injection
     if (!initialData && fieldName && !touched[fieldName]) {
       return 'default';
     }
@@ -133,7 +130,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     ) {
       return 'default';
     }
-    // eslint-disable-next-line security/detect-object-injection
     if (!initialData && fieldName && !touched[fieldName]) {
       return 'default';
     }
@@ -322,7 +318,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={qualityRef} className="relative">
                   <LabelWithTick
                     label="Quality"
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     status={getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
                   />
                   <button
@@ -375,7 +370,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={brandRef} className="relative">
                   <LabelWithTick
                     label="Brand"
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     status={getStatus(brandInput, initialData?.brand?.[0], 2)}
                   />
                   <div className="relative flex items-center">
@@ -433,7 +427,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={colorRef} className="relative">
                   <LabelWithTick
                     label="Color"
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     status={getStatus(colorInput, initialData?.attributes?.colors?.[0], 3)}
                   />
                   <div className="relative flex items-center">
@@ -495,7 +488,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div>
                   <LabelWithTick
                     label="Size"
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     status={getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
                     subtitle="Pick Available Sizes"
                   />
@@ -557,7 +549,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Original Price"
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(ogPrice, initialData?.price?.ogPrice, 1)}
                 />
                 <div className="relative">
@@ -579,7 +570,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Selling Price"
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(basePrice, initialData?.price?.sellingPrice, 1)}
                 />
                 <div className="relative">
@@ -601,7 +591,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Stock"
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(stock, initialData?.inventory?.totalStock, 1)}
                 />
                 <input
@@ -618,7 +607,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="SKU"
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(sku, initialData?.inventory?.sku, 3)}
                 />
                 <input
@@ -667,7 +655,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Tags / Keywords"
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getArrayStatus(tags, initialData?.marketing?.collections)}
                 />
                 <div className="flex min-h-[52px] w-full flex-wrap items-center gap-2 rounded-xl border border-transparent bg-black/5 px-3 py-2 transition-all focus-within:border-black/20 dark:bg-white/5 dark:focus-within:border-white/20">
@@ -736,7 +723,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Meta Title"
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(seoTitle, initialData?.marketing?.seoTitle, 5)}
                   rightElement={
                     <span className="text-xs font-medium text-black/40 dark:text-white/40">
@@ -758,7 +744,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Meta Description"
-                  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                   status={getStatus(seoDesc, initialData?.marketing?.seoDescription, 10)}
                   rightElement={
                     <span className="text-xs font-medium text-black/40 dark:text-white/40">
@@ -1010,10 +995,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   ) : (
                     <iframe
                       className="absolute top-1/2 left-0 aspect-[9/16] w-full -translate-y-1/2"
-                      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                       src={embedUrl || ''}
                       title="YouTube Shorts player"
-                      // eslint-disable-next-line @typescript-eslint/no-deprecated
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
