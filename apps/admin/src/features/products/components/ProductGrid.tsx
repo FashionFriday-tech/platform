@@ -187,7 +187,6 @@ export function ProductGrid({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                       product.status !== 'Draft' && onToggleStatus(product.id);
                     }}
                     disabled={product.status === 'Draft'}
