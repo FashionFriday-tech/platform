@@ -1,4 +1,3 @@
-// eslint-disable-next-line unicorn/filename-case
 import { useMemo, useState } from 'react';
 
 import type { Product } from '../types';
@@ -48,9 +47,7 @@ export function useProductPerformance(product: Product) {
             : timeframe === 'monthly'
               ? 0.1
               : 0.5;
-      // eslint-disable-next-line security/detect-object-injection
       const sVal = Math.max(1, Math.floor(baseSales * salesMultipliers[idx] * scale));
-      // eslint-disable-next-line security/detect-object-injection
       const vVal = Math.max(sVal + 10, Math.floor(baseViews * viewsMultipliers[idx] * scale));
       return { label, sales: sVal, views: vVal };
     });
