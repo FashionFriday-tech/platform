@@ -42,7 +42,6 @@ export function ProductPricingStock({
         <div>
           <LabelWithTick
             label="Original Price"
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             status={getStatus(ogPrice, initialData?.price?.ogPrice, 1)}
           />
           <div className="relative">
@@ -64,7 +63,6 @@ export function ProductPricingStock({
         <div>
           <LabelWithTick
             label="Selling Price"
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             status={getStatus(basePrice, initialData?.price?.sellingPrice, 1)}
           />
           <div className="relative">
@@ -86,7 +84,6 @@ export function ProductPricingStock({
         <div>
           <LabelWithTick
             label="Stock"
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             status={getStatus(stock, initialData?.inventory?.totalStock, 1)}
           />
           <input
@@ -101,7 +98,6 @@ export function ProductPricingStock({
         </div>
 
         <div>
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           <LabelWithTick label="SKU" status={getStatus(sku, initialData?.inventory?.sku, 3)} />
           <input
             type="text"
