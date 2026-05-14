@@ -63,7 +63,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Req() req: AuthRequest) {
-    const id = req.user?.id || req.user?.sub;
+    const id = req.user.id || req.user.sub;
     if (!id) {
       throw new UnauthorizedException();
     }
@@ -74,7 +74,7 @@ export class AuthController {
   @Get('me')
   @HttpCode(HttpStatus.OK)
   async getMe(@Req() req: AuthRequest) {
-    const id = req.user?.id || req.user?.sub;
+    const id = req.user.id || req.user.sub;
     if (!id) {
       throw new UnauthorizedException();
     }
@@ -86,8 +86,8 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: AuthRequest) {
-    const sub = req.user?.sub;
-    const refreshToken = req.user?.refreshToken;
+    const sub = req.user.sub;
+    const refreshToken = req.user.refreshToken;
     if (!sub || !refreshToken) {
       throw new UnauthorizedException();
     }
@@ -97,8 +97,11 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Patch('profile')
   @HttpCode(HttpStatus.OK)
-  async updateProfile(@Req() req: AuthRequest, @Body() body: any) {
-    const id = req.user?.id || req.user?.sub;
+  async updateProfile(
+    @Req() req: AuthRequest,
+    @Body() body: { name?: string; email?: string; avatarUrl?: string },
+  ) {
+    const id = req.user.id || req.user.sub;
     if (!id) {
       throw new UnauthorizedException();
     }
@@ -109,7 +112,7 @@ export class AuthController {
   @Delete('account')
   @HttpCode(HttpStatus.OK)
   async deleteAccount(@Req() req: AuthRequest) {
-    const id = req.user?.id || req.user?.sub;
+    const id = req.user.id || req.user.sub;
     if (!id) {
       throw new UnauthorizedException();
     }
@@ -121,7 +124,7 @@ export class AuthController {
   @Post('email/send-otp')
   @HttpCode(HttpStatus.OK)
   async sendEmailOtp(@Req() req: AuthRequest) {
-    const id = req.user?.id || req.user?.sub;
+    const id = req.user.id || req.user.sub;
     if (!id) {
       throw new UnauthorizedException();
     }
@@ -132,12 +135,12 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('email/verify-otp')
   @HttpCode(HttpStatus.OK)
-  async verifyEmailOtp(@Req() req: AuthRequest, @Body() body: any) {
-    const id = req.user?.id || req.user?.sub;
+  async verifyEmailOtp(@Req() req: AuthRequest, @Body() body: { otp: string }) {
+    const id = req.user.id || req.user.sub;
     if (!id) {
       throw new UnauthorizedException();
     }
-    if (!body?.otp) {
+    if (!body.otp) {
       throw new BadRequestException('OTP is required');
     }
     return this.authService.verifyEmailOtp(id, body.otp);
