@@ -60,11 +60,9 @@ export function useAddressForm(initialData: Address | null, isFirstAddress: bool
       void fetchRegion();
     } else {
       if (formData.district || formData.state) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData((prev) => ({ ...prev, state: '', district: '' }));
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.pincode]);
 
   return {
