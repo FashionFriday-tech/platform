@@ -85,7 +85,7 @@ export function useReferral() {
         url: referralLink,
       };
 
-      if (navigator.canShare && navigator.canShare({ files: [] })) {
+      if (navigator.canShare?.({ files: [] })) {
         try {
           const response = await fetch('/images/refferal/hero.png');
           const blob = await response.blob();
