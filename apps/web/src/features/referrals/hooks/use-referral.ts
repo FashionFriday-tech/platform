@@ -85,7 +85,6 @@ export function useReferral() {
         url: referralLink,
       };
 
-      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
       if (navigator.canShare && navigator.canShare({ files: [] })) {
         try {
           const response = await fetch('/images/refferal/hero.png');
