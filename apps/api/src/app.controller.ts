@@ -9,7 +9,7 @@ export class AppController {
   @Get()
   async getHello() {
     try {
-      await (this.prisma.db as any).$connect();
+      await this.prisma.db.$connect();
       return {
         message: 'Hello World! Fashion Friday API is running',
         database: 'Connected',

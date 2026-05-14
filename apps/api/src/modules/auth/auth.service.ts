@@ -32,7 +32,22 @@ export class AuthService {
 
   // In-memory fallbacks for development when DB is down
   private otpMap = new Map<string, { otpHash: string; expiresAt: Date }>();
-  private userMap = new Map<string, any>();
+  private userMap = new Map<
+    string,
+    {
+      id: string;
+      phone: string;
+      email: string;
+      name: string;
+      role: string;
+      isPhoneVerified: boolean;
+      accountStatus: string;
+      createdAt: Date;
+      refreshToken?: string | null;
+      avatarUrl?: string | null;
+      isEmailVerified?: boolean | null;
+    }
+  >();
 
   async sendOtp(dto: SendOtpDto) {
     const { phone } = dto;
@@ -77,7 +92,7 @@ export class AuthService {
       otpEntry = await this.prisma.db.otp.findUnique({
         where: { phone },
       });
-    } catch (error) {
+    } catch {
       this.logger.warn(
         `Database unreachable during OTP verification for ${phone}, checking memory fallback`,
       );
@@ -232,11 +247,17 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_SECRET'),
-        expiresIn: this.configService.get<string>('JWT_ACCESS_EXPIRES_IN', '15m') as any,
+        expiresIn: this.configService.get<string>(
+          'JWT_ACCESS_EXPIRES_IN',
+          '15m',
+        ) as unknown as number,
       }),
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-        expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN', '90d') as any,
+        expiresIn: this.configService.get<string>(
+          'JWT_REFRESH_EXPIRES_IN',
+          '90d',
+        ) as unknown as number,
       }),
     ]);
 
@@ -299,7 +320,7 @@ export class AuthService {
     return tokens;
   }
 
-  async updateProfile(userId: string, data: any) {
+  async updateProfile(userId: string, data: { name?: string; email?: string; avatarUrl?: string }) {
     try {
       const updatedUser = await this.prisma.db.user.update({
         where: { id: userId },

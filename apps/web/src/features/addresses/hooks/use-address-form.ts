@@ -58,12 +58,12 @@ export function useAddressForm(initialData: Address | null, isFirstAddress: bool
         }
       };
       void fetchRegion();
-    } else {
-      if (formData.district || formData.state) {
+    } else if (formData.district || formData.state) {
+      queueMicrotask(() => {
         setFormData((prev) => ({ ...prev, state: '', district: '' }));
-      }
+      });
     }
-  }, [formData.pincode]);
+  }, [formData.pincode, formData.district, formData.state]);
 
   return {
     formData,
