@@ -108,7 +108,6 @@ export function ProfilePage() {
   // Effect to sync user data into form
   useEffect(() => {
     if (user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: user.name || '',
         phone: user.phone || '',
