@@ -23,7 +23,7 @@ export function AccountDashboard() {
       await logout();
       router.replace('/');
       toast.success('Logged out successfully');
-    } catch (_error) {
+    } catch {
       toast.error('Failed to logout');
     }
   };
