@@ -108,20 +108,22 @@ export function ProfilePage() {
   // Effect to sync user data into form
   useEffect(() => {
     if (user) {
-      setFormData({
-        name: user.name || '',
-        phone: user.phone || '',
-        email: user.email || '',
-        dob: '',
-        anniversary: '',
-        gender: 'Male',
-        stylePreference: ['Streetwear'],
-        avatarUrl: user.avatarUrl || '/images/placeholders/user.png',
-        loyaltyPoints: user.loyaltyPoints || 0,
-      });
-      setVerifiedStatus({
-        phone: user.isPhoneVerified ?? !!user.phone,
-        email: user.isEmailVerified ?? false,
+      queueMicrotask(() => {
+        setFormData({
+          name: user.name || '',
+          phone: user.phone || '',
+          email: user.email || '',
+          dob: '',
+          anniversary: '',
+          gender: 'Male',
+          stylePreference: ['Streetwear'],
+          avatarUrl: user.avatarUrl || '/images/placeholders/user.png',
+          loyaltyPoints: user.loyaltyPoints || 0,
+        });
+        setVerifiedStatus({
+          phone: user.isPhoneVerified ?? !!user.phone,
+          email: user.isEmailVerified ?? false,
+        });
       });
     }
   }, [user]);
