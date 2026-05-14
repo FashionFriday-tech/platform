@@ -219,7 +219,7 @@ export async function logoutAction(): Promise<{ success: boolean; message: strin
   try {
     // Attempt backend logout, but don't fail if it doesn't work
     await fetchWithAuth('/auth/logout', { method: 'POST' });
-  } catch (_error) {
+  } catch {
     // Ignore server error for logout
   }
 
