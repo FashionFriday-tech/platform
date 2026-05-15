@@ -5,7 +5,7 @@ import { BRAND_LOGOS, type BrandCategory, MAJOR_COLORS, type Product } from '@ff
 import { SIZE_MAP } from '../utils/constants';
 
 export function useAddProductForm(initialData?: Product) {
-  const [sizes, setSizes] = useState<string[]>(['S']);
+  const [sizes, setSizes] = useState<string[]>(SIZE_MAP['Jacket'] || []);
   const [gender, setGender] = useState<string>('Woman');
   const [category, setCategory] = useState<string>('Jacket');
   const [quality, setQuality] = useState<string>('Original');
@@ -63,7 +63,7 @@ export function useAddProductForm(initialData?: Product) {
       setOgPrice(initialData.price?.ogPrice?.toString() || '');
       setStock(initialData.inventory?.totalStock?.toString() || '');
       setSku(initialData.inventory?.sku || '');
-      setSizes(initialData.attributes?.sizes || ['S']);
+      setSizes(initialData.attributes?.sizes && initialData.attributes.sizes.length > 0 ? initialData.attributes.sizes : SIZE_MAP[initialData.category || 'Jacket'] || SIZE_MAP['Jacket'] || []);
       setTags(initialData.marketing?.collections || []);
       setSeoTitle(initialData.marketing?.seoTitle || '');
       setSeoDesc(initialData.marketing?.seoDescription || '');
@@ -132,7 +132,7 @@ export function useAddProductForm(initialData?: Product) {
   const handleCategorySelect = (c: string) => {
     setCategory(c);
     setIsCategoryOpen(false);
-    setSizes([]);
+    setSizes(SIZE_MAP[c] || []);
     setBrandInput(''); // Reset brand when category changes
     setSelectedBrandLogo(null);
   };
