@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { ProductBaseSchema } from './product.base.schema';
-import { InventorySchema } from './product.inventory.schema';
+import { ProductSchema } from './product.schema';
 
-export const CreateProductSchema = ProductBaseSchema.omit({
+export const CreateProductSchema = ProductSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+  rating: true,
+  liveMatrix: true,
 }).extend({
-  inventory: InventorySchema,
   status: z.literal('DRAFT').default('DRAFT'),
 });
