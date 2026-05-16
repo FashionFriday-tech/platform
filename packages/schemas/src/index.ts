@@ -1,7 +1,7 @@
-export * from './product.schema';
+export * from './product';
 export * from './auth.schema';
-export * from './user.schema';
-export * from './address.schema';
+export * from './user';
+export * from './address';
 export * from './review.schema';
 
 export * from './constants';
