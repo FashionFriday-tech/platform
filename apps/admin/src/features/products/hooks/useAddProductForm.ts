@@ -33,7 +33,7 @@ export function useAddProductForm(initialData?: Product) {
   const [basePrice, setBasePrice] = useState('');
   const [ogPrice, setOgPrice] = useState('');
   const [stock, setStock] = useState('');
-  const [sku, setSku] = useState('');
+  const [gettingPrice, setGettingPrice] = useState('');
 
   // SEO
   const [seoTitle, setSeoTitle] = useState('');
@@ -62,7 +62,7 @@ export function useAddProductForm(initialData?: Product) {
       setBasePrice(initialData.price?.sellingPrice?.toString() || '');
       setOgPrice(initialData.price?.ogPrice?.toString() || '');
       setStock(initialData.inventory?.totalStock?.toString() || '');
-      setSku(initialData.inventory?.sku || '');
+      setGettingPrice(initialData.price?.gettingPrice?.toString() || '');
       setSizes(initialData.attributes?.sizes && initialData.attributes.sizes.length > 0 ? initialData.attributes.sizes : SIZE_MAP[initialData.category || 'Jacket'] || SIZE_MAP['Jacket'] || []);
       setTags(initialData.marketing?.collections || []);
       setSeoTitle(initialData.marketing?.seoTitle || '');
@@ -188,21 +188,52 @@ export function useAddProductForm(initialData?: Product) {
     setTags(Array.from(newTags));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
-      const newImages = newFiles.map((file) => ({
-        id: Math.random().toString(36).substring(7),
-        url: URL.createObjectURL(file),
-      }));
+  const [isUploading, setIsUploading] = useState(false);
 
-      setImages((prev) => {
-        const combined = [...prev, ...newImages];
-        return combined.slice(0, 10);
-      });
-      // reset input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, productName?: string) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsUploading(true);
+      const newFiles = Array.from(e.target.files);
+      const uploadedImages: { id: string; url: string }[] = [];
+
+      try {
+        for (const file of newFiles) {
+          const formData = new FormData();
+          formData.append('file', file);
+          if (productName) {
+            formData.append('slug', productName);
+          }
+          formData.append('folder', 'products');
+
+          const res = await fetch('http://localhost:3001/admin/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!res.ok) {
+            throw new Error('Failed to upload image');
+          }
+
+          const data = await res.json();
+          uploadedImages.push({
+            id: Math.random().toString(36).substring(7),
+            url: data.url,
+          });
+        }
+
+        setImages((prev) => {
+          const combined = [...prev, ...uploadedImages];
+          return combined.slice(0, 10);
+        });
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        alert('Failed to upload images. Please try again.');
+      } finally {
+        setIsUploading(false);
+        // reset input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       }
     }
   };
@@ -249,8 +280,26 @@ export function useAddProductForm(initialData?: Product) {
     setDraggedIndex(null);
   };
 
+  const [imagesToDelete, setImagesToDelete] = useState<{ id: string; url: string }[]>([]);
+
   const removeImage = (idToRemove: string) => {
-    setImages((prev) => prev.filter((img) => img.id !== idToRemove));
+    setImages((prev) => {
+      const imgToRemove = prev.find((img) => img.id === idToRemove);
+      if (imgToRemove) {
+        setImagesToDelete((delPrev) => [...delPrev, imgToRemove]);
+      }
+      return prev.filter((img) => img.id !== idToRemove);
+    });
+  };
+
+  const restoreImage = (idToRestore: string) => {
+    setImagesToDelete((prev) => {
+      const imgToRestore = prev.find((img) => img.id === idToRestore);
+      if (imgToRestore) {
+        setImages((imgPrev) => [...imgPrev, imgToRestore]);
+      }
+      return prev.filter((img) => img.id !== idToRestore);
+    });
   };
 
   const filteredColors = MAJOR_COLORS.filter((c) =>
@@ -281,7 +330,7 @@ export function useAddProductForm(initialData?: Product) {
       basePrice,
       ogPrice,
       stock,
-      sku,
+      gettingPrice,
       images.length > 0 ? 'filled' : '',
       videoLink,
       tags.length > 0 ? 'filled' : '',
@@ -343,8 +392,8 @@ export function useAddProductForm(initialData?: Product) {
     setOgPrice,
     stock,
     setStock,
-    sku,
-    setSku,
+    gettingPrice,
+    setGettingPrice,
     seoTitle,
     setSeoTitle,
     seoSlug,
@@ -371,5 +420,8 @@ export function useAddProductForm(initialData?: Product) {
     availableSizes,
     filteredBrands,
     progress,
+    isUploading,
+    imagesToDelete,
+    restoreImage,
   };
 }
