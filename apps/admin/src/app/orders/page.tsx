@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
 
-import OrdersFeature from '@/features/orders';
+import { OrdersFeature } from '@/features/orders';
 
 export const metadata: Metadata = {
   title: 'Orders | Admin Panel',
