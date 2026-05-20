@@ -12,9 +12,9 @@ import { BrandCard } from './BrandCard';
 
 const ALL_CATEGORIES: (BrandCategory | 'All')[] = [
   'All',
-  'sneakers',
-  'fashion',
-  'watches',
+  'footwear',
+  'clothing',
+  'watch',
   'accessories',
 ];
 const SORT_OPTIONS: ('a-z' | 'z-a')[] = ['a-z', 'z-a'];
