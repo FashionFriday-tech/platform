@@ -12,8 +12,8 @@ interface Props {
   setBasePrice: (val: string) => void;
   stock: string;
   setStock: (val: string) => void;
-  sku: string;
-  setSku: (val: string) => void;
+  gettingPrice: string;
+  setGettingPrice: (val: string) => void;
   getStatus: (
     val: string | number,
     initVal: string | number | undefined,
@@ -30,8 +30,8 @@ export function ProductPricingStock({
   setBasePrice,
   stock,
   setStock,
-  sku,
-  setSku,
+  gettingPrice,
+  setGettingPrice,
   getStatus,
 }: Props) {
   return (
@@ -98,16 +98,21 @@ export function ProductPricingStock({
         </div>
 
         <div>
-          <LabelWithTick label="SKU" status={getStatus(sku, initialData?.inventory?.sku, 3)} />
-          <input
-            type="text"
-            value={sku}
-            onChange={(e) => {
-              setSku(e.target.value);
-            }}
-            placeholder="JAC-WIN-001"
-            className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black uppercase transition-all outline-none placeholder:normal-case focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-          />
+          <LabelWithTick label="Getting Price" status={getStatus(gettingPrice, initialData?.price?.gettingPrice, 1)} />
+          <div className="relative">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+              <span className="text-sm font-bold text-black/50 dark:text-white/50">₹</span>
+            </div>
+            <input
+              type="text"
+              value={gettingPrice}
+              onChange={(e) => {
+                setGettingPrice(e.target.value);
+              }}
+              placeholder="2,500"
+              className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+            />
+          </div>
         </div>
       </div>
     </div>
