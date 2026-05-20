@@ -44,12 +44,9 @@ model Product {
   colors         String[]
   quality        String
   sizes          String[]
-  materials      String[]
-  specs          Json?           
   
   // Inventory
   totalStock     Int             @default(0)
-  sku            String?         @unique
   
   // Matrix (Real-time data)
   liveWatching   Int             @default(0)
@@ -71,7 +68,6 @@ model Product {
   // Relations
   reviews        Review[]
   variants       ProductVariant[]
-  sellers        ProductSeller[]
   
   @@index([category])
   @@index([status])
@@ -90,21 +86,4 @@ model ProductVariant {
 
   @@index([productId])
   @@map("product_variants")
-}
-
-model ProductSeller {
-  id           String  @id @default(uuid())
-  productId    String
-  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  sellerId     String
-  seller       User    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  
-  gettingPrice Decimal @db.Decimal(12, 2)
-  stock        Int     @default(0)
-  isVerified   Boolean @default(false)
-
-  @@index([productId])
-  @@index([sellerId])
-  @@map("product_sellers")
 }
