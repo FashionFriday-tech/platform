@@ -72,7 +72,6 @@ model User {
   addresses               Address[]
   reviews                 Review[]
   orders                  Order[]
-  productsSold            ProductSeller[]
   devices                 Device[]
   walletTransactions      WalletTransaction[]
   referralRewardsSent     ReferralReward[]    @relation("Referrer")
