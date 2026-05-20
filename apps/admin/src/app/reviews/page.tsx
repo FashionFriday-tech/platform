@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
 
-import ReviewsFeature from '@/features/reviews';
+import { ReviewsFeature } from '@/features/reviews';
 
 export const metadata: Metadata = {
   title: 'Reviews | Admin Panel',
