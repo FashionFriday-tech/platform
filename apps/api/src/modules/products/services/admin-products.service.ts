@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ProductsRepository } from '../products.repository';
 import { CreateProductDto, UpdateProductDto } from '../dto';
 import { Prisma, ProductStatus, ProductCategory, Gender } from '@ff/database';
+import { UploadService } from '../../upload/upload.service';
 
 @Injectable()
 export class AdminProductsService {
-  constructor(private readonly productsRepository: ProductsRepository) { }
+  constructor(
+    private readonly productsRepository: ProductsRepository,
+    private readonly uploadService: UploadService,
+  ) { }
 
   async createProduct(dto: CreateProductDto) {
     const data: Prisma.ProductCreateInput = {
@@ -32,28 +36,15 @@ export class AdminProductsService {
       colors: dto.attributes.colors,
       quality: dto.attributes.quality,
       sizes: dto.attributes.sizes,
-      materials: dto.attributes.materials || [],
-      specs: dto.attributes.specs || Prisma.DbNull,
 
       // Inventory
       totalStock: dto.inventory.totalStock,
-      sku: dto.inventory.sku,
 
       // Marketing
       collections: dto.marketing.collections,
       isFeatured: dto.marketing.isFeatured,
       seoTitle: dto.marketing.seoTitle,
       seoDescription: dto.marketing.seoDescription,
-
-      // Sellers
-      sellers: dto.inventory.sellers.length > 0 ? {
-        create: dto.inventory.sellers.map(s => ({
-          sellerId: s.sellerId,
-          gettingPrice: s.gettingPrice,
-          stock: s.stock,
-          isVerified: s.isVerified,
-        }))
-      } : undefined,
     };
 
     return this.productsRepository.create(data);
@@ -110,13 +101,10 @@ export class AdminProductsService {
       if (d.attributes.colors) data.colors = d.attributes.colors;
       if (d.attributes.quality) data.quality = d.attributes.quality;
       if (d.attributes.sizes) data.sizes = d.attributes.sizes;
-      if (d.attributes.materials) data.materials = d.attributes.materials;
-      if (d.attributes.specs !== undefined) data.specs = d.attributes.specs || Prisma.DbNull;
     }
 
     if (d.inventory) {
       if (d.inventory.totalStock !== undefined) data.totalStock = d.inventory.totalStock;
-      if (d.inventory.sku) data.sku = d.inventory.sku;
     }
 
     if (d.marketing) {
@@ -126,10 +114,34 @@ export class AdminProductsService {
       if (d.marketing.seoDescription !== undefined) data.seoDescription = d.marketing.seoDescription;
     }
 
+    // Handle image cleanup
+    if (d.media && (d.media.liveImages || d.media.mainImage || d.media.promoImage)) {
+      const existingProduct = await this.productsRepository.findById(id);
+      if (existingProduct) {
+        const oldImages = [existingProduct.mainImage, existingProduct.promoImage, ...(existingProduct.liveImages as string[] || [])].filter(Boolean);
+        const newImages = [d.media.mainImage, d.media.promoImage, ...(d.media.liveImages || [])].filter(Boolean);
+        
+        // Find images that exist in the old product but not in the new payload
+        const imagesToDelete = oldImages.filter(oldUrl => !newImages.includes(oldUrl));
+        
+        for (const url of imagesToDelete) {
+          if (url) await this.uploadService.deleteFile(url);
+        }
+      }
+    }
+
     return this.productsRepository.update(id, data);
   }
 
   async deleteProduct(id: string) {
+    const existingProduct = await this.productsRepository.findById(id);
+    if (existingProduct) {
+      const imagesToDelete = [existingProduct.mainImage, existingProduct.promoImage, ...(existingProduct.liveImages as string[] || [])].filter(Boolean);
+      for (const url of imagesToDelete) {
+        if (url) await this.uploadService.deleteFile(url);
+      }
+    }
+    
     return this.productsRepository.delete(id);
   }
 }
