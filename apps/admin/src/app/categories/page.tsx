@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
 
-import CategoriesFeature from '../../features/categories';
+import { CategoriesFeature } from '../../features/categories';
 
 export const metadata: Metadata = {
   title: 'Categories | Fashion Friday Admin',
