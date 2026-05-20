@@ -7,11 +7,16 @@ import { PrismaModule } from './database/prisma.module';
 import { PrismaService } from './database/prisma.service';
 import { AuthModule } from './modules/auth/auth.module';
 
+import { ProductsModule } from './modules/products/products.module';
+import { UploadModule } from './modules/upload/upload.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,
+    ProductsModule,
+    UploadModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
