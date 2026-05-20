@@ -59,8 +59,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     setOgPrice,
     stock,
     setStock,
-    sku,
-    setSku,
+    gettingPrice,
+    setGettingPrice,
     seoTitle,
     setSeoTitle,
     seoSlug,
@@ -87,6 +87,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     availableSizes,
     filteredBrands,
     progress,
+    isUploading,
+    imagesToDelete,
+    restoreImage,
   } = useAddProductForm(initialData);
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -188,8 +191,89 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <span>Save Draft</span>
             </button>
             <button
-              onClick={() => {
+              onClick={async () => {
                 setHasSubmitted(true);
+                
+                // Basic Validation
+                if (
+                  !productName ||
+                  !productDesc ||
+                  !basePrice ||
+                  !category ||
+                  !quality ||
+                  images.length === 0
+                ) {
+                  alert('Please fill out all required fields and upload at least one image.');
+                  return;
+                }
+                
+                try {
+                  const payload = {
+                    name: productName,
+                    description: productDesc,
+                    category: category,
+                    brand: brandInput ? [brandInput] : [],
+                    gender: gender.toUpperCase(), // Assuming enum needs uppercase
+                    attributes: {
+                      sizes: sizes,
+                      colors: selectedColorHex ? [selectedColorHex] : [],
+                      quality: quality,
+                    },
+                    price: {
+                      sellingPrice: Number(basePrice),
+                      gettingPrice: Number(gettingPrice),
+                      ogPrice: ogPrice ? Number(ogPrice) : undefined,
+                    },
+                    inventory: {
+                      totalStock: Number(stock),
+                    },
+                    media: {
+                      mainImage: images[0]?.url,
+                      promoImage: images[1]?.url,
+                      liveImages: images.slice(2).map((img) => img.url),
+                      videoUrl: videoLink || undefined,
+                    },
+                    marketing: {
+                      collections: tags,
+                      seoTitle: seoTitle,
+                      seoDescription: seoDesc,
+                    },
+                    slug: seoSlug,
+                  };
+
+                  const res = await fetch('http://localhost:3001/admin/products', {
+                    method: initialData ? 'PATCH' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                  });
+
+                  if (!res.ok) {
+                    throw new Error('Failed to save product');
+                  }
+
+                  // If we staged images for deletion, permanently delete them from R2
+                  // (For updates, the backend does this automatically via array comparison, 
+                  // but we trigger this batch delete for newly uploaded/discarded images too)
+                  if (imagesToDelete.length > 0) {
+                    try {
+                      await fetch('http://localhost:3001/admin/upload/batch', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ urls: imagesToDelete.map(img => img.url) }),
+                      });
+                    } catch (err) {
+                      console.error('Failed to cleanup discarded images:', err);
+                    }
+                  }
+
+                  alert(initialData ? 'Product updated successfully!' : 'Product created successfully!');
+                  
+                  // Optional: Redirect to product list
+                  // router.push('/admin/products');
+                } catch (error) {
+                  console.error('Error saving product:', error);
+                  alert('Failed to save product. Please try again.');
+                }
               }}
               className="flex items-center space-x-2 rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
             >
@@ -606,18 +690,23 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
               <div>
                 <LabelWithTick
-                  label="SKU"
-                  status={getStatus(sku, initialData?.inventory?.sku, 3)}
+                  label="Getting Price"
+                  status={getStatus(gettingPrice, initialData?.price?.gettingPrice, 1)}
                 />
-                <input
-                  type="text"
-                  value={sku}
-                  onChange={(e) => {
-                    setSku(e.target.value);
-                  }}
-                  placeholder="JAC-WIN-001"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black uppercase transition-all outline-none placeholder:normal-case focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                />
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                    <span className="text-sm font-bold text-black/50 dark:text-white/50">₹</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={gettingPrice}
+                    onChange={(e) => {
+                      setGettingPrice(e.target.value);
+                    }}
+                    placeholder="2,500"
+                    className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -781,11 +870,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               multiple
               accept="image/*"
               ref={fileInputRef}
-              onChange={handleImageUpload}
+              onChange={(e) => handleImageUpload(e, productName)}
               className="hidden"
             />
 
-            {images.length === 0 ? (
+            {isUploading ? (
+              <div className="mb-4 flex aspect-[3/4] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                <div className="mb-3 h-8 w-8 animate-spin rounded-full border-4 border-black/20 border-t-black dark:border-white/20 dark:border-t-white"></div>
+                <span className="text-sm font-bold text-black/80 dark:text-white/80">
+                  Uploading...
+                </span>
+              </div>
+            ) : images.length === 0 ? (
               <div
                 onClick={() => fileInputRef.current?.click()}
                 className="group relative mb-4 flex aspect-[3/4] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-black/5 transition-colors hover:border-black/40 hover:bg-black/10 dark:border-white/20 dark:bg-white/5 dark:hover:border-white/40 dark:hover:bg-white/10"
@@ -927,34 +1023,76 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     );
                   })}
 
-                  {/* Add More Button */}
                   {images.length < 10 && (
                     <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className="group flex aspect-[3/4] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-black/20 transition-colors hover:border-black/40 hover:bg-black/5 dark:border-white/20 dark:hover:border-white/40 dark:hover:bg-white/5"
+                      onClick={() => !isUploading && fileInputRef.current?.click()}
+                      className={`group flex aspect-[3/4] flex-col items-center justify-center rounded-xl border border-dashed border-black/20 transition-colors dark:border-white/20 ${isUploading ? 'cursor-not-allowed bg-black/5 dark:bg-white/5 opacity-50' : 'cursor-pointer hover:border-black/40 hover:bg-black/5 dark:hover:border-white/40 dark:hover:bg-white/5'}`}
                     >
-                      <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/5 text-black/60 transition-transform group-hover:scale-110 dark:bg-white/10 dark:text-white/80">
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                      </div>
-                      <span className="text-[10px] font-bold text-black/50 dark:text-white/50">
-                        Add
-                      </span>
+                      {isUploading ? (
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white"></div>
+                      ) : (
+                        <>
+                          <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/5 text-black/60 transition-transform group-hover:scale-110 dark:bg-white/10 dark:text-white/80">
+                            <svg
+                              className="h-4 w-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={3}
+                                d="M12 4v16m8-8H4"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-[10px] font-bold text-black/60 dark:text-white/60">
+                            Add Image
+                          </span>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
               </>
+            )}
+
+            {/* Staged for Deletion */}
+            {imagesToDelete.length > 0 && (
+              <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/5 p-4 dark:border-red-500/20 dark:bg-red-500/5">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-red-600 dark:text-red-400">Staged for Deletion</h3>
+                  <span className="text-[10px] font-medium text-red-600/70 dark:text-red-400/70">
+                    Will be permanently deleted on save
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  {imagesToDelete.map((img) => (
+                    <div key={img.id} className="group relative aspect-[3/4] overflow-hidden rounded-lg opacity-60 transition-opacity hover:opacity-100">
+                      <Image
+                        width={500}
+                        height={500}
+                        src={img.url}
+                        alt="Deleted preview"
+                        className="pointer-events-none h-full w-full object-cover grayscale transition-all group-hover:grayscale-0"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            restoreImage(img.id);
+                          }}
+                          className="rounded-full bg-white px-3 py-1.5 text-[10px] font-bold text-black shadow-sm transition-transform hover:scale-105"
+                        >
+                          Restore
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
             <div className="border-t border-black/5 pt-4 dark:border-white/5">
