@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
 
-import CustomersFeature from '../../features/customers';
+import { CustomersFeature } from '../../features/customers';
 
 export const metadata: Metadata = {
   title: 'Customers Management | FF Admin',
