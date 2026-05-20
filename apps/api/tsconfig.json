@@ -3,6 +3,10 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "ignoreDeprecations": "5.0",
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
