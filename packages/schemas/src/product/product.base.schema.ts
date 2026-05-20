@@ -22,8 +22,6 @@ export const ProductBaseSchema = z.object({
     colors: z.array(z.string()).min(1),
     quality: QualityEnum,
     sizes: z.array(z.string()).min(1),
-    materials: z.array(z.string()).optional(),
-    specs: z.record(z.string(), z.string()).optional(),
   }),
 
   createdAt: z.coerce.date(),
