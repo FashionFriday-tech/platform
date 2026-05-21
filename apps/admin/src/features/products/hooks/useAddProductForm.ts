@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
+import { useCategories } from '../../categories/hooks/useCategories';
 
 import { BRAND_LOGOS, type BrandCategory, MAJOR_COLORS, type Product } from '@ff/schemas';
 
 import { SIZE_MAP } from '../utils/constants';
 
 export function useAddProductForm(initialData?: Product) {
+  const { categories: apiCategories } = useCategories();
+
   const [sizes, setSizes] = useState<string[]>(SIZE_MAP['Jacket'] || []);
-  const [gender, setGender] = useState<string>('Woman');
+  const [gender, setGender] = useState<string>('Unisex');
   const [category, setCategory] = useState<string>('Jacket');
   const [quality, setQuality] = useState<string>('Original');
   const [tags, setTags] = useState<string[]>([]);
@@ -57,7 +60,7 @@ export function useAddProductForm(initialData?: Product) {
   useEffect(() => {
     if (initialData) {
       // Map Gender
-      let mappedGender = 'Woman';
+      let mappedGender = 'Unisex';
       if (initialData.gender === 'MEN') mappedGender = 'Men';
       if (initialData.gender === 'WOMEN') mappedGender = 'Woman';
       if (initialData.gender === 'UNISEX') mappedGender = 'Unisex';
@@ -69,12 +72,12 @@ export function useAddProductForm(initialData?: Product) {
 
       // Map Category
       let mappedCategory = 'Jacket'; // default fallback for CLOTHING
-      if (initialData.category === 'SNEAKERS') mappedCategory = 'Sneakers';
-      else if (initialData.category === 'WATCHES') mappedCategory = 'Watches';
-      else if (initialData.category === 'ACCESSORIES') mappedCategory = 'Accessories';
+      if (initialData.categoryId === 'SNEAKERS') mappedCategory = 'Sneakers';
+      else if (initialData.categoryId === 'WATCHES') mappedCategory = 'Watches';
+      else if (initialData.categoryId === 'ACCESSORIES') mappedCategory = 'Accessories';
       
       // Try to infer specific clothing type from tags
-      if (initialData.category === 'CLOTHING') {
+      if (initialData.categoryId === 'CLOTHING') {
         const tags = initialData.marketing?.collections || [];
         if (tags.some(t => t.toLowerCase() === 'shirts' || t.toLowerCase() === 'shirt')) mappedCategory = 'Shirts';
         else if (tags.some(t => t.toLowerCase() === 'pants' || t.toLowerCase() === 'pant')) mappedCategory = 'Pants';
@@ -495,5 +498,6 @@ export function useAddProductForm(initialData?: Product) {
     restoreImage,
     originalFiles,
     handleReCrop,
+    apiCategories,
   };
 }
