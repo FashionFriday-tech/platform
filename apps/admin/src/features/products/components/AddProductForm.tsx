@@ -1,8 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import { Toast } from '@/components/ui/Toast';
+import { ImageCropModal } from '@/components/ui/ImageCropModal';
 
 import { type Product } from '@ff/schemas';
 
@@ -15,6 +19,8 @@ interface AddProductFormProps {
 }
 
 export function AddProductForm({ initialData }: AddProductFormProps) {
+  const router = useRouter();
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
   const {
     sizes,
     toggleSize,
@@ -90,6 +96,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     isUploading,
     imagesToDelete,
     restoreImage,
+    cropQueue,
+    uploadCroppedImage,
+    handleCropCancel,
   } = useAddProductForm(initialData);
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -203,21 +212,30 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   !quality ||
                   images.length === 0
                 ) {
-                  alert('Please fill out all required fields and upload at least one image.');
+                  setToast({ message: 'Please fill out all required fields and upload at least one image.', type: 'warning' });
                   return;
                 }
                 
                 try {
+                  // Map frontend category to backend enum
+                  let mappedCategory = 'CLOTHING';
+                  if (category === 'Sneakers') mappedCategory = 'SNEAKERS';
+
+                  // Map frontend quality to backend enum
+                  let mappedQuality = quality.toUpperCase().replace(/\s+/g, '_');
+                  if (mappedQuality === 'ORIGINAL') mappedQuality = 'UA';
+                  if (mappedQuality === '5A') mappedQuality = 'STANDARD';
+
                   const payload = {
                     name: productName,
                     description: productDesc,
-                    category: category,
+                    category: mappedCategory,
                     brand: brandInput ? [brandInput] : [],
-                    gender: gender.toUpperCase(), // Assuming enum needs uppercase
+                    gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
                     attributes: {
                       sizes: sizes,
                       colors: selectedColorHex ? [selectedColorHex] : [],
-                      quality: quality,
+                      quality: mappedQuality,
                     },
                     price: {
                       sellingPrice: Number(basePrice),
@@ -231,7 +249,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       mainImage: images[0]?.url,
                       promoImage: images[1]?.url,
                       liveImages: images.slice(2).map((img) => img.url),
-                      videoUrl: videoLink || undefined,
+                      youtubeId: videoId || undefined,
                     },
                     marketing: {
                       collections: tags,
@@ -241,14 +259,19 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     slug: seoSlug,
                   };
 
-                  const res = await fetch('http://localhost:3001/admin/products', {
+                  const url = initialData 
+                    ? `http://localhost:3002/admin/products/${initialData.id}` 
+                    : 'http://localhost:3002/admin/products';
+                  const res = await fetch(url, {
                     method: initialData ? 'PATCH' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
                   });
 
                   if (!res.ok) {
-                    throw new Error('Failed to save product');
+                    const errorText = await res.text();
+                    console.error('Save Product Error:', res.status, errorText);
+                    throw new Error(`Failed to save product: ${errorText}`);
                   }
 
                   // If we staged images for deletion, permanently delete them from R2
@@ -256,7 +279,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   // but we trigger this batch delete for newly uploaded/discarded images too)
                   if (imagesToDelete.length > 0) {
                     try {
-                      await fetch('http://localhost:3001/admin/upload/batch', {
+                      await fetch('http://localhost:3002/admin/upload/batch', {
                         method: 'DELETE',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ urls: imagesToDelete.map(img => img.url) }),
@@ -266,13 +289,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     }
                   }
 
-                  alert(initialData ? 'Product updated successfully!' : 'Product created successfully!');
+                  setToast({ message: initialData ? 'Product updated successfully!' : 'Product created successfully!', type: 'success' });
                   
-                  // Optional: Redirect to product list
-                  // router.push('/admin/products');
+                  // Redirect to product list after a brief delay
+                  setTimeout(() => {
+                    router.push('/products');
+                  }, 1500);
                 } catch (error) {
                   console.error('Error saving product:', error);
-                  alert('Failed to save product. Please try again.');
+                  setToast({ message: 'Failed to save product. Please try again.', type: 'error' });
                 }
               }}
               className="flex items-center space-x-2 rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
@@ -1168,6 +1193,20 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           </div>
         </div>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+      {cropQueue.length > 0 && (
+        <ImageCropModal
+          file={cropQueue[0]}
+          onCropComplete={(croppedBlob) => uploadCroppedImage(croppedBlob, cropQueue[0].name, productName)}
+          onCancel={handleCropCancel}
+        />
+      )}
     </div>
   );
 }
