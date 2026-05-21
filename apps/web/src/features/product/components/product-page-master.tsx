@@ -158,7 +158,7 @@ export default function ProductPageMaster({
 
             <ProductVariantPage />
 
-            {product.category === 'SNEAKERS' && (
+            {product.categoryId === 'SNEAKERS' && (
               <div className="space-y-4">
                 <div className="flex items-end justify-between">
                   <label className="text-[10px] font-black tracking-widest uppercase">
