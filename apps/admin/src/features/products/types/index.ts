@@ -10,6 +10,7 @@ export interface Product {
   stock: number;
   maxStock: number;
   status: ProductStatus;
+  categoryId: string;
   category: string;
   store: string;
   variants: string[];
