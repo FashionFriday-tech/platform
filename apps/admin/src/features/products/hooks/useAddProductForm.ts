@@ -54,26 +54,85 @@ export function useAddProductForm(initialData?: Product) {
   // Prepopulate data if editing
   useEffect(() => {
     if (initialData) {
+      // Map Gender
+      let mappedGender = 'Woman';
+      if (initialData.gender === 'MEN') mappedGender = 'Men';
+      if (initialData.gender === 'WOMEN') mappedGender = 'Woman';
+      if (initialData.gender === 'UNISEX') mappedGender = 'Unisex';
+
+      // Map Quality
+      let mappedUIQuality: string = initialData.attributes?.quality || 'Original';
+      if (mappedUIQuality === 'UA') mappedUIQuality = 'Original';
+      if (mappedUIQuality === 'STANDARD') mappedUIQuality = '5A';
+
+      // Map Category
+      let mappedCategory = 'Jacket'; // default fallback for CLOTHING
+      if (initialData.category === 'SNEAKERS') mappedCategory = 'Sneakers';
+      else if (initialData.category === 'WATCHES') mappedCategory = 'Watches';
+      else if (initialData.category === 'ACCESSORIES') mappedCategory = 'Accessories';
+      
+      // Try to infer specific clothing type from tags
+      if (initialData.category === 'CLOTHING') {
+        const tags = initialData.marketing?.collections || [];
+        if (tags.some(t => t.toLowerCase() === 'shirts' || t.toLowerCase() === 'shirt')) mappedCategory = 'Shirts';
+        else if (tags.some(t => t.toLowerCase() === 'pants' || t.toLowerCase() === 'pant')) mappedCategory = 'Pants';
+        else if (tags.some(t => t.toLowerCase() === 'jacket' || t.toLowerCase() === 'jackets')) mappedCategory = 'Jacket';
+      }
+
+      // Core fields
       setProductName(initialData.name || '');
       setProductDesc(initialData.description || '');
-      setCategory(initialData.category || 'Jacket');
-      setQuality(initialData.attributes?.quality || 'Original');
+      setCategory(mappedCategory);
+      setQuality(mappedUIQuality);
+      setGender(mappedGender);
       setBrandInput(initialData.brand?.[0] || '');
+      if (initialData.brand?.[0]) {
+        setSelectedBrandLogo(initialData.brand[0].charAt(0).toUpperCase());
+      }
       setBasePrice(initialData.price?.sellingPrice?.toString() || '');
       setOgPrice(initialData.price?.ogPrice?.toString() || '');
       setStock(initialData.inventory?.totalStock?.toString() || '');
       setGettingPrice(initialData.price?.gettingPrice?.toString() || '');
-      setSizes(initialData.attributes?.sizes && initialData.attributes.sizes.length > 0 ? initialData.attributes.sizes : SIZE_MAP[initialData.category || 'Jacket'] || SIZE_MAP['Jacket'] || []);
+      setSizes(initialData.attributes?.sizes && initialData.attributes.sizes.length > 0 ? initialData.attributes.sizes : SIZE_MAP[mappedCategory] || SIZE_MAP['Jacket'] || []);
+
+      // Color — reverse-map from hex to color name
+      const savedColorHex = initialData.attributes?.colors?.[0];
+      if (savedColorHex) {
+        const matchedColor = MAJOR_COLORS.find(c => c.hex.toLowerCase() === savedColorHex.toLowerCase());
+        setColorInput(matchedColor ? matchedColor.name : savedColorHex);
+        setSelectedColorHex(savedColorHex);
+      }
+
+      // Video — convert youtubeId back to a watchable URL
+      const savedYoutubeId = (initialData.media as any)?.youtubeId;
+      if (savedYoutubeId) {
+        setVideoLink(`https://www.youtube.com/watch?v=${savedYoutubeId}`);
+      }
+
+      // Tags / SEO
       setTags(initialData.marketing?.collections || []);
       setSeoTitle(initialData.marketing?.seoTitle || '');
       setSeoDesc(initialData.marketing?.seoDescription || '');
       setSeoSlug(initialData.slug || '');
 
-      if (initialData.media?.liveImages && initialData.media.liveImages.length > 0) {
-        setImages(initialData.media.liveImages.map((url, i) => ({ id: `init-${i}`, url })));
-      } else if (initialData.media?.mainImage) {
-        setImages([{ id: 'init-main', url: initialData.media.mainImage }]);
+      // Images — load ALL images (mainImage + promoImage + liveImages) into form state
+      setImagesToDelete([]);
+      const uniquePrefix = Math.random().toString(36).substring(7);
+      const allImages: { id: string; url: string }[] = [];
+
+      if (initialData.media?.mainImage) {
+        allImages.push({ id: `init-${uniquePrefix}-main`, url: initialData.media.mainImage });
       }
+      if ((initialData.media as any)?.promoImage) {
+        allImages.push({ id: `init-${uniquePrefix}-promo`, url: (initialData.media as any).promoImage });
+      }
+      if (initialData.media?.liveImages && initialData.media.liveImages.length > 0) {
+        initialData.media.liveImages.forEach((url, i) => {
+          allImages.push({ id: `init-${uniquePrefix}-live-${i}`, url });
+        });
+      }
+
+      setImages(allImages.length > 0 ? allImages : []);
     }
   }, [initialData]);
 
@@ -189,52 +248,69 @@ export function useAddProductForm(initialData?: Product) {
   };
 
   const [isUploading, setIsUploading] = useState(false);
+  const [cropQueue, setCropQueue] = useState<File[]>([]);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, productName?: string) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setIsUploading(true);
       const newFiles = Array.from(e.target.files);
-      const uploadedImages: { id: string; url: string }[] = [];
+      setCropQueue((prev) => [...prev, ...newFiles]);
+    }
+  };
 
-      try {
-        for (const file of newFiles) {
-          const formData = new FormData();
-          formData.append('file', file);
-          if (productName) {
-            formData.append('slug', productName);
-          }
-          formData.append('folder', 'products');
+  const uploadCroppedImage = async (croppedBlob: Blob, originalName: string, productName?: string) => {
+    setIsUploading(true);
+    try {
+      const fileExtension = originalName.split('.').pop() || 'webp';
+      const file = new File([croppedBlob], originalName, {
+        type: 'image/webp',
+      });
 
-          const res = await fetch('http://localhost:3001/admin/upload', {
-            method: 'POST',
-            body: formData,
-          });
-
-          if (!res.ok) {
-            throw new Error('Failed to upload image');
-          }
-
-          const data = await res.json();
-          uploadedImages.push({
-            id: Math.random().toString(36).substring(7),
-            url: data.url,
-          });
-        }
-
-        setImages((prev) => {
-          const combined = [...prev, ...uploadedImages];
-          return combined.slice(0, 10);
-        });
-      } catch (error) {
-        console.error('Error uploading images:', error);
-        alert('Failed to upload images. Please try again.');
-      } finally {
-        setIsUploading(false);
-        // reset input
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
+      const formData = new FormData();
+      formData.append('file', file);
+      if (productName) {
+        formData.append('slug', productName);
       }
+      formData.append('folder', 'products');
+
+      const res = await fetch('http://localhost:3002/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Upload Error:', res.status, errorText);
+        throw new Error(`Failed to upload image: ${errorText}`);
+      }
+
+      const data = await res.json();
+      setImages((prev) => {
+        const combined = [...prev, {
+          id: Math.random().toString(36).substring(7),
+          url: data.url,
+        }];
+        return combined.slice(0, 10);
+      });
+
+      // Remove the completed file from crop queue
+      setCropQueue((prev) => prev.slice(1));
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      alert('Failed to upload image. Please try again.');
+    } finally {
+      setIsUploading(false);
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleCropCancel = () => {
+    // Remove the current file from queue on cancel
+    setCropQueue((prev) => prev.slice(1));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -283,23 +359,25 @@ export function useAddProductForm(initialData?: Product) {
   const [imagesToDelete, setImagesToDelete] = useState<{ id: string; url: string }[]>([]);
 
   const removeImage = (idToRemove: string) => {
-    setImages((prev) => {
-      const imgToRemove = prev.find((img) => img.id === idToRemove);
-      if (imgToRemove) {
-        setImagesToDelete((delPrev) => [...delPrev, imgToRemove]);
-      }
-      return prev.filter((img) => img.id !== idToRemove);
-    });
+    const imgToRemove = images.find((img) => img.id === idToRemove);
+    if (imgToRemove) {
+      setImagesToDelete((delPrev) => {
+        if (delPrev.some((img) => img.id === idToRemove)) return delPrev;
+        return [...delPrev, imgToRemove];
+      });
+    }
+    setImages((prev) => prev.filter((img) => img.id !== idToRemove));
   };
 
   const restoreImage = (idToRestore: string) => {
-    setImagesToDelete((prev) => {
-      const imgToRestore = prev.find((img) => img.id === idToRestore);
-      if (imgToRestore) {
-        setImages((imgPrev) => [...imgPrev, imgToRestore]);
-      }
-      return prev.filter((img) => img.id !== idToRestore);
-    });
+    const imgToRestore = imagesToDelete.find((img) => img.id === idToRestore);
+    if (imgToRestore) {
+      setImages((imgPrev) => {
+        if (imgPrev.some((img) => img.id === idToRestore)) return imgPrev;
+        return [...imgPrev, imgToRestore];
+      });
+    }
+    setImagesToDelete((prev) => prev.filter((img) => img.id !== idToRestore));
   };
 
   const filteredColors = MAJOR_COLORS.filter((c) =>
@@ -423,5 +501,8 @@ export function useAddProductForm(initialData?: Product) {
     isUploading,
     imagesToDelete,
     restoreImage,
+    cropQueue,
+    uploadCroppedImage,
+    handleCropCancel,
   };
 }
