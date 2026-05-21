@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ProductsRepository } from '../products.repository';
 import { CreateProductDto, UpdateProductDto } from '../dto';
-import { Prisma, ProductStatus, ProductCategory, Gender } from '@ff/database';
+import { Prisma, ProductStatus, Gender } from '@ff/database';
 import { UploadService } from '../../upload/upload.service';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class AdminProductsService {
       description: dto.description,
       brand: dto.brand,
       status: dto.status.toUpperCase() as ProductStatus,
-      category: dto.category.toUpperCase() as ProductCategory,
+      category: { connect: { id: (dto as any).categoryId } },
       gender: dto.gender.toUpperCase() as Gender,
 
       // Pricing
@@ -81,7 +81,7 @@ export class AdminProductsService {
     if (d.description) data.description = d.description;
     if (d.brand) data.brand = d.brand;
     if (d.status) data.status = d.status.toUpperCase() as ProductStatus;
-    if (d.category) data.category = d.category.toUpperCase() as ProductCategory;
+    if (d.categoryId) data.category = { connect: { id: d.categoryId } };
     if (d.gender) data.gender = d.gender.toUpperCase() as Gender;
 
     if (d.price) {
