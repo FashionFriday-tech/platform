@@ -67,7 +67,11 @@ export class UploadService {
 
     // e.g. puffer-jacket-a1b2c3d4.webp
     const randomSuffix = randomUUID().split('-')[0];
-    const fileName = `${baseName}-${randomSuffix}.${fileExtension}`;
+    
+    // For brands, use exactly the brand name without random suffix
+    const fileName = folder === 'brands' 
+      ? `${baseName}.${fileExtension}`
+      : `${baseName}-${randomSuffix}.${fileExtension}`;
     
     // Construct the final key with an optional folder prefix (e.g. products/puffer-jacket...)
     const fullPath = folder ? `${folder.replace(/^\/+|\/+$/g, '')}/${fileName}` : fileName;
