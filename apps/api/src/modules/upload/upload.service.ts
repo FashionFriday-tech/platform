@@ -68,8 +68,8 @@ export class UploadService {
     // e.g. puffer-jacket-a1b2c3d4.webp
     const randomSuffix = randomUUID().split('-')[0];
     
-    // For brands, use exactly the brand name without random suffix
-    const fileName = folder === 'brands' 
+    // For brands and categories, use exactly the provided name without random suffix
+    const fileName = (folder === 'brands' || folder === 'categories')
       ? `${baseName}.${fileExtension}`
       : `${baseName}-${randomSuffix}.${fileExtension}`;
     
