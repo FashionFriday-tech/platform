@@ -96,10 +96,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     isUploading,
     imagesToDelete,
     restoreImage,
-    cropQueue,
-    uploadCroppedImage,
-    handleCropCancel,
+    originalFiles,
+    handleReCrop,
   } = useAddProductForm(initialData);
+
+  const [editingImageId, setEditingImageId] = useState<string | null>(null);
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isPlaying, setIsPlaying] = useState(false);
@@ -217,6 +218,33 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 }
                 
                 try {
+                  // Upload any new images first
+                  setToast({ message: 'Uploading images and saving product...', type: 'success' });
+                  
+                  const uploadBlob = async (blob: Blob | File, originalName: string, pName?: string) => {
+                    const file = blob instanceof File ? blob : new File([blob], originalName, { type: 'image/webp' });
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    if (pName) formData.append('slug', pName);
+                    formData.append('folder', 'products');
+
+                    const res = await fetch('http://localhost:3002/admin/upload', {
+                      method: 'POST',
+                      body: formData,
+                    });
+                    if (!res.ok) throw new Error('Upload failed');
+                    const data = await res.json();
+                    return data.url;
+                  };
+
+                  const finalImages = await Promise.all(images.map(async (img) => {
+                    if (img.isNew && img.file) {
+                      const url = await uploadBlob(img.file, img.file.name, productName);
+                      return url;
+                    }
+                    return img.url;
+                  }));
+
                   // Map frontend category to backend enum
                   let mappedCategory = 'CLOTHING';
                   if (category === 'Sneakers') mappedCategory = 'SNEAKERS';
@@ -246,9 +274,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       totalStock: Number(stock),
                     },
                     media: {
-                      mainImage: images[0]?.url,
-                      promoImage: images[1]?.url,
-                      liveImages: images.slice(2).map((img) => img.url),
+                      mainImage: finalImages[0],
+                      promoImage: finalImages[1],
+                      liveImages: finalImages.slice(2),
                       youtubeId: videoId || undefined,
                     },
                     marketing: {
@@ -272,21 +300,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     const errorText = await res.text();
                     console.error('Save Product Error:', res.status, errorText);
                     throw new Error(`Failed to save product: ${errorText}`);
-                  }
-
-                  // If we staged images for deletion, permanently delete them from R2
-                  // (For updates, the backend does this automatically via array comparison, 
-                  // but we trigger this batch delete for newly uploaded/discarded images too)
-                  if (imagesToDelete.length > 0) {
-                    try {
-                      await fetch('http://localhost:3002/admin/upload/batch', {
-                        method: 'DELETE',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ urls: imagesToDelete.map(img => img.url) }),
-                      });
-                    } catch (err) {
-                      console.error('Failed to cleanup discarded images:', err);
-                    }
                   }
 
                   setToast({ message: initialData ? 'Product updated successfully!' : 'Product created successfully!', type: 'success' });
@@ -895,7 +908,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               multiple
               accept="image/*"
               ref={fileInputRef}
-              onChange={(e) => handleImageUpload(e, productName)}
+              onChange={handleImageUpload}
               className="hidden"
             />
 
@@ -973,6 +986,20 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       />
                     </svg>
                   </button>
+                  {originalFiles[images[0].id] && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setEditingImageId(images[0].id);
+                      }}
+                      className="absolute top-12 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-black/5 bg-white text-black opacity-0 shadow-sm transition-transform group-hover:opacity-100 hover:scale-110 dark:border-white/5 dark:bg-black dark:text-white"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14.304 4.844l5.852 5.852M7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h11a1 1 0 001-1v-4.5m2.409-9.91a2.017 2.017 0 010 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 012.852 0zM12.5 7.5L17 12" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
 
                 {/* Grid Previews */}
@@ -1044,6 +1071,22 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             />
                           </svg>
                         </button>
+                        
+                        {/* Crop button */}
+                        {originalFiles[img.id] && (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setEditingImageId(img.id);
+                            }}
+                            className="absolute top-8 right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-black/5 bg-white text-black opacity-0 shadow-sm transition-opacity group-hover:opacity-100 dark:border-white/5 dark:bg-black dark:text-white hover:scale-110"
+                          >
+                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14.304 4.844l5.852 5.852M7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h11a1 1 0 001-1v-4.5m2.409-9.91a2.017 2.017 0 010 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 012.852 0zM12.5 7.5L17 12" />
+                            </svg>
+                          </button>
+                        )}
                       </div>
                     );
                   })}
@@ -1083,42 +1126,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               </>
             )}
 
-            {/* Staged for Deletion */}
-            {imagesToDelete.length > 0 && (
-              <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/5 p-4 dark:border-red-500/20 dark:bg-red-500/5">
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-red-600 dark:text-red-400">Staged for Deletion</h3>
-                  <span className="text-[10px] font-medium text-red-600/70 dark:text-red-400/70">
-                    Will be permanently deleted on save
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-3">
-                  {imagesToDelete.map((img) => (
-                    <div key={img.id} className="group relative aspect-[3/4] overflow-hidden rounded-lg opacity-60 transition-opacity hover:opacity-100">
-                      <Image
-                        width={500}
-                        height={500}
-                        src={img.url}
-                        alt="Deleted preview"
-                        className="pointer-events-none h-full w-full object-cover grayscale transition-all group-hover:grayscale-0"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            restoreImage(img.id);
-                          }}
-                          className="rounded-full bg-white px-3 py-1.5 text-[10px] font-bold text-black shadow-sm transition-transform hover:scale-105"
-                        >
-                          Restore
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+
 
             <div className="border-t border-black/5 pt-4 dark:border-white/5">
               <LabelWithTick
@@ -1200,11 +1208,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           onClose={() => setToast(null)}
         />
       )}
-      {cropQueue.length > 0 && (
+      {editingImageId && originalFiles[editingImageId] && (
         <ImageCropModal
-          file={cropQueue[0]}
-          onCropComplete={(croppedBlob) => uploadCroppedImage(croppedBlob, cropQueue[0].name, productName)}
-          onCancel={handleCropCancel}
+          file={originalFiles[editingImageId]}
+          onCropComplete={(croppedBlob) => {
+            handleReCrop(editingImageId, croppedBlob, originalFiles[editingImageId].name);
+            setEditingImageId(null);
+          }}
+          onCancel={() => setEditingImageId(null)}
         />
       )}
     </div>

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { autoCropImageTo3x4 } from '../utils/imageCrop';
+
 import { BRAND_LOGOS, type BrandCategory, MAJOR_COLORS, type Product } from '@ff/schemas';
 
 import { SIZE_MAP } from '../utils/constants';
@@ -43,7 +45,7 @@ export function useAddProductForm(initialData?: Product) {
 
   // Media
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [images, setImages] = useState<{ id: string; url: string }[]>([]);
+  const [images, setImages] = useState<{ id: string; url: string; file?: File; isNew?: boolean }[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const categoryRef = useRef<HTMLDivElement>(null);
@@ -248,70 +250,60 @@ export function useAddProductForm(initialData?: Product) {
   };
 
   const [isUploading, setIsUploading] = useState(false);
-  const [cropQueue, setCropQueue] = useState<File[]>([]);
+  const [originalFiles, setOriginalFiles] = useState<Record<string, File>>({});
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      setCropQueue((prev) => [...prev, ...newFiles]);
-    }
-  };
-
-  const uploadCroppedImage = async (croppedBlob: Blob, originalName: string, productName?: string) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    
     setIsUploading(true);
     try {
-      const fileExtension = originalName.split('.').pop() || 'webp';
-      const file = new File([croppedBlob], originalName, {
-        type: 'image/webp',
-      });
+      const newFiles = Array.from(e.target.files);
+      const newImages: { id: string; url: string; file: File; isNew: boolean }[] = [];
+      const newOriginalFiles: Record<string, File> = {};
 
-      const formData = new FormData();
-      formData.append('file', file);
-      if (productName) {
-        formData.append('slug', productName);
-      }
-      formData.append('folder', 'products');
-
-      const res = await fetch('http://localhost:3002/admin/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Upload Error:', res.status, errorText);
-        throw new Error(`Failed to upload image: ${errorText}`);
+      for (const file of newFiles) {
+        // Automatically crop to 3:4 center
+        const croppedBlob = await autoCropImageTo3x4(file);
+        
+        // Create a File from the Blob
+        const croppedFile = new File([croppedBlob], file.name, { type: 'image/webp' });
+        
+        // Generate a local preview URL
+        const localUrl = URL.createObjectURL(croppedFile);
+        
+        const newId = Math.random().toString(36).substring(7);
+        newImages.push({ id: newId, url: localUrl, file: croppedFile, isNew: true });
+        
+        // Store original file so it can be re-cropped later
+        newOriginalFiles[newId] = file;
       }
 
-      const data = await res.json();
-      setImages((prev) => {
-        const combined = [...prev, {
-          id: Math.random().toString(36).substring(7),
-          url: data.url,
-        }];
-        return combined.slice(0, 10);
-      });
+      setImages((prev) => [...prev, ...newImages].slice(0, 10));
+      setOriginalFiles((prev) => ({ ...prev, ...newOriginalFiles }));
 
-      // Remove the completed file from crop queue
-      setCropQueue((prev) => prev.slice(1));
     } catch (error) {
-      console.error('Error uploading images:', error);
-      alert('Failed to upload image. Please try again.');
+      console.error('Error auto-cropping images:', error);
+      alert('Failed to process images. Please try again.');
     } finally {
       setIsUploading(false);
-      // Reset input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
     }
   };
 
-  const handleCropCancel = () => {
-    // Remove the current file from queue on cancel
-    setCropQueue((prev) => prev.slice(1));
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const handleReCrop = (imageId: string, croppedBlob: Blob, originalName: string) => {
+    const croppedFile = new File([croppedBlob], originalName, { type: 'image/webp' });
+    const localUrl = URL.createObjectURL(croppedFile);
+      
+    setImages((prev) => {
+      const newImages = [...prev];
+      const index = newImages.findIndex(img => img.id === imageId);
+      if (index !== -1) {
+        newImages[index] = { id: imageId, url: localUrl, file: croppedFile, isNew: true };
+      }
+      return newImages;
+    });
   };
 
   const handleReorder = (fromIndex: number, toIndex: number) => {
@@ -501,8 +493,7 @@ export function useAddProductForm(initialData?: Product) {
     isUploading,
     imagesToDelete,
     restoreImage,
-    cropQueue,
-    uploadCroppedImage,
-    handleCropCancel,
+    originalFiles,
+    handleReCrop,
   };
 }

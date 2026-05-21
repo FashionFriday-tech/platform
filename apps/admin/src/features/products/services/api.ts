@@ -1,6 +1,6 @@
 import { type Product } from '../types';
 
-
+export const mockProducts: Product[] = [];
 
 export async function fetchProducts(): Promise<Product[]> {
   try {
