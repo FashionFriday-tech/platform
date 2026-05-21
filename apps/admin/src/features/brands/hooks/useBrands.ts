@@ -50,10 +50,27 @@ export function useBrands() {
     setBrandToEdit(null);
   };
 
-  const handleDeleteBrand = () => {
+  const handleDeleteBrand = async () => {
     if (!selectedBrand) {
       return;
     }
+
+    if (
+      selectedBrand.logo &&
+      selectedBrand.logo.startsWith('http') &&
+      !selectedBrand.logo.includes('localhost')
+    ) {
+      try {
+        await fetch('http://localhost:3002/admin/upload/batch', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ urls: [selectedBrand.logo] }),
+        });
+      } catch (err) {
+        console.error('Failed to cleanup brand logo on delete:', err);
+      }
+    }
+
     setBrands((prev) => prev.filter((b) => b.slug !== selectedBrand.slug));
     setSelectedBrand(null);
   };

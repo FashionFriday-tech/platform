@@ -16,17 +16,16 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-all hover:shadow-lg dark:border-white/5 dark:bg-[#111111]"
     >
       <div
-        className="relative flex h-52 w-full items-center justify-center p-6 transition-colors"
+        className="relative flex aspect-square w-full items-center justify-center transition-colors"
         style={{ backgroundColor: brand.color || '#000000' }}
       >
         {/* Glow effect on hover */}
-        <div className="absolute inset-0 bg-white opacity-0 mix-blend-overlay transition-opacity group-hover:opacity-20" />
+        <div className="absolute inset-0 z-10 bg-white opacity-0 mix-blend-overlay transition-opacity group-hover:opacity-20" />
         <Image
-          width={500}
-          height={500}
+          fill
           src={brand.logo}
           alt={brand.name}
-          className="max-h-full max-w-full object-contain brightness-0 drop-shadow-md invert filter"
+          className="object-cover drop-shadow-md"
         />
       </div>
     </motion.div>

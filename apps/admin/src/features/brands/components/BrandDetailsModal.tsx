@@ -68,7 +68,7 @@ export function BrandDetailsModal({
               height={500}
               src={brand.logo}
               alt={brand.name}
-              className="max-h-full max-w-full object-contain brightness-0 drop-shadow-md invert filter"
+              className="max-h-full max-w-full object-contain drop-shadow-md"
             />
           </div>
 

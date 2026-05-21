@@ -18,6 +18,8 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
   const [name, setName] = useState('');
   const [color, setColor] = useState('#000000');
   const [logoUrl, setLogoUrl] = useState('');
+  const [fileToUpload, setFileToUpload] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [categories, setCategories] = useState<BrandCategory[]>([]);
 
   React.useEffect(() => {
@@ -37,10 +39,12 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
       };
       const mapped = initialData.categories.map((c) => categoryMap[c] || c);
       setCategories([...new Set(mapped)] as BrandCategory[]);
+      setFileToUpload(null);
     } else if (isOpen) {
       setName('');
       setColor('#000000');
       setLogoUrl('');
+      setFileToUpload(null);
       setCategories([]);
     }
   }, [initialData, isOpen]);
@@ -49,34 +53,80 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
     return null;
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name.trim()) {
       return;
     }
 
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
+    setIsUploading(true);
 
-    onSave(
-      {
-        name: name.trim(),
-        slug,
-        color,
-        logo: logoUrl.trim() || '/images/brand-logos/zara.png', // Default fallback
-        categories: categories.length > 0 ? categories : ['clothing'],
-      },
-      !!initialData,
-      initialData?.slug,
-    );
+    try {
+      let finalLogoUrl = logoUrl.trim() || '/images/brand-logos/zara.png';
 
-    // Reset form
-    setName('');
-    setColor('#000000');
-    setLogoUrl('');
-    setCategories([]);
-    onClose();
+      if (fileToUpload) {
+        const formData = new FormData();
+        formData.append('file', fileToUpload);
+        formData.append('slug', name.trim());
+        formData.append('folder', 'brands');
+
+        const res = await fetch('http://localhost:3002/admin/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error('Upload failed');
+        const data = await res.json();
+        finalLogoUrl = data.url;
+
+        // If we are replacing an existing Cloudflare logo, delete it
+        if (
+          initialData &&
+          initialData.logo &&
+          initialData.logo.startsWith('http') &&
+          !initialData.logo.includes('localhost')
+        ) {
+          try {
+            await fetch('http://localhost:3002/admin/upload/batch', {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ urls: [initialData.logo] }),
+            });
+          } catch (err) {
+            console.error('Failed to cleanup old brand logo:', err);
+          }
+        }
+      }
+
+      const slug = name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+
+      onSave(
+        {
+          name: name.trim(),
+          slug,
+          color,
+          logo: finalLogoUrl,
+          categories: categories.length > 0 ? categories : ['clothing'],
+        },
+        !!initialData,
+        initialData?.slug,
+      );
+
+      // Reset form
+      setName('');
+      setColor('#000000');
+      setLogoUrl('');
+      setFileToUpload(null);
+      setCategories([]);
+      onClose();
+    } catch (error) {
+      console.error('Failed to save brand:', error);
+      alert('Failed to save brand logo. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const toggleCategory = (cat: BrandCategory) => {
@@ -168,17 +218,19 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                 </div>
               </div>
 
-              <div>
-                <label className="mb-2 block text-sm font-medium text-black/70 dark:text-white/70">
-                  Logo Image
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-black/70 dark:text-white/70">
+                  Logo Image (1:1 Ratio)
                 </label>
-                <div className="relative">
+                <div className="relative w-24">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
-                        setLogoUrl(URL.createObjectURL(e.target.files[0]));
+                        const file = e.target.files[0];
+                        setFileToUpload(file);
+                        setLogoUrl(URL.createObjectURL(file));
                       }
                     }}
                     className="hidden"
@@ -186,30 +238,24 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                   />
                   <label
                     htmlFor="brand-logo-upload"
-                    className="flex cursor-pointer items-center justify-center gap-3 rounded-xl border border-dashed border-black/20 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black/60 transition-all hover:bg-black/5 dark:border-white/20 dark:bg-[#1a1a1a] dark:text-white/60 dark:hover:bg-white/5"
+                    className="group flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-[#f8f9fa] transition-all hover:bg-black/5 dark:border-white/20 dark:bg-[#1a1a1a] dark:hover:bg-white/5"
                   >
                     {logoUrl ? (
-                      <div className="flex w-full items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Image
-                            width={500}
-                            height={500}
-                            src={logoUrl}
-                            alt="Logo preview"
-                            className="h-6 w-6 rounded-md bg-black/5 object-contain p-0.5 dark:bg-white/5"
-                          />
-                          <span className="truncate text-black dark:text-white">
-                            Image selected
-                          </span>
+                      <div className="relative h-full w-full">
+                        <Image
+                          fill
+                          src={logoUrl}
+                          alt="Logo preview"
+                          className="object-contain p-2"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+                          <span className="text-[10px] font-bold text-white">Change</span>
                         </div>
-                        <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-                          Change
-                        </span>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2">
-                        <ImageIcon className="h-4 w-4 opacity-50" />
-                        <span>Click to upload logo...</span>
+                      <div className="flex flex-col items-center gap-1.5 text-black/60 dark:text-white/60">
+                        <ImageIcon className="h-6 w-6 opacity-50" />
+                        <span className="text-[10px] font-medium">Upload</span>
                       </div>
                     )}
                   </label>
@@ -245,16 +291,20 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
           <div className="flex items-center justify-end gap-3 border-t border-black/5 bg-[#f8f9fa] p-6 dark:border-white/5 dark:bg-[#1a1a1a]">
             <button
               onClick={onClose}
-              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5"
+              disabled={isUploading}
+              className="rounded-xl px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-black/5 disabled:opacity-50 dark:text-white dark:hover:bg-white/5"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              disabled={!name.trim() || !logoUrl || categories.length === 0}
-              className="rounded-xl bg-black px-6 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 dark:bg-white dark:text-black"
+              disabled={!name.trim() || !logoUrl || categories.length === 0 || isUploading}
+              className="flex items-center gap-2 rounded-xl bg-black px-6 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95 disabled:hover:scale-100 disabled:opacity-50 dark:bg-white dark:text-black"
             >
-              {initialData ? 'Save Changes' : 'Add Brand'}
+              {isUploading && (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white dark:border-black/20 dark:border-t-black"></div>
+              )}
+              {isUploading ? 'Uploading...' : initialData ? 'Save Changes' : 'Add Brand'}
             </button>
           </div>
         </motion.div>
