@@ -5,7 +5,7 @@ export const UpdateProductSchema = z.object({
   name: z.string().optional(),
   slug: z.string().optional(),
   description: z.string().optional(),
-  brand: z.string().optional(),
+  brand: z.array(z.string()).optional(),
   category: ProductCategoryEnum.optional(),
   gender: GenderEnum.optional(),
   status: z.enum(['PENDING', 'DRAFT', 'PUBLISHED', 'REJECTED', 'ARCHIVED']).optional(),
