@@ -8,7 +8,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-pegasus-premium-volt',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Experience the next generation of cushioning with the Pegasus Premium, featuring a visible Air Zoom unit for maximum energy return.',
@@ -39,7 +39,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-aone-red-white',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'A classic silhouette reimagined with premium leather overlays and a striking color-blocked design.',
@@ -65,7 +65,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-p6000-silver-metallic',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       "A mash-up of Pegasus' past, the Nike P-6000 features breathable mesh with vertical and horizontal overlays for a 2000s running look.",
@@ -95,7 +95,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-kd18-nrg-purple',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Built for the versatile scorer, the KD18 NRG offers a locked-in fit and responsive cushioning to keep you fresh through the fourth quarter.',
@@ -125,7 +125,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-af1-retro-red-gum',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'A tribute to the original, the AF1 Retro brings back heritage materials and classic basketball flair.',
@@ -151,7 +151,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'rolex-submariner-black-dial',
     brand: ['Rolex'],
     status: 'PUBLISHED',
-    category: 'WATCHES',
+    categoryId: 'WATCHES',
     gender: 'MEN',
     description:
       "The quintessential divers' watch, the Submariner features a unidirectional rotatable bezel and solid-link Oyster bracelet.",
@@ -174,7 +174,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'essential-fog-hoodie-cream',
     brand: ['Fear of God'],
     status: 'PUBLISHED',
-    category: 'CLOTHING',
+    categoryId: 'CLOTHING',
     gender: 'WOMEN',
     description:
       'Crafted from heavy-weight cotton fleece, this oversized hoodie provides the perfect drape and signature Fear of God aesthetic.',
@@ -198,7 +198,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'zara-relaxed-fit-black',
     brand: ['Zara'],
     status: 'PUBLISHED',
-    category: 'CLOTHING',
+    categoryId: 'CLOTHING',
     gender: 'MEN',
     description:
       'A versatile wardrobe staple made from soft, breathable cotton featuring a relaxed silhouette for effortless daily style.',
@@ -223,7 +223,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'rayban-wayfarer-black',
     brand: ['Ray-Ban'],
     status: 'PUBLISHED',
-    category: 'ACCESSORIES',
+    categoryId: 'ACCESSORIES',
     gender: 'MEN',
     description:
       'The most recognizable style in the history of sunglasses. Since its initial design in 1952, Wayfarer gained popularity among celebrities and musicians.',
@@ -246,7 +246,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'yeezy-slides-pure-beige',
     brand: ['Yeezy'],
     status: 'PUBLISHED',
-    category: 'ACCESSORIES',
+    categoryId: 'ACCESSORIES',
     gender: 'UNISEX',
     description:
       'Minimalist design meets maximum comfort. These slides feature injected EVA foam to provide lightweight durability and an easy slip-on feel.',
@@ -269,7 +269,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-shox-r4-black',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Bringing back the late-90s icon, the Shox R4 features four columns of cushioning that absorb impact and turn it into propulsion.',
@@ -299,7 +299,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-reactx-rejuven8-black',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Engineered with ReactX foam for 13% more energy return, these shoes are designed to help you recover faster and move smoother.',
@@ -325,7 +325,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-diamond-standout-cleats',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Professional grade baseball cleats featuring a metal spike plate for explosive traction and a supportive upper for lateral stability.',
@@ -355,7 +355,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-lebron-23-purple-gold',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Engineered for explosive power, the LeBron 23 features a dual-chamber Air Max unit and a reinforced upper for maximum containment on the court.',
@@ -385,7 +385,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-p6000-vintage-silver',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'UNISEX',
     description:
       'The P-6000 draws on the 2006 Nike Air Pegasus, bringing you a breathable, comfortable trainer with an early-2000s vibe.',
@@ -415,7 +415,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'rayban-aviator-classic-gold',
     brand: ['Ray-Ban'],
     status: 'PUBLISHED',
-    category: 'ACCESSORIES',
+    categoryId: 'ACCESSORIES',
     gender: 'UNISEX',
     description:
       'One of the most iconic sunglass models in the world, the Ray-Ban Aviator Classic was originally designed for U.S. aviators in 1937.',
@@ -438,7 +438,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-reactx-rejuven8-print-white',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'WOMEN',
     description:
       'Step into cloud-like comfort with the ReactX Rejuven8. Featuring a unique graphic print and circular-knit upper for maximum breathability.',
@@ -468,7 +468,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-kd18-gi-blue-white',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       "The KD18 'GI' is designed for the modern ballplayer, featuring a lightweight, multi-layer mesh upper and a Zoom Air unit for low-profile, responsive cushioning.",
@@ -499,7 +499,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-af1-retro-university-red',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Back to the basics. The AF1 Retro keeps the 1982 DNA alive with premium leather and the iconic gum sole that defined an era of basketball and street style.',
@@ -529,7 +529,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'lv-keepall-55-monogram',
     brand: ['Louis Vuitton'],
     status: 'PUBLISHED',
-    category: 'ACCESSORIES',
+    categoryId: 'ACCESSORIES',
     gender: 'UNISEX',
     description:
       'An icon since its appearance in 1930, the Keepall embodies the spirit of modern travel. Light, supple and always ready for immediate departure.',
@@ -552,7 +552,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'seiko-presage-blue-moon-automatic',
     brand: ['Seiko'],
     status: 'PUBLISHED',
-    category: 'WATCHES',
+    categoryId: 'WATCHES',
     gender: 'MEN',
     description:
       'Inspired by the Blue Moon cocktail, this Presage model features a deep blue sunray dial and a mechanical movement that showcases fine Japanese watchmaking.',
@@ -575,7 +575,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-pegasus-premium-blue-silver',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Featuring a sculpted foam midsole and high-visibility reflective hits, this Pegasus Premium variant is built for those who demand both style and high-mileage durability.',
@@ -605,7 +605,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'apple-watch-ultra-2-clone',
     brand: ['Apple Clone'],
     status: 'PUBLISHED',
-    category: 'WATCHES',
+    categoryId: 'WATCHES',
     gender: 'UNISEX',
     description:
       'A 1:1 replica of the Ultra 2 featuring a titanium-style finish, functional Action Button, and a vibrant always-on display at a fraction of the cost.',
@@ -628,7 +628,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'titan-edge-slim-black',
     brand: ['Titan'],
     status: 'PUBLISHED',
-    category: 'WATCHES',
+    categoryId: 'WATCHES',
     gender: 'MEN',
     description:
       'One of the slimmest watches in the world. The Titan Edge represents the pinnacle of Indian horological engineering with its minimalist design and premium build.',
@@ -651,7 +651,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-af1-white-7aa',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'UNISEX',
     description:
       'The street icon that never fades. This 7AA quality version features premium synthetic leather and the classic Air-sole unit for all-day comfort.',
@@ -681,7 +681,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'gucci-marmont-bag-black',
     brand: ['Gucci'],
     status: 'PUBLISHED',
-    category: 'ACCESSORIES',
+    categoryId: 'ACCESSORIES',
     gender: 'WOMEN',
     description:
       'Crafted from matelassé chevron leather with a heart on the back, the small GG Marmont chain shoulder bag is defined by its iconic Double G hardware.',
@@ -704,7 +704,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'hm-slim-fit-chinos-beige',
     brand: ['H&M'],
     status: 'PUBLISHED',
-    category: 'CLOTHING',
+    categoryId: 'CLOTHING',
     gender: 'UNISEX',
     description:
       'A timeless classic for the office or casual weekends, these chinos are made from a stretch cotton twill for a comfortable, slim silhouette.',
@@ -727,7 +727,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'crocs-classic-clog-white',
     brand: ['Crocs'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'UNISEX',
     description:
       'The original comfort icon. Lightweight, water-friendly, and buoyant, these clogs are the ultimate easy-on footwear for any season.',
@@ -757,7 +757,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'rayban-aviator-metal-gold',
     brand: ['Ray-Ban'],
     status: 'PUBLISHED',
-    category: 'ACCESSORIES',
+    categoryId: 'ACCESSORIES',
     gender: 'MEN',
     description:
       'The gold standard of eyewear. These Aviators feature a polished metal frame and classic G-15 green lenses for superior clarity and style.',
@@ -784,7 +784,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-reactx-rejuven8-triple-black',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'Built for recovery and all-day wear, the ReactX Rejuven8 features a revolutionary circular-knit upper and dual-density foam for a seamless, cushioned experience.',
@@ -814,7 +814,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-shox-r4-metallic-black',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       'The 2000s cult classic returns. The Shox R4 delivers the legendary four-column cushioning system that redefined impact protection and energy return.',
@@ -844,7 +844,7 @@ export const DUMMY_PRODUCTS: Product[] = [
     slug: 'nike-reactx-rejuven8-print-camo',
     brand: ['Nike'],
     status: 'PUBLISHED',
-    category: 'SNEAKERS',
+    categoryId: 'SNEAKERS',
     gender: 'MEN',
     description:
       "A bold iteration of the Rejuven8, this 'Print' edition combines striking camo aesthetics with high-performance ReactX foam technology.",
