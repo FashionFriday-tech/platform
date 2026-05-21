@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 
 import { useCategories } from '../hooks/useCategories';
 import { CategoryCard } from './CategoryCard';
+import { AddCategoryModal } from './AddCategoryModal';
 
 export default function CategoriesFeature() {
   const {
@@ -14,6 +15,11 @@ export default function CategoriesFeature() {
     setSelectedGender,
     genders,
     filteredCategories,
+    isAddModalOpen,
+    setIsAddModalOpen,
+    categoryToEdit,
+    setCategoryToEdit,
+    handleSaveCategory,
   } = useCategories();
 
   return (
@@ -39,18 +45,37 @@ export default function CategoriesFeature() {
           ))}
         </div>
 
-        {/* Search Bar */}
-        <div className="relative w-full sm:max-w-xs">
-          <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-black/40 dark:text-white/40" />
-          <input
-            type="text"
-            placeholder="Search categories..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
+        {/* Search Bar & Add Button */}
+        <div className="flex w-full items-center gap-3 sm:max-w-md">
+          <div className="relative flex-1">
+            <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-black/40 dark:text-white/40" />
+            <input
+              type="text"
+              placeholder="Search categories..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+              className="w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-10 text-sm text-black placeholder-black/40 transition-colors outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222]"
+            />
+          </div>
+          <button
+            onClick={() => {
+              setCategoryToEdit(null);
+              setIsAddModalOpen(true);
             }}
-            className="w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-10 text-sm text-black placeholder-black/40 transition-colors outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222]"
-          />
+            className="flex shrink-0 items-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-105 active:scale-95 dark:bg-white dark:text-black"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+            </svg>
+            <span className="hidden sm:inline">Add Category</span>
+          </button>
         </div>
       </div>
 
@@ -82,6 +107,13 @@ export default function CategoriesFeature() {
           </motion.div>
         )}
       </div>
+
+      <AddCategoryModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        initialData={categoryToEdit}
+        onSave={handleSaveCategory}
+      />
     </div>
   );
 }
