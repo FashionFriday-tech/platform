@@ -28,7 +28,7 @@ export function ProductListView() {
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
-      <ProductStats />
+      <ProductStats products={products} />
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <ProductActionBar
