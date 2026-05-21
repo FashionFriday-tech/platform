@@ -61,7 +61,7 @@ export function useBrands() {
       !selectedBrand.logo.includes('localhost')
     ) {
       try {
-        await fetch('http://localhost:3002/admin/upload/batch', {
+        await fetch('http://127.0.0.1:3002/admin/upload/batch', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ urls: [selectedBrand.logo] }),
