@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 
 import { ProductsModule } from './modules/products/products.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UploadModule } from './modules/upload/upload.module';
     PrismaModule,
     AuthModule,
     ProductsModule,
+    CategoriesModule,
     UploadModule,
     ThrottlerModule.forRoot([
       {
