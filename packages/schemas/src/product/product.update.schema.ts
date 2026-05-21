@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { ProductCategoryEnum, GenderEnum, QualityEnum } from './product.enums';
+import { GenderEnum, QualityEnum } from './product.enums';
 
 export const UpdateProductSchema = z.object({
   name: z.string().optional(),
   slug: z.string().optional(),
   description: z.string().optional(),
   brand: z.array(z.string()).optional(),
-  category: ProductCategoryEnum.optional(),
+  categoryId: z.string().uuid().optional(),
   gender: GenderEnum.optional(),
   status: z.enum(['PENDING', 'DRAFT', 'PUBLISHED', 'REJECTED', 'ARCHIVED']).optional(),
   price: z.object({
