@@ -3,13 +3,17 @@ import React from 'react';
 import { ActivityIcon, AlertCircleIcon, ClockIcon, ShoppingBagIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
-import { mockProducts } from '../services/api';
+import { type Product } from '../types';
 
-export function ProductStats() {
-  const totalProducts = mockProducts.length;
-  const activeProducts = mockProducts.filter((p) => p.status === 'Active').length;
-  const inactiveProducts = mockProducts.filter((p) => p.status === 'Inactive').length;
-  const draftProducts = mockProducts.filter((p) => p.status === 'Draft').length;
+interface ProductStatsProps {
+  products: Product[];
+}
+
+export function ProductStats({ products }: ProductStatsProps) {
+  const totalProducts = products.length;
+  const activeProducts = products.filter((p) => p.status === 'Active').length;
+  const inactiveProducts = products.filter((p) => p.status === 'Inactive').length;
+  const draftProducts = products.filter((p) => p.status === 'Draft').length;
 
   const stats = [
     {
