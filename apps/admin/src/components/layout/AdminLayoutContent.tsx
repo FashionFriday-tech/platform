@@ -10,6 +10,7 @@ import { LoginPage } from '@/features/auth';
 
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { Toaster } from 'sonner';
 
 // Route prefix permission rules
 const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
@@ -98,6 +99,7 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
             </a>
           </div>
         </main>
+        <Toaster position="top-right" richColors />
       </>
     );
   }
@@ -109,6 +111,7 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
         <Header />
         <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </main>
+      <Toaster position="top-right" richColors />
     </>
   );
 }
