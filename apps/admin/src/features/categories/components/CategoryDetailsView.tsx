@@ -4,13 +4,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { EditIcon, PackageIcon, PlusIcon, SearchIcon } from '@ff/ui';
+import { EditIcon, PackageIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
+import { useRouter } from 'next/navigation';
 
 // We simulate fetching all products using the products feature mock
 import { mockProducts } from '../../products/services/api';
 import { type Product } from '../../products/types';
 import { type ProductCategory } from '../types';
 import { CategoryProductTable } from './CategoryProductTable';
+import { AddCategoryModal } from './AddCategoryModal';
 
 interface CategoryDetailsViewProps {
   initialCategory: ProductCategory;
@@ -21,14 +23,52 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   const [categoryProducts, setCategoryProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive' | 'Draft'>('All');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    // In a real app, we'd fetch products by category ID.
-    const initialProducts = mockProducts
-      .filter((p) => parseInt(p.id.replace(/\D/g, '')) % 2 === (category.gender === 'Men' ? 0 : 1))
-      .slice(0, 10);
-    setCategoryProducts(initialProducts);
-  }, [category.gender]);
+    async function loadProducts() {
+      try {
+        const res = await fetch(`http://127.0.0.1:3002/admin/products`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const allProducts = data.data || [];
+        
+        // Filter by category ID and map
+        const categoryProds = allProducts.filter((p: any) => p.categoryId === category.id).map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          sku: p.id.substring(0, 8).toUpperCase(),
+          costPrice: Number(p.gettingPrice) || 0,
+          originalPrice: Number(p.ogPrice || p.sellingPrice),
+          sellingPrice: Number(p.sellingPrice) || 0,
+          stock: Number(p.totalStock) || 0,
+          maxStock: 1000,
+          status: (p.status.charAt(0).toUpperCase() + p.status.slice(1).toLowerCase()) as any,
+          categoryId: p.categoryId,
+          category: p.category?.name || category.name,
+          store: 'Main Store',
+          variants: p.sizes || [],
+          sales: 0,
+          dateAdded: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          imageUrl: p.mainImage,
+          images: [p.mainImage, p.promoImage, ...(p.liveImages || [])].filter(Boolean),
+          description: p.description,
+          quality: p.quality,
+          brand: p.brand ? p.brand[0] : undefined,
+          gender: p.gender,
+          seoTitle: p.seoTitle,
+          seoDesc: p.seoDescription,
+          seoSlug: p.slug,
+          videoLink: p.youtubeId ? `https://www.youtube.com/embed/${p.youtubeId}` : undefined,
+        }));
+        setCategoryProducts(categoryProds);
+      } catch (err) {
+        console.error('Failed to load category products', err);
+      }
+    }
+    loadProducts();
+  }, [category.id, category.name]);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -37,16 +77,35 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     setCategory((prev) => ({ ...prev, productCount: prev.productCount - 1 }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setCategory((prev) => ({ ...prev, image: imageUrl }));
-    }
+  const handleSaveCategory = (savedCategory: ProductCategory) => {
+    setCategory(savedCategory);
   };
 
-  const handleChangeImage = () => {
-    fileInputRef.current?.click();
+  const handleDeleteCategory = async () => {
+    // 1. Delete image from Cloudflare (if it's not a local placeholder)
+    if (category.image && category.image.startsWith('http') && !category.image.includes('localhost')) {
+      try {
+        await fetch('http://localhost:3002/admin/upload/batch', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ urls: [category.image] }),
+        });
+      } catch (err) {
+        console.error('Failed to cleanup category image:', err);
+      }
+    }
+
+    // 2. Delete category from the database
+    try {
+      await fetch(`http://localhost:3002/admin/categories/${category.id}`, {
+        method: 'DELETE',
+      });
+    } catch (err) {
+      console.error('Failed to delete category from DB:', err);
+    }
+
+    // 3. Redirect back to categories list
+    router.push('/categories');
   };
 
   const filteredProducts = useMemo(() => {
@@ -74,22 +133,6 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*"
-              className="hidden"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-              <button
-                onClick={handleChangeImage}
-                className="flex items-center gap-2 rounded-xl bg-white/20 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-md transition-all hover:bg-white/40"
-              >
-                <EditIcon className="h-3.5 w-3.5" />
-                Edit
-              </button>
-            </div>
           </div>
         </div>
 
@@ -106,8 +149,24 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
               </div>
             </div>
 
-            <div className="inline-flex items-center rounded-lg bg-black/5 px-4 py-2 text-sm font-semibold tracking-widest text-black/60 uppercase dark:bg-white/5 dark:text-white/60">
-              {category.gender}
+            <div className="flex items-center gap-3">
+              <div className="inline-flex items-center rounded-lg bg-black/5 px-4 py-2 text-sm font-semibold tracking-widest text-black/60 uppercase dark:bg-white/5 dark:text-white/60">
+                {category.gender}
+              </div>
+              <button
+                onClick={() => setIsEditModalOpen(true)}
+                className="flex items-center gap-2 rounded-xl bg-black/5 px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+              >
+                <EditIcon className="h-4 w-4" />
+                Edit
+              </button>
+              <button
+                onClick={handleDeleteCategory}
+                className="flex items-center gap-2 rounded-xl bg-[#DC143C]/10 px-4 py-2 text-sm font-semibold text-[#DC143C] transition-colors hover:bg-[#DC143C]/20"
+              >
+                <TrashIcon className="h-4 w-4" />
+                Delete
+              </button>
             </div>
           </div>
 
@@ -174,6 +233,13 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
           <CategoryProductTable products={filteredProducts} onRemoveProduct={handleRemoveProduct} />
         </div>
       </div>
+
+      <AddCategoryModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        initialData={category}
+        onSave={handleSaveCategory}
+      />
     </div>
   );
 }
