@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ProductStatusEnum, ProductCategoryEnum, GenderEnum, QualityEnum } from './product.enums';
+import { ProductStatusEnum, GenderEnum, QualityEnum } from './product.enums';
 
 export const ProductBaseSchema = z.object({
   id: z.string().uuid(),
@@ -14,7 +14,7 @@ export const ProductBaseSchema = z.object({
 
   status: ProductStatusEnum,
 
-  category: ProductCategoryEnum,
+  categoryId: z.string().uuid(),
 
   gender: GenderEnum,
 
