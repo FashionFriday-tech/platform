@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ProductsRepository } from '../products.repository';
-import { ProductStatus, ProductCategory } from '@ff/database';
+import { ProductStatus } from '@ff/database';
 
 @Injectable()
 export class PublicProductsService {
@@ -77,7 +77,9 @@ export class PublicProductsService {
       take,
       where: {
         status: ProductStatus.PUBLISHED,
-        category: categorySlug.toUpperCase() as ProductCategory,
+        category: {
+          slug: categorySlug
+        }
       }
     });
     return this.paginate(result, skip, take);
