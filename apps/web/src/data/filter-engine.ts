@@ -91,7 +91,7 @@ export const getProductBySlug = (slug: string): Product | undefined => {
 };
 
 export const getSimilarProducts = (category: string, currentProductId?: string): Product[] => {
-  return DUMMY_PRODUCTS.filter((p) => p.category === category && p.id !== currentProductId).slice(
+  return DUMMY_PRODUCTS.filter((p) => p.categoryId === category && p.id !== currentProductId).slice(
     0,
     10,
   );
