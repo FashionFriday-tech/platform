@@ -40,7 +40,7 @@ export default async function Page({ params }: Props) {
     return <EditorialError slug={slug} />;
   }
 
-  const similarProducts = getSimilarProducts(product.category, product.id);
+  const similarProducts = getSimilarProducts(product.categoryId, product.id);
 
   return <ProductPageMaster product={product} similarProducts={similarProducts} />;
 }
