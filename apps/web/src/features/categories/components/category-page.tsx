@@ -27,7 +27,7 @@ export function CategoryPage({ gender, category }: CategoryPageProps) {
 
   // The logic: (Category must match) AND (Product Gender is current department OR Unisex)
   const initialProducts = DUMMY_PRODUCTS.filter((p) => {
-    const isCorrectCategory = p.category === formattedCategory;
+    const isCorrectCategory = p.categoryId === formattedCategory;
 
     const pGender = p.gender.toLowerCase();
     const isCorrectGender = pGender === formattedGender || pGender === 'unisex';
