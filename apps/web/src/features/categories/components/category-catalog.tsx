@@ -22,7 +22,7 @@ export function CategoryCatalog({ category }: CategoryCatalogProps) {
     return notFound();
   }
 
-  const initialProducts = DUMMY_PRODUCTS.filter((p) => p.category === formattedCategory);
+  const initialProducts = DUMMY_PRODUCTS.filter((p) => p.categoryId === formattedCategory);
 
   return <CatalogueClient categorySlug={formattedCategory} initialProducts={initialProducts} />;
 }
