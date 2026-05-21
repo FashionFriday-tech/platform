@@ -11,7 +11,7 @@ import { ImageCropModal } from '@/components/ui/ImageCropModal';
 import { type Product } from '@ff/schemas';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
-import { CATEGORIES, QUALITIES } from '../utils/constants';
+import { QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 
 interface AddProductFormProps {
@@ -98,6 +98,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     restoreImage,
     originalFiles,
     handleReCrop,
+    apiCategories,
   } = useAddProductForm(initialData);
 
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
@@ -148,6 +149,16 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     }
     return 'valid';
   };
+
+  const dynamicCategories = apiCategories.filter((c) => {
+    if (c.gender === 'Unisex') return true;
+    if (gender === 'Men' && c.gender === 'Men') return true;
+    if (gender === 'Woman' && c.gender === 'Women') return true;
+    if (gender === 'Unisex') return true;
+    return false;
+  });
+
+  const uniqueCategories = dynamicCategories;
 
   return (
     <div className="scrollbar-hide h-full w-full overflow-y-auto rounded-2xl pb-20">
@@ -245,9 +256,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     return img.url;
                   }));
 
-                  // Map frontend category to backend enum
-                  let mappedCategory = 'CLOTHING';
-                  if (category === 'Sneakers') mappedCategory = 'SNEAKERS';
+                  const selectedApiCategory = uniqueCategories.find((c) => c.name === category);
+                  if (!selectedApiCategory) {
+                    setToast({ message: 'Please select a valid category.', type: 'warning' });
+                    return;
+                  }
 
                   // Map frontend quality to backend enum
                   let mappedQuality = quality.toUpperCase().replace(/\s+/g, '_');
@@ -257,7 +270,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   const payload = {
                     name: productName,
                     description: productDesc,
-                    category: mappedCategory,
+                    categoryId: selectedApiCategory.id,
                     brand: brandInput ? [brandInput] : [],
                     gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
                     attributes: {
@@ -372,10 +385,41 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               </div>
 
               <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2">
+                <div>
+                  <LabelWithTick
+                    label="Gender"
+                    status={getStatus(gender, initialData?.gender, 1, 'gender')}
+                    subtitle="Pick Available Gender"
+                  />
+                  <div className="flex h-10 items-center space-x-6">
+                    {['Men', 'Woman', 'Unisex'].map((g) => (
+                      <button
+                        key={g}
+                        onClick={() => {
+                          setGender(g);
+                          markTouched('gender');
+                        }}
+                        className="group flex cursor-pointer items-center space-x-2.5"
+                      >
+                        <div
+                          className={`flex h-4 w-4 items-center justify-center rounded-full border-[2px] transition-colors ${gender === g ? 'border-black dark:border-white' : 'border-black/20 group-hover:border-black/40 dark:border-white/20 dark:group-hover:border-white/40'}`}
+                        >
+                          {gender === g && (
+                            <div className="h-2 w-2 rounded-full bg-black dark:bg-white" />
+                          )}
+                        </div>
+                        <span className="text-sm font-medium text-black/80 dark:text-white/80">
+                          {g}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div ref={categoryRef} className="relative">
                   <LabelWithTick
                     label="Product Category"
-                    status={getStatus(category, initialData?.category, 1, 'category')}
+                    status={getStatus(category, initialData?.categoryId, 1, 'category')}
                   />
                   <button
                     onClick={() => {
@@ -403,21 +447,26 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   </button>
 
                   {isCategoryOpen && (
-                    <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
-                      {CATEGORIES.map((c) => (
+                    <div className="absolute z-10 mt-2 w-full max-h-60 overflow-y-auto overflow-x-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+                      {uniqueCategories.map((c) => (
                         <button
-                          key={c}
+                          key={c.id}
                           onClick={() => {
-                            handleCategorySelect(c);
+                            handleCategorySelect(c.name);
                             markTouched('category');
                           }}
-                          className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${category === c ? 'bg-black/5 text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
+                          className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${category === c.name ? 'bg-black/5 text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
                         >
-                          {c}
+                          {c.name}
                         </button>
                       ))}
+                      {uniqueCategories.length === 0 && (
+                        <div className="px-4 py-3 text-center text-sm font-medium text-black/50 dark:text-white/50">
+                          No categories for this gender.
+                        </div>
+                      )}
                       <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                      <button className="flex w-full items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5">
+                      <Link href="/categories" className="flex w-full items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5">
                         <svg
                           className="h-4 w-4"
                           fill="none"
@@ -431,57 +480,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                           />
                         </svg>
-                        <span>Add Category</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div ref={qualityRef} className="relative">
-                  <LabelWithTick
-                    label="Quality"
-                    status={getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
-                  />
-                  <button
-                    onClick={() => {
-                      setIsQualityOpen(!isQualityOpen);
-                      markTouched('quality');
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${isQualityOpen ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white' : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'}`}
-                  >
-                    <span>{quality}</span>
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
-                      <svg
-                        className={`h-3 w-3 text-black transition-transform dark:text-white ${isQualityOpen ? 'rotate-180' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
-                  </button>
-
-                  {isQualityOpen && (
-                    <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
-                      {QUALITIES.map((q) => (
-                        <button
-                          key={q}
-                          onClick={() => {
-                            setQuality(q);
-                            setIsQualityOpen(false);
-                            markTouched('quality');
-                          }}
-                          className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${quality === q ? 'bg-black/5 text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
-                        >
-                          {q}
-                        </button>
-                      ))}
+                        <span>Manage Categories</span>
+                      </Link>
                     </div>
                   )}
                 </div>
@@ -629,35 +629,53 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   </div>
                 </div>
 
-                <div>
+                <div ref={qualityRef} className="relative">
                   <LabelWithTick
-                    label="Gender"
-                    status={getStatus(gender, initialData?.gender, 1, 'gender')}
-                    subtitle="Pick Available Gender"
+                    label="Quality"
+                    status={getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
                   />
-                  <div className="flex h-10 items-center space-x-6">
-                    {['Men', 'Woman', 'Unisex'].map((g) => (
-                      <button
-                        key={g}
-                        onClick={() => {
-                          setGender(g);
-                          markTouched('gender');
-                        }}
-                        className="group flex cursor-pointer items-center space-x-2.5"
+                  <button
+                    onClick={() => {
+                      setIsQualityOpen(!isQualityOpen);
+                      markTouched('quality');
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${isQualityOpen ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white' : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'}`}
+                  >
+                    <span>{quality}</span>
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
+                      <svg
+                        className={`h-3 w-3 text-black transition-transform dark:text-white ${isQualityOpen ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                       >
-                        <div
-                          className={`flex h-4 w-4 items-center justify-center rounded-full border-[2px] transition-colors ${gender === g ? 'border-black dark:border-white' : 'border-black/20 group-hover:border-black/40 dark:border-white/20 dark:group-hover:border-white/40'}`}
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </button>
+
+                  {isQualityOpen && (
+                    <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+                      {QUALITIES.map((q) => (
+                        <button
+                          key={q}
+                          onClick={() => {
+                            setQuality(q);
+                            setIsQualityOpen(false);
+                            markTouched('quality');
+                          }}
+                          className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${quality === q ? 'bg-black/5 text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
                         >
-                          {gender === g && (
-                            <div className="h-2 w-2 rounded-full bg-black dark:bg-white" />
-                          )}
-                        </div>
-                        <span className="text-sm font-medium text-black/80 dark:text-white/80">
-                          {g}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                          {q}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
