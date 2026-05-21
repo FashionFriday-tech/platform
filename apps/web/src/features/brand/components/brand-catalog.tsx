@@ -18,7 +18,7 @@ export function BrandCatalog({ brandName }: BrandCatalogProps) {
   );
 
   // 3. Determine initial sidebar context
-  const contextCategory = brandProducts.length > 0 ? brandProducts[0].category : 'sneakers';
+  const contextCategory = brandProducts.length > 0 ? brandProducts[0].categoryId : 'sneakers';
 
   return <CatalogueClient categorySlug={contextCategory} initialProducts={brandProducts} />;
 }
