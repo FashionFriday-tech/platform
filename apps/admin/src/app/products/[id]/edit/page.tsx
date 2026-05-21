@@ -6,7 +6,6 @@ import { useParams } from 'next/navigation';
 import { type Product } from '@ff/schemas';
 
 import { AddProductForm } from '@/features/products/components/AddProductForm';
-import { fetchProductById } from '@/features/products/services/api';
 
 export default function EditProductPage() {
   const params = useParams();
@@ -22,70 +21,61 @@ export default function EditProductPage() {
       }
       setIsLoading(true);
       try {
-        const data = await fetchProductById(productId);
-        if (data) {
-          // Map local product to schema product structure
-          const mappedProduct: Product = {
-            id: data.id,
-            name: data.name,
-            slug: data.seoSlug || data.name.toLowerCase().replace(/\s+/g, '-'),
-            description: data.description || '',
-            brand: data.brand ? [data.brand] : [],
-            status: 'Published',
-            category: 'Clothing',
-            price: {
-              basePrice: data.costPrice,
-              sellingPrice: data.sellingPrice,
-              ogPrice: data.originalPrice,
-              discountPercentage: 0,
-              currency: 'INR',
-            },
-            inventory: {
-              sku: data.sku,
-              barcode: '',
-              totalStock: data.stock,
-              availableStock: data.stock,
-              trackInventory: true,
-              lowStockThreshold: 10,
-              allowBackorder: false,
-            },
-            media: {
-              mainImage: data.imageUrl || '',
-              gallery: data.images || [],
-              videoUrl: data.videoLink,
-            },
-            attributes: {
-              sizes: data.variants,
-              colors: data.color ? [{ name: data.color, hex: '#000000' }] : [],
-              materials: [],
-              careInstructions: [],
-              fit: 'Regular',
-              style: '',
-              quality: data.quality || 'Standard',
-            },
-            gender: (data.gender as any) || 'Unisex',
-            marketing: {
-              seoTitle: data.seoTitle || '',
-              seoDescription: data.seoDesc || '',
-              collections: data.tags || [],
-              tags: data.tags || [],
-              isFeatured: false,
-              isNewArrival: false,
-            },
-            shipping: {
-              weight: 0,
-              dimensions: { length: 0, width: 0, height: 0, unit: 'cm' },
-              isFragile: false,
-              processingTime: '1-2 days',
-            },
-            variants: [],
-            createdAt: new Date(data.dateAdded),
-            updatedAt: new Date(),
-          } as any;
-          setProduct(mappedProduct);
-        }
+        const res = await fetch(`http://localhost:3002/admin/products/${productId}`);
+        if (!res.ok) throw new Error('Failed to fetch product');
+        const p = await res.json();
+
+        // Pass the raw API response mapped directly to the Product schema shape
+        // so no data is lost or misaligned (especially images).
+        const mappedProduct: Product = {
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          description: p.description || '',
+          brand: p.brand || [],
+          status: p.status || 'DRAFT',
+          category: p.category || 'CLOTHING',
+          gender: p.gender || 'UNISEX',
+          price: {
+            ogPrice: Number(p.ogPrice) || 0,
+            sellingPrice: Number(p.sellingPrice) || 0,
+            gettingPrice: Number(p.gettingPrice) || 0,
+          },
+          inventory: {
+            totalStock: Number(p.totalStock) || 0,
+          },
+          media: {
+            mainImage: p.mainImage || '',
+            promoImage: p.promoImage || undefined,
+            liveImages: p.liveImages || [],
+            youtubeId: p.youtubeId || undefined,
+          },
+          attributes: {
+            sizes: p.sizes || [],
+            colors: p.colors || [],
+            quality: p.quality || 'UA',
+          },
+          marketing: {
+            collections: p.collections || [],
+            isFeatured: p.isFeatured || false,
+            seoTitle: p.seoTitle || '',
+            seoDescription: p.seoDescription || '',
+          },
+          rating: {
+            averageRating: p.averageRating || 4,
+            totalReviews: p.totalReviews || 0,
+          },
+          liveMatrix: {
+            liveWatching: p.liveWatching || 0,
+            liveSold: p.liveSold || 0,
+          },
+          createdAt: new Date(p.createdAt),
+          updatedAt: new Date(p.updatedAt),
+        } as any;
+
+        setProduct(mappedProduct);
       } catch (err) {
-        console.error(err);
+        console.error("DEBUG ERROR fetchProductById:", err);
       } finally {
         setIsLoading(false);
       }
