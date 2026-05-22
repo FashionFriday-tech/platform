@@ -8,6 +8,7 @@ import { PrismaService } from './database/prisma.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { CollectionsModule } from './modules/collections/collections.module';
 import { ProductsModule } from './modules/products/products.module';
 import { UploadModule } from './modules/upload/upload.module';
 
@@ -17,6 +18,7 @@ import { UploadModule } from './modules/upload/upload.module';
     PrismaModule,
     AuthModule,
     BrandsModule,
+    CollectionsModule,
     ProductsModule,
     CategoriesModule,
     UploadModule,
