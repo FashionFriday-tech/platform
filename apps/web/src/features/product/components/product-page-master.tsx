@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -31,7 +31,7 @@ export default function ProductPageMaster({
 }: {
   product: Product;
   similarProducts: Product[];
-}) {
+}): JSX.Element {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [isWishlisted, setIsWishlisted] = useState(true);
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
