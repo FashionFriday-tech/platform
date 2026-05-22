@@ -26,7 +26,7 @@ export function BrandsPage() {
   const [brandsData, setBrandsData] = useState<Brand[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:3002/brands')
+    fetch('http://127.0.0.1:3002/brands')
       .then((res) => res.json())
       .then((data) => setBrandsData(data))
       .catch((err) => console.error('Failed to fetch brands:', err));
