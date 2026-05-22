@@ -239,7 +239,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     if (pName) formData.append('slug', pName);
                     formData.append('folder', 'products');
 
-                    const res = await fetch('http://localhost:3002/admin/upload', {
+                    const res = await fetch('http://127.0.0.1:3002/admin/upload', {
                       method: 'POST',
                       body: formData,
                     });
@@ -301,8 +301,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   };
 
                   const url = initialData 
-                    ? `http://localhost:3002/admin/products/${initialData.id}` 
-                    : 'http://localhost:3002/admin/products';
+                    ? `http://127.0.0.1:3002/admin/products/${initialData.id}` 
+                    : 'http://127.0.0.1:3002/admin/products';
                   const res = await fetch(url, {
                     method: initialData ? 'PATCH' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
