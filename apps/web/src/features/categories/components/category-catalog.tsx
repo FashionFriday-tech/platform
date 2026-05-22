@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import type { JSX } from 'react';
 
 import { DUMMY_PRODUCTS } from '@/data/products';
 import { CatalogueClient } from '@/features/catalogue';
@@ -7,7 +8,7 @@ interface CategoryCatalogProps {
   category: string;
 }
 
-export function CategoryCatalog({ category }: CategoryCatalogProps) {
+export function CategoryCatalog({ category }: CategoryCatalogProps): JSX.Element {
   // Map URL slugs to exact Data Categories
   const categoryMap: Record<string, string> = {
     watches: 'Watches',
