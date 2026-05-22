@@ -1,26 +1,75 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-
-import { MOCK_COLLECTIONS, type ProductCollection } from '../types';
+import { useMemo, useState, useEffect } from 'react';
+import { type ProductCollection } from '../types';
 
 export function useCollections() {
-  const [collections, setCollections] = useState<ProductCollection[]>(MOCK_COLLECTIONS);
+  const [collections, setCollections] = useState<ProductCollection[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleAddCollection = (name: string, image: string, slug: string) => {
-    const newCol: ProductCollection = {
-      id: `col_${Date.now()}`,
-      name,
-      slug,
-      image:
-        image ||
-        'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=1000&auto=format&fit=crop',
-      productCount: 0,
-    };
-    setCollections((prev) => [newCol, ...prev]);
-    setIsAddModalOpen(false);
+  const fetchCollections = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('http://127.0.0.1:3002/admin/collections');
+      if (res.ok) {
+        const data = await res.json();
+        setCollections(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch collections', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCollections();
+  }, []);
+
+  const handleAddCollection = async (name: string, image: string, slug: string) => {
+    try {
+      const res = await fetch('http://127.0.0.1:3002/admin/collections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, slug, image }),
+      });
+      if (res.ok) {
+        await fetchCollections();
+        setIsAddModalOpen(false);
+      }
+    } catch (error) {
+      console.error('Failed to create collection', error);
+    }
+  };
+
+  const handleUpdateCollection = async (id: string, name: string, image: string, slug: string) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:3002/admin/collections/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, slug, image }),
+      });
+      if (res.ok) {
+        await fetchCollections();
+      }
+    } catch (error) {
+      console.error('Failed to update collection', error);
+    }
+  };
+
+  const handleDeleteCollection = async (id: string) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:3002/admin/collections/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        await fetchCollections();
+      }
+    } catch (error) {
+      console.error('Failed to delete collection', error);
+    }
   };
 
   const filteredCollections = useMemo(() => {
@@ -38,6 +87,9 @@ export function useCollections() {
     isAddModalOpen,
     setIsAddModalOpen,
     filteredCollections,
+    loading,
     handleAddCollection,
+    handleUpdateCollection,
+    handleDeleteCollection,
   };
 }
