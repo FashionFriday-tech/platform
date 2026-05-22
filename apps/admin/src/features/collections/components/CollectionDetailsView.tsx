@@ -10,7 +10,8 @@ import { EditIcon, PackageIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
 // We simulate fetching all products using the products feature mock
 import { mockProducts } from '../../products/services/api';
 import { type Product } from '../../products/types';
-import { deleteCollection, type ProductCollection, updateCollection } from '../types';
+import { type ProductCollection } from '../types';
+import { AddCollectionModal } from './AddCollectionModal';
 import { CollectionProductTable } from './CollectionProductTable';
 
 interface CollectionDetailsViewProps {
@@ -26,6 +27,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState(initialCollection.name);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     // In a real app, we'd fetch products by collection ID.
@@ -40,12 +42,49 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     setCollection((prev) => ({ ...prev, productCount: prev.productCount - 1 }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setCollection((prev) => ({ ...prev, image: imageUrl }));
-      updateCollection(collection.id, { image: imageUrl });
+      const localUrl = URL.createObjectURL(file);
+      setCollection((prev) => ({ ...prev, image: localUrl }));
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('slug', collection.slug);
+      formData.append('folder', 'collections');
+
+      try {
+        const uploadRes = await fetch('http://127.0.0.1:3002/admin/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (uploadRes.ok) {
+          const { url } = await uploadRes.json();
+          await fetch(`http://127.0.0.1:3002/admin/collections/${collection.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: url }),
+          });
+          
+          // Cleanup old image
+          if (collection.image && collection.image.startsWith('http') && !collection.image.includes('localhost')) {
+            try {
+              await fetch('http://127.0.0.1:3002/admin/upload/batch', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ urls: [collection.image] }),
+              });
+            } catch (err) {
+              console.error('Failed to cleanup old image:', err);
+            }
+          }
+
+          setCollection((prev) => ({ ...prev, image: url }));
+        }
+      } catch (err) {
+        console.error('Failed to update image', err);
+      }
     }
   };
 
@@ -53,20 +92,50 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     fileInputRef.current?.click();
   };
 
-  const handleSaveName = () => {
+  const handleSaveName = async () => {
     if (editNameValue.trim() && editNameValue !== collection.name) {
       setCollection((prev) => ({ ...prev, name: editNameValue.trim() }));
-      updateCollection(collection.id, { name: editNameValue.trim() });
+      try {
+        await fetch(`http://127.0.0.1:3002/admin/collections/${collection.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: editNameValue.trim() }),
+        });
+      } catch (err) {
+        console.error('Failed to update name', err);
+      }
     } else {
       setEditNameValue(collection.name);
     }
     setIsEditingName(false);
   };
 
-  const handleDeleteCollection = () => {
+  const handleDeleteCollection = async () => {
     if (window.confirm('Are you sure you want to delete this collection?')) {
-      deleteCollection(collection.id);
-      router.push('/collections');
+      try {
+        await fetch(`http://127.0.0.1:3002/admin/collections/${collection.id}`, {
+          method: 'DELETE',
+        });
+        router.push('/collections');
+      } catch (err) {
+        console.error('Failed to delete collection', err);
+      }
+    }
+  };
+
+  const handleSaveModal = async (name: string, image: string, slug: string, isEdit: boolean, id?: string) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:3002/admin/collections/${collection.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, image }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setCollection(updated);
+      }
+    } catch (err) {
+      console.error('Failed to update via modal', err);
     }
   };
 
@@ -152,13 +221,22 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
                 <span>{collection.productCount} Total Products Assigned</span>
               </div>
             </div>
-            <button
-              onClick={handleDeleteCollection}
-              className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-500/20 active:scale-95"
-            >
-              <TrashIcon className="h-4 w-4" />
-              <span className="hidden sm:inline">Delete Collection</span>
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                onClick={() => setIsEditModalOpen(true)}
+                className="flex items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-black/10 active:scale-95 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+              >
+                <EditIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Edit</span>
+              </button>
+              <button
+                onClick={handleDeleteCollection}
+                className="flex items-center justify-center gap-2 rounded-xl bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-500/20 active:scale-95"
+              >
+                <TrashIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Delete</span>
+              </button>
+            </div>
           </div>
 
           <div className="mt-6 flex flex-col gap-4 border-t border-black/5 pt-6 xl:flex-row xl:items-center xl:justify-between dark:border-white/5">
@@ -227,6 +305,14 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
           />
         </div>
       </div>
+
+      {/* Edit Modal */}
+      <AddCollectionModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveModal}
+        initialData={collection}
+      />
     </div>
   );
 }
