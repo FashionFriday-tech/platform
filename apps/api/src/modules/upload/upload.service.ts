@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { randomUUID } from 'crypto';
+
 
 @Injectable()
 export class UploadService {
@@ -37,11 +37,17 @@ export class UploadService {
     let fileExtension = file.originalname.split('.').pop() || 'bin';
     let contentType = file.mimetype;
 
-    // Optimize images to webp automatically
+    // Optimize images to webp automatically and crop to 3:4 ratio
     if (contentType.startsWith('image/')) {
       try {
         const sharp = require('sharp');
         processedBuffer = await sharp(file.buffer)
+          .resize({
+            width: 900,
+            height: 1200,
+            fit: 'cover',
+            position: 'center'
+          })
           .webp({ quality: 80 })
           .toBuffer();
           
@@ -65,13 +71,7 @@ export class UploadService {
     
     if (!baseName) baseName = 'image';
 
-    // e.g. puffer-jacket-a1b2c3d4.webp
-    const randomSuffix = randomUUID().split('-')[0];
-    
-    // For brands and categories, use exactly the provided name without random suffix
-    const fileName = (folder === 'brands' || folder === 'categories')
-      ? `${baseName}.${fileExtension}`
-      : `${baseName}-${randomSuffix}.${fileExtension}`;
+    const fileName = `${baseName}.${fileExtension}`;
     
     // Construct the final key with an optional folder prefix (e.g. products/puffer-jacket...)
     const fullPath = folder ? `${folder.replace(/^\/+|\/+$/g, '')}/${fileName}` : fileName;
