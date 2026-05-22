@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: CategoryDetailsPageProps): Pr
   const resolvedParams = await params;
   let category = null;
   try {
-    const res = await fetch('http://localhost:3002/admin/categories', { cache: 'no-store' });
+    const res = await fetch('http://127.0.0.1:3002/admin/categories', { cache: 'no-store' });
     const data = await res.json();
     const categoriesData = Array.isArray(data) ? data : data.data || [];
     category = categoriesData.find((c: any) => c.slug === resolvedParams.slug);
@@ -31,7 +31,7 @@ export default async function CategoryDetailsPage({ params }: CategoryDetailsPag
   
   let category = null;
   try {
-    const res = await fetch('http://localhost:3002/admin/categories', { cache: 'no-store' });
+    const res = await fetch('http://127.0.0.1:3002/admin/categories', { cache: 'no-store' });
     const data = await res.json();
     const categoriesData = Array.isArray(data) ? data : data.data || [];
     const apiCategory = categoriesData.find((c: any) => c.slug === resolvedParams.slug);
