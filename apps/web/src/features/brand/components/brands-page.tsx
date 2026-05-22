@@ -6,7 +6,6 @@ import { ChevronDownIcon, SlidersIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 import type { Brand, BrandCategory } from '@/features/brand';
-import { brandLogos as brandsData } from '@/features/brand';
 
 import { BrandCard } from './BrandCard';
 
@@ -24,6 +23,14 @@ export function BrandsPage() {
   const [selectedCategory, setSelectedCategory] = useState<BrandCategory | 'All'>('All');
   const [sortOption, setSortOption] = useState<'a-z' | 'z-a'>('a-z');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [brandsData, setBrandsData] = useState<Brand[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3002/brands')
+      .then((res) => res.json())
+      .then((data) => setBrandsData(data))
+      .catch((err) => console.error('Failed to fetch brands:', err));
+  }, []);
 
   const displayedBrands = brandsData
     .filter((b: Brand) => selectedCategory === 'All' || b.categories.includes(selectedCategory))

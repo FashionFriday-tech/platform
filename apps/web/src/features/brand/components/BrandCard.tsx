@@ -16,6 +16,7 @@ interface BrandCardProps {
 }
 
 export const BrandCard = ({ brand }: BrandCardProps) => {
+  const [hasError, setHasError] = React.useState(false);
   const isBlackBackground = brand.color === '#000000';
 
   return (
@@ -26,15 +27,22 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
       >
-        <Image
-          src={brand.logo}
-          alt={brand.name}
-          width={160}
-          height={160}
-          className={`object-contain duration-500 group-hover:scale-125 ${
-            isBlackBackground ? 'invert dark:invert-0' : 'invert'
-          }`}
-        />
+        {!hasError ? (
+          <Image
+            src={brand.logo}
+            alt={brand.name}
+            width={160}
+            height={160}
+            onError={() => setHasError(true)}
+            className={`object-contain duration-500 group-hover:scale-125 ${
+              isBlackBackground ? 'invert dark:invert-0' : 'invert'
+            }`}
+          />
+        ) : (
+          <span className={`px-4 text-center text-xl font-black uppercase tracking-widest ${isBlackBackground ? 'text-background dark:text-foreground' : 'text-white'}`}>
+            {brand.name}
+          </span>
+        )}
       </div>
     </Link>
   );
