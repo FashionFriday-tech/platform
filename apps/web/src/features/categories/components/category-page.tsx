@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import type { JSX } from 'react';
 
 import { DUMMY_PRODUCTS } from '@/data/products';
 import { CatalogueClient } from '@/features/catalogue';
@@ -8,7 +9,7 @@ interface CategoryPageProps {
   category: string;
 }
 
-export function CategoryPage({ gender, category }: CategoryPageProps) {
+export function CategoryPage({ gender, category }: CategoryPageProps): JSX.Element {
   const categoryMap: Record<string, string> = {
     watches: 'Watches',
     clothing: 'Clothing',
