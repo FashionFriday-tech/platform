@@ -1,18 +1,32 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
-import { type Brand, BRAND_LOGOS, type BrandCategory } from '@ff/schemas';
+import { type Brand, type BrandCategory } from '@ff/schemas';
 
 const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
 export function useBrands() {
-  const [brands, setBrands] = useState<Brand[]>(BRAND_LOGOS);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | BrandCategory>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [brandToEdit, setBrandToEdit] = useState<Brand | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('http://localhost:3002/admin/brands')
+      .then((res) => res.json())
+      .then((data) => {
+        setBrands(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch brands:', err);
+        setIsLoading(false);
+      });
+  }, []);
 
   const categoryOptions = [
     { label: 'All Categories', value: 'all' },
@@ -38,16 +52,36 @@ export function useBrands() {
     return result.sort((a, b) => a.name.localeCompare(b.name));
   }, [brands, searchQuery, categoryFilter]);
 
-  const handleSaveBrand = (savedBrand: Brand, isEdit: boolean, originalSlug?: string) => {
-    if (isEdit && originalSlug) {
-      setBrands((prev) => prev.map((b) => (b.slug === originalSlug ? savedBrand : b)));
-      if (selectedBrand?.slug === originalSlug) {
-        setSelectedBrand(savedBrand);
+  const handleSaveBrand = async (savedBrand: Brand, isEdit: boolean, originalSlug?: string) => {
+    try {
+      if (isEdit && originalSlug) {
+        // Find existing brand to get ID
+        const existingBrand = brands.find((b) => b.slug === originalSlug) as any;
+        if (existingBrand?.id) {
+          const res = await fetch(`http://localhost:3002/admin/brands/${existingBrand.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(savedBrand),
+          });
+          const updated = await res.json();
+          setBrands((prev) => prev.map((b) => (b.slug === originalSlug ? updated : b)));
+          if (selectedBrand?.slug === originalSlug) {
+            setSelectedBrand(updated);
+          }
+        }
+      } else {
+        const res = await fetch('http://localhost:3002/admin/brands', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(savedBrand),
+        });
+        const created = await res.json();
+        setBrands((prev) => [created, ...prev]);
       }
-    } else {
-      setBrands((prev) => [savedBrand, ...prev]);
+      setBrandToEdit(null);
+    } catch (err) {
+      console.error('Failed to save brand:', err);
     }
-    setBrandToEdit(null);
   };
 
   const handleDeleteBrand = async () => {
@@ -55,28 +89,41 @@ export function useBrands() {
       return;
     }
 
-    if (
-      selectedBrand.logo &&
-      selectedBrand.logo.startsWith('http') &&
-      !selectedBrand.logo.includes('localhost')
-    ) {
-      try {
-        await fetch('http://127.0.0.1:3002/admin/upload/batch', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ urls: [selectedBrand.logo] }),
-        });
-      } catch (err) {
-        console.error('Failed to cleanup brand logo on delete:', err);
-      }
-    }
+    const brandAsAny = selectedBrand as any;
 
-    setBrands((prev) => prev.filter((b) => b.slug !== selectedBrand.slug));
-    setSelectedBrand(null);
+    try {
+      if (brandAsAny.id) {
+        await fetch(`http://localhost:3002/admin/brands/${brandAsAny.id}`, {
+          method: 'DELETE',
+        });
+      }
+
+      if (
+        selectedBrand.logo &&
+        selectedBrand.logo.startsWith('http') &&
+        !selectedBrand.logo.includes('localhost')
+      ) {
+        try {
+          await fetch('http://localhost:3002/admin/upload/batch', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urls: [selectedBrand.logo] }),
+          });
+        } catch (err) {
+          console.error('Failed to cleanup brand logo on delete:', err);
+        }
+      }
+
+      setBrands((prev) => prev.filter((b) => b.slug !== selectedBrand.slug));
+      setSelectedBrand(null);
+    } catch (err) {
+      console.error('Failed to delete brand:', err);
+    }
   };
 
   return {
     brands,
+    isLoading,
     searchQuery,
     setSearchQuery,
     categoryFilter,
