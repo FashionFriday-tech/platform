@@ -18,7 +18,7 @@ export function useCategories() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch('http://localhost:3002/admin/categories');
+        const res = await fetch('http://127.0.0.1:3002/admin/categories');
         const data = await res.json();
         // data usually comes back directly or in data depending on backend
         const categoriesData = Array.isArray(data) ? data : data.data || [];
@@ -73,7 +73,7 @@ export function useCategories() {
         // Find existing category to get ID
         const existingCat = categories.find((c) => c.slug === originalSlug);
         if (existingCat) {
-          const res = await fetch(`http://localhost:3002/admin/categories/${existingCat.id}`, {
+          const res = await fetch(`http://127.0.0.1:3002/admin/categories/${existingCat.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(apiPayload),
@@ -86,7 +86,7 @@ export function useCategories() {
           }
         }
       } else {
-        const res = await fetch('http://localhost:3002/admin/categories', {
+        const res = await fetch('http://127.0.0.1:3002/admin/categories', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(apiPayload),
@@ -119,7 +119,7 @@ export function useCategories() {
     try {
       const cat = categories.find((c) => c.slug === slug);
       if (cat) {
-        await fetch(`http://localhost:3002/admin/categories/${cat.id}`, { method: 'DELETE' });
+        await fetch(`http://127.0.0.1:3002/admin/categories/${cat.id}`, { method: 'DELETE' });
         setCategories((prev) => prev.filter((c) => c.slug !== slug));
       }
     } catch (err) {
