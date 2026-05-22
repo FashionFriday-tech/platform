@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import type { JSX } from 'react';
 
 import { DUMMY_PRODUCTS } from '@/data/products';
 import { CatalogueClient } from '@/features/catalogue';
@@ -7,7 +8,7 @@ interface BrandCatalogProps {
   brandName: string;
 }
 
-export function BrandCatalog({ brandName }: BrandCatalogProps) {
+export function BrandCatalog({ brandName }: BrandCatalogProps): JSX.Element {
   if (!brandName) {
     return notFound();
   }
