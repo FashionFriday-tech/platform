@@ -41,7 +41,7 @@ export function BrandDetailsModal({
         >
           {/* Header Image Area */}
           <div
-            className="relative flex h-32 w-full items-center justify-center p-6 transition-colors"
+            className="relative flex h-48 w-full items-center justify-center p-6 transition-colors"
             style={{ backgroundColor: brand.color || '#000000' }}
           >
             <button
@@ -68,7 +68,7 @@ export function BrandDetailsModal({
               height={500}
               src={brand.logo}
               alt={brand.name}
-              className="max-h-full max-w-full object-contain drop-shadow-md"
+              className="max-h-full max-w-full object-contain drop-shadow-md invert"
             />
           </div>
 
