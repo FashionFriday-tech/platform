@@ -194,35 +194,53 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-black/70 dark:text-white/70">
-                  Brand Color
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={color}
-                    onChange={(e) => {
-                      setColor(e.target.value);
-                    }}
-                    className="h-10 w-12 cursor-pointer rounded-xl bg-transparent"
-                  />
+              <div className="flex flex-col justify-between">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-black/70 dark:text-white/70">
+                    Brand Color
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={color}
+                      onChange={(e) => {
+                        setColor(e.target.value);
+                      }}
+                      className="h-10 w-12 cursor-pointer rounded-xl bg-transparent"
+                    />
+                    <input
+                      type="text"
+                      value={color}
+                      onChange={(e) => {
+                        setColor(e.target.value);
+                      }}
+                      className="flex-1 rounded-xl border border-black/10 bg-[#f8f9fa] px-4 py-2 text-sm text-black uppercase transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-white/20 dark:focus:bg-[#222] dark:focus:ring-white/5"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label className="mb-2 block text-sm font-medium text-black/70 dark:text-white/70">
+                    Image Link
+                  </label>
                   <input
                     type="text"
-                    value={color}
+                    value={fileToUpload ? '' : logoUrl}
                     onChange={(e) => {
-                      setColor(e.target.value);
+                      setFileToUpload(null);
+                      setLogoUrl(e.target.value);
                     }}
-                    className="flex-1 rounded-xl border border-black/10 bg-[#f8f9fa] px-4 py-2 text-sm text-black uppercase transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-white/20 dark:focus:bg-[#222] dark:focus:ring-white/5"
+                    placeholder="Paste URL..."
+                    className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222] dark:focus:ring-white/5"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-black/70 dark:text-white/70">
-                  Logo Image (1:1 Ratio)
+                  Logo Preview
                 </label>
-                <div className="relative w-24">
+                <div className="relative w-full">
                   <input
                     type="file"
                     accept="image/*"
@@ -246,16 +264,16 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                           fill
                           src={logoUrl}
                           alt="Logo preview"
-                          className="object-contain p-2"
+                          className="object-contain p-4 invert"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-                          <span className="text-[10px] font-bold text-white">Change</span>
+                          <span className="text-sm font-bold text-white">Change Image</span>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center gap-1.5 text-black/60 dark:text-white/60">
-                        <ImageIcon className="h-6 w-6 opacity-50" />
-                        <span className="text-[10px] font-medium">Upload</span>
+                      <div className="flex flex-col items-center gap-2 text-black/60 dark:text-white/60">
+                        <ImageIcon className="h-8 w-8 opacity-50" />
+                        <span className="text-xs font-medium">Upload Image</span>
                       </div>
                     )}
                   </label>
