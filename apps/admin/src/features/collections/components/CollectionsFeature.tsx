@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { PlusIcon, SearchIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { useCollections } from '../hooks/useCollections';
 import { AddCollectionModal } from './AddCollectionModal';
 import { CollectionCard } from './CollectionCard';
+import { type ProductCollection } from '../types';
 
 export default function CollectionsFeature() {
   const {
@@ -14,8 +16,31 @@ export default function CollectionsFeature() {
     isAddModalOpen,
     setIsAddModalOpen,
     filteredCollections,
+    loading,
     handleAddCollection,
+    handleUpdateCollection,
+    handleDeleteCollection,
   } = useCollections();
+
+  const [editingCollection, setEditingCollection] = useState<ProductCollection | null>(null);
+
+  const handleSaveModal = (name: string, image: string, slug: string, isEdit: boolean, id?: string) => {
+    if (isEdit && id) {
+      handleUpdateCollection(id, name, image, slug);
+    } else {
+      handleAddCollection(name, image, slug);
+    }
+  };
+
+  const openEditModal = (collection: ProductCollection) => {
+    setEditingCollection(collection);
+    setIsAddModalOpen(true);
+  };
+
+  const closeAddModal = () => {
+    setEditingCollection(null);
+    setIsAddModalOpen(false);
+  };
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
@@ -38,6 +63,7 @@ export default function CollectionsFeature() {
         {/* Add Collection Button */}
         <button
           onClick={() => {
+            setEditingCollection(null);
             setIsAddModalOpen(true);
           }}
           className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
@@ -49,15 +75,18 @@ export default function CollectionsFeature() {
 
       <AddCollectionModal
         isOpen={isAddModalOpen}
-        onClose={() => {
-          setIsAddModalOpen(false);
-        }}
-        onSave={handleAddCollection}
+        onClose={closeAddModal}
+        onSave={handleSaveModal}
+        initialData={editingCollection}
       />
 
       {/* Grid */}
       <div className="scrollbar-hide flex flex-1 flex-col gap-4 overflow-auto pb-6">
-        {filteredCollections.length === 0 ? (
+        {loading ? (
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
+          </div>
+        ) : filteredCollections.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-black/10 py-24 dark:border-white/10">
             <p className="text-sm font-medium text-black/60 dark:text-white/60">
               No collections found.
@@ -77,7 +106,11 @@ export default function CollectionsFeature() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.05 }}
               >
-                <CollectionCard collection={collection} />
+                <CollectionCard 
+                  collection={collection} 
+                  onEdit={openEditModal}
+                  onDelete={handleDeleteCollection}
+                />
               </motion.div>
             ))}
           </motion.div>
