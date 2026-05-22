@@ -1,8 +1,7 @@
 import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
-
 import { CollectionDetailsView } from '../../../features/collections/components/CollectionDetailsView';
-import { MOCK_COLLECTIONS } from '../../../features/collections/types';
+import { ProductCollection } from '../../../features/collections/types';
 
 interface CollectionDetailsPageProps {
   params: Promise<{
@@ -10,9 +9,23 @@ interface CollectionDetailsPageProps {
   }>;
 }
 
+async function getCollectionBySlug(slug: string): Promise<ProductCollection | null> {
+  try {
+    const res = await fetch(`http://127.0.0.1:3002/collections/${slug}`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      return null;
+    }
+    return res.json();
+  } catch (error) {
+    return null;
+  }
+}
+
 export async function generateMetadata({ params }: CollectionDetailsPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const collection = MOCK_COLLECTIONS.find((c) => c.slug === resolvedParams.slug);
+  const collection = await getCollectionBySlug(resolvedParams.slug);
   return {
     title: collection ? `${collection.name} | Fashion Friday Admin` : 'Collection Not Found',
   };
@@ -20,7 +33,7 @@ export async function generateMetadata({ params }: CollectionDetailsPageProps): 
 
 export default async function CollectionDetailsPage({ params }: CollectionDetailsPageProps) {
   const resolvedParams = await params;
-  const collection = MOCK_COLLECTIONS.find((c) => c.slug === resolvedParams.slug);
+  const collection = await getCollectionBySlug(resolvedParams.slug);
 
   if (!collection) {
     notFound();
