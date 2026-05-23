@@ -69,7 +69,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
         formData.append('slug', name.trim());
         formData.append('folder', 'brands');
 
-        const res = await fetch('http://127.0.0.1:3002/admin/upload', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -86,7 +86,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
           !initialData.logo.includes('localhost')
         ) {
           try {
-            await fetch('http://127.0.0.1:3002/admin/upload/batch', {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ urls: [initialData.logo] }),
