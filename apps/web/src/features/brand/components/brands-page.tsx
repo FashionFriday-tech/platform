@@ -26,7 +26,7 @@ export function BrandsPage() {
   const [brandsData, setBrandsData] = useState<Brand[]>([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:3002/brands')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/brands`)
       .then((res) => res.json())
       .then((data) => setBrandsData(data))
       .catch((err) => console.error('Failed to fetch brands:', err));
