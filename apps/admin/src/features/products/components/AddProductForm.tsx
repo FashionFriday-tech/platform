@@ -153,7 +153,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   const dynamicCategories = apiCategories.filter((c) => {
     if (c.gender === 'Unisex') return true;
     if (gender === 'Men' && c.gender === 'Men') return true;
-    if (gender === 'Woman' && c.gender === 'Women') return true;
+    if (gender === 'Women' && c.gender === 'Women') return true;
     if (gender === 'Unisex') return true;
     return false;
   });
@@ -239,7 +239,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     if (pName) formData.append('slug', pName);
                     formData.append('folder', 'products');
 
-                    const res = await fetch('http://127.0.0.1:3002/admin/upload', {
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
                       method: 'POST',
                       body: formData,
                     });
@@ -301,8 +301,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   };
 
                   const url = initialData 
-                    ? `http://127.0.0.1:3002/admin/products/${initialData.id}` 
-                    : 'http://127.0.0.1:3002/admin/products';
+                    ? `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${initialData.id}` 
+                    : `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`;
                   const res = await fetch(url, {
                     method: initialData ? 'PATCH' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -496,8 +496,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   />
                   <div className="relative flex items-center">
                     {selectedBrandLogo && (
-                      <div className="absolute left-3 flex h-5 w-5 items-center justify-center rounded-full bg-black/5 text-[10px] font-bold text-black dark:bg-white/10 dark:text-white">
-                        {selectedBrandLogo}
+                      <div className="absolute left-4 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-black/10 text-[10px] font-bold text-black/80 dark:bg-white/20 dark:text-white overflow-hidden">
+                        {selectedBrandLogo.startsWith('http') || selectedBrandLogo.startsWith('/') ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={selectedBrandLogo} alt="Brand logo" className="h-full w-full object-contain bg-white p-0.5" />
+                        ) : (
+                          selectedBrandLogo
+                        )}
                       </div>
                     )}
                     <input
@@ -516,7 +521,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     />
                   </div>
 
-                  {isBrandOpen && brandInput.length > 0 && (
+                  {isBrandOpen && (
                     <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
                       {filteredBrands.length > 0 ? (
                         filteredBrands.map((b) => (
@@ -524,13 +529,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             key={b.name}
                             onClick={() => {
                               setBrandInput(b.name);
-                              setSelectedBrandLogo(b.name.charAt(0).toUpperCase());
+                              setSelectedBrandLogo(b.logo || b.name.charAt(0).toUpperCase());
                               setIsBrandOpen(false);
                             }}
                             className="flex w-full items-center space-x-3 px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
                           >
-                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black/5 text-xs font-bold text-black/80 dark:bg-white/10 dark:text-white/80">
-                              {b.name.charAt(0).toUpperCase()}
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black/5 text-xs font-bold text-black/80 dark:bg-white/10 dark:text-white/80 overflow-hidden">
+                              {b.logo ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img src={b.logo} alt={b.name} className="h-full w-full object-contain bg-white p-0.5" />
+                              ) : (
+                                b.name.charAt(0).toUpperCase()
+                              )}
                             </div>
                             <span className="text-sm font-medium text-black/80 dark:text-white/80">
                               {b.name}
