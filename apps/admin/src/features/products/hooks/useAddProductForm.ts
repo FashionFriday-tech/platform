@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 import { useCategories } from '../../categories/hooks/useCategories';
+import { useBrands } from '../../brands/hooks/useBrands';
 
-import { BRAND_LOGOS, type BrandCategory, MAJOR_COLORS, type Product } from '@ff/schemas';
+import { MAJOR_COLORS, type Product } from '@ff/schemas';
 
 import { SIZE_MAP } from '../utils/constants';
 
 export function useAddProductForm(initialData?: Product) {
   const { categories: apiCategories } = useCategories();
+  const { brands: apiBrands } = useBrands();
 
   const [sizes, setSizes] = useState<string[]>(SIZE_MAP['Jacket'] || []);
   const [gender, setGender] = useState<string>('Unisex');
@@ -380,16 +382,7 @@ export function useAddProductForm(initialData?: Product) {
   );
   const availableSizes = SIZE_MAP[category] || SIZE_MAP.Jacket;
 
-  const categoryToBrandCategory: Record<string, BrandCategory[]> = {
-    Jacket: ['clothing'],
-    Shirts: ['clothing'],
-    Sneakers: ['footwear'],
-    Pants: ['clothing'],
-  };
-  const availableBrands = BRAND_LOGOS.filter((b) =>
-    b.categories.some((c) => categoryToBrandCategory[category]?.includes(c)),
-  );
-  const filteredBrands = availableBrands.filter((b) =>
+  const filteredBrands = apiBrands.filter((b) =>
     b.name.toLowerCase().includes(brandInput.toLowerCase()),
   );
 
