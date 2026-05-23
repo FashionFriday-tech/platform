@@ -18,10 +18,7 @@ import { UploadModule } from './modules/upload/upload.module';
     PrismaModule,
     AuthModule,
     BrandsModule,
-<<<<<<< HEAD
     CollectionsModule,
-=======
->>>>>>> aff00358e93c3b77bcb48894a69aa58c864d89da
     ProductsModule,
     CategoriesModule,
     UploadModule,
