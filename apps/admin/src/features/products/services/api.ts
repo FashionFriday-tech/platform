@@ -4,7 +4,7 @@ export const mockProducts: Product[] = [];
 
 export async function fetchProducts(): Promise<Product[]> {
   try {
-    const res = await fetch('http://127.0.0.1:3002/admin/products');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`);
     if (!res.ok) {
       throw new Error(`Failed to fetch products: ${res.statusText}`);
     }
@@ -47,7 +47,7 @@ export async function fetchProducts(): Promise<Product[]> {
 
 export async function fetchProductById(id: string): Promise<Product | undefined> {
   try {
-    const res = await fetch(`http://127.0.0.1:3002/admin/products/${id}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${id}`);
     if (!res.ok) return undefined;
     const p = await res.json();
     
