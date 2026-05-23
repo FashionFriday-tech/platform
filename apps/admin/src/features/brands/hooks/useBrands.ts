@@ -16,7 +16,7 @@ export function useBrands() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:3002/admin/brands')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands`)
       .then((res) => res.json())
       .then((data) => {
         setBrands(data);
@@ -58,7 +58,7 @@ export function useBrands() {
         // Find existing brand to get ID
         const existingBrand = brands.find((b) => b.slug === originalSlug) as any;
         if (existingBrand?.id) {
-          const res = await fetch(`http://127.0.0.1:3002/admin/brands/${existingBrand.id}`, {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands/${existingBrand.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(savedBrand),
@@ -70,7 +70,7 @@ export function useBrands() {
           }
         }
       } else {
-        const res = await fetch('http://127.0.0.1:3002/admin/brands', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(savedBrand),
@@ -93,7 +93,7 @@ export function useBrands() {
 
     try {
       if (brandAsAny.id) {
-        await fetch(`http://127.0.0.1:3002/admin/brands/${brandAsAny.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands/${brandAsAny.id}`, {
           method: 'DELETE',
         });
       }
@@ -104,7 +104,7 @@ export function useBrands() {
         !selectedBrand.logo.includes('localhost')
       ) {
         try {
-          await fetch('http://127.0.0.1:3002/admin/upload/batch', {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ urls: [selectedBrand.logo] }),
