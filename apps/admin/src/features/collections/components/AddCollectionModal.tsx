@@ -50,7 +50,7 @@ export function AddCollectionModal({ isOpen, onClose, onSave, initialData }: Add
         formData.append('slug', name.trim());
         formData.append('folder', 'collections');
 
-        const res = await fetch('http://127.0.0.1:3002/admin/upload', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -67,7 +67,7 @@ export function AddCollectionModal({ isOpen, onClose, onSave, initialData }: Add
           !initialData.image.includes('localhost')
         ) {
           try {
-            await fetch('http://127.0.0.1:3002/admin/upload/batch', {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ urls: [initialData.image] }),
