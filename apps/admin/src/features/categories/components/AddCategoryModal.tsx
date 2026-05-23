@@ -60,7 +60,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
         formData.append('slug', uploadSlug);
         formData.append('folder', 'categories');
 
-        const res = await fetch('http://127.0.0.1:3002/admin/upload', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -77,7 +77,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
           !initialData.image.includes('localhost')
         ) {
           try {
-            await fetch('http://127.0.0.1:3002/admin/upload/batch', {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ urls: [initialData.image] }),
