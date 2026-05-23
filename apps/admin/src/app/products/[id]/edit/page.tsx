@@ -21,7 +21,7 @@ export default function EditProductPage() {
       }
       setIsLoading(true);
       try {
-        const res = await fetch(`http://127.0.0.1:3002/admin/products/${productId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}`);
         if (!res.ok) throw new Error('Failed to fetch product');
         const p = await res.json();
 
