@@ -54,14 +54,14 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       formData.append('folder', 'collections');
 
       try {
-        const uploadRes = await fetch('http://127.0.0.1:3002/admin/upload', {
+        const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
           method: 'POST',
           body: formData,
         });
 
         if (uploadRes.ok) {
           const { url } = await uploadRes.json();
-          await fetch(`http://127.0.0.1:3002/admin/collections/${collection.id}`, {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ image: url }),
@@ -70,7 +70,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
           // Cleanup old image
           if (collection.image && collection.image.startsWith('http') && !collection.image.includes('localhost')) {
             try {
-              await fetch('http://127.0.0.1:3002/admin/upload/batch', {
+              await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ urls: [collection.image] }),
@@ -96,7 +96,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     if (editNameValue.trim() && editNameValue !== collection.name) {
       setCollection((prev) => ({ ...prev, name: editNameValue.trim() }));
       try {
-        await fetch(`http://127.0.0.1:3002/admin/collections/${collection.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: editNameValue.trim() }),
@@ -113,7 +113,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   const handleDeleteCollection = async () => {
     if (window.confirm('Are you sure you want to delete this collection?')) {
       try {
-        await fetch(`http://127.0.0.1:3002/admin/collections/${collection.id}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
           method: 'DELETE',
         });
         router.push('/collections');
@@ -125,7 +125,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
 
   const handleSaveModal = async (name: string, image: string, slug: string, isEdit: boolean, id?: string) => {
     try {
-      const res = await fetch(`http://127.0.0.1:3002/admin/collections/${collection.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, image }),
