@@ -29,7 +29,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   useEffect(() => {
     async function loadProducts() {
       try {
-        const res = await fetch(`http://127.0.0.1:3002/admin/products`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`);
         if (!res.ok) return;
         const data = await res.json();
         const allProducts = data.data || [];
@@ -85,7 +85,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     // 1. Delete image from Cloudflare (if it's not a local placeholder)
     if (category.image && category.image.startsWith('http') && !category.image.includes('localhost')) {
       try {
-        await fetch('http://127.0.0.1:3002/admin/upload/batch', {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ urls: [category.image] }),
@@ -97,7 +97,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
 
     // 2. Delete category from the database
     try {
-      await fetch(`http://127.0.0.1:3002/admin/categories/${category.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${category.id}`, {
         method: 'DELETE',
       });
     } catch (err) {
