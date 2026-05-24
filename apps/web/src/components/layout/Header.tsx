@@ -256,7 +256,12 @@ export function Header() {
           }
         }
         .animate-marquee {
-          animation: marquee 30s linear infinite;
+          animation: marquee 50s linear infinite;
+        }
+        @media (min-width: 1024px) {
+          .animate-marquee {
+            animation: marquee 30s linear infinite;
+          }
         }
       `,
         }}
