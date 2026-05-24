@@ -46,7 +46,7 @@ export default function CategoryCarousel() {
           {genderCategories.map((cat) => (
             <article
               key={cat.id}
-              className="group relative h-[420px] sm:h-[500px] lg:h-[580px] w-full overflow-hidden rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl transition-transform duration-500 hover:-translate-y-1"
+              className="group relative h-[420px] sm:h-[500px] lg:h-[580px] w-full overflow-hidden rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl"
             >
               <Link href={cat.href} className="block h-full w-full">
                 <figure className="relative m-0 h-full w-full overflow-hidden">
@@ -55,7 +55,7 @@ export default function CategoryCarousel() {
                     alt={cat.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="object-cover object-top"
                     priority
                   />
                   {/* Subtle vignette gradient overlay */}
