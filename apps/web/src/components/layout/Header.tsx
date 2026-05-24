@@ -148,14 +148,14 @@ export function Header() {
           </div>
         </div>
 
-        {/* MARQUEE (Large Screen Scrolling Announcement) */}
-        <div className="bg-foreground text-background relative z-40 hidden w-full overflow-hidden py-2 lg:block">
+        {/* MARQUEE (Scrolling Announcement for All Screens) */}
+        <div className="bg-foreground text-background relative z-40 block w-full overflow-hidden py-1.5 sm:py-2">
           <div className="animate-marquee flex w-max whitespace-nowrap">
             {[0, 1].map((set) => (
-              <div key={set} className="flex items-center gap-12 px-6">
+              <div key={set} className="flex items-center gap-8 sm:gap-12 px-4 sm:px-6">
                 {marqueeContent.map((text, i) => (
-                  <span key={i} className="flex items-center gap-3 text-[10px] font-black tracking-[0.25em] uppercase">
-                    <span className="bg-brand h-1.5 w-1.5 rounded-full" />
+                  <span key={i} className="flex items-center gap-2.5 sm:gap-3 text-[9px] sm:text-[10px] font-black tracking-[0.25em] uppercase">
+                    <span className="bg-brand h-1.5 w-1.5 rounded-full shrink-0" />
                     {text}
                   </span>
                 ))}
