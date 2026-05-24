@@ -489,7 +489,8 @@ export function ProductReviews({
               <div className="flex items-center gap-3 pt-2">
                 <button
                   onClick={handleAddSubmit}
-                  className="rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white hover:opacity-90 dark:bg-white dark:text-black"
+                  disabled={!newReview.userName || newReview.userName.trim().length < 4 || !newReview.productImage}
+                  className="rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black"
                 >
                   Submit Review
                 </button>
@@ -639,9 +640,9 @@ export function ProductReviews({
                     
                     <div className="flex items-center gap-2">
                       <button
-                        disabled={isLoading}
+                        disabled={isLoading || !editData.userName || editData.userName.trim().length < 4 || !editData.productImage}
                         onClick={handleEditSubmit}
-                        className="rounded-lg bg-black px-4 py-1.5 text-xs font-bold text-white hover:opacity-90 dark:bg-white dark:text-black"
+                        className="rounded-lg bg-black px-4 py-1.5 text-xs font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black"
                       >
                         {isLoading ? 'Saving...' : 'Save'}
                       </button>
