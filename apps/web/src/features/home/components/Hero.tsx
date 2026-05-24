@@ -41,12 +41,12 @@ export default function Hero(): JSX.Element {
   // Typewriter animation for search bar placeholder
   useEffect(() => {
     const fullText = placeholders[placeholderIndex] ?? '';
-    let speed = isDeletingPlaceholder ? 35 : 85;
+    let speed = isDeletingPlaceholder ? 20 : 45;
 
     if (!isDeletingPlaceholder && typedPlaceholder === fullText) {
-      speed = 1800;
+      speed = 1400;
     } else if (isDeletingPlaceholder && typedPlaceholder === '') {
-      speed = 300;
+      speed = 200;
     }
 
     const timeout = setTimeout(() => {
