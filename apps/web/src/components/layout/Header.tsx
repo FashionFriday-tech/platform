@@ -148,13 +148,14 @@ export function Header() {
           </div>
         </div>
 
-        {/* MARQUEE */}
-        <div className="bg-foreground text-background relative z-40 hidden py-1.5 sm:block">
-          <div className="animate-marquee flex whitespace-nowrap">
+        {/* MARQUEE (Large Screen Scrolling Announcement) */}
+        <div className="bg-foreground text-background relative z-40 hidden w-full overflow-hidden py-2 lg:block">
+          <div className="animate-marquee flex w-max whitespace-nowrap">
             {[0, 1].map((set) => (
-              <div key={set} className="flex gap-10 px-5">
+              <div key={set} className="flex items-center gap-12 px-6">
                 {marqueeContent.map((text, i) => (
-                  <span key={i} className="text-[9px] font-black tracking-[0.2em] uppercase">
+                  <span key={i} className="flex items-center gap-3 text-[10px] font-black tracking-[0.25em] uppercase">
+                    <span className="bg-brand h-1.5 w-1.5 rounded-full" />
                     {text}
                   </span>
                 ))}
