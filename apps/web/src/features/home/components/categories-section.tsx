@@ -39,21 +39,9 @@ export default function CategoryCarousel() {
                     fill
                     sizes="(max-width: 768px) 50vw, 320px"
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    priority={index < 2} // Optimization: Priority for first two items
+                    priority={index < 2}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity group-hover:opacity-80" />
                 </figure>
-
-                <div className="absolute bottom-0 left-0 z-10 w-full p-4 md:p-8">
-                  <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
-                    <p className="mb-1 text-[10px] font-medium text-zinc-300 opacity-0 transition-opacity duration-500 group-hover:opacity-100 md:mb-2 md:text-sm">
-                      {cat.count}
-                    </p>
-                    <h3 className="text-xl font-black tracking-tighter text-white uppercase md:text-4xl">
-                      {cat.title}
-                    </h3>
-                  </div>
-                </div>
               </Link>
             </article>
           ))}
