@@ -56,7 +56,7 @@ export const SearchInput = ({ query, setQuery, onSave }: SearchInputProps) => {
         }
       }}
       placeholder={placeholder}
-      className="w-full border-b-4 border-white/10 bg-transparent py-6 text-2xl font-black tracking-tighter uppercase italic transition-all outline-none placeholder:text-white/20 md:text-4xl"
+      className="w-full border-b-2 border-foreground/30 focus:border-foreground bg-transparent py-4 sm:py-6 text-xl sm:text-2xl md:text-4xl font-black tracking-tighter uppercase italic transition-all outline-none placeholder:text-foreground/40 text-foreground"
       autoFocus
     />
   );
