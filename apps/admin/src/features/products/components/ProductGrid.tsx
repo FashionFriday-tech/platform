@@ -82,7 +82,7 @@ export function ProductGrid({
             <div
               key={product.id}
               onClick={() => {
-                router.push(`/products/${product.id}`);
+                router.push(`/products/${product.seoSlug || product.id}`);
               }}
               className={`group relative flex h-[180px] cursor-pointer flex-row overflow-hidden rounded-[24px] transition-all duration-300 ${isSelected ? 'bg-black/5 shadow-md ring-2 ring-black/20 dark:bg-white/5 dark:ring-white/20' : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1.5 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:bg-[#161616] dark:shadow-[0_8px_30px_rgb(255,255,255,0.02)] dark:hover:shadow-[0_12px_40px_rgb(255,255,255,0.04)]'}`}
             >
