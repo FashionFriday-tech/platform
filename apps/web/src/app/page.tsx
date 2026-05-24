@@ -3,6 +3,7 @@ import Request from '@/components/ui/sections/Request';
 import {
   BrandScroll,
   CategoriesSection,
+  CollectionsSection,
   Hero,
   InfluencerCarousel,
   PWAInstallSection,
@@ -17,6 +18,7 @@ export default function HomePage() {
       <Hero />
       <BrandScroll />
       <CategoriesSection />
+      <CollectionsSection />
       <TrendingSection />
       <ShopByBrand />
       <InfluencerCarousel />
