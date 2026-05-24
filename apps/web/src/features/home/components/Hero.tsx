@@ -1,44 +1,76 @@
+import type { JSX } from 'react';
 import Image from 'next/image';
 
-import ImageCarousel from '@/components/ui/sections/ImageCarousel';
+export default function Hero(): JSX.Element {
+  const cards = [
+    { 
+      id: 1, 
+      src: '/images/hero/hero-grid1.png', 
+      title: 'LINEN EDIT', 
+      subtitle: 'SOFT ON SKIN.\nSHARP ON STYLE.' 
+    },
+    { 
+      id: 2, 
+      src: '/images/poster/1.png', 
+      title: 'NEW IN', 
+      subtitle: '' 
+    },
+    { 
+      id: 3, 
+      src: '/images/hero/hero-grid2.png', 
+      title: 'ACCESSORIES', 
+      subtitle: 'FINISHING TOUCH' 
+    },
+    { 
+      id: 4, 
+      src: '/images/poster/2.png', 
+      title: 'STREET WEAR', 
+      subtitle: 'URBAN ESSENTIALS' 
+    },
+  ];
 
-export default function Hero() {
+  // Duplicate cards for seamless infinite scroll (CSS marquee)
+  const repeatedCards = [...cards, ...cards, ...cards];
+
   return (
-    // OUTER SECTION: Padding around the grid
-    <section className="min-h-screen w-full p-2 pb-6 lg:mt-18 lg:p-6">
-      <div className="SM:mt-18 grid min-h-[80vh] grid-cols-1 gap-4 lg:h-[95vh] lg:grid-cols-12">
-        <div className="group relative h-125 w-full rounded-4xl lg:col-span-6 lg:h-full">
-          <ImageCarousel />
-        </div>
-        <div className="flex h-full flex-col gap-4 lg:col-span-6">
-          <div className="relative flex min-h-50 grow flex-col justify-center overflow-hidden rounded-4xl p-8 lg:p-12">
+    <section className="relative min-h-[60vh] w-full overflow-hidden p-2 pb-6 lg:mt-24 lg:min-h-[85vh] lg:p-6">
+      <style>{`
+        @keyframes auto-scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(calc(-100% / 3)); }
+        }
+        .carousel-track {
+          display: flex;
+          width: max-content;
+          animation: auto-scroll 45s linear infinite;
+        }
+        .carousel-track:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+      
+      {/* 
+        We use a wrapper with flex and max-content width to ensure the children dictate the width.
+        The animation translates the entire track seamlessly.
+      */}
+      <div className="carousel-track h-[60vh] items-stretch gap-4 px-2 lg:h-[80vh] lg:gap-6">
+        {repeatedCards.map((card, idx) => (
+          <div 
+            key={`${card.id}-${idx}`} 
+            className="group relative h-full aspect-[2/3] shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
+          >
             <Image
-              src="/images/hero/hero-grid1.png"
-              alt="Accessories Collection"
+              src={card.src}
+              alt={card.title || 'Hero image'}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              sizes="(max-width: 768px) 85vw, (max-width: 1024px) 60vw, 40vw"
+              className="object-cover transition-transform duration-1000 group-hover:scale-105"
+              priority={idx < 2} // Load first couple images immediately
             />
-          </div>
-          <div className="grid h-50 shrink-0 grid-cols-2 gap-4 lg:h-[50%]">
-            <div className="group relative h-full w-full overflow-hidden rounded-4xl">
-              <Image
-                src="/images/hero/hero-grid1.png"
-                alt="Accessories Collection"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
+            
 
-            <div className="group relative h-full w-full overflow-hidden rounded-4xl">
-              <Image
-                src="/images/hero/hero-grid2.png"
-                alt="Insulated Gear"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   );
