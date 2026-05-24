@@ -19,11 +19,11 @@ export default function Hero(): JSX.Element {
   const repeatedCards = [...cards, ...cards, ...cards];
 
   const placeholders = [
-    'Search for linen shirts...',
-    'Search by category...',
-    'Search by brands...',
-    'Search for street wear...',
-    'Search for accessories...',
+    'Search for linen shirts',
+    'Search by category',
+    'Search by brands',
+    'Search for street wear',
+    'Search for accessories',
   ];
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [typedPlaceholder, setTypedPlaceholder] = useState('');
