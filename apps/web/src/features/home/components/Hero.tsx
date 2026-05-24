@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useHeroCarousel } from '../hooks/use-hero-carousel';
 import { SearchIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
 
 export default function Hero(): JSX.Element {
   const {
@@ -26,46 +27,13 @@ export default function Hero(): JSX.Element {
     'Search for accessories',
   ];
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [typedPlaceholder, setTypedPlaceholder] = useState('');
-  const [isDeletingPlaceholder, setIsDeletingPlaceholder] = useState(false);
-  const [showCursor, setShowCursor] = useState(true);
 
-  // Blinking cursor
   useEffect(() => {
-    const cursorInterval = setInterval(() => {
-      setShowCursor((prev) => !prev);
-    }, 500);
-    return () => clearInterval(cursorInterval);
+    const timer = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3200);
+    return () => clearInterval(timer);
   }, []);
-
-  // Typewriter animation for search bar placeholder
-  useEffect(() => {
-    const fullText = placeholders[placeholderIndex] ?? '';
-    let speed = isDeletingPlaceholder ? 20 : 45;
-
-    if (!isDeletingPlaceholder && typedPlaceholder === fullText) {
-      speed = 1400;
-    } else if (isDeletingPlaceholder && typedPlaceholder === '') {
-      speed = 200;
-    }
-
-    const timeout = setTimeout(() => {
-      if (!isDeletingPlaceholder && typedPlaceholder === fullText) {
-        setIsDeletingPlaceholder(true);
-      } else if (isDeletingPlaceholder && typedPlaceholder === '') {
-        setIsDeletingPlaceholder(false);
-        setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-      } else {
-        setTypedPlaceholder(
-          isDeletingPlaceholder
-            ? fullText.substring(0, typedPlaceholder.length - 1)
-            : fullText.substring(0, typedPlaceholder.length + 1),
-        );
-      }
-    }, speed);
-
-    return () => clearTimeout(timeout);
-  }, [typedPlaceholder, isDeletingPlaceholder, placeholderIndex]);
 
   const handleOpenSearch = () => {
     window.dispatchEvent(new CustomEvent('open-search'));
@@ -104,12 +72,23 @@ export default function Hero(): JSX.Element {
       <div className="px-2 mb-4 lg:hidden">
         <div
           onClick={handleOpenSearch}
-          className="flex items-center gap-3 w-full bg-transparent border border-zinc-300 dark:border-zinc-700/80 rounded-full px-4 py-3.5 cursor-pointer active:scale-98 transition-transform duration-200"
+          className="flex items-center gap-3 w-full bg-transparent border border-zinc-300 dark:border-zinc-700/80 rounded-full px-4 py-3.5 cursor-pointer active:scale-98 transition-all duration-200 overflow-hidden"
         >
           <SearchIcon className="text-zinc-600 dark:text-zinc-400 w-5 h-5 shrink-0" />
-          <span className="text-zinc-800 dark:text-zinc-200 text-sm font-semibold select-none truncate">
-            {typedPlaceholder}{showCursor ? '│' : ' '}
-          </span>
+          <div className="relative h-5 w-full overflow-hidden flex items-center">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={placeholderIndex}
+                initial={{ opacity: 0, y: 10, filter: 'blur(3px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -10, filter: 'blur(3px)' }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute text-zinc-700 dark:text-zinc-300 text-sm font-semibold select-none truncate"
+              >
+                {placeholders[placeholderIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 
