@@ -32,6 +32,8 @@ export function BannerEditorModal({
   const [mediaType, setMediaType] = useState<MediaType>('image');
   const [linkUrl, setLinkUrl] = useState('');
   const [placement, setPlacement] = useState<BannerPlacement>('home-carousel');
+  const [isUploading, setIsUploading] = useState(false);
+  const [fileToUpload, setFileToUpload] = useState<File | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,12 +44,14 @@ export function BannerEditorModal({
       setMediaType(initialData.mediaType);
       setLinkUrl(initialData.linkUrl);
       setPlacement(initialData.placement);
+      setFileToUpload(null);
     } else {
       setTitle('');
       setMediaUrl('');
       setMediaType('image');
       setLinkUrl('');
       setPlacement(fixedPlacement || 'home-carousel');
+      setFileToUpload(null);
     }
   }, [initialData, isOpen, fixedPlacement]);
 
@@ -55,14 +59,46 @@ export function BannerEditorModal({
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ title, mediaUrl, mediaType, linkUrl, placement });
+    setIsUploading(true);
+
+    try {
+      let finalMediaUrl = mediaUrl;
+
+      if (fileToUpload) {
+        const formData = new FormData();
+        formData.append('file', fileToUpload);
+        formData.append('slug', title.trim());
+        formData.append('folder', `campaigns/${placement}`);
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+
+        if (!res.ok) throw new Error('Upload failed');
+        const data = await res.json();
+        finalMediaUrl = data.url;
+      }
+
+      onSave({ title, mediaUrl: finalMediaUrl, mediaType, linkUrl, placement });
+      setFileToUpload(null);
+    } catch (err) {
+      alert('Failed to upload banner media. Please try again.');
+      console.error(err);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setFileToUpload(file);
       const url = URL.createObjectURL(file);
       setMediaUrl(url);
       setMediaType(file.type.startsWith('video') ? 'video' : 'image');
@@ -71,16 +107,12 @@ export function BannerEditorModal({
 
   const getResponsiveClasses = (p: BannerPlacement) => {
     switch (p) {
-      case 'home-carousel':
       case 'products-list':
         return 'w-full aspect-[21/9]';
-      case 'home-grid-small-1':
-      case 'home-grid-small-2':
-        return 'w-full aspect-video';
+      case 'home-carousel':
+        return 'h-[300px] md:h-[350px] w-auto aspect-[2/3]';
       case 'trending-products':
         return 'h-[300px] md:h-[350px] w-auto aspect-[3/4]';
-      case 'home-grid-large':
-        return 'h-[300px] md:h-[350px] w-auto aspect-square';
       default:
         return 'w-full aspect-video';
     }
@@ -193,16 +225,17 @@ export function BannerEditorModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5"
+                disabled={isUploading}
+                className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5 disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={!mediaUrl}
+                disabled={!mediaUrl || isUploading}
                 className="flex-1 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-black/90 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/90"
               >
-                {initialData ? 'Save Changes' : 'Create Banner'}
+                {isUploading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Banner'}
               </button>
             </div>
           </form>
