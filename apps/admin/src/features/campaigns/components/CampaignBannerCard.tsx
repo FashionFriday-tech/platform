@@ -7,29 +7,25 @@ import { ImageIcon, PlayIcon, TrashIcon } from '@ff/ui';
 
 import {
   type CampaignBanner,
-  deleteBanner,
   PLACEMENT_ASPECT_RATIOS,
   PLACEMENT_LABELS,
-  updateBanner,
 } from '../types';
 
 interface CampaignBannerCardProps {
   banner: CampaignBanner;
   onUpdate: () => void;
   onEdit: (banner: CampaignBanner) => void;
+  onDelete: (id: string) => void;
+  onToggleActive: (id: string, currentStatus: boolean) => void;
 }
 
-export function CampaignBannerCard({ banner, onUpdate, onEdit }: CampaignBannerCardProps) {
+export function CampaignBannerCard({ banner, onUpdate, onEdit, onDelete, onToggleActive }: CampaignBannerCardProps) {
   const handleToggleActive = () => {
-    updateBanner(banner.id, { isActive: !banner.isActive });
-    onUpdate();
+    onToggleActive(banner.id, !banner.isActive);
   };
 
   const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this banner?')) {
-      deleteBanner(banner.id);
-      onUpdate();
-    }
+    onDelete(banner.id);
   };
 
   const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[banner.placement] || 'aspect-video';
