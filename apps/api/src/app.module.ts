@@ -11,6 +11,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { CollectionsModule } from './modules/collections/collections.module';
 import { ProductsModule } from './modules/products/products.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UploadModule } from './modules/upload/upload.module';
     ProductsModule,
     CategoriesModule,
     UploadModule,
+    ReviewsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
