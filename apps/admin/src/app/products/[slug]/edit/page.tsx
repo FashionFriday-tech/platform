@@ -9,7 +9,7 @@ import { AddProductForm } from '@/features/products/components/AddProductForm';
 
 export default function EditProductPage() {
   const params = useParams();
-  const productId = params.id as string;
+  const productId = params.slug as string;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
