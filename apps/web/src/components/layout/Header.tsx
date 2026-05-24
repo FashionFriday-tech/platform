@@ -173,15 +173,8 @@ export function Header() {
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <Link
             href="/"
-            className="transition-transform active:scale-95 flex items-center gap-2 whitespace-nowrap"
+            className="transition-transform active:scale-95 flex items-center whitespace-nowrap"
           >
-            <Image
-              src="/images/logos/ff-logo.png"
-              width={32}
-              height={32}
-              alt="logo"
-              className="dark:invert"
-            />
             <span className="text-lg font-black tracking-tighter uppercase">
               Fashion Friday
             </span>
