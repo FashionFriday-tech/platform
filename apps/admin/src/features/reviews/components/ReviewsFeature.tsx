@@ -11,6 +11,7 @@ import { ReviewStats } from './ReviewStats';
 
 export default function ReviewsFeature() {
   const {
+    reviews,
     searchQuery,
     setSearchQuery,
     ratingFilter,
@@ -37,7 +38,7 @@ export default function ReviewsFeature() {
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
       <div className="shrink-0">
-        <ReviewStats />
+        <ReviewStats reviews={reviews} />
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">

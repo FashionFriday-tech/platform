@@ -5,17 +5,17 @@ import React from 'react';
 import { ActivityIcon, MessageSquareIcon, StarIcon, UserIcon, VerifiedUserIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
-import { mockReviews } from '../services/mock-reviews';
+import { type Review } from '../types';
 
-export function ReviewStats() {
-  const totalReviews = mockReviews.length;
+export function ReviewStats({ reviews }: { reviews: Review[] }) {
+  const totalReviews = reviews.length;
   const avgRating = (
-    mockReviews.reduce((acc, curr) => acc + curr.rating, 0) / (totalReviews || 1)
+    reviews.reduce((acc, curr) => acc + curr.rating, 0) / (totalReviews || 1)
   ).toFixed(1);
-  const recentReviews = mockReviews.filter(
+  const recentReviews = reviews.filter(
     (r) => new Date(r.date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
   ).length;
-  const verifiedReviews = mockReviews.filter((r) => r.isVerified).length;
+  const verifiedReviews = reviews.filter((r) => r.isVerified).length;
   const unverifiedReviews = totalReviews - verifiedReviews;
 
   const stats = [
