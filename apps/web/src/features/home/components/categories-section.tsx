@@ -18,7 +18,7 @@ export default function CategoryCarousel() {
             id="category-heading"
             className="text-4xl font-black tracking-tighter uppercase lg:text-7xl"
           >
-            Shop by Category
+            Shop by Collections
           </h2>
         </header>
 
