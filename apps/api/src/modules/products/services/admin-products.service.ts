@@ -68,8 +68,12 @@ export class AdminProductsService {
     return this.paginate(result, skip, take);
   }
 
-  async getProductById(id: string) {
-    return this.productsRepository.findById(id);
+  async getProductById(idOrSlug: string) {
+    const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(idOrSlug);
+    if (isUuid) {
+      return this.productsRepository.findById(idOrSlug);
+    }
+    return this.productsRepository.findBySlug(idOrSlug);
   }
 
   async updateProduct(id: string, dto: UpdateProductDto) {
