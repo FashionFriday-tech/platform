@@ -168,7 +168,26 @@ export function Header() {
       {/* MOBILE UI */}
       <div className="bg-background text-foreground sticky top-0 z-50 flex w-full flex-col border-b border-border/20 lg:hidden">
         <div className="relative flex w-full items-center justify-between px-4 py-3.5">
-          <div className="w-16" />
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('open-menu'));
+            }}
+            className="flex items-center justify-start text-foreground transition-transform active:scale-95 py-1 px-0.5"
+            aria-label="Toggle Menu"
+          >
+            <svg
+              width="26"
+              height="14"
+              viewBox="0 0 26 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="stroke-current"
+            >
+              <path d="M0.5 2.5H25.5" strokeWidth="2.5" strokeLinecap="round" />
+              <path d="M0.5 11.5H25.5" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+          </button>
 
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <Link
