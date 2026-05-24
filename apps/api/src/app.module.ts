@@ -12,6 +12,7 @@ import { CollectionsModule } from './modules/collections/collections.module';
 import { ProductsModule } from './modules/products/products.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { CampaignsModule } from './modules/campaigns/campaigns.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
     CategoriesModule,
     UploadModule,
     ReviewsModule,
+    CampaignsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
