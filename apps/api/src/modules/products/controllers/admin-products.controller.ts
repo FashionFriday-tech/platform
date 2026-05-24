@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 
 // import { Roles } from '../../auth/decorators/roles.decorator';
@@ -34,7 +35,11 @@ export class AdminProductsController {
 
   @Get(':id')
   async getProductById(@Param('id') id: string) {
-    return this.productsService.getProductById(id);
+    const product = await this.productsService.getProductById(id);
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    return product;
   }
 
   @Patch(':id')
