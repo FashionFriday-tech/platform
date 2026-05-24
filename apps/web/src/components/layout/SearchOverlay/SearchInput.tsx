@@ -30,12 +30,12 @@ export const SearchInput = ({ query, setQuery, onSave }: SearchInputProps) => {
   // Typewriter animation effect
   useEffect(() => {
     const fullText = FASHION_KEYWORDS[index] ?? '';
-    let speed = isDeleting ? 30 : 80;
+    let speed = isDeleting ? 20 : 45;
 
     if (!isDeleting && placeholder === fullText) {
-      speed = 1800; // Hold full phrase
+      speed = 1400; // Hold full phrase
     } else if (isDeleting && placeholder === '') {
-      speed = 300; // Pause before next phrase
+      speed = 200; // Pause before next phrase
     }
 
     const timeout = setTimeout(() => {
