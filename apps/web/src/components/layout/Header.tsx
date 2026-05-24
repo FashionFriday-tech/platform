@@ -80,7 +80,7 @@ export function Header() {
     <>
       <header className="bg-background fixed top-0 right-0 left-0 z-50">
         {/* DESKTOP TOP BAR */}
-        <div className="text-foreground relative z-50 mx-auto hidden h-16 items-center justify-between px-6 sm:flex lg:px-12">
+        <div className="text-foreground relative z-50 mx-auto hidden h-20 items-center justify-between px-6 sm:flex lg:px-12">
           <Link href="/" className="relative z-50 flex h-8 items-center">
             <span className="text-2xl lg:text-3xl font-black tracking-tighter uppercase italic">
               Fashion Friday
@@ -165,7 +165,7 @@ export function Header() {
       </header>
 
       {/* MOBILE UI */}
-      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-3 lg:hidden relative">
+      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-5 lg:hidden relative">
         <div className="w-16" />
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
