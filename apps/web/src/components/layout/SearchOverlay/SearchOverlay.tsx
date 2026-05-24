@@ -50,7 +50,7 @@ export const SearchOverlay: React.FC<{
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="bg-background/80 fixed inset-0 z-[10000] flex flex-col pt-8 backdrop-blur-xl"
+          className="bg-background/95 text-foreground fixed inset-0 z-[10000] flex flex-col pt-8 backdrop-blur-2xl"
         >
           {/* Close Trigger - Stay positioned relative to overlay */}
           <button
