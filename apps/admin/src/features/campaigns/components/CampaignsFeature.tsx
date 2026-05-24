@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { PlusIcon } from '@ff/ui';
 
@@ -8,6 +8,7 @@ import { useCampaigns } from '../hooks/useCampaigns';
 import { type BannerPlacement, PLACEMENT_ASPECT_RATIOS, PLACEMENT_LABELS } from '../types';
 import { BannerEditorModal } from './BannerEditorModal';
 import { CampaignBannerCard } from './CampaignBannerCard';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 export function CampaignsFeature() {
   const {
@@ -19,20 +20,22 @@ export function CampaignsFeature() {
     handleOpenCreate,
     handleOpenEdit,
     handleSaveBanner,
+    handleToggleActive,
+    handleDeleteCampaign,
     refreshBanners,
   } = useCampaigns();
+
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const renderSection = (placement: BannerPlacement) => {
     const sectionBanners = banners.filter((b) => b.placement === placement);
     const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[placement] || 'aspect-video';
 
     let cardWidthClass = 'w-[300px]';
-    if (placement === 'home-carousel' || placement === 'products-list') {
+    if (placement === 'products-list') {
       cardWidthClass = 'w-[450px] md:w-[600px]';
-    } else if (placement === 'trending-products') {
+    } else if (placement === 'home-carousel' || placement === 'trending-products') {
       cardWidthClass = 'w-[220px] md:w-[260px]';
-    } else if (placement === 'home-grid-small-1' || placement === 'home-grid-small-2') {
-      cardWidthClass = 'w-[320px] md:w-[400px]';
     }
 
     return (
@@ -49,6 +52,8 @@ export function CampaignsFeature() {
                 banner={banner}
                 onUpdate={refreshBanners}
                 onEdit={handleOpenEdit}
+                onDelete={(id) => setDeleteConfirmId(id)}
+                onToggleActive={handleToggleActive}
               />
             </div>
           ))}
@@ -80,9 +85,6 @@ export function CampaignsFeature() {
 
   const placementOrder: BannerPlacement[] = [
     'home-carousel',
-    'home-grid-large',
-    'home-grid-small-1',
-    'home-grid-small-2',
     'products-list',
     'trending-products',
   ];
@@ -110,6 +112,20 @@ export function CampaignsFeature() {
         onSave={handleSaveBanner}
         initialData={editingBanner}
         fixedPlacement={targetPlacement}
+      />
+
+      <ConfirmModal
+        isOpen={deleteConfirmId !== null}
+        title="Delete Banner"
+        message="Are you sure you want to delete this banner? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            handleDeleteCampaign(deleteConfirmId);
+          }
+        }}
+        onClose={() => setDeleteConfirmId(null)}
       />
     </div>
   );
