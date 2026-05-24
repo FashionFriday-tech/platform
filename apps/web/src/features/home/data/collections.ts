@@ -42,4 +42,11 @@ export const collections: CollectionItem[] = [
     image: '/images/categories/poster/audio.png',
     href: '/collections/performance-active',
   },
+  {
+    id: 6,
+    title: 'Bags & Utility',
+    count: '75+ Items',
+    image: '/images/categories/poster/bag.png',
+    href: '/collections/bags-utility',
+  },
 ];
