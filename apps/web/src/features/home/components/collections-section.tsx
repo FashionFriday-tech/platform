@@ -29,7 +29,7 @@ export default function CollectionsSection() {
           {collections.map((item, index) => (
             <article
               key={`${item.id}-${index}`}
-              className="group relative aspect-[3/4] w-full shrink-0 overflow-hidden rounded-2xl md:w-80 md:rounded-3xl"
+              className="group relative aspect-[3/4] h-[280px] sm:h-[360px] md:h-[420px] w-full shrink-0 overflow-hidden rounded-2xl md:w-80 md:rounded-3xl"
             >
               <Link href={item.href} className="block h-full w-full" title={`Browse ${item.title}`}>
                 <figure className="absolute inset-0 m-0 h-full w-full">
