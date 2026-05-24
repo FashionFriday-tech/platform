@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -61,6 +61,12 @@ export function Header() {
   const user = useAuthStore((state) => state.user);
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenSearch = () => setIsSearchOpen(true);
+    window.addEventListener('open-search', handleOpenSearch);
+    return () => window.removeEventListener('open-search', handleOpenSearch);
+  }, []);
 
   // Hide header on login and signup pages
   if (pathname === '/login' || pathname === '/signup') {
@@ -159,30 +165,31 @@ export function Header() {
       </header>
 
       {/* MOBILE UI */}
-      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-3 lg:hidden">
-        <Link
-          href="/account"
-          className="border-foreground flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border-2 bg-zinc-100 transition-transform active:scale-95 dark:bg-zinc-800"
-        >
-          {user ? (
-            user.avatarUrl && user.avatarUrl !== '' ? (
-              <div className="relative h-full w-full">
-                <Image src={user.avatarUrl} alt={user.name} fill className="object-cover" />
-              </div>
-            ) : (
-              <span className="text-[10px] font-black uppercase">{getInitials(user.name)}</span>
-            )
-          ) : (
-            <UserIcon size={20} />
-          )}
-        </Link>
+      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-3 lg:hidden relative">
+        {/* Left spacing placeholder to balance flex container */}
+        <div className="w-16" />
+
+        {/* Absolutely centered brand logo & text */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Link
+            href="/"
+            className="transition-transform active:scale-95 flex items-center gap-2 whitespace-nowrap"
+          >
+            <Image
+              src="/images/logos/ff-logo.png"
+              width={32}
+              height={32}
+              alt="logo"
+              className="dark:invert"
+            />
+            <span className="text-lg font-black tracking-tighter uppercase">
+              Fashion Friday
+            </span>
+          </Link>
+        </div>
+
+        {/* Right side actions */}
         <div className="flex items-center gap-4">
-          <SearchIcon
-            className="text-xl"
-            onClick={() => {
-              setIsSearchOpen(true);
-            }}
-          />
           <Link href="/account/notifications" className="relative">
             <BellIcon className="text-xl" />
             <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
