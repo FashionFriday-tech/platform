@@ -1,0 +1,11 @@
+model Campaign {
+  id        String   @id @default(uuid())
+  title     String
+  mediaUrl  String
+  mediaType String   @default("image") // 'image' | 'video'
+  linkUrl   String
+  placement String   // e.g., 'home-carousel', 'products-list', 'trending-products'
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
