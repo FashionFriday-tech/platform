@@ -48,11 +48,11 @@ export default function BrandScroll() {
   const BRAND_ROW_B = BrandLogo.slice(midIndex);
 
   return (
-    <section className="w-full overflow-hidden py-6 lg:py-12">
+    <section className="w-full overflow-hidden py-2 lg:py-4">
       <div className="relative flex w-full flex-col items-center justify-center">
 
 
-        <ScrollVelocityContainer className="flex w-full flex-col gap-8">
+        <ScrollVelocityContainer className="flex w-full flex-col gap-2 sm:gap-3">
           {/* Row 1: First Half (Moving Right) */}
           <ScrollVelocityRow baseVelocity={1} direction={1}>
             <BrandList logos={BRAND_ROW_A} priorityStart />
