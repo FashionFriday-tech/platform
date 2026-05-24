@@ -166,28 +166,46 @@ export function Header() {
       </header>
 
       {/* MOBILE UI */}
-      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-5 lg:hidden relative">
-        <div className="w-16" />
+      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full flex-col border-b border-border/20 lg:hidden">
+        <div className="relative flex w-full items-center justify-between px-4 py-3.5">
+          <div className="w-16" />
 
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <Link
-            href="/"
-            className="transition-transform active:scale-95 flex items-center whitespace-nowrap"
-          >
-            <span className="text-xl sm:text-2xl font-black tracking-tighter uppercase">
-              Fashion Friday
-            </span>
-          </Link>
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <Link
+              href="/"
+              className="transition-transform active:scale-95 flex items-center whitespace-nowrap"
+            >
+              <span className="text-xl sm:text-2xl font-black tracking-tighter uppercase">
+                Fashion Friday
+              </span>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Link href="/account/notifications" className="relative">
+              <BellIcon className="text-xl" />
+              <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
+            </Link>
+            <Link href="/account/wishlist">
+              <WishlistIcon className="text-xl" />
+            </Link>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Link href="/account/notifications" className="relative">
-            <BellIcon className="text-xl" />
-            <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
-          </Link>
-          <Link href="/account/wishlist">
-            <WishlistIcon className="text-xl" />
-          </Link>
+        {/* MOBILE MARQUEE ANNOUNCEMENT */}
+        <div className="bg-foreground text-background relative z-40 block w-full overflow-hidden py-1.5">
+          <div className="animate-marquee flex w-max whitespace-nowrap">
+            {[0, 1].map((set) => (
+              <div key={set} className="flex items-center gap-8 px-4">
+                {marqueeContent.map((text, i) => (
+                  <span key={i} className="flex items-center gap-2 text-[9px] font-black tracking-[0.25em] uppercase">
+                    <span className="bg-brand h-1.5 w-1.5 rounded-full shrink-0" />
+                    {text}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
