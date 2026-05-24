@@ -1,12 +1,10 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-
-import { mockReviews } from '../services/mock-reviews';
+import { useMemo, useState, useEffect } from 'react';
 import { type Review } from '../types';
 
 export function useReviews() {
-  const [reviews, setReviews] = useState<Review[]>(mockReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [sortField, setSortField] = useState<string>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
@@ -16,6 +14,35 @@ export function useReviews() {
   const [featuredFilter, setFeaturedFilter] = useState<'all' | 'featured' | 'unfeatured'>('all');
 
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews`);
+      if (res.ok) {
+        const data = await res.json();
+        // Map backend data to frontend Review format
+        const formattedReviews: Review[] = data.map((item: any) => ({
+          id: item.id,
+          customerId: item.userName || item.userId || 'guest',
+          productId: item.productId,
+          productName: item.product?.name || 'Unknown Product',
+          productImage: item.productImage || item.product?.image || '',
+          rating: item.rating,
+          comment: item.comment,
+          date: new Date(item.createdAt).toISOString().split('T')[0],
+          isVerified: item.isActive, // Mapping isActive to isVerified in UI
+          isFeatured: false, // We don't have isFeatured in DB yet
+        }));
+        setReviews(formattedReviews);
+      }
+    } catch (err) {
+      console.error('Failed to fetch reviews', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
 
   const ratingOptions = [
     { label: 'All Ratings', value: 'all' },
@@ -47,20 +74,54 @@ export function useReviews() {
     }
   };
 
-  const handleDelete = (reviewId: string) => {
-    setReviews(reviews.filter((r) => r.id !== reviewId));
+  const handleDelete = async (reviewId: string) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        setReviews(reviews.filter((r) => r.id !== reviewId));
+      }
+    } catch (err) {
+      console.error('Failed to delete review', err);
+    }
   };
 
-  const handleToggleVerified = (reviewId: string) => {
-    setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, isVerified: !r.isVerified } : r)));
+  const handleToggleVerified = async (reviewId: string) => {
+    const review = reviews.find(r => r.id === reviewId);
+    if (!review) return;
+    
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !review.isVerified }),
+      });
+      if (res.ok) {
+        setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, isVerified: !r.isVerified } : r)));
+      }
+    } catch (err) {
+      console.error('Failed to toggle verified', err);
+    }
   };
 
   const handleToggleFeatured = (reviewId: string) => {
     setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, isFeatured: !r.isFeatured } : r)));
   };
 
-  const handleEditSave = (reviewId: string, newComment: string) => {
-    setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, comment: newComment } : r)));
+  const handleEditSave = async (reviewId: string, newComment: string) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ comment: newComment }),
+      });
+      if (res.ok) {
+        setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, comment: newComment } : r)));
+      }
+    } catch (err) {
+      console.error('Failed to save review', err);
+    }
   };
 
   const filteredAndSortedReviews = useMemo(() => {
