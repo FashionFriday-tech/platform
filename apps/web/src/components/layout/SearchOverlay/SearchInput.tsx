@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 const FASHION_KEYWORDS = [
-  'Search by brands...',
-  "Search by model's name...",
-  'Search by category...',
-  'Search sneakers, apparel, watches...',
+  'Search by brands',
+  "Search by model's name",
+  'Search by category',
+  'Search sneakers, apparel, watches',
 ];
 
 interface SearchInputProps {
