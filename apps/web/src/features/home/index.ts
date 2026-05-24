@@ -1,5 +1,6 @@
 export { default as BrandScroll } from './components/BrandScroll';
 export { default as CategoriesSection } from './components/categories-section';
+export { default as CollectionsSection } from './components/collections-section';
 export { default as Hero } from './components/Hero';
 export { default as InfluencerCarousel } from './components/InfluencerCarousel';
 export { default as PWAInstallSection } from './components/pwa-install-section';
