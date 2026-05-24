@@ -321,7 +321,11 @@ export function ProductDetailView({ productId }: Props) {
       </div>
 
       {/* Reviews Section */}
-      <ProductReviews productId={product.id} />
+      <ProductReviews 
+        productId={product.id} 
+        productCategory={product.category || 'uncategorized'} 
+        productName={product.name}
+      />
     </div>
   );
 }
