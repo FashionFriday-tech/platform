@@ -69,7 +69,7 @@ export default function Hero(): JSX.Element {
   return (
     <section className="relative min-h-[60vh] w-full overflow-hidden p-2 pb-2 lg:mt-28 lg:min-h-[85vh] lg:p-6">
       {/* Mobile Search input at the top of Hero section */}
-      <div className="px-2 mb-4 lg:hidden">
+      <div className="px-2 mt-4 mb-4 lg:hidden">
         <div
           onClick={handleOpenSearch}
           className="flex items-center gap-3 w-full bg-transparent border border-zinc-300 dark:border-zinc-700/80 rounded-full px-4 py-3.5 cursor-pointer active:scale-98 transition-all duration-200 overflow-hidden"
