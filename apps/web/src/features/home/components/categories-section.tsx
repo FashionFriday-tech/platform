@@ -1,52 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-import { motion, useScroll, useTransform } from 'motion/react';
 
 import { categories } from '@/features/home/data/categories';
 
 export default function CategoryCarousel() {
-  const targetRef = useRef<HTMLDivElement>(null);
-  const scrollContentRef = useRef<HTMLDivElement>(null);
-  const [dynamicHeight, setDynamicHeight] = useState<number | null>(null);
-
-  useEffect(() => {
-    const calculateHeight = () => {
-      if (scrollContentRef.current && window.innerWidth >= 768) {
-        const contentWidth = scrollContentRef.current.scrollWidth;
-        const windowWidth = window.innerWidth;
-        setDynamicHeight(contentWidth - windowWidth + window.innerHeight);
-      } else {
-        setDynamicHeight(null);
-      }
-    };
-
-    calculateHeight();
-    window.addEventListener('resize', calculateHeight);
-    return () => {
-      window.removeEventListener('resize', calculateHeight);
-    };
-  }, []);
-
-  const { scrollYProgress } = useScroll({ target: targetRef });
-  const x = useTransform(scrollYProgress, [0, 1], ['0%', '-95%']);
-
   return (
     <section
-      ref={targetRef}
       aria-labelledby="category-heading"
-      className="relative"
-      style={{ height: dynamicHeight ? `${dynamicHeight}px` : 'auto' }}
+      className="relative py-12 md:py-20"
     >
-      <div className="py-12 md:sticky md:top-0 md:flex md:h-screen md:flex-col md:justify-center md:overflow-hidden">
+      <div className="container mx-auto">
         {/* Header Section */}
-        <header className="container mx-auto mb-10 px-4 md:mt-20 lg:px-6">
-          <p className="text-muted-foreground mb-2 block text-xs font-bold tracking-widest uppercase">
-            Curated Collections
-          </p>
+        <header className="mb-10 px-4 lg:px-6">
           <h2
             id="category-heading"
             className="text-4xl font-black tracking-tighter uppercase lg:text-7xl"
@@ -56,10 +23,8 @@ export default function CategoryCarousel() {
         </header>
 
         {/* Categories Grid/Carousel */}
-        <motion.div
-          ref={scrollContentRef}
-          style={{ x: dynamicHeight ? x : 0 }}
-          className="grid grid-cols-2 gap-4 px-4 md:flex md:flex-nowrap md:gap-6 md:px-6"
+        <div
+          className="no-scrollbar grid grid-cols-2 gap-4 px-4 md:flex md:overflow-x-auto md:gap-6 md:px-6 md:pb-4"
         >
           {categories.map((cat, index) => (
             <article
@@ -92,18 +57,9 @@ export default function CategoryCarousel() {
               </Link>
             </article>
           ))}
-        </motion.div>
-
-        {/* Visual Progress Indicator */}
-        <nav aria-hidden="true" className="container mx-auto mt-12 hidden px-4 md:block lg:px-6">
-          <div className="h-px w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-            <motion.div
-              className="bg-primary h-full"
-              style={{ scaleX: scrollYProgress, transformOrigin: '0%' }}
-            />
-          </div>
-        </nav>
+        </div>
       </div>
     </section>
   );
 }
+
