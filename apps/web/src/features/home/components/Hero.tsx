@@ -31,7 +31,7 @@ export default function Hero(): JSX.Element {
   useEffect(() => {
     const timer = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-    }, 3200);
+    }, 1800);
     return () => clearInterval(timer);
   }, []);
 
@@ -82,7 +82,7 @@ export default function Hero(): JSX.Element {
                 initial={{ opacity: 0, y: 10, filter: 'blur(3px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, y: -10, filter: 'blur(3px)' }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                 className="absolute text-zinc-700 dark:text-zinc-300 text-sm font-semibold select-none truncate"
               >
                 {placeholders[placeholderIndex]}
