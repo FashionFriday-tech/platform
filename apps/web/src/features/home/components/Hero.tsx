@@ -104,7 +104,7 @@ export default function Hero(): JSX.Element {
       <div className="px-2 mb-4 lg:hidden">
         <div
           onClick={handleOpenSearch}
-          className="flex items-center gap-3 w-full bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-300 dark:border-zinc-700/80 shadow-xs rounded-full px-4 py-3.5 cursor-pointer active:scale-98 transition-transform duration-200"
+          className="flex items-center gap-3 w-full bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 backdrop-blur-md rounded-full px-4 py-3.5 cursor-pointer active:scale-98 transition-transform duration-200"
         >
           <SearchIcon className="text-zinc-600 dark:text-zinc-400 w-5 h-5 shrink-0" />
           <span className="text-zinc-800 dark:text-zinc-200 text-sm font-semibold select-none truncate">
