@@ -201,7 +201,7 @@ export function ProductTable({
                 <tr
                   key={product.id}
                   onClick={() => {
-                    router.push(`/products/${product.id}`);
+                    router.push(`/products/${product.seoSlug || product.id}`);
                   }}
                   className={`group cursor-pointer whitespace-nowrap transition-colors ${isSelected ? 'bg-black/[0.03] dark:bg-white/[0.05]' : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'}`}
                 >
