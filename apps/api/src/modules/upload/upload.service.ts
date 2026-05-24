@@ -37,14 +37,32 @@ export class UploadService {
     let fileExtension = file.originalname.split('.').pop() || 'bin';
     let contentType = file.mimetype;
 
-    // Optimize images to webp automatically and crop to 3:4 ratio
+    // Optimize images to webp automatically and crop to correct ratio
     if (contentType.startsWith('image/')) {
       try {
         const sharp = require('sharp');
+        
+        let width = 900;
+        let height = 1200;
+        
+        if (folder === 'campaigns/home-carousel') {
+          width = 800;
+          height = 1200; // 2:3
+        } else if (folder === 'campaigns/products-list') {
+          width = 2100;
+          height = 900;  // 21:9
+        } else if (folder === 'campaigns/trending-products') {
+          width = 900;
+          height = 1200; // 3:4
+        } else if (folder && folder.startsWith('campaigns')) {
+          width = 900;
+          height = 1200;
+        }
+
         processedBuffer = await sharp(file.buffer)
           .resize({
-            width: 900,
-            height: 1200,
+            width,
+            height,
             fit: 'cover',
             position: 'center'
           })
@@ -61,6 +79,8 @@ export class UploadService {
     
     // Create a SEO-friendly name based on the slug or the original file name
     let baseName = '';
+    const isCampaign = folder && folder.startsWith('campaigns');
+
     if (slug) {
       baseName = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     } else {
@@ -70,6 +90,10 @@ export class UploadService {
     }
     
     if (!baseName) baseName = 'image';
+
+    if (isCampaign) {
+      baseName = `poster-${baseName}`;
+    }
 
     const fileName = `${baseName}.${fileExtension}`;
     
