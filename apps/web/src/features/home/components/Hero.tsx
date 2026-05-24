@@ -23,16 +23,49 @@ export default function Hero(): JSX.Element {
     'Search by category...',
     'Search by brands...',
     'Search for street wear...',
-    'Search for accessories...'
+    'Search for accessories...',
   ];
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [typedPlaceholder, setTypedPlaceholder] = useState('');
+  const [isDeletingPlaceholder, setIsDeletingPlaceholder] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
 
+  // Blinking cursor
   useEffect(() => {
-    const timer = setInterval(() => {
-      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-    }, 3000);
-    return () => clearInterval(timer);
+    const cursorInterval = setInterval(() => {
+      setShowCursor((prev) => !prev);
+    }, 500);
+    return () => clearInterval(cursorInterval);
   }, []);
+
+  // Typewriter animation for search bar placeholder
+  useEffect(() => {
+    const fullText = placeholders[placeholderIndex] ?? '';
+    let speed = isDeletingPlaceholder ? 35 : 85;
+
+    if (!isDeletingPlaceholder && typedPlaceholder === fullText) {
+      speed = 1800;
+    } else if (isDeletingPlaceholder && typedPlaceholder === '') {
+      speed = 300;
+    }
+
+    const timeout = setTimeout(() => {
+      if (!isDeletingPlaceholder && typedPlaceholder === fullText) {
+        setIsDeletingPlaceholder(true);
+      } else if (isDeletingPlaceholder && typedPlaceholder === '') {
+        setIsDeletingPlaceholder(false);
+        setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+      } else {
+        setTypedPlaceholder(
+          isDeletingPlaceholder
+            ? fullText.substring(0, typedPlaceholder.length - 1)
+            : fullText.substring(0, typedPlaceholder.length + 1),
+        );
+      }
+    }, speed);
+
+    return () => clearTimeout(timeout);
+  }, [typedPlaceholder, isDeletingPlaceholder, placeholderIndex]);
 
   const handleOpenSearch = () => {
     window.dispatchEvent(new CustomEvent('open-search'));
@@ -75,7 +108,7 @@ export default function Hero(): JSX.Element {
         >
           <SearchIcon className="text-zinc-500 w-5 h-5 shrink-0" />
           <span className="text-zinc-500 text-sm font-semibold select-none truncate">
-            {placeholders[placeholderIndex]}
+            {typedPlaceholder}{showCursor ? '│' : ' '}
           </span>
         </div>
       </div>
