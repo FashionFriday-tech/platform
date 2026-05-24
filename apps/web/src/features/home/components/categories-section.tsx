@@ -46,7 +46,7 @@ export default function CategoryCarousel() {
           {genderCategories.map((cat) => (
             <article
               key={cat.id}
-              className="group relative h-[380px] sm:h-[480px] lg:h-[540px] w-full overflow-hidden rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl"
+              className="group relative aspect-square w-full overflow-hidden rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl"
             >
               <Link href={cat.href} className="block h-full w-full">
                 <figure className="relative m-0 h-full w-full overflow-hidden">
