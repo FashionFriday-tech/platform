@@ -48,13 +48,9 @@ export default function BrandScroll() {
   const BRAND_ROW_B = BrandLogo.slice(midIndex);
 
   return (
-    <section className="w-full overflow-hidden py-12">
+    <section className="w-full overflow-hidden py-6 lg:py-12">
       <div className="relative flex w-full flex-col items-center justify-center">
-        <div className="container mx-auto mb-8 px-4 text-center">
-          <p className="flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-size-[400%_100%] bg-clip-text text-[10px] font-black tracking-[0.5em] text-transparent uppercase">
-            our brand collections
-          </p>
-        </div>
+
 
         <ScrollVelocityContainer className="flex w-full flex-col gap-8">
           {/* Row 1: First Half (Moving Right) */}
