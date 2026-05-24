@@ -29,7 +29,7 @@ export default function CategoryCarousel() {
           {categories.map((cat, index) => (
             <article
               key={`${cat.id}-${index}`}
-              className="group relative aspect-[3/4] w-full shrink-0 overflow-hidden rounded-2xl md:w-80 md:rounded-3xl"
+              className="group relative aspect-[3/4] h-[240px] xs:h-[280px] sm:h-[360px] md:h-[420px] w-full shrink-0 overflow-hidden rounded-2xl md:w-80 md:rounded-3xl"
             >
               <Link href={cat.href} className="block h-full w-full" title={`Browse ${cat.title}`}>
                 <figure className="absolute inset-0 m-0 h-full w-full">
