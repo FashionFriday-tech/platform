@@ -57,6 +57,67 @@ const navStructure = [
   },
 ];
 
+function TypewriterHeaderSearch({ onClick }: { onClick: () => void }) {
+  const [index, setIndex] = useState(0);
+  const [placeholder, setPlaceholder] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
+
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setShowCursor((prev) => !prev);
+    }, 500);
+    return () => clearInterval(cursorInterval);
+  }, []);
+
+  useEffect(() => {
+    const keywords = [
+      'Search by brands...',
+      "Search by model's name...",
+      'Search by category...',
+      'Search sneakers, apparel...',
+    ];
+    const fullText = keywords[index] ?? '';
+    let speed = isDeleting ? 30 : 80;
+
+    if (!isDeleting && placeholder === fullText) {
+      speed = 1800;
+    } else if (isDeleting && placeholder === '') {
+      speed = 300;
+    }
+
+    const timeout = setTimeout(() => {
+      if (!isDeleting && placeholder === fullText) {
+        setIsDeleting(true);
+      } else if (isDeleting && placeholder === '') {
+        setIsDeleting(false);
+        setIndex((prev) => (prev + 1) % keywords.length);
+      } else {
+        setPlaceholder(
+          isDeleting
+            ? fullText.substring(0, placeholder.length - 1)
+            : fullText.substring(0, placeholder.length + 1),
+        );
+      }
+    }, speed);
+
+    return () => clearTimeout(timeout);
+  }, [placeholder, isDeleting, index]);
+
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className="group relative flex w-full max-w-[280px] sm:w-60 lg:w-72 items-center gap-2.5 rounded-full border border-border bg-muted/60 px-3.5 py-1.5 text-xs transition-all hover:border-foreground/30 hover:bg-muted"
+    >
+      <SearchIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+      <span className="truncate text-left text-[11px] font-semibold tracking-wider text-muted-foreground uppercase transition-colors group-hover:text-foreground">
+        {placeholder}{showCursor ? '│' : ' '}
+      </span>
+    </button>
+  );
+}
+
 export function Header() {
   const user = useAuthStore((state) => state.user);
   const pathname = usePathname();
@@ -107,14 +168,7 @@ export function Header() {
           </nav>
 
           <div className="z-50 flex items-center gap-5">
-            <button
-              onClick={() => {
-                setIsSearchOpen(true);
-              }}
-              className="text-foreground hover:text-brand hidden items-center gap-2 text-[10px] font-black tracking-widest uppercase transition-colors lg:flex"
-            >
-              <SearchIcon className="text-lg" />
-            </button>
+            <TypewriterHeaderSearch onClick={() => setIsSearchOpen(true)} />
             <div className="bg-border hidden h-4 w-px lg:block" />
             <div className="text-foreground flex items-center gap-4">
               <Link href="/account/wishlist">
@@ -165,31 +219,31 @@ export function Header() {
       </header>
 
       {/* MOBILE UI */}
-      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full items-center justify-between px-4 py-3 lg:hidden relative">
-        {/* Left spacing placeholder to balance flex container */}
-        <div className="w-16" />
-
-        {/* Absolutely centered brand logo & text */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="bg-background text-foreground border-b border-border/40 sticky top-0 z-50 flex w-full flex-col gap-2 px-4 py-2.5 lg:hidden">
+        <div className="flex w-full items-center justify-between">
           <Link
             href="/"
             className="transition-transform active:scale-95 flex items-center whitespace-nowrap"
           >
-            <span className="text-lg font-black tracking-tighter uppercase">
+            <span className="text-base font-black tracking-tighter uppercase">
               Fashion Friday
             </span>
           </Link>
+
+          <div className="flex items-center gap-3">
+            <Link href="/account/notifications" className="relative">
+              <BellIcon className="text-lg" />
+              <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
+            </Link>
+            <Link href="/account/wishlist">
+              <WishlistIcon className="text-lg" />
+            </Link>
+          </div>
         </div>
 
-        {/* Right side actions */}
-        <div className="flex items-center gap-4">
-          <Link href="/account/notifications" className="relative">
-            <BellIcon className="text-xl" />
-            <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
-          </Link>
-          <Link href="/account/wishlist">
-            <WishlistIcon className="text-xl" />
-          </Link>
+        {/* Mobile Typewriter Search Bar */}
+        <div className="w-full">
+          <TypewriterHeaderSearch onClick={() => setIsSearchOpen(true)} />
         </div>
       </div>
 
