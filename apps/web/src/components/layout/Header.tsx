@@ -82,7 +82,7 @@ export function Header() {
         {/* DESKTOP TOP BAR */}
         <div className="text-foreground relative z-50 mx-auto hidden h-20 items-center justify-between px-6 sm:flex lg:px-12">
           <Link href="/" className="relative z-50 flex h-8 items-center">
-            <span className="text-2xl lg:text-3xl font-black tracking-tighter uppercase italic">
+            <span className="text-2xl lg:text-3xl font-black tracking-tighter uppercase">
               Fashion Friday
             </span>
           </Link>
