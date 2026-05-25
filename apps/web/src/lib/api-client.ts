@@ -1,85 +1,131 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Extend AxiosRequestConfig to include our custom _retry flag
-interface RetryableRequestConfig extends InternalAxiosRequestConfig {
-  _retry?: boolean;
+export interface RequestOptions extends RequestInit {
+  params?: Record<string, string | number | boolean | undefined>;
 }
 
-// Add a request interceptor
-api.interceptors.request.use(
-  (config) => {
+// Internal helper for refreshing access token when 401 occurs in client
+async function refreshAccessToken(): Promise<string | null> {
+  if (typeof window === 'undefined') return null;
+  const refreshToken = localStorage.getItem('refreshToken');
+
+  try {
+    const res = await fetch(`${BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include', // Industry standard: Send HttpOnly cookies automatically
+      headers: {
+        'Content-Type': 'application/json',
+        ...(refreshToken ? { Authorization: `Bearer ${refreshToken}` } : {}),
+      },
+    });
+
+    if (!res.ok) throw new Error('Refresh failed');
+
+    const data = await res.json();
+    if (data.accessToken) {
+      localStorage.setItem('accessToken', data.accessToken);
+    }
+    if (data.refreshToken) {
+      localStorage.setItem('refreshToken', data.refreshToken);
+    }
+    return data.accessToken || 'cookie-refreshed';
+  } catch {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+      window.location.href = '/';
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+    return null;
+  }
+}
 
-// Add a response interceptor for handling token expiration
-api.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as RetryableRequestConfig | undefined;
+/**
+ * Production-Grade Secure Fetch API Client
+ * Supports HttpOnly Cookies (`credentials: 'include'`) & Bearer Tokens
+ */
+export async function fetcher<T = unknown>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  const { params, headers: customHeaders, credentials = 'include', ...customOptions } = options;
 
-    // If the error is 401 and not already retried
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
-      originalRequest._retry = true;
+  let url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
 
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-
-        // Call the refresh endpoint
-        const response = await axios.post<{ accessToken: string; refreshToken: string }>(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/auth/refresh`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          },
-        );
-
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
-
-        // Store new tokens
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
-
-        // Update the original request with the new access token
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-
-        // Retry the original request
-        return api(originalRequest);
-      } catch (refreshError) {
-        // If refresh fails, clear tokens and redirect to login
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        if (typeof window !== 'undefined') {
-          window.location.href = '/';
-        }
-        return Promise.reject(refreshError);
-      }
+  if (params) {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, val]) => {
+      if (val !== undefined) searchParams.append(key, String(val));
+    });
+    const queryString = searchParams.toString();
+    if (queryString) {
+      url += (url.includes('?') ? '&' : '?') + queryString;
     }
+  }
 
-    return Promise.reject(error);
-  },
-);
+  const buildHeaders = (token?: string | null) => {
+    const headers = new Headers(customHeaders);
+    if (!headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+  };
+
+  let token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+  let response = await fetch(url, {
+    ...customOptions,
+    credentials, // Industry Standard: Automatically attaches HttpOnly cookies
+    headers: buildHeaders(token),
+  });
+
+  // If 401 Unauthorized, attempt refresh once
+  if (response.status === 401 && typeof window !== 'undefined') {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      response = await fetch(url, {
+        ...customOptions,
+        credentials,
+        headers: buildHeaders(newToken !== 'cookie-refreshed' ? newToken : null),
+      });
+    }
+  }
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  return response.json() as Promise<T>;
+}
+
+// Convenience wrapper object matching HTTP methods
+export const api = {
+  get: <T = unknown>(endpoint: string, options?: RequestOptions) =>
+    fetcher<T>(endpoint, { ...options, method: 'GET' }),
+
+  post: <T = unknown>(endpoint: string, body?: unknown, options?: RequestOptions) =>
+    fetcher<T>(endpoint, {
+      ...options,
+      method: 'POST',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    }),
+
+  put: <T = unknown>(endpoint: string, body?: unknown, options?: RequestOptions) =>
+    fetcher<T>(endpoint, {
+      ...options,
+      method: 'PUT',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    }),
+
+  patch: <T = unknown>(endpoint: string, body?: unknown, options?: RequestOptions) =>
+    fetcher<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    }),
+
+  delete: <T = unknown>(endpoint: string, options?: RequestOptions) =>
+    fetcher<T>(endpoint, { ...options, method: 'DELETE' }),
+};
 
 export interface SendOtpResponse {
   message: string;
