@@ -279,7 +279,7 @@ export function Header() {
         }
         @media (min-width: 1024px) {
           .animate-marquee {
-            animation: marquee 40s linear infinite;
+            animation: marquee 90s linear infinite;
           }
         }
       `,
