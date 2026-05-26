@@ -16,9 +16,10 @@ interface CustomerDetailsFeatureProps {
 
 export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeatureProps) {
   const router = useRouter();
-  const customer = mockCustomers.find((c) => c.id === customerId);
-  const customerOrders = mockOrders.filter((o) => o.customer.id === customerId);
-  const customerReviews = mockReviews.filter((r) => r.customerId === customerId);
+  const customer = mockCustomers.find((c: any) => c.id === customerId);
+  const customerOrders = mockOrders.filter((o: any) => o.customer.id === customerId);
+  const customerReviews = mockReviews.filter((r: any) => r.customerId === customerId);
+
 
   if (!customer) {
     return (
@@ -290,7 +291,8 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
           <div className="flex flex-col gap-4">
             {customerReviews.length > 0 ? (
-              customerReviews.map((review) => (
+              customerReviews.map((review: any) => (
+
                 <div
                   key={review.id}
                   className="flex flex-col gap-4 rounded-3xl border border-black/5 bg-white/40 p-6 transition-all hover:-translate-y-1 hover:bg-white/60 hover:shadow-lg hover:shadow-black/5 dark:border-white/5 dark:bg-[#111111]/60 dark:hover:bg-[#1a1a1a]/60"
