@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: '**.r2.dev',
+      },
+      {
+        protocol: 'https',
         hostname: 'fashionfriday.in',
       },
       {
@@ -23,8 +27,17 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
     ],
   },
+
 
   transpilePackages: ['@ff/ui'],
 

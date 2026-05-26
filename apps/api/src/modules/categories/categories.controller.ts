@@ -3,7 +3,7 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 
 @Controller('admin/categories')
-export class CategoriesController {
+export class AdminCategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
@@ -32,3 +32,19 @@ export class CategoriesController {
     return this.categoriesService.remove(id);
   }
 }
+
+@Controller('categories')
+export class PublicCategoriesController {
+  constructor(private readonly categoriesService: CategoriesService) {}
+
+  @Get()
+  findAll() {
+    return this.categoriesService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.categoriesService.findOne(id);
+  }
+}
+
