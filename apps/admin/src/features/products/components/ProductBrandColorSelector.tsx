@@ -74,8 +74,9 @@ export function ProductBrandColorSelector({
           />
         </div>
 
-        {isBrandOpen && brandInput.length > 0 && (
-          <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+        {isBrandOpen && (
+          <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+
             {filteredBrands.length > 0 ? (
               filteredBrands.map((b) => (
                 <button
