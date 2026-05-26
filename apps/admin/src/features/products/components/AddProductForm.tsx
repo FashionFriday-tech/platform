@@ -214,7 +214,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             <button
               onClick={async () => {
                 setHasSubmitted(true);
-                
+
                 // Basic Validation
                 if (
                   !productName ||
@@ -227,11 +227,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   setToast({ message: 'Please fill out all required fields and upload at least one image.', type: 'warning' });
                   return;
                 }
-                
+
                 try {
                   // Upload any new images first
                   setToast({ message: 'Uploading images and saving product...', type: 'success' });
-                  
+
                   const uploadBlob = async (blob: Blob | File, originalName: string, pName?: string) => {
                     const file = blob instanceof File ? blob : new File([blob], originalName, { type: 'image/webp' });
                     const formData = new FormData();
@@ -330,8 +330,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     slug: seoSlug,
                   };
 
-                  const url = initialData 
-                    ? `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${initialData.id}` 
+                  const url = initialData
+                    ? `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${initialData.id}`
                     : `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`;
                   const res = await fetch(url, {
                     method: initialData ? 'PATCH' : 'POST',
@@ -346,7 +346,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   }
 
                   setToast({ message: initialData ? 'Product updated successfully!' : 'Product created successfully!', type: 'success' });
-                  
+
                   // Redirect to product list after a brief delay
                   setTimeout(() => {
                     router.push('/products');
@@ -419,31 +419,27 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <LabelWithTick
                     label="Gender"
                     status={getStatus(gender, initialData?.gender, 1, 'gender')}
-                    subtitle="Pick Available Gender"
                   />
-                  <div className="flex h-10 items-center space-x-6">
+                  <div className="flex flex-wrap gap-2">
                     {['Men', 'Woman', 'Unisex'].map((g) => (
                       <button
                         key={g}
+                        type="button"
                         onClick={() => {
                           setGender(g);
                           markTouched('gender');
                         }}
-                        className="group flex cursor-pointer items-center space-x-2.5"
+                        className={`flex h-10 min-w-[70px] items-center justify-center rounded-xl px-4 text-sm font-bold transition-all ${
+                          gender === g
+                            ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
+                            : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
+                        }`}
                       >
-                        <div
-                          className={`flex h-4 w-4 items-center justify-center rounded-full border-[2px] transition-colors ${gender === g ? 'border-black dark:border-white' : 'border-black/20 group-hover:border-black/40 dark:border-white/20 dark:group-hover:border-white/40'}`}
-                        >
-                          {gender === g && (
-                            <div className="h-2 w-2 rounded-full bg-black dark:bg-white" />
-                          )}
-                        </div>
-                        <span className="text-sm font-medium text-black/80 dark:text-white/80">
-                          {g}
-                        </span>
+                        {g}
                       </button>
                     ))}
                   </div>
+
                 </div>
 
                 <div ref={categoryRef} className="relative">
@@ -552,7 +548,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   </div>
 
                   {isBrandOpen && (
-                    <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+                    <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+
                       {filteredBrands.length > 0 ? (
                         filteredBrands.map((b) => (
                           <button
@@ -651,7 +648,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <LabelWithTick
                     label="Size"
                     status={getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
-                    subtitle="Pick Available Sizes"
                   />
                   <div className="flex flex-wrap gap-2">
                     {availableSizes.map((s) => (
@@ -1129,7 +1125,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             />
                           </svg>
                         </button>
-                        
+
                         {/* Crop button */}
                         {originalFiles[img.id] && (
                           <button
