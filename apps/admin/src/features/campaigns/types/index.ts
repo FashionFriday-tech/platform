@@ -1,5 +1,6 @@
 export type BannerPlacement =
   | 'home-carousel'
+  | 'home-categories'
   | 'products-list'
   | 'trending-products';
 
@@ -43,12 +44,15 @@ export let MOCK_BANNERS: CampaignBanner[] = [
 
 export const PLACEMENT_ASPECT_RATIOS: Record<BannerPlacement, string> = {
   'home-carousel': 'aspect-[2/3]',
+  'home-categories': 'aspect-square',
   'products-list': 'aspect-[21/9]',
   'trending-products': 'aspect-[3/4]',
 };
 
 export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {
   'home-carousel': 'Home Carousel',
+  'home-categories': 'Category Cards (Men & Women)',
   'products-list': 'Products List Banner',
   'trending-products': 'Trending Products Banner',
 };
+
