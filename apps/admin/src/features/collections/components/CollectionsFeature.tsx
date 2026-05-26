@@ -7,7 +7,9 @@ import { motion } from 'motion/react';
 import { useCollections } from '../hooks/useCollections';
 import { AddCollectionModal } from './AddCollectionModal';
 import { CollectionCard } from './CollectionCard';
+import { DeleteCollectionModal } from './DeleteCollectionModal';
 import { type ProductCollection } from '../types';
+
 
 export default function CollectionsFeature() {
   const {
@@ -23,6 +25,8 @@ export default function CollectionsFeature() {
   } = useCollections();
 
   const [editingCollection, setEditingCollection] = useState<ProductCollection | null>(null);
+  const [collectionToDelete, setCollectionToDelete] = useState<ProductCollection | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSaveModal = (name: string, image: string, slug: string, isEdit: boolean, id?: string) => {
     if (isEdit && id) {
@@ -40,6 +44,26 @@ export default function CollectionsFeature() {
   const closeAddModal = () => {
     setEditingCollection(null);
     setIsAddModalOpen(false);
+  };
+
+  const handleDeleteRequest = (id: string) => {
+    const target = filteredCollections.find((c) => c.id === id);
+    if (target) {
+      setCollectionToDelete(target);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!collectionToDelete) return;
+    setIsDeleting(true);
+    try {
+      await handleDeleteCollection(collectionToDelete.id);
+      setCollectionToDelete(null);
+    } catch (err) {
+      console.error('Failed to delete collection:', err);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -80,6 +104,15 @@ export default function CollectionsFeature() {
         initialData={editingCollection}
       />
 
+      <DeleteCollectionModal
+        isOpen={!!collectionToDelete}
+        onClose={() => setCollectionToDelete(null)}
+        onConfirm={confirmDelete}
+        collectionName={collectionToDelete?.name}
+        isDeleting={isDeleting}
+      />
+
+
       {/* Grid */}
       <div className="scrollbar-hide flex flex-1 flex-col gap-4 overflow-auto pb-6">
         {loading ? (
@@ -109,8 +142,9 @@ export default function CollectionsFeature() {
                 <CollectionCard 
                   collection={collection} 
                   onEdit={openEditModal}
-                  onDelete={handleDeleteCollection}
+                  onDelete={handleDeleteRequest}
                 />
+
               </motion.div>
             ))}
           </motion.div>
