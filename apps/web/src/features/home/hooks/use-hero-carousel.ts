@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { fetcher } from '@/lib/api-client';
 
 export interface HeroCard {
   id: string;
@@ -61,10 +62,8 @@ export function useHeroCarousel() {
   useEffect(() => {
     const loadHeroBanners = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
-        const res = await fetch(`${apiUrl}/campaigns`);
-        if (res.ok) {
-          const data: CampaignBanner[] = await res.json();
+        const data = await fetcher<CampaignBanner[]>('/campaigns');
+        if (data && Array.isArray(data)) {
           const carouselBanners = data.filter(b => b.placement === 'home-carousel' && b.isActive);
           if (carouselBanners.length > 0) {
             setCards(
@@ -84,6 +83,7 @@ export function useHeroCarousel() {
     };
     loadHeroBanners();
   }, []);
+
 
   const startTimer = useCallback(() => {
     if (timerRef.current) {

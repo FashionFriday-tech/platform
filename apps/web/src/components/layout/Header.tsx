@@ -262,29 +262,7 @@ export function Header() {
           <SearchOverlay isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
         )}
       </AnimatePresence>
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-marquee {
-          animation: marquee 85s linear infinite;
-        }
-        @media (min-width: 1024px) {
-          .animate-marquee {
-            animation: marquee 90s linear infinite;
-          }
-        }
-      `,
-        }}
-      />
     </>
+
   );
 }
