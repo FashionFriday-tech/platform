@@ -215,17 +215,12 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                 </div>
               </div>
 
-              <Link
-                href={`/categories/${category.slug}/add-products`}
-                className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
-              >
-                <PlusIcon className="h-4 w-4" />
-                <span>Add Products</span>
-              </Link>
+              {/* Add Products button removed - products are managed exclusively via /products */}
             </div>
           </div>
         </div>
       </div>
+
 
       {/* Product List */}
       <div className="mt-2 flex min-h-0 flex-1 flex-col overflow-hidden">
