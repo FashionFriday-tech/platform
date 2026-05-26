@@ -17,6 +17,11 @@ export class AdminCategoriesController {
     return this.categoriesService.findAll();
   }
 
+  @Patch('reorder')
+  reorder(@Body() body: { items: { id: string; position: number }[] }) {
+    return this.categoriesService.reorder(body.items);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.categoriesService.findOne(id);
@@ -32,6 +37,7 @@ export class AdminCategoriesController {
     return this.categoriesService.remove(id);
   }
 }
+
 
 @Controller('categories')
 export class PublicCategoriesController {
