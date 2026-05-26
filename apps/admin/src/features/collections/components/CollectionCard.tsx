@@ -73,13 +73,12 @@ export function CollectionCard({ collection, onEdit, onDelete }: CollectionCardP
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (confirm('Are you sure you want to delete this collection?')) {
-              onDelete(collection.id);
-            }
+            onDelete(collection.id);
           }}
           className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/90 text-white shadow-sm backdrop-blur-sm transition-transform hover:scale-110 active:scale-95"
           title="Delete Collection"
         >
+
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
