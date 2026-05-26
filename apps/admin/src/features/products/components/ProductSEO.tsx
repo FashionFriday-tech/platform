@@ -62,7 +62,7 @@ export function ProductSEO({
             Search Engine Optimization & Collections
           </h2>
           {seoError && (
-            <span className="rounded-md bg-[#DC143C]/10 px-2.5 py-1 text-xs font-bold text-[#DC143C]">
+            <span className="rounded-md bg-[#FF0000]/10 px-2.5 py-1 text-xs font-bold text-[#FF0000]">
               {seoError}
             </span>
           )}
