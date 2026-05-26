@@ -68,8 +68,11 @@ export function BrandDetailsModal({
               height={500}
               src={brand.logo}
               alt={brand.name}
-              className="max-h-full max-w-full object-contain drop-shadow-md invert"
+              className={`max-h-full max-w-full object-contain drop-shadow-md ${
+                brand.logo?.startsWith('http') ? '' : brand.color === '#000000' ? 'invert' : 'invert-0'
+              }`}
             />
+
           </div>
 
           {/* Body */}

@@ -11,26 +11,30 @@ interface BrandCardProps {
 
 export function BrandCard({ brand, onClick }: BrandCardProps) {
   const [hasError, setHasError] = React.useState(false);
-  
+  const isHttpUrl = brand.logo?.startsWith('http');
+  const isBlackBg = brand.color === '#000000';
+
   return (
     <motion.div
       onClick={onClick}
       className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-all hover:shadow-lg dark:border-white/5 dark:bg-[#111111]"
     >
       <div
-        className="relative flex aspect-square w-full items-center justify-center transition-colors p-4"
+        className="relative flex aspect-square w-full items-center justify-center p-4 transition-colors"
         style={{ backgroundColor: brand.color || '#000000' }}
       >
         {/* Glow effect on hover */}
         <div className="absolute inset-0 z-10 bg-white opacity-0 mix-blend-overlay transition-opacity group-hover:opacity-20" />
-        
-        {!hasError ? (
+
+        {!hasError && brand.logo ? (
           <Image
             fill
             src={brand.logo}
             alt={brand.name}
             onError={() => setHasError(true)}
-            className="object-cover drop-shadow-md invert"
+            className={`object-contain p-4 drop-shadow-md ${
+              isHttpUrl ? '' : isBlackBg ? 'invert' : 'invert-0'
+            }`}
           />
         ) : (
           <span className="z-20 w-full break-words text-center text-lg font-bold text-white">
@@ -41,3 +45,4 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
     </motion.div>
   );
 }
+
