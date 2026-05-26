@@ -1,15 +1,9 @@
 'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-// --- Define Brand Interface ---
-interface Brand {
-  slug: string;
-  name: string;
-  logo: string;
-  color: string;
-}
+import type { Brand } from '@ff/schemas';
 
 interface BrandCardProps {
   brand: Brand;
@@ -27,7 +21,7 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
       >
-        {!hasError ? (
+        {!hasError && brand.logo ? (
           <Image
             src={brand.logo}
             alt={brand.name}
@@ -39,7 +33,11 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
             }`}
           />
         ) : (
-          <span className={`px-4 text-center text-xl font-black uppercase tracking-widest ${isBlackBackground ? 'text-background dark:text-foreground' : 'text-white'}`}>
+          <span
+            className={`px-4 text-center text-xl font-black uppercase tracking-widest ${
+              isBlackBackground ? 'text-background' : 'text-white'
+            }`}
+          >
             {brand.name}
           </span>
         )}
@@ -47,3 +45,4 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
     </Link>
   );
 };
+

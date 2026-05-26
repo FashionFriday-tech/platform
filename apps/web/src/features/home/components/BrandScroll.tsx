@@ -7,7 +7,8 @@ import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from '@/components/ui/magicUi/ScrollBasedVelocity';
-import { brandLogos as BrandLogo } from '@/features/brand';
+import { useBrands } from '@/features/brand';
+import type { Brand } from '@ff/schemas';
 
 // Helper for clean URLs
 const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-');
@@ -17,24 +18,30 @@ const BrandList = ({
   logos,
   priorityStart = false,
 }: {
-  logos: typeof BrandLogo;
+  logos: Brand[];
   priorityStart?: boolean;
 }) => (
   <>
-    {logos.map(({ name, logo }, idx) => (
-      <div key={`${name}-${idx}`} className="mx-10">
+    {logos.map(({ name, logo, slug }, idx) => (
+      <div key={`${slug || name}-${idx}`} className="mx-10">
         <Link
-          href={`/brands/${slugify(name)}`}
+          href={`/brands/${slug || slugify(name)}`}
           className="relative block h-16 w-16 transition-transform hover:scale-110 active:scale-95 lg:w-24"
         >
-          <Image
-            src={logo}
-            alt={name}
-            fill
-            sizes="100px"
-            className="object-contain invert-0 dark:invert"
-            priority={priorityStart && idx < 4}
-          />
+          {logo ? (
+            <Image
+              src={logo}
+              alt={name}
+              fill
+              sizes="100px"
+              className="object-contain invert-0 dark:invert"
+              priority={priorityStart && idx < 4}
+            />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center text-xs font-bold uppercase">
+              {name}
+            </span>
+          )}
         </Link>
       </div>
     ))}
@@ -42,16 +49,20 @@ const BrandList = ({
 );
 
 export default function BrandScroll() {
-  // Logic to split the array
-  const midIndex = Math.ceil(BrandLogo.length / 2);
-  const BRAND_ROW_A = BrandLogo.slice(0, midIndex);
-  const BRAND_ROW_B = BrandLogo.slice(midIndex);
+  const { brands, isLoading } = useBrands();
+
+  if (isLoading || brands.length === 0) {
+    return null;
+  }
+
+  // Logic to split the array into two rows for the marquee
+  const midIndex = Math.ceil(brands.length / 2);
+  const BRAND_ROW_A = brands.slice(0, midIndex);
+  const BRAND_ROW_B = brands.slice(midIndex);
 
   return (
     <section className="w-full overflow-hidden py-2 lg:py-4">
       <div className="relative flex w-full flex-col items-center justify-center">
-
-
         <ScrollVelocityContainer className="flex w-full flex-col gap-2 sm:gap-3">
           {/* Row 1: First Half (Moving Right) */}
           <ScrollVelocityRow baseVelocity={1} direction={1}>
