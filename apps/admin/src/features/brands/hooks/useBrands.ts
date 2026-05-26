@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 
-import { type Brand, type BrandCategory } from '@ff/schemas';
+import { BRAND_LOGOS, type Brand, type BrandCategory } from '@ff/schemas';
 
 const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
@@ -19,14 +19,16 @@ export function useBrands() {
     fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands`)
       .then((res) => res.json())
       .then((data) => {
-        setBrands(data);
+        setBrands(Array.isArray(data) && data.length > 0 ? data : BRAND_LOGOS);
         setIsLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch brands:', err);
+        setBrands(BRAND_LOGOS);
         setIsLoading(false);
       });
   }, []);
+
 
   const categoryOptions = [
     { label: 'All Categories', value: 'all' },
