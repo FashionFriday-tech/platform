@@ -1,16 +1,28 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { ArrowUpRightIcon } from '@ff/ui';
+import { fetcher } from '@/lib/api-client';
 
-export const genderCategories = [
+interface CampaignBanner {
+  id: string;
+  title: string;
+  mediaUrl: string;
+  mediaType: string;
+  linkUrl: string;
+  placement: string;
+  isActive: boolean;
+}
+
+const DEFAULT_CATEGORY_CARDS = [
   {
     id: 'men',
     title: "Men's Collection",
     subtitle: 'Streetwear, Footwear & Accessories',
-    image: '/images/categories/men.png',
+    image: 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/men-clothing.webp',
     href: '/men',
     buttonText: 'Shop Men',
   },
@@ -18,13 +30,44 @@ export const genderCategories = [
     id: 'women',
     title: "Women's Collection",
     subtitle: 'Curated Apparel & Statement Pieces',
-    image: '/images/categories/womens.png',
+    image: 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/women-clothing.webp',
     href: '/women',
     buttonText: 'Shop Women',
   },
 ];
 
 export default function CategoryCarousel() {
+  const [cards, setCards] = useState(DEFAULT_CATEGORY_CARDS);
+
+  useEffect(() => {
+    const loadCategoryBanners = async () => {
+      try {
+        const data = await fetcher<CampaignBanner[]>('/campaigns');
+        if (data && Array.isArray(data)) {
+          const categoryBanners = data.filter(
+            (b) => b.placement === 'home-categories' && b.isActive,
+          );
+
+          if (categoryBanners.length > 0) {
+            setCards(
+              categoryBanners.map((b) => ({
+                id: b.id,
+                title: b.title,
+                subtitle: b.linkUrl.includes('women') ? 'Curated Apparel & Statement Pieces' : 'Streetwear, Footwear & Accessories',
+                image: b.mediaUrl,
+                href: b.linkUrl,
+                buttonText: b.linkUrl.includes('women') ? 'Shop Women' : 'Shop Men',
+              })),
+            );
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load category banners from API:', err);
+      }
+    };
+    loadCategoryBanners();
+  }, []);
+
   return (
     <section
       aria-labelledby="category-heading"
@@ -43,7 +86,7 @@ export default function CategoryCarousel() {
 
         {/* 2-Card Grid (Men & Women) */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
-          {genderCategories.map((cat) => (
+          {cards.map((cat) => (
             <article
               key={cat.id}
               className="group relative aspect-square w-full overflow-hidden rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl"
@@ -86,3 +129,4 @@ export default function CategoryCarousel() {
     </section>
   );
 }
+
