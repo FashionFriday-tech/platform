@@ -13,6 +13,8 @@ interface Props {
   setTagInput: (val: string) => void;
   handleTagKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   removeTag: (tag: string) => void;
+  availableCollections?: string[];
+  toggleCollection?: (colName: string) => void;
   seoSlug: string;
   setSeoSlug: (val: string) => void;
   seoTitle: string;
@@ -41,6 +43,8 @@ export function ProductSEO({
   setTagInput,
   handleTagKeyDown,
   removeTag,
+  availableCollections,
+  toggleCollection,
   seoSlug,
   setSeoSlug,
   seoTitle,
@@ -55,7 +59,7 @@ export function ProductSEO({
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <h2 className="text-lg font-bold text-black dark:text-white">
-            Search Engine Optimization
+            Search Engine Optimization & Collections
           </h2>
           {seoError && (
             <span className="rounded-md bg-[#DC143C]/10 px-2.5 py-1 text-xs font-bold text-[#DC143C]">
@@ -82,48 +86,41 @@ export function ProductSEO({
       <div className="space-y-6">
         <div>
           <LabelWithTick
-            label="Tags / Keywords"
+            label="Product Collections"
             status={getArrayStatus(tags, initialData?.marketing?.collections)}
           />
-          <div className="flex min-h-[52px] w-full flex-wrap items-center gap-2 rounded-xl border border-transparent bg-black/5 px-3 py-2 transition-all focus-within:border-black/20 dark:bg-white/5 dark:focus-within:border-white/20">
-            {tags.map((tag) => (
-              <span
-                key={tag}
-                className="flex items-center space-x-1 rounded-md bg-black/10 px-2.5 py-1 text-xs font-bold text-black shadow-sm dark:bg-white/10 dark:text-white"
-              >
-                <span>{tag}</span>
-                <button
-                  onClick={() => {
-                    removeTag(tag);
-                  }}
-                  className="text-black/50 transition-colors hover:text-black dark:text-white/50 dark:hover:text-white"
-                >
-                  <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </span>
-            ))}
-            <input
-              type="text"
-              value={tagInput}
-              onChange={(e) => {
-                setTagInput(e.target.value);
-              }}
-              onKeyDown={handleTagKeyDown}
-              placeholder={tags.length === 0 ? 'Type and press enter' : ''}
-              className="min-w-[120px] flex-1 bg-transparent text-sm font-medium text-black outline-none placeholder:text-black/30 dark:text-white dark:placeholder:text-white/30"
-            />
-          </div>
+
+          {/* Multi-select Collection Chips */}
+          {availableCollections && availableCollections.length > 0 ? (
+            <div className="mb-2 flex flex-wrap gap-2">
+              {availableCollections.map((colName) => {
+                const isSelected = tags.includes(colName);
+                return (
+                  <button
+                    key={colName}
+                    type="button"
+                    onClick={() => toggleCollection?.(colName)}
+                    className={`flex items-center space-x-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all ${
+                      isSelected
+                        ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
+                        : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    <span>{colName}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-xs font-medium text-black/40 dark:text-white/40">
+              No collections available.
+            </p>
+          )}
           <p className="mt-1.5 text-[10px] font-medium text-black/40 dark:text-white/40">
-            Press enter to add a tag
+            Click collections above to select multiple
           </p>
         </div>
+
 
         <div className="border-t border-black/5 pt-5 dark:border-white/5">
           <LabelWithTick label="URL Slug" status={getStatus(seoSlug, initialData?.slug, 3)} />
