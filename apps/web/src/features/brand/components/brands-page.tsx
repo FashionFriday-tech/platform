@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-
 import { ChevronDownIcon, SlidersIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
-
 import type { Brand, BrandCategory } from '@/features/brand';
-
+import { useBrands } from '@/features/brand';
 import { BrandCard } from './BrandCard';
 
 const ALL_CATEGORIES: (BrandCategory | 'All')[] = [
@@ -23,14 +21,8 @@ export function BrandsPage() {
   const [selectedCategory, setSelectedCategory] = useState<BrandCategory | 'All'>('All');
   const [sortOption, setSortOption] = useState<'a-z' | 'z-a'>('a-z');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [brandsData, setBrandsData] = useState<Brand[]>([]);
 
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/brands`)
-      .then((res) => res.json())
-      .then((data) => setBrandsData(data))
-      .catch((err) => console.error('Failed to fetch brands:', err));
-  }, []);
+  const { brands: brandsData, isLoading } = useBrands();
 
   const displayedBrands = brandsData
     .filter((b: Brand) => selectedCategory === 'All' || b.categories.includes(selectedCategory))
@@ -86,11 +78,17 @@ export function BrandsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-3 lg:grid-cols-5">
-        {displayedBrands.map((brand) => (
-          <BrandCard key={brand.slug} brand={brand} />
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex h-64 w-full items-center justify-center">
+          <div className="border-foreground h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-x-3 gap-y-6 md:grid-cols-3 lg:grid-cols-5">
+          {displayedBrands.map((brand) => (
+            <BrandCard key={brand.slug} brand={brand} />
+          ))}
+        </div>
+      )}
     </main>
   );
 }
