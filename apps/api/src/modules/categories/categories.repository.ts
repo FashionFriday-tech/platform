@@ -12,12 +12,12 @@ export class CategoriesRepository {
 
   async findAll() {
     return this.prisma.db.category.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
       include: {
         _count: {
-          select: { products: true }
-        }
-      }
+          select: { products: true },
+        },
+      },
     });
   }
 
@@ -39,4 +39,15 @@ export class CategoriesRepository {
       where: { id },
     });
   }
+
+  async reorder(items: { id: string; position: number }[]) {
+    const updates = items.map((item) =>
+      this.prisma.db.category.update({
+        where: { id: item.id },
+        data: { position: item.position },
+      }),
+    );
+    return this.prisma.db.$transaction(updates);
+  }
 }
+
