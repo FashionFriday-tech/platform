@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 
 import type { SendOtpResponse, SignupResponse, VerifyOtpResponse } from '@/lib/api-client';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
 async function setAuthCookies(accessToken: string, refreshToken: string) {
   const cookieStore = await cookies();
