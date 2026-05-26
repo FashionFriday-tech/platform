@@ -1,4 +1,5 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCollectionDto } from './create-collection.dto';
+import { createZodDto } from 'nestjs-zod';
+import { UpdateCollectionSchema } from '@ff/schemas';
 
-export class UpdateCollectionDto extends PartialType(CreateCollectionDto) {}
+export class UpdateCollectionDto extends createZodDto(UpdateCollectionSchema) {}
+
