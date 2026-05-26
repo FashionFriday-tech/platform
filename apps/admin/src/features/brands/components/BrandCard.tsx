@@ -32,10 +32,9 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             src={brand.logo}
             alt={brand.name}
             onError={() => setHasError(true)}
-            className={`object-contain p-4 drop-shadow-md ${
-              isHttpUrl ? '' : isBlackBg ? 'invert' : 'invert-0'
-            }`}
+            className="object-contain p-4 drop-shadow-md invert"
           />
+
         ) : (
           <span className="z-20 w-full break-words text-center text-lg font-bold text-white">
             {brand.name}
