@@ -4,5 +4,7 @@ export * from './user';
 export * from './address';
 export * from './review.schema';
 export * from './category.schema';
+export * from './collection.schema';
 
 export * from './constants';
+
