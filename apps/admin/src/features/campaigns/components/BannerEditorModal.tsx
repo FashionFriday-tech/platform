@@ -111,12 +111,15 @@ export function BannerEditorModal({
         return 'w-full aspect-[21/9]';
       case 'home-carousel':
         return 'h-[300px] md:h-[350px] w-auto aspect-[2/3]';
+      case 'home-categories':
+        return 'h-[300px] md:h-[350px] w-auto aspect-square';
       case 'trending-products':
         return 'h-[300px] md:h-[350px] w-auto aspect-[3/4]';
       default:
         return 'w-full aspect-video';
     }
   };
+
 
   const responsiveClass = getResponsiveClasses(placement);
 
