@@ -21,59 +21,28 @@ interface CampaignBanner {
   isActive: boolean;
 }
 
-const DEFAULT_CARDS: HeroCard[] = [
-  { 
-    id: 'd1', 
-    src: '/images/hero/hero-grid1.png', 
-    title: 'LINEN EDIT', 
-    subtitle: 'SOFT ON SKIN.\nSHARP ON STYLE.',
-    linkUrl: '/products'
-  },
-  { 
-    id: 'd2', 
-    src: '/images/poster/1.png', 
-    title: 'NEW IN', 
-    subtitle: '',
-    linkUrl: '/products'
-  },
-  { 
-    id: 'd3', 
-    src: '/images/hero/hero-grid2.png', 
-    title: 'ACCESSORIES', 
-    subtitle: 'FINISHING TOUCH',
-    linkUrl: '/products'
-  },
-  { 
-    id: 'd4', 
-    src: '/images/poster/2.png', 
-    title: 'STREET WEAR', 
-    subtitle: 'URBAN ESSENTIALS',
-    linkUrl: '/products'
-  },
-];
-
 export function useHeroCarousel() {
-  const [cards, setCards] = useState<HeroCard[]>(DEFAULT_CARDS);
+  const [cards, setCards] = useState<HeroCard[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch campaigns
+  // Fetch campaign banners dynamically from database via NestJS API
   useEffect(() => {
     const loadHeroBanners = async () => {
       try {
         const data = await fetcher<CampaignBanner[]>('/campaigns');
         if (data && Array.isArray(data)) {
-          const carouselBanners = data.filter(b => b.placement === 'home-carousel' && b.isActive);
+          const carouselBanners = data.filter((b) => b.placement === 'home-carousel' && b.isActive);
           if (carouselBanners.length > 0) {
             setCards(
-              carouselBanners.map(b => ({
+              carouselBanners.map((b) => ({
                 id: b.id,
                 src: b.mediaUrl,
                 title: b.title,
                 subtitle: '',
-                linkUrl: b.linkUrl
-              }))
+                linkUrl: b.linkUrl,
+              })),
             );
           }
         }
@@ -83,6 +52,7 @@ export function useHeroCarousel() {
     };
     loadHeroBanners();
   }, []);
+
 
 
   const startTimer = useCallback(() => {
