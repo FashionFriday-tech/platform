@@ -149,13 +149,13 @@ export function Header() {
         </div>
 
         {/* MARQUEE (Scrolling Announcement for All Screens) */}
-        <div className="bg-foreground text-background relative z-40 block w-full overflow-hidden py-1.5 sm:py-2">
+        <div className="bg-[#FF0000] text-white relative z-40 block w-full overflow-hidden py-1.5 sm:py-2">
           <div className="animate-marquee flex w-max whitespace-nowrap">
             {[0, 1].map((set) => (
               <div key={set} className="flex items-center gap-8 sm:gap-12 px-4 sm:px-6">
                 {marqueeContent.map((text, i) => (
                   <span key={i} className="flex items-center gap-2.5 sm:gap-3 text-[9px] sm:text-[10px] font-black tracking-[0.25em] uppercase">
-                    <span className="bg-brand h-1.5 w-1.5 rounded-full shrink-0" />
+                    <span className="bg-white h-1.5 w-1.5 rounded-full shrink-0" />
                     {text}
                   </span>
                 ))}
@@ -212,13 +212,13 @@ export function Header() {
         </div>
 
         {/* MOBILE MARQUEE ANNOUNCEMENT */}
-        <div className="bg-foreground text-background relative z-40 block w-full overflow-hidden py-1.5">
+        <div className="bg-[#FF0000] text-white relative z-40 block w-full overflow-hidden py-1.5">
           <div className="animate-marquee flex w-max whitespace-nowrap">
             {[0, 1].map((set) => (
               <div key={set} className="flex items-center gap-8 px-4">
                 {marqueeContent.map((text, i) => (
                   <span key={i} className="flex items-center gap-2 text-[9px] font-black tracking-[0.25em] uppercase">
-                    <span className="bg-brand h-1.5 w-1.5 rounded-full shrink-0" />
+                    <span className="bg-white h-1.5 w-1.5 rounded-full shrink-0" />
                     {text}
                   </span>
                 ))}
