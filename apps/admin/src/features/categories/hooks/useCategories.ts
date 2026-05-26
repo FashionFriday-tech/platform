@@ -68,7 +68,9 @@ export function useCategories() {
   ) => {
     try {
       const apiPayload = {
-        ...savedCategory,
+        name: savedCategory.name,
+        slug: savedCategory.slug,
+        image: savedCategory.image || '',
         gender: savedCategory.gender.toUpperCase(),
       };
 
@@ -94,6 +96,7 @@ export function useCategories() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(apiPayload),
         });
+
         if (res.ok) {
           const created = await res.json();
           setCategories((prev) => [
