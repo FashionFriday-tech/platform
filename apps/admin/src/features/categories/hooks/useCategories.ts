@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { ProductCategory } from '../types';
+import { MOCK_CATEGORIES, ProductCategory } from '../types';
 
 export function useCategories() {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
@@ -20,28 +20,31 @@ export function useCategories() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`);
         const data = await res.json();
-        // data usually comes back directly or in data depending on backend
         const categoriesData = Array.isArray(data) ? data : data.data || [];
         
-        // Map backend category to frontend ProductCategory
-        const mapped = categoriesData.map((c: any) => ({
-          id: c.id,
-          name: c.name,
-          slug: c.slug,
-          image: c.image,
-          gender: c.gender.charAt(0).toUpperCase() + c.gender.slice(1).toLowerCase(),
-          productCount: c._count?.products || c.productCount || 0,
-        }));
-        
+        const mapped = categoriesData.map((c: any) => {
+          const rawGender = c.gender || 'UNISEX';
+          return {
+            id: c.id,
+            name: c.name,
+            slug: c.slug,
+            image: c.image || '',
+            gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as 'Men' | 'Women' | 'Unisex',
+            productCount: c._count?.products || c.productCount || 0,
+          };
+        });
         setCategories(mapped);
       } catch (err) {
         console.error('Failed to load categories', err);
+        setCategories([]);
       } finally {
         setIsLoading(false);
       }
+
     }
     load();
   }, []);
+
 
   const filteredCategories = useMemo(() => {
     let result = [...categories];
