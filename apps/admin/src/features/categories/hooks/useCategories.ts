@@ -8,12 +8,12 @@ export function useCategories() {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGender, setSelectedGender] = useState<'All' | 'Men' | 'Women' | 'Unisex'>('All');
+  const [selectedGender, setSelectedGender] = useState<'Men' | 'Women'>('Men');
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<ProductCategory | null>(null);
 
-  const genders: ('All' | 'Men' | 'Women' | 'Unisex')[] = ['All', 'Men', 'Women', 'Unisex'];
+  const genders: ('Men' | 'Women')[] = ['Men', 'Women'];
 
   useEffect(() => {
     async function load() {
@@ -23,13 +23,13 @@ export function useCategories() {
         const categoriesData = Array.isArray(data) ? data : data.data || [];
         
         const mapped = categoriesData.map((c: any) => {
-          const rawGender = c.gender || 'UNISEX';
+          const rawGender = c.gender || 'MEN';
           return {
             id: c.id,
             name: c.name,
             slug: c.slug,
             image: c.image || '',
-            gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as 'Men' | 'Women' | 'Unisex',
+            gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as 'Men' | 'Women',
             productCount: c._count?.products || c.productCount || 0,
           };
         });
@@ -40,18 +40,12 @@ export function useCategories() {
       } finally {
         setIsLoading(false);
       }
-
     }
     load();
   }, []);
 
-
   const filteredCategories = useMemo(() => {
-    let result = [...categories];
-
-    if (selectedGender !== 'All') {
-      result = result.filter((cat) => cat.gender === selectedGender);
-    }
+    let result = categories.filter((cat) => cat.gender === selectedGender);
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -60,6 +54,31 @@ export function useCategories() {
 
     return result;
   }, [categories, searchQuery, selectedGender]);
+
+  const handleReorderCategories = async (reorderedFiltered: ProductCategory[]) => {
+    // Merge reordered subset into overall categories array
+    const otherCategories = categories.filter((c) => c.gender !== selectedGender);
+    const newCategories = [...reorderedFiltered, ...otherCategories];
+
+    setCategories(newCategories);
+
+    try {
+      const payloadItems = reorderedFiltered.map((c, index) => ({
+        id: c.id,
+        position: index,
+      }));
+
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/reorder`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: payloadItems }),
+      });
+      toast.success('Category order saved!');
+    } catch (err) {
+      console.error('Failed to reorder categories', err);
+      toast.error('Failed to save category order');
+    }
+  };
 
   const handleSaveCategory = async (
     savedCategory: ProductCategory,
@@ -75,7 +94,6 @@ export function useCategories() {
       };
 
       if (isEdit) {
-        // Find existing category to get ID
         const existingCat = categories.find((c) => c.slug === originalSlug);
         if (existingCat) {
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${existingCat.id}`, {
@@ -127,6 +145,7 @@ export function useCategories() {
       if (cat) {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${cat.id}`, { method: 'DELETE' });
         setCategories((prev) => prev.filter((c) => c.slug !== slug));
+        toast.success('Category deleted successfully');
       }
     } catch (err) {
       console.error('Failed to delete category via API', err);
@@ -146,8 +165,10 @@ export function useCategories() {
     setIsAddModalOpen,
     categoryToEdit,
     setCategoryToEdit,
+    handleReorderCategories,
     handleSaveCategory,
     handleDeleteCategory,
   };
 }
+
 
