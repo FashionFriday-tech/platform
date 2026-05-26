@@ -256,11 +256,41 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     return img.url;
                   }));
 
-                  const selectedApiCategory = uniqueCategories.find((c) => c.name === category);
+                  const catTarget = category.toLowerCase();
+                  const selectedGender = gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase();
+
+                  let selectedApiCategory = uniqueCategories.find((c) => {
+                    const cName = c.name.toLowerCase();
+                    const cGender = c.gender.toUpperCase();
+                    return (cName === catTarget || c.id === category) && (cGender === selectedGender || cGender === 'UNISEX');
+                  });
+
                   if (!selectedApiCategory) {
-                    setToast({ message: 'Please select a valid category.', type: 'warning' });
+                    selectedApiCategory = uniqueCategories.find(
+                      (c) => c.name.toLowerCase() === catTarget || c.id === category
+                    );
+                  }
+
+                  if (!selectedApiCategory) {
+                    // Try mapping clothing subcategories (Jacket, Shirts, Pants, etc.)
+                    if (['jacket', 'shirts', 'pants', 'clothing', 'cloths'].includes(catTarget)) {
+                      selectedApiCategory = uniqueCategories.find(
+                        (c) =>
+                          (c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing')) &&
+                          (c.gender.toUpperCase() === selectedGender || c.gender.toUpperCase() === 'UNISEX')
+                      ) || uniqueCategories.find((c) => c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing'));
+                    }
+                  }
+
+                  if (!selectedApiCategory) {
+                    selectedApiCategory = uniqueCategories[0];
+                  }
+
+                  if (!selectedApiCategory) {
+                    setToast({ message: 'Please create at least one category first.', type: 'warning' });
                     return;
                   }
+
 
                   // Map frontend quality to backend enum
                   let mappedQuality = quality.toUpperCase().replace(/\s+/g, '_');
