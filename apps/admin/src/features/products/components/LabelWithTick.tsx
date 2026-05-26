@@ -16,9 +16,10 @@ export const LabelWithTick = ({
       ? 'text-[#22c55e]'
       : status === 'default'
         ? 'text-[#3b82f6]'
-        : status === 'error'
+        : status === 'error' || status === 'empty'
           ? 'text-red-500'
           : 'text-black/20 dark:text-white/20';
+
   return (
     <div className={subtitle ? 'mb-3' : 'mb-2'}>
       <div className="flex w-full items-center justify-between">

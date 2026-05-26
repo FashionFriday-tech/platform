@@ -69,13 +69,25 @@ export function ProductBrandColorSelector({
             onFocus={() => {
               setIsBrandOpen(true);
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (filteredBrands.length > 0) {
+                  const first = filteredBrands[0];
+                  setBrandInput(first.name);
+                  setSelectedBrandLogo(first.logo || first.name.charAt(0).toUpperCase());
+                  setIsBrandOpen(false);
+                }
+              }
+            }}
             placeholder="e.g. Nike"
             className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
           />
         </div>
 
         {isBrandOpen && (
-          <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+          <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:border-white/10 dark:bg-[#1a1a1a]">
+
 
             {filteredBrands.length > 0 ? (
               filteredBrands.map((b) => (
@@ -128,7 +140,19 @@ export function ProductBrandColorSelector({
             onFocus={() => {
               setIsColorOpen(true);
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                if (filteredColors.length > 0) {
+                  const first = filteredColors[0];
+                  setColorInput(first.name);
+                  setSelectedColorHex(first.hex);
+                  setIsColorOpen(false);
+                }
+              }
+            }}
             placeholder="e.g. Black"
+
             className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedColorHex ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
           />
         </div>
