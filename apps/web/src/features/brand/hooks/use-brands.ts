@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BRAND_LOGOS, type Brand } from '@ff/schemas';
+import { type Brand } from '@ff/schemas';
+
 import { getBrands } from '../services/queries';
 
 // Module-level in-memory cache & deduplication promise
@@ -32,13 +33,14 @@ export function useBrands() {
 
     brandsPromise
       .then((data) => {
-        const finalData = data && data.length > 0 ? data : BRAND_LOGOS;
+        const finalData = data || [];
         cachedBrands = finalData;
         if (isMounted) {
           setBrands(finalData);
           setIsLoading(false);
         }
       })
+
       .catch((err) => {
         // Reset promise on error so retry is possible if needed
         brandsPromise = null;
