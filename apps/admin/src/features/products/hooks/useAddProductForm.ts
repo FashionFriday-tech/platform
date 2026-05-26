@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
+
 
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 import { useCategories } from '../../categories/hooks/useCategories';
@@ -382,9 +383,50 @@ export function useAddProductForm(initialData?: Product) {
   );
   const availableSizes = SIZE_MAP[category] || SIZE_MAP.Jacket;
 
-  const filteredBrands = apiBrands.filter((b) =>
-    b.name.toLowerCase().includes(brandInput.toLowerCase()),
-  );
+  const [availableCollections, setAvailableCollections] = useState<string[]>([
+    'Summer Drop',
+    'Y2K Style',
+    'Streetwear Essentials',
+    'Luxury Elite',
+    'Performance Active',
+    'Bags & Utility',
+  ]);
+
+  useEffect(() => {
+    async function loadCollections() {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const names = data.map((c: any) => c.name);
+          setAvailableCollections((prev) => Array.from(new Set([...names, ...prev])));
+        }
+      } catch (err) {
+        console.error('Failed to load collections in add product form', err);
+      }
+    }
+    loadCollections();
+  }, []);
+
+  const toggleCollection = (colName: string) => {
+    setTags((prev) =>
+      prev.includes(colName) ? prev.filter((t) => t !== colName) : [...prev, colName],
+    );
+  };
+
+  const filteredBrands = useMemo(() => {
+    const seen = new Set<string>();
+    return apiBrands.filter((b) => {
+      if (!b?.name) return false;
+      const lowerName = b.name.toLowerCase();
+      if (brandInput && !lowerName.includes(brandInput.toLowerCase())) return false;
+      if (seen.has(lowerName)) return false;
+      seen.add(lowerName);
+      return true;
+    });
+  }, [apiBrands, brandInput]);
+
+
 
   // Progress tracking
   const getProgress = () => {
@@ -492,5 +534,8 @@ export function useAddProductForm(initialData?: Product) {
     originalFiles,
     handleReCrop,
     apiCategories,
+    availableCollections,
+    toggleCollection,
   };
 }
+
