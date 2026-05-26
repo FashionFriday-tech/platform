@@ -174,6 +174,26 @@ export default function PWAInstallSection() {
 
   return (
     <section className="relative w-full overflow-hidden py-16 sm:py-20">
+      {/* Premium Banner Strip */}
+      <div className="w-full bg-black text-white dark:bg-[#f5f1e6] dark:text-black py-6 mb-12 sm:mb-16 border-y border-black/5 dark:border-white/5 transition-colors">
+        <div className="container mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+          {/* Brand Logo Container */}
+          <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 p-2.5 shadow-md flex items-center justify-center shrink-0 border border-black/5 dark:border-white/5">
+            <Image
+              src="/images/logos/ff-logo.png"
+              alt="Fashion Friday"
+              width={48}
+              height={48}
+              className="object-contain dark:invert"
+            />
+          </div>
+          {/* Banner Text with fluid viewport width text sizing */}
+          <h2 className="text-center sm:text-left text-white dark:text-black font-black tracking-tighter uppercase leading-none text-[7vw] sm:text-[4vw] lg:text-[3.2vw]">
+            It's Better On The Web App
+          </h2>
+        </div>
+      </div>
+
       <div className="container mx-auto flex flex-col items-center gap-16 px-6 md:flex-row md:gap-24 md:px-12">
         {/* Visual: Phone Mockup */}
         <motion.div
