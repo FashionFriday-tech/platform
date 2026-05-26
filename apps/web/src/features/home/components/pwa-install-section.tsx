@@ -173,22 +173,22 @@ export default function PWAInstallSection() {
   }
 
   return (
-    <section className="relative w-full overflow-hidden py-16 sm:py-20">
+    <section className="relative w-full overflow-hidden pt-4 pb-16 sm:pt-6 sm:pb-20 bg-[#f5f1e6] dark:bg-[#f5f1e6] text-black dark:text-black">
       {/* Premium Banner Strip */}
-      <div className="w-full bg-black text-white dark:bg-[#f5f1e6] dark:text-black py-6 mb-12 sm:mb-16 border-y border-black/5 dark:border-white/5 transition-colors">
+      <div className="w-full bg-[#eae5d8] text-black py-7 mb-16 transition-colors">
         <div className="container mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
           {/* Brand Logo Container */}
-          <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 p-2.5 shadow-md flex items-center justify-center shrink-0 border border-black/5 dark:border-white/5">
+          <div className="relative h-[10vw] w-[10vw] max-h-16 max-w-16 sm:h-[6vw] sm:w-[6vw] lg:h-[4.5vw] lg:w-[4.5vw] overflow-hidden rounded-2xl bg-black p-[1.5vw] sm:p-[1vw] shadow-md flex items-center justify-center shrink-0">
             <Image
               src="/images/logos/ff-logo.png"
               alt="Fashion Friday"
               width={48}
               height={48}
-              className="object-contain dark:invert"
+              className="object-contain invert"
             />
           </div>
-          {/* Banner Text with fluid viewport width text sizing */}
-          <h2 className="text-center sm:text-left text-white dark:text-black font-black tracking-tighter uppercase leading-none text-[7vw] sm:text-[4vw] lg:text-[3.2vw]">
+          {/* Banner Text with matching fluid viewport sizing */}
+          <h2 className="text-center sm:text-left text-black font-black tracking-tighter uppercase leading-none text-[8.5vw] sm:text-[5vw] lg:text-[3.8vw]">
             It's Better On The Web App
           </h2>
         </div>
@@ -216,17 +216,17 @@ export default function PWAInstallSection() {
         >
           <motion.span
             variants={fadeInUp}
-            className="flex w-fit items-center justify-center rounded-full border px-4 py-1 text-[10px] font-bold tracking-widest uppercase"
+            className="flex w-fit items-center justify-center rounded-full border border-black/10 px-4 py-1 text-[10px] font-bold tracking-widest uppercase text-black dark:text-black"
           >
             <DownloadIcon className="mr-2 text-xl" /> Install our Web App
           </motion.span>
 
-          <motion.h1 variants={fadeInUp} className="text-4xl font-semibold md:text-5xl">
+          <motion.h1 variants={fadeInUp} className="text-4xl font-semibold md:text-5xl text-black dark:text-black">
             Your Daily Drop <br />
-            <span className="text-neutral-400">On Your Homescreen.</span>
+            <span className="text-neutral-500">On Your Homescreen.</span>
           </motion.h1>
 
-          <motion.p variants={fadeInUp} className="text-foreground-muted max-w-md text-sm">
+          <motion.p variants={fadeInUp} className="text-neutral-600 dark:text-neutral-600 max-w-md text-sm">
             Native-app experience. Faster loads, offline access, instant notifications and exclusive
             drops.
           </motion.p>
@@ -234,13 +234,13 @@ export default function PWAInstallSection() {
           {/* Features Grid */}
           <motion.div variants={fadeInUp} className="grid gap-4">
             {FEATURES.map(({ icon: Icon, title, desc }, i) => (
-              <div key={i} className="flex gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border">
+              <div key={i} className="flex gap-3 text-black dark:text-black">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10">
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
                   <h4 className="text-sm font-bold uppercase">{title}</h4>
-                  <p className="text-foreground-muted text-xs">{desc}</p>
+                  <p className="text-neutral-600 dark:text-neutral-600 text-xs">{desc}</p>
                 </div>
               </div>
             ))}
