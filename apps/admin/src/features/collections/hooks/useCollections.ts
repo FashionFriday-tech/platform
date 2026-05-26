@@ -61,6 +61,21 @@ export function useCollections() {
 
   const handleDeleteCollection = async (id: string) => {
     try {
+      const col = collections.find((c) => c.id === id);
+
+      // Clean up Cloudflare R2 image if applicable
+      if (col?.image && col.image.startsWith('http') && !col.image.includes('localhost')) {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urls: [col.image] }),
+          });
+        } catch (err) {
+          console.error('Failed to cleanup collection image from Cloudflare R2:', err);
+        }
+      }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${id}`, {
         method: 'DELETE',
       });
@@ -71,6 +86,7 @@ export function useCollections() {
       console.error('Failed to delete collection', error);
     }
   };
+
 
   const filteredCollections = useMemo(() => {
     let result = [...collections];
