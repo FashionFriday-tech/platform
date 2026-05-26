@@ -40,4 +40,9 @@ export class CategoriesService {
   async remove(id: string) {
     return this.categoriesRepository.delete(id);
   }
+
+  async reorder(items: { id: string; position: number }[]) {
+    return this.categoriesRepository.reorder(items);
+  }
 }
+
