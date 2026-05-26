@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -10,89 +11,33 @@ import { AnimatePresence, motion, type PanInfo } from 'motion/react';
 const GENDERS = ['men', 'women'] as const;
 type Gender = (typeof GENDERS)[number];
 
-const CATEGORIES_DATA = {
-  men: {
-    label: 'Men',
-    hero: '/images/categories/men.png',
-    list: [
-      {
-        name: 'Sneakers',
-        slug: 'sneakers',
-        img: '/images/categories/men/sneaker.png',
-        items: '124 Items',
-      },
-      {
-        name: 'Watches',
-        slug: 'watches',
-        img: '/images/categories/men/watches.png',
-        items: '86 Items',
-      },
-      {
-        name: 'Clothing',
-        slug: 'clothing',
-        img: '/images/categories/men/cloths.png',
-        items: '210 Items',
-      },
-      {
-        name: 'Slippers',
-        slug: 'slippers',
-        img: '/images/categories/men/slippers.png',
-        items: '45 Items',
-      },
-      {
-        name: 'Accessories',
-        slug: 'accessories',
-        img: '/images/categories/men/accessories.png',
-        items: '92 Items',
-      },
-    ],
-  },
-  women: {
-    label: 'Women',
-    hero: '/images/categories/womens.png',
-    list: [
-      {
-        name: 'Sneakers',
-        slug: 'sneakers',
-        img: '/images/categories/women/sneaker.png',
-        items: '110 Items',
-      },
-      {
-        name: 'Watches',
-        slug: 'watches',
-        img: '/images/categories/women/watches.png',
-        items: '95 Items',
-      },
-      {
-        name: 'Clothing',
-        slug: 'clothing',
-        img: '/images/categories/women/cloth.png',
-        items: '340 Items',
-      },
-      {
-        name: 'Slippers',
-        slug: 'slippers',
-        img: '/images/categories/women/slippers.png',
-        items: '52 Items',
-      },
-      {
-        name: 'Accessories',
-        slug: 'accessories',
-        img: '/images/categories/women/accessories.png',
-        items: '120 Items',
-      },
-    ],
-  },
-};
+interface CategoryRecord {
+  id: string;
+  name: string;
+  slug: string;
+  image: string;
+  gender: string;
+  _count?: { products: number };
+}
 
 export function GenderLanding() {
   const params = useParams();
   const router = useRouter();
   const genderParam = (params.gender as string).toLowerCase();
 
-  /**
-   * 1. Derived State
-   */
+  const [categories, setCategories] = useState<CategoryRecord[]>([]);
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/categories`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCategories(data);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch categories:', err));
+  }, []);
+
   const getIndexFromParam = (param: string | undefined) => {
     const idx = GENDERS.indexOf(param as Gender);
     return idx !== -1 ? idx : 0;
@@ -101,16 +46,10 @@ export function GenderLanding() {
   const genderIndex = getIndexFromParam(genderParam);
   const activeGender = GENDERS[genderIndex];
 
-  /**
-   * 2. Navigation Handler
-   */
   const handleGenderChange = (idx: number) => {
     router.replace(`/${GENDERS[idx]}`, { scroll: false });
   };
 
-  /**
-   * 3. Gesture Handler
-   */
   const handleDragEnd = (_: unknown, info: PanInfo) => {
     const swipeThreshold = 50;
     if (info.offset.x > swipeThreshold && genderIndex > 0) {
@@ -120,9 +59,22 @@ export function GenderLanding() {
     }
   };
 
-  const currentData = Object.prototype.hasOwnProperty.call(CATEGORIES_DATA, activeGender)
-    ? CATEGORIES_DATA[activeGender]
-    : CATEGORIES_DATA.men;
+  const genderTarget = activeGender.toUpperCase();
+  const categoryList = categories
+    .filter((c) => c.gender === genderTarget || c.gender === 'UNISEX')
+    .map((c) => ({
+      name: c.name,
+      slug: c.slug.replace(/^(men-|women-|unisex-)/i, ''),
+      img: c.image,
+      items: `${c._count?.products || 0} Items`,
+    }));
+
+  const currentData = {
+    label: activeGender.charAt(0).toUpperCase() + activeGender.slice(1),
+    hero: activeGender === 'women' ? 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/women-clothing.webp' : 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/men-clothing.webp',
+    list: categoryList,
+  };
+
 
   return (
     <div className="bg-background min-h-screen overflow-x-hidden select-none lg:h-screen lg:overflow-hidden">
