@@ -1,9 +1,10 @@
 model Category {
-  id     String @id @default(uuid())
-  name   String
-  slug   String @unique
-  image  String
-  gender Gender
+  id       String @id @default(uuid())
+  name     String
+  slug     String @unique
+  image    String
+  gender   Gender
+  position Int    @default(0)
 
 
   createdAt DateTime @default(now())
@@ -13,3 +14,4 @@ model Category {
 
   @@map("categories")
 }
+
