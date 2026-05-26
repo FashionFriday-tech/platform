@@ -7,17 +7,10 @@ import Link from 'next/link';
 import { ArrowUpRightIcon } from '@ff/ui';
 import { fetcher } from '@/lib/api-client';
 
-interface CampaignBanner {
-  id: string;
-  title: string;
-  mediaUrl: string;
-  mediaType: string;
-  linkUrl: string;
-  placement: string;
-  isActive: boolean;
-}
 
-const DEFAULT_CATEGORY_CARDS = [
+
+// Fallback static cards in case API fails or returns empty
+const FALLBACK_CATEGORY_CARDS = [
   {
     id: 'men',
     title: "Men's Collection",
@@ -37,35 +30,43 @@ const DEFAULT_CATEGORY_CARDS = [
 ];
 
 export default function CategoryCarousel() {
-  const [cards, setCards] = useState(DEFAULT_CATEGORY_CARDS);
+  // Load categories dynamically from public API
+  const [cards, setCards] = useState(FALLBACK_CATEGORY_CARDS);
 
   useEffect(() => {
-    const loadCategoryBanners = async () => {
+    const loadCategories = async () => {
       try {
-        const data = await fetcher<CampaignBanner[]>('/campaigns');
-        if (data && Array.isArray(data)) {
+        // Fetch from campaigns endpoint to get the admin panel category setup
+        const data = await fetcher<any[]>('/campaigns');
+        if (Array.isArray(data) && data.length > 0) {
           const categoryBanners = data.filter(
-            (b) => b.placement === 'home-categories' && b.isActive,
+            (b) => b.placement === 'home-categories' && b.isActive
           );
 
           if (categoryBanners.length > 0) {
-            setCards(
-              categoryBanners.map((b) => ({
+            const mapped = categoryBanners.map((b) => {
+              const isWomen = b.title?.toLowerCase().includes('women') || b.linkUrl?.toLowerCase().includes('women');
+              return {
                 id: b.id,
-                title: b.title,
-                subtitle: b.linkUrl.includes('women') ? 'Curated Apparel & Statement Pieces' : 'Streetwear, Footwear & Accessories',
-                image: b.mediaUrl,
-                href: b.linkUrl,
-                buttonText: b.linkUrl.includes('women') ? 'Shop Women' : 'Shop Men',
-              })),
-            );
+                title: b.title ?? (isWomen ? "Women's Collection" : "Men's Collection"),
+                subtitle: isWomen ? 'women' : 'men',
+                image: b.mediaUrl ?? b.image ?? '',
+                href: b.linkUrl ?? (isWomen ? '/women' : '/men'),
+                buttonText: isWomen ? 'Shop Women' : 'Shop Men',
+              };
+            });
+            setCards(mapped);
+            return;
           }
         }
+        // Fallback if no active home-categories campaign banners are setup
+        setCards(FALLBACK_CATEGORY_CARDS);
       } catch (err) {
         console.error('Failed to load category banners from API:', err);
+        setCards(FALLBACK_CATEGORY_CARDS);
       }
     };
-    loadCategoryBanners();
+    loadCategories();
   }, []);
 
   return (
@@ -89,7 +90,7 @@ export default function CategoryCarousel() {
           {cards.map((cat) => (
             <article
               key={cat.id}
-              className="group relative aspect-square w-full overflow-hidden rounded-3xl bg-zinc-900 border border-white/10 shadow-2xl"
+              className="group relative aspect-square w-full overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl"
             >
               <Link href={cat.href} className="block h-full w-full">
                 <figure className="relative m-0 h-full w-full overflow-hidden">
