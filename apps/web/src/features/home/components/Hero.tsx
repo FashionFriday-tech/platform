@@ -117,7 +117,7 @@ export default function Hero(): JSX.Element {
       `}</style>
 
       {/* Mobile/Tablet Single Card Carousel (shown on small devices, hidden on lg) */}
-      <div 
+      <div
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -129,11 +129,10 @@ export default function Hero(): JSX.Element {
             <Link
               key={card.id}
               href={card.linkUrl || '/products'}
-              className={`absolute inset-0 h-full w-full transition-all duration-1000 ease-in-out ${
-                isActive 
-                  ? 'opacity-100 z-10 scale-100 pointer-events-auto' 
-                  : 'opacity-0 z-0 scale-95 pointer-events-none'
-              }`}
+              className={`absolute inset-0 h-full w-full transition-all duration-1000 ease-in-out ${isActive
+                ? 'opacity-100 z-10 pointer-events-auto'
+                : 'opacity-0 z-0 pointer-events-none'
+                }`}
             >
               <Image
                 src={card.src}
@@ -159,11 +158,10 @@ export default function Hero(): JSX.Element {
                   e.stopPropagation();
                   goToCard(idx);
                 }}
-                className={`relative transition-all duration-300 rounded-full overflow-hidden ${
-                  isActive 
-                    ? 'w-6 h-1.5 bg-white/20' 
-                    : 'w-1.5 h-1.5 bg-white/35 hover:bg-white/55'
-                }`}
+                className={`relative transition-all duration-300 rounded-full overflow-hidden ${isActive
+                  ? 'w-6 h-1.5 bg-white/20'
+                  : 'w-1.5 h-1.5 bg-white/35 hover:bg-white/55'
+                  }`}
                 aria-label={`Go to slide ${idx + 1}`}
               >
                 {isActive && isPlaying && (
