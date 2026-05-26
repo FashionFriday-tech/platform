@@ -12,7 +12,9 @@ import { mockProducts } from '../../products/services/api';
 import { type Product } from '../../products/types';
 import { type ProductCollection } from '../types';
 import { AddCollectionModal } from './AddCollectionModal';
+import { DeleteCollectionModal } from './DeleteCollectionModal';
 import { CollectionProductTable } from './CollectionProductTable';
+
 
 interface CollectionDetailsViewProps {
   initialCollection: ProductCollection;
@@ -110,18 +112,37 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     setIsEditingName(false);
   };
 
-  const handleDeleteCollection = async () => {
-    if (window.confirm('Are you sure you want to delete this collection?')) {
-      try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
-          method: 'DELETE',
-        });
-        router.push('/collections');
-      } catch (err) {
-        console.error('Failed to delete collection', err);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDeleteCollection = async () => {
+    setIsDeleting(true);
+    try {
+      // Clean up Cloudflare R2 image if applicable
+      if (collection.image && collection.image.startsWith('http') && !collection.image.includes('localhost')) {
+        try {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urls: [collection.image] }),
+          });
+        } catch (err) {
+          console.error('Failed to cleanup collection image from Cloudflare R2:', err);
+        }
       }
+
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
+        method: 'DELETE',
+      });
+      router.push('/collections');
+    } catch (err) {
+      console.error('Failed to delete collection', err);
+    } finally {
+      setIsDeleting(false);
     }
   };
+
+
 
   const handleSaveModal = async (name: string, image: string, slug: string, isEdit: boolean, id?: string) => {
     try {
@@ -230,9 +251,10 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
                 <span className="hidden sm:inline">Edit</span>
               </button>
               <button
-                onClick={handleDeleteCollection}
+                onClick={() => setIsDeleteModalOpen(true)}
                 className="flex items-center justify-center gap-2 rounded-xl bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-500/20 active:scale-95"
               >
+
                 <TrashIcon className="h-4 w-4" />
                 <span className="hidden sm:inline">Delete</span>
               </button>
@@ -313,6 +335,16 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
         onSave={handleSaveModal}
         initialData={collection}
       />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteCollectionModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDeleteCollection}
+        collectionName={collection.name}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }
+
