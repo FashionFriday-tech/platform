@@ -1,6 +1,5 @@
-export class CreateCollectionDto {
-  name = '';
-  slug = '';
-  image = '';
-  description?: string;
-}
+import { createZodDto } from 'nestjs-zod';
+import { CreateCollectionSchema } from '@ff/schemas';
+
+export class CreateCollectionDto extends createZodDto(CreateCollectionSchema) {}
+
