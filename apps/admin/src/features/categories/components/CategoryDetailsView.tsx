@@ -162,7 +162,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
               </button>
               <button
                 onClick={handleDeleteCategory}
-                className="flex items-center gap-2 rounded-xl bg-[#DC143C]/10 px-4 py-2 text-sm font-semibold text-[#DC143C] transition-colors hover:bg-[#DC143C]/20"
+                className="flex items-center gap-2 rounded-xl bg-[#FF0000]/10 px-4 py-2 text-sm font-semibold text-[#FF0000] transition-colors hover:bg-[#FF0000]/20"
               >
                 <TrashIcon className="h-4 w-4" />
                 Delete
