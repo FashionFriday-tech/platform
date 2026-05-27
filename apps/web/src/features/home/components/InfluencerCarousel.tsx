@@ -187,7 +187,7 @@ export default function TrendingCoverflowPage() {
                 onClick={() => {
                   handleCardClick(virtualIndex);
                 }}
-                className="group absolute aspect-3/5 w-[280px] cursor-pointer overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl md:w-[360px]"
+                className="group absolute aspect-3/5 w-[220px] cursor-pointer overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl md:w-[280px]"
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 <div className="relative h-full w-full">
