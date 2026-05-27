@@ -6,8 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import Link from 'next/link';
-import { ArrowLeftIcon, ArrowRightIcon, PlayIcon, ArrowUpRightIcon } from '@ff/ui';
+import { PlayIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 import { fetcher } from '@/lib/api-client';
 
@@ -77,14 +76,7 @@ export default function TrendingCoverflowPage() {
     loadContentPartners();
   }, []);
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => prev + 1);
-    resetTimer();
-  };
-  const handlePrev = () => {
-    setCurrentIndex((prev) => prev - 1);
-    resetTimer();
-  };
+
 
   const handleCardClick = (virtualIndex: number) => {
     setCurrentIndex(virtualIndex);
