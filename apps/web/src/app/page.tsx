@@ -1,5 +1,5 @@
 import Footer from '@/components/layout/Footer';
-import Request from '@/components/ui/sections/Request';
+import HomeFeedbackSection from '@/components/ui/sections/HomeFeedback';
 import {
   BrandScroll,
   CategoriesSection,
@@ -24,7 +24,7 @@ export default function HomePage() {
       <InfluencerCarousel />
       <WhyChooseUs />
       <PWAInstallSection />
-      <Request />
+      <HomeFeedbackSection />
       <Footer />
     </main>
   );
