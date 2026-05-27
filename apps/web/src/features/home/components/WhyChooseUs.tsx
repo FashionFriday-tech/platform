@@ -1,10 +1,10 @@
 'use client';
 
-import { type CSSProperties } from 'react';
+import { type CSSProperties, useState, useEffect } from 'react';
 import Image from 'next/image';
-
 import { ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+import { fetcher } from '@/lib/api-client';
 
 // --- Data ---
 
@@ -29,7 +29,7 @@ const features = [
   },
 ];
 
-const reviewImages = [
+const FALLBACK_REVIEWS = [
   '/images/reviews/1.jpg',
   '/images/reviews/2.jpg',
   '/images/reviews/3.jpg',
@@ -53,6 +53,7 @@ interface InfiniteColumnProps {
 // --- Components ---
 
 const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnProps) => {
+  // Ensure we have enough items to scroll nicely
   const loopImages = [...images, ...images, ...images];
 
   return (
@@ -83,7 +84,7 @@ const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnPro
           animation: scrollDown var(--duration) linear infinite;
         }
 
-        /* The Important Fix: Force pause on hover */
+        /* Force pause on hover */
         .pause-on-hover:hover {
           animation-play-state: paused !important;
         }
@@ -120,15 +121,52 @@ const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnPro
 
 // --- Main Section ---
 export default function SplitFeatureSection() {
+  const [reviews, setReviews] = useState<string[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const loadReviews = async () => {
+      try {
+        const data = await fetcher<any[]>('/campaigns');
+        if (Array.isArray(data)) {
+          const filtered = data
+            .filter((b) => b.placement === 'whatsapp-reviews' && b.isActive)
+            .map((b) => b.mediaUrl);
+          
+          if (filtered.length > 0) {
+            setReviews(filtered);
+            return;
+          }
+        }
+        setReviews(FALLBACK_REVIEWS);
+      } catch (err) {
+        console.error('Failed to load dynamic reviews:', err);
+        setReviews(FALLBACK_REVIEWS);
+      }
+    };
+    loadReviews();
+  }, []);
+
+  // Split reviews evenly into 3 columns
+  const getColumnImages = (colIndex: number) => {
+    if (reviews.length === 0) return [];
+    
+    // Chunk reviews dynamically
+    const chunks: string[][] = [[], [], []];
+    reviews.forEach((src, idx) => {
+      chunks[idx % 3].push(src);
+    });
+    
+    return chunks[colIndex];
+  };
+
+  const col1 = getColumnImages(0);
+  const col2 = getColumnImages(1);
+  const col3 = getColumnImages(2);
+
   return (
     <section className="relative overflow-hidden font-sans">
-      {/* <div
-        className="absolute inset-0 opacity-[0.07] pointer-events-none"
-        style={{
-          backgroundImage: `url("/images/background/ff-x-sup.png")`,
-        }}
-      /> */}
-
       <div className="container mx-auto px-4 py-10 md:px-6 lg:px-8">
         <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
           {/* LEFT SIDE */}
@@ -183,13 +221,13 @@ export default function SplitFeatureSection() {
 
             <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6">
               <div className="relative h-full overflow-hidden">
-                <InfiniteColumn images={reviewImages.slice(0, 3)} duration={25} />
+                {isMounted && col1.length > 0 && <InfiniteColumn images={col1} duration={25} />}
               </div>
               <div className="relative h-full overflow-hidden pt-24">
-                <InfiniteColumn images={reviewImages.slice(3, 7)} duration={35} reverse={true} />
+                {isMounted && col2.length > 0 && <InfiniteColumn images={col2} duration={35} reverse={true} />}
               </div>
               <div className="relative h-full overflow-hidden pt-12">
-                <InfiniteColumn images={reviewImages.slice(7, 10)} duration={28} />
+                {isMounted && col3.length > 0 && <InfiniteColumn images={col3} duration={28} />}
               </div>
             </div>
           </div>
