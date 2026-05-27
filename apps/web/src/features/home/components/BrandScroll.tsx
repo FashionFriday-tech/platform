@@ -65,12 +65,12 @@ export default function BrandScroll() {
       <div className="relative flex w-full flex-col items-center justify-center">
         <ScrollVelocityContainer className="flex w-full flex-col gap-2 sm:gap-3">
           {/* Row 1: First Half (Moving Right) */}
-          <ScrollVelocityRow baseVelocity={1} direction={1}>
+          <ScrollVelocityRow baseVelocity={0.35} direction={1}>
             <BrandList logos={BRAND_ROW_A} priorityStart />
           </ScrollVelocityRow>
 
           {/* Row 2: Second Half (Moving Left) */}
-          <ScrollVelocityRow baseVelocity={1} direction={-1}>
+          <ScrollVelocityRow baseVelocity={0.35} direction={-1}>
             <BrandList logos={BRAND_ROW_B} />
           </ScrollVelocityRow>
         </ScrollVelocityContainer>
