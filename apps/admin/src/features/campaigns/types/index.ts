@@ -3,7 +3,8 @@ export type BannerPlacement =
   | 'home-categories'
   | 'products-list'
   | 'trending-products'
-  | 'content-partners';
+  | 'content-partners'
+  | 'whatsapp-reviews';
 
 export type MediaType = 'image' | 'video';
 
@@ -49,6 +50,7 @@ export const PLACEMENT_ASPECT_RATIOS: Record<BannerPlacement, string> = {
   'products-list': 'aspect-[21/9]',
   'trending-products': 'aspect-[3/4]',
   'content-partners': 'aspect-[3/5]',
+  'whatsapp-reviews': 'aspect-[4/3]',
 };
 
 export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {
@@ -57,5 +59,6 @@ export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {
   'products-list': 'Products List Banner',
   'trending-products': 'Trending Products Banner',
   'content-partners': 'Content Partners (Influencer Carousel)',
+  'whatsapp-reviews': 'WhatsApp Reviews',
 };
 
