@@ -1,7 +1,6 @@
 'use client';
 
 import { type CSSProperties, useState, useEffect } from 'react';
-import Image from 'next/image';
 import { ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 import { fetcher } from '@/lib/api-client';
@@ -103,14 +102,12 @@ const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnPro
         {loopImages.map((src, i) => (
           <div
             key={i}
-            className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:opacity-100 hover:shadow-2xl"
+            className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:opacity-100 hover:shadow-2xl w-full"
           >
-            <Image
+            <img
               src={src}
               alt={`Customer Review ${i}`}
-              width={800}
-              height={600}
-              className="block h-auto w-full object-cover"
+              className="block h-auto w-full object-contain"
             />
           </div>
         ))}
@@ -128,16 +125,10 @@ export default function SplitFeatureSection() {
     setIsMounted(true);
     const loadReviews = async () => {
       try {
-        const data = await fetcher<any[]>('/campaigns');
-        if (Array.isArray(data)) {
-          const filtered = data
-            .filter((b) => b.placement === 'whatsapp-reviews' && b.isActive)
-            .map((b) => b.mediaUrl);
-          
-          if (filtered.length > 0) {
-            setReviews(filtered);
-            return;
-          }
+        const data = await fetcher<any[]>('/whatsapp-reviews');
+        if (Array.isArray(data) && data.length > 0) {
+          setReviews(data.map((r) => r.imageUrl));
+          return;
         }
         setReviews(FALLBACK_REVIEWS);
       } catch (err) {
@@ -148,13 +139,14 @@ export default function SplitFeatureSection() {
     loadReviews();
   }, []);
 
-  // Split reviews evenly into 3 columns
+  // Split reviews (max 20) evenly into 3 columns
   const getColumnImages = (colIndex: number) => {
-    if (reviews.length === 0) return [];
+    const limitedReviews = reviews.slice(0, 20);
+    if (limitedReviews.length === 0) return [];
     
     // Chunk reviews dynamically
     const chunks: string[][] = [[], [], []];
-    reviews.forEach((src, idx) => {
+    limitedReviews.forEach((src, idx) => {
       chunks[idx % 3].push(src);
     });
     
@@ -212,24 +204,38 @@ export default function SplitFeatureSection() {
                 </motion.div>
               ))}
             </div>
+
+            {/* See More Reviews Button */}
+            <div className="mt-12">
+              <a
+                href="/whatsapp-reviews"
+                className="inline-flex items-center justify-center rounded-full bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 px-8 py-3.5 text-sm font-bold tracking-wide uppercase transition-all active:scale-95 shadow-md"
+              >
+                See More Reviews
+              </a>
+            </div>
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="relative h-150 w-full overflow-hidden border-white/5 lg:h-screen lg:border-l">
-            <div className="from-background via-blackground pointer-events-none absolute top-0 right-0 left-0 z-20 h-24 bg-linear-to-b to-transparent" />
-            <div className="from-blackground via-background pointer-events-none absolute right-0 -bottom-6 left-0 z-20 h-24 bg-linear-to-t to-transparent" />
+          <div className="relative flex flex-col items-center border-white/5 lg:border-l">
+            {isMounted && (
+              <div className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)]">
+                <div className="from-background via-blackground pointer-events-none absolute top-0 right-0 left-0 z-20 h-24 bg-linear-to-b to-transparent" />
+                <div className="from-blackground via-background pointer-events-none absolute right-0 -bottom-6 left-0 z-20 h-24 bg-linear-to-t to-transparent" />
 
-            <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6">
-              <div className="relative h-full overflow-hidden">
-                {isMounted && col1.length > 0 && <InfiniteColumn images={col1} duration={25} />}
+                <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6">
+                  <div className="relative h-full overflow-hidden">
+                    {col1.length > 0 && <InfiniteColumn images={col1} duration={25} />}
+                  </div>
+                  <div className="relative h-full overflow-hidden pt-24">
+                    {col2.length > 0 && <InfiniteColumn images={col2} duration={35} reverse={true} />}
+                  </div>
+                  <div className="relative h-full overflow-hidden pt-12">
+                    {col3.length > 0 && <InfiniteColumn images={col3} duration={28} />}
+                  </div>
+                </div>
               </div>
-              <div className="relative h-full overflow-hidden pt-24">
-                {isMounted && col2.length > 0 && <InfiniteColumn images={col2} duration={35} reverse={true} />}
-              </div>
-              <div className="relative h-full overflow-hidden pt-12">
-                {isMounted && col3.length > 0 && <InfiniteColumn images={col3} duration={28} />}
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
