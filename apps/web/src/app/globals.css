@@ -207,3 +207,27 @@
     animation: marquee 70s linear infinite;
   }
 }
+
+/* Uniform section header style */
+.section-header {
+  text-align: center;
+  font-size: 3rem;
+  /* base size for mobile */
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+@media (min-width: 768px) {
+  .section-header {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-header {
+    font-size: 5rem;
+  }
+}
