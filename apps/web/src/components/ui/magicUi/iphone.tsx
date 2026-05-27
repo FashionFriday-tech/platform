@@ -69,7 +69,7 @@ export function Iphone({ src, videoSrc, className, style, ...props }: IphoneProp
             borderRadius: `${RADIUS_H}% / ${RADIUS_V}%`,
           }}
         >
-          <Image src={src} alt="" fill className="object-cover object-top" />{' '}
+          <Image src={src} alt="" fill sizes="(max-width: 1024px) 260px, 260px" className="object-cover object-top" />{' '}
         </div>
       )}
 

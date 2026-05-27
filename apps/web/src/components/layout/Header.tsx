@@ -246,6 +246,7 @@ export function Header() {
             height={32}
             alt="logo"
             className="dark:invert"
+            style={{ height: 'auto' }}
           />
         </Link>
         <Link href="/checkout/cart" className="relative">
