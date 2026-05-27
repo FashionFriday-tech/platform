@@ -115,6 +115,8 @@ export function BannerEditorModal({
         return 'h-[300px] md:h-[350px] w-auto aspect-square';
       case 'trending-products':
         return 'h-[300px] md:h-[350px] w-auto aspect-[3/4]';
+      case 'content-partners':
+        return 'h-[300px] md:h-[350px] w-auto aspect-[3/5]';
       default:
         return 'w-full aspect-video';
     }
