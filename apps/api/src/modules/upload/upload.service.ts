@@ -41,42 +41,51 @@ export class UploadService {
     if (contentType.startsWith('image/')) {
       try {
         const sharp = require('sharp');
-        
-        let width = 900;
-        let height = 1200;
-        
-        if (folder === 'campaigns/home-carousel') {
-          width = 800;
-          height = 1200; // 2:3
-        } else if (folder === 'campaigns/products-list') {
-          width = 2100;
-          height = 900;  // 21:9
-        } else if (folder === 'campaigns/trending-products') {
-          width = 900;
-          height = 1200; // 3:4
-        } else if (folder === 'campaigns/content-partners') {
-          width = 900;
-          height = 1500; // 3:5
-        } else if (folder === 'campaigns/whatsapp-reviews') {
-          width = 800;
-          height = 600;  // 4:3
-        } else if (folder && folder.startsWith('campaigns')) {
-          width = 900;
-          height = 1200;
-        }
 
-        processedBuffer = await sharp(file.buffer)
-          .resize({
-            width,
-            height,
-            fit: 'cover',
-            position: 'center'
-          })
-          .webp({ quality: 80 })
-          .toBuffer();
-          
-        fileExtension = 'webp';
-        contentType = 'image/webp';
+        // WhatsApp review screenshots: convert to webp but keep full original dimensions (no resize/crop)
+        if (folder === 'whatsapp-reviews') {
+          processedBuffer = await sharp(file.buffer)
+            .webp({ quality: 90 })
+            .toBuffer();
+          fileExtension = 'webp';
+          contentType = 'image/webp';
+        } else {
+          let width = 900;
+          let height = 1200;
+        
+          if (folder === 'campaigns/home-carousel') {
+            width = 800;
+            height = 1200; // 2:3
+          } else if (folder === 'campaigns/products-list') {
+            width = 2100;
+            height = 900;  // 21:9
+          } else if (folder === 'campaigns/trending-products') {
+            width = 900;
+            height = 1200; // 3:4
+          } else if (folder === 'campaigns/content-partners') {
+            width = 900;
+            height = 1500; // 3:5
+          } else if (folder === 'campaigns/whatsapp-reviews') {
+            width = 800;
+            height = 600;  // 4:3
+          } else if (folder && folder.startsWith('campaigns')) {
+            width = 900;
+            height = 1200;
+          }
+
+          processedBuffer = await sharp(file.buffer)
+            .resize({
+              width,
+              height,
+              fit: 'cover',
+              position: 'center'
+            })
+            .webp({ quality: 80 })
+            .toBuffer();
+            
+          fileExtension = 'webp';
+          contentType = 'image/webp';
+        }
       } catch (err) {
         console.error('Failed to optimize image with sharp:', err);
         // Fallback to original buffer
@@ -87,7 +96,9 @@ export class UploadService {
     let baseName = '';
     const isCampaign = folder && folder.startsWith('campaigns');
 
-    if (slug) {
+    if (folder === 'whatsapp-reviews') {
+      baseName = `fashion-friday-whatsapp-sales-review-${Date.now()}`;
+    } else if (slug) {
       baseName = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     } else {
       // Fallback to original file name without extension

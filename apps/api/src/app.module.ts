@@ -13,6 +13,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
+import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CampaignsModule } from './modules/campaigns/campaigns.module';
     UploadModule,
     ReviewsModule,
     CampaignsModule,
+    WhatsAppReviewsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
