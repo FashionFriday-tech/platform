@@ -28,6 +28,7 @@ const mod = (n: number, m: number) => ((n % m) + m) % m;
 export default function TrendingCoverflowPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startTimer = () => {
