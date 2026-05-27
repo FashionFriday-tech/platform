@@ -5,38 +5,100 @@ import Image from 'next/image';
 
 import { PackageIcon, TagIcon } from '@ff/ui';
 
+import React, { useState, useRef } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { PackageIcon, ImageIcon } from '@ff/ui';
+import { useAuthStore } from '@/store/auth-store';
+import { fetcher } from '@/lib/api-client';
+
 export default function SourcingSection() {
-  const [formData, setFormData] = useState({ productName: '', category: '' });
+  const user = useAuthStore((state) => state.user);
+  const router = useRouter();
+  const [productName, setProductName] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-
-  const categories = ['Sneakers', 'Apparel', 'Luxury Bags', 'Accessories', 'Other'];
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (formData.productName.trim().length < 3) {
-      newErrors.productName = 'Product name is too short';
-    } else if (formData.productName.length > 30) {
-      newErrors.productName = 'Maximum 30 characters allowed';
+    if (productName.trim().length < 3) {
+      newErrors.productName = 'Product name must be at least 3 characters';
+    } else if (productName.length > 50) {
+      newErrors.productName = 'Maximum 50 characters allowed';
     }
-    if (!formData.category) {
-      newErrors.category = 'Please select a category';
+    if (!selectedFile) {
+      newErrors.image = 'Product image is required';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSourceSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setErrors((prev) => ({ ...prev, image: '' }));
+    }
+  };
+
+  const handleSourceSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!user) {
+      // Direct user to login page if unauthenticated
+      router.push('/login');
+      return;
+    }
+
     if (!validate()) {
       return;
     }
-    setLoading(true);
 
-    setTimeout(() => {
+    setLoading(true);
+    setSuccessMsg(null);
+    setErrors({});
+
+    try {
+      const formData = new FormData();
+      formData.append('productName', productName);
+      if (selectedFile) {
+        formData.append('file', selectedFile);
+      }
+
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+      // Fetch user auth token from local storage to attach to request header
+      const token = localStorage.getItem('accessToken');
+
+      const res = await fetch(`${API_URL}/product-requests`, {
+        method: 'POST',
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Sourcing request failed.');
+      }
+
+      setSuccessMsg('Your request has been filed successfully! We will get in touch with you.');
+      setProductName('');
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch (err: any) {
+      setErrors({ submit: err.message || 'Something went wrong.' });
+    } finally {
       setLoading(false);
-    }, 1200);
+    }
   };
 
   return (
@@ -53,7 +115,7 @@ export default function SourcingSection() {
           {/* Deep Vignette Gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-90 transition-opacity duration-500" />
 
-          {/* Crossed Banner 1 - Glassmorphic Dark Ribbon (Slanted Top-Left to Bottom-Right) */}
+          {/* Crossed Banner 1 */}
           <div className="absolute w-[180%] top-[30%] -left-[40%] -rotate-12 bg-black/85 backdrop-blur-md py-3 border-y border-white/10 select-none pointer-events-none whitespace-nowrap overflow-hidden z-10 flex">
             <div className="animate-marquee flex w-max gap-8 px-4 text-white text-[10px] font-black tracking-[0.3em] uppercase">
               {Array(8).fill('SOURCING THE UNATTAINABLE • ').map((text, i) => (
@@ -65,7 +127,7 @@ export default function SourcingSection() {
             </div>
           </div>
 
-          {/* Crossed Banner 2 - Pure Red Ribbon (Slanted Bottom-Left to Top-Right) */}
+          {/* Crossed Banner 2 */}
           <div className="absolute w-[180%] bottom-[30%] -left-[40%] rotate-6 bg-[#FF0000] py-3 border-y border-white/20 select-none pointer-events-none whitespace-nowrap overflow-hidden z-10 flex">
             <div className="animate-marquee flex w-max gap-8 px-4 text-white text-[10px] font-black tracking-[0.3em] uppercase">
               {Array(8).fill('LIMITED EDITION DROP • ').map((text, i) => (
@@ -99,6 +161,18 @@ export default function SourcingSection() {
             onSubmit={handleSourceSubmit}
             className="mt-10 w-full max-w-xl space-y-4 text-start"
           >
+            {successMsg && (
+              <div className="mb-6 rounded-2xl bg-green-500/10 p-4 border border-green-500/20">
+                <p className="text-xs font-bold tracking-wider text-green-500 uppercase">{successMsg}</p>
+              </div>
+            )}
+
+            {errors.submit && (
+              <div className="mb-6 rounded-2xl bg-red-500/10 p-4 border border-red-500/20">
+                <p className="text-xs font-bold tracking-wider text-red-500 uppercase">{errors.submit}</p>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {/* PRODUCT NAME */}
               <div className="flex flex-col">
@@ -106,7 +180,7 @@ export default function SourcingSection() {
                   Product Name
                 </label>
                 <div
-                  className={`bg-foreground/2] flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
+                  className={`bg-foreground/2 flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
                     errors.productName
                       ? 'border-red-500'
                       : 'border-foreground-subtle focus-within:border-foreground'
@@ -117,11 +191,11 @@ export default function SourcingSection() {
                     type="text"
                     placeholder="e.g. Jordan 1 High"
                     className="text-foreground placeholder:text-foreground-muted/40 w-full bg-transparent text-sm outline-none"
-                    value={formData.productName}
+                    value={productName}
                     onChange={(e) => {
-                      setFormData({ ...formData, productName: e.target.value });
+                      setProductName(e.target.value);
                       if (errors.productName) {
-                        setErrors({});
+                        setErrors((prev) => ({ ...prev, productName: '' }));
                       }
                     }}
                   />
@@ -135,58 +209,62 @@ export default function SourcingSection() {
                 </div>
               </div>
 
-              {/* CATEGORY */}
+              {/* IMAGE UPLOAD */}
               <div className="flex flex-col">
                 <label className="text-foreground-muted mb-3 px-6 text-[10px] font-black tracking-[0.2em] uppercase">
-                  Category
+                  Product Image
                 </label>
                 <div
-                  className={`bg-foreground/2 flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
-                    errors.category
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`bg-foreground/2 flex items-center gap-4 rounded-full border-2 px-6 py-4 cursor-pointer transition-all ${
+                    errors.image
                       ? 'border-red-500'
-                      : 'border-foreground-subtle focus-within:border-foreground'
+                      : 'border-foreground-subtle hover:border-foreground'
                   }`}
                 >
-                  <TagIcon size={18} className="text-foreground-muted" />
-                  <select
-                    className="text-foreground w-full cursor-pointer appearance-none bg-transparent text-sm outline-none"
-                    value={formData.category}
-                    onChange={(e) => {
-                      setFormData({ ...formData, category: e.target.value });
-                      if (errors.category) {
-                        setErrors({});
-                      }
-                    }}
-                  >
-                    <option value="" className="bg-background">
-                      Select Category
-                    </option>
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat} className="bg-background">
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
+                  <ImageIcon size={18} className="text-foreground-muted" />
+                  <span className="text-foreground-muted/60 text-sm truncate">
+                    {selectedFile ? selectedFile.name : 'Upload from Gallery'}
+                  </span>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
                 </div>
                 <div className="mt-2 h-4 px-6">
-                  {errors.category && (
+                  {errors.image && (
                     <p className="animate-in fade-in slide-in-from-top-1 text-[10px] font-bold tracking-widest text-red-500 uppercase">
-                      {errors.category}
+                      {errors.image}
                     </p>
                   )}
                 </div>
               </div>
             </div>
 
+            {/* Preview Image block */}
+            {previewUrl && (
+              <div className="mt-4 flex justify-center">
+                <div className="relative h-40 w-40 overflow-hidden rounded-2xl border border-black/10 dark:border-white/10">
+                  <Image src={previewUrl} alt="Upload Preview" fill className="object-cover" />
+                </div>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
               className="bg-foreground text-background hover:bg-foreground/90 group mt-6 flex w-full items-center justify-center rounded-full px-10 py-4 font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-50"
             >
-              {loading ? 'Sending the Request...' : 'I Need This Product'}
+              {!user
+                ? 'Login to File Request'
+                : loading
+                ? 'Sending the Request...'
+                : 'I Need This Product'}
             </button>
           </form>
-        </div>
       </div>
     </div>
   );
