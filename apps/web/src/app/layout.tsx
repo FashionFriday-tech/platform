@@ -6,6 +6,7 @@ import { StoreInitializer } from '@/components/layout/StoreInitializer';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
 import { ThemeProvider } from './providers/theme-provider';
+import { SmoothScrollProvider } from './providers/smooth-scroll-provider';
 
 import './globals.css';
 
@@ -52,10 +53,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <StoreInitializer />
-          <ServiceWorkerRegister />
-          <Header />
-          {children}
+          <SmoothScrollProvider>
+            <StoreInitializer />
+            <ServiceWorkerRegister />
+            <Header />
+            {children}
+          </SmoothScrollProvider>
         </ThemeProvider>
       </body>
     </html>
