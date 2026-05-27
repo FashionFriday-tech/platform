@@ -19,50 +19,7 @@ interface Product {
 }
 
 /* ---------------- DATA ---------------- */
-const FALLBACK_PRODUCTS: Product[] = [
-  {
-    id: 1,
-    title: 'The Roseline Ring',
-    tag: 'Rings',
-    image: '/images/influencers/1.png',
-    link: '/shop/rings/roseline',
-  },
-  {
-    id: 2,
-    title: 'Zoe Link Earrings',
-    tag: 'Earrings',
-    image: '/images/influencers/2.png',
-    link: '/shop/earrings/zoe',
-  },
-  {
-    id: 3,
-    title: 'The Hibiscus Ring II',
-    tag: 'Best Seller',
-    image: '/images/influencers/3.png',
-    link: '/shop/rings/hibiscus',
-  },
-  {
-    id: 4,
-    title: 'Chubby Gold Hoops',
-    tag: 'Hoops',
-    image: '/images/influencers/4.png',
-    link: '/shop/earrings/hoops',
-  },
-  {
-    id: 5,
-    title: 'Serpent Chain',
-    tag: 'Necklaces',
-    image: '/images/influencers/5.png',
-    link: '/shop/necklaces/serpent',
-  },
-  {
-    id: 6,
-    title: 'Serpent Chain',
-    tag: 'Necklaces',
-    image: '/images/influencers/6.png',
-    link: '/shop/necklaces/serpent',
-  },
-];
+// Purely dynamic - no static fallback
 
 /* ---------------- HELPER ---------------- */
 // Handles negative modulo correctly (e.g. -1 % 6 = 5)
@@ -70,7 +27,7 @@ const mod = (n: number, m: number) => ((n % m) + m) % m;
 
 export default function TrendingCoverflowPage() {
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
   // We allow this index to go infinite (e.g., 100, 101, 102...)
   // This prevents the "rewind" animation when looping.
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -169,6 +126,10 @@ export default function TrendingCoverflowPage() {
   // We render a fixed window of cards around the current index
   // e.g., if current is 10, we render 7, 8, 9, 10, 11, 12, 13
   const visibleRange = [-3, -2, -1, 0, 1, 2, 3];
+
+  if (products.length === 0) {
+    return null;
+  }
 
   return (
     <section className="bg w-full overflow-hidden sm:py-24 py-12">
