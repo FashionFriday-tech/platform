@@ -45,7 +45,7 @@ export default function HomeFeedbackSection() {
   };
 
   return (
-    <div className="my-16 flex items-center justify-center px-4 md:px-8">
+    <div className="my-24 py-12 md:py-20 flex items-center justify-center px-4 md:px-8">
       <div className="bg-zinc-950 text-white w-full max-w-6xl overflow-hidden rounded-[2.5rem] lg:flex lg:items-stretch lg:justify-between border border-white/10 shadow-2xl">
         {/* Left Visual Card */}
         <div className="relative hidden min-h-[450px] lg:flex flex-col justify-end p-12 overflow-hidden rounded-l-[2.5rem] flex-1 bg-black">
