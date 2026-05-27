@@ -105,7 +105,8 @@ import {
   MdWatch,
   MdWbSunny,
 } from 'react-icons/md';
-import { PiArrowsLeftRightLight, PiBriefcaseFill, PiMapPin, PiShoppingBag } from 'react-icons/pi';
+import { CgShoppingBag } from 'react-icons/cg';
+import { PiArrowsLeftRightLight, PiBriefcaseFill, PiMapPin } from 'react-icons/pi';
 import {
   RiArrowUpDownLine,
   RiMenuSearchLine,
@@ -133,7 +134,7 @@ export const ChevronUpIcon = IoChevronUpOutline;
 export const ChevronDownIcon = IoChevronDownOutline;
 
 // SHOPPING & COMMERCE
-export const ShoppingBagIcon = PiShoppingBag;
+export const ShoppingBagIcon = CgShoppingBag;
 export const ShoppingCartIcon = MdShoppingCart;
 export const PackageIcon = MdOutlineInventory2;
 export const TruckIcon = MdOutlineLocalShipping;
