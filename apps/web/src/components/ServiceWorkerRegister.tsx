@@ -8,10 +8,18 @@ export default function ServiceWorkerRegister() {
       return;
     }
 
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
-        // Listen for updates
+        // Check for updates periodically
         registration.onupdatefound = () => {
           const installingWorker = registration.installing;
 
@@ -21,8 +29,8 @@ export default function ServiceWorkerRegister() {
 
           installingWorker.onstatechange = () => {
             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New content available
-              alert('New version available. Refresh to update.');
+              // Tell the new service worker to take control immediately
+              installingWorker.postMessage({ type: 'SKIP_WAITING' });
             }
           };
         };
