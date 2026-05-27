@@ -37,7 +37,7 @@ export default function TrendingCoverflowPage() {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setCurrentIndex((prev) => prev + 1);
-    }, 2000);
+    }, 3000);
   };
 
   const resetTimer = () => {
