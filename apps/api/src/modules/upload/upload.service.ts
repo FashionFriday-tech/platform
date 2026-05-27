@@ -54,6 +54,9 @@ export class UploadService {
         } else if (folder === 'campaigns/trending-products') {
           width = 900;
           height = 1200; // 3:4
+        } else if (folder === 'campaigns/content-partners') {
+          width = 900;
+          height = 1500; // 3:5
         } else if (folder && folder.startsWith('campaigns')) {
           width = 900;
           height = 1200;
