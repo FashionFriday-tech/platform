@@ -206,14 +206,16 @@ export default function SplitFeatureSection() {
             </div>
 
             {/* See More Reviews Button */}
-            <div className="mt-12">
-              <a
-                href="/whatsapp-reviews"
-                className="inline-flex items-center justify-center rounded-full bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 px-8 py-3.5 text-sm font-bold tracking-wide uppercase transition-all active:scale-95 shadow-md"
-              >
-                See More Reviews
-              </a>
-            </div>
+            {isMounted && (
+              <div className="mt-12">
+                <a
+                  href="/whatsapp-reviews"
+                  className="inline-flex items-center justify-center rounded-full bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 px-8 py-3.5 text-sm font-bold tracking-wide uppercase transition-all active:scale-95 shadow-md"
+                >
+                  See More Reviews
+                </a>
+              </div>
+            )}
           </div>
 
           {/* RIGHT SIDE */}
