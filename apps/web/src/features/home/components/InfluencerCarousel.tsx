@@ -183,7 +183,7 @@ export default function TrendingCoverflowPage() {
                 key={virtualIndex}
                 animate={variant}
                 initial={variant}
-                transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+                transition={{ type: 'spring', stiffness: 60, damping: 24, mass: 1.2 }}
                 onClick={() => {
                   handleCardClick(virtualIndex);
                 }}
