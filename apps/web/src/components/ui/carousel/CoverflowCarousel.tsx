@@ -25,14 +25,7 @@ const transitionSpec = {
 export default function CoverflowCarousel({ products }: { products: Product[] }) {
   const [activeIndex, setActiveIndex] = useState(Math.floor(products.length / 2));
 
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % products.length);
-    resetTimer();
-  };
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + products.length) % products.length);
-    resetTimer();
-  };
+
 
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
