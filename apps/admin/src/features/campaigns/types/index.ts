@@ -2,7 +2,8 @@ export type BannerPlacement =
   | 'home-carousel'
   | 'home-categories'
   | 'products-list'
-  | 'trending-products';
+  | 'trending-products'
+  | 'content-partners';
 
 export type MediaType = 'image' | 'video';
 
@@ -47,6 +48,7 @@ export const PLACEMENT_ASPECT_RATIOS: Record<BannerPlacement, string> = {
   'home-categories': 'aspect-square',
   'products-list': 'aspect-[21/9]',
   'trending-products': 'aspect-[3/4]',
+  'content-partners': 'aspect-[3/5]',
 };
 
 export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {
@@ -54,5 +56,6 @@ export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {
   'home-categories': 'Category Cards (Men & Women)',
   'products-list': 'Products List Banner',
   'trending-products': 'Trending Products Banner',
+  'content-partners': 'Content Partners (Influencer Carousel)',
 };
 
