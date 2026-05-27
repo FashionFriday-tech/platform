@@ -97,9 +97,9 @@ export default function TrendingCoverflowPage() {
     if (offset === 0) {
       return {
         x: '0%',
-        scale: 0.6,
+        scale: 1,
         rotateY: 0,
-        zIndex: 10,
+        zIndex: 50,
         opacity: 1,
         filter: 'brightness(1) blur(0px)',
       };
@@ -110,11 +110,11 @@ export default function TrendingCoverflowPage() {
       const dir = Math.sign(offset);
       return {
         x: `${dir * 65}%`,
-        scale: 0.65,
+        scale: 0.82,
         rotateY: `${dir * -20}deg`,
         zIndex: 40,
         opacity: 1,
-        filter: 'brightness(1) blur(0px)',
+        filter: 'brightness(0.8) blur(0px)',
       };
     }
 
@@ -122,24 +122,24 @@ export default function TrendingCoverflowPage() {
     if (Math.abs(offset) === 2) {
       const dir = Math.sign(offset);
       return {
-        x: `${dir * 140}%`,
-        scale: 0.8,
-        rotateY: `${dir * -60}deg`,
+        x: `${dir * 120}%`,
+        scale: 0.65,
+        rotateY: `${dir * -45}deg`,
         zIndex: 30,
-        opacity: 1,
-        filter: 'brightness(1) blur(0px)',
+        opacity: 0.6,
+        filter: 'brightness(0.5) blur(1px)',
       };
     }
 
     // Hidden / Offscreen (+3 or -3)
     const dir = Math.sign(offset);
     return {
-      x: `${dir * 300}%`,
-      scale: 1,
-      rotateY: `${dir * -80}deg`,
+      x: `${dir * 180}%`,
+      scale: 0.5,
+      rotateY: `${dir * -60}deg`,
       zIndex: 10,
       opacity: 0,
-      filter: 'brightness(0) blur(0)',
+      filter: 'brightness(0.2) blur(3px)',
     };
   };
 
