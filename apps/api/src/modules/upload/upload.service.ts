@@ -42,8 +42,8 @@ export class UploadService {
       try {
         const sharp = require('sharp');
 
-        // WhatsApp review screenshots: convert to webp but keep full original dimensions (no resize/crop)
-        if (folder === 'whatsapp-reviews') {
+        // WhatsApp reviews & product request screenshots: convert to webp but keep full original dimensions (no resize/crop)
+        if (folder === 'whatsapp-reviews' || folder === 'product-requests') {
           processedBuffer = await sharp(file.buffer)
             .webp({ quality: 90 })
             .toBuffer();

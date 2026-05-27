@@ -14,6 +14,7 @@ import { UploadModule } from './modules/upload/upload.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
+import { ProductRequestsModule } from './modules/product-requests/product-requests.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-revie
     ReviewsModule,
     CampaignsModule,
     WhatsAppReviewsModule,
+    ProductRequestsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
