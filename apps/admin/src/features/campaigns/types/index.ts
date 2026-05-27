@@ -50,7 +50,7 @@ export const PLACEMENT_ASPECT_RATIOS: Record<BannerPlacement, string> = {
   'products-list': 'aspect-[21/9]',
   'trending-products': 'aspect-[3/4]',
   'content-partners': 'aspect-[3/5]',
-  'whatsapp-reviews': 'aspect-[4/3]',
+  'whatsapp-reviews': 'aspect-[9/16]',
 };
 
 export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {

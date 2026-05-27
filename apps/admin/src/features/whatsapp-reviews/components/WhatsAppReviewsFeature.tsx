@@ -1,103 +1,152 @@
 'use client';
 
-import React, { useState } from 'react';
-import { PlusIcon } from '@ff/ui';
-import { useCampaigns } from '../../campaigns/hooks/useCampaigns';
-import { type BannerPlacement, PLACEMENT_ASPECT_RATIOS } from '../../campaigns/types';
-import { BannerEditorModal } from '../../campaigns/components/BannerEditorModal';
-import { CampaignBannerCard } from '../../campaigns/components/CampaignBannerCard';
+import React, { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
+import { PlusIcon, TrashIcon } from '@ff/ui';
+import { useWhatsAppReviews } from '../hooks/useWhatsAppReviews';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 export function WhatsAppReviewsFeature() {
-  const {
-    banners,
-    isModalOpen,
-    setIsModalOpen,
-    editingBanner,
-    targetPlacement,
-    handleOpenCreate,
-    handleOpenEdit,
-    handleSaveBanner,
-    handleToggleActive,
-    handleDeleteCampaign,
-    refreshBanners,
-  } = useCampaigns();
-
+  const { reviews, isLoading, isInitialLoad, hasMore, loadMore, uploadReview, deleteReview } = useWhatsAppReviews();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const placement: BannerPlacement = 'whatsapp-reviews';
-  const sectionBanners = banners.filter((b) => b.placement === placement);
-  const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[placement] || 'aspect-[4/3]';
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      await uploadReview(file);
+    } catch (err) {
+      alert('Failed to upload review image. Please try again.');
+      console.error(err);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  // Scroll event listener for infinite scroll
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      // Trigger loadMore when scrolled within 100px of bottom
+      if (scrollHeight - scrollTop - clientHeight < 100) {
+        loadMore();
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [loadMore]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+    <div 
+      ref={containerRef}
+      className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide" 
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    >
+      <style jsx>{`
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black uppercase tracking-tight text-black dark:text-white">
-            WhatsApp Customer Reviews
+            Total Reviews {reviews.length}
           </h1>
-          <p className="text-sm font-semibold text-black/60 dark:text-white/60">
-            Manage WhatsApp chat reviews displayed on the storefront home page.
-          </p>
         </div>
         <button
-          onClick={() => handleOpenCreate(placement)}
-          className="inline-flex items-center space-x-2 rounded-full bg-black px-4 py-2 text-xs font-black tracking-wider text-white uppercase transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="inline-flex items-center space-x-2 rounded-full bg-black px-4 py-2 text-xs font-black tracking-wider text-white uppercase transition-all hover:bg-black/90 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/90 py-4 px-8"
         >
           <PlusIcon className="h-4 w-4" />
-          <span>Add Review Card</span>
+          <span>{isUploading ? 'Uploading...' : 'Add Review'}</span>
         </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+        />
       </div>
 
-      {/* Grid of Banners */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {/* Add Card Box */}
-        <div
-          onClick={() => handleOpenCreate(placement)}
-          className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-dashed border-black/20 transition-all hover:border-black/50 hover:bg-black/5 dark:border-white/20 dark:hover:border-white/50 dark:hover:bg-white/5"
-        >
-          <div className={`flex w-full items-center justify-center ${aspectRatioClass} bg-black/2 dark:bg-white/2`}>
-            <div className="flex flex-col items-center gap-2 text-black/40 transition-colors group-hover:text-black dark:text-white/40 dark:group-hover:text-white">
-              <PlusIcon className="h-8 w-8" />
-              <span className="text-sm font-semibold">Add New Review Card</span>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2 border-t border-dashed border-black/10 p-4 dark:border-white/10">
-            <div className="h-4 w-3/4 rounded bg-black/10 dark:bg-white/10" />
-            <div className="h-3 w-1/2 rounded bg-black/5 dark:bg-white/5" />
-          </div>
+      {/* Initial load loading state */}
+      {isInitialLoad && (
+        <div className="flex flex-1 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
         </div>
+      )}
 
-        {/* Existing review cards */}
-        {sectionBanners.map((banner) => (
-          <div key={banner.id}>
-            <CampaignBannerCard
-              banner={banner}
-              onUpdate={refreshBanners}
-              onEdit={handleOpenEdit}
-              onDelete={(id) => setDeleteConfirmId(id)}
-              onToggleActive={handleToggleActive}
-            />
+      {/* Empty state */}
+      {!isInitialLoad && reviews.length === 0 && (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-black/40 dark:text-white/40">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-dashed border-current">
+            <PlusIcon className="h-8 w-8" />
           </div>
-        ))}
-      </div>
+          <p className="text-sm font-semibold">No review cards yet. Click &quot;Add Review&quot; to upload.</p>
+        </div>
+      )}
 
-      {/* Modals */}
-      <BannerEditorModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveBanner}
-        initialData={editingBanner}
-        fixedPlacement={targetPlacement || placement}
-      />
+      {/* Grid of Review Cards — image only, no title */}
+      {reviews.length > 0 && (
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 pb-6">
+          {reviews.map((review) => (
+            <div
+              key={review.id}
+              className="group relative overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-white/10 dark:bg-[#111111]"
+            >
+              {/* Image — full natural size, no crop */}
+              <div className="relative w-full bg-black/5 dark:bg-white/5">
+                <Image
+                  src={review.imageUrl}
+                  alt="WhatsApp Review"
+                  width={800}
+                  height={1400}
+                  className="block h-auto w-full"
+                />
 
+                {/* Hover overlay with delete */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100">
+                  <button
+                    onClick={() => setDeleteConfirmId(review.id)}
+                    className="flex items-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-red-600"
+                  >
+                    <TrashIcon className="h-4 w-4" />
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Loading animation at the bottom for scroll pagination */}
+      {isLoading && !isInitialLoad && (
+        <div className="py-4 flex justify-center items-center">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
       <ConfirmModal
         isOpen={deleteConfirmId !== null}
         onClose={() => setDeleteConfirmId(null)}
         onConfirm={async () => {
           if (deleteConfirmId) {
-            await handleDeleteCampaign(deleteConfirmId);
+            await deleteReview(deleteConfirmId);
             setDeleteConfirmId(null);
           }
         }}
