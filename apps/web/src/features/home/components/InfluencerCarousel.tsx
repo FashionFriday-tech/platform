@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -28,9 +28,27 @@ const mod = (n: number, m: number) => ((n % m) + m) % m;
 export default function TrendingCoverflowPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
-  // We allow this index to go infinite (e.g., 100, 101, 102...)
-  // This prevents the "rewind" animation when looping.
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrentIndex((prev) => prev + 1);
+    }, 2000);
+  };
+
+  const resetTimer = () => {
+    startTimer();
+  };
+
+  useEffect(() => {
+    if (products.length > 0) {
+      startTimer();
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [products.length]);
 
   useEffect(() => {
     const loadContentPartners = async () => {
@@ -58,17 +76,16 @@ export default function TrendingCoverflowPage() {
 
   const handleNext = () => {
     setCurrentIndex((prev) => prev + 1);
+    resetTimer();
   };
   const handlePrev = () => {
     setCurrentIndex((prev) => prev - 1);
+    resetTimer();
   };
 
-  const handleCardClick = (virtualIndex: number, link: string) => {
-    if (virtualIndex === currentIndex) {
-      router.push(link);
-    } else {
-      setCurrentIndex(virtualIndex);
-    }
+  const handleCardClick = (virtualIndex: number) => {
+    setCurrentIndex(virtualIndex);
+    resetTimer();
   };
 
   // Determines the style based on how far the card is from the center (offset)
@@ -165,7 +182,7 @@ export default function TrendingCoverflowPage() {
                 initial={variant}
                 transition={{ type: 'spring', stiffness: 100, damping: 20 }}
                 onClick={() => {
-                  handleCardClick(virtualIndex, product.link);
+                  handleCardClick(virtualIndex);
                 }}
                 className="group absolute aspect-3/5 w-[280px] cursor-pointer overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl md:w-[360px]"
                 style={{ transformStyle: 'preserve-3d' }}
@@ -183,6 +200,10 @@ export default function TrendingCoverflowPage() {
                   {/* Play Button (Centered on ALL cards) */}
                   <div className="absolute inset-0 z-20 flex items-center justify-center">
                     <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(product.link);
+                      }}
                       className={`flex h-16 w-16 scale-110 items-center justify-center rounded-full border-2 border-white text-white opacity-100 shadow-lg backdrop-blur-xs transition-all duration-500 ease-out group-hover:bg-white group-hover:text-black hover:scale-125`}
                     >
                       <PlayIcon className="ml-1 h-6 w-6 fill-current" />
