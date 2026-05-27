@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import Link from 'next/link';
 import { ArrowLeftIcon, ArrowRightIcon, PlayIcon, ArrowUpRightIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+import { fetcher } from '@/lib/api-client';
 
 /* ---------------- TYPES ---------------- */
 interface Product {
@@ -18,7 +19,7 @@ interface Product {
 }
 
 /* ---------------- DATA ---------------- */
-const products: Product[] = [
+const FALLBACK_PRODUCTS: Product[] = [
   {
     id: 1,
     title: 'The Roseline Ring',
@@ -69,9 +70,34 @@ const mod = (n: number, m: number) => ((n % m) + m) % m;
 
 export default function TrendingCoverflowPage() {
   const router = useRouter();
+  const [products, setProducts] = useState<Product[]>(FALLBACK_PRODUCTS);
   // We allow this index to go infinite (e.g., 100, 101, 102...)
   // This prevents the "rewind" animation when looping.
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const loadContentPartners = async () => {
+      try {
+        const data = await fetcher<any[]>('/campaigns');
+        if (Array.isArray(data) && data.length > 0) {
+          const filtered = data.filter((b) => b.placement === 'content-partners' && b.isActive);
+          if (filtered.length > 0) {
+            const mapped = filtered.map((b, index) => ({
+              id: index + 1,
+              title: b.title,
+              tag: '',
+              image: b.mediaUrl,
+              link: b.linkUrl,
+            }));
+            setProducts(mapped);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load dynamic content partners:', err);
+      }
+    };
+    loadContentPartners();
+  }, []);
 
   const handleNext = () => {
     setCurrentIndex((prev) => prev + 1);
