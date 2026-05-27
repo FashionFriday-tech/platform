@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { ArrowLeftIcon, ArrowRightIcon, PlayIcon } from '@ff/ui';
+import Link from 'next/link';
+import { ArrowLeftIcon, ArrowRightIcon, PlayIcon, ArrowUpRightIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 /* ---------------- TYPES ---------------- */
@@ -144,19 +145,18 @@ export default function TrendingCoverflowPage() {
   const visibleRange = [-3, -2, -1, 0, 1, 2, 3];
 
   return (
-    <section className="bg w-full overflow-hidden sm:py-24">
-      <div className="container mx-auto px-4 text-center sm:mb-16">
-        <h2 className="text-4xl font-extrabold tracking-tight uppercase md:text-7xl">
+    <section className="bg w-full overflow-hidden sm:py-24 py-12">
+      <div className="container mx-auto px-6 flex flex-col items-center md:flex-row md:items-end justify-center gap-4 sm:mb-16 mb-6">
+        <h2 className="section-header">
           Content Partners
         </h2>
-        <p className="text-foreground-muted mx-auto mt-4 max-w-md">
-          Creators and pages who promote our products across social media.
-        </p>
+        
+        
       </div>
 
       <div className="relative flex h-96 w-full items-center justify-center sm:my-10 sm:h-125">
         <div
-          className="relative flex h-full w-full max-w-6xl items-center justify-center"
+          className="relative flex h-full w-full max-w-7xl items-center justify-center"
           style={{ perspective: '1000px' }}
         >
           {/* We map the OFFSETS, not the products directly */}
@@ -180,7 +180,7 @@ export default function TrendingCoverflowPage() {
                 onClick={() => {
                   handleCardClick(virtualIndex, product.link);
                 }}
-                className="group absolute aspect-3/5 w-70 cursor-pointer overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl md:w-87"
+                className="group absolute aspect-3/5 w-[280px] cursor-pointer overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl md:w-[360px]"
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 <div className="relative h-full w-full">
@@ -188,6 +188,7 @@ export default function TrendingCoverflowPage() {
                     src={product.image}
                     alt={product.title}
                     fill
+                    sizes="(max-width: 768px) 280px, 360px"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     priority={isActive}
                   />
@@ -207,20 +208,7 @@ export default function TrendingCoverflowPage() {
         </div>
       </div>
 
-      <div className="flex justify-center gap-10 sm:mt-4">
-        <button
-          onClick={handlePrev}
-          className="border-forground-muted flex h-12 w-12 items-center justify-center rounded-full border transition hover:scale-95 active:scale-95"
-        >
-          <ArrowLeftIcon className="h-5 w-5" />
-        </button>
-        <button
-          onClick={handleNext}
-          className="border-forground-muted flex h-12 w-12 items-center justify-center rounded-full border transition hover:scale-95 active:scale-95"
-        >
-          <ArrowRightIcon className="h-5 w-5" />
-        </button>
-      </div>
+      
     </section>
   );
 }

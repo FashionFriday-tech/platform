@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link'; // Import Link
 
@@ -147,22 +147,16 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
             );
           })}
         </AnimatePresence>
-      </div>
-
-      {/* CONTROLS */}
-      <div className="z-40 flex gap-10 sm:mt-10">
-        <button
-          onClick={handlePrev}
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white transition-all hover:bg-white hover:text-black active:scale-95"
-        >
-          <ArrowLeftIcon className="h-5 w-5" />
-        </button>
-        <button
-          onClick={handleNext}
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white transition-all hover:bg-white hover:text-black active:scale-95"
-        >
-          <ArrowRightIcon className="h-5 w-5" />
-        </button>
+        <div className="absolute inset-y-0 left-0 flex items-center">
+          <button onClick={handlePrev} className="p-2 bg-white/30 rounded-full hover:bg-white/50">
+            <ArrowLeftIcon className="h-6 w-6 text-black" />
+          </button>
+        </div>
+        <div className="absolute inset-y-0 right-0 flex items-center">
+          <button onClick={handleNext} className="p-2 bg-white/30 rounded-full hover:bg-white/50">
+            <ArrowRightIcon className="h-6 w-6 text-black" />
+          </button>
+        </div>
       </div>
     </div>
   );
