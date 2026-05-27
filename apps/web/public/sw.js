@@ -125,3 +125,10 @@ async function trimCache(cacheName, maxItems) {
     trimCache(cacheName, maxItems);
   }
 }
+
+/* ---------------- MESSAGES ---------------- */
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
