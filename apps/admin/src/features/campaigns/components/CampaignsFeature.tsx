@@ -38,6 +38,8 @@ export function CampaignsFeature() {
       cardWidthClass = 'w-[220px] md:w-[260px]';
     } else if (placement === 'home-categories') {
       cardWidthClass = 'w-[260px] md:w-[300px]';
+    } else if (placement === 'content-partners') {
+      cardWidthClass = 'w-[200px] md:w-[240px]';
     }
 
     return (
@@ -93,6 +95,7 @@ export function CampaignsFeature() {
     'home-categories',
     'products-list',
     'trending-products',
+    'content-partners',
   ];
 
 
