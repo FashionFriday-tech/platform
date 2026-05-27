@@ -219,13 +219,13 @@ export default function SplitFeatureSection() {
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="relative flex flex-col items-center border-white/5 lg:border-l">
-            {isMounted && (
+          <div className="relative flex flex-col items-center border-white/5 lg:border-l w-full">
+            {isMounted ? (
               <div className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)]">
                 <div className="from-background via-blackground pointer-events-none absolute top-0 right-0 left-0 z-20 h-24 bg-linear-to-b to-transparent" />
                 <div className="from-blackground via-background pointer-events-none absolute right-0 -bottom-6 left-0 z-20 h-24 bg-linear-to-t to-transparent" />
 
-                <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6">
+                <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6 w-full">
                   <div className="relative h-full overflow-hidden">
                     {col1.length > 0 && <InfiniteColumn images={col1} duration={25} />}
                   </div>
@@ -234,6 +234,27 @@ export default function SplitFeatureSection() {
                   </div>
                   <div className="relative h-full overflow-hidden pt-12">
                     {col3.length > 0 && <InfiniteColumn images={col3} duration={28} />}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Skeleton Placeholder layout to prevent jumping/layout shifts during SSR/Hydration */
+              <div className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)] w-full">
+                <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6 w-full">
+                  {/* Column 1 Placeholder */}
+                  <div className="flex flex-col gap-4">
+                    <div className="h-64 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
+                    <div className="h-80 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
+                  </div>
+                  {/* Column 2 Placeholder */}
+                  <div className="flex flex-col gap-4 pt-24">
+                    <div className="h-80 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
+                    <div className="h-64 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
+                  </div>
+                  {/* Column 3 Placeholder */}
+                  <div className="flex flex-col gap-4 pt-12">
+                    <div className="h-64 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
+                    <div className="h-80 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
                   </div>
                 </div>
               </div>
