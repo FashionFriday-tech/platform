@@ -57,6 +57,9 @@ export class UploadService {
         } else if (folder === 'campaigns/content-partners') {
           width = 900;
           height = 1500; // 3:5
+        } else if (folder === 'campaigns/whatsapp-reviews') {
+          width = 800;
+          height = 600;  // 4:3
         } else if (folder && folder.startsWith('campaigns')) {
           width = 900;
           height = 1200;
