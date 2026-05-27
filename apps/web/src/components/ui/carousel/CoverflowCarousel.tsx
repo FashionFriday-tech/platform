@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link'; // Import Link
 
@@ -17,9 +17,9 @@ export interface Product {
 
 const transitionSpec = {
   type: 'spring' as const,
-  stiffness: 150,
-  damping: 25,
-  mass: 1,
+  stiffness: 75,
+  damping: 20,
+  mass: 1.2,
 };
 
 export default function CoverflowCarousel({ products }: { products: Product[] }) {
@@ -27,10 +27,32 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % products.length);
+    resetTimer();
   };
   const handlePrev = () => {
     setActiveIndex((prev) => (prev - 1 + products.length) % products.length);
+    resetTimer();
   };
+
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const startTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % products.length);
+    }, 3000);
+  };
+
+  const resetTimer = () => {
+    startTimer();
+  };
+
+  React.useEffect(() => {
+    startTimer();
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [products.length]);
 
   const getVariant = (index: number) => {
     const total = products.length;
@@ -105,6 +127,7 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
                 onClick={() => {
                   if (!isActive) {
                     setActiveIndex(index);
+                    resetTimer();
                   }
                 }}
               >
