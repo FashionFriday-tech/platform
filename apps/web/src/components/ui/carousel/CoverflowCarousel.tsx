@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link'; // Import Link
 
-import { ArrowLeftIcon, ArrowRightIcon } from '@ff/ui';
+
 import { AnimatePresence, motion } from 'motion/react';
 
 // --- TYPES ---
@@ -147,16 +147,7 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
             );
           })}
         </AnimatePresence>
-        <div className="absolute inset-y-0 left-0 flex items-center">
-          <button onClick={handlePrev} className="p-2 bg-white/30 rounded-full hover:bg-white/50">
-            <ArrowLeftIcon className="h-6 w-6 text-black" />
-          </button>
-        </div>
-        <div className="absolute inset-y-0 right-0 flex items-center">
-          <button onClick={handleNext} className="p-2 bg-white/30 rounded-full hover:bg-white/50">
-            <ArrowRightIcon className="h-6 w-6 text-black" />
-          </button>
-        </div>
+
       </div>
     </div>
   );
