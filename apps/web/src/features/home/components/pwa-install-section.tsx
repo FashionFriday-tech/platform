@@ -173,9 +173,9 @@ export default function PWAInstallSection() {
   }
 
   return (
-    <section className="relative w-full overflow-hidden pt-4 pb-16 sm:pt-6 sm:pb-20 bg-[#f5f1e6] dark:bg-[#f5f1e6] text-black dark:text-black">
+    <section className="relative w-full overflow-hidden pt-0 pb-16 sm:pt-0 sm:pb-20 bg-[#f5f1e6] dark:bg-[#f5f1e6] text-black dark:text-black">
       {/* Premium Banner Strip */}
-      <div className="w-full bg-[#eae5d8] text-black py-7 mb-16 transition-colors">
+      <div className="w-full bg-[#eae5d8] text-black py-7 mb-20 transition-colors">
         <div className="container mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
           {/* Brand Logo Container */}
           <div className="relative h-[10vw] w-[10vw] max-h-16 max-w-16 sm:h-[6vw] sm:w-[6vw] lg:h-[4.5vw] lg:w-[4.5vw] overflow-hidden rounded-2xl bg-black p-[1.5vw] sm:p-[1vw] shadow-md flex items-center justify-center shrink-0">
