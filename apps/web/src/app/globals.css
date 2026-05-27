@@ -6,6 +6,10 @@
    These are the ONLY tokens used in JSX
 ================================================= */
 @theme {
+  /* Fonts */
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+
   /* Surfaces */
   --color-background: var(--surface-base);
   --color-background-muted: var(--surface-muted);
