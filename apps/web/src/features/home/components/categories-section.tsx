@@ -64,7 +64,13 @@ export default function CategoryCarousel() {
 
         {/* 2-Card Grid (Men & Women) */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
-          {isMounted && cards.length > 0 ? (
+          {!isMounted ? (
+            <>
+              {/* Category skeleton placeholders */}
+              <div className="aspect-square w-full rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse" />
+              <div className="aspect-square w-full rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse" />
+            </>
+          ) : cards.length > 0 ? (
             cards.map((cat) => (
               <article
                 key={cat.id}
