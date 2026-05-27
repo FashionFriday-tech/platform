@@ -1,0 +1,95 @@
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
+import { useProductRequests } from '../hooks/useProductRequests';
+
+export function ProductRequestsFeature() {
+  const { requests, isLoading, refreshRequests } = useProductRequests();
+
+  return (
+    <div className="flex-1 space-y-8 p-8">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b pb-6">
+        <div>
+          <h2 className="text-3xl font-black uppercase tracking-tight">Sourcing Requests</h2>
+          <p className="text-sm text-black/60 dark:text-white/60">
+            Monitor and manage custom products requested by customers.
+          </p>
+        </div>
+        <button
+          onClick={refreshRequests}
+          disabled={isLoading}
+          className="rounded-full bg-black px-6 py-2.5 text-xs font-bold tracking-widest text-white uppercase transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
+        >
+          {isLoading ? 'Refreshing...' : 'Refresh List'}
+        </button>
+      </div>
+
+      {/* Requests Grid */}
+      {requests.length === 0 ? (
+        <div className="flex h-[400px] items-center justify-center rounded-3xl border border-dashed">
+          <div className="text-center">
+            <p className="text-lg font-bold text-black/40 dark:text-white/40 uppercase">No Sourcing Requests Filed Yet</p>
+            <p className="text-sm text-black/30 dark:text-white/30">User requests will show up here automatically.</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {requests.map((request) => (
+            <div
+              key={request.id}
+              className="group overflow-hidden rounded-3xl border bg-card transition-all hover:shadow-lg"
+            >
+              {/* Product Sourcing Image Wrapper */}
+              <div className="relative aspect-[3/4] w-full overflow-hidden bg-muted">
+                <Image
+                  src={request.imageUrl}
+                  alt={request.productName}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                />
+              </div>
+
+              {/* Card Meta Content Info */}
+              <div className="p-5 space-y-4">
+                <div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-destructive">
+                    Custom Sourcing
+                  </span>
+                  <h4 className="text-base font-black uppercase tracking-tight truncate">
+                    {request.productName}
+                  </h4>
+                </div>
+
+                <div className="border-t pt-3 space-y-1.5 text-xs">
+                  <div>
+                    <span className="font-bold text-black/55 dark:text-white/55">Customer: </span>
+                    <span className="font-medium text-black dark:text-white">{request.user?.name || 'Anonymous'}</span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-black/55 dark:text-white/55">Contact: </span>
+                    <a
+                      href={`tel:${request.user?.phone}`}
+                      className="font-medium text-destructive hover:underline"
+                    >
+                      {request.user?.phone || 'N/A'}
+                    </a>
+                  </div>
+                  <div>
+                    <span className="font-bold text-black/55 dark:text-white/55">Email: </span>
+                    <span className="font-medium text-black dark:text-white truncate block">{request.user?.email || 'N/A'}</span>
+                  </div>
+                  <div className="text-[10px] text-black/40 dark:text-white/40 pt-1">
+                    Filed on {new Date(request.createdAt).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
