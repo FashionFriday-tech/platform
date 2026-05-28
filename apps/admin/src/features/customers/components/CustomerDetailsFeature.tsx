@@ -308,28 +308,16 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="flex gap-3 mt-4 md:mt-0">
+          </div>          <div className="flex gap-3 mt-4 md:mt-0">
             <button
               onClick={() => {
                 setEditName(customer.name);
                 setEditPhone(customer.phone);
                 setIsEditModalOpen(true);
               }}
-              className="flex items-center gap-2 rounded-xl border border-black/5 bg-transparent px-4 py-2 text-sm font-semibold text-black/70 transition-all hover:scale-105 hover:bg-black/5 active:scale-95 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
+              className="flex items-center gap-2 rounded-xl border border-black/5 bg-transparent px-4 py-2 text-sm font-semibold text-black/70 transition-all hover:scale-105 hover:bg-black/5 active:scale-95 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5 whitespace-nowrap"
             >
               Edit Profile
-            </button>
-
-            <button
-              onClick={() => {
-                setIsOrderModalOpen(true);
-              }}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95"
-            >
-              <PlusIcon className="h-4 w-4" />
-              Create Order
             </button>
           </div>
         </div>
@@ -374,9 +362,20 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             </div>
             <h2 className="text-2xl font-bold">Orders History</h2>
           </div>
-          <span className="rounded-full bg-black/5 px-3 py-1 text-sm font-bold dark:bg-white/5">
-            {customer.orders.length} Total
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="rounded-full bg-black/5 px-3 py-1 text-sm font-bold dark:bg-white/5 whitespace-nowrap">
+              {customer.orders.length} Total
+            </span>
+            <button
+              onClick={() => {
+                setIsOrderModalOpen(true);
+              }}
+              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95 whitespace-nowrap"
+            >
+              <PlusIcon className="h-4 w-4" />
+              Create Order
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
