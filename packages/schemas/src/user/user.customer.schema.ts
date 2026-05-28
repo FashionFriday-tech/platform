@@ -36,3 +36,14 @@ export const UpdateCustomerSchema = z.object({}).strict();
 export type Customer = z.infer<typeof CustomerSchema>;
 export type CreateCustomerInput = z.infer<typeof CreateCustomerSchema>;
 export type UpdateCustomerInput = z.infer<typeof UpdateCustomerSchema>;
+
+/**
+ * Validate customer creation input from admin panel
+ */
+export const CreateCustomerAdminSchema = z.object({
+  name: z.string().min(4, { message: 'Name must be at least 4 characters' }).trim(),
+  phone: z.string().regex(/^\+91[6-9]\d{9}$/, {
+    message: 'Phone must include +91 followed by a valid 10-digit Indian mobile number',
+  }),
+});
+export type CreateCustomerAdminInput = z.infer<typeof CreateCustomerAdminSchema>;
