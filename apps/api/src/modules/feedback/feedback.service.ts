@@ -3,7 +3,7 @@ import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
 export class FeedbackService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async createFeedback(type: string, description: string, email?: string) {
     const validTypes = ['issue', 'improvement', 'suggestion', 'other'];
@@ -23,9 +23,11 @@ export class FeedbackService {
     });
   }
 
-  async getAllFeedback() {
+  async getAllFeedback(limit = 50, offset = 0) {
     return this.prisma.db.feedback.findMany({
       orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
     });
   }
 }
