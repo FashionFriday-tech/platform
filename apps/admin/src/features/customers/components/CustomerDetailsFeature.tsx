@@ -264,42 +264,6 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Back Header Nav */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => {
-            router.push('/customers');
-          }}
-          className="flex items-center gap-2 text-sm font-semibold text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-          Back to Customers
-        </button>
-
-        <div className="flex gap-3">
-          <button
-            onClick={() => {
-              setEditName(customer.name);
-              setEditPhone(customer.phone);
-              setIsEditModalOpen(true);
-            }}
-            className="flex items-center gap-2 rounded-xl border border-black/5 bg-transparent px-4 py-2 text-sm font-semibold text-black/70 transition-all hover:scale-105 hover:bg-black/5 active:scale-95 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
-          >
-            Edit Profile
-          </button>
-
-          <button
-            onClick={() => {
-              setIsOrderModalOpen(true);
-            }}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95"
-          >
-            <PlusIcon className="h-4 w-4" />
-            Create Order
-          </button>
-        </div>
-      </div>
-
       <div className="flex flex-col rounded-[32px] border border-black/5 bg-white p-8 shadow-sm dark:border-white/5 dark:bg-[#111111]">
         {/* Top Section */}
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
@@ -344,6 +308,29 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="flex gap-3 mt-4 md:mt-0">
+            <button
+              onClick={() => {
+                setEditName(customer.name);
+                setEditPhone(customer.phone);
+                setIsEditModalOpen(true);
+              }}
+              className="flex items-center gap-2 rounded-xl border border-black/5 bg-transparent px-4 py-2 text-sm font-semibold text-black/70 transition-all hover:scale-105 hover:bg-black/5 active:scale-95 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
+            >
+              Edit Profile
+            </button>
+
+            <button
+              onClick={() => {
+                setIsOrderModalOpen(true);
+              }}
+              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95"
+            >
+              <PlusIcon className="h-4 w-4" />
+              Create Order
+            </button>
           </div>
         </div>
 
