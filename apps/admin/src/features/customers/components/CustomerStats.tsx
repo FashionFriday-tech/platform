@@ -5,13 +5,13 @@ import React from 'react';
 import { ActivityIcon, AlertCircleIcon, ShoppingBagIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
-import { mockCustomers } from '../services/mock-customers';
+import { type Customer } from '../types';
 
-export function CustomerStats() {
-  const totalCustomers = mockCustomers.length;
-  const activeCustomers = mockCustomers.filter((c) => c.status === 'active').length;
-  const blockedCustomers = mockCustomers.filter((c) => c.status === 'blocked').length;
-  const purchasedCustomers = mockCustomers.filter((c) => c.ordersCount > 0).length;
+export function CustomerStats({ customers }: { customers: Customer[] }) {
+  const totalCustomers = customers.length;
+  const activeCustomers = customers.filter((c) => c.status === 'active').length;
+  const blockedCustomers = customers.filter((c) => c.status === 'blocked').length;
+  const purchasedCustomers = customers.filter((c) => c.ordersCount > 0).length;
 
   const stats = [
     {
