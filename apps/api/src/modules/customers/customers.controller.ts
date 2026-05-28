@@ -29,6 +29,14 @@ export class CustomersController {
     return this.service.createCustomerOrder(id, dto);
   }
 
+  @Patch(':id')
+  async updateCustomer(
+    @Param('id') id: string,
+    @Body() dto: { name?: string; phone?: string },
+  ) {
+    return this.service.updateCustomer(id, dto);
+  }
+
   @Patch(':id/status')
   async toggleCustomerStatus(@Param('id') id: string) {
     return this.service.toggleCustomerStatus(id);
