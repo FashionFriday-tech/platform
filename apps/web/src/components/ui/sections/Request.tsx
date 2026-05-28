@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PackageIcon, ImageIcon } from '@ff/ui';
 import { useAuthStore } from '@/store/auth-store';
-import { fetcher } from '@/lib/api-client';
 
 export default function SourcingSection() {
   const user = useAuthStore((state) => state.user);

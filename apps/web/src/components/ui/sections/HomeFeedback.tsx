@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { SparklesIcon } from '@ff/ui';
 
 export default function HomeFeedbackSection() {
   const [type, setType] = useState('suggestion');
