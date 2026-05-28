@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { LoaderIcon, LockIcon } from '@ff/ui';
 
@@ -18,6 +18,7 @@ const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
   { prefix: '/orders', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
   { prefix: '/customers', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
   { prefix: '/reviews', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
+  { prefix: '/feedback', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
   { prefix: '/products', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
   { prefix: '/categories', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
   { prefix: '/brands', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
@@ -30,6 +31,18 @@ const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
 export function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   const pathname = usePathname() || '';
+  const router = useRouter();
+
+  // Handle client-side auth state routing
+  React.useEffect(() => {
+    if (!isLoading) {
+      if (!user && pathname !== '/login') {
+        router.push('/login');
+      } else if (user && pathname === '/login') {
+        router.push('/');
+      }
+    }
+  }, [user, isLoading, pathname, router]);
 
   if (isLoading) {
     return (
@@ -45,7 +58,27 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
   }
 
   if (!user) {
-    return <LoginPage />;
+    if (pathname === '/login') {
+      return (
+        <>
+          {children}
+          <Toaster position="top-right" richColors />
+        </>
+      );
+    }
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-transparent">
+        <LoaderIcon className="h-8 w-8 animate-spin text-black dark:text-white" />
+      </div>
+    );
+  }
+
+  if (pathname === '/login') {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-transparent">
+        <LoaderIcon className="h-8 w-8 animate-spin text-black dark:text-white" />
+      </div>
+    );
   }
 
   // Routing validation checks based on user role
