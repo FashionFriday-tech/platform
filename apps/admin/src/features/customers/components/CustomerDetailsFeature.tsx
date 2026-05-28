@@ -362,20 +362,15 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             </div>
             <h2 className="text-2xl font-bold">Orders History</h2>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="rounded-full bg-black/5 px-3 py-1 text-sm font-bold dark:bg-white/5 whitespace-nowrap">
-              {customer.orders.length} Total
-            </span>
-            <button
-              onClick={() => {
-                setIsOrderModalOpen(true);
-              }}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95 whitespace-nowrap"
-            >
-              <PlusIcon className="h-4 w-4" />
-              Create Order
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              setIsOrderModalOpen(true);
+            }}
+            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95 whitespace-nowrap"
+          >
+            <PlusIcon className="h-4 w-4" />
+            Create Order
+          </button>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
