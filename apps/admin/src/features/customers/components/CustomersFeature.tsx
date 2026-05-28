@@ -29,7 +29,7 @@ export default function CustomersFeature() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState('+91');
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -56,7 +56,7 @@ export default function CustomersFeature() {
     setIsSubmitting(false);
     if (success) {
       setName('');
-      setPhone('');
+      setPhone('+91');
       setFormErrors({});
       setIsAddModalOpen(false);
     }
@@ -188,7 +188,15 @@ export default function CustomersFeature() {
                       placeholder="e.g., +919876543210"
                       value={phone}
                       onChange={(e) => {
-                        setPhone(e.target.value);
+                        let value = e.target.value;
+                        if (!value.startsWith('+91')) {
+                          if (value.startsWith('+9') || value.startsWith('+') || value === '') {
+                            value = '+91';
+                          } else {
+                            value = '+91' + value.replace(/^\+?9?1?/, '');
+                          }
+                        }
+                        setPhone(value);
                       }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222]"
                     />
