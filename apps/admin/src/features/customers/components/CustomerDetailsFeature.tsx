@@ -1,25 +1,190 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { AnimatePresence, motion } from 'motion/react';
 
-import { ChevronLeftIcon, ShoppingBagIcon, StarIcon } from '@ff/ui';
-
-import { mockOrders } from '../../orders/services/mock-orders';
-import { mockReviews } from '../../reviews/services/mock-reviews';
-import { mockCustomers } from '../services/mock-customers';
+import { ChevronLeftIcon, ShoppingBagIcon, StarIcon, PlusIcon, CloseIcon, UserIcon, PhoneIcon, MailIcon } from '@ff/ui';
+import { fetcher } from '@/lib/api-client';
 
 interface CustomerDetailsFeatureProps {
   customerId: string;
 }
 
+interface OrderItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  size: string;
+  color: string;
+  image: string;
+}
+
+interface Order {
+  id: string;
+  orderNumber: string;
+  total: number;
+  status: string;
+  createdAt: string;
+  items: OrderItem[];
+}
+
+interface CustomerDetails {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  avatar: string;
+  status: string;
+  ordersCount: number;
+  totalSpent: number;
+  joinDate: string;
+  orders: Order[];
+}
+
 export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeatureProps) {
   const router = useRouter();
-  const customer = mockCustomers.find((c: any) => c.id === customerId);
-  const customerOrders = mockOrders.filter((o: any) => o.customer.id === customerId);
-  const customerReviews = mockReviews.filter((r: any) => r.customerId === customerId);
+  const [customer, setCustomer] = useState<CustomerDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Order creation form states
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [productName, setProductName] = useState('');
+  const [size, setSize] = useState('');
+  const [color, setColor] = useState('');
+  const [price, setPrice] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'RAZORPAY' | 'STRIPE' | 'WALLET'>('COD');
+  const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED'>('PENDING');
+  const [addressLine, setAddressLine] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [pinCode, setPinCode] = useState('');
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const fetchCustomerDetails = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetcher<CustomerDetails>(`/admin/customers/${customerId}`);
+      setCustomer(data);
+    } catch (error) {
+      console.error('Failed to load customer details:', error);
+      toast.error('Failed to load customer profile details.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomerDetails();
+  }, [customerId]);
+
+  const validateOrderForm = () => {
+    const errors: Record<string, string> = {};
+    if (!productName.trim() || productName.trim().length < 3) {
+      errors.productName = 'Product name must be at least 3 characters';
+    }
+    if (!size.trim()) {
+      errors.size = 'Size is required';
+    }
+    if (!color.trim()) {
+      errors.color = 'Color is required';
+    }
+    if (price <= 0) {
+      errors.price = 'Price must be greater than 0';
+    }
+    if (quantity <= 0) {
+      errors.quantity = 'Quantity must be at least 1';
+    }
+    if (!addressLine.trim()) {
+      errors.addressLine = 'Address line is required';
+    }
+    if (!city.trim()) {
+      errors.city = 'City is required';
+    }
+    if (!state.trim()) {
+      errors.state = 'State is required';
+    }
+    if (!pinCode.trim() || !/^\d{6}$/.test(pinCode)) {
+      errors.pinCode = 'Pin code must be exactly 6 digits';
+    }
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleCreateOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateOrderForm()) {
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const newOrder = await fetcher<Order>(`/admin/customers/${customerId}/orders`, {
+        method: 'POST',
+        body: JSON.stringify({
+          productName,
+          size,
+          color,
+          price,
+          quantity,
+          paymentMethod,
+          paymentStatus,
+          addressLine,
+          city,
+          state,
+          pinCode,
+        }),
+      });
+
+      // Update local state to immediately show the new order
+      setCustomer((prev) => {
+        if (!prev) {
+          return null;
+        }
+        const updatedOrders = [newOrder, ...prev.orders];
+        const newTotalSpent = prev.totalSpent + (price * quantity);
+        return {
+          ...prev,
+          ordersCount: updatedOrders.length,
+          totalSpent: newTotalSpent,
+          orders: updatedOrders,
+        };
+      });
+
+      toast.success('Order created successfully!');
+      setIsOrderModalOpen(false);
+      // Reset form fields
+      setProductName('');
+      setSize('');
+      setColor('');
+      setPrice(0);
+      setQuantity(1);
+      setPaymentMethod('COD');
+      setPaymentStatus('PENDING');
+      setAddressLine('');
+      setCity('');
+      setState('');
+      setPinCode('');
+      setFormErrors({});
+    } catch (error: any) {
+      console.error('Failed to create order:', error);
+      toast.error(error.message || 'Failed to create order');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-black/10 border-t-black dark:border-white/10 dark:border-t-white" />
+      </div>
+    );
+  }
 
   if (!customer) {
     return (
@@ -42,13 +207,36 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Back Header Nav */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => {
+            router.push('/customers');
+          }}
+          className="flex items-center gap-2 text-sm font-semibold text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white"
+        >
+          <ChevronLeftIcon className="h-5 w-5" />
+          Back to Customers
+        </button>
+
+        <button
+          onClick={() => {
+            setIsOrderModalOpen(true);
+          }}
+          className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95"
+        >
+          <PlusIcon className="h-4 w-4" />
+          Create Order
+        </button>
+      </div>
+
       <div className="flex flex-col rounded-[32px] border border-black/5 bg-white p-8 shadow-sm dark:border-white/5 dark:bg-[#111111]">
         {/* Top Section */}
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
             <Image
-              width={500}
-              height={500}
+              width={200}
+              height={200}
               src={customer.avatar}
               alt={customer.name}
               className="h-24 w-24 rounded-2xl object-cover shadow-sm"
@@ -73,38 +261,11 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
               <div className="mt-2 flex flex-col gap-3 text-sm text-black/60 sm:flex-row sm:gap-6 dark:text-white/60">
                 <div className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-black/40 dark:text-white/40"
-                  >
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                  </svg>
+                  <PhoneIcon className="h-4 w-4 text-black/40 dark:text-white/40" />
                   <span>{customer.phone}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-black/40 dark:text-white/40"
-                  >
-                    <rect width="20" height="16" x="2" y="4" rx="2" />
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
+                  <MailIcon className="h-4 w-4 text-black/40 dark:text-white/40" />
                   <span>{customer.email}</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -114,63 +275,20 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
               </div>
             </div>
           </div>
-
-          <div className="flex gap-3">
-            <a
-              href={`tel:${customer.phone}`}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-              title="Call"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-            </a>
-            <a
-              href={`https://wa.me/${customer.phone.replace(/[^0-9]/g, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
-              title="WhatsApp"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-              </svg>
-            </a>
-          </div>
         </div>
 
         {/* Divider */}
         <div className="my-8 h-px w-full bg-black/5 dark:bg-white/5" />
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
             <span className="text-sm font-medium text-black/50 dark:text-white/50">
               Total Orders
             </span>
             <div className="flex flex-col gap-3">
               <span className="text-3xl font-bold text-black dark:text-white">
-                {customerOrders.length}
+                {customer.ordersCount}
               </span>
               <div className="h-1 w-full rounded-full bg-pink-300 dark:bg-pink-500" />
             </div>
@@ -187,151 +305,323 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
               <div className="h-1 w-full rounded-full bg-teal-300 dark:bg-teal-500" />
             </div>
           </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-black/50 dark:text-white/50">
-              Total Reviews
-            </span>
-            <div className="flex flex-col gap-3">
-              <span className="text-3xl font-bold text-black dark:text-white">
-                {customerReviews.length}
-              </span>
-              <div className="h-1 w-full rounded-full bg-green-300 dark:bg-green-500" />
-            </div>
-          </div>
         </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Orders Section */}
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
-                <ShoppingBagIcon className="h-5 w-5" />
-              </div>
-              <h2 className="text-2xl font-bold">Orders</h2>
+      {/* Orders Section */}
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+              <ShoppingBagIcon className="h-5 w-5" />
             </div>
-            <span className="rounded-full bg-black/5 px-3 py-1 text-sm font-bold dark:bg-white/5">
-              {customerOrders.length} Total
-            </span>
+            <h2 className="text-2xl font-bold">Orders History</h2>
           </div>
+          <span className="rounded-full bg-black/5 px-3 py-1 text-sm font-bold dark:bg-white/5">
+            {customer.orders.length} Total
+          </span>
+        </div>
 
-          <div className="flex flex-col gap-4">
-            {customerOrders.length > 0 ? (
-              customerOrders.map((order) => (
-                <div
-                  key={order.id}
-                  className="group flex cursor-pointer flex-col gap-4 rounded-3xl border border-black/5 bg-white/40 p-6 transition-all hover:-translate-y-1 hover:bg-white/60 hover:shadow-lg hover:shadow-black/5 dark:border-white/5 dark:bg-[#111111]/60 dark:hover:bg-[#1a1a1a]/60"
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {customer.orders.length > 0 ? (
+            customer.orders.map((order) => (
+              <div
+                key={order.id}
+                className="group flex flex-col gap-4 rounded-3xl border border-black/5 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-[#111111]"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-black/40 dark:text-white/40">
+                      {order.orderNumber}
+                    </span>
+                    <span className="text-lg font-bold text-black dark:text-white">
+                      ₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  <span
+                    className={`rounded-xl px-4 py-2 text-xs font-bold tracking-wider uppercase ${
+                      order.status === 'delivered'
+                        ? 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400'
+                        : order.status === 'pending' || order.status === 'confirmed'
+                          ? 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400'
+                          : 'bg-black/5 text-black/60 dark:bg-white/5 dark:text-white/60'
+                    }`}
+                  >
+                    {order.status}
+                  </span>
+                </div>
+
+                <div className="border-t border-black/5 pt-4 dark:border-white/5">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-black/40 dark:text-white/40">Items</span>
+                  <div className="mt-2 space-y-3">
+                    {order.items.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3">
+                        <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-black/5 dark:border-white/5">
+                          <Image src={item.image} alt={item.name} fill className="object-cover" />
+                        </div>
+                        <div className="flex flex-1 flex-col">
+                          <span className="text-sm font-semibold text-black dark:text-white">{item.name}</span>
+                          <span className="text-xs text-black/50 dark:text-white/50">
+                            Size: {item.size} • Color: {item.color} • Qty: {item.quantity}
+                          </span>
+                        </div>
+                        <span className="text-sm font-bold text-black dark:text-white">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-black/5 pt-4 text-xs text-black/50 dark:border-white/5 dark:text-white/50">
+                  <span>Ordered on</span>
+                  <span>
+                    {new Date(order.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-2 flex flex-col items-center justify-center rounded-[32px] border border-dashed border-black/10 p-12 text-center dark:border-white/10">
+              <ShoppingBagIcon className="mb-4 h-8 w-8 text-black/20 dark:text-white/20" />
+              <p className="font-semibold text-black/50 dark:text-white/50">
+                No orders placed yet.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Premium Create Order Modal */}
+      <AnimatePresence>
+        {isOrderModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                if (!isSubmitting) {
+                  setIsOrderModalOpen(false);
+                }
+              }}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', duration: 0.4 }}
+              className="relative z-10 w-full max-w-2xl overflow-hidden rounded-3xl border border-black/5 bg-white shadow-2xl dark:border-white/5 dark:bg-[#111111]"
+            >
+              <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-blue-500/10 blur-2xl" />
+
+              <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
+                <h3 className="text-xl font-bold text-black dark:text-white">Create Order for {customer.name}</h3>
+                <button
+                  onClick={() => {
+                    setIsOrderModalOpen(false);
+                  }}
+                  className="rounded-lg p-1.5 text-black/50 hover:bg-black/5 dark:text-white/50 dark:hover:bg-white/5"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-bold text-black/50 dark:text-white/50">
-                        {order.orderNumber}
-                      </span>
-                      <span className="text-lg font-bold text-black dark:text-white">
-                        ₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                      </span>
+                  <CloseIcon className="h-5 w-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateOrder} className="max-h-[70vh] overflow-y-auto p-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Left Column: Product Details */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-bold uppercase tracking-wider text-black/40 dark:text-white/40">Product Details</h4>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Product Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., Oversized Graphic Tee"
+                        value={productName}
+                        onChange={(e) => setProductName(e.target.value)}
+                        className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                      />
+                      {formErrors.productName && <span className="mt-1 text-xs text-red-500">{formErrors.productName}</span>}
                     </div>
-                    <span
-                      className={`rounded-xl px-4 py-2 text-xs font-bold tracking-wider uppercase ${
-                        order.status === 'delivered'
-                          ? 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400'
-                          : order.status === 'pending'
-                            ? 'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400'
-                            : 'bg-black/5 text-black/60 dark:bg-white/5 dark:text-white/60'
-                      }`}
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Size</label>
+                        <input
+                          type="text"
+                          placeholder="e.g., L"
+                          value={size}
+                          onChange={(e) => setSize(e.target.value)}
+                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                        />
+                        {formErrors.size && <span className="mt-1 text-xs text-red-500">{formErrors.size}</span>}
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Color</label>
+                        <input
+                          type="text"
+                          placeholder="e.g., Black"
+                          value={color}
+                          onChange={(e) => setColor(e.target.value)}
+                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                        />
+                        {formErrors.color && <span className="mt-1 text-xs text-red-500">{formErrors.color}</span>}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Price (₹)</label>
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          value={price || ''}
+                          onChange={(e) => setPrice(Number(e.target.value))}
+                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                        />
+                        {formErrors.price && <span className="mt-1 text-xs text-red-500">{formErrors.price}</span>}
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Quantity</label>
+                        <input
+                          type="number"
+                          placeholder="1"
+                          value={quantity || ''}
+                          onChange={(e) => setQuantity(Number(e.target.value))}
+                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                        />
+                        {formErrors.quantity && <span className="mt-1 text-xs text-red-500">{formErrors.quantity}</span>}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Method</label>
+                        <select
+                          value={paymentMethod}
+                          onChange={(e) => setPaymentMethod(e.target.value as any)}
+                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                        >
+                          <option value="COD">Cash on Delivery</option>
+                          <option value="RAZORPAY">Razorpay</option>
+                          <option value="STRIPE">Stripe</option>
+                          <option value="WALLET">Wallet</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Payment Status</label>
+                        <select
+                          value={paymentStatus}
+                          onChange={(e) => setPaymentStatus(e.target.value as any)}
+                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                        >
+                          <option value="PENDING">Pending</option>
+                          <option value="SUCCESS">Success</option>
+                          <option value="FAILED">Failed</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Shipping Info */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-bold uppercase tracking-wider text-black/40 dark:text-white/40">Shipping Address</h4>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Address Line</label>
+                      <textarea
+                        rows={3}
+                        placeholder="Flat, House no., Building, Street, Area..."
+                        value={addressLine}
+                        onChange={(e) => setAddressLine(e.target.value)}
+                        className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                      />
+                      {formErrors.addressLine && <span className="mt-1 text-xs text-red-500">{formErrors.addressLine}</span>}
+                    </div>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">City</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., Mumbai"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                      />
+                      {formErrors.city && <span className="mt-1 text-xs text-red-500">{formErrors.city}</span>}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">State</label>
+                        <input
+                          type="text"
+                          placeholder="e.g., Maharashtra"
+                          value={state}
+                          onChange={(e) => setState(e.target.value)}
+                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                        />
+                        {formErrors.state && <span className="mt-1 text-xs text-red-500">{formErrors.state}</span>}
+                      </div>
+
+                      <div>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Pin Code</label>
+                        <input
+                          type="text"
+                          placeholder="e.g., 400001"
+                          value={pinCode}
+                          onChange={(e) => setPinCode(e.target.value)}
+                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
+                        />
+                        {formErrors.pinCode && <span className="mt-1 text-xs text-red-500">{formErrors.pinCode}</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex items-center justify-between border-t border-black/5 pt-6 dark:border-white/5">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-black/50 dark:text-white/50">Total Amount</span>
+                    <span className="text-xl font-extrabold text-black dark:text-white">₹{(price * quantity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      disabled={isSubmitting}
+                      onClick={() => setIsOrderModalOpen(false)}
+                      className="rounded-xl border border-black/5 bg-transparent px-4 py-2.5 text-sm font-semibold text-black/70 hover:bg-black/5 disabled:opacity-50 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
                     >
-                      {order.status}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-sm text-black/60 dark:text-white/60">
-                    <div className="flex items-center gap-1.5 rounded-lg bg-black/5 px-3 py-1.5 dark:bg-white/5">
-                      <span className="font-semibold text-black dark:text-white">
-                        {order.items.length}
-                      </span>{' '}
-                      items
-                    </div>
-                    <span>•</span>
-                    <span>
-                      {new Date(order.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </span>
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-emerald-700 disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+                      ) : (
+                        'Place Order'
+                      )}
+                    </button>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-black/10 p-12 text-center dark:border-white/10">
-                <ShoppingBagIcon className="mb-4 h-8 w-8 text-black/20 dark:text-white/20" />
-                <p className="font-semibold text-black/50 dark:text-white/50">
-                  No orders placed yet.
-                </p>
-              </div>
-            )}
+              </form>
+            </motion.div>
           </div>
-        </div>
-
-        {/* Reviews Section */}
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-500/10 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400">
-                <StarIcon className="h-5 w-5" />
-              </div>
-              <h2 className="text-2xl font-bold">Reviews</h2>
-            </div>
-            <span className="rounded-full bg-black/5 px-3 py-1 text-sm font-bold dark:bg-white/5">
-              {customerReviews.length} Total
-            </span>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            {customerReviews.length > 0 ? (
-              customerReviews.map((review: any) => (
-
-                <div
-                  key={review.id}
-                  className="flex flex-col gap-4 rounded-3xl border border-black/5 bg-white/40 p-6 transition-all hover:-translate-y-1 hover:bg-white/60 hover:shadow-lg hover:shadow-black/5 dark:border-white/5 dark:bg-[#111111]/60 dark:hover:bg-[#1a1a1a]/60"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-black dark:text-white">
-                        {review.productName}
-                      </span>
-                      <span className="text-xs font-medium text-black/40 dark:text-white/40">
-                        {new Date(review.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 rounded-xl bg-yellow-500/10 px-3 py-1.5 text-yellow-600 dark:bg-yellow-500/20 dark:text-yellow-400">
-                      <span className="text-sm font-bold">{review.rating}.0</span>
-                      <StarIcon className="h-4 w-4 fill-current" />
-                    </div>
-                  </div>
-
-                  <p className="text-sm leading-relaxed text-black/80 dark:text-white/80">
-                    "{review.comment}"
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-black/10 p-12 text-center dark:border-white/10">
-                <StarIcon className="mb-4 h-8 w-8 text-black/20 dark:text-white/20" />
-                <p className="font-semibold text-black/50 dark:text-white/50">
-                  No reviews left yet.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
