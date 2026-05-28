@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
-
-import { mockCustomers } from '../services/mock-customers';
+import { useMemo, useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { fetcher } from '@/lib/api-client';
 import { type Customer, type SortDirection, type SortField } from '../types';
 
 export function useCustomers() {
@@ -9,7 +9,60 @@ export function useCustomers() {
   const [ordersFilter, setOrdersFilter] = useState('all');
   const [sortField, setSortField] = useState<SortField>('joinDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [customersData, setCustomersData] = useState<Customer[]>(mockCustomers);
+  const [customersData, setCustomersData] = useState<Customer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch customers list
+  const fetchCustomers = async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetcher<Customer[]>('/admin/customers');
+      setCustomersData(data);
+    } catch (error) {
+      console.error('Failed to fetch customers:', error);
+      toast.error('Failed to load customers from backend API.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
+  const addCustomer = async (customer: { name: string; phone: string }) => {
+    try {
+      const newCustomer = await fetcher<Customer>('/admin/customers', {
+        method: 'POST',
+        body: JSON.stringify(customer),
+      });
+      setCustomersData((prev) => [newCustomer, ...prev]);
+      toast.success('Customer registered successfully!');
+      return true;
+    } catch (error: any) {
+      console.error('Failed to register customer:', error);
+      toast.error(error.message || 'Failed to register customer.');
+      return false;
+    }
+  };
+
+  const toggleCustomerStatus = async (customerId: string) => {
+    try {
+      const updated = await fetcher<{ id: string; status: 'active' | 'blocked' }>(
+        `/admin/customers/${customerId}/status`,
+        {
+          method: 'PATCH',
+        },
+      );
+      setCustomersData((prev) =>
+        prev.map((c) => (c.id === customerId ? { ...c, status: updated.status } : c)),
+      );
+      toast.success(`Customer status set to ${updated.status}.`);
+    } catch (error) {
+      console.error('Failed to toggle customer status:', error);
+      toast.error('Failed to update customer status.');
+    }
+  };
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -18,14 +71,6 @@ export function useCustomers() {
       setSortField(field);
       setSortDirection('asc');
     }
-  };
-
-  const toggleCustomerStatus = (customerId: string) => {
-    setCustomersData((prev) =>
-      prev.map((c) =>
-        c.id === customerId ? { ...c, status: c.status === 'active' ? 'blocked' : 'active' } : c,
-      ),
-    );
   };
 
   const filteredAndSortedCustomers = useMemo(() => {
@@ -73,7 +118,7 @@ export function useCustomers() {
     });
 
     return result;
-  }, [customersData, searchQuery, statusFilter, sortField, sortDirection]);
+  }, [customersData, searchQuery, statusFilter, ordersFilter, sortField, sortDirection]);
 
   const handleExport = () => {
     const headers = [
@@ -119,7 +164,9 @@ export function useCustomers() {
     setOrdersFilter,
     sortField,
     sortDirection,
+    isLoading,
     handleSort,
+    addCustomer,
     toggleCustomerStatus,
     handleExport,
   };
