@@ -91,9 +91,8 @@ export class CustomersService {
   }
 
   async createCustomer(name: string, phone: string) {
-    // Generate placeholder email based on phone number to satisfy unique constraint
     const phoneDigits = phone.replace(/[^0-9]/g, '');
-    const email = `${phoneDigits}@fashionfriday.com`;
+    const email = `nan-${phoneDigits}`;
 
     // Check if user already exists
     const existing = await this.prisma.db.user.findFirst({
@@ -106,8 +105,11 @@ export class CustomersService {
       throw new BadRequestException('A customer with this phone number already exists.');
     }
 
+    const shortId = Math.random().toString(36).substring(2, 10).toUpperCase();
+
     const newUser = await this.prisma.db.user.create({
       data: {
+        id: shortId,
         name,
         email,
         phone,
@@ -231,6 +233,42 @@ export class CustomersService {
 
     return {
       id: updated.id,
+      status: updated.accountStatus === 'ACTIVE' ? 'active' : 'blocked',
+    };
+  }
+
+  async updateCustomer(id: string, data: { name?: string; phone?: string }) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id },
+    });
+
+    if (!user || user.role !== UserRole.CUSTOMER) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const updateData: any = {};
+    if (data.name) {
+      updateData.name = data.name;
+    }
+    if (data.phone) {
+      updateData.phone = data.phone;
+      if (user.email.startsWith('nan-')) {
+        const phoneDigits = data.phone.replace(/[^0-9]/g, '');
+        updateData.email = `nan-${phoneDigits}`;
+      }
+    }
+
+    const updated = await this.prisma.db.user.update({
+      where: { id },
+      data: updateData,
+    });
+
+    return {
+      id: updated.id,
+      name: updated.name,
+      email: updated.email,
+      phone: updated.phone,
+      avatar: updated.avatarUrl ?? `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(updated.name)}`,
       status: updated.accountStatus === 'ACTIVE' ? 'active' : 'blocked',
     };
   }
