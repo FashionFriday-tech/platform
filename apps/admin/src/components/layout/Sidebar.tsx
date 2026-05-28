@@ -9,6 +9,7 @@ import {
   CategoryIcon,
   LayersIcon,
   LifeBuoyIcon,
+  MessageSquareIcon,
   PackageIcon,
   SettingsIcon,
   ShieldCheckIcon,
@@ -114,6 +115,12 @@ export function Sidebar() {
                   <StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
                 </div>
                 <span className="text-sm font-medium">Reviews</span>
+              </Link>
+              <Link href="/feedback" className={getLinkClass('/feedback')}>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <MessageSquareIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
+                <span className="text-sm font-medium">Feedback</span>
               </Link>
             </div>
           </div>
