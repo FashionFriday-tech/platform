@@ -1,0 +1,9 @@
+model Feedback {
+  id          String   @id @default(uuid())
+  type        String   // 'issue', 'improvement', 'suggestion', 'other'
+  description String   @db.Text
+  email       String?
+  createdAt   DateTime @default(now())
+
+  @@map("feedbacks")
+}
