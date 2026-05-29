@@ -46,27 +46,57 @@ export default function HomeFeedbackSection() {
 
   return (
     <div className="my-24 py-12 md:py-20 flex items-center justify-center px-4 md:px-8">
-      <div className="bg-zinc-950 text-white w-full max-w-6xl overflow-hidden rounded-[2.5rem] lg:flex lg:items-stretch lg:justify-between border border-white/10 shadow-2xl">
-        {/* Left Visual Card */}
-        <div className="relative hidden min-h-[450px] lg:flex flex-col justify-end p-12 overflow-hidden rounded-l-[2.5rem] flex-1 bg-black">
-          <div className="absolute inset-0 bg-radial-to-br from-zinc-800 to-black opacity-95" />
-          
-          <div className="relative z-10 space-y-4">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-md">
-              <SparklesIcon className="text-xl text-white" />
+      <div className="w-full max-w-6xl lg:flex lg:items-stretch lg:justify-between gap-8">
+        
+        {/* Left Box - Image Card */}
+        <div className="group relative hidden min-h-[500px] lg:block overflow-hidden rounded-[2.5rem] flex-1 border border-white/10 shadow-2xl">
+          {/* Sourcing/Feedback Image */}
+          <Image
+            src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=2070&auto=format&fit=crop"
+            alt="Customer Feedback Service"
+            fill
+            className="object-cover grayscale transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0"
+          />
+          {/* Deep Vignette Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-95 transition-opacity duration-500" />
+
+          {/* Crossed Banner 1 */}
+          <div className="absolute w-[180%] top-[30%] -left-[40%] -rotate-12 bg-black/85 backdrop-blur-md py-3 border-y border-white/10 select-none pointer-events-none whitespace-nowrap overflow-hidden z-10 flex">
+            <div className="animate-marquee flex w-max gap-8 px-4 text-white text-[10px] font-black tracking-[0.3em] uppercase">
+              {Array(8).fill('SHARE YOUR EXPERIENCE • ').map((text, i) => (
+                <span key={i} className="flex items-center gap-2">
+                  {text}
+                  <span className="bg-[#FF0000] h-1.5 w-1.5 rounded-full shrink-0" />
+                </span>
+              ))}
             </div>
-            <h4 className="text-4xl font-black tracking-tighter uppercase leading-none text-white">
-              Help Us <br />
-              <span className="text-[#FF0000]">Improve.</span>
-            </h4>
-            <p className="max-w-xs text-sm text-zinc-400 font-medium">
-              Your feedback shapes Fashion Friday. Report issues, suggest features, or share your shopping experience.
+          </div>
+
+          {/* Crossed Banner 2 */}
+          <div className="absolute w-[180%] bottom-[30%] -left-[40%] rotate-6 bg-[#FF0000] py-3 border-y border-white/20 select-none pointer-events-none whitespace-nowrap overflow-hidden z-10 flex">
+            <div className="animate-marquee flex w-max gap-8 px-4 text-white text-[10px] font-black tracking-[0.3em] uppercase">
+              {Array(8).fill('HELP US DEFINE FASHION • ').map((text, i) => (
+                <span key={i} className="flex items-center gap-2">
+                  {text}
+                  <span className="bg-white h-1.5 w-1.5 rounded-full shrink-0" />
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Content Info overlay */}
+          <div className="absolute bottom-12 left-12 right-12 z-20">
+            <p className="text-[#FF0000] mb-2 text-xs font-bold tracking-[0.4em] uppercase">
+              Co-Creation Node
             </p>
+            <h4 className="text-white text-4xl font-black tracking-tighter uppercase leading-none">
+              Help Us <br /> Improve.
+            </h4>
           </div>
         </div>
 
-        {/* Right Form Card */}
-        <div className="flex flex-col justify-center p-8 lg:p-16 flex-1 bg-zinc-950">
+        {/* Right Box - Form Card */}
+        <div className="flex flex-col justify-center p-8 lg:p-16 flex-1 bg-zinc-950 rounded-[2.5rem] border border-white/10 shadow-2xl">
           <h3 className="text-white text-3xl font-black uppercase mb-2">Feedback & suggestions</h3>
           <p className="text-zinc-400 text-sm font-medium mb-8">
             Tell us what is on your mind. We read every submission.
