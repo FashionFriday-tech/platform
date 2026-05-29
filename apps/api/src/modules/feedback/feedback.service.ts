@@ -3,7 +3,7 @@ import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
 export class FeedbackService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async createFeedback(type: string, description: string, email?: string) {
     const validTypes = ['issue', 'improvement', 'suggestion', 'other'];
