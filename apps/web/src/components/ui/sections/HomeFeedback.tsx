@@ -146,5 +146,6 @@ export default function HomeFeedbackSection() {
           </form>
         </div>
       </div>
+    </div>
   );
 }
