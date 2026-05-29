@@ -8,6 +8,8 @@ import { motion } from 'motion/react';
 
 import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
 
+import Request from '@/components/ui/sections/Request';
+
 interface GridProps {
   products: Product[];
 }
@@ -63,6 +65,11 @@ export const CatalogueGrid = ({ products }: GridProps) => {
             </React.Fragment>
           );
         })}
+      </div>
+
+      {/* Sourcing Request Section: Displayed below product lists when customer needs custom sourcing */}
+      <div className="mt-16 border-t border-border pt-12">
+        <Request />
       </div>
 
       {/* Empty State Logic */}
