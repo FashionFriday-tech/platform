@@ -1,0 +1,7 @@
+model WhatsAppReview {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
