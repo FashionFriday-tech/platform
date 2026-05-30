@@ -1,14 +1,14 @@
 import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
-import { DUMMY_PRODUCTS } from '@/data/products';
+import { getProductsByCategory } from '@/data/filter-engine';
 import { CatalogueClient } from '@/features/catalogue';
 
 interface CategoryCatalogProps {
   category: string;
 }
 
-export function CategoryCatalog({ category }: CategoryCatalogProps): JSX.Element {
+export async function CategoryCatalog({ category }: CategoryCatalogProps): Promise<JSX.Element> {
   // Map URL slugs to exact Data Categories
   const categoryMap: Record<string, string> = {
     watches: 'Watches',
@@ -23,7 +23,8 @@ export function CategoryCatalog({ category }: CategoryCatalogProps): JSX.Element
     return notFound();
   }
 
-  const initialProducts = DUMMY_PRODUCTS.filter((p) => p.categoryId === formattedCategory);
+  const products = await getProductsByCategory(formattedCategory);
+  const initialProducts = products.filter((p) => p.categoryId?.toLowerCase() === formattedCategory.toLowerCase());
 
   return <CatalogueClient categorySlug={formattedCategory} initialProducts={initialProducts} />;
 }
