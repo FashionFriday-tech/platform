@@ -47,18 +47,7 @@ export class ProductsRepository {
         take,
         where,
         orderBy,
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          mainImage: true,
-          sellingPrice: true,
-          ogPrice: true,
-          quality: true,
-          averageRating: true,
-          isFeatured: true,
-          category: true,
-        }
+        include: { category: true },
       })
     ]);
   }
