@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRightIcon } from '@ff/ui';
@@ -16,6 +16,21 @@ interface CollectionItem {
 export default function CollectionsSection() {
   const [collections, setCollections] = useState<CollectionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInView, setIsInView] = useState(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const containerRef = useCallback((node: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    if (node) {
+      observerRef.current = new IntersectionObserver(([entry]) => {
+        setIsInView(entry.isIntersecting);
+      });
+      observerRef.current.observe(node);
+    }
+  }, []);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/collections`)
@@ -59,7 +74,7 @@ export default function CollectionsSection() {
         </header>
 
         {/* Marquee tracks: single row on desktop (sm:block), two rows on mobile (sm:hidden) */}
-        <div className="w-full overflow-hidden relative py-6">
+        <div ref={containerRef} className="w-full overflow-hidden relative py-6">
           <style>{`
             @keyframes collection-marquee-left {
               0% { transform: translateX(0); }
@@ -89,7 +104,7 @@ export default function CollectionsSection() {
 
           {/* LARGE SCREENS ONLY: Single Row (Hidden on mobile under 640px) */}
           <div className="hidden sm:block">
-            <div className="animate-collection-marquee-left px-6 relative z-10">
+            <div className="animate-collection-marquee-left px-6 relative z-10" style={{ animationPlayState: isInView ? 'running' : 'paused' }}>
               {desktopItems.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
@@ -125,7 +140,7 @@ export default function CollectionsSection() {
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
           <div className="flex flex-col gap-6 sm:hidden">
             {/* ROW 1: Moves Left */}
-            <div className="animate-collection-marquee-left px-6 relative z-10">
+            <div className="animate-collection-marquee-left px-6 relative z-10" style={{ animationPlayState: isInView ? 'running' : 'paused' }}>
               {row1Items.map((item, index) => (
                 <article
                   key={`r1-mobile-${item.id}-${index}`}
@@ -158,7 +173,7 @@ export default function CollectionsSection() {
             </div>
 
             {/* ROW 2: Moves Right */}
-            <div className="animate-collection-marquee-right px-6 relative z-10">
+            <div className="animate-collection-marquee-right px-6 relative z-10" style={{ animationPlayState: isInView ? 'running' : 'paused' }}>
               {row2Items.map((item, index) => (
                 <article
                   key={`r2-mobile-${item.id}-${index}`}
