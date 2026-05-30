@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { CategoryCatalog } from '@/features/categories';
 
 interface Props {

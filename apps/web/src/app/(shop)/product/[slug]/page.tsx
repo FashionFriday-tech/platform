@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { type Metadata } from 'next';
 
 import ProductPageMaster, {
