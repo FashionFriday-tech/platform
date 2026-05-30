@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
 
-import { DUMMY_PRODUCTS } from '@/data/products';
+import { getProductsByCategory } from '@/data/filter-engine';
 import { CatalogueClient } from '@/features/catalogue';
 
 interface CategoryPageProps {
@@ -9,7 +9,7 @@ interface CategoryPageProps {
   category: string;
 }
 
-export function CategoryPage({ gender, category }: CategoryPageProps): JSX.Element {
+export async function CategoryPage({ gender, category }: CategoryPageProps): Promise<JSX.Element> {
   const categoryMap: Record<string, string> = {
     watches: 'Watches',
     clothing: 'Clothing',
@@ -26,9 +26,10 @@ export function CategoryPage({ gender, category }: CategoryPageProps): JSX.Eleme
     return notFound();
   }
 
-  // The logic: (Category must match) AND (Product Gender is current department OR Unisex)
-  const initialProducts = DUMMY_PRODUCTS.filter((p) => {
-    const isCorrectCategory = p.categoryId === formattedCategory;
+  const products = await getProductsByCategory(formattedCategory);
+
+  const initialProducts = products.filter((p) => {
+    const isCorrectCategory = p.categoryId?.toLowerCase() === formattedCategory.toLowerCase();
 
     const pGender = p.gender.toLowerCase();
     const isCorrectGender = pGender === formattedGender || pGender === 'unisex';

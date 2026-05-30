@@ -1,6 +1,5 @@
 import { type Product } from '@ff/schemas';
-
-import { DUMMY_PRODUCTS } from './products';
+import { mapDbProductToSchema } from '@/features/product/utils/mapper';
 
 /**
  * 1. SIDEBAR CONFIGURATION
@@ -86,15 +85,70 @@ export function filterProducts(products: Product[], activeFilters: Record<string
  * 3. DATA FETCHING LOGIC
  */
 
-export const getProductBySlug = (slug: string): Product | undefined => {
-  return DUMMY_PRODUCTS.find((p) => p.slug === slug);
+export const getProductBySlug = async (slug: string): Promise<Product | undefined> => {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const res = await fetch(`${API_URL}/products/${slug}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return undefined;
+    const p = await res.json();
+    return mapDbProductToSchema(p);
+  } catch (err) {
+    console.error('getProductBySlug error:', err);
+    return undefined;
+  }
 };
 
-export const getSimilarProducts = (category: string, currentProductId?: string): Product[] => {
-  return DUMMY_PRODUCTS.filter((p) => p.categoryId === category && p.id !== currentProductId).slice(
-    0,
-    10,
-  );
+export const getSimilarProducts = async (category: string, currentProductId?: string): Promise<Product[]> => {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const res = await fetch(`${API_URL}/products/category/${category.toLowerCase()}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const data = json.data || [];
+    return data
+      .map(mapDbProductToSchema)
+      .filter((p: Product) => p.id !== currentProductId)
+      .slice(0, 10);
+  } catch (err) {
+    console.error('getSimilarProducts error:', err);
+    return [];
+  }
+};
+
+export const getProductsByCategory = async (category: string): Promise<Product[]> => {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const res = await fetch(`${API_URL}/products/category/${category.toLowerCase()}?take=100`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const data = json.data || [];
+    return data.map(mapDbProductToSchema);
+  } catch (err) {
+    console.error('getProductsByCategory error:', err);
+    return [];
+  }
+};
+
+export const getAllProducts = async (): Promise<Product[]> => {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const res = await fetch(`${API_URL}/products?take=100`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const data = json.data || [];
+    return data.map(mapDbProductToSchema);
+  } catch (err) {
+    console.error('getAllProducts error:', err);
+    return [];
+  }
 };
 
 export const getMaxPrice = (products: Product[]): number => {
