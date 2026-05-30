@@ -12,7 +12,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return { title: 'Product Not Found | Fashion Friday' };
@@ -59,13 +59,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return <EditorialError slug={slug} />;
   }
 
-  const similarProducts = getSimilarProducts(product.categoryId, product.id);
+  const similarProducts = await getSimilarProducts(product.categoryId, product.id);
 
   const brandName = Array.isArray(product.brand) ? product.brand[0] : product.brand || 'Fashion Friday';
 
