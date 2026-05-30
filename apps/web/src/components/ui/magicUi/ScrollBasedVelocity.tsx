@@ -134,7 +134,7 @@ function ScrollVelocityRowImpl({
       document.removeEventListener('visibilitychange', handleVisibility);
       mq.removeEventListener('change', handlePRM);
     };
-  }, [children, unitWidth]);
+  }, []);
 
   const x = useTransform([baseX, unitWidth], ([v, bw]) => {
     const width = Number(bw) || 1;
