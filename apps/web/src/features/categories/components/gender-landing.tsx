@@ -60,14 +60,26 @@ export function GenderLanding() {
   };
 
   const genderTarget = activeGender.toUpperCase();
-  const categoryList = categories
+  const categoryListMap = new Map<string, { name: string; slug: string; img: string; items: string; productCount: number }>();
+  
+  categories
     .filter((c) => c.gender === genderTarget || c.gender === 'UNISEX')
-    .map((c) => ({
-      name: c.name,
-      slug: c.slug.replace(/^(men-|women-|unisex-)/i, ''),
-      img: c.image,
-      items: `${c._count?.products || 0} Items`,
-    }));
+    .forEach((c) => {
+      const slug = c.slug.replace(/^(men-|women-|unisex-)/i, '').toLowerCase();
+      const productCount = c._count?.products || 0;
+      const existing = categoryListMap.get(slug);
+      if (!existing || productCount > existing.productCount) {
+        categoryListMap.set(slug, {
+          name: c.name,
+          slug,
+          img: c.image,
+          items: `${productCount} Items`,
+          productCount,
+        });
+      }
+    });
+
+  const categoryList = Array.from(categoryListMap.values());
 
   const currentData = {
     label: activeGender.charAt(0).toUpperCase() + activeGender.slice(1),
