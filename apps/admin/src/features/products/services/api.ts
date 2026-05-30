@@ -21,7 +21,7 @@ export async function fetchProducts(): Promise<Product[]> {
       sellingPrice: Number(p.sellingPrice) || 0,
       stock: Number(p.totalStock) || 0,
       maxStock: 1000,
-      status: (p.status.charAt(0).toUpperCase() + p.status.slice(1).toLowerCase()) as any,
+      status: p.status === 'PUBLISHED' ? 'Active' : p.status === 'DRAFT' ? 'Draft' : 'Inactive',
       categoryId: p.categoryId,
       category: p.category?.name || 'Unknown',
       store: 'Main Store', // Dummy store
@@ -60,7 +60,7 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
       sellingPrice: Number(p.sellingPrice) || 0,
       stock: Number(p.totalStock) || 0,
       maxStock: 1000,
-      status: (p.status.charAt(0).toUpperCase() + p.status.slice(1).toLowerCase()) as any,
+      status: p.status === 'PUBLISHED' ? 'Active' : p.status === 'DRAFT' ? 'Draft' : 'Inactive',
       categoryId: p.categoryId,
       category: p.category?.name || 'Unknown',
       store: 'Main Store',
