@@ -15,6 +15,8 @@ export default function Hero(): JSX.Element {
     goToCard,
     nextCard,
     prevCard,
+    containerRef,
+    isInView,
   } = useHeroCarousel();
 
   const repeatedCards = [...cards, ...cards, ...cards];
@@ -67,7 +69,7 @@ export default function Hero(): JSX.Element {
   };
 
   return (
-    <section className="relative min-h-[60vh] w-full overflow-hidden p-2 pb-2 lg:mt-28 lg:min-h-[85vh] lg:p-6">
+    <section ref={containerRef} className="relative min-h-[60vh] w-full overflow-hidden p-2 pb-2 lg:mt-28 lg:min-h-[85vh] lg:p-6">
       {/* Mobile Search input at the top of Hero section */}
       <div className="px-2 mt-2 mb-4 lg:hidden">
         <div
@@ -180,7 +182,7 @@ export default function Hero(): JSX.Element {
       </div>
 
       {/* Large screen scrolling marquee carousel (hidden on small devices, flex on lg) */}
-      <div className="carousel-track hidden h-[80vh] items-stretch gap-6 px-2 lg:flex">
+      <div className="carousel-track hidden h-[80vh] items-stretch gap-6 px-2 lg:flex" style={{ animationPlayState: isInView ? 'running' : 'paused' }}>
         {repeatedCards.map((card, idx) => (
           <Link
             key={`${card.id}-${idx}`}
