@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowUpRightIcon } from '@ff/ui';
 import { BrandCard, useBrands } from '@/features/brand';
@@ -8,6 +9,21 @@ const FEATURED_BRAND_NAMES = ['nike', 'adidas', 'zara', 'crocs', 'new balance', 
 
 export default function ShopByBrands() {
   const { brands, isLoading } = useBrands();
+  const [isInView, setIsInView] = useState(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const containerRef = useCallback((node: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    if (node) {
+      observerRef.current = new IntersectionObserver(([entry]) => {
+        setIsInView(entry.isIntersecting);
+      });
+      observerRef.current.observe(node);
+    }
+  }, []);
 
   const featuredBrands = brands.filter((brand) =>
     FEATURED_BRAND_NAMES.includes(brand.name.toLowerCase()),
@@ -52,8 +68,7 @@ export default function ShopByBrands() {
           `}</style>
 
 
-          {/* Infinity scroll row (doubled contents for seamless loop) */}
-          <div className="animate-brand-marquee px-6 relative z-10">
+          <div ref={containerRef} className="animate-brand-marquee px-6 relative z-10" style={{ animationPlayState: isInView ? 'running' : 'paused' }}>
             {[...displayList, ...displayList].map((brand, idx) => (
               <div key={`${brand.slug}-${idx}`} className="w-[180px] sm:w-[220px] shrink-0">
                 <BrandCard brand={brand} />
