@@ -1,6 +1,6 @@
 'use client';
 
-import { type CSSProperties, useState, useEffect } from 'react';
+import { type CSSProperties, useState, useEffect, useRef, useCallback } from 'react';
 import { ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 import { fetcher } from '@/lib/api-client';
@@ -41,17 +41,16 @@ const FALLBACK_REVIEWS = [
   '/images/reviews/10.jpg',
 ];
 
-// --- Interfaces ---
-
 interface InfiniteColumnProps {
   images: string[];
   duration: number;
   reverse?: boolean;
+  active?: boolean;
 }
 
 // --- Components ---
 
-const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnProps) => {
+const InfiniteColumn = ({ images, duration, reverse = false, active = false }: InfiniteColumnProps) => {
   // Ensure we have enough items to scroll nicely
   const loopImages = [...images, ...images, ...images];
 
@@ -96,6 +95,7 @@ const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnPro
         style={
           {
             '--duration': `${duration}s`,
+            animationPlayState: active ? 'running' : 'paused',
           } as CSSProperties
         }
       >
@@ -120,6 +120,21 @@ const InfiniteColumn = ({ images, duration, reverse = false }: InfiniteColumnPro
 export default function SplitFeatureSection() {
   const [reviews, setReviews] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [isInView, setIsInView] = useState(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const columnsRef = useCallback((node: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    if (node) {
+      observerRef.current = new IntersectionObserver(([entry]) => {
+        setIsInView(entry.isIntersecting);
+      });
+      observerRef.current.observe(node);
+    }
+  }, []);
 
   useEffect(() => {
     setIsMounted(true);
@@ -182,7 +197,7 @@ export default function SplitFeatureSection() {
             <div className="space-y-8">
               {features.map((item, idx) => (
                 <motion.div
-                  key={idx}
+                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -221,19 +236,19 @@ export default function SplitFeatureSection() {
           {/* RIGHT SIDE */}
           <div className="relative flex flex-col items-center border-white/5 lg:border-l w-full">
             {isMounted ? (
-              <div className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)]">
+              <div ref={columnsRef} className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)]">
                 <div className="from-background via-blackground pointer-events-none absolute top-0 right-0 left-0 z-20 h-24 bg-linear-to-b to-transparent" />
                 <div className="from-blackground via-background pointer-events-none absolute right-0 -bottom-6 left-0 z-20 h-24 bg-linear-to-t to-transparent" />
 
                 <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6 w-full">
                   <div className="relative h-full overflow-hidden">
-                    {col1.length > 0 && <InfiniteColumn images={col1} duration={25} />}
+                    {col1.length > 0 && <InfiniteColumn images={col1} duration={25} active={isInView} />}
                   </div>
                   <div className="relative h-full overflow-hidden pt-24">
-                    {col2.length > 0 && <InfiniteColumn images={col2} duration={35} reverse={true} />}
+                    {col2.length > 0 && <InfiniteColumn images={col2} duration={35} reverse={true} active={isInView} />}
                   </div>
                   <div className="relative h-full overflow-hidden pt-12">
-                    {col3.length > 0 && <InfiniteColumn images={col3} duration={28} />}
+                    {col3.length > 0 && <InfiniteColumn images={col3} duration={28} active={isInView} />}
                   </div>
                 </div>
               </div>
