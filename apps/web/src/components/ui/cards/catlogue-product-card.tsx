@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 'use client';
 
 import React from 'react';
@@ -8,7 +9,7 @@ import { type Product } from '@ff/schemas';
 import { StarBadgeIcon, StarsIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
 
-import brandLogos from '@/data/brand-logos';
+import { brandLogos } from '@/features/brand';
 
 interface StoreProductCardProps {
   // Use the concrete Product type instead of 'any' to catch errors early

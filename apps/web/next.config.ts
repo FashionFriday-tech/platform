@@ -26,10 +26,6 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  experimental: {
-    optimizeCss: true,
-  },
-
   transpilePackages: ['@ff/ui'],
 };
 

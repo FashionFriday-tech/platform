@@ -9,9 +9,3 @@ export interface Transaction {
   description: string;
   timestamp: number;
 }
-
-export interface WalletTotals {
-  total: number;
-  rewardWallet: number;
-  refundBalance: number;
-}

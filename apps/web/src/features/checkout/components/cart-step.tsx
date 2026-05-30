@@ -6,8 +6,7 @@ import Link from 'next/link';
 
 import { ChevronDownIcon, ShoppingBagIcon } from '@ff/ui';
 
-import { bagItems } from '@/data/bag-items';
-import { CartItemsCard, OrderSummary } from '@/features/cart';
+import { bagItems, CartItemsCard, OrderSummary } from '@/features/cart';
 
 import { CheckoutProgress } from './checkout-progress';
 

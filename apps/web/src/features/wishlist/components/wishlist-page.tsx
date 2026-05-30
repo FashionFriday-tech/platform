@@ -1,13 +1,14 @@
-import React from 'react';
+'use client';
 
+import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { useWishlist } from '../hooks/use-wishlist';
+import { wishlistItems } from '../data';
 import { EmptyWishlist } from './empty-wishlist';
 import { WishlistCard } from './wishlist-card';
 
 export function WishlistPage() {
-  const { wishlistItems, hasItems } = useWishlist();
+  const hasItems = wishlistItems.length > 0;
 
   return (
     <main className="bg-background text-foreground min-h-screen md:pt-20">
@@ -19,7 +20,7 @@ export function WishlistPage() {
             <h1 className="text-lg uppercase">Wishlist</h1>
           </div>
 
-          {/* Right: Items Count */}
+          {/* Right: Favorite Icon */}
           <span className="px-2 py-0.5 text-3xl">
             {wishlistItems.length} <span className="text-sm">Items</span>
           </span>

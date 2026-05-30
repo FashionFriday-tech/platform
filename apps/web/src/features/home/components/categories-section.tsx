@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-import { categories } from '@/data/categories';
+import { categories } from '@/features/home/data/categories';
 
 export default function CategoryCarousel() {
   const targetRef = useRef<HTMLDivElement>(null);

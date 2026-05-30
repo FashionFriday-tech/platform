@@ -1,5 +1,5 @@
 import CoverflowCarousel from '@/components/ui/carousel/CoverflowCarousel';
-import { trendingProducts } from '@/data/trending-products';
+import { trendingProducts } from '@/features/home/data/trending-products';
 
 export default function TrendingSection() {
   return (

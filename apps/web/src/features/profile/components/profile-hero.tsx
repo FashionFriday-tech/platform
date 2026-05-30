@@ -1,12 +1,13 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 
 import { ArrowUpRightIcon, CrownIcon, SmartphoneIcon, SparklesIcon, ZapIcon } from '@ff/ui';
 import { motion } from 'framer-motion';
 
 import { useAuth } from '@/context/AuthContext';
-import { userData as fallbackData } from '@/data/profile';
+import { userData as fallbackData } from '../data/profile';
 
 export function ProfileHero() {
   const { user, loading } = useAuth();

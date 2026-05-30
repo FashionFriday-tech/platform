@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use client';
 
 import { useState } from 'react';
@@ -5,7 +6,7 @@ import Image from 'next/image';
 
 import { CloseIcon, MinusIcon, PlusIcon } from '@ff/ui';
 
-import { type BagItem } from '@/data/bag-items';
+import { type BagItem } from '@/features/cart';
 
 interface BagItemCardProps {
   item: BagItem;

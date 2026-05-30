@@ -1,10 +1,10 @@
-import brandLogos from '@/data/brand-logos';
+import { brandLogos } from '@/features/brand';
 const brands = brandLogos;
 import Link from 'next/link';
 
 import { ArrowUpRightIcon } from '@ff/ui';
 
-import { BrandCard } from '@/features/brand/components/BrandCard';
+import { BrandCard } from '@/features/brand';
 
 const FEATURED_BRAND_NAMES = ['nike', 'adidas', 'zara', 'crocs', 'new balance', 'asics'];
 

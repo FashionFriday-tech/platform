@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
-
-import { type Transaction, type TransactionType, type WalletTotals } from '../types';
+import type { Transaction, TransactionType } from '../types';
 
 export function useWallet() {
   const [filter, setFilter] = useState<'all' | TransactionType>('all');
 
-  const totals: WalletTotals = useMemo(
+  const totals = useMemo(
     () => ({
       total: 3199,
       rewardWallet: 700,
@@ -66,6 +65,7 @@ export function useWallet() {
     filter,
     setFilter,
     totals,
+    transactions,
     sortedLedger,
   };
 }

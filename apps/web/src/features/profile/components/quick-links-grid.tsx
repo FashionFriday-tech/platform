@@ -1,12 +1,13 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 
 import { ExternalLinkIcon, UserIcon as UIIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
 import { useAuth } from '@/context/AuthContext';
-import { quickLinks } from '@/data/profile';
+import { quickLinks } from '../data/profile';
 
 export function QuickLinksGrid() {
   const { user, logout } = useAuth();

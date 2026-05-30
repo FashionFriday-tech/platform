@@ -19,12 +19,11 @@ import {
   TruckIcon,
 } from '@ff/ui';
 
-import { useLiveProductMetric } from '@/features/product/hooks/use-live-product-metric';
-
-import Gallery from './components/gallery';
-import RelatedProducts from './components/RelatedProducts';
-import ReviewSection from './components/ReviewSection';
-import ProductVariantPage from './components/VariantDropdown';
+import { useLiveProductMetric } from './use-live-product-metric';
+import Gallery from './gallery';
+import RelatedProducts from './related-products';
+import ReviewSection from './review-section';
+import ProductVariantPage from './variant-dropdown';
 
 export default function ProductPageMaster({
   product,
@@ -40,10 +39,6 @@ export default function ProductPageMaster({
   const displaySizes = product.attributes.sizes;
   const cols = Math.ceil(displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2);
 
-  /**
-   * FIX: Wrapped async logic to avoid @typescript-eslint/no-misused-promises.
-   * Also replaced console.log with console.error to satisfy 'no-console' rule.
-   */
   const handleShare = () => {
     const performShare = async () => {
       if (navigator.share) {
@@ -271,7 +266,6 @@ export default function ProductPageMaster({
 
       {showWatchingPopup && (
         <div className="bg-background/60 fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-2xl transition-all">
-          {/* FIX: Optimized max-w-[360px] to max-w-90 per Tailwind canonical suggestion */}
           <div className="relative w-full max-w-90">
             <div className="flex flex-col items-center justify-center rounded-[40px] border border-white/5 bg-black p-10 text-center text-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
               <div className="mb-8 flex items-center gap-2">
