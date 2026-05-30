@@ -30,7 +30,7 @@ export class AdminProductsController {
 
   @Get()
   async getProducts(@Query('skip') skip?: number, @Query('take') take?: number) {
-    return this.productsService.getProducts(Number(skip) || 0, Number(take) || 10);
+    return this.productsService.getProducts(Number(skip) || 0, Number(take) || 100);
   }
 
   @Get(':id')
