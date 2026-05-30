@@ -54,12 +54,12 @@ const ColorTray = ({
           >
             <div className="no-scrollbar flex gap-4 overflow-x-auto pt-6 pb-2">
               {options.map((opt) => (
-                <div key={opt.slug} className={`flex shrink-0 flex-col items-center gap-2`}>
+                <div key={opt.slug || opt.label} className={`flex shrink-0 flex-col items-center gap-2`}>
                   {/* Link wrapper for navigation */}
                   <Link
-                    href={`/product/${opt.slug}`}
+                    href={`/product/${opt.slug || opt.label.toLowerCase()}`}
                     onClick={() => {
-                      onChange(opt.slug);
+                      onChange(opt.slug || opt.label.toLowerCase());
                       onToggle();
                     }}
                     className="relative flex items-center justify-center p-1"
@@ -67,7 +67,7 @@ const ColorTray = ({
                     {/* Active Circle Border */}
                     <div
                       className={`absolute inset-0 rounded-full border transition-all duration-300 ${
-                        selectedValue === opt.slug
+                        selectedValue === (opt.slug || opt.label.toLowerCase())
                           ? 'border-white opacity-100'
                           : 'border-transparent opacity-0'
                       }`}
@@ -85,7 +85,7 @@ const ColorTray = ({
                   </Link>
                   <span
                     className={`text-[8px] font-black tracking-widest uppercase italic ${
-                      selectedValue === opt.slug ? 'text-white' : 'text-white/40'
+                      selectedValue === (opt.slug || opt.label.toLowerCase()) ? 'text-white' : 'text-white/40'
                     }`}
                   >
                     {opt.label}
