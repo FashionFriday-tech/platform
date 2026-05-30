@@ -2,7 +2,7 @@
 
 // Force rebuild comment
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -31,9 +31,25 @@ export default function TrendingCoverflowPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isInView, setIsInView] = useState(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  const sectionRef = useCallback((node: HTMLElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    if (node) {
+      observerRef.current = new IntersectionObserver(([entry]) => {
+        setIsInView(entry.isIntersecting);
+      });
+      observerRef.current.observe(node);
+    }
+  }, []);
 
   const startTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    if (!isInView) return;
     timerRef.current = setInterval(() => {
       setCurrentIndex((prev) => prev + 1);
     }, 3000);
@@ -50,7 +66,7 @@ export default function TrendingCoverflowPage() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [products.length]);
+  }, [products.length, isInView]);
 
   useEffect(() => {
     const loadContentPartners = async () => {
@@ -101,12 +117,12 @@ export default function TrendingCoverflowPage() {
     if (Math.abs(offset) === 1) {
       const dir = Math.sign(offset);
       return {
-        x: `${dir * 65}%`,
-        scale: 0.82,
-        rotateY: `${dir * -20}deg`,
+        x: `${dir * 70}%`,
+        scale: 0.78,
+        rotateY: `${dir * -45}deg`,
         zIndex: 40,
-        opacity: 1,
-        filter: 'brightness(0.8) blur(0px)',
+        opacity: 0.85,
+        filter: 'brightness(0.55) blur(1.5px)',
       };
     }
 
@@ -114,43 +130,42 @@ export default function TrendingCoverflowPage() {
     if (Math.abs(offset) === 2) {
       const dir = Math.sign(offset);
       return {
-        x: `${dir * 120}%`,
+        x: `${dir * 110}%`,
         scale: 0.65,
-        rotateY: `${dir * -45}deg`,
+        rotateY: `${dir * -55}deg`,
         zIndex: 30,
         opacity: 0.6,
-        filter: 'brightness(0.5) blur(1px)',
+        filter: 'brightness(0.35) blur(3px)',
       };
     }
 
     // Hidden / Offscreen (+3 or -3)
     const dir = Math.sign(offset);
     return {
-      x: `${dir * 180}%`,
+      x: `${dir * 160}%`,
       scale: 0.5,
-      rotateY: `${dir * -60}deg`,
+      rotateY: `${dir * -65}deg`,
       zIndex: 10,
       opacity: 0,
-      filter: 'brightness(0.2) blur(3px)',
+      filter: 'brightness(0.2) blur(6px)',
     };
   };
 
-  // We render a fixed window of cards around the current index
-  // e.g., if current is 10, we render 7, 8, 9, 10, 11, 12, 13
-  const visibleRange = [-3, -2, -1, 0, 1, 2, 3];
+
+
+  // The 5 indices centered around the current index
+  const visibleRange = [-2, -1, 0, 1, 2];
 
   if (products.length === 0) {
     return null;
   }
 
   return (
-    <section className="bg w-full overflow-hidden sm:py-24 py-12">
+    <section ref={sectionRef} className="bg w-full overflow-hidden sm:py-24 py-12">
       <div className="container mx-auto px-6 flex flex-col items-center md:flex-row md:items-end justify-center gap-4 sm:mb-16 mb-6">
         <h2 className="section-header">
           Content Partners
         </h2>
-        
-        
       </div>
 
       <div className="relative flex h-96 w-full items-center justify-center sm:my-10 sm:h-125">
@@ -175,7 +190,7 @@ export default function TrendingCoverflowPage() {
                 key={virtualIndex}
                 animate={variant}
                 initial={variant}
-                transition={{ type: 'spring', stiffness: 60, damping: 24, mass: 1.2 }}
+                transition={{ type: 'spring', stiffness: 75, damping: 20, mass: 1.2 }}
                 onClick={() => {
                   handleCardClick(virtualIndex);
                 }}
