@@ -26,8 +26,22 @@ export function useHeroCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isInView, setIsInView] = useState(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Fetch campaign banners dynamically from database via NestJS API
+  const containerRef = useCallback((node: HTMLElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    if (node) {
+      observerRef.current = new IntersectionObserver(([entry]) => {
+        setIsInView(entry.isIntersecting);
+      });
+      observerRef.current.observe(node);
+    }
+  }, []);
+
   useEffect(() => {
     const loadHeroBanners = async () => {
       try {
@@ -53,17 +67,15 @@ export function useHeroCarousel() {
     loadHeroBanners();
   }, []);
 
-
-
   const startTimer = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    if (!isPlaying) return;
+    if (!isPlaying || !isInView) return;
     timerRef.current = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % cards.length);
     }, 3000);
-  }, [cards.length, isPlaying]);
+  }, [cards.length, isPlaying, isInView]);
 
   useEffect(() => {
     if (cards.length > 0) {
@@ -103,5 +115,7 @@ export function useHeroCarousel() {
     nextCard,
     prevCard,
     togglePlay,
+    containerRef,
+    isInView,
   };
 }
