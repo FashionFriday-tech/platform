@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link'; // Import Link
 
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useInView } from 'motion/react';
 
 // --- TYPES ---
 export interface Product {
@@ -24,13 +24,14 @@ const transitionSpec = {
 
 export default function CoverflowCarousel({ products }: { products: Product[] }) {
   const [activeIndex, setActiveIndex] = useState(Math.floor(products.length / 2));
-
-
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef);
 
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const startTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    if (!isInView) return;
     timerRef.current = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % products.length);
     }, 3000);
@@ -45,7 +46,7 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [products.length]);
+  }, [products.length, isInView]);
 
   const getVariant = (index: number) => {
     const total = products.length;
@@ -101,7 +102,7 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
   };
 
   return (
-    <div className="relative flex w-full flex-col items-center justify-center">
+    <div ref={containerRef} className="relative flex w-full flex-col items-center justify-center">
       {/* 3D STAGE CONTAINER */}
       <div className="relative flex h-112 w-full max-w-6xl items-center justify-center perspective-distant">
         <AnimatePresence mode="popLayout">
