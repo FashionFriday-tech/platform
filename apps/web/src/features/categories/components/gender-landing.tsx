@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -11,32 +10,22 @@ import { AnimatePresence, motion, type PanInfo } from 'motion/react';
 const GENDERS = ['men', 'women'] as const;
 type Gender = (typeof GENDERS)[number];
 
-interface CategoryRecord {
+export interface CategoryRecord {
   id: string;
   name: string;
   slug: string;
   image: string;
   gender: string;
-  _count?: { products: number };
 }
 
-export function GenderLanding() {
+interface GenderLandingProps {
+  initialCategories: CategoryRecord[];
+}
+
+export function GenderLanding({ initialCategories }: GenderLandingProps) {
   const params = useParams();
   const router = useRouter();
   const genderParam = (params.gender as string).toLowerCase();
-
-  const [categories, setCategories] = useState<CategoryRecord[]>([]);
-
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/categories`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setCategories(data);
-        }
-      })
-      .catch((err) => console.error('Failed to fetch categories:', err));
-  }, []);
 
   const getIndexFromParam = (param: string | undefined) => {
     const idx = GENDERS.indexOf(param as Gender);
@@ -60,21 +49,17 @@ export function GenderLanding() {
   };
 
   const genderTarget = activeGender.toUpperCase();
-  const categoryListMap = new Map<string, { name: string; slug: string; img: string; items: string; productCount: number }>();
+  const categoryListMap = new Map<string, { name: string; slug: string; img: string }>();
   
-  categories
+  initialCategories
     .filter((c) => c.gender === genderTarget || c.gender === 'UNISEX')
     .forEach((c) => {
       const slug = c.slug.replace(/^(men-|women-|unisex-)/i, '').toLowerCase();
-      const productCount = c._count?.products || 0;
-      const existing = categoryListMap.get(slug);
-      if (!existing || productCount > existing.productCount) {
+      if (!categoryListMap.has(slug)) {
         categoryListMap.set(slug, {
           name: c.name,
           slug,
           img: c.image,
-          items: `${productCount} Items`,
-          productCount,
         });
       }
     });
@@ -89,7 +74,7 @@ export function GenderLanding() {
 
 
   return (
-    <div className="bg-background min-h-screen overflow-x-hidden select-none lg:h-screen lg:overflow-hidden">
+    <div className="bg-background min-h-screen overflow-x-hidden select-none lg:h-[calc(100vh-8rem)] lg:overflow-hidden lg:mt-32">
       {/* --- MOBILE HEADER --- */}
       <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md lg:hidden">
         <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
@@ -130,11 +115,11 @@ export function GenderLanding() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:flex-row lg:px-12 lg:pt-28 lg:pb-0"
+            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:flex-row lg:items-stretch lg:justify-center lg:gap-12 lg:h-full lg:px-12 lg:pt-0 lg:pb-0"
           >
             {/* 1. HERO SECTION */}
-            <div className="flex w-full items-start justify-center lg:h-full lg:w-1/2 lg:pr-8">
-              <div className="border-border/50 group relative aspect-5/4 w-full overflow-hidden rounded-4xl border shadow-2xl lg:fixed lg:aspect-auto lg:h-[80%] lg:w-[95%] lg:max-w-150 lg:rounded-[3.5rem]">
+            <div className="flex w-full items-center justify-center lg:h-full lg:w-1/2 lg:pr-8">
+              <div className="border-border/50 group relative aspect-5/4 w-full overflow-hidden rounded-4xl border shadow-2xl lg:relative lg:aspect-auto lg:h-[90%] lg:w-full lg:max-w-150 lg:rounded-[3.5rem]">
                 <motion.div
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
@@ -157,7 +142,7 @@ export function GenderLanding() {
             </div>
 
             {/* 2. CATEGORY LIST */}
-            <div className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:gap-6 lg:overflow-y-auto lg:pt-0 lg:pb-10">
+            <div className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-[90%] lg:w-1/2 lg:gap-6 lg:overflow-y-auto lg:pt-0 lg:pb-0 lg:my-auto">
               <div className="w-full max-w-2xl space-y-3 lg:space-y-6">
                 {currentData.list.map((cat) => (
                   <Link
@@ -180,9 +165,6 @@ export function GenderLanding() {
                         <h3 className="text-foreground group-hover:text-brand text-[20px] font-bold tracking-tighter uppercase italic transition-colors lg:text-3xl">
                           {cat.name}
                         </h3>
-                        <p className="text-foreground-muted mt-0.5 text-[12px] font-bold tracking-tight uppercase">
-                          {cat.items}
-                        </p>
                       </div>
 
                       <div className="pr-3">
