@@ -89,7 +89,7 @@ export const getProductBySlug = async (slug: string): Promise<Product | undefine
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
     const res = await fetch(`${API_URL}/products/${slug}`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 86400, tags: [`product-${slug}`] },
     });
     if (!res.ok) return undefined;
     const p = await res.json();
@@ -104,7 +104,7 @@ export const getSimilarProducts = async (category: string, currentProductId?: st
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
     const res = await fetch(`${API_URL}/products/category/${category.toLowerCase()}`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 86400, tags: [`similar-products-${category.toLowerCase()}`] },
     });
     if (!res.ok) return [];
     const json = await res.json();

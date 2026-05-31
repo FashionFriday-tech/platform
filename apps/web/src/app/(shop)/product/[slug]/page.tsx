@@ -10,6 +10,25 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    // Pre-render the top 50 featured products to keep build times fast
+    const res = await fetch(`${API_URL}/products/featured?take=50`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    const products = json.data || [];
+    return products.map((p: any) => ({
+      slug: p.slug,
+    }));
+  } catch (err) {
+    console.error('Failed to generate static params for products:', err);
+    return [];
+  }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
