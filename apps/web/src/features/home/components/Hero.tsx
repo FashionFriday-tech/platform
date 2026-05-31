@@ -7,7 +7,12 @@ import { useHeroCarousel } from '../hooks/use-hero-carousel';
 import { SearchIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
-export default function Hero(): JSX.Element {
+export default function Hero({
+  initialCampaigns,
+}: {
+  initialCampaigns?: any[];
+}): JSX.Element {
+  console.log('[Hero] initialCampaigns:', initialCampaigns ? initialCampaigns.length : 'undefined');
   const {
     cards,
     activeIndex,
@@ -17,7 +22,8 @@ export default function Hero(): JSX.Element {
     prevCard,
     containerRef,
     isInView,
-  } = useHeroCarousel();
+  } = useHeroCarousel(initialCampaigns);
+
 
   const repeatedCards = [...cards, ...cards, ...cards];
 

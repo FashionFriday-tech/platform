@@ -48,8 +48,12 @@ const BrandList = ({
   </>
 );
 
-export default function BrandScroll() {
-  const { brands, isLoading } = useBrands();
+export default function BrandScroll({
+  initialBrands,
+}: {
+  initialBrands?: Brand[];
+}) {
+  const { brands, isLoading } = useBrands(initialBrands);
 
   if (isLoading || brands.length === 0) {
     return null;

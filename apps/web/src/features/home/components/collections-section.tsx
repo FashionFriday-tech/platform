@@ -13,9 +13,15 @@ interface CollectionItem {
   productCount: number;
 }
 
-export default function CollectionsSection() {
-  const [collections, setCollections] = useState<CollectionItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default function CollectionsSection({
+  initialCollections,
+}: {
+  initialCollections?: CollectionItem[];
+}) {
+  const [collections, setCollections] = useState<CollectionItem[]>(
+    initialCollections || [],
+  );
+  const [isLoading, setIsLoading] = useState(!initialCollections);
   const [isInView, setIsInView] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -33,6 +39,7 @@ export default function CollectionsSection() {
   }, []);
 
   useEffect(() => {
+    if (initialCollections) return;
     fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/collections`)
       .then((res) => res.json())
       .then((data) => {
@@ -43,7 +50,7 @@ export default function CollectionsSection() {
         console.error('Failed to fetch collections:', err);
         setIsLoading(false);
       });
-  }, []);
+  }, [initialCollections]);
 
   // Split the array for the mobile double-row configuration to prevent duplicates
   const midpoint = Math.ceil(collections.length / 2);

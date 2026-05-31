@@ -7,8 +7,12 @@ import { BrandCard, useBrands } from '@/features/brand';
 
 const FEATURED_BRAND_NAMES = ['nike', 'adidas', 'zara', 'crocs', 'new balance', 'asics'];
 
-export default function ShopByBrands() {
-  const { brands, isLoading } = useBrands();
+export default function ShopByBrands({
+  initialBrands,
+}: {
+  initialBrands?: any[];
+}) {
+  const { brands, isLoading } = useBrands(initialBrands);
   const [isInView, setIsInView] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
 

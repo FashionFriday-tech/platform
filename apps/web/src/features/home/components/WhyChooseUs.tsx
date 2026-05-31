@@ -117,9 +117,17 @@ const InfiniteColumn = ({ images, duration, reverse = false, active = false }: I
 };
 
 // --- Main Section ---
-export default function SplitFeatureSection() {
-  const [reviews, setReviews] = useState<string[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
+export default function SplitFeatureSection({
+  initialReviews,
+}: {
+  initialReviews?: any[];
+}) {
+  const [reviews, setReviews] = useState<string[]>(
+    initialReviews && initialReviews.length > 0
+      ? initialReviews.map((r) => r.imageUrl)
+      : []
+  );
+  const [isMounted, setIsMounted] = useState(!!initialReviews && initialReviews.length > 0);
   const [isInView, setIsInView] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -138,6 +146,7 @@ export default function SplitFeatureSection() {
 
   useEffect(() => {
     setIsMounted(true);
+    if (initialReviews && initialReviews.length > 0) return;
     const loadReviews = async () => {
       try {
         const data = await fetcher<any[]>('/whatsapp-reviews');
@@ -152,7 +161,7 @@ export default function SplitFeatureSection() {
       }
     };
     loadReviews();
-  }, []);
+  }, [initialReviews]);
 
   // Split reviews (max 20) evenly into 3 columns
   const getColumnImages = (colIndex: number) => {

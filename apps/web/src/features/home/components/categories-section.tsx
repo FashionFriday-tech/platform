@@ -9,34 +9,43 @@ import { fetcher } from '@/lib/api-client';
 
 
 
-export default function CategoryCarousel() {
-  const [cards, setCards] = useState<any[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
+export default function CategoryCarousel({
+  initialCampaigns,
+}: {
+  initialCampaigns?: any[];
+}) {
+  const getMappedCategories = (banners: any[]) => {
+    const categoryBanners = banners.filter(
+      (b) => b.placement === 'home-categories' && b.isActive
+    );
+    return categoryBanners.map((b) => {
+      const isWomen = b.title?.toLowerCase().includes('women') || b.linkUrl?.toLowerCase().includes('women');
+      return {
+        id: b.id,
+        title: b.title ?? (isWomen ? "Women's Collection" : "Men's Collection"),
+        subtitle: isWomen ? 'women' : 'men',
+        image: b.mediaUrl ?? b.image ?? '',
+        href: b.linkUrl ?? (isWomen ? '/women' : '/men'),
+        buttonText: isWomen ? 'Shop Women' : 'Shop Men',
+      };
+    });
+  };
+
+  const [cards, setCards] = useState<any[]>(
+    initialCampaigns ? getMappedCategories(initialCampaigns) : []
+  );
+  const [isMounted, setIsMounted] = useState(!!initialCampaigns);
 
   useEffect(() => {
     setIsMounted(true);
+    if (initialCampaigns) return;
     const loadCategories = async () => {
       try {
         const data = await fetcher<any[]>('/campaigns');
         if (Array.isArray(data) && data.length > 0) {
-          const categoryBanners = data.filter(
-            (b) => b.placement === 'home-categories' && b.isActive
-          );
-
+          const categoryBanners = getMappedCategories(data);
           if (categoryBanners.length > 0) {
-            const mapped = categoryBanners.map((b) => {
-              const isWomen = b.title?.toLowerCase().includes('women') || b.linkUrl?.toLowerCase().includes('women');
-              return {
-                id: b.id,
-                title: b.title ?? (isWomen ? "Women's Collection" : "Men's Collection"),
-                subtitle: isWomen ? 'women' : 'men',
-                image: b.mediaUrl ?? b.image ?? '',
-                href: b.linkUrl ?? (isWomen ? '/women' : '/men'),
-                buttonText: isWomen ? 'Shop Women' : 'Shop Men',
-              };
-            });
-            setCards(mapped);
-            return;
+            setCards(categoryBanners);
           }
         }
       } catch (err) {
@@ -44,7 +53,7 @@ export default function CategoryCarousel() {
       }
     };
     loadCategories();
-  }, []);
+  }, [initialCampaigns]);
 
   return (
     <section

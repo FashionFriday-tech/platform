@@ -15,28 +15,37 @@ interface CampaignBanner {
   isActive: boolean;
 }
 
-export default function TrendingSection() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default function TrendingSection({
+  initialCampaigns,
+}: {
+  initialCampaigns?: CampaignBanner[];
+}) {
+  const getMappedBanners = (data: CampaignBanner[]) => {
+    const trendingBanners = data.filter(
+      (b) => b.placement === 'trending-products' && b.isActive,
+    );
+    return trendingBanners.map((b, idx) => ({
+      id: idx + 1,
+      title: b.title,
+      slug: b.linkUrl.replace('/products?search=', '') || b.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      image: b.mediaUrl,
+    }));
+  };
+
+  const [products, setProducts] = useState<Product[]>(
+    initialCampaigns ? getMappedBanners(initialCampaigns) : []
+  );
+  const [isLoading, setIsLoading] = useState(!initialCampaigns);
 
   useEffect(() => {
+    if (initialCampaigns) return;
     const loadTrendingBanners = async () => {
       try {
         const data = await fetcher<CampaignBanner[]>('/campaigns');
         if (data && Array.isArray(data)) {
-          const trendingBanners = data.filter(
-            (b) => b.placement === 'trending-products' && b.isActive,
-          );
-
+          const trendingBanners = getMappedBanners(data);
           if (trendingBanners.length > 0) {
-            setProducts(
-              trendingBanners.map((b, idx) => ({
-                id: idx + 1,
-                title: b.title,
-                slug: b.linkUrl.replace('/products?search=', '') || b.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-                image: b.mediaUrl,
-              })),
-            );
+            setProducts(trendingBanners);
           }
         }
       } catch (err) {
@@ -46,7 +55,7 @@ export default function TrendingSection() {
       }
     };
     loadTrendingBanners();
-  }, []);
+  }, [initialCampaigns]);
 
   if (isLoading || products.length === 0) {
     return null;

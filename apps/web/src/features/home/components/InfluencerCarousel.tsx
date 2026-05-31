@@ -26,9 +26,27 @@ interface Product {
 // Handles negative modulo correctly (e.g. -1 % 6 = 5)
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 
-export default function TrendingCoverflowPage() {
+export default function TrendingCoverflowPage({
+  initialCampaigns,
+}: {
+  initialCampaigns?: any[];
+}) {
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
+
+  const getMappedBanners = (data: any[]) => {
+    const filtered = data.filter((b) => b.placement === 'content-partners' && b.isActive);
+    return filtered.map((b, index) => ({
+      id: index + 1,
+      title: b.title,
+      tag: '',
+      image: b.mediaUrl,
+      link: b.linkUrl,
+    }));
+  };
+
+  const [products, setProducts] = useState<Product[]>(
+    initialCampaigns ? getMappedBanners(initialCampaigns) : []
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isInView, setIsInView] = useState(true);
@@ -60,7 +78,8 @@ export default function TrendingCoverflowPage() {
   };
 
   useEffect(() => {
-    if (products.length > 0) {
+    if (timerRef.current) clearInterval(timerRef.current);
+    if (products.length > 0 && isInView) {
       startTimer();
     }
     return () => {
@@ -69,19 +88,13 @@ export default function TrendingCoverflowPage() {
   }, [products.length, isInView]);
 
   useEffect(() => {
+    if (initialCampaigns) return;
     const loadContentPartners = async () => {
       try {
         const data = await fetcher<any[]>('/campaigns');
         if (Array.isArray(data) && data.length > 0) {
-          const filtered = data.filter((b) => b.placement === 'content-partners' && b.isActive);
-          if (filtered.length > 0) {
-            const mapped = filtered.map((b, index) => ({
-              id: index + 1,
-              title: b.title,
-              tag: '',
-              image: b.mediaUrl,
-              link: b.linkUrl,
-            }));
+          const mapped = getMappedBanners(data);
+          if (mapped.length > 0) {
             setProducts(mapped);
           }
         }
@@ -90,7 +103,7 @@ export default function TrendingCoverflowPage() {
       }
     };
     loadContentPartners();
-  }, []);
+  }, [initialCampaigns]);
 
 
 
