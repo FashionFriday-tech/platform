@@ -1,5 +1,4 @@
-import React from 'react';
-
+import { notFound } from 'next/navigation';
 import { CategoryPage } from '@/features/categories';
 
 interface Props {
@@ -22,6 +21,10 @@ export async function generateStaticParams() {
 
 export default async function Page({ params }: Props) {
   const { gender, category } = await params;
+
+  if (gender !== 'men' && gender !== 'women') {
+    return notFound();
+  }
 
   return <CategoryPage gender={gender} category={category} />;
 }
