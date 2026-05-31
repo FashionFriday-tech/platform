@@ -17,12 +17,16 @@ const ALL_CATEGORIES: (BrandCategory | 'All')[] = [
 const SORT_OPTIONS: ('a-z' | 'z-a')[] = ['a-z', 'z-a'];
 const SORT_MAP: Record<string, string> = { 'a-z': 'A - Z', 'z-a': 'Z - A' };
 
-export function BrandsPage() {
+interface BrandsPageProps {
+  initialBrands?: Brand[];
+}
+
+export function BrandsPage({ initialBrands }: BrandsPageProps) {
   const [selectedCategory, setSelectedCategory] = useState<BrandCategory | 'All'>('All');
   const [sortOption, setSortOption] = useState<'a-z' | 'z-a'>('a-z');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  const { brands: brandsData, isLoading } = useBrands();
+  const { brands: brandsData, isLoading } = useBrands(initialBrands);
 
   const displayedBrands = brandsData
     .filter((b: Brand) => selectedCategory === 'All' || b.categories.includes(selectedCategory))
