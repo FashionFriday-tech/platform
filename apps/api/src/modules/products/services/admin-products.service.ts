@@ -3,6 +3,7 @@ import { ProductsRepository } from '../products.repository';
 import { CreateProductDto, UpdateProductDto } from '../dto';
 import { Prisma, ProductStatus, Gender } from '@ff/database';
 import { UploadService } from '../../upload/upload.service';
+import { triggerRevalidation } from '../../revalidate-helper';
 
 @Injectable()
 export class AdminProductsService {
@@ -47,7 +48,9 @@ export class AdminProductsService {
       seoDescription: dto.marketing.seoDescription,
     };
 
-    return this.productsRepository.create(data);
+    const result = await this.productsRepository.create(data);
+    triggerRevalidation(`product-${result.slug}`);
+    return result;
   }
   
   private paginate([total, data]: [number, any[]], skip: number, take: number) {
@@ -134,7 +137,9 @@ export class AdminProductsService {
       }
     }
 
-    return this.productsRepository.update(id, data);
+    const result = await this.productsRepository.update(id, data);
+    triggerRevalidation(`product-${result.slug}`);
+    return result;
   }
 
   async deleteProduct(id: string) {
@@ -146,6 +151,8 @@ export class AdminProductsService {
       }
     }
     
-    return this.productsRepository.delete(id);
+    const result = await this.productsRepository.delete(id);
+    triggerRevalidation(`product-${result.slug}`);
+    return result;
   }
 }
