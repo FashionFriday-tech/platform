@@ -21,8 +21,22 @@ interface CampaignBanner {
   isActive: boolean;
 }
 
-export function useHeroCarousel() {
-  const [cards, setCards] = useState<HeroCard[]>([]);
+export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
+  const getMappedBanners = (banners: CampaignBanner[]) => {
+    return banners
+      .filter((b) => b.placement === 'home-carousel' && b.isActive)
+      .map((b) => ({
+        id: b.id,
+        src: b.mediaUrl,
+        title: b.title,
+        subtitle: '',
+        linkUrl: b.linkUrl,
+      }));
+  };
+
+  const [cards, setCards] = useState<HeroCard[]>(
+    initialCampaigns ? getMappedBanners(initialCampaigns) : [],
+  );
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -43,21 +57,14 @@ export function useHeroCarousel() {
   }, []);
 
   useEffect(() => {
+    if (initialCampaigns) return;
     const loadHeroBanners = async () => {
       try {
         const data = await fetcher<CampaignBanner[]>('/campaigns');
         if (data && Array.isArray(data)) {
-          const carouselBanners = data.filter((b) => b.placement === 'home-carousel' && b.isActive);
+          const carouselBanners = getMappedBanners(data);
           if (carouselBanners.length > 0) {
-            setCards(
-              carouselBanners.map((b) => ({
-                id: b.id,
-                src: b.mediaUrl,
-                title: b.title,
-                subtitle: '',
-                linkUrl: b.linkUrl,
-              })),
-            );
+            setCards(carouselBanners);
           }
         }
       } catch (err) {
@@ -65,7 +72,8 @@ export function useHeroCarousel() {
       }
     };
     loadHeroBanners();
-  }, []);
+  }, [initialCampaigns]);
+
 
   const startTimer = useCallback(() => {
     if (timerRef.current) {

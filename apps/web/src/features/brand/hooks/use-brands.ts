@@ -13,13 +13,20 @@ let brandsPromise: Promise<Brand[]> | null = null;
  * Single-fetch shared hook for brand data.
  * Fetches data ONCE and reuses it across BrandScroll, ShopByBrands, and BrandsPage with 0ms re-fetch delay.
  */
-export function useBrands() {
-  const [brands, setBrands] = useState<Brand[]>(cachedBrands || []);
-  const [isLoading, setIsLoading] = useState(!cachedBrands);
+export function useBrands(initialBrands?: Brand[]) {
+  const [brands, setBrands] = useState<Brand[]>(initialBrands || cachedBrands || []);
+  const [isLoading, setIsLoading] = useState(!initialBrands && !cachedBrands);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     let isMounted = true;
+
+    if (initialBrands) {
+      if (typeof window !== 'undefined') {
+        cachedBrands = initialBrands;
+      }
+      return;
+    }
 
     if (cachedBrands) {
       setBrands(cachedBrands);
