@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CategoriesRepository } from './categories.repository';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { Prisma, Gender } from '@ff/database';
+import { triggerRevalidation } from '../revalidate-helper';
 
 @Injectable()
 export class CategoriesService {
@@ -14,7 +15,9 @@ export class CategoriesService {
       image: dto.image,
       gender: dto.gender.toUpperCase() as Gender,
     };
-    return this.categoriesRepository.create(data);
+    const result = await this.categoriesRepository.create(data);
+    this.triggerCategoriesRevalidation();
+    return result;
   }
 
   async findAll() {
@@ -34,15 +37,26 @@ export class CategoriesService {
     if (dto.image) data.image = dto.image;
     if (dto.gender) data.gender = dto.gender.toUpperCase() as Gender;
 
-    return this.categoriesRepository.update(id, data);
+    const result = await this.categoriesRepository.update(id, data);
+    this.triggerCategoriesRevalidation();
+    return result;
   }
-
   async remove(id: string) {
-    return this.categoriesRepository.delete(id);
+    const result = await this.categoriesRepository.delete(id);
+    this.triggerCategoriesRevalidation();
+    return result;
   }
 
   async reorder(items: { id: string; position: number }[]) {
-    return this.categoriesRepository.reorder(items);
+    const result = await this.categoriesRepository.reorder(items);
+    this.triggerCategoriesRevalidation();
+    return result;
+  }
+
+  private triggerCategoriesRevalidation() {
+    triggerRevalidation('home-categories');
+    triggerRevalidation('home-categories', '/men');
+    triggerRevalidation('home-categories', '/women');
   }
 }
 
