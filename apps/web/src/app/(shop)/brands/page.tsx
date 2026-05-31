@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { BrandsPage } from '@/features/brand';
+import { BrandsPage, getBrands } from '@/features/brand';
 
-export default function Page() {
-  return <BrandsPage />;
+export default async function Page() {
+  const initialBrands = await getBrands();
+  return <BrandsPage initialBrands={initialBrands} />;
 }
