@@ -156,6 +156,16 @@ export class AdminProductsService {
     // Invalidate product page (which now returns 404)
     triggerRevalidation(`product-${result.slug}`);
     
+    // Invalidate brand listings
+    triggerRevalidation('all-products');
+    const brands = Array.isArray(result.brand) ? result.brand : [result.brand].filter(Boolean);
+    for (const b of brands) {
+      if (b) {
+        const brandSlug = String(b).toLowerCase();
+        triggerRevalidation('all-products', `/brands/${brandSlug}`);
+      }
+    }
+    
     // Invalidate categories it belonged to so it disappears from listings
     if (result.categoryId) {
       const categorySlug = result.categoryId.toLowerCase();
@@ -183,6 +193,16 @@ export class AdminProductsService {
 
     // Revalidate specific product page
     triggerRevalidation(`product-${slug}`, `/product/${slug}`);
+
+    // Revalidate brand listings
+    triggerRevalidation('all-products');
+    const brands = Array.isArray(product.brand) ? product.brand : [product.brand].filter(Boolean);
+    for (const b of brands) {
+      if (b) {
+        const brandSlug = String(b).toLowerCase();
+        triggerRevalidation('all-products', `/brands/${brandSlug}`);
+      }
+    }
 
     // Revalidate categories if applicable
     if (categorySlug) {
