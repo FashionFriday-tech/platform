@@ -4,9 +4,13 @@ import Link from 'next/link';
 
 import { ArrowUpRightIcon, ChevronRightIcon, MailIcon, SearchIcon, SendIcon } from '@ff/ui';
 
-import { faqData } from '@/features/help/data/faq';
+import { FAQItem } from '@/features/help/data/faq';
 
-export function FaqPage() {
+interface FaqPageProps {
+  faqs: FAQItem[];
+}
+
+export function FaqPage({ faqs }: FaqPageProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,7 +34,7 @@ export function FaqPage() {
     };
   }, [placeholders.length]);
 
-  const filteredFaqs = faqData.filter((item) => {
+  const filteredFaqs = faqs.filter((item) => {
     const matchesFilter = filter === 'All' || item.category === filter;
     const matchesSearch = item.question.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
