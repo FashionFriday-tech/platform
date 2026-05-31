@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const secret = searchParams.get('secret') || request.headers.get('x-revalidate-secret');
     const tag = searchParams.get('tag');
+    const path = searchParams.get('path') || '/';
 
     // 1. Guard against unauthorized requests
     const expectedSecret = process.env.REVALIDATION_SECRET || 'super-secret-token';
@@ -22,14 +23,17 @@ export async function POST(request: NextRequest) {
 
     // 3. Fire-and-forget cache warming
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://127.0.0.1:3000';
+    const targetUrl = `${appUrl}${path.startsWith('/') ? path : '/' + path}`;
+    
     // We run this asynchronously so we can return the response immediately
-    fetch(appUrl, { method: 'GET' }).catch((err) => {
+    fetch(targetUrl, { method: 'GET' }).catch((err) => {
       console.error('Cache warming fetch failed:', err);
     });
 
     return NextResponse.json({
       revalidated: true,
       tag,
+      path,
       warmed: true,
       timestamp: Date.now(),
     });
