@@ -29,19 +29,19 @@ const FOOTER_SECTIONS = [
   {
     title: 'Customer Care',
     links: [
-      { name: 'Contact Us', href: '/contact' },
-      { name: 'Track Order', href: '/track-order' },
-      { name: 'Returns & Exchanges', href: '/returns' },
-      { name: 'Shipping Info', href: '/shipping' },
-      { name: 'Size Guide', href: '/size-guide' },
-      { name: 'Payment Options', href: '/payment-options' },
-      { name: 'FAQs', href: '/faq' },
+      { name: 'Contact Us', href: '/help/contact' },
+      { name: 'Track Order', href: '/account/orders' },
+      { name: 'Returns & Exchanges', href: '/help/returns' },
+      { name: 'Shipping Info', href: '/help/shipping' },
+      { name: 'Size Guide', href: '/help/size-guide' },
+      { name: 'Payment Options', href: '/help/payments' },
+      { name: 'FAQs', href: '/help/faq' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { name: 'About Us', href: '/about' },
+      { name: 'About Us', href: '/help/about' },
       { name: 'Our Story', href: '/our-story' },
       { name: 'Careers', href: '/careers' },
       { name: 'Press & Media', href: '/press' },
@@ -53,10 +53,10 @@ const FOOTER_SECTIONS = [
   {
     title: 'Legal',
     links: [
-      { name: 'Privacy Policy', href: '/privacy-policy' },
-      { name: 'Terms & Conditions', href: '/terms' },
-      { name: 'Refund Policy', href: '/refund-policy' },
-      { name: 'Shipping Policy', href: '/shipping-policy' },
+      { name: 'Privacy Policy', href: '/help/privacy-policy' },
+      { name: 'Terms & Conditions', href: '/help/terms-conditions' },
+      { name: 'Refund Policy', href: '/help/returns' },
+      { name: 'Shipping Policy', href: '/help/shipping' },
       { name: 'Cookie Policy', href: '/cookie-policy' },
       { name: 'Disclaimer', href: '/disclaimer' },
     ],
