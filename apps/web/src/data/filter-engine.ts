@@ -139,7 +139,7 @@ export const getAllProducts = async (): Promise<Product[]> => {
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
     const res = await fetch(`${API_URL}/products?take=100`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 86400, tags: ['all-products'] },
     });
     if (!res.ok) return [];
     const json = await res.json();
