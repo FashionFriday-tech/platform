@@ -49,7 +49,7 @@ export class AdminProductsService {
     };
 
     const result = await this.productsRepository.create(data);
-    triggerRevalidation(`product-${result.slug}`);
+    triggerRevalidation(`product-${result.slug}`, `/product/${result.slug}`);
     return result;
   }
   
@@ -138,7 +138,7 @@ export class AdminProductsService {
     }
 
     const result = await this.productsRepository.update(id, data);
-    triggerRevalidation(`product-${result.slug}`);
+    triggerRevalidation(`product-${result.slug}`, `/product/${result.slug}`);
     return result;
   }
 
