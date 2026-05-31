@@ -25,6 +25,7 @@ const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
   { prefix: '/collections', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
   { prefix: '/campaigns', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
   { prefix: '/whatsapp-reviews', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
+  { prefix: '/faqs', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
   { prefix: '/team', roles: ['SUPER_ADMIN'] },
 ];
 
