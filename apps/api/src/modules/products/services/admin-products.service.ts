@@ -49,7 +49,7 @@ export class AdminProductsService {
     };
 
     const result = await this.productsRepository.create(data);
-    triggerRevalidation(`product-${result.slug}`, `/product/${result.slug}`);
+    this.triggerProductAndCategoryRevalidation(result);
     return result;
   }
   
@@ -138,7 +138,7 @@ export class AdminProductsService {
     }
 
     const result = await this.productsRepository.update(id, data);
-    triggerRevalidation(`product-${result.slug}`, `/product/${result.slug}`);
+    this.triggerProductAndCategoryRevalidation(result);
     return result;
   }
 
@@ -152,7 +152,50 @@ export class AdminProductsService {
     }
     
     const result = await this.productsRepository.delete(id);
+    
+    // Invalidate product page (which now returns 404)
     triggerRevalidation(`product-${result.slug}`);
+    
+    // Invalidate categories it belonged to so it disappears from listings
+    if (result.categoryId) {
+      const categorySlug = result.categoryId.toLowerCase();
+      triggerRevalidation(`category-products-${categorySlug}`);
+      triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
+      
+      const gender = result.gender ? result.gender.toLowerCase() : null;
+      if (gender) {
+        if (gender === 'unisex') {
+          triggerRevalidation(`category-products-${categorySlug}`, `/men/${categorySlug}`);
+          triggerRevalidation(`category-products-${categorySlug}`, `/women/${categorySlug}`);
+        } else {
+          triggerRevalidation(`category-products-${categorySlug}`, `/${gender}/${categorySlug}`);
+        }
+      }
+    }
+    
     return result;
+  }
+
+  private triggerProductAndCategoryRevalidation(product: any) {
+    const slug = product.slug;
+    const categorySlug = product.categoryId ? product.categoryId.toLowerCase() : null;
+    const gender = product.gender ? product.gender.toLowerCase() : null;
+
+    // Revalidate specific product page
+    triggerRevalidation(`product-${slug}`, `/product/${slug}`);
+
+    // Revalidate categories if applicable
+    if (categorySlug) {
+      triggerRevalidation(`category-products-${categorySlug}`);
+      triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
+      if (gender) {
+        if (gender === 'unisex') {
+          triggerRevalidation(`category-products-${categorySlug}`, `/men/${categorySlug}`);
+          triggerRevalidation(`category-products-${categorySlug}`, `/women/${categorySlug}`);
+        } else {
+          triggerRevalidation(`category-products-${categorySlug}`, `/${gender}/${categorySlug}`);
+        }
+      }
+    }
   }
 }
