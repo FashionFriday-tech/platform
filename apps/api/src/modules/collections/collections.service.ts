@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CollectionsRepository } from './collections.repository';
 import { CreateCollectionDto, UpdateCollectionDto } from './dto';
+import { triggerRevalidation } from '../revalidate-helper';
 
 @Injectable()
 export class CollectionsService {
@@ -35,7 +36,9 @@ export class CollectionsService {
   }
 
   async create(data: CreateCollectionDto) {
-    return this.repository.create(data);
+    const result = await this.repository.create(data);
+    triggerRevalidation('home-collections');
+    return result;
   }
 
   async update(id: string, data: UpdateCollectionDto) {
@@ -43,7 +46,9 @@ export class CollectionsService {
     if (!collection) {
       throw new NotFoundException('Collection not found');
     }
-    return this.repository.update(id, data);
+    const result = await this.repository.update(id, data);
+    triggerRevalidation('home-collections');
+    return result;
   }
 
   async delete(id: string) {
@@ -51,6 +56,8 @@ export class CollectionsService {
     if (!collection) {
       throw new NotFoundException('Collection not found');
     }
-    return this.repository.delete(id);
+    const result = await this.repository.delete(id);
+    triggerRevalidation('home-collections');
+    return result;
   }
 }

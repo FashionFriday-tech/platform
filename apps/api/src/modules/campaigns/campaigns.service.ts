@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { UploadService } from '../upload/upload.service';
+import { triggerRevalidation } from '../revalidate-helper';
 
 @Injectable()
 export class CampaignsService {
@@ -30,7 +31,7 @@ export class CampaignsService {
     placement: string;
     isActive?: boolean;
   }) {
-    return this.prisma.db.campaign.create({
+    const result = await this.prisma.db.campaign.create({
       data: {
         title: data.title,
         mediaUrl: data.mediaUrl,
@@ -40,6 +41,8 @@ export class CampaignsService {
         isActive: data.isActive ?? true,
       },
     });
+    triggerRevalidation('home-campaigns');
+    return result;
   }
 
   async updateCampaign(
@@ -72,10 +75,12 @@ export class CampaignsService {
       }
     }
 
-    return this.prisma.db.campaign.update({
+    const result = await this.prisma.db.campaign.update({
       where: { id },
       data,
     });
+    triggerRevalidation('home-campaigns');
+    return result;
   }
 
   async deleteCampaign(id: string) {
@@ -96,8 +101,10 @@ export class CampaignsService {
       }
     }
 
-    return this.prisma.db.campaign.delete({
+    const result = await this.prisma.db.campaign.delete({
       where: { id },
     });
+    triggerRevalidation('home-campaigns');
+    return result;
   }
 }
