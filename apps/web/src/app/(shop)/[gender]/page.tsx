@@ -1,5 +1,4 @@
-import React from 'react';
-
+import { notFound } from 'next/navigation';
 import { GenderLanding } from '@/features/categories';
 
 export const dynamicParams = true;
@@ -11,7 +10,17 @@ export async function generateStaticParams() {
   ];
 }
 
-export default async function StoreLandingPage() {
+interface Props {
+  params: Promise<{ gender: string }>;
+}
+
+export default async function StoreLandingPage({ params }: Props) {
+  const { gender } = await params;
+  
+  if (gender !== 'men' && gender !== 'women') {
+    return notFound();
+  }
+
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
   
   let initialCategories = [];
