@@ -186,6 +186,12 @@ export function Sidebar() {
                 </div>
                 <span className="text-sm font-medium">Product Requests</span>
               </Link>
+              <Link href="/faqs" className={getLinkClass('/faqs')}>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black/20">
+                  <LifeBuoyIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                </div>
+                <span className="text-sm font-medium">FAQs</span>
+              </Link>
             </div>
           </div>
         )}
