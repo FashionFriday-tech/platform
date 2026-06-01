@@ -9,82 +9,39 @@ import { AnimatePresence, motion, type PanInfo } from 'motion/react';
 
 const GENDERS = ['Men', 'Women'] as const;
 
-const CATEGORIES_DATA = {
-  Men: {
-    hero: '/images/categories/men.png',
-    list: [
-      {
-        name: 'Sneakers',
-        slug: 'sneakers',
-        img: '/images/categories/men/sneaker.png',
-        items: '124 Items',
-      },
-      {
-        name: 'Watches',
-        slug: 'watches',
-        img: '/images/categories/men/watches.png',
-        items: '86 Items',
-      },
-      {
-        name: 'Clothing',
-        slug: 'clothing',
-        img: '/images/categories/men/cloths.png',
-        items: '210 Items',
-      },
-      {
-        name: 'Slippers',
-        slug: 'slippers',
-        img: '/images/categories/men/slippers.png',
-        items: '45 Items',
-      },
-      {
-        name: 'Accessories',
-        slug: 'accessories',
-        img: '/images/categories/men/accessories.png',
-        items: '92 Items',
-      },
-    ],
-  },
-  Women: {
-    hero: '/images/categories/womens.png',
-    list: [
-      {
-        name: 'Sneakers',
-        slug: 'sneakers',
-        img: '/images/categories/women/sneaker.png',
-        items: '110 Items',
-      },
-      {
-        name: 'Watches',
-        slug: 'watches',
-        img: '/images/categories/women/watches.png',
-        items: '95 Items',
-      },
-      {
-        name: 'Clothing',
-        slug: 'clothing',
-        img: '/images/categories/women/cloth.png',
-        items: '340 Items',
-      },
-      {
-        name: 'Slippers',
-        slug: 'slippers',
-        img: '/images/categories/women/slippers.png',
-        items: '52 Items',
-      },
-      {
-        name: 'Accessories',
-        slug: 'accessories',
-        img: '/images/categories/women/accessories.png',
-        items: '120 Items',
-      },
-    ],
-  },
-};
+export interface CategoryRecord {
+  id: string;
+  name: string;
+  slug: string;
+  image: string;
+  gender: string;
+}
 
-export function CategoriesLanding() {
+interface CategoriesLandingProps {
+  categories: CategoryRecord[];
+}
+
+export function CategoriesLanding({ categories }: CategoriesLandingProps) {
   const [genderIndex, setGenderIndex] = useState(0);
   const activeGender = GENDERS[genderIndex];
+
+  const menCategories = categories.filter(
+    (c) => c.gender.toUpperCase() === 'MEN' || c.gender.toUpperCase() === 'UNISEX'
+  );
+  const womenCategories = categories.filter(
+    (c) => c.gender.toUpperCase() === 'WOMEN' || c.gender.toUpperCase() === 'UNISEX'
+  );
+
+  const categoriesByGender = {
+    Men: {
+      hero: '/images/categories/men.png',
+      list: menCategories,
+    },
+    Women: {
+      hero: '/images/categories/womens.png',
+      list: womenCategories,
+    },
+  };
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
     const swipeThreshold = 50;
@@ -147,11 +104,7 @@ export function CategoriesLanding() {
                 transition={{ duration: 0.8 }}
                 className="absolute inset-0 bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${
-                    Object.prototype.hasOwnProperty.call(CATEGORIES_DATA, activeGender)
-                      ? CATEGORIES_DATA[activeGender].hero
-                      : CATEGORIES_DATA.Men.hero
-                  })`,
+                  backgroundImage: `url(${categoriesByGender[activeGender].hero})`,
                 }}
               />
               <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-transparent" />
@@ -167,10 +120,7 @@ export function CategoriesLanding() {
 
             {/* 2. CATEGORY ROWS */}
             <div className="space-y-3">
-              {(Object.prototype.hasOwnProperty.call(CATEGORIES_DATA, activeGender)
-                ? CATEGORIES_DATA[activeGender].list
-                : CATEGORIES_DATA.Men.list
-              ).map((cat) => (
+              {categoriesByGender[activeGender].list.map((cat) => (
                 <Link
                   key={cat.slug}
                   href={`/categories/${cat.slug}?gender=${activeGender.toLowerCase()}`}
@@ -179,7 +129,7 @@ export function CategoriesLanding() {
                   <div className="bg-background-muted/40 group-hover:border-border/40 group-active:bg-background-muted flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98]">
                     <div className="border-border/50 bg-background relative h-25 w-25 shrink-0 overflow-hidden rounded-4xl border">
                       <Image
-                        src={cat.img}
+                        src={cat.image || '/images/placeholder.jpg'}
                         alt={cat.name}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -191,9 +141,6 @@ export function CategoriesLanding() {
                       <h3 className="text-foreground text-[20px] font-bold tracking-tighter uppercase italic">
                         {cat.name}
                       </h3>
-                      <p className="text-foreground-muted mt-0.5 text-[12px] font-bold tracking-tight uppercase">
-                        {cat.items}
-                      </p>
                     </div>
 
                     <div className="pr-3">
