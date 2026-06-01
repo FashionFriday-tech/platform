@@ -162,7 +162,8 @@ export class AdminProductsService {
     for (const b of brands) {
       if (b) {
         const brandSlug = String(b).toLowerCase();
-        triggerRevalidation('all-products', `/brands/${brandSlug}`);
+        triggerRevalidation(`brand-products-${brandSlug}`);
+        triggerRevalidation(`brand-products-${brandSlug}`, `/brands/${brandSlug}`);
       }
     }
     
@@ -200,7 +201,8 @@ export class AdminProductsService {
     for (const b of brands) {
       if (b) {
         const brandSlug = String(b).toLowerCase();
-        triggerRevalidation('all-products', `/brands/${brandSlug}`);
+        triggerRevalidation(`brand-products-${brandSlug}`);
+        triggerRevalidation(`brand-products-${brandSlug}`, `/brands/${brandSlug}`);
       }
     }
 
