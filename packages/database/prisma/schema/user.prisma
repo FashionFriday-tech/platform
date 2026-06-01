@@ -50,7 +50,6 @@ model User {
   name            String
   email           String        @unique
   phone           String        @unique
-  avatarUrl       String?
   role            UserRole
   accountStatus   AccountStatus @default(ACTIVE)
   isPhoneVerified Boolean       @default(false)
