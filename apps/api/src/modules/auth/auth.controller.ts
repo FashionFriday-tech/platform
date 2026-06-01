@@ -99,7 +99,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async updateProfile(
     @Req() req: AuthRequest,
-    @Body() body: { name?: string; email?: string; avatarUrl?: string },
+    @Body() body: { name?: string; email?: string },
   ) {
     const id = req.user.id || req.user.sub;
     if (!id) {
@@ -144,5 +144,32 @@ export class AuthController {
       throw new BadRequestException('OTP is required');
     }
     return this.authService.verifyEmailOtp(id, body.otp);
+  }
+
+  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Post('phone/send-otp')
+  @HttpCode(HttpStatus.OK)
+  async sendPhoneOtp(@Req() req: AuthRequest) {
+    const id = req.user.id || req.user.sub;
+    if (!id) {
+      throw new UnauthorizedException();
+    }
+    return this.authService.sendPhoneVerificationOtp(id);
+  }
+
+  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('phone/verify-otp')
+  @HttpCode(HttpStatus.OK)
+  async verifyPhoneOtp(@Req() req: AuthRequest, @Body() body: { otp: string }) {
+    const id = req.user.id || req.user.sub;
+    if (!id) {
+      throw new UnauthorizedException();
+    }
+    if (!body.otp) {
+      throw new BadRequestException('OTP is required');
+    }
+    return this.authService.verifyPhoneOtp(id, body.otp);
   }
 }
