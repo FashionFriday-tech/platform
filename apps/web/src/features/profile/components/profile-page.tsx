@@ -1,12 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import {
-  CameraIcon,
   ChevronRightIcon,
   CloseIcon,
   GiftIcon,
@@ -20,7 +18,12 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
-import { sendEmailOtpAction, verifyEmailOtpAction } from '@/features/auth/services/auth.actions';
+import {
+  sendEmailOtpAction,
+  verifyEmailOtpAction,
+  sendPhoneOtpAction,
+  verifyPhoneOtpAction,
+} from '@/features/auth/services/auth.actions';
 import { useAuthStore } from '@/store/auth-store';
 
 import { ModernInput } from './modern-input';
@@ -32,16 +35,16 @@ export function ProfilePage() {
   const loading = useAuthStore((state) => state.loading);
   const updateProfile = useAuthStore((state) => state.updateProfile);
   const refreshUser = useAuthStore((state) => state.refreshUser);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const [verifyingField, setVerifyingField] = useState<string | null>(null);
   const [verifiedStatus, setVerifiedStatus] = useState({
-    phone: true,
+    phone: false,
     email: false,
   });
 
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otpType, setOtpType] = useState<'phone' | 'email' | null>(null);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [otpError, setOtpError] = useState('');
@@ -55,9 +58,16 @@ export function ProfilePage() {
     anniversary: '',
     gender: 'Male',
     stylePreference: ['Streetwear'],
-    avatarUrl: '/images/placeholders/user.png',
     loyaltyPoints: 0,
   });
+
+  // Initials generator for profile logo
+  const getInitials = (nameString: string) => {
+    const parts = nameString.trim().split(/\s+/);
+    if (parts.length === 0 || !parts[0]) return '?';
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  };
 
   // Calculate completion percentage
   const calculateCompletion = () => {
@@ -66,7 +76,6 @@ export function ProfilePage() {
       formData.phone,
       formData.email,
       formData.dob,
-      formData.avatarUrl,
     ];
     const filled = fields.filter((f) => !!f).length;
     return Math.round((filled / fields.length) * 100);
@@ -86,7 +95,6 @@ export function ProfilePage() {
       anniversary: '',
       gender: 'Male',
       stylePreference: ['Streetwear'],
-      avatarUrl: user.avatarUrl || '/images/placeholders/user.png',
       loyaltyPoints: user.loyaltyPoints || 0,
     };
   }, [user]);
@@ -117,7 +125,6 @@ export function ProfilePage() {
           anniversary: '',
           gender: 'Male',
           stylePreference: ['Streetwear'],
-          avatarUrl: user.avatarUrl || '/images/placeholders/user.png',
           loyaltyPoints: user.loyaltyPoints || 0,
         });
         setVerifiedStatus({
@@ -128,10 +135,48 @@ export function ProfilePage() {
     }
   }, [user]);
 
+  // Alert user before unload if has changes
+  useEffect(() => {
+    if (!hasChanges) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      return (e.returnValue = 'You have unsaved changes. Are you sure you want to leave?');
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [hasChanges]);
+
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <LoaderIcon className="text-brand animate-spin" size={40} />
+      <div className="bg-background text-foreground min-h-screen pb-10 transition-colors lg:pt-20">
+        <main className="mx-auto max-w-6xl px-4 py-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
+            {/* LEFT SIDEBAR SKELETON */}
+            <aside className="space-y-6 md:col-span-4">
+              <div className="bg-background-elevated border-border animate-pulse rounded-4xl border p-6 text-center shadow-sm">
+                <div className="mx-auto h-28 w-28 rounded-full bg-border" />
+                <div className="mx-auto mt-4 h-6 w-32 rounded-md bg-border" />
+                <div className="mx-auto mt-2 h-4 w-24 rounded-md bg-border" />
+                <div className="mt-6 h-12 w-full rounded-3xl bg-border" />
+              </div>
+            </aside>
+            {/* MAIN FORM SKELETON */}
+            <div className="space-y-6 md:col-span-8">
+              <div className="bg-background-elevated border-border animate-pulse rounded-4xl border p-6 shadow-sm">
+                <div className="h-6 w-48 rounded-md bg-border mb-6" />
+                <div className="space-y-4">
+                  <div className="h-10 w-full rounded-2xl bg-border" />
+                  <div className="h-10 w-full rounded-2xl bg-border" />
+                  <div className="h-10 w-full rounded-2xl bg-border" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
@@ -142,29 +187,24 @@ export function ProfilePage() {
   }
 
   const handleVerifyField = async (field: 'phone' | 'email') => {
-    if (field === 'phone') {
-      setVerifyingField(field);
-      await new Promise((r) => setTimeout(r, 2000));
-      setVerifiedStatus((p) => ({ ...p, [field]: true }));
-      setVerifyingField(null);
-      return;
-    }
-
-    if (field === 'email') {
-      try {
-        setVerifyingField(field);
-
-        // Send OTP
-        await sendEmailOtpAction();
-        toast.info('OTP securely generated. Please check server console.');
-
+    setVerifyingField(field);
+    try {
+      if (field === 'phone') {
+        await sendPhoneOtpAction();
+        toast.info('OTP securely sent to your WhatsApp number!');
+        setOtpType('phone');
         setShowOtpModal(true);
-      } catch (error: any) {
-        console.error('Email verification error:', error);
-        toast.error(error.response?.data?.message || 'Failed to send OTP');
-      } finally {
-        setVerifyingField(null);
+      } else {
+        await sendEmailOtpAction();
+        toast.info('OTP securely sent to your email address!');
+        setOtpType('email');
+        setShowOtpModal(true);
       }
+    } catch (error: any) {
+      console.error(`${field} verification error:`, error);
+      toast.error(error.message || `Failed to send ${field} OTP`);
+    } finally {
+      setVerifyingField(null);
     }
   };
 
@@ -214,16 +254,21 @@ export function ProfilePage() {
 
     try {
       setIsVerifyingOtp(true);
-      await verifyEmailOtpAction(otpString);
-      toast.success('Email verified successfully!');
-
-      setVerifiedStatus((p) => ({ ...p, email: true }));
+      if (otpType === 'phone') {
+        await verifyPhoneOtpAction(otpString);
+        toast.success('WhatsApp number verified successfully!');
+        setVerifiedStatus((p) => ({ ...p, phone: true }));
+      } else {
+        await verifyEmailOtpAction(otpString);
+        toast.success('Email verified successfully!');
+        setVerifiedStatus((p) => ({ ...p, email: true }));
+      }
       await refreshUser();
-
       setShowOtpModal(false);
       setOtp(['', '', '', '', '', '']);
+      setOtpType(null);
     } catch (error: any) {
-      setOtpError(error.response?.data?.message || 'Invalid OTP');
+      setOtpError(error.message || 'Invalid OTP');
     } finally {
       setIsVerifyingOtp(false);
     }
@@ -239,29 +284,9 @@ export function ProfilePage() {
               <div className="from-background-muted absolute top-0 left-0 z-0 h-24 w-full bg-linear-to-b to-transparent" />
 
               <div className="relative z-10">
-                <button
-                  type="button"
-                  className="border-brand group relative mx-auto h-28 w-28 cursor-pointer rounded-full border-2 border-dashed p-1"
-                  onClick={() => {
-                    fileInputRef.current?.click();
-                  }}
-                >
-                  <div className="relative h-full w-full overflow-hidden rounded-full">
-                    <Image
-                      src={formData.avatarUrl}
-                      alt="Profile"
-                      width={112}
-                      height={112}
-                      className="h-full w-full object-cover"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                      <CameraIcon className="text-white" size={24} />
-                    </div>
-                  </div>
-                  <div className="bg-brand text-brand-foreground border-background absolute right-0 bottom-0 rounded-full border-2 p-1.5">
-                    <CameraIcon size={14} />
-                  </div>
-                </button>
+                <div className="bg-brand/10 text-brand border-brand/20 relative mx-auto flex h-28 w-28 items-center justify-center rounded-full border-2 text-3xl font-black italic shadow-inner">
+                  {getInitials(formData.name)}
+                </div>
 
                 <h2 className="mt-4 text-lg font-bold">{formData.name}</h2>
                 <p className="text-foreground-muted mb-4 text-xs font-bold tracking-widest uppercase">
@@ -303,14 +328,6 @@ export function ProfilePage() {
                   </div>
                 </Link>
               </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                onChange={() => {
-                  /* logic */
-                }}
-              />
             </div>
           </aside>
 
@@ -530,10 +547,10 @@ export function ProfilePage() {
 
               <div className="space-y-6">
                 <h3 className="text-3xl font-black tracking-tighter uppercase italic">
-                  Verify Email
+                  Verify {otpType === 'phone' ? 'WhatsApp Phone' : 'Email'}
                 </h3>
                 <p className="text-foreground-subtle text-[10px] leading-loose font-bold tracking-widest uppercase">
-                  Please enter the 6-digit verification code sent to your email.
+                  Please enter the 6-digit verification code sent to your {otpType === 'phone' ? 'WhatsApp number' : 'email'}.
                 </p>
 
                 <div className="flex justify-center gap-2 py-4 sm:gap-4">
