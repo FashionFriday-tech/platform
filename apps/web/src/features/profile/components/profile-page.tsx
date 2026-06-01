@@ -20,15 +20,18 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
-import { useAuth } from '@/context/AuthContext';
-import { authApi } from '@/lib/api-client';
+import { useAuthStore } from '@/store/auth-store';
+import { sendEmailOtpAction, verifyEmailOtpAction } from '@/features/auth/services/auth.actions';
 
 import { ModernInput } from './modern-input';
 import { ProfileSection } from './profile-section';
 
 export function ProfilePage() {
-  const { user, loading, updateProfile, refreshUser } = useAuth();
   const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
+  const updateProfile = useAuthStore((state) => state.updateProfile);
+  const refreshUser = useAuthStore((state) => state.refreshUser);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -151,7 +154,7 @@ export function ProfilePage() {
         setVerifyingField(field);
 
         // Send OTP
-        await authApi.sendEmailOtp();
+        await sendEmailOtpAction();
         toast.info('OTP securely generated. Please check server console.');
 
         setShowOtpModal(true);
@@ -210,7 +213,7 @@ export function ProfilePage() {
 
     try {
       setIsVerifyingOtp(true);
-      await authApi.verifyEmailOtp(otpString);
+      await verifyEmailOtpAction(otpString);
       toast.success('Email verified successfully!');
 
       setVerifiedStatus((p) => ({ ...p, email: true }));

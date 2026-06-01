@@ -22,7 +22,7 @@ import {
 import Gallery from './gallery';
 import RelatedProducts from './related-products';
 import ReviewSection from './review-section';
-import { useLiveProductMetric } from './use-live-product-metric';
+import { useLiveProductMetric } from '../hooks/use-live-product-metric';
 import ProductVariantPage from './variant-dropdown';
 
 export default function ProductPageMaster({

@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
-import { useAuth } from '@/context/AuthContext';
-import { authApi } from '@/lib/api-client';
+import { useAuthStore } from '@/store/auth-store';
+import { sendOtpAction, verifyOtpAction, signupAction } from '@/features/auth/services/auth.actions';
 
 export type AuthStep = 'PHONE' | 'OTP' | 'PROFILE';
 
@@ -22,7 +22,10 @@ export function useAuthFlow() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
-  const { user, loading: authLoading, login: authLogin } = useAuth();
+  
+  const user = useAuthStore((state) => state.user);
+  const authLoading = useAuthStore((state) => state.loading);
+  const authLogin = useAuthStore((state) => state.login);
 
   // Timer interval countdown
   useEffect(() => {
@@ -125,33 +128,33 @@ export function useAuthFlow() {
 
     try {
       if (step === 'PHONE') {
-        await authApi.sendOtp(phoneNumber);
+        await sendOtpAction(phoneNumber);
         setStep('OTP');
         startTimer();
         toast.success('OTP sent successfully!');
       } else if (step === 'OTP') {
-        const response = await authApi.verifyOtp(phoneNumber, otp.join(''));
+        const response = await verifyOtpAction(phoneNumber, otp.join(''));
         setOtpToken(response.otpToken);
 
         if (response.isNewUser) {
           setStep('PROFILE');
         } else {
           if (response.accessToken && response.refreshToken && response.user) {
-            authLogin(response.accessToken, response.refreshToken, response.user);
+            authLogin(response.user);
             toast.success('Login successful!');
           } else {
             toast.error('Invalid response from server');
           }
         }
       } else {
-        const response = await authApi.signup(phoneNumber, profile.name, profile.email, otpToken);
-        authLogin(response.accessToken, response.refreshToken, response.user);
+        const response = await signupAction(phoneNumber, profile.name, profile.email, otpToken);
+        authLogin(response.user);
         toast.success('Welcome to Fashion Friday!');
       }
     } catch (error: unknown) {
       console.error('Auth Error:', error);
-      const err = error as { response?: { data?: { message?: string } } };
-      const message = err.response?.data?.message || 'Something went wrong';
+      const err = error as Error;
+      const message = err.message || 'Something went wrong';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -164,7 +167,7 @@ export function useAuthFlow() {
     }
     setLoading(true);
     try {
-      await authApi.sendOtp(phoneNumber);
+      await sendOtpAction(phoneNumber);
       setOtp(['', '', '', '', '', '']);
       startTimer();
       toast.success('OTP resent successfully!');

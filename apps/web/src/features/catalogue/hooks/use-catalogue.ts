@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { type Product } from '@ff/schemas';
 
-import { useSettings } from '@/context/SettingsContext';
+import { useSettingsStore } from '@/store/settings-store';
 import { filterProducts } from '@/data/filter-engine';
 
 interface UseCatalogueProps {
@@ -16,7 +16,7 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
   const [sortBy, setSortBy] = useState<string>('newest');
 
   // --- AUTO-SCROLL ENGINE ---
-  const { settings } = useSettings();
+  const settings = useSettingsStore((state) => state.settings);
   const [isAutoScrolling, setIsAutoScrolling] = useState(false);
   const scrollRef = useRef<number | null>(null);
 

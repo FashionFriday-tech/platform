@@ -6,12 +6,13 @@ import Link from 'next/link';
 import { ArrowUpRightIcon, CrownIcon, SmartphoneIcon, SparklesIcon, ZapIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
-import { useAuth } from '@/context/AuthContext';
+import { useAuthStore } from '@/store/auth-store';
 
 import { userData as fallbackData } from '../data/profile';
 
 export function ProfileHero() {
-  const { user, loading } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const loading = useAuthStore((state) => state.loading);
 
   if (loading) {
     return <div className="m-8 h-96 animate-pulse rounded-4xl bg-zinc-800/10" />;

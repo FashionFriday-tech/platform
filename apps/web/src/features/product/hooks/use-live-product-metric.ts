@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { getGlobalSlot, getPageSlot } from './time';
+import { getGlobalSlot, getPageSlot } from '../utils/time';
 
 const SLOT_MS = 5000;
 
