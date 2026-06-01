@@ -6,8 +6,16 @@ export class ProductsController {
   constructor(private readonly productsService: PublicProductsService) {}
 
   @Get()
-  async getPublicProducts(@Query('skip') skip?: number, @Query('take') take?: number) {
-    return this.productsService.getPublicProducts(Number(skip) || 0, Number(take) || 10);
+  async getPublicProducts(
+    @Query('skip') skip?: number,
+    @Query('take') take?: number,
+    @Query('brand') brand?: string,
+  ) {
+    return this.productsService.getPublicProducts(
+      Number(skip) || 0,
+      Number(take) || 10,
+      brand,
+    );
   }
 
   @Get('search')
