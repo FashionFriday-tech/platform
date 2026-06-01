@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { UploadService } from '../upload/upload.service';
+import { triggerRevalidation } from '../revalidate-helper';
 
 @Injectable()
 export class WhatsAppReviewsService {
@@ -24,12 +25,15 @@ export class WhatsAppReviewsService {
     });
     const nextOrder = (last?.sortOrder ?? -1) + 1;
 
-    return this.prisma.db.whatsAppReview.create({
+    const result = await this.prisma.db.whatsAppReview.create({
       data: {
         imageUrl,
         sortOrder: nextOrder,
       },
     });
+
+    this.triggerReviewsRevalidation();
+    return result;
   }
 
   async deleteReview(id: string) {
@@ -50,8 +54,16 @@ export class WhatsAppReviewsService {
       }
     }
 
-    return this.prisma.db.whatsAppReview.delete({
+    const result = await this.prisma.db.whatsAppReview.delete({
       where: { id },
     });
+
+    this.triggerReviewsRevalidation();
+    return result;
+  }
+
+  private triggerReviewsRevalidation() {
+    triggerRevalidation('home-reviews');
+    triggerRevalidation('home-reviews', '/whatsapp-reviews');
   }
 }
