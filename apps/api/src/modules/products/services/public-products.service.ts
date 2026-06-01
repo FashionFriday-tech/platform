@@ -19,13 +19,21 @@ export class PublicProductsService {
     };
   }
 
-  async getPublicProducts(skip = 0, take = 10) {
+  async getPublicProducts(skip = 0, take = 10, brand?: string) {
+    const where: any = {
+      status: ProductStatus.PUBLISHED,
+    };
+
+    if (brand) {
+      where.brand = {
+        has: brand,
+      };
+    }
+
     const result = await this.productsRepository.findPublicProducts({
       skip,
       take,
-      where: {
-        status: ProductStatus.PUBLISHED,
-      }
+      where,
     });
     return this.paginate(result, skip, take);
   }
