@@ -1,6 +1,7 @@
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { BiCategoryAlt, BiUser } from 'react-icons/bi';
 import { BsShieldExclamation, BsTags } from 'react-icons/bs';
+import { CgShoppingBag } from 'react-icons/cg';
 import { FaInfoCircle } from 'react-icons/fa';
 import {
   FiActivity,
@@ -105,7 +106,6 @@ import {
   MdWatch,
   MdWbSunny,
 } from 'react-icons/md';
-import { CgShoppingBag } from 'react-icons/cg';
 import { PiArrowsLeftRightLight, PiBriefcaseFill, PiMapPin } from 'react-icons/pi';
 import {
   RiArrowUpDownLine,
@@ -114,7 +114,7 @@ import {
   RiVerifiedBadgeFill,
 } from 'react-icons/ri';
 import { RxHamburgerMenu, RxStar, RxStarFilled } from 'react-icons/rx';
-import { SiFacebook, SiInstagram, SiX, SiYoutube } from 'react-icons/si';
+import { SiFacebook, SiInstagram, SiWhatsapp, SiX, SiYoutube } from 'react-icons/si';
 import { TbHanger, TbHeartMinus, TbHeartPlus, TbJacket, TbShirt, TbShoe } from 'react-icons/tb';
 import { TfiCrown } from 'react-icons/tfi';
 import { TiThMenuOutline } from 'react-icons/ti';
@@ -157,7 +157,7 @@ export const InstagramIcon = SiInstagram;
 export const TwitterIcon = SiX;
 export const YoutubeIcon = SiYoutube;
 export const FacebookIcon = SiFacebook;
-export { SiWhatsapp as WhatsAppIcon } from 'react-icons/si';
+export const WhatsAppIcon = SiWhatsapp;
 
 // USER & ACCOUNT
 export const UserIcon = BiUser;
