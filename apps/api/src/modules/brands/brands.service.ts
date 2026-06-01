@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { BrandsRepository } from './brands.repository';
 import { CreateBrandDto, UpdateBrandDto } from './dto';
+import { triggerRevalidation } from '../revalidate-helper';
 
 @Injectable()
 export class BrandsService {
@@ -20,17 +21,28 @@ export class BrandsService {
   }
 
   async create(dto: CreateBrandDto) {
-    return this.repository.create({
+    const result = await this.repository.create({
       ...dto,
       logo: dto.logo || '',
     });
+    this.triggerBrandsRevalidation();
+    return result;
   }
 
   async update(id: string, dto: UpdateBrandDto) {
-    return this.repository.update(id, dto);
+    const result = await this.repository.update(id, dto);
+    this.triggerBrandsRevalidation();
+    return result;
   }
 
   async delete(id: string) {
-    return this.repository.delete(id);
+    const result = await this.repository.delete(id);
+    this.triggerBrandsRevalidation();
+    return result;
+  }
+
+  private triggerBrandsRevalidation() {
+    triggerRevalidation('brands');
+    triggerRevalidation('brands', '/brands');
   }
 }
