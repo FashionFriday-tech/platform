@@ -151,6 +151,22 @@ export const getAllProducts = async (): Promise<Product[]> => {
   }
 };
 
+export const getProductsByBrand = async (brand: string): Promise<Product[]> => {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const res = await fetch(`${API_URL}/products?brand=${encodeURIComponent(brand)}&take=100`, {
+      next: { revalidate: 86400, tags: [`brand-products-${brand.toLowerCase()}`] },
+    });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const data = json.data || [];
+    return data.map(mapDbProductToSchema);
+  } catch (err) {
+    console.error('getProductsByBrand error:', err);
+    return [];
+  }
+};
+
 export const getMaxPrice = (products: Product[]): number => {
   if (products.length === 0) {
     return 50000;
