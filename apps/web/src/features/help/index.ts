@@ -11,3 +11,4 @@ export { ShippingPage } from './components/shipping-page';
 export { SizeGuidePage } from './components/size-guide-page';
 export { TermsConditionsPage } from './components/terms-conditions-page';
 export { type HelpSection, helpSections } from './constants';
+export { getFaqs } from './services/queries';
