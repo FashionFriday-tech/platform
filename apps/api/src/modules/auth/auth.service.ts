@@ -320,15 +320,13 @@ export class AuthService {
     return tokens;
   }
 
-  async updateProfile(userId: string, data: { name?: string; email?: string; avatarUrl?: string }) {
+  async updateProfile(userId: string, data: { name?: string; email?: string }) {
     try {
       const updatedUser = await this.prisma.db.user.update({
         where: { id: userId },
         data: {
           name: data.name,
           email: data.email,
-          avatarUrl: data.avatarUrl,
-          // Add other fields if needed, currentlyprisma model might not have them
         },
       });
 
@@ -410,5 +408,64 @@ export class AuthService {
     });
 
     return { success: true, message: 'Email verified successfully', user: updatedUser };
+  }
+
+  async sendPhoneVerificationOtp(userId: string) {
+    const user = await this.prisma.db.user.findUnique({ where: { id: userId } });
+    if (!user?.phone) {
+      throw new BadRequestException('User or phone number not found');
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    this.logger.log(`[SECURE WHATSAPP OTP MOCK] Sending OTP ${otp} via WhatsApp to ${user.phone}`);
+
+    const otpHash = await argon2.hash(otp);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    try {
+      await this.prisma.db.otp.upsert({
+        where: { phone: user.phone },
+        update: { otpHash, expiresAt },
+        create: { phone: user.phone, otpHash, expiresAt },
+      });
+    } catch (error) {
+      this.logger.error(`Failed to save phone OTP for ${user.phone}:`, error);
+      throw new InternalServerErrorException('Failed to send WhatsApp OTP');
+    }
+
+    return { success: true, message: 'WhatsApp OTP sent successfully' };
+  }
+
+  async verifyPhoneOtp(userId: string, otp: string) {
+    const user = await this.prisma.db.user.findUnique({ where: { id: userId } });
+    if (!user?.phone) {
+      throw new BadRequestException('User or phone number not found');
+    }
+
+    const otpEntry = await this.prisma.db.otp.findUnique({
+      where: { phone: user.phone },
+    });
+
+    if (!otpEntry) {
+      throw new BadRequestException('OTP not requested for this phone number');
+    }
+
+    if (new Date() > otpEntry.expiresAt) {
+      throw new BadRequestException('OTP has expired');
+    }
+
+    const isValid = await argon2.verify(otpEntry.otpHash, otp);
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid OTP');
+    }
+
+    await this.prisma.db.otp.delete({ where: { phone: user.phone } });
+
+    const updatedUser = await this.prisma.db.user.update({
+      where: { id: userId },
+      data: { isPhoneVerified: true },
+    });
+
+    return { success: true, message: 'Phone verified successfully', user: updatedUser };
   }
 }
