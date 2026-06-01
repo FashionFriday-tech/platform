@@ -12,8 +12,6 @@ const UserIdentityCore = z.object({
   phone: z.string().regex(/^\+91[6-9]\d{9}$/, {
     message: 'Phone must include +91 followed by a valid 10-digit Indian mobile number',
   }),
-
-  avatarUrl: z.string().url({ message: 'Avatar must be a valid URL' }).optional(),
 });
 
 /**
