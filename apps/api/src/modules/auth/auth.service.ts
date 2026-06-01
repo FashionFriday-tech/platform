@@ -11,6 +11,7 @@ import * as argon2 from 'argon2';
 
 import { PrismaService } from '../../database/prisma.service';
 import { SendOtpDto, SignupDto, VerifyOtpDto } from './dto/auth.dto';
+import { Msg91Service } from './msg91.service';
 
 interface JwtPayload {
   sub: string;
@@ -28,6 +29,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private msg91Service: Msg91Service,
   ) {}
 
   // In-memory fallbacks for development when DB is down
@@ -416,8 +418,24 @@ export class AuthService {
       throw new BadRequestException('User or phone number not found');
     }
 
+    // Rate Limiting: Check if OTP was sent less than 60 seconds ago
+    const existingOtp = await this.prisma.db.otp.findUnique({
+      where: { phone: user.phone },
+    });
+
+    if (existingOtp) {
+      const secondsSinceLastSend = (Date.now() - existingOtp.createdAt.getTime()) / 1000;
+      if (secondsSinceLastSend < 60) {
+        throw new BadRequestException(
+          `Please wait ${Math.ceil(60 - secondsSinceLastSend)} seconds before requesting another OTP`,
+        );
+      }
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    this.logger.log(`[SECURE WHATSAPP OTP MOCK] Sending OTP ${otp} via WhatsApp to ${user.phone}`);
+    
+    // Call Msg91Service to dispatch the WhatsApp/SMS OTP
+    await this.msg91Service.sendOtp(user.phone, otp);
 
     const otpHash = await argon2.hash(otp);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
@@ -425,7 +443,7 @@ export class AuthService {
     try {
       await this.prisma.db.otp.upsert({
         where: { phone: user.phone },
-        update: { otpHash, expiresAt },
+        update: { otpHash, expiresAt, createdAt: new Date() },
         create: { phone: user.phone, otpHash, expiresAt },
       });
     } catch (error) {
