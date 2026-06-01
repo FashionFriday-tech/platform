@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 
 import type { SendOtpResponse, SignupResponse, VerifyOtpResponse } from '@/lib/api-client';
+import type { UpdateUserBaseInput } from '@ff/schemas';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
@@ -188,7 +189,7 @@ export async function getMeAction(): Promise<SignupResponse['user'] | null> {
 }
 
 export async function updateProfileAction(
-  data: Partial<{ name: string; email: string; phone: string; avatarUrl: string }>,
+  data: UpdateUserBaseInput,
 ): Promise<SignupResponse['user']> {
   const res = await fetchWithAuth('/auth/profile', {
     method: 'PATCH',
@@ -228,4 +229,31 @@ export async function logoutAction(): Promise<{ success: boolean; message: strin
   cookieStore.delete('refreshToken');
 
   return { success: true, message: 'Logged out successfully' };
+}
+
+export async function sendPhoneOtpAction(): Promise<{ success: boolean; message: string }> {
+  const res = await fetchWithAuth('/auth/phone/send-otp', { method: 'POST' });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.message || 'Failed to send WhatsApp OTP');
+  }
+
+  return res.json();
+}
+
+export async function verifyPhoneOtpAction(
+  otp: string,
+): Promise<SignupResponse['user']> {
+  const res = await fetchWithAuth('/auth/phone/verify-otp', {
+    method: 'POST',
+    body: JSON.stringify({ otp }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.message || 'Invalid WhatsApp OTP');
+  }
+
+  return res.json();
 }
