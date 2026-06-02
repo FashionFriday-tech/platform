@@ -66,7 +66,7 @@ export class WhatsAppReviewsService {
   }
 
   private triggerReviewsRevalidation() {
-    triggerRevalidation('home-reviews');
-    triggerRevalidation('home-reviews', '/whatsapp-reviews');
+    void triggerRevalidation('home-reviews');
+    void triggerRevalidation('home-reviews', '/whatsapp-reviews');
   }
 }

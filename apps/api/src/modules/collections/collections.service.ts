@@ -38,7 +38,7 @@ export class CollectionsService {
 
   async create(data: CreateCollectionDto) {
     const result = await this.repository.create(data);
-    triggerRevalidation('home-collections');
+    void triggerRevalidation('home-collections');
     return result;
   }
 
@@ -48,7 +48,7 @@ export class CollectionsService {
       throw new NotFoundException('Collection not found');
     }
     const result = await this.repository.update(id, data);
-    triggerRevalidation('home-collections');
+    void triggerRevalidation('home-collections');
     return result;
   }
 
@@ -58,7 +58,7 @@ export class CollectionsService {
       throw new NotFoundException('Collection not found');
     }
     const result = await this.repository.delete(id);
-    triggerRevalidation('home-collections');
+    void triggerRevalidation('home-collections');
     return result;
   }
 }

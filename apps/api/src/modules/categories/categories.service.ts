@@ -65,8 +65,8 @@ export class CategoriesService {
   }
 
   private triggerCategoriesRevalidation() {
-    triggerRevalidation('home-categories');
-    triggerRevalidation('home-categories', '/men');
-    triggerRevalidation('home-categories', '/women');
+    void triggerRevalidation('home-categories');
+    void triggerRevalidation('home-categories', '/men');
+    void triggerRevalidation('home-categories', '/women');
   }
 }

@@ -218,32 +218,35 @@ export class AdminProductsService {
     const result = await this.productsRepository.delete(id);
 
     // Invalidate product page (which now returns 404)
-    triggerRevalidation(`product-${result.slug}`);
+    void triggerRevalidation(`product-${result.slug}`);
 
     // Invalidate brand listings
-    triggerRevalidation('all-products');
+    void triggerRevalidation('all-products');
     const brands = Array.isArray(result.brand) ? result.brand : [result.brand].filter(Boolean);
     for (const b of brands) {
       if (b) {
-        const brandSlug = String(b).toLowerCase();
-        triggerRevalidation(`brand-products-${brandSlug}`);
-        triggerRevalidation(`brand-products-${brandSlug}`, `/brands/${brandSlug}`);
+        const brandSlug = b.toLowerCase();
+        void triggerRevalidation(`brand-products-${brandSlug}`);
+        void triggerRevalidation(`brand-products-${brandSlug}`, `/brands/${brandSlug}`);
       }
     }
 
     // Invalidate categories it belonged to so it disappears from listings
     if (result.categoryId) {
       const categorySlug = result.categoryId.toLowerCase();
-      triggerRevalidation(`category-products-${categorySlug}`);
-      triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
+      void triggerRevalidation(`category-products-${categorySlug}`);
+      void triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
 
       const gender = result.gender ? result.gender.toLowerCase() : null;
       if (gender) {
         if (gender === 'unisex') {
-          triggerRevalidation(`category-products-${categorySlug}`, `/men/${categorySlug}`);
-          triggerRevalidation(`category-products-${categorySlug}`, `/women/${categorySlug}`);
+          void triggerRevalidation(`category-products-${categorySlug}`, `/men/${categorySlug}`);
+          void triggerRevalidation(`category-products-${categorySlug}`, `/women/${categorySlug}`);
         } else {
-          triggerRevalidation(`category-products-${categorySlug}`, `/${gender}/${categorySlug}`);
+          void triggerRevalidation(
+            `category-products-${categorySlug}`,
+            `/${gender}/${categorySlug}`,
+          );
         }
       }
     }
@@ -257,29 +260,32 @@ export class AdminProductsService {
     const gender = product.gender ? product.gender.toLowerCase() : null;
 
     // Revalidate specific product page
-    triggerRevalidation(`product-${slug}`, `/product/${slug}`);
+    void triggerRevalidation(`product-${slug}`, `/product/${slug}`);
 
     // Revalidate brand listings
-    triggerRevalidation('all-products');
+    void triggerRevalidation('all-products');
     const brands = Array.isArray(product.brand) ? product.brand : [product.brand].filter(Boolean);
     for (const b of brands) {
       if (b) {
         const brandSlug = String(b).toLowerCase();
-        triggerRevalidation(`brand-products-${brandSlug}`);
-        triggerRevalidation(`brand-products-${brandSlug}`, `/brands/${brandSlug}`);
+        void triggerRevalidation(`brand-products-${brandSlug}`);
+        void triggerRevalidation(`brand-products-${brandSlug}`, `/brands/${brandSlug}`);
       }
     }
 
     // Revalidate categories if applicable
     if (categorySlug) {
-      triggerRevalidation(`category-products-${categorySlug}`);
-      triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
+      void triggerRevalidation(`category-products-${categorySlug}`);
+      void triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
       if (gender) {
         if (gender === 'unisex') {
-          triggerRevalidation(`category-products-${categorySlug}`, `/men/${categorySlug}`);
-          triggerRevalidation(`category-products-${categorySlug}`, `/women/${categorySlug}`);
+          void triggerRevalidation(`category-products-${categorySlug}`, `/men/${categorySlug}`);
+          void triggerRevalidation(`category-products-${categorySlug}`, `/women/${categorySlug}`);
         } else {
-          triggerRevalidation(`category-products-${categorySlug}`, `/${gender}/${categorySlug}`);
+          void triggerRevalidation(
+            `category-products-${categorySlug}`,
+            `/${gender}/${categorySlug}`,
+          );
         }
       }
     }

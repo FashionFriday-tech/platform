@@ -42,7 +42,7 @@ export class BrandsService {
   }
 
   private triggerBrandsRevalidation() {
-    triggerRevalidation('brands');
-    triggerRevalidation('brands', '/brands');
+    void triggerRevalidation('brands');
+    void triggerRevalidation('brands', '/brands');
   }
 }

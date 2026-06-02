@@ -80,7 +80,7 @@ export class FaqService {
   }
 
   private triggerFaqRevalidation() {
-    triggerRevalidation('help-faq');
-    triggerRevalidation('help-faq', '/help/faq');
+    void triggerRevalidation('help-faq');
+    void triggerRevalidation('help-faq', '/help/faq');
   }
 }
