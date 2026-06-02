@@ -1,6 +1,6 @@
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-
+import * as sharp from 'sharp';
 
 @Injectable()
 export class UploadService {
@@ -11,9 +11,9 @@ export class UploadService {
   constructor() {
     this.bucketName = process.env.R2_BUCKET_NAME || 'fashion-friday-images';
     this.publicUrl = process.env.R2_PUBLIC_URL || '';
-    
+
     const accountId = process.env.R2_ACCOUNT_ID;
-    
+
     if (accountId) {
       this.s3Client = new S3Client({
         region: 'auto',
@@ -40,25 +40,21 @@ export class UploadService {
     // Optimize images to webp automatically and crop to correct ratio
     if (contentType.startsWith('image/')) {
       try {
-        const sharp = require('sharp');
-
         // WhatsApp reviews & product request screenshots: convert to webp but keep full original dimensions (no resize/crop)
         if (folder === 'whatsapp-reviews' || folder === 'product-requests') {
-          processedBuffer = await sharp(file.buffer)
-            .webp({ quality: 90 })
-            .toBuffer();
+          processedBuffer = await sharp(file.buffer).webp({ quality: 90 }).toBuffer();
           fileExtension = 'webp';
           contentType = 'image/webp';
         } else {
           let width = 900;
           let height = 1200;
-        
+
           if (folder === 'campaigns/home-carousel') {
             width = 800;
             height = 1200; // 2:3
           } else if (folder === 'campaigns/products-list') {
             width = 2100;
-            height = 900;  // 21:9
+            height = 900; // 21:9
           } else if (folder === 'campaigns/trending-products') {
             width = 900;
             height = 1200; // 3:4
@@ -67,8 +63,8 @@ export class UploadService {
             height = 1500; // 3:5
           } else if (folder === 'campaigns/whatsapp-reviews') {
             width = 800;
-            height = 600;  // 4:3
-          } else if (folder && folder.startsWith('campaigns')) {
+            height = 600; // 4:3
+          } else if (folder?.startsWith('campaigns')) {
             width = 900;
             height = 1200;
           }
@@ -78,11 +74,11 @@ export class UploadService {
               width,
               height,
               fit: 'cover',
-              position: 'center'
+              position: 'center',
             })
             .webp({ quality: 80 })
             .toBuffer();
-            
+
           fileExtension = 'webp';
           contentType = 'image/webp';
         }
@@ -91,29 +87,38 @@ export class UploadService {
         // Fallback to original buffer
       }
     }
-    
+
     // Create a SEO-friendly name based on the slug or the original file name
     let baseName = '';
-    const isCampaign = folder && folder.startsWith('campaigns');
+    const isCampaign = folder?.startsWith('campaigns');
 
     if (folder === 'whatsapp-reviews') {
       baseName = `fashion-friday-whatsapp-sales-review-${Date.now()}`;
     } else if (slug) {
-      baseName = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      baseName = slug
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
     } else {
       // Fallback to original file name without extension
-      const originalWithoutExt = file.originalname.substring(0, file.originalname.lastIndexOf('.')) || file.originalname;
-      baseName = originalWithoutExt.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const originalWithoutExt =
+        file.originalname.substring(0, file.originalname.lastIndexOf('.')) || file.originalname;
+      baseName = originalWithoutExt
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
     }
-    
-    if (!baseName) baseName = 'image';
+
+    if (!baseName) {
+      baseName = 'image';
+    }
 
     if (isCampaign) {
       baseName = `poster-${baseName}`;
     }
 
     const fileName = `${baseName}.${fileExtension}`;
-    
+
     // Construct the final key with an optional folder prefix (e.g. products/puffer-jacket...)
     const fullPath = folder ? `${folder.replace(/^\/+|\/+$/g, '')}/${fileName}` : fileName;
 
@@ -124,7 +129,7 @@ export class UploadService {
           Key: fullPath,
           Body: processedBuffer,
           ContentType: contentType,
-        })
+        }),
       );
 
       return `${this.publicUrl}/${fullPath}`;
@@ -144,7 +149,9 @@ export class UploadService {
       // The fileUrl will look like https://pub-xxx.r2.dev/products/jacket-a1b2.webp
       // We need to extract the "products/jacket-a1b2.webp" part (the Key)
       if (!fileUrl.startsWith(this.publicUrl)) {
-        console.warn(`File URL ${fileUrl} does not match the configured public URL. Skipping deletion.`);
+        console.warn(
+          `File URL ${fileUrl} does not match the configured public URL. Skipping deletion.`,
+        );
         return false;
       }
 
@@ -155,9 +162,9 @@ export class UploadService {
         new DeleteObjectCommand({
           Bucket: this.bucketName,
           Key: key,
-        })
+        }),
       );
-      
+
       return true;
     } catch (error) {
       console.error(`Failed to delete file from R2 (${fileUrl}):`, error);
