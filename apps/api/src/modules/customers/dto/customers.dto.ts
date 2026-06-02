@@ -1,5 +1,5 @@
-import { createZodDto } from 'nestjs-zod';
 import { CreateCustomerAdminSchema } from '@ff/schemas';
+import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
 export class CreateCustomerDto extends createZodDto(CreateCustomerAdminSchema) {}

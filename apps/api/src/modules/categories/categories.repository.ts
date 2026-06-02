@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../database/prisma.service';
 import { Prisma } from '@ff/database';
+import { Injectable } from '@nestjs/common';
+
+import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
 export class CategoriesRepository {
@@ -50,4 +51,3 @@ export class CategoriesRepository {
     return this.prisma.db.$transaction(updates);
   }
 }
-

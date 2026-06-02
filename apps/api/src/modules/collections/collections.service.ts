@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../../database/prisma.service';
+import { triggerRevalidation } from '../revalidate-helper';
 import { CollectionsRepository } from './collections.repository';
 import { CreateCollectionDto, UpdateCollectionDto } from './dto';
-import { triggerRevalidation } from '../revalidate-helper';
 
 @Injectable()
 export class CollectionsService {
@@ -13,7 +14,7 @@ export class CollectionsService {
 
   async findAll() {
     const collections = await this.repository.findAll();
-    
+
     // Attach product counts dynamically
     const enrichedCollections = await Promise.all(
       collections.map(async (collection: any) => {
@@ -21,7 +22,7 @@ export class CollectionsService {
           where: { collections: { has: collection.slug } },
         });
         return { ...collection, productCount };
-      })
+      }),
     );
 
     return enrichedCollections;

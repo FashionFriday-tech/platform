@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { triggerRevalidation } from '../revalidate-helper';
 import { BrandsRepository } from './brands.repository';
 import { CreateBrandDto, UpdateBrandDto } from './dto';
-import { triggerRevalidation } from '../revalidate-helper';
 
 @Injectable()
 export class BrandsService {

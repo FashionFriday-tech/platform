@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../../database/prisma.service';
 import { UploadService } from '../upload/upload.service';
 
@@ -49,10 +50,18 @@ export class ReviewsService {
 
   async updateReview(
     id: string,
-    data: { userName?: string; rating?: number; comment?: string; productImage?: string; isActive?: boolean },
+    data: {
+      userName?: string;
+      rating?: number;
+      comment?: string;
+      productImage?: string;
+      isActive?: boolean;
+    },
   ) {
     const existing = await this.prisma.db.review.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Review not found');
+    if (!existing) {
+      throw new NotFoundException('Review not found');
+    }
 
     if (
       data.productImage !== undefined &&
@@ -74,7 +83,9 @@ export class ReviewsService {
 
   async deleteReview(id: string) {
     const review = await this.prisma.db.review.findUnique({ where: { id } });
-    if (!review) throw new NotFoundException('Review not found');
+    if (!review) {
+      throw new NotFoundException('Review not found');
+    }
 
     if (review.productImage) {
       try {

@@ -1,4 +1,4 @@
-import { createZodDto } from 'nestjs-zod';
 import { UpdateProductSchema } from '@ff/schemas';
+import { createZodDto } from 'nestjs-zod';
 
 export class UpdateProductDto extends createZodDto(UpdateProductSchema) {}

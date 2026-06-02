@@ -1,12 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+
 import { ReviewsService } from './reviews.service';
 
 @Controller('admin/products/:productId/reviews')
@@ -21,7 +14,14 @@ export class ReviewsController {
   @Post()
   async createReview(
     @Param('productId') productId: string,
-    @Body() body: { userName: string; rating: number; comment: string; productImage?: string; isActive?: boolean },
+    @Body()
+    body: {
+      userName: string;
+      rating: number;
+      comment: string;
+      productImage?: string;
+      isActive?: boolean;
+    },
   ) {
     return this.reviewsService.createReview({
       productId,
@@ -36,7 +36,14 @@ export class ReviewsController {
   @Patch(':id')
   async updateReview(
     @Param('id') id: string,
-    @Body() body: { userName?: string; rating?: number; comment?: string; productImage?: string; isActive?: boolean },
+    @Body()
+    body: {
+      userName?: string;
+      rating?: number;
+      comment?: string;
+      productImage?: string;
+      isActive?: boolean;
+    },
   ) {
     return this.reviewsService.updateReview(id, body);
   }

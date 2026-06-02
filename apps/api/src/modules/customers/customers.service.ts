@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { AccountStatus, OrderStatus, PaymentMethod, PaymentStatus, UserRole } from '@ff/database';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../../database/prisma.service';
-import { UserRole, AccountStatus, OrderStatus, PaymentStatus, PaymentMethod } from '@ff/database';
 
 @Injectable()
 export class CustomersService {
@@ -24,7 +25,8 @@ export class CustomersService {
     return users.map((user) => {
       const orders = user.orders || [];
       const totalSpent = orders.reduce((sum, order) => sum + Number(order.finalAmount), 0);
-      const lastOrderDate = orders.length > 0 ? orders[0].createdAt.toISOString() : user.createdAt.toISOString();
+      const lastOrderDate =
+        orders.length > 0 ? orders[0].createdAt.toISOString() : user.createdAt.toISOString();
 
       return {
         id: user.id,
@@ -54,7 +56,7 @@ export class CustomersService {
       },
     });
 
-    if (!user || user.role !== UserRole.CUSTOMER) {
+    if (user?.role !== UserRole.CUSTOMER) {
       throw new NotFoundException('Customer not found');
     }
 
@@ -71,13 +73,13 @@ export class CustomersService {
       ordersCount: orders.length,
       totalSpent,
       joinDate: user.createdAt.toISOString(),
-      orders: orders.map(order => ({
+      orders: orders.map((order) => ({
         id: order.id,
         orderNumber: order.orderNumber,
         total: Number(order.finalAmount),
         status: order.status.toLowerCase(),
         createdAt: order.createdAt.toISOString(),
-        items: order.items.map(item => ({
+        items: order.items.map((item) => ({
           id: item.id,
           name: item.name,
           price: Number(item.price),
@@ -153,7 +155,7 @@ export class CustomersService {
       where: { id: customerId },
     });
 
-    if (!user || user.role !== UserRole.CUSTOMER) {
+    if (user?.role !== UserRole.CUSTOMER) {
       throw new NotFoundException('Customer not found');
     }
 
@@ -183,7 +185,8 @@ export class CustomersService {
             create: {
               productId: `prod-manual-${Date.now()}`,
               name: details.productName,
-              image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=150&q=80',
+              image:
+                'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=150&q=80',
               size: details.size,
               color: details.color,
               price: details.price,
@@ -202,7 +205,7 @@ export class CustomersService {
         total: Number(order.finalAmount),
         status: order.status.toLowerCase(),
         createdAt: order.createdAt.toISOString(),
-        items: order.items.map(item => ({
+        items: order.items.map((item) => ({
           id: item.id,
           name: item.name,
           price: Number(item.price),
@@ -224,7 +227,8 @@ export class CustomersService {
       throw new NotFoundException('Customer not found');
     }
 
-    const nextStatus = user.accountStatus === AccountStatus.ACTIVE ? AccountStatus.BANNED : AccountStatus.ACTIVE;
+    const nextStatus =
+      user.accountStatus === AccountStatus.ACTIVE ? AccountStatus.BANNED : AccountStatus.ACTIVE;
 
     const updated = await this.prisma.db.user.update({
       where: { id },
@@ -242,7 +246,7 @@ export class CustomersService {
       where: { id },
     });
 
-    if (!user || user.role !== UserRole.CUSTOMER) {
+    if (user?.role !== UserRole.CUSTOMER) {
       throw new NotFoundException('Customer not found');
     }
 

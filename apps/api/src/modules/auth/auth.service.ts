@@ -433,7 +433,7 @@ export class AuthService {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     // Call Msg91Service to dispatch the WhatsApp/SMS OTP
     await this.msg91Service.sendOtp(user.phone, otp);
 

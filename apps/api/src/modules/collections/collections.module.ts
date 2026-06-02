@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { PrismaModule } from '../../database/prisma.module';
 import { AdminCollectionsController, PublicCollectionsController } from './collections.controller';
 import { CollectionsRepository } from './collections.repository';

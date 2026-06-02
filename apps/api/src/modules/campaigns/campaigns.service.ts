@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../../database/prisma.service';
-import { UploadService } from '../upload/upload.service';
 import { triggerRevalidation } from '../revalidate-helper';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class CampaignsService {
@@ -57,7 +58,9 @@ export class CampaignsService {
     },
   ) {
     const existing = await this.prisma.db.campaign.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Campaign not found');
+    if (!existing) {
+      throw new NotFoundException('Campaign not found');
+    }
 
     // Clean up old Cloudflare R2 image if mediaUrl is being updated
     if (
@@ -85,7 +88,9 @@ export class CampaignsService {
 
   async deleteCampaign(id: string) {
     const existing = await this.prisma.db.campaign.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Campaign not found');
+    if (!existing) {
+      throw new NotFoundException('Campaign not found');
+    }
 
     // Clean up Cloudflare R2 image
     if (

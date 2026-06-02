@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../../database/prisma.service';
 import { triggerRevalidation } from '../revalidate-helper';
 
@@ -51,7 +52,9 @@ export class FaqService {
     },
   ) {
     const existing = await this.prisma.db.faq.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('FAQ not found');
+    if (!existing) {
+      throw new NotFoundException('FAQ not found');
+    }
 
     const result = await this.prisma.db.faq.update({
       where: { id },
@@ -64,7 +67,9 @@ export class FaqService {
 
   async deleteFaq(id: string) {
     const existing = await this.prisma.db.faq.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('FAQ not found');
+    if (!existing) {
+      throw new NotFoundException('FAQ not found');
+    }
 
     const result = await this.prisma.db.faq.delete({
       where: { id },

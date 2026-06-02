@@ -1,22 +1,23 @@
+import { UserRole } from '@ff/database';
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   Post,
+  Req,
+  UnauthorizedException,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
-  UploadedFile,
-  Body,
-  Req,
-  BadRequestException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ProductRequestsService } from './product-requests.service';
+import type { Request } from 'express';
+
+import { Roles } from '../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '@ff/database';
-import type { Request } from 'express';
+import { ProductRequestsService } from './product-requests.service';
 
 interface AuthRequest extends Request {
   user: {

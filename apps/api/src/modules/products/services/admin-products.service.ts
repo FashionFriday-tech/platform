@@ -1,16 +1,17 @@
+import { Gender, Prisma, ProductStatus } from '@ff/database';
 import { Injectable } from '@nestjs/common';
-import { ProductsRepository } from '../products.repository';
-import { CreateProductDto, UpdateProductDto } from '../dto';
-import { Prisma, ProductStatus, Gender } from '@ff/database';
-import { UploadService } from '../../upload/upload.service';
+
 import { triggerRevalidation } from '../../revalidate-helper';
+import { UploadService } from '../../upload/upload.service';
+import { CreateProductDto, UpdateProductDto } from '../dto';
+import { ProductsRepository } from '../products.repository';
 
 @Injectable()
 export class AdminProductsService {
   constructor(
     private readonly productsRepository: ProductsRepository,
     private readonly uploadService: UploadService,
-  ) { }
+  ) {}
 
   async createProduct(dto: CreateProductDto) {
     const data: Prisma.ProductCreateInput = {
@@ -52,7 +53,7 @@ export class AdminProductsService {
     this.triggerProductAndCategoryRevalidation(result);
     return result;
   }
-  
+
   private paginate([total, data]: [number, any[]], skip: number, take: number) {
     return {
       data,
@@ -62,7 +63,7 @@ export class AdminProductsService {
         take,
         page: Math.floor(skip / take) + 1,
         totalPages: Math.ceil(total / take),
-      }
+      },
     };
   }
 
@@ -72,7 +73,10 @@ export class AdminProductsService {
   }
 
   async getProductById(idOrSlug: string) {
-    const isUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(idOrSlug);
+    const isUuid =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+        idOrSlug,
+      );
     if (isUuid) {
       return this.productsRepository.findById(idOrSlug);
     }
@@ -83,56 +87,110 @@ export class AdminProductsService {
     const data: Prisma.ProductUpdateInput = {};
     const d = dto as any;
 
-    if (d.name) data.name = d.name;
-    if (d.slug) data.slug = d.slug;
-    if (d.description) data.description = d.description;
-    if (d.brand) data.brand = d.brand;
-    if (d.status) data.status = d.status.toUpperCase() as ProductStatus;
-    if (d.categoryId) data.category = { connect: { id: d.categoryId } };
-    if (d.gender) data.gender = d.gender.toUpperCase() as Gender;
+    if (d.name) {
+      data.name = d.name;
+    }
+    if (d.slug) {
+      data.slug = d.slug;
+    }
+    if (d.description) {
+      data.description = d.description;
+    }
+    if (d.brand) {
+      data.brand = d.brand;
+    }
+    if (d.status) {
+      data.status = d.status.toUpperCase() as ProductStatus;
+    }
+    if (d.categoryId) {
+      data.category = { connect: { id: d.categoryId } };
+    }
+    if (d.gender) {
+      data.gender = d.gender.toUpperCase() as Gender;
+    }
 
     if (d.price) {
-      if (d.price.ogPrice !== undefined) data.ogPrice = d.price.ogPrice;
-      if (d.price.sellingPrice !== undefined) data.sellingPrice = d.price.sellingPrice;
-      if (d.price.gettingPrice !== undefined) data.gettingPrice = d.price.gettingPrice;
+      if (d.price.ogPrice !== undefined) {
+        data.ogPrice = d.price.ogPrice;
+      }
+      if (d.price.sellingPrice !== undefined) {
+        data.sellingPrice = d.price.sellingPrice;
+      }
+      if (d.price.gettingPrice !== undefined) {
+        data.gettingPrice = d.price.gettingPrice;
+      }
     }
 
     if (d.media) {
-      if (d.media.mainImage) data.mainImage = d.media.mainImage;
-      if (d.media.promoImage !== undefined) data.promoImage = d.media.promoImage;
-      if (d.media.liveImages) data.liveImages = d.media.liveImages;
-      if (d.media.youtubeId !== undefined) data.youtubeId = d.media.youtubeId;
+      if (d.media.mainImage) {
+        data.mainImage = d.media.mainImage;
+      }
+      if (d.media.promoImage !== undefined) {
+        data.promoImage = d.media.promoImage;
+      }
+      if (d.media.liveImages) {
+        data.liveImages = d.media.liveImages;
+      }
+      if (d.media.youtubeId !== undefined) {
+        data.youtubeId = d.media.youtubeId;
+      }
     }
 
     if (d.attributes) {
-      if (d.attributes.colors) data.colors = d.attributes.colors;
-      if (d.attributes.quality) data.quality = d.attributes.quality;
-      if (d.attributes.sizes) data.sizes = d.attributes.sizes;
+      if (d.attributes.colors) {
+        data.colors = d.attributes.colors;
+      }
+      if (d.attributes.quality) {
+        data.quality = d.attributes.quality;
+      }
+      if (d.attributes.sizes) {
+        data.sizes = d.attributes.sizes;
+      }
     }
 
     if (d.inventory) {
-      if (d.inventory.totalStock !== undefined) data.totalStock = d.inventory.totalStock;
+      if (d.inventory.totalStock !== undefined) {
+        data.totalStock = d.inventory.totalStock;
+      }
     }
 
     if (d.marketing) {
-      if (d.marketing.collections) data.collections = d.marketing.collections;
-      if (d.marketing.isFeatured !== undefined) data.isFeatured = d.marketing.isFeatured;
-      if (d.marketing.seoTitle !== undefined) data.seoTitle = d.marketing.seoTitle;
-      if (d.marketing.seoDescription !== undefined) data.seoDescription = d.marketing.seoDescription;
+      if (d.marketing.collections) {
+        data.collections = d.marketing.collections;
+      }
+      if (d.marketing.isFeatured !== undefined) {
+        data.isFeatured = d.marketing.isFeatured;
+      }
+      if (d.marketing.seoTitle !== undefined) {
+        data.seoTitle = d.marketing.seoTitle;
+      }
+      if (d.marketing.seoDescription !== undefined) {
+        data.seoDescription = d.marketing.seoDescription;
+      }
     }
 
     // Handle image cleanup
     if (d.media && (d.media.liveImages || d.media.mainImage || d.media.promoImage)) {
       const existingProduct = await this.productsRepository.findById(id);
       if (existingProduct) {
-        const oldImages = [existingProduct.mainImage, existingProduct.promoImage, ...(existingProduct.liveImages as string[] || [])].filter(Boolean);
-        const newImages = [d.media.mainImage, d.media.promoImage, ...(d.media.liveImages || [])].filter(Boolean);
-        
+        const oldImages = [
+          existingProduct.mainImage,
+          existingProduct.promoImage,
+          ...(existingProduct.liveImages || []),
+        ].filter(Boolean);
+        const newImages = [
+          d.media.mainImage,
+          d.media.promoImage,
+          ...(d.media.liveImages || []),
+        ].filter(Boolean);
+
         // Find images that exist in the old product but not in the new payload
-        const imagesToDelete = oldImages.filter(oldUrl => !newImages.includes(oldUrl));
-        
+        const imagesToDelete = oldImages.filter((oldUrl) => !newImages.includes(oldUrl));
+
         for (const url of imagesToDelete) {
-          if (url) await this.uploadService.deleteFile(url);
+          if (url) {
+            await this.uploadService.deleteFile(url);
+          }
         }
       }
     }
@@ -145,17 +203,23 @@ export class AdminProductsService {
   async deleteProduct(id: string) {
     const existingProduct = await this.productsRepository.findById(id);
     if (existingProduct) {
-      const imagesToDelete = [existingProduct.mainImage, existingProduct.promoImage, ...(existingProduct.liveImages as string[] || [])].filter(Boolean);
+      const imagesToDelete = [
+        existingProduct.mainImage,
+        existingProduct.promoImage,
+        ...(existingProduct.liveImages || []),
+      ].filter(Boolean);
       for (const url of imagesToDelete) {
-        if (url) await this.uploadService.deleteFile(url);
+        if (url) {
+          await this.uploadService.deleteFile(url);
+        }
       }
     }
-    
+
     const result = await this.productsRepository.delete(id);
-    
+
     // Invalidate product page (which now returns 404)
     triggerRevalidation(`product-${result.slug}`);
-    
+
     // Invalidate brand listings
     triggerRevalidation('all-products');
     const brands = Array.isArray(result.brand) ? result.brand : [result.brand].filter(Boolean);
@@ -166,13 +230,13 @@ export class AdminProductsService {
         triggerRevalidation(`brand-products-${brandSlug}`, `/brands/${brandSlug}`);
       }
     }
-    
+
     // Invalidate categories it belonged to so it disappears from listings
     if (result.categoryId) {
       const categorySlug = result.categoryId.toLowerCase();
       triggerRevalidation(`category-products-${categorySlug}`);
       triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
-      
+
       const gender = result.gender ? result.gender.toLowerCase() : null;
       if (gender) {
         if (gender === 'unisex') {
@@ -183,7 +247,7 @@ export class AdminProductsService {
         }
       }
     }
-    
+
     return result;
   }
 

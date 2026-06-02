@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto, CreateCustomerOrderDto } from './dto/customers.dto';
 
@@ -22,18 +23,12 @@ export class CustomersController {
   }
 
   @Post(':id/orders')
-  async createCustomerOrder(
-    @Param('id') id: string,
-    @Body() dto: CreateCustomerOrderDto,
-  ) {
+  async createCustomerOrder(@Param('id') id: string, @Body() dto: CreateCustomerOrderDto) {
     return this.service.createCustomerOrder(id, dto);
   }
 
   @Patch(':id')
-  async updateCustomer(
-    @Param('id') id: string,
-    @Body() dto: { name?: string; phone?: string },
-  ) {
+  async updateCustomer(@Param('id') id: string, @Body() dto: { name?: string; phone?: string }) {
     return this.service.updateCustomer(id, dto);
   }
 

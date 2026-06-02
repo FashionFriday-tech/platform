@@ -1,4 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
+
 import { PublicProductsService } from '../services/public-products.service';
 
 @Controller('products')
@@ -11,11 +12,7 @@ export class ProductsController {
     @Query('take') take?: number,
     @Query('brand') brand?: string,
   ) {
-    return this.productsService.getPublicProducts(
-      Number(skip) || 0,
-      Number(take) || 10,
-      brand,
-    );
+    return this.productsService.getPublicProducts(Number(skip) || 0, Number(take) || 10, brand);
   }
 
   @Get('search')

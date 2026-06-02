@@ -1,4 +1,4 @@
-import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 
 @Injectable()
 export class Msg91Service {
@@ -8,7 +8,9 @@ export class Msg91Service {
 
   async sendOtp(phone: string, otp: string): Promise<boolean> {
     if (!this.authKey || !this.templateId) {
-      this.logger.warn('MSG91_AUTH_KEY or MSG91_OTP_TEMPLATE_ID is missing from environment. Skipping API send.');
+      this.logger.warn(
+        'MSG91_AUTH_KEY or MSG91_OTP_TEMPLATE_ID is missing from environment. Skipping API send.',
+      );
       return false;
     }
 
@@ -20,7 +22,7 @@ export class Msg91Service {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'authkey': this.authKey,
+          authkey: this.authKey,
         },
         body: JSON.stringify({
           template_id: this.templateId,
@@ -42,7 +44,9 @@ export class Msg91Service {
       return false;
     } catch (error) {
       this.logger.error('Error occurred while contacting MSG91 API gateway:', error);
-      throw new InternalServerErrorException('Failed to dispatch verification code via WhatsApp/SMS');
+      throw new InternalServerErrorException(
+        'Failed to dispatch verification code via WhatsApp/SMS',
+      );
     }
   }
 }

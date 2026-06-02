@@ -6,9 +6,9 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../../database/prisma.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { Msg91Service } from './msg91.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh.strategy';
-import { Msg91Service } from './msg91.service';
 
 @Module({
   imports: [

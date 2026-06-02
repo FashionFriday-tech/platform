@@ -1,5 +1,14 @@
-import { Controller, Post, Delete, Body, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+
 import { UploadService } from './upload.service';
 
 @Controller('admin/upload')

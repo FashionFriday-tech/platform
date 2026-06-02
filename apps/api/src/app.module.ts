@@ -7,17 +7,17 @@ import { PrismaModule } from './database/prisma.module';
 import { PrismaService } from './database/prisma.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { BrandsModule } from './modules/brands/brands.module';
+import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CollectionsModule } from './modules/collections/collections.module';
-import { ProductsModule } from './modules/products/products.module';
-import { UploadModule } from './modules/upload/upload.module';
-import { ReviewsModule } from './modules/reviews/reviews.module';
-import { CampaignsModule } from './modules/campaigns/campaigns.module';
-import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
-import { ProductRequestsModule } from './modules/product-requests/product-requests.module';
-import { FeedbackModule } from './modules/feedback/feedback.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { FaqModule } from './modules/faq/faq.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
+import { ProductRequestsModule } from './modules/product-requests/product-requests.module';
+import { ProductsModule } from './modules/products/products.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
 
 @Module({
   imports: [

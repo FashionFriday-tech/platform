@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../../database/prisma.service';
-import { UploadService } from '../upload/upload.service';
 import { triggerRevalidation } from '../revalidate-helper';
+import { UploadService } from '../upload/upload.service';
 
 @Injectable()
 export class WhatsAppReviewsService {
@@ -38,7 +39,9 @@ export class WhatsAppReviewsService {
 
   async deleteReview(id: string) {
     const existing = await this.prisma.db.whatsAppReview.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Review not found');
+    if (!existing) {
+      throw new NotFoundException('Review not found');
+    }
 
     // Clean up R2 image
     if (

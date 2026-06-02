@@ -1,16 +1,17 @@
 import {
   Controller,
-  Get,
-  Post,
   Delete,
+  Get,
   Param,
+  Post,
   Query,
-  UseInterceptors,
   UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { WhatsAppReviewsService } from './whatsapp-reviews.service';
+
 import { UploadService } from '../upload/upload.service';
+import { WhatsAppReviewsService } from './whatsapp-reviews.service';
 
 @Controller()
 export class WhatsAppReviewsController {
@@ -21,10 +22,7 @@ export class WhatsAppReviewsController {
 
   // Public endpoint for storefront
   @Get('whatsapp-reviews')
-  async getReviews(
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
-  ) {
+  async getReviews(@Query('limit') limit?: string, @Query('offset') offset?: string) {
     const limitNum = limit ? parseInt(limit, 10) : undefined;
     const offsetNum = offset ? parseInt(offset, 10) : undefined;
     return this.reviewsService.getAllReviews(limitNum, offsetNum);
@@ -32,10 +30,7 @@ export class WhatsAppReviewsController {
 
   // Admin endpoint: List all reviews
   @Get('admin/whatsapp-reviews')
-  async getAllReviews(
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
-  ) {
+  async getAllReviews(@Query('limit') limit?: string, @Query('offset') offset?: string) {
     const limitNum = limit ? parseInt(limit, 10) : undefined;
     const offsetNum = offset ? parseInt(offset, 10) : undefined;
     return this.reviewsService.getAllReviews(limitNum, offsetNum);

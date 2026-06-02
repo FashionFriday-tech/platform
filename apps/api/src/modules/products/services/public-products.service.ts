@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { ProductsRepository } from '../products.repository';
 import { ProductStatus } from '@ff/database';
+import { Injectable } from '@nestjs/common';
+
+import { ProductsRepository } from '../products.repository';
 
 @Injectable()
 export class PublicProductsService {
-  constructor(private readonly productsRepository: ProductsRepository) { }
+  constructor(private readonly productsRepository: ProductsRepository) {}
 
   private paginate([total, data]: [number, any[]], skip: number, take: number) {
     return {
@@ -15,7 +16,7 @@ export class PublicProductsService {
         take,
         page: Math.floor(skip / take) + 1,
         totalPages: Math.ceil(total / take),
-      }
+      },
     };
   }
 
@@ -47,8 +48,8 @@ export class PublicProductsService {
         OR: [
           { name: { contains: q, mode: 'insensitive' } },
           { description: { contains: q, mode: 'insensitive' } },
-        ]
-      }
+        ],
+      },
     });
     return this.paginate(result, skip, take);
   }
@@ -60,7 +61,7 @@ export class PublicProductsService {
       where: {
         status: ProductStatus.PUBLISHED,
         isFeatured: true,
-      }
+      },
     });
     return this.paginate(result, skip, take);
   }
@@ -73,8 +74,8 @@ export class PublicProductsService {
         status: ProductStatus.PUBLISHED,
       },
       orderBy: {
-        averageRating: 'desc' as const
-      }
+        averageRating: 'desc' as const,
+      },
     });
     return this.paginate(result, skip, take);
   }
@@ -86,9 +87,9 @@ export class PublicProductsService {
       where: {
         status: ProductStatus.PUBLISHED,
         category: {
-          slug: categorySlug
-        }
-      }
+          slug: categorySlug,
+        },
+      },
     });
     return this.paginate(result, skip, take);
   }

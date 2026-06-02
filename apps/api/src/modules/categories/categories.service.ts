@@ -1,8 +1,9 @@
+import { Gender, Prisma } from '@ff/database';
 import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { triggerRevalidation } from '../revalidate-helper';
 import { CategoriesRepository } from './categories.repository';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { Prisma, Gender } from '@ff/database';
-import { triggerRevalidation } from '../revalidate-helper';
 
 @Injectable()
 export class CategoriesService {
@@ -26,16 +27,26 @@ export class CategoriesService {
 
   async findOne(id: string) {
     const category = await this.categoriesRepository.findById(id);
-    if (!category) throw new NotFoundException('Category not found');
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
     return category;
   }
 
   async update(id: string, dto: UpdateCategoryDto) {
     const data: Prisma.CategoryUpdateInput = {};
-    if (dto.name) data.name = dto.name;
-    if (dto.slug) data.slug = dto.slug;
-    if (dto.image) data.image = dto.image;
-    if (dto.gender) data.gender = dto.gender.toUpperCase() as Gender;
+    if (dto.name) {
+      data.name = dto.name;
+    }
+    if (dto.slug) {
+      data.slug = dto.slug;
+    }
+    if (dto.image) {
+      data.image = dto.image;
+    }
+    if (dto.gender) {
+      data.gender = dto.gender.toUpperCase() as Gender;
+    }
 
     const result = await this.categoriesRepository.update(id, data);
     this.triggerCategoriesRevalidation();
@@ -59,4 +70,3 @@ export class CategoriesService {
     triggerRevalidation('home-categories', '/women');
   }
 }
-

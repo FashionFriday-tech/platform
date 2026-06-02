@@ -97,10 +97,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Patch('profile')
   @HttpCode(HttpStatus.OK)
-  async updateProfile(
-    @Req() req: AuthRequest,
-    @Body() body: { name?: string; email?: string },
-  ) {
+  async updateProfile(@Req() req: AuthRequest, @Body() body: { name?: string; email?: string }) {
     const id = req.user.id || req.user.sub;
     if (!id) {
       throw new UnauthorizedException();

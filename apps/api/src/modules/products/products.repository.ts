@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../database/prisma.service';
 import { Prisma } from '@ff/database';
+import { Injectable } from '@nestjs/common';
+
+import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
 export class ProductsRepository {
@@ -19,7 +20,7 @@ export class ProductsRepository {
     orderBy?: Prisma.ProductOrderByWithRelationInput;
   }) {
     const { skip, take, where, orderBy } = params;
-    
+
     return this.prisma.db.$transaction([
       this.prisma.db.product.count({ where }),
       this.prisma.db.product.findMany({
@@ -28,7 +29,7 @@ export class ProductsRepository {
         where,
         orderBy,
         include: { category: true },
-      })
+      }),
     ]);
   }
 
@@ -39,7 +40,7 @@ export class ProductsRepository {
     orderBy?: Prisma.ProductOrderByWithRelationInput;
   }) {
     const { skip, take, where, orderBy } = params;
-    
+
     return this.prisma.db.$transaction([
       this.prisma.db.product.count({ where }),
       this.prisma.db.product.findMany({
@@ -48,7 +49,7 @@ export class ProductsRepository {
         where,
         orderBy,
         include: { category: true },
-      })
+      }),
     ]);
   }
 
