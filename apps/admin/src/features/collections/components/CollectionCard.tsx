@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { PackageIcon } from '@ff/ui';
+
 import { type ProductCollection } from '../types';
 
 interface CollectionCardProps {
@@ -17,10 +18,17 @@ export function CollectionCard({ collection, onEdit, onDelete }: CollectionCardP
   return (
     <div
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#111111]"
-      onMouseEnter={() => setShowOptions(true)}
-      onMouseLeave={() => setShowOptions(false)}
+      onMouseEnter={() => {
+        setShowOptions(true);
+      }}
+      onMouseLeave={() => {
+        setShowOptions(false);
+      }}
     >
-      <Link href={`/collections/${collection.slug}`} className="cursor-pointer block relative aspect-[3/4] w-full overflow-hidden bg-black/5 dark:bg-white/5">
+      <Link
+        href={`/collections/${collection.slug}`}
+        className="relative block aspect-[3/4] w-full cursor-pointer overflow-hidden bg-black/5 dark:bg-white/5"
+      >
         <Image
           src={collection.image}
           alt={collection.name}
@@ -78,7 +86,6 @@ export function CollectionCard({ collection, onEdit, onDelete }: CollectionCardP
           className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/90 text-white shadow-sm backdrop-blur-sm transition-transform hover:scale-110 active:scale-95"
           title="Delete Collection"
         >
-
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"

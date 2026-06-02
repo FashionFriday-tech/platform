@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { type Brand, type BrandCategory } from '@ff/schemas';
 
@@ -28,8 +28,6 @@ export function useBrands() {
         setIsLoading(false);
       });
   }, []);
-
-
 
   const categoryOptions = [
     { label: 'All Categories', value: 'all' },
@@ -61,11 +59,14 @@ export function useBrands() {
         // Find existing brand to get ID
         const existingBrand = brands.find((b) => b.slug === originalSlug) as any;
         if (existingBrand?.id) {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands/${existingBrand.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(savedBrand),
-          });
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands/${existingBrand.id}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(savedBrand),
+            },
+          );
           const updated = await res.json();
           setBrands((prev) => prev.map((b) => (b.slug === originalSlug ? updated : b)));
           if (selectedBrand?.slug === originalSlug) {
@@ -73,11 +74,14 @@ export function useBrands() {
           }
         }
       } else {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(savedBrand),
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(savedBrand),
+          },
+        );
         const created = await res.json();
         setBrands((prev) => [created, ...prev]);
       }
@@ -96,9 +100,12 @@ export function useBrands() {
 
     try {
       if (brandAsAny.id) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands/${brandAsAny.id}`, {
-          method: 'DELETE',
-        });
+        await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands/${brandAsAny.id}`,
+          {
+            method: 'DELETE',
+          },
+        );
       }
 
       if (
@@ -107,11 +114,14 @@ export function useBrands() {
         !selectedBrand.logo.includes('localhost')
       ) {
         try {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ urls: [selectedBrand.logo] }),
-          });
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+            {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ urls: [selectedBrand.logo] }),
+            },
+          );
         } catch (err) {
           console.error('Failed to cleanup brand logo on delete:', err);
         }

@@ -14,7 +14,10 @@ export async function generateMetadata({ params }: CategoryDetailsPageProps): Pr
   const resolvedParams = await params;
   let category = null;
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`, { cache: 'no-store' });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`,
+      { cache: 'no-store' },
+    );
     const data = await res.json();
     const categoriesData = Array.isArray(data) ? data : data.data || [];
     category = categoriesData.find((c: any) => c.slug === resolvedParams.slug);
@@ -28,21 +31,25 @@ export async function generateMetadata({ params }: CategoryDetailsPageProps): Pr
 
 export default async function CategoryDetailsPage({ params }: CategoryDetailsPageProps) {
   const resolvedParams = await params;
-  
+
   let category = null;
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`, { cache: 'no-store' });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`,
+      { cache: 'no-store' },
+    );
     const data = await res.json();
     const categoriesData = Array.isArray(data) ? data : data.data || [];
     const apiCategory = categoriesData.find((c: any) => c.slug === resolvedParams.slug);
-    
+
     if (apiCategory) {
       category = {
         id: apiCategory.id,
         name: apiCategory.name,
         slug: apiCategory.slug,
         image: apiCategory.image,
-        gender: apiCategory.gender.charAt(0).toUpperCase() + apiCategory.gender.slice(1).toLowerCase(),
+        gender:
+          apiCategory.gender.charAt(0).toUpperCase() + apiCategory.gender.slice(1).toLowerCase(),
         productCount: apiCategory._count?.products || apiCategory.productCount || 0,
       };
     }

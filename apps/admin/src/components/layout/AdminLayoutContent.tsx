@@ -4,13 +4,13 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { LoaderIcon, LockIcon } from '@ff/ui';
+import { Toaster } from 'sonner';
 
 import { type Role, useAuth } from '@/contexts/AuthContext';
 import { LoginPage } from '@/features/auth';
 
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
-import { Toaster } from 'sonner';
 
 // Route prefix permission rules
 const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [

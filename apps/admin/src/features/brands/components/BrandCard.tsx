@@ -31,12 +31,13 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
             fill
             src={brand.logo}
             alt={brand.name}
-            onError={() => setHasError(true)}
+            onError={() => {
+              setHasError(true);
+            }}
             className="object-contain p-4 drop-shadow-md invert"
           />
-
         ) : (
-          <span className="z-20 w-full break-words text-center text-lg font-bold text-white">
+          <span className="z-20 w-full text-center text-lg font-bold break-words text-white">
             {brand.name}
           </span>
         )}
@@ -44,4 +45,3 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
     </motion.div>
   );
 }
-

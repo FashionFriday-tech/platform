@@ -1,12 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { AnimatePresence, motion } from 'motion/react';
 
-import { ChevronLeftIcon, ShoppingBagIcon, StarIcon, PlusIcon, CloseIcon, UserIcon, PhoneIcon, MailIcon } from '@ff/ui';
+import {
+  ChevronLeftIcon,
+  CloseIcon,
+  MailIcon,
+  PhoneIcon,
+  PlusIcon,
+  ShoppingBagIcon,
+  StarIcon,
+  UserIcon,
+} from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
+import { toast } from 'sonner';
+
 import { fetcher } from '@/lib/api-client';
 
 interface CustomerDetailsFeatureProps {
@@ -64,7 +74,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   const [color, setColor] = useState('');
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'RAZORPAY' | 'STRIPE' | 'WALLET'>('COD');
+  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'RAZORPAY' | 'STRIPE' | 'WALLET'>(
+    'COD',
+  );
   const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED'>('PENDING');
   const [addressLine, setAddressLine] = useState('');
   const [city, setCity] = useState('');
@@ -203,7 +215,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
           return null;
         }
         const updatedOrders = [newOrder, ...prev.orders];
-        const newTotalSpent = prev.totalSpent + (price * quantity);
+        const newTotalSpent = prev.totalSpent + price * quantity;
         return {
           ...prev,
           ordersCount: updatedOrders.length,
@@ -308,14 +320,15 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 </div>
               </div>
             </div>
-          </div>          <div className="flex gap-3 mt-4 md:mt-0">
+          </div>{' '}
+          <div className="mt-4 flex gap-3 md:mt-0">
             <button
               onClick={() => {
                 setEditName(customer.name);
                 setEditPhone(customer.phone);
                 setIsEditModalOpen(true);
               }}
-              className="flex items-center gap-2 rounded-xl border border-black/5 bg-transparent px-4 py-2 text-sm font-semibold text-black/70 transition-all hover:scale-105 hover:bg-black/5 active:scale-95 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5 whitespace-nowrap"
+              className="flex items-center gap-2 rounded-xl border border-black/5 bg-transparent px-4 py-2 text-sm font-semibold whitespace-nowrap text-black/70 transition-all hover:scale-105 hover:bg-black/5 active:scale-95 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
             >
               Edit Profile
             </button>
@@ -366,7 +379,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             onClick={() => {
               setIsOrderModalOpen(true);
             }}
-            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95 whitespace-nowrap"
+            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-emerald-700 active:scale-95"
           >
             <PlusIcon className="h-4 w-4" />
             Create Order
@@ -403,7 +416,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 </div>
 
                 <div className="border-t border-black/5 pt-4 dark:border-white/5">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-black/40 dark:text-white/40">Items</span>
+                  <span className="text-xs font-semibold tracking-wider text-black/40 uppercase dark:text-white/40">
+                    Items
+                  </span>
                   <div className="mt-2 space-y-3">
                     {order.items.map((item) => (
                       <div key={item.id} className="flex items-center gap-3">
@@ -411,12 +426,16 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                           <Image src={item.image} alt={item.name} fill className="object-cover" />
                         </div>
                         <div className="flex flex-1 flex-col">
-                          <span className="text-sm font-semibold text-black dark:text-white">{item.name}</span>
+                          <span className="text-sm font-semibold text-black dark:text-white">
+                            {item.name}
+                          </span>
                           <span className="text-xs text-black/50 dark:text-white/50">
                             Size: {item.size} • Color: {item.color} • Qty: {item.quantity}
                           </span>
                         </div>
-                        <span className="text-sm font-bold text-black dark:text-white">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                        <span className="text-sm font-bold text-black dark:text-white">
+                          ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -473,7 +492,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
               <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-emerald-500/10 blur-2xl" />
 
               <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
-                <h3 className="text-xl font-bold text-black dark:text-white">Edit Customer Profile</h3>
+                <h3 className="text-xl font-bold text-black dark:text-white">
+                  Edit Customer Profile
+                </h3>
                 <button
                   onClick={() => {
                     setIsEditModalOpen(false);
@@ -486,7 +507,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
               <form onSubmit={handleUpdateProfile} className="space-y-4 p-6">
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-white/60">
+                  <label className="mb-1.5 block text-xs font-semibold tracking-wider text-black/60 uppercase dark:text-white/60">
                     Full Name
                   </label>
                   <div className="relative">
@@ -504,12 +525,14 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     />
                   </div>
                   {editErrors.name && (
-                    <span className="mt-1 block text-xs font-medium text-red-500">{editErrors.name}</span>
+                    <span className="mt-1 block text-xs font-medium text-red-500">
+                      {editErrors.name}
+                    </span>
                   )}
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-white/60">
+                  <label className="mb-1.5 block text-xs font-semibold tracking-wider text-black/60 uppercase dark:text-white/60">
                     WhatsApp Number
                   </label>
                   <div className="relative">
@@ -535,7 +558,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     />
                   </div>
                   {editErrors.phone && (
-                    <span className="mt-1 block text-xs font-medium text-red-500">{editErrors.phone}</span>
+                    <span className="mt-1 block text-xs font-medium text-red-500">
+                      {editErrors.phone}
+                    </span>
                   )}
                 </div>
 
@@ -596,7 +621,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
               <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-blue-500/10 blur-2xl" />
 
               <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
-                <h3 className="text-xl font-bold text-black dark:text-white">Create Order for {customer.name}</h3>
+                <h3 className="text-xl font-bold text-black dark:text-white">
+                  Create Order for {customer.name}
+                </h3>
                 <button
                   onClick={() => {
                     setIsOrderModalOpen(false);
@@ -611,78 +638,114 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {/* Left Column: Product Details */}
                   <div className="space-y-4">
-                    <h4 className="text-sm font-bold uppercase tracking-wider text-black/40 dark:text-white/40">Product Details</h4>
+                    <h4 className="text-sm font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                      Product Details
+                    </h4>
 
                     <div>
-                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Product Name</label>
+                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                        Product Name
+                      </label>
                       <input
                         type="text"
                         placeholder="e.g., Oversized Graphic Tee"
                         value={productName}
-                        onChange={(e) => setProductName(e.target.value)}
+                        onChange={(e) => {
+                          setProductName(e.target.value);
+                        }}
                         className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                       />
-                      {formErrors.productName && <span className="mt-1 text-xs text-red-500">{formErrors.productName}</span>}
+                      {formErrors.productName && (
+                        <span className="mt-1 text-xs text-red-500">{formErrors.productName}</span>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Size</label>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                          Size
+                        </label>
                         <input
                           type="text"
                           placeholder="e.g., L"
                           value={size}
-                          onChange={(e) => setSize(e.target.value)}
+                          onChange={(e) => {
+                            setSize(e.target.value);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
-                        {formErrors.size && <span className="mt-1 text-xs text-red-500">{formErrors.size}</span>}
+                        {formErrors.size && (
+                          <span className="mt-1 text-xs text-red-500">{formErrors.size}</span>
+                        )}
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Color</label>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                          Color
+                        </label>
                         <input
                           type="text"
                           placeholder="e.g., Black"
                           value={color}
-                          onChange={(e) => setColor(e.target.value)}
+                          onChange={(e) => {
+                            setColor(e.target.value);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
-                        {formErrors.color && <span className="mt-1 text-xs text-red-500">{formErrors.color}</span>}
+                        {formErrors.color && (
+                          <span className="mt-1 text-xs text-red-500">{formErrors.color}</span>
+                        )}
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Price (₹)</label>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                          Price (₹)
+                        </label>
                         <input
                           type="number"
                           placeholder="0.00"
                           value={price || ''}
-                          onChange={(e) => setPrice(Number(e.target.value))}
+                          onChange={(e) => {
+                            setPrice(Number(e.target.value));
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
-                        {formErrors.price && <span className="mt-1 text-xs text-red-500">{formErrors.price}</span>}
+                        {formErrors.price && (
+                          <span className="mt-1 text-xs text-red-500">{formErrors.price}</span>
+                        )}
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Quantity</label>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                          Quantity
+                        </label>
                         <input
                           type="number"
                           placeholder="1"
                           value={quantity || ''}
-                          onChange={(e) => setQuantity(Number(e.target.value))}
+                          onChange={(e) => {
+                            setQuantity(Number(e.target.value));
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
-                        {formErrors.quantity && <span className="mt-1 text-xs text-red-500">{formErrors.quantity}</span>}
+                        {formErrors.quantity && (
+                          <span className="mt-1 text-xs text-red-500">{formErrors.quantity}</span>
+                        )}
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Method</label>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                          Method
+                        </label>
                         <select
                           value={paymentMethod}
-                          onChange={(e) => setPaymentMethod(e.target.value as any)}
+                          onChange={(e) => {
+                            setPaymentMethod(e.target.value as any);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         >
                           <option value="COD">Cash on Delivery</option>
@@ -693,10 +756,14 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Payment Status</label>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                          Payment Status
+                        </label>
                         <select
                           value={paymentStatus}
-                          onChange={(e) => setPaymentStatus(e.target.value as any)}
+                          onChange={(e) => {
+                            setPaymentStatus(e.target.value as any);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         >
                           <option value="PENDING">Pending</option>
@@ -709,55 +776,81 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
                   {/* Right Column: Shipping Info */}
                   <div className="space-y-4">
-                    <h4 className="text-sm font-bold uppercase tracking-wider text-black/40 dark:text-white/40">Shipping Address</h4>
+                    <h4 className="text-sm font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                      Shipping Address
+                    </h4>
 
                     <div>
-                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Address Line</label>
+                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                        Address Line
+                      </label>
                       <textarea
                         rows={3}
                         placeholder="Flat, House no., Building, Street, Area..."
                         value={addressLine}
-                        onChange={(e) => setAddressLine(e.target.value)}
+                        onChange={(e) => {
+                          setAddressLine(e.target.value);
+                        }}
                         className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                       />
-                      {formErrors.addressLine && <span className="mt-1 text-xs text-red-500">{formErrors.addressLine}</span>}
+                      {formErrors.addressLine && (
+                        <span className="mt-1 text-xs text-red-500">{formErrors.addressLine}</span>
+                      )}
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">City</label>
+                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                        City
+                      </label>
                       <input
                         type="text"
                         placeholder="e.g., Mumbai"
                         value={city}
-                        onChange={(e) => setCity(e.target.value)}
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                        }}
                         className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                       />
-                      {formErrors.city && <span className="mt-1 text-xs text-red-500">{formErrors.city}</span>}
+                      {formErrors.city && (
+                        <span className="mt-1 text-xs text-red-500">{formErrors.city}</span>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">State</label>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                          State
+                        </label>
                         <input
                           type="text"
                           placeholder="e.g., Maharashtra"
                           value={state}
-                          onChange={(e) => setState(e.target.value)}
+                          onChange={(e) => {
+                            setState(e.target.value);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
-                        {formErrors.state && <span className="mt-1 text-xs text-red-500">{formErrors.state}</span>}
+                        {formErrors.state && (
+                          <span className="mt-1 text-xs text-red-500">{formErrors.state}</span>
+                        )}
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Pin Code</label>
+                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                          Pin Code
+                        </label>
                         <input
                           type="text"
                           placeholder="e.g., 400001"
                           value={pinCode}
-                          onChange={(e) => setPinCode(e.target.value)}
+                          onChange={(e) => {
+                            setPinCode(e.target.value);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
-                        {formErrors.pinCode && <span className="mt-1 text-xs text-red-500">{formErrors.pinCode}</span>}
+                        {formErrors.pinCode && (
+                          <span className="mt-1 text-xs text-red-500">{formErrors.pinCode}</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -766,14 +859,18 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 <div className="mt-6 flex items-center justify-between border-t border-black/5 pt-6 dark:border-white/5">
                   <div className="flex flex-col">
                     <span className="text-xs text-black/50 dark:text-white/50">Total Amount</span>
-                    <span className="text-xl font-extrabold text-black dark:text-white">₹{(price * quantity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                    <span className="text-xl font-extrabold text-black dark:text-white">
+                      ₹{(price * quantity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </span>
                   </div>
 
                   <div className="flex gap-3">
                     <button
                       type="button"
                       disabled={isSubmitting}
-                      onClick={() => setIsOrderModalOpen(false)}
+                      onClick={() => {
+                        setIsOrderModalOpen(false);
+                      }}
                       className="rounded-xl border border-black/5 bg-transparent px-4 py-2.5 text-sm font-semibold text-black/70 hover:bg-black/5 disabled:opacity-50 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
                     >
                       Cancel

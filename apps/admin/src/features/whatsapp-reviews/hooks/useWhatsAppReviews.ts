@@ -20,10 +20,14 @@ export function useWhatsAppReviews() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
 
   const fetchReviews = async (newOffset: number, clearPrevious = false) => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/admin/whatsapp-reviews?limit=${limit}&offset=${newOffset}`);
+      const res = await fetch(
+        `${API_URL}/admin/whatsapp-reviews?limit=${limit}&offset=${newOffset}`,
+      );
       if (res.ok) {
         const data = await res.json();
         if (data.length < limit) {
@@ -31,7 +35,7 @@ export function useWhatsAppReviews() {
         } else {
           setHasMore(true);
         }
-        setReviews((prev) => clearPrevious ? data : [...prev, ...data]);
+        setReviews((prev) => (clearPrevious ? data : [...prev, ...data]));
         setOffset(newOffset);
       }
     } catch (error) {
@@ -61,7 +65,9 @@ export function useWhatsAppReviews() {
       body: formData,
     });
 
-    if (!res.ok) throw new Error('Upload failed');
+    if (!res.ok) {
+      throw new Error('Upload failed');
+    }
     // Clear and refetch from start on fresh upload
     setHasMore(true);
     await fetchReviews(0, true);
@@ -71,7 +77,9 @@ export function useWhatsAppReviews() {
     const res = await fetch(`${API_URL}/admin/whatsapp-reviews/${id}`, {
       method: 'DELETE',
     });
-    if (!res.ok) throw new Error('Delete failed');
+    if (!res.ok) {
+      throw new Error('Delete failed');
+    }
     // Clear and refetch from start on deletion
     setHasMore(true);
     await fetchReviews(0, true);

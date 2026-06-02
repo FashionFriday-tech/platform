@@ -4,13 +4,15 @@ export const mockProducts: Product[] = [];
 
 export async function fetchProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`,
+    );
     if (!res.ok) {
       throw new Error(`Failed to fetch products: ${res.statusText}`);
     }
     const json = await res.json();
     const data = json.data || [];
-    
+
     // Map backend product to frontend Product interface
     return data.map((p: any) => ({
       id: p.id,
@@ -27,7 +29,9 @@ export async function fetchProducts(): Promise<Product[]> {
       store: 'Main Store', // Dummy store
       variants: p.sizes || [],
       sales: 0,
-      dateAdded: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      dateAdded: p.createdAt
+        ? new Date(p.createdAt).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0],
       imageUrl: p.mainImage,
       images: [p.mainImage, p.promoImage, ...(p.liveImages || [])].filter(Boolean),
       description: p.description,
@@ -47,10 +51,14 @@ export async function fetchProducts(): Promise<Product[]> {
 
 export async function fetchProductById(id: string): Promise<Product | undefined> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${id}`);
-    if (!res.ok) return undefined;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${id}`,
+    );
+    if (!res.ok) {
+      return undefined;
+    }
     const p = await res.json();
-    
+
     return {
       id: p.id,
       name: p.name,
@@ -66,7 +74,9 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
       store: 'Main Store',
       variants: p.sizes || [],
       sales: 0,
-      dateAdded: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      dateAdded: p.createdAt
+        ? new Date(p.createdAt).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0],
       imageUrl: p.mainImage,
       images: [p.mainImage, p.promoImage, ...(p.liveImages || [])].filter(Boolean),
       description: p.description,

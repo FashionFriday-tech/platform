@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
-import { SearchIcon, RefreshCcwIcon } from '@ff/ui';
+
+import { RefreshCcwIcon, SearchIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
+
+import { CustomSelect } from '../../../components/ui/CustomSelect';
 import { useFeedback } from '../hooks/useFeedback';
 import { FeedbackTable } from './FeedbackTable';
-import { CustomSelect } from '../../../components/ui/CustomSelect';
 
 const TYPE_OPTIONS = [
   { label: 'All Types', value: 'all' },
@@ -36,30 +38,34 @@ export default function FeedbackFeature() {
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 shrink-0">
+      <div className="grid shrink-0 grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-          <span className="text-xs font-bold uppercase tracking-wider text-black/45 dark:text-white/45">
+          <span className="text-xs font-bold tracking-wider text-black/45 uppercase dark:text-white/45">
             Total Submissions
           </span>
           <h3 className="mt-1 text-2xl font-black">{totalCount}</h3>
         </div>
         <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-          <span className="text-xs font-bold uppercase tracking-wider text-red-500/80 dark:text-red-400">
+          <span className="text-xs font-bold tracking-wider text-red-500/80 uppercase dark:text-red-400">
             Issues / Bugs
           </span>
           <h3 className="mt-1 text-2xl font-black text-red-600 dark:text-red-400">{issueCount}</h3>
         </div>
         <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-500/80 dark:text-emerald-400">
+          <span className="text-xs font-bold tracking-wider text-emerald-500/80 uppercase dark:text-emerald-400">
             Suggestions
           </span>
-          <h3 className="mt-1 text-2xl font-black text-emerald-600 dark:text-emerald-400">{suggestionCount}</h3>
+          <h3 className="mt-1 text-2xl font-black text-emerald-600 dark:text-emerald-400">
+            {suggestionCount}
+          </h3>
         </div>
         <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-          <span className="text-xs font-bold uppercase tracking-wider text-violet-500/80 dark:text-violet-400">
+          <span className="text-xs font-bold tracking-wider text-violet-500/80 uppercase dark:text-violet-400">
             Improvements
           </span>
-          <h3 className="mt-1 text-2xl font-black text-violet-600 dark:text-violet-400">{improvementCount}</h3>
+          <h3 className="mt-1 text-2xl font-black text-violet-600 dark:text-violet-400">
+            {improvementCount}
+          </h3>
         </div>
       </div>
 
@@ -79,7 +85,9 @@ export default function FeedbackFeature() {
               type="text"
               placeholder="Search by email or description..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
               className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
             />
           </div>
@@ -88,13 +96,15 @@ export default function FeedbackFeature() {
             <CustomSelect
               options={TYPE_OPTIONS}
               value={selectedType}
-              onChange={(val) => setSelectedType(val)}
+              onChange={(val) => {
+                setSelectedType(val);
+              }}
               className="z-50 w-44"
             />
 
             <button
               onClick={refreshFeedback}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-black/10 hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5 transition-all"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-black/10 transition-all hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
               title="Refresh"
             >
               <RefreshCcwIcon className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />

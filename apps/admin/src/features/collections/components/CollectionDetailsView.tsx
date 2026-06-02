@@ -12,9 +12,8 @@ import { mockProducts } from '../../products/services/api';
 import { type Product } from '../../products/types';
 import { type ProductCollection } from '../types';
 import { AddCollectionModal } from './AddCollectionModal';
-import { DeleteCollectionModal } from './DeleteCollectionModal';
 import { CollectionProductTable } from './CollectionProductTable';
-
+import { DeleteCollectionModal } from './DeleteCollectionModal';
 
 interface CollectionDetailsViewProps {
   initialCollection: ProductCollection;
@@ -49,34 +48,47 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     if (file) {
       const localUrl = URL.createObjectURL(file);
       setCollection((prev) => ({ ...prev, image: localUrl }));
-      
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('slug', collection.slug);
       formData.append('folder', 'collections');
 
       try {
-        const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
-          method: 'POST',
-          body: formData,
-        });
+        const uploadRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          },
+        );
 
         if (uploadRes.ok) {
           const { url } = await uploadRes.json();
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ image: url }),
-          });
-          
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ image: url }),
+            },
+          );
+
           // Cleanup old image
-          if (collection.image && collection.image.startsWith('http') && !collection.image.includes('localhost')) {
+          if (
+            collection.image &&
+            collection.image.startsWith('http') &&
+            !collection.image.includes('localhost')
+          ) {
             try {
-              await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ urls: [collection.image] }),
-              });
+              await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+                {
+                  method: 'DELETE',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ urls: [collection.image] }),
+                },
+              );
             } catch (err) {
               console.error('Failed to cleanup old image:', err);
             }
@@ -98,11 +110,14 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     if (editNameValue.trim() && editNameValue !== collection.name) {
       setCollection((prev) => ({ ...prev, name: editNameValue.trim() }));
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: editNameValue.trim() }),
-        });
+        await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: editNameValue.trim() }),
+          },
+        );
       } catch (err) {
         console.error('Failed to update name', err);
       }
@@ -119,21 +134,31 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     setIsDeleting(true);
     try {
       // Clean up Cloudflare R2 image if applicable
-      if (collection.image && collection.image.startsWith('http') && !collection.image.includes('localhost')) {
+      if (
+        collection.image &&
+        collection.image.startsWith('http') &&
+        !collection.image.includes('localhost')
+      ) {
         try {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ urls: [collection.image] }),
-          });
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+            {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ urls: [collection.image] }),
+            },
+          );
         } catch (err) {
           console.error('Failed to cleanup collection image from Cloudflare R2:', err);
         }
       }
 
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
-        method: 'DELETE',
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
+        {
+          method: 'DELETE',
+        },
+      );
       router.push('/collections');
     } catch (err) {
       console.error('Failed to delete collection', err);
@@ -142,15 +167,22 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     }
   };
 
-
-
-  const handleSaveModal = async (name: string, image: string, slug: string, isEdit: boolean, id?: string) => {
+  const handleSaveModal = async (
+    name: string,
+    image: string,
+    slug: string,
+    isEdit: boolean,
+    id?: string,
+  ) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, image }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, image }),
+        },
+      );
       if (res.ok) {
         const updated = await res.json();
         setCollection(updated);
@@ -244,17 +276,20 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <button
-                onClick={() => setIsEditModalOpen(true)}
+                onClick={() => {
+                  setIsEditModalOpen(true);
+                }}
                 className="flex items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-black/10 active:scale-95 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
               >
                 <EditIcon className="h-4 w-4" />
                 <span className="hidden sm:inline">Edit</span>
               </button>
               <button
-                onClick={() => setIsDeleteModalOpen(true)}
+                onClick={() => {
+                  setIsDeleteModalOpen(true);
+                }}
                 className="flex items-center justify-center gap-2 rounded-xl bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-500/20 active:scale-95"
               >
-
                 <TrashIcon className="h-4 w-4" />
                 <span className="hidden sm:inline">Delete</span>
               </button>
@@ -331,7 +366,9 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       {/* Edit Modal */}
       <AddCollectionModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={() => {
+          setIsEditModalOpen(false);
+        }}
         onSave={handleSaveModal}
         initialData={collection}
       />
@@ -339,7 +376,9 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       {/* Delete Confirmation Modal */}
       <DeleteCollectionModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+        }}
         onConfirm={confirmDeleteCollection}
         collectionName={collection.name}
         isDeleting={isDeleting}
@@ -347,4 +386,3 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     </div>
   );
 }
-

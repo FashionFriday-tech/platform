@@ -98,7 +98,10 @@ export function ProductPricingStock({
         </div>
 
         <div>
-          <LabelWithTick label="Getting Price" status={getStatus(gettingPrice, initialData?.price?.gettingPrice, 1)} />
+          <LabelWithTick
+            label="Getting Price"
+            status={getStatus(gettingPrice, initialData?.price?.gettingPrice, 1)}
+          />
           <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
               <span className="text-sm font-bold text-black/50 dark:text-white/50">₹</span>

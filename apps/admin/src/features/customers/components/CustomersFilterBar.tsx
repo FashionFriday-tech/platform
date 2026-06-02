@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { DownloadIcon, SearchIcon, PlusIcon } from '@ff/ui';
+import { DownloadIcon, PlusIcon, SearchIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { CustomSelect } from '../../../components/ui/CustomSelect';

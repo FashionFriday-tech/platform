@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+
 import { CloseIcon, PhoneIcon, UserIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { useCustomers } from '../hooks/useCustomers';
 import { CustomersFilterBar } from './CustomersFilterBar';
@@ -139,7 +140,9 @@ export default function CustomersFeature() {
               <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-emerald-500/10 blur-2xl" />
 
               <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
-                <h3 className="text-xl font-bold text-black dark:text-white">Register New Customer</h3>
+                <h3 className="text-xl font-bold text-black dark:text-white">
+                  Register New Customer
+                </h3>
                 <button
                   onClick={() => {
                     setIsAddModalOpen(false);
@@ -152,7 +155,7 @@ export default function CustomersFeature() {
 
               <form onSubmit={handleSubmit} className="space-y-4 p-6">
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-white/60">
+                  <label className="mb-1.5 block text-xs font-semibold tracking-wider text-black/60 uppercase dark:text-white/60">
                     Full Name
                   </label>
                   <div className="relative">
@@ -170,13 +173,14 @@ export default function CustomersFeature() {
                     />
                   </div>
                   {formErrors.name && (
-                    <span className="mt-1 block text-xs font-medium text-red-500">{formErrors.name}</span>
+                    <span className="mt-1 block text-xs font-medium text-red-500">
+                      {formErrors.name}
+                    </span>
                   )}
                 </div>
 
-
                 <div>
-                  <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-white/60">
+                  <label className="mb-1.5 block text-xs font-semibold tracking-wider text-black/60 uppercase dark:text-white/60">
                     WhatsApp Number
                   </label>
                   <div className="relative">
@@ -202,7 +206,9 @@ export default function CustomersFeature() {
                     />
                   </div>
                   {formErrors.phone && (
-                    <span className="mt-1 block text-xs font-medium text-red-500">{formErrors.phone}</span>
+                    <span className="mt-1 block text-xs font-medium text-red-500">
+                      {formErrors.phone}
+                    </span>
                   )}
                 </div>
 

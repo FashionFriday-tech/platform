@@ -86,9 +86,7 @@ export function ProductBrandColorSelector({
         </div>
 
         {isBrandOpen && (
-          <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:border-white/10 dark:bg-[#1a1a1a]">
-
-
+          <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl [-ms-overflow-style:none] [scrollbar-width:none] dark:border-white/10 dark:bg-[#1a1a1a] [&::-webkit-scrollbar]:hidden">
             {filteredBrands.length > 0 ? (
               filteredBrands.map((b) => (
                 <button
@@ -152,7 +150,6 @@ export function ProductBrandColorSelector({
               }
             }}
             placeholder="e.g. Black"
-
             className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedColorHex ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
           />
         </div>

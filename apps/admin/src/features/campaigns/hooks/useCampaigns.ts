@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+
 import { type BannerPlacement, type CampaignBanner } from '../types';
 
 export function useCampaigns() {
@@ -57,7 +58,9 @@ export function useCampaigns() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
-        if (!res.ok) throw new Error('Failed to update campaign');
+        if (!res.ok) {
+          throw new Error('Failed to update campaign');
+        }
       } else {
         const res = await fetch(`${API_URL}/admin/campaigns`, {
           method: 'POST',
@@ -67,7 +70,9 @@ export function useCampaigns() {
             isActive: true,
           }),
         });
-        if (!res.ok) throw new Error('Failed to create campaign');
+        if (!res.ok) {
+          throw new Error('Failed to create campaign');
+        }
       }
       fetchBanners();
       setIsModalOpen(false);
@@ -84,7 +89,9 @@ export function useCampaigns() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive }),
       });
-      if (!res.ok) throw new Error('Failed to toggle campaign status');
+      if (!res.ok) {
+        throw new Error('Failed to toggle campaign status');
+      }
       fetchBanners();
     } catch (error) {
       console.error(error);
@@ -96,7 +103,9 @@ export function useCampaigns() {
       const res = await fetch(`${API_URL}/admin/campaigns/${id}`, {
         method: 'DELETE',
       });
-      if (!res.ok) throw new Error('Failed to delete campaign');
+      if (!res.ok) {
+        throw new Error('Failed to delete campaign');
+      }
       fetchBanners();
     } catch (error) {
       alert('Error deleting campaign. Please try again.');

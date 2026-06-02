@@ -15,14 +15,18 @@ export function Toast({ message, type = 'success', duration = 3000, onClose }: T
 
   useEffect(() => {
     // Trigger enter animation
-    requestAnimationFrame(() => setIsVisible(true));
+    requestAnimationFrame(() => {
+      setIsVisible(true);
+    });
 
     const timer = setTimeout(() => {
       setIsLeaving(true);
       setTimeout(onClose, 400); // Wait for exit animation
     }, duration);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [duration, onClose]);
 
   const icons = {
@@ -33,12 +37,22 @@ export function Toast({ message, type = 'success', duration = 3000, onClose }: T
     ),
     error: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2.5}
+          d="M6 18L18 6M6 6l12 12"
+        />
       </svg>
     ),
     warning: (
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01M12 3l9.5 16.5H2.5L12 3z" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2.5}
+          d="M12 9v2m0 4h.01M12 3l9.5 16.5H2.5L12 3z"
+        />
       </svg>
     ),
   };
@@ -58,7 +72,9 @@ export function Toast({ message, type = 'success', duration = 3000, onClose }: T
             : '-translate-y-4 scale-95 opacity-0'
         } bg-black/90 dark:bg-white/95`}
       >
-        <div className={`flex h-7 w-7 items-center justify-center rounded-full ${colors[type]} text-white`}>
+        <div
+          className={`flex h-7 w-7 items-center justify-center rounded-full ${colors[type]} text-white`}
+        >
           {icons[type]}
         </div>
         <span className="text-sm font-semibold text-white dark:text-black">{message}</span>
@@ -70,7 +86,12 @@ export function Toast({ message, type = 'success', duration = 3000, onClose }: T
           className="ml-2 flex h-6 w-6 items-center justify-center rounded-full text-white/50 transition-colors hover:text-white dark:text-black/50 dark:hover:text-black"
         >
           <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>

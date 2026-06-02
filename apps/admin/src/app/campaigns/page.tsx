@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { CampaignsFeature } from '../../features/campaigns';
 

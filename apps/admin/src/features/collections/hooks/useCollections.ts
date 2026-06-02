@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
 import { type ProductCollection } from '../types';
 
 export function useCollections() {
@@ -12,7 +13,9 @@ export function useCollections() {
   const fetchCollections = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`,
+      );
       if (res.ok) {
         const data = await res.json();
         setCollections(data);
@@ -30,11 +33,14 @@ export function useCollections() {
 
   const handleAddCollection = async (name: string, image: string, slug: string) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, slug, image }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, slug, image }),
+        },
+      );
       if (res.ok) {
         await fetchCollections();
         setIsAddModalOpen(false);
@@ -46,11 +52,14 @@ export function useCollections() {
 
   const handleUpdateCollection = async (id: string, name: string, image: string, slug: string) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, slug, image }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, slug, image }),
+        },
+      );
       if (res.ok) {
         await fetchCollections();
       }
@@ -66,19 +75,25 @@ export function useCollections() {
       // Clean up Cloudflare R2 image if applicable
       if (col?.image && col.image.startsWith('http') && !col.image.includes('localhost')) {
         try {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ urls: [col.image] }),
-          });
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+            {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ urls: [col.image] }),
+            },
+          );
         } catch (err) {
           console.error('Failed to cleanup collection image from Cloudflare R2:', err);
         }
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${id}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${id}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (res.ok) {
         await fetchCollections();
       }
@@ -86,7 +101,6 @@ export function useCollections() {
       console.error('Failed to delete collection', error);
     }
   };
-
 
   const filteredCollections = useMemo(() => {
     let result = [...collections];

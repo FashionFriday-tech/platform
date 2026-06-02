@@ -20,4 +20,3 @@ export const SIZE_MAP: Record<string, string[]> = {
   Slippers: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
   Accessories: ['ONE SIZE'],
 };
-

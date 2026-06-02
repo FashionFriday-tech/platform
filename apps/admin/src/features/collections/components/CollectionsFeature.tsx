@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+
 import { PlusIcon, SearchIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { useCollections } from '../hooks/useCollections';
+import { type ProductCollection } from '../types';
 import { AddCollectionModal } from './AddCollectionModal';
 import { CollectionCard } from './CollectionCard';
 import { DeleteCollectionModal } from './DeleteCollectionModal';
-import { type ProductCollection } from '../types';
-
 
 export default function CollectionsFeature() {
   const {
@@ -28,7 +28,13 @@ export default function CollectionsFeature() {
   const [collectionToDelete, setCollectionToDelete] = useState<ProductCollection | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleSaveModal = (name: string, image: string, slug: string, isEdit: boolean, id?: string) => {
+  const handleSaveModal = (
+    name: string,
+    image: string,
+    slug: string,
+    isEdit: boolean,
+    id?: string,
+  ) => {
     if (isEdit && id) {
       handleUpdateCollection(id, name, image, slug);
     } else {
@@ -54,7 +60,9 @@ export default function CollectionsFeature() {
   };
 
   const confirmDelete = async () => {
-    if (!collectionToDelete) return;
+    if (!collectionToDelete) {
+      return;
+    }
     setIsDeleting(true);
     try {
       await handleDeleteCollection(collectionToDelete.id);
@@ -106,12 +114,13 @@ export default function CollectionsFeature() {
 
       <DeleteCollectionModal
         isOpen={!!collectionToDelete}
-        onClose={() => setCollectionToDelete(null)}
+        onClose={() => {
+          setCollectionToDelete(null);
+        }}
         onConfirm={confirmDelete}
         collectionName={collectionToDelete?.name}
         isDeleting={isDeleting}
       />
-
 
       {/* Grid */}
       <div className="scrollbar-hide flex flex-1 flex-col gap-4 overflow-auto pb-6">
@@ -139,12 +148,11 @@ export default function CollectionsFeature() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.05 }}
               >
-                <CollectionCard 
-                  collection={collection} 
+                <CollectionCard
+                  collection={collection}
                   onEdit={openEditModal}
                   onDelete={handleDeleteRequest}
                 />
-
               </motion.div>
             ))}
           </motion.div>

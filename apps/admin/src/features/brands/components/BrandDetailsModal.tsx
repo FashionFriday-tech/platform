@@ -70,8 +70,6 @@ export function BrandDetailsModal({
               alt={brand.name}
               className="max-h-full max-w-full object-contain drop-shadow-md invert"
             />
-
-
           </div>
 
           {/* Body */}

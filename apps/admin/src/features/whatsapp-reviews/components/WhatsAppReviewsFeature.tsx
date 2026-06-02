@@ -1,13 +1,16 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+
 import { PlusIcon, TrashIcon } from '@ff/ui';
-import { useWhatsAppReviews } from '../hooks/useWhatsAppReviews';
+
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
+import { useWhatsAppReviews } from '../hooks/useWhatsAppReviews';
 
 export function WhatsAppReviewsFeature() {
-  const { reviews, isLoading, isInitialLoad, hasMore, loadMore, uploadReview, deleteReview } = useWhatsAppReviews();
+  const { reviews, isLoading, isInitialLoad, hasMore, loadMore, uploadReview, deleteReview } =
+    useWhatsAppReviews();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -15,7 +18,9 @@ export function WhatsAppReviewsFeature() {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     setIsUploading(true);
     try {
@@ -25,14 +30,18 @@ export function WhatsAppReviewsFeature() {
       console.error(err);
     } finally {
       setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
   // Scroll event listener for infinite scroll
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
@@ -43,13 +52,15 @@ export function WhatsAppReviewsFeature() {
     };
 
     container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
   }, [loadMore]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className="flex min-h-0 flex-1 flex-col overflow-y-auto scrollbar-hide" 
+      className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto"
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
       <style jsx>{`
@@ -61,14 +72,14 @@ export function WhatsAppReviewsFeature() {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-black dark:text-white">
+          <h1 className="text-2xl font-black tracking-tight text-black uppercase dark:text-white">
             Total Reviews {reviews.length}
           </h1>
         </div>
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
-          className="inline-flex items-center space-x-2 rounded-full bg-black px-4 py-2 text-xs font-black tracking-wider text-white uppercase transition-all hover:bg-black/90 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/90 py-4 px-8"
+          className="inline-flex items-center space-x-2 rounded-full bg-black px-4 px-8 py-2 py-4 text-xs font-black tracking-wider text-white uppercase transition-all hover:bg-black/90 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/90"
         >
           <PlusIcon className="h-4 w-4" />
           <span>{isUploading ? 'Uploading...' : 'Add Review'}</span>
@@ -95,13 +106,15 @@ export function WhatsAppReviewsFeature() {
           <div className="flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-dashed border-current">
             <PlusIcon className="h-8 w-8" />
           </div>
-          <p className="text-sm font-semibold">No review cards yet. Click &quot;Add Review&quot; to upload.</p>
+          <p className="text-sm font-semibold">
+            No review cards yet. Click &quot;Add Review&quot; to upload.
+          </p>
         </div>
       )}
 
       {/* Grid of Review Cards — image only, no title */}
       {reviews.length > 0 && (
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 pb-6">
+        <div className="grid grid-cols-2 gap-6 pb-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {reviews.map((review) => (
             <div
               key={review.id}
@@ -120,7 +133,9 @@ export function WhatsAppReviewsFeature() {
                 {/* Hover overlay with delete */}
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100">
                   <button
-                    onClick={() => setDeleteConfirmId(review.id)}
+                    onClick={() => {
+                      setDeleteConfirmId(review.id);
+                    }}
                     className="flex items-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-red-600"
                   >
                     <TrashIcon className="h-4 w-4" />
@@ -135,7 +150,7 @@ export function WhatsAppReviewsFeature() {
 
       {/* Loading animation at the bottom for scroll pagination */}
       {isLoading && !isInitialLoad && (
-        <div className="py-4 flex justify-center items-center">
+        <div className="flex items-center justify-center py-4">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
         </div>
       )}
@@ -143,7 +158,9 @@ export function WhatsAppReviewsFeature() {
       {/* Delete confirmation modal */}
       <ConfirmModal
         isOpen={deleteConfirmId !== null}
-        onClose={() => setDeleteConfirmId(null)}
+        onClose={() => {
+          setDeleteConfirmId(null);
+        }}
         onConfirm={async () => {
           if (deleteConfirmId) {
             await deleteReview(deleteConfirmId);

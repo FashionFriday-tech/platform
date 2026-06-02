@@ -121,7 +121,6 @@ export function ProductSEO({
           </p>
         </div>
 
-
         <div className="border-t border-black/5 pt-5 dark:border-white/5">
           <LabelWithTick label="URL Slug" status={getStatus(seoSlug, initialData?.slug, 3)} />
           <div className="relative flex items-center">

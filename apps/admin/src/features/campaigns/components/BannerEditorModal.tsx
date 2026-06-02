@@ -77,10 +77,12 @@ export function BannerEditorModal({
           {
             method: 'POST',
             body: formData,
-          }
+          },
         );
 
-        if (!res.ok) throw new Error('Upload failed');
+        if (!res.ok) {
+          throw new Error('Upload failed');
+        }
         const data = await res.json();
         finalMediaUrl = data.url;
       }
@@ -121,7 +123,6 @@ export function BannerEditorModal({
         return 'w-full aspect-video';
     }
   };
-
 
   const responsiveClass = getResponsiveClasses(placement);
 
@@ -231,7 +232,7 @@ export function BannerEditorModal({
                 type="button"
                 onClick={onClose}
                 disabled={isUploading}
-                className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5 disabled:opacity-50"
+                className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-black hover:bg-black/5 disabled:opacity-50 dark:text-white dark:hover:bg-white/5"
               >
                 Cancel
               </button>

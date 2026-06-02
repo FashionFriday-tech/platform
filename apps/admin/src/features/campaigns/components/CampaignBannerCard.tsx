@@ -5,11 +5,7 @@ import Image from 'next/image';
 
 import { ImageIcon, PlayIcon, TrashIcon } from '@ff/ui';
 
-import {
-  type CampaignBanner,
-  PLACEMENT_ASPECT_RATIOS,
-  PLACEMENT_LABELS,
-} from '../types';
+import { type CampaignBanner, PLACEMENT_ASPECT_RATIOS, PLACEMENT_LABELS } from '../types';
 
 interface CampaignBannerCardProps {
   banner: CampaignBanner;
@@ -19,7 +15,13 @@ interface CampaignBannerCardProps {
   onToggleActive: (id: string, currentStatus: boolean) => void;
 }
 
-export function CampaignBannerCard({ banner, onUpdate, onEdit, onDelete, onToggleActive }: CampaignBannerCardProps) {
+export function CampaignBannerCard({
+  banner,
+  onUpdate,
+  onEdit,
+  onDelete,
+  onToggleActive,
+}: CampaignBannerCardProps) {
   const handleToggleActive = () => {
     onToggleActive(banner.id, !banner.isActive);
   };
@@ -92,7 +94,9 @@ export function CampaignBannerCard({ banner, onUpdate, onEdit, onDelete, onToggl
             >
               <span
                 className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
-                  banner.isActive ? 'translate-x-4 bg-white dark:bg-black' : 'translate-x-1 bg-white'
+                  banner.isActive
+                    ? 'translate-x-4 bg-white dark:bg-black'
+                    : 'translate-x-1 bg-white'
                 }`}
               />
             </button>
@@ -102,4 +106,3 @@ export function CampaignBannerCard({ banner, onUpdate, onEdit, onDelete, onToggl
     </div>
   );
 }
-

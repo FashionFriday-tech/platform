@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 
 import { PlusIcon } from '@ff/ui';
 
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { useCampaigns } from '../hooks/useCampaigns';
 import { type BannerPlacement, PLACEMENT_ASPECT_RATIOS, PLACEMENT_LABELS } from '../types';
 import { BannerEditorModal } from './BannerEditorModal';
 import { CampaignBannerCard } from './CampaignBannerCard';
-import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 export function CampaignsFeature() {
   const {
@@ -56,7 +56,9 @@ export function CampaignsFeature() {
                 banner={banner}
                 onUpdate={refreshBanners}
                 onEdit={handleOpenEdit}
-                onDelete={(id) => setDeleteConfirmId(id)}
+                onDelete={(id) => {
+                  setDeleteConfirmId(id);
+                }}
                 onToggleActive={handleToggleActive}
               />
             </div>
@@ -87,7 +89,6 @@ export function CampaignsFeature() {
         </div>
       </section>
     );
-
   };
 
   const placementOrder: BannerPlacement[] = [
@@ -97,7 +98,6 @@ export function CampaignsFeature() {
     'trending-products',
     'content-partners',
   ];
-
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden p-6">
@@ -135,7 +135,9 @@ export function CampaignsFeature() {
             handleDeleteCampaign(deleteConfirmId);
           }
         }}
-        onClose={() => setDeleteConfirmId(null)}
+        onClose={() => {
+          setDeleteConfirmId(null);
+        }}
       />
     </div>
   );

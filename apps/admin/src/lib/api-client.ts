@@ -6,7 +6,9 @@ export interface RequestOptions extends RequestInit {
 
 // Internal helper for refreshing access token when 401 occurs in client
 async function refreshAccessToken(): Promise<string | null> {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') {
+    return null;
+  }
   const refreshToken = localStorage.getItem('adminRefreshToken');
 
   try {
@@ -19,7 +21,9 @@ async function refreshAccessToken(): Promise<string | null> {
       },
     });
 
-    if (!res.ok) throw new Error('Refresh failed');
+    if (!res.ok) {
+      throw new Error('Refresh failed');
+    }
 
     const data = await res.json();
     if (data.accessToken) {
@@ -42,16 +46,21 @@ async function refreshAccessToken(): Promise<string | null> {
 /**
  * Production-Grade Secure Fetch API Client for Admin Panel
  */
-export async function fetcher<T = unknown>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+export async function fetcher<T = unknown>(
+  endpoint: string,
+  options: RequestOptions = {},
+): Promise<T> {
   const { params, headers: customHeaders, credentials = 'include', ...customOptions } = options;
 
   let url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
 
   if (params) {
     const searchParams = new URLSearchParams();
-    Object.entries(params).forEach(([key, val]) => {
-      if (val !== undefined) searchParams.append(key, String(val));
-    });
+    for (const [key, val] of Object.entries(params)) {
+      if (val !== undefined) {
+        searchParams.append(key, String(val));
+      }
+    }
     const queryString = searchParams.toString();
     if (queryString) {
       url += (url.includes('?') ? '&' : '?') + queryString;
@@ -69,7 +78,7 @@ export async function fetcher<T = unknown>(endpoint: string, options: RequestOpt
     return headers;
   };
 
-  let token = typeof window !== 'undefined' ? localStorage.getItem('adminAccessToken') : null;
+  const token = typeof window !== 'undefined' ? localStorage.getItem('adminAccessToken') : null;
   let response = await fetch(url, {
     ...customOptions,
     credentials, // Industry Standard: Automatically attaches HttpOnly cookies

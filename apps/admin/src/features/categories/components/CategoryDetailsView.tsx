@@ -3,16 +3,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { EditIcon, PackageIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
-import { useRouter } from 'next/navigation';
 
 // We simulate fetching all products using the products feature mock
 import { mockProducts } from '../../products/services/api';
 import { type Product } from '../../products/types';
 import { type ProductCategory } from '../types';
-import { CategoryProductTable } from './CategoryProductTable';
 import { AddCategoryModal } from './AddCategoryModal';
+import { CategoryProductTable } from './CategoryProductTable';
 
 interface CategoryDetailsViewProps {
   initialCategory: ProductCategory;
@@ -29,39 +29,47 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   useEffect(() => {
     async function loadProducts() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`);
-        if (!res.ok) return;
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`,
+        );
+        if (!res.ok) {
+          return;
+        }
         const data = await res.json();
         const allProducts = data.data || [];
-        
+
         // Filter by category ID and map
-        const categoryProds = allProducts.filter((p: any) => p.categoryId === category.id).map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          sku: p.id.substring(0, 8).toUpperCase(),
-          costPrice: Number(p.gettingPrice) || 0,
-          originalPrice: Number(p.ogPrice || p.sellingPrice),
-          sellingPrice: Number(p.sellingPrice) || 0,
-          stock: Number(p.totalStock) || 0,
-          maxStock: 1000,
-          status: (p.status.charAt(0).toUpperCase() + p.status.slice(1).toLowerCase()) as any,
-          categoryId: p.categoryId,
-          category: p.category?.name || category.name,
-          store: 'Main Store',
-          variants: p.sizes || [],
-          sales: 0,
-          dateAdded: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          imageUrl: p.mainImage,
-          images: [p.mainImage, p.promoImage, ...(p.liveImages || [])].filter(Boolean),
-          description: p.description,
-          quality: p.quality,
-          brand: p.brand ? p.brand[0] : undefined,
-          gender: p.gender,
-          seoTitle: p.seoTitle,
-          seoDesc: p.seoDescription,
-          seoSlug: p.slug,
-          videoLink: p.youtubeId ? `https://www.youtube.com/embed/${p.youtubeId}` : undefined,
-        }));
+        const categoryProds = allProducts
+          .filter((p: any) => p.categoryId === category.id)
+          .map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            sku: p.id.substring(0, 8).toUpperCase(),
+            costPrice: Number(p.gettingPrice) || 0,
+            originalPrice: Number(p.ogPrice || p.sellingPrice),
+            sellingPrice: Number(p.sellingPrice) || 0,
+            stock: Number(p.totalStock) || 0,
+            maxStock: 1000,
+            status: p.status.charAt(0).toUpperCase() + p.status.slice(1).toLowerCase(),
+            categoryId: p.categoryId,
+            category: p.category?.name || category.name,
+            store: 'Main Store',
+            variants: p.sizes || [],
+            sales: 0,
+            dateAdded: p.createdAt
+              ? new Date(p.createdAt).toISOString().split('T')[0]
+              : new Date().toISOString().split('T')[0],
+            imageUrl: p.mainImage,
+            images: [p.mainImage, p.promoImage, ...(p.liveImages || [])].filter(Boolean),
+            description: p.description,
+            quality: p.quality,
+            brand: p.brand ? p.brand[0] : undefined,
+            gender: p.gender,
+            seoTitle: p.seoTitle,
+            seoDesc: p.seoDescription,
+            seoSlug: p.slug,
+            videoLink: p.youtubeId ? `https://www.youtube.com/embed/${p.youtubeId}` : undefined,
+          }));
         setCategoryProducts(categoryProds);
       } catch (err) {
         console.error('Failed to load category products', err);
@@ -83,13 +91,20 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
 
   const handleDeleteCategory = async () => {
     // 1. Delete image from Cloudflare (if it's not a local placeholder)
-    if (category.image && category.image.startsWith('http') && !category.image.includes('localhost')) {
+    if (
+      category.image &&
+      category.image.startsWith('http') &&
+      !category.image.includes('localhost')
+    ) {
       try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ urls: [category.image] }),
-        });
+        await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+          {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urls: [category.image] }),
+          },
+        );
       } catch (err) {
         console.error('Failed to cleanup category image:', err);
       }
@@ -97,9 +112,12 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
 
     // 2. Delete category from the database
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${category.id}`, {
-        method: 'DELETE',
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${category.id}`,
+        {
+          method: 'DELETE',
+        },
+      );
     } catch (err) {
       console.error('Failed to delete category from DB:', err);
     }
@@ -154,7 +172,9 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                 {category.gender}
               </div>
               <button
-                onClick={() => setIsEditModalOpen(true)}
+                onClick={() => {
+                  setIsEditModalOpen(true);
+                }}
                 className="flex items-center gap-2 rounded-xl bg-black/5 px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
               >
                 <EditIcon className="h-4 w-4" />
@@ -221,7 +241,6 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         </div>
       </div>
 
-
       {/* Product List */}
       <div className="mt-2 flex min-h-0 flex-1 flex-col overflow-hidden">
         <div className="scrollbar-hide flex-1 overflow-auto rounded-2xl border border-black/5 bg-white shadow-sm dark:border-white/5 dark:bg-[#111111]">
@@ -231,7 +250,9 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
 
       <AddCategoryModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={() => {
+          setIsEditModalOpen(false);
+        }}
         initialData={category}
         onSave={handleSaveCategory}
       />

@@ -21,8 +21,12 @@ export default function EditProductPage() {
       }
       setIsLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}`);
-        if (!res.ok) throw new Error('Failed to fetch product');
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}`,
+        );
+        if (!res.ok) {
+          throw new Error('Failed to fetch product');
+        }
         const p = await res.json();
 
         // Pass the raw API response mapped directly to the Product schema shape
@@ -75,7 +79,7 @@ export default function EditProductPage() {
 
         setProduct(mappedProduct);
       } catch (err) {
-        console.error("DEBUG ERROR fetchProductById:", err);
+        console.error('DEBUG ERROR fetchProductById:', err);
       } finally {
         setIsLoading(false);
       }

@@ -1,7 +1,8 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
+
 import { TrashIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
-import { createPortal } from 'react-dom';
 
 interface DeleteCollectionModalProps {
   isOpen: boolean;
@@ -53,9 +54,7 @@ export function DeleteCollectionModal({
               <TrashIcon className="h-7 w-7" />
             </div>
 
-            <h3 className="text-xl font-bold text-black dark:text-white">
-              Delete Collection
-            </h3>
+            <h3 className="text-xl font-bold text-black dark:text-white">Delete Collection</h3>
 
             <p className="mt-2 text-sm text-black/60 dark:text-white/60">
               Are you sure you want to delete{' '}

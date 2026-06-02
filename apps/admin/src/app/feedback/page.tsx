@@ -1,4 +1,5 @@
 import { type Metadata } from 'next';
+
 import { FeedbackFeature } from '@/features/feedback';
 
 export const metadata: Metadata = {

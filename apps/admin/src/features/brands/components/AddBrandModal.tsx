@@ -69,28 +69,35 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
         formData.append('slug', name.trim());
         formData.append('folder', 'brands');
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
-          method: 'POST',
-          body: formData,
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          },
+        );
 
-        if (!res.ok) throw new Error('Upload failed');
+        if (!res.ok) {
+          throw new Error('Upload failed');
+        }
         const data = await res.json();
         finalLogoUrl = data.url;
 
         // If we are replacing an existing Cloudflare logo, delete it
         if (
-          initialData &&
-          initialData.logo &&
+          initialData?.logo &&
           initialData.logo.startsWith('http') &&
           !initialData.logo.includes('localhost')
         ) {
           try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`, {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ urls: [initialData.logo] }),
-            });
+            await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+              {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ urls: [initialData.logo] }),
+              },
+            );
           } catch (err) {
             console.error('Failed to cleanup old brand logo:', err);
           }
@@ -317,10 +324,10 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
             <button
               onClick={handleSave}
               disabled={!name.trim() || !logoUrl || categories.length === 0 || isUploading}
-              className="flex items-center gap-2 rounded-xl bg-black px-6 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95 disabled:hover:scale-100 disabled:opacity-50 dark:bg-white dark:text-black"
+              className="flex items-center gap-2 rounded-xl bg-black px-6 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 dark:bg-white dark:text-black"
             >
               {isUploading && (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white dark:border-black/20 dark:border-t-black"></div>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white dark:border-black/20 dark:border-t-black" />
               )}
               {isUploading ? 'Uploading...' : initialData ? 'Save Changes' : 'Add Brand'}
             </button>

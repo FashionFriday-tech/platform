@@ -1,10 +1,10 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 
 import type { Review } from '@ff/schemas';
+import { toast } from 'sonner';
 interface Props {
   productId: string;
   productCategory?: string;
@@ -18,10 +18,10 @@ const cropImageTo3x4 = (file: File): Promise<File> => {
     img.onload = () => {
       URL.revokeObjectURL(url);
       const canvas = document.createElement('canvas');
-      
+
       const targetRatio = 3 / 4;
       const sourceRatio = img.width / img.height;
-      
+
       let drawWidth = img.width;
       let drawHeight = img.height;
       let offsetX = 0;
@@ -39,12 +39,18 @@ const cropImageTo3x4 = (file: File): Promise<File> => {
       canvas.height = drawHeight;
 
       const ctx = canvas.getContext('2d');
-      if (!ctx) return reject(new Error('Canvas ctx not available'));
-      
+      if (!ctx) {
+        reject(new Error('Canvas ctx not available'));
+        return;
+      }
+
       ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight, 0, 0, drawWidth, drawHeight);
-      
+
       canvas.toBlob((blob) => {
-        if (!blob) return reject(new Error('Canvas toBlob failed'));
+        if (!blob) {
+          reject(new Error('Canvas toBlob failed'));
+          return;
+        }
         const croppedFile = new File([blob], file.name, { type: file.type });
         resolve(croppedFile);
       }, file.type);
@@ -54,10 +60,10 @@ const cropImageTo3x4 = (file: File): Promise<File> => {
   });
 };
 
-export function ProductReviews({ 
-  productId, 
-  productCategory = 'uncategorized', 
-  productName = 'product'
+export function ProductReviews({
+  productId,
+  productCategory = 'uncategorized',
+  productName = 'product',
 }: Props) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [sortOption, setSortOption] = useState<'newest' | 'oldest' | 'highest' | 'lowest'>(
@@ -99,7 +105,9 @@ export function ProductReviews({
 
   const fetchReviews = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews`,
+      );
       if (res.ok) {
         const data = await res.json();
         setReviews(data);
@@ -142,20 +150,27 @@ export function ProductReviews({
     const formData = new FormData();
     formData.append('folder', `reviews/${productCategory}`);
     const uniqueId = Math.random().toString(36).substring(2, 6);
-    
+
     // Sanitize strings for SEO (lowercase, only alphanumeric, hyphens instead of spaces)
-    const sanitizeForSeo = (str: string) => str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const sanitizeForSeo = (str: string) =>
+      str
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
     const seoName = sanitizeForSeo(productName);
-    
+
     // SEO Best Practice: [product-name]-review-fashion-friday-[id]
     formData.append('slug', `${seoName}-review-fashion-friday-${uniqueId}`);
     formData.append('file', file);
-    
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
-        method: 'POST',
-        body: formData,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        },
+      );
       if (res.ok) {
         const data = await res.json();
         return data.url;
@@ -180,7 +195,9 @@ export function ProductReviews({
     let finalImageUrl = newReview.productImage;
     if (newReview.imageFile) {
       const uploadedUrl = await uploadImage(newReview.imageFile, newReview.userName);
-      if (uploadedUrl) finalImageUrl = uploadedUrl;
+      if (uploadedUrl) {
+        finalImageUrl = uploadedUrl;
+      }
     }
 
     try {
@@ -191,13 +208,16 @@ export function ProductReviews({
         productImage: finalImageUrl || undefined,
         isActive: true, // Auto-verify admin created reviews
       };
-      
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+      );
+
       if (res.ok) {
         toast.success('Review submitted successfully! It will appear once verified.');
         await fetchReviews();
@@ -215,7 +235,9 @@ export function ProductReviews({
   };
 
   const handleEditSubmit = async () => {
-    if (!editingId) return;
+    if (!editingId) {
+      return;
+    }
     if (!editData.userName || editData.userName.trim().length < 4) {
       toast.error('Customer name must be at least 4 characters long.');
       return;
@@ -229,7 +251,9 @@ export function ProductReviews({
     let finalImageUrl = editData.productImage;
     if (editData.imageFile) {
       const uploadedUrl = await uploadImage(editData.imageFile, editData.userName);
-      if (uploadedUrl) finalImageUrl = uploadedUrl;
+      if (uploadedUrl) {
+        finalImageUrl = uploadedUrl;
+      }
     }
 
     try {
@@ -239,13 +263,16 @@ export function ProductReviews({
         comment: editData.comment,
         productImage: finalImageUrl || undefined,
       };
-      
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews/${editingId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews/${editingId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+      );
+
       if (res.ok) {
         await fetchReviews();
         setEditingId(null);
@@ -260,9 +287,12 @@ export function ProductReviews({
   const handleDelete = async (id: string) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews/${id}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews/${id}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (res.ok) {
         await fetchReviews();
       }
@@ -285,7 +315,6 @@ export function ProductReviews({
     });
     setMenuOpenId(null);
   };
-
 
   return (
     <div className="border-t border-black/10 pt-16 dark:border-white/10">
@@ -399,21 +428,50 @@ export function ProductReviews({
                       className="h-full w-full object-contain"
                     />
                     <button
-                      onClick={() => setNewReview({ ...newReview, productImage: '', imageFile: null })}
+                      onClick={() => {
+                        setNewReview({ ...newReview, productImage: '', imageFile: null });
+                      }}
                       className="absolute top-2 right-2 rounded-full bg-black/60 p-1.5 text-white hover:bg-black"
                     >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
                 ) : (
                   <label className="flex aspect-[3/4] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-black/20 bg-white transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:hover:bg-white/5">
-                    <svg className="h-8 w-8 text-black/40 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      className="h-8 w-8 text-black/40 dark:text-white/40"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
-                    <span className="text-[10px] font-bold text-black/40 dark:text-white/40 uppercase">Upload</span>
+                    <span className="text-[10px] font-bold text-black/40 uppercase dark:text-white/40">
+                      Upload
+                    </span>
                     <input
                       type="file"
                       accept="image/*"
@@ -423,7 +481,11 @@ export function ProductReviews({
                         if (file) {
                           try {
                             const croppedFile = await cropImageTo3x4(file);
-                            setNewReview({ ...newReview, imageFile: croppedFile, productImage: URL.createObjectURL(croppedFile) });
+                            setNewReview({
+                              ...newReview,
+                              imageFile: croppedFile,
+                              productImage: URL.createObjectURL(croppedFile),
+                            });
                           } catch (err) {
                             console.error('Cropping failed', err);
                           }
@@ -445,7 +507,9 @@ export function ProductReviews({
                   <input
                     type="text"
                     value={newReview.userName}
-                    onChange={(e) => setNewReview({ ...newReview, userName: e.target.value })}
+                    onChange={(e) => {
+                      setNewReview({ ...newReview, userName: e.target.value });
+                    }}
                     className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                     placeholder="John Doe"
                   />
@@ -459,9 +523,13 @@ export function ProductReviews({
                       <button
                         key={star}
                         type="button"
-                        onClick={() => setNewReview({ ...newReview, rating: star })}
+                        onClick={() => {
+                          setNewReview({ ...newReview, rating: star });
+                        }}
                         className={`transition-colors hover:text-yellow-500 ${
-                          star <= newReview.rating ? 'text-yellow-500' : 'text-black/20 dark:text-white/20'
+                          star <= newReview.rating
+                            ? 'text-yellow-500'
+                            : 'text-black/20 dark:text-white/20'
                         }`}
                       >
                         <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -472,14 +540,16 @@ export function ProductReviews({
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <label className="mb-1 block text-xs font-bold tracking-wider text-black/60 uppercase dark:text-white/60">
                   Comment
                 </label>
                 <textarea
                   value={newReview.comment}
-                  onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                  onChange={(e) => {
+                    setNewReview({ ...newReview, comment: e.target.value });
+                  }}
                   rows={3}
                   className="w-full resize-none rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                   placeholder="Write the review here..."
@@ -489,13 +559,19 @@ export function ProductReviews({
               <div className="flex items-center gap-3 pt-2">
                 <button
                   onClick={handleAddSubmit}
-                  disabled={!newReview.userName || newReview.userName.trim().length < 4 || !newReview.productImage}
+                  disabled={
+                    !newReview.userName ||
+                    newReview.userName.trim().length < 4 ||
+                    !newReview.productImage
+                  }
                   className="rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black"
                 >
                   Submit Review
                 </button>
                 <button
-                  onClick={() => setIsAdding(false)}
+                  onClick={() => {
+                    setIsAdding(false);
+                  }}
                   className="rounded-full border border-black/10 px-6 py-2.5 text-sm font-bold text-black hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
                 >
                   Cancel
@@ -567,21 +643,50 @@ export function ProductReviews({
                           className="h-full w-full object-contain"
                         />
                         <button
-                          onClick={() => setEditData({ ...editData, productImage: '', imageFile: null })}
+                          onClick={() => {
+                            setEditData({ ...editData, productImage: '', imageFile: null });
+                          }}
                           className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white hover:bg-black"
                         >
-                          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          <svg
+                            className="h-3 w-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                         </button>
                       </div>
                     ) : (
                       <label className="flex aspect-[3/4] w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-black/20 bg-white transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:hover:bg-white/5">
-                        <svg className="h-6 w-6 text-black/40 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <svg
+                          className="h-6 w-6 text-black/40 dark:text-white/40"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
                         </svg>
-                        <span className="text-[9px] font-bold text-black/40 dark:text-white/40 uppercase">Upload</span>
+                        <span className="text-[9px] font-bold text-black/40 uppercase dark:text-white/40">
+                          Upload
+                        </span>
                         <input
                           type="file"
                           accept="image/*"
@@ -591,7 +696,11 @@ export function ProductReviews({
                             if (file) {
                               try {
                                 const croppedFile = await cropImageTo3x4(file);
-                                setEditData({ ...editData, imageFile: croppedFile, productImage: URL.createObjectURL(croppedFile) });
+                                setEditData({
+                                  ...editData,
+                                  imageFile: croppedFile,
+                                  productImage: URL.createObjectURL(croppedFile),
+                                });
                               } catch (err) {
                                 console.error('Cropping failed', err);
                               }
@@ -608,7 +717,9 @@ export function ProductReviews({
                       <input
                         type="text"
                         value={editData.userName}
-                        onChange={(e) => setEditData({ ...editData, userName: e.target.value })}
+                        onChange={(e) => {
+                          setEditData({ ...editData, userName: e.target.value });
+                        }}
                         className="flex-1 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-bold text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                         placeholder="Customer Name"
                       />
@@ -617,9 +728,13 @@ export function ProductReviews({
                           <button
                             key={star}
                             type="button"
-                            onClick={() => setEditData({ ...editData, rating: star })}
+                            onClick={() => {
+                              setEditData({ ...editData, rating: star });
+                            }}
                             className={`transition-colors hover:text-yellow-500 ${
-                              star <= editData.rating ? 'text-yellow-500' : 'text-black/20 dark:text-white/20'
+                              star <= editData.rating
+                                ? 'text-yellow-500'
+                                : 'text-black/20 dark:text-white/20'
                             }`}
                           >
                             <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -629,25 +744,34 @@ export function ProductReviews({
                         ))}
                       </div>
                     </div>
-                    
+
                     <textarea
                       value={editData.comment}
-                      onChange={(e) => setEditData({ ...editData, comment: e.target.value })}
+                      onChange={(e) => {
+                        setEditData({ ...editData, comment: e.target.value });
+                      }}
                       rows={3}
                       className="w-full resize-none rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-medium text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
                       placeholder="Review comment..."
                     />
-                    
+
                     <div className="flex items-center gap-2">
                       <button
-                        disabled={isLoading || !editData.userName || editData.userName.trim().length < 4 || !editData.productImage}
+                        disabled={
+                          isLoading ||
+                          !editData.userName ||
+                          editData.userName.trim().length < 4 ||
+                          !editData.productImage
+                        }
                         onClick={handleEditSubmit}
                         className="rounded-lg bg-black px-4 py-1.5 text-xs font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black"
                       >
                         {isLoading ? 'Saving...' : 'Save'}
                       </button>
                       <button
-                        onClick={() => setEditingId(null)}
+                        onClick={() => {
+                          setEditingId(null);
+                        }}
                         className="rounded-lg border border-black/10 px-4 py-1.5 text-xs font-bold text-black hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
                       >
                         Cancel

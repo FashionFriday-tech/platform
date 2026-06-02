@@ -1,4 +1,5 @@
 import { type Metadata } from 'next';
+
 import { FaqsFeature } from '@/features/faqs/components/FaqsFeature';
 
 export const metadata: Metadata = {

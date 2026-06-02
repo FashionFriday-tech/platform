@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { PlusIcon, TrashIcon, EditIcon, SearchIcon, LifeBuoyIcon } from '@ff/ui';
-import { api } from '@/lib/api-client';
+import React, { useEffect, useState } from 'react';
+
+import { EditIcon, LifeBuoyIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
+
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { api } from '@/lib/api-client';
 
 interface FAQItem {
   id: string;
@@ -21,7 +23,7 @@ export function FaqsFeature() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  
+
   // Modal states
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState<FAQItem | null>(null);
@@ -56,8 +58,9 @@ export function FaqsFeature() {
 
   useEffect(() => {
     const filtered = faqs.filter((faq) => {
-      const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || faq.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
@@ -126,7 +129,7 @@ export function FaqsFeature() {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-black dark:text-white">
+          <h1 className="text-2xl font-black tracking-tight text-black uppercase dark:text-white">
             FAQs Curation ({faqs.length})
           </h1>
           <p className="text-xs font-semibold text-black/60 dark:text-white/60">
@@ -144,7 +147,7 @@ export function FaqsFeature() {
 
       {/* Filters & Search */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 max-w-md">
+        <div className="relative max-w-md flex-1">
           <span className="absolute inset-y-0 left-3 flex items-center text-black/40 dark:text-white/40">
             <SearchIcon className="h-4 w-4" />
           </span>
@@ -152,8 +155,10 @@ export function FaqsFeature() {
             type="text"
             placeholder="Search FAQs by question or answer..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-full border border-black/10 bg-white py-2 pl-10 pr-4 text-sm font-semibold outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111111] dark:focus:border-white/30"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            className="w-full rounded-full border border-black/10 bg-white py-2 pr-4 pl-10 text-sm font-semibold outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111111] dark:focus:border-white/30"
           />
         </div>
 
@@ -161,8 +166,10 @@ export function FaqsFeature() {
           {filterCategories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all ${
+              onClick={() => {
+                setSelectedCategory(cat);
+              }}
+              className={`rounded-full px-4 py-1.5 text-xs font-black tracking-wider uppercase transition-all ${
                 selectedCategory === cat
                   ? 'bg-black text-white dark:bg-white dark:text-black'
                   : 'bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'
@@ -191,35 +198,51 @@ export function FaqsFeature() {
         <div className="flex-1 overflow-y-auto rounded-3xl border border-black/10 bg-white dark:border-white/10 dark:bg-[#111111]">
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02]">
-                <th className="p-4 text-xs font-black uppercase tracking-wider text-black/40 dark:text-white/40">Order</th>
-                <th className="p-4 text-xs font-black uppercase tracking-wider text-black/40 dark:text-white/40">Category</th>
-                <th className="p-4 text-xs font-black uppercase tracking-wider text-black/40 dark:text-white/40 w-1/3">Question</th>
-                <th className="p-4 text-xs font-black uppercase tracking-wider text-black/40 dark:text-white/40 w-1/2">Answer</th>
-                <th className="p-4 text-xs font-black uppercase tracking-wider text-black/40 dark:text-white/40 text-right">Actions</th>
+              <tr className="border-b border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.02]">
+                <th className="p-4 text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Order
+                </th>
+                <th className="p-4 text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Category
+                </th>
+                <th className="w-1/3 p-4 text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Question
+                </th>
+                <th className="w-1/2 p-4 text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Answer
+                </th>
+                <th className="p-4 text-right text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5 dark:divide-white/5">
               {filteredFaqs.map((faq) => (
                 <tr key={faq.id} className="hover:bg-black/[0.01] dark:hover:bg-white/[0.01]">
-                  <td className="p-4 font-mono font-bold text-xs">{faq.sortOrder}</td>
+                  <td className="p-4 font-mono text-xs font-bold">{faq.sortOrder}</td>
                   <td className="p-4">
-                    <span className="rounded-full bg-black/5 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider dark:bg-white/5">
+                    <span className="rounded-full bg-black/5 px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase dark:bg-white/5">
                       {faq.category}
                     </span>
                   </td>
                   <td className="p-4 font-bold text-black dark:text-white">{faq.question}</td>
-                  <td className="p-4 text-black/60 dark:text-white/60 line-clamp-2 mt-2">{faq.answer}</td>
+                  <td className="mt-2 line-clamp-2 p-4 text-black/60 dark:text-white/60">
+                    {faq.answer}
+                  </td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end space-x-1.5">
                       <button
-                        onClick={() => openEditModal(faq)}
+                        onClick={() => {
+                          openEditModal(faq);
+                        }}
                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
                       >
                         <EditIcon className="h-3.5 w-3.5" />
                       </button>
                       <button
-                        onClick={() => setDeleteConfirmId(faq.id)}
+                        onClick={() => {
+                          setDeleteConfirmId(faq.id);
+                        }}
                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 text-red-500 hover:bg-red-500/10 dark:border-red-500/10 dark:hover:bg-red-950/20"
                       >
                         <TrashIcon className="h-3.5 w-3.5" />
@@ -236,16 +259,20 @@ export function FaqsFeature() {
       {/* Form Drawer / Modal Overlay */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/50 backdrop-blur-xs">
-          <div className="h-full w-full max-w-lg border-l border-black/10 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#111111] overflow-y-auto">
-            <h2 className="mb-6 text-xl font-black uppercase tracking-tight text-black dark:text-white">
+          <div className="h-full w-full max-w-lg overflow-y-auto border-l border-black/10 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#111111]">
+            <h2 className="mb-6 text-xl font-black tracking-tight text-black uppercase dark:text-white">
               {editingFaq ? 'Modify FAQ Option' : 'Curate New FAQ'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-xs font-black uppercase tracking-wider text-black/60 dark:text-white/60">Category</label>
+                <label className="mb-1.5 block text-xs font-black tracking-wider text-black/60 uppercase dark:text-white/60">
+                  Category
+                </label>
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(e) => {
+                    setCategory(e.target.value);
+                  }}
                   className="w-full rounded-2xl border border-black/10 bg-transparent p-3 text-sm font-semibold outline-none dark:border-white/10"
                 >
                   {categories.map((cat) => (
@@ -257,24 +284,32 @@ export function FaqsFeature() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-black uppercase tracking-wider text-black/60 dark:text-white/60">Question</label>
+                <label className="mb-1.5 block text-xs font-black tracking-wider text-black/60 uppercase dark:text-white/60">
+                  Question
+                </label>
                 <input
                   type="text"
                   required
                   value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
+                  onChange={(e) => {
+                    setQuestion(e.target.value);
+                  }}
                   placeholder="Enter the curated question..."
                   className="w-full rounded-2xl border border-black/10 bg-transparent p-3 text-sm font-semibold outline-none dark:border-white/10"
                 />
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-black uppercase tracking-wider text-black/60 dark:text-white/60">Answer</label>
+                <label className="mb-1.5 block text-xs font-black tracking-wider text-black/60 uppercase dark:text-white/60">
+                  Answer
+                </label>
                 <textarea
                   required
                   rows={4}
                   value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
+                  onChange={(e) => {
+                    setAnswer(e.target.value);
+                  }}
                   placeholder="Explain the store policy or answer clearly..."
                   className="w-full rounded-2xl border border-black/10 bg-transparent p-3 text-sm font-semibold outline-none dark:border-white/10"
                 />
@@ -282,21 +317,29 @@ export function FaqsFeature() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1.5 block text-xs font-black uppercase tracking-wider text-black/60 dark:text-white/60">Link Path (Optional)</label>
+                  <label className="mb-1.5 block text-xs font-black tracking-wider text-black/60 uppercase dark:text-white/60">
+                    Link Path (Optional)
+                  </label>
                   <input
                     type="text"
                     value={href}
-                    onChange={(e) => setHref(e.target.value)}
+                    onChange={(e) => {
+                      setHref(e.target.value);
+                    }}
                     placeholder="e.g. /shipping"
                     className="w-full rounded-2xl border border-black/10 bg-transparent p-3 text-sm font-semibold outline-none dark:border-white/10"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-xs font-black uppercase tracking-wider text-black/60 dark:text-white/60">Link Text (Optional)</label>
+                  <label className="mb-1.5 block text-xs font-black tracking-wider text-black/60 uppercase dark:text-white/60">
+                    Link Text (Optional)
+                  </label>
                   <input
                     type="text"
                     value={linkText}
-                    onChange={(e) => setLinkText(e.target.value)}
+                    onChange={(e) => {
+                      setLinkText(e.target.value);
+                    }}
                     placeholder="e.g. View policy"
                     className="w-full rounded-2xl border border-black/10 bg-transparent p-3 text-sm font-semibold outline-none dark:border-white/10"
                   />
@@ -304,19 +347,25 @@ export function FaqsFeature() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-black uppercase tracking-wider text-black/60 dark:text-white/60">Sort Order</label>
+                <label className="mb-1.5 block text-xs font-black tracking-wider text-black/60 uppercase dark:text-white/60">
+                  Sort Order
+                </label>
                 <input
                   type="number"
                   value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
+                  onChange={(e) => {
+                    setSortOrder(e.target.value);
+                  }}
                   className="w-full rounded-2xl border border-black/10 bg-transparent p-3 text-sm font-semibold outline-none dark:border-white/10"
                 />
               </div>
 
-              <div className="pt-6 flex justify-end gap-3 border-t border-black/5 dark:border-white/5">
+              <div className="flex justify-end gap-3 border-t border-black/5 pt-6 dark:border-white/5">
                 <button
                   type="button"
-                  onClick={() => setIsFormOpen(false)}
+                  onClick={() => {
+                    setIsFormOpen(false);
+                  }}
                   className="rounded-full bg-black/5 px-5 py-2.5 text-xs font-black tracking-wider text-black/60 uppercase hover:bg-black/10 dark:bg-white/5 dark:text-white/60"
                 >
                   Cancel
@@ -336,7 +385,9 @@ export function FaqsFeature() {
       {/* Delete confirmation modal */}
       <ConfirmModal
         isOpen={deleteConfirmId !== null}
-        onClose={() => setDeleteConfirmId(null)}
+        onClose={() => {
+          setDeleteConfirmId(null);
+        }}
         onConfirm={async () => {
           if (deleteConfirmId) {
             await handleDelete(deleteConfirmId);

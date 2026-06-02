@@ -37,17 +37,7 @@ export async function autoCropImageTo3x4(file: File): Promise<Blob> {
       canvas.height = cropHeight;
 
       // Draw the cropped area to the canvas
-      ctx.drawImage(
-        img,
-        cropX,
-        cropY,
-        cropWidth,
-        cropHeight,
-        0,
-        0,
-        cropWidth,
-        cropHeight
-      );
+      ctx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
 
       // Export as WebP blob
       canvas.toBlob(
@@ -59,7 +49,7 @@ export async function autoCropImageTo3x4(file: File): Promise<Blob> {
           }
         },
         'image/webp',
-        0.85
+        0.85,
       );
     };
 

@@ -1,7 +1,8 @@
 import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
+
 import { CollectionDetailsView } from '../../../features/collections/components/CollectionDetailsView';
-import { ProductCollection } from '../../../features/collections/types';
+import { type ProductCollection } from '../../../features/collections/types';
 
 interface CollectionDetailsPageProps {
   params: Promise<{
@@ -11,9 +12,12 @@ interface CollectionDetailsPageProps {
 
 async function getCollectionBySlug(slug: string): Promise<ProductCollection | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/collections/${slug}`, {
-      cache: 'no-store',
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/collections/${slug}`,
+      {
+        cache: 'no-store',
+      },
+    );
     if (!res.ok) {
       return null;
     }

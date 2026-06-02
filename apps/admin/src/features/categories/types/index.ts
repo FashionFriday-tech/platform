@@ -8,5 +8,3 @@ export interface ProductCategory {
 }
 
 export const MOCK_CATEGORIES: ProductCategory[] = [];
-
-

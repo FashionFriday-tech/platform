@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
 import { type Review } from '../types';
 
 export function useReviews() {
@@ -17,7 +18,9 @@ export function useReviews() {
 
   const fetchReviews = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews`,
+      );
       if (res.ok) {
         const data = await res.json();
         // Map backend data to frontend Review format
@@ -76,9 +79,12 @@ export function useReviews() {
 
   const handleDelete = async (reviewId: string) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (res.ok) {
         setReviews(reviews.filter((r) => r.id !== reviewId));
       }
@@ -88,17 +94,24 @@ export function useReviews() {
   };
 
   const handleToggleVerified = async (reviewId: string) => {
-    const review = reviews.find(r => r.id === reviewId);
-    if (!review) return;
-    
+    const review = reviews.find((r) => r.id === reviewId);
+    if (!review) {
+      return;
+    }
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !review.isVerified }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isActive: !review.isVerified }),
+        },
+      );
       if (res.ok) {
-        setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, isVerified: !r.isVerified } : r)));
+        setReviews(
+          reviews.map((r) => (r.id === reviewId ? { ...r, isVerified: !r.isVerified } : r)),
+        );
       }
     } catch (err) {
       console.error('Failed to toggle verified', err);
@@ -111,11 +124,14 @@ export function useReviews() {
 
   const handleEditSave = async (reviewId: string, newComment: string) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comment: newComment }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ comment: newComment }),
+        },
+      );
       if (res.ok) {
         setReviews(reviews.map((r) => (r.id === reviewId ? { ...r, comment: newComment } : r)));
       }

@@ -1,6 +1,9 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
 import { toast } from 'sonner';
+
 import { fetcher } from '@/lib/api-client';
+
 import { type Customer, type SortDirection, type SortField } from '../types';
 
 export function useCustomers() {

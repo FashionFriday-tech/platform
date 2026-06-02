@@ -1,19 +1,19 @@
 'use client';
 
 import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
-  rectSortingStrategy,
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -21,9 +21,9 @@ import { SearchIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { useCategories } from '../hooks/useCategories';
-import { CategoryCard } from './CategoryCard';
+import { type ProductCategory } from '../types';
 import { AddCategoryModal } from './AddCategoryModal';
-import { ProductCategory } from '../types';
+import { CategoryCard } from './CategoryCard';
 
 function SortableCategoryItem({ category }: { category: ProductCategory }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -38,17 +38,22 @@ function SortableCategoryItem({ category }: { category: ProductCategory }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group">
+    <div ref={setNodeRef} style={style} className="group relative">
       {/* Drag Handle Icon */}
       <button
         {...attributes}
         {...listeners}
         type="button"
-        className="absolute top-3 right-3 z-30 flex h-8 w-8 cursor-grab items-center justify-center rounded-xl bg-black/70 text-white backdrop-blur-md transition-opacity group-hover:opacity-100 opacity-75 hover:bg-black active:cursor-grabbing"
+        className="absolute top-3 right-3 z-30 flex h-8 w-8 cursor-grab items-center justify-center rounded-xl bg-black/70 text-white opacity-75 backdrop-blur-md transition-opacity group-hover:opacity-100 hover:bg-black active:cursor-grabbing"
         title="Drag to reorder category"
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 8h16M4 16h16" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M4 8h16M4 16h16"
+          />
         </svg>
       </button>
       <CategoryCard category={category} />
@@ -133,13 +138,13 @@ export default function CategoriesFeature() {
             }}
             className="flex shrink-0 items-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-transform hover:scale-105 active:scale-95 dark:bg-white dark:text-black"
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
             <span className="hidden sm:inline">Add Category</span>
           </button>
@@ -155,8 +160,15 @@ export default function CategoriesFeature() {
             </p>
           </div>
         ) : (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={filteredCategories.map((c) => c.id)} strategy={rectSortingStrategy}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={filteredCategories.map((c) => c.id)}
+              strategy={rectSortingStrategy}
+            >
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -174,11 +186,12 @@ export default function CategoriesFeature() {
 
       <AddCategoryModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+        }}
         initialData={categoryToEdit}
         onSave={handleSaveCategory}
       />
     </div>
   );
 }
-

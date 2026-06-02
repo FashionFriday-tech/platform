@@ -19,7 +19,7 @@ export interface CampaignBanner {
   createdAt: string;
 }
 
-export let MOCK_BANNERS: CampaignBanner[] = [
+export const MOCK_BANNERS: CampaignBanner[] = [
   {
     id: 'b1',
     title: 'Summer Collection',
@@ -61,4 +61,3 @@ export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {
   'content-partners': 'Content Partners (Influencer Carousel)',
   'whatsapp-reviews': 'WhatsApp Reviews',
 };
-

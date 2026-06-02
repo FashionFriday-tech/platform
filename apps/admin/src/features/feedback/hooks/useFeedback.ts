@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
 import { type Feedback } from '@ff/schemas';
 
 import { fetcher } from '@/lib/api-client';
@@ -12,7 +13,9 @@ export function useFeedback() {
   const [selectedType, setSelectedType] = useState<string>('all');
 
   const fetchFeedbackList = async () => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     setIsLoading(true);
     try {
       const data = await fetcher<Feedback[]>('/feedback/admin');
@@ -32,7 +35,7 @@ export function useFeedback() {
     return feedbackList.filter((item) => {
       const matchesSearch =
         item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.email && item.email.toLowerCase().includes(searchQuery.toLowerCase()));
+        item.email?.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesType = selectedType === 'all' || item.type === selectedType;
 

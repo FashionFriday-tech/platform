@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import ReactCrop, { type Crop, centerCrop, makeAspectCrop } from 'react-image-crop';
+import { useEffect, useRef, useState } from 'react';
+import ReactCrop, { centerCrop, type Crop, makeAspectCrop } from 'react-image-crop';
+
 import 'react-image-crop/dist/ReactCrop.css';
 
 interface ImageCropModalProps {
@@ -19,13 +20,15 @@ export function ImageCropModal({ file, onCropComplete, onCancel }: ImageCropModa
   // Set up image source from file
   useEffect(() => {
     const reader = new FileReader();
-    reader.addEventListener('load', () => setImgSrc(reader.result?.toString() || ''));
+    reader.addEventListener('load', () => {
+      setImgSrc(reader.result?.toString() || '');
+    });
     reader.readAsDataURL(file);
   }, [file]);
 
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
-    
+
     // Create initial 3:4 aspect crop centered in the image
     const initialCrop = centerCrop(
       makeAspectCrop(
@@ -35,34 +38,38 @@ export function ImageCropModal({ file, onCropComplete, onCancel }: ImageCropModa
         },
         3 / 4,
         width,
-        height
+        height,
       ),
       width,
-      height
+      height,
     );
-    
+
     setCrop(initialCrop);
     setCompletedCrop(initialCrop);
   };
 
   const handleCropSave = async () => {
     const image = imgRef.current;
-    if (!image || !completedCrop) return;
+    if (!image || !completedCrop) {
+      return;
+    }
 
     // Use HTML5 Canvas to perform the crop in the client browser
     const canvas = document.createElement('canvas');
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-    
+
     // Set 3:4 output resolution (e.g. 1200x1600 or relative to cropped area)
     const targetWidth = Math.round(completedCrop.width * scaleX);
     const targetHeight = Math.round(completedCrop.height * scaleY);
-    
+
     canvas.width = targetWidth;
     canvas.height = targetHeight;
-    
+
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
@@ -76,7 +83,7 @@ export function ImageCropModal({ file, onCropComplete, onCancel }: ImageCropModa
       0,
       0,
       targetWidth,
-      targetHeight
+      targetHeight,
     );
 
     // Convert canvas to Blob (webp format with 85% quality to save space)
@@ -87,13 +94,13 @@ export function ImageCropModal({ file, onCropComplete, onCancel }: ImageCropModa
         }
       },
       'image/webp',
-      0.85
+      0.85,
     );
   };
 
   return (
     <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-md">
-      <div className="flex w-full max-w-xl flex-col rounded-3xl border border-black/5 bg-white shadow-2xl overflow-hidden dark:border-white/5 dark:bg-[#111111]">
+      <div className="flex w-full max-w-xl flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-2xl dark:border-white/5 dark:bg-[#111111]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-black/5 px-6 py-4 dark:border-white/5">
           <div className="flex items-center space-x-2">
@@ -111,10 +118,20 @@ export function ImageCropModal({ file, onCropComplete, onCancel }: ImageCropModa
           </div>
           <button
             onClick={onCancel}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 hover:bg-black/10 transition-colors dark:bg-white/5 dark:hover:bg-white/10"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"
           >
-            <svg className="h-4 w-4 text-black/60 dark:text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="h-4 w-4 text-black/60 dark:text-white/60"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -124,8 +141,12 @@ export function ImageCropModal({ file, onCropComplete, onCancel }: ImageCropModa
           {imgSrc ? (
             <ReactCrop
               crop={crop}
-              onChange={(c) => setCrop(c)}
-              onComplete={(c) => setCompletedCrop(c)}
+              onChange={(c) => {
+                setCrop(c);
+              }}
+              onComplete={(c) => {
+                setCompletedCrop(c);
+              }}
               aspect={3 / 4}
               className="max-h-full"
             >

@@ -5,10 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { Toast } from '@/components/ui/Toast';
-import { ImageCropModal } from '@/components/ui/ImageCropModal';
-
 import { type Product } from '@ff/schemas';
+
+import { ImageCropModal } from '@/components/ui/ImageCropModal';
+import { Toast } from '@/components/ui/Toast';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
 import { QUALITIES } from '../utils/constants';
@@ -20,7 +20,10 @@ interface AddProductFormProps {
 
 export function AddProductForm({ initialData }: AddProductFormProps) {
   const router = useRouter();
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: 'success' | 'error' | 'warning';
+  } | null>(null);
   const {
     sizes,
     toggleSize,
@@ -103,7 +106,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     toggleCollection,
   } = useAddProductForm(initialData);
 
-
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -154,10 +156,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   };
 
   const dynamicCategories = apiCategories.filter((c) => {
-    if (c.gender === 'Unisex') return true;
-    if (gender === 'Men' && c.gender === 'Men') return true;
-    if (gender === 'Women' && c.gender === 'Women') return true;
-    if (gender === 'Unisex') return true;
+    if (c.gender === 'Unisex') {
+      return true;
+    }
+    if (gender === 'Men' && c.gender === 'Men') {
+      return true;
+    }
+    if (gender === 'Women' && c.gender === 'Women') {
+      return true;
+    }
+    if (gender === 'Unisex') {
+      return true;
+    }
     return false;
   });
 
@@ -227,7 +237,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   !quality ||
                   images.length === 0
                 ) {
-                  setToast({ message: 'Please fill out all required fields and upload at least one image.', type: 'warning' });
+                  setToast({
+                    message: 'Please fill out all required fields and upload at least one image.',
+                    type: 'warning',
+                  });
                   return;
                 }
 
@@ -235,53 +248,78 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   // Upload any new images first
                   setToast({ message: 'Uploading images and saving product...', type: 'success' });
 
-                  const uploadBlob = async (blob: Blob | File, originalName: string, pName?: string) => {
-                    const file = blob instanceof File ? blob : new File([blob], originalName, { type: 'image/webp' });
+                  const uploadBlob = async (
+                    blob: Blob | File,
+                    originalName: string,
+                    pName?: string,
+                  ) => {
+                    const file =
+                      blob instanceof File
+                        ? blob
+                        : new File([blob], originalName, { type: 'image/webp' });
                     const formData = new FormData();
                     formData.append('file', file);
-                    if (pName) formData.append('slug', pName);
+                    if (pName) {
+                      formData.append('slug', pName);
+                    }
                     formData.append('folder', 'products');
 
-                    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`, {
-                      method: 'POST',
-                      body: formData,
-                    });
-                    if (!res.ok) throw new Error('Upload failed');
+                    const res = await fetch(
+                      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+                      {
+                        method: 'POST',
+                        body: formData,
+                      },
+                    );
+                    if (!res.ok) {
+                      throw new Error('Upload failed');
+                    }
                     const data = await res.json();
                     return data.url;
                   };
 
-                  const finalImages = await Promise.all(images.map(async (img) => {
-                    if (img.isNew && img.file) {
-                      const url = await uploadBlob(img.file, img.file.name, productName);
-                      return url;
-                    }
-                    return img.url;
-                  }));
+                  const finalImages = await Promise.all(
+                    images.map(async (img) => {
+                      if (img.isNew && img.file) {
+                        const url = await uploadBlob(img.file, img.file.name, productName);
+                        return url;
+                      }
+                      return img.url;
+                    }),
+                  );
 
                   const catTarget = category.toLowerCase();
-                  const selectedGender = gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase();
+                  const selectedGender =
+                    gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase();
 
                   let selectedApiCategory = uniqueCategories.find((c) => {
                     const cName = c.name.toLowerCase();
                     const cGender = c.gender.toUpperCase();
-                    return (cName === catTarget || c.id === category) && (cGender === selectedGender || cGender === 'UNISEX');
+                    return (
+                      (cName === catTarget || c.id === category) &&
+                      (cGender === selectedGender || cGender === 'UNISEX')
+                    );
                   });
 
                   if (!selectedApiCategory) {
                     selectedApiCategory = uniqueCategories.find(
-                      (c) => c.name.toLowerCase() === catTarget || c.id === category
+                      (c) => c.name.toLowerCase() === catTarget || c.id === category,
                     );
                   }
 
                   if (!selectedApiCategory) {
                     // Try mapping clothing subcategories (Jacket, Shirts, Pants, etc.)
                     if (['jacket', 'shirts', 'pants', 'clothing', 'cloths'].includes(catTarget)) {
-                      selectedApiCategory = uniqueCategories.find(
-                        (c) =>
-                          (c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing')) &&
-                          (c.gender.toUpperCase() === selectedGender || c.gender.toUpperCase() === 'UNISEX')
-                      ) || uniqueCategories.find((c) => c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing'));
+                      selectedApiCategory =
+                        uniqueCategories.find(
+                          (c) =>
+                            (c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing')) &&
+                            (c.gender.toUpperCase() === selectedGender ||
+                              c.gender.toUpperCase() === 'UNISEX'),
+                        ) ||
+                        uniqueCategories.find(
+                          (c) => c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing'),
+                        );
                     }
                   }
 
@@ -290,15 +328,21 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   }
 
                   if (!selectedApiCategory) {
-                    setToast({ message: 'Please create at least one category first.', type: 'warning' });
+                    setToast({
+                      message: 'Please create at least one category first.',
+                      type: 'warning',
+                    });
                     return;
                   }
 
-
                   // Map frontend quality to backend enum
                   let mappedQuality = quality.toUpperCase().replace(/\s+/g, '_');
-                  if (mappedQuality === 'ORIGINAL') mappedQuality = 'UA';
-                  if (mappedQuality === '5A') mappedQuality = 'STANDARD';
+                  if (mappedQuality === 'ORIGINAL') {
+                    mappedQuality = 'UA';
+                  }
+                  if (mappedQuality === '5A') {
+                    mappedQuality = 'STANDARD';
+                  }
 
                   const payload = {
                     name: productName,
@@ -348,7 +392,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     throw new Error(`Failed to save product: ${errorText}`);
                   }
 
-                  setToast({ message: initialData ? 'Product updated successfully!' : 'Product created successfully!', type: 'success' });
+                  setToast({
+                    message: initialData
+                      ? 'Product updated successfully!'
+                      : 'Product created successfully!',
+                    type: 'success',
+                  });
 
                   // Redirect to product list after a brief delay
                   setTimeout(() => {
@@ -442,7 +491,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       </button>
                     ))}
                   </div>
-
                 </div>
 
                 <div ref={categoryRef} className="relative">
@@ -476,7 +524,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   </button>
 
                   {isCategoryOpen && (
-                    <div className="absolute z-10 mt-2 w-full max-h-60 overflow-y-auto overflow-x-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+                    <div className="absolute z-10 mt-2 max-h-60 w-full overflow-x-hidden overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
                       {uniqueCategories.map((c) => (
                         <button
                           key={c.id}
@@ -495,7 +543,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         </div>
                       )}
                       <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                      <Link href="/categories" className="flex w-full items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5">
+                      <Link
+                        href="/categories"
+                        className="flex w-full items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5"
+                      >
                         <svg
                           className="h-4 w-4"
                           fill="none"
@@ -525,10 +576,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   />
                   <div className="relative flex items-center">
                     {selectedBrandLogo && (
-                      <div className="absolute left-4 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full bg-black/10 text-[10px] font-bold text-black/80 dark:bg-white/20 dark:text-white overflow-hidden">
-                        {selectedBrandLogo.startsWith('http') || selectedBrandLogo.startsWith('/') ? (
+                      <div className="absolute top-1/2 left-4 flex h-5 w-5 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full bg-black/10 text-[10px] font-bold text-black/80 dark:bg-white/20 dark:text-white">
+                        {selectedBrandLogo.startsWith('http') ||
+                        selectedBrandLogo.startsWith('/') ? (
                           /* eslint-disable-next-line @next/next/no-img-element */
-                          <img src={selectedBrandLogo} alt="Brand logo" className="h-full w-full object-contain bg-white p-0.5" />
+                          <img
+                            src={selectedBrandLogo}
+                            alt="Brand logo"
+                            className="h-full w-full bg-white object-contain p-0.5"
+                          />
                         ) : (
                           selectedBrandLogo
                         )}
@@ -562,12 +618,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   </div>
 
                   {isBrandOpen && (
-                    <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:border-white/10 dark:bg-[#1a1a1a]">
-
-
+                    <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl [-ms-overflow-style:none] [scrollbar-width:none] dark:border-white/10 dark:bg-[#1a1a1a] [&::-webkit-scrollbar]:hidden">
                       {filteredBrands.length > 0 ? (
                         filteredBrands.map((b: any) => (
-
                           <button
                             key={b.name}
                             onClick={() => {
@@ -577,10 +630,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             }}
                             className="flex w-full items-center space-x-3 px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
                           >
-                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black/5 text-xs font-bold text-black/80 dark:bg-white/10 dark:text-white/80 overflow-hidden">
+                            <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-black/5 text-xs font-bold text-black/80 dark:bg-white/10 dark:text-white/80">
                               {b.logo ? (
                                 /* eslint-disable-next-line @next/next/no-img-element */
-                                <img src={b.logo} alt={b.name} className="h-full w-full object-contain bg-white p-0.5" />
+                                <img
+                                  src={b.logo}
+                                  alt={b.name}
+                                  className="h-full w-full bg-white object-contain p-0.5"
+                                />
                               ) : (
                                 b.name.charAt(0).toUpperCase()
                               )}
@@ -634,7 +691,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         }
                       }}
                       placeholder="e.g. Black"
-
                       className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedColorHex ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
                     />
                   </div>
@@ -946,7 +1002,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
             {isUploading ? (
               <div className="mb-4 flex aspect-[3/4] w-full flex-col items-center justify-center overflow-hidden rounded-2xl border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
-                <div className="mb-3 h-8 w-8 animate-spin rounded-full border-4 border-black/20 border-t-black dark:border-white/20 dark:border-t-white"></div>
+                <div className="mb-3 h-8 w-8 animate-spin rounded-full border-4 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
                 <span className="text-sm font-bold text-black/80 dark:text-white/80">
                   Uploading...
                 </span>
@@ -1027,8 +1083,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       }}
                       className="absolute top-12 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-black/5 bg-white text-black opacity-0 shadow-sm transition-transform group-hover:opacity-100 hover:scale-110 dark:border-white/5 dark:bg-black dark:text-white"
                     >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14.304 4.844l5.852 5.852M7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h11a1 1 0 001-1v-4.5m2.409-9.91a2.017 2.017 0 010 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 012.852 0zM12.5 7.5L17 12" />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2.5}
+                          d="M14.304 4.844l5.852 5.852M7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h11a1 1 0 001-1v-4.5m2.409-9.91a2.017 2.017 0 010 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 012.852 0zM12.5 7.5L17 12"
+                        />
                       </svg>
                     </button>
                   )}
@@ -1112,10 +1178,20 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                               e.stopPropagation();
                               setEditingImageId(img.id);
                             }}
-                            className="absolute top-8 right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-black/5 bg-white text-black opacity-0 shadow-sm transition-opacity group-hover:opacity-100 dark:border-white/5 dark:bg-black dark:text-white hover:scale-110"
+                            className="absolute top-8 right-1.5 z-10 flex h-5 w-5 items-center justify-center rounded-full border border-black/5 bg-white text-black opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:scale-110 dark:border-white/5 dark:bg-black dark:text-white"
                           >
-                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14.304 4.844l5.852 5.852M7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h11a1 1 0 001-1v-4.5m2.409-9.91a2.017 2.017 0 010 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 012.852 0zM12.5 7.5L17 12" />
+                            <svg
+                              className="h-3 w-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M14.304 4.844l5.852 5.852M7 7H4a1 1 0 00-1 1v10a1 1 0 001 1h11a1 1 0 001-1v-4.5m2.409-9.91a2.017 2.017 0 010 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 012.852 0zM12.5 7.5L17 12"
+                              />
                             </svg>
                           </button>
                         )}
@@ -1126,10 +1202,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   {images.length < 10 && (
                     <div
                       onClick={() => !isUploading && fileInputRef.current?.click()}
-                      className={`group flex aspect-[3/4] flex-col items-center justify-center rounded-xl border border-dashed border-black/20 transition-colors dark:border-white/20 ${isUploading ? 'cursor-not-allowed bg-black/5 dark:bg-white/5 opacity-50' : 'cursor-pointer hover:border-black/40 hover:bg-black/5 dark:hover:border-white/40 dark:hover:bg-white/5'}`}
+                      className={`group flex aspect-[3/4] flex-col items-center justify-center rounded-xl border border-dashed border-black/20 transition-colors dark:border-white/20 ${isUploading ? 'cursor-not-allowed bg-black/5 opacity-50 dark:bg-white/5' : 'cursor-pointer hover:border-black/40 hover:bg-black/5 dark:hover:border-white/40 dark:hover:bg-white/5'}`}
                     >
                       {isUploading ? (
-                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white"></div>
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
                       ) : (
                         <>
                           <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/5 text-black/60 transition-transform group-hover:scale-110 dark:bg-white/10 dark:text-white/80">
@@ -1245,7 +1321,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     <button
                       key={colName}
                       type="button"
-                      onClick={() => toggleCollection?.(colName)}
+                      onClick={() => {
+                        toggleCollection?.(colName);
+                      }}
                       className={`flex items-center space-x-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all ${
                         isSelected
                           ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
@@ -1272,7 +1350,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         <Toast
           message={toast.message}
           type={toast.type}
-          onClose={() => setToast(null)}
+          onClose={() => {
+            setToast(null);
+          }}
         />
       )}
       {editingImageId && originalFiles[editingImageId] && (
@@ -1282,7 +1362,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             handleReCrop(editingImageId, croppedBlob, originalFiles[editingImageId].name);
             setEditingImageId(null);
           }}
-          onCancel={() => setEditingImageId(null)}
+          onCancel={() => {
+            setEditingImageId(null);
+          }}
         />
       )}
     </div>

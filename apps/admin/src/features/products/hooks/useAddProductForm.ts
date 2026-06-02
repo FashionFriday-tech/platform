@@ -1,19 +1,17 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
-
-
-import { autoCropImageTo3x4 } from '../utils/imageCrop';
-import { useCategories } from '../../categories/hooks/useCategories';
-import { useBrands } from '../../brands/hooks/useBrands';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { MAJOR_COLORS, type Product } from '@ff/schemas';
 
+import { useBrands } from '../../brands/hooks/useBrands';
+import { useCategories } from '../../categories/hooks/useCategories';
 import { SIZE_MAP } from '../utils/constants';
+import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export function useAddProductForm(initialData?: Product) {
   const { categories: apiCategories } = useCategories();
   const { brands: apiBrands } = useBrands();
 
-  const [sizes, setSizes] = useState<string[]>(SIZE_MAP['Jacket'] || []);
+  const [sizes, setSizes] = useState<string[]>(SIZE_MAP.Jacket || []);
   const [gender, setGender] = useState<string>('Unisex');
   const [category, setCategory] = useState<string>('Jacket');
   const [quality, setQuality] = useState<string>('Original');
@@ -51,7 +49,9 @@ export function useAddProductForm(initialData?: Product) {
 
   // Media
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [images, setImages] = useState<{ id: string; url: string; file?: File; isNew?: boolean }[]>([]);
+  const [images, setImages] = useState<{ id: string; url: string; file?: File; isNew?: boolean }[]>(
+    [],
+  );
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const categoryRef = useRef<HTMLDivElement>(null);
@@ -64,27 +64,47 @@ export function useAddProductForm(initialData?: Product) {
     if (initialData) {
       // Map Gender
       let mappedGender = 'Unisex';
-      if (initialData.gender === 'MEN') mappedGender = 'Men';
-      if (initialData.gender === 'WOMEN') mappedGender = 'Woman';
-      if (initialData.gender === 'UNISEX') mappedGender = 'Unisex';
+      if (initialData.gender === 'MEN') {
+        mappedGender = 'Men';
+      }
+      if (initialData.gender === 'WOMEN') {
+        mappedGender = 'Woman';
+      }
+      if (initialData.gender === 'UNISEX') {
+        mappedGender = 'Unisex';
+      }
 
       // Map Quality
       let mappedUIQuality: string = initialData.attributes?.quality || 'Original';
-      if (mappedUIQuality === 'UA') mappedUIQuality = 'Original';
-      if (mappedUIQuality === 'STANDARD') mappedUIQuality = '5A';
+      if (mappedUIQuality === 'UA') {
+        mappedUIQuality = 'Original';
+      }
+      if (mappedUIQuality === 'STANDARD') {
+        mappedUIQuality = '5A';
+      }
 
       // Map Category
       let mappedCategory = 'Jacket'; // default fallback for CLOTHING
-      if (initialData.categoryId === 'SNEAKERS') mappedCategory = 'Sneakers';
-      else if (initialData.categoryId === 'WATCHES') mappedCategory = 'Watches';
-      else if (initialData.categoryId === 'ACCESSORIES') mappedCategory = 'Accessories';
-      
+      if (initialData.categoryId === 'SNEAKERS') {
+        mappedCategory = 'Sneakers';
+      } else if (initialData.categoryId === 'WATCHES') {
+        mappedCategory = 'Watches';
+      } else if (initialData.categoryId === 'ACCESSORIES') {
+        mappedCategory = 'Accessories';
+      }
+
       // Try to infer specific clothing type from tags
       if (initialData.categoryId === 'CLOTHING') {
         const tags = initialData.marketing?.collections || [];
-        if (tags.some(t => t.toLowerCase() === 'shirts' || t.toLowerCase() === 'shirt')) mappedCategory = 'Shirts';
-        else if (tags.some(t => t.toLowerCase() === 'pants' || t.toLowerCase() === 'pant')) mappedCategory = 'Pants';
-        else if (tags.some(t => t.toLowerCase() === 'jacket' || t.toLowerCase() === 'jackets')) mappedCategory = 'Jacket';
+        if (tags.some((t) => t.toLowerCase() === 'shirts' || t.toLowerCase() === 'shirt')) {
+          mappedCategory = 'Shirts';
+        } else if (tags.some((t) => t.toLowerCase() === 'pants' || t.toLowerCase() === 'pant')) {
+          mappedCategory = 'Pants';
+        } else if (
+          tags.some((t) => t.toLowerCase() === 'jacket' || t.toLowerCase() === 'jackets')
+        ) {
+          mappedCategory = 'Jacket';
+        }
       }
 
       // Core fields
@@ -101,12 +121,18 @@ export function useAddProductForm(initialData?: Product) {
       setOgPrice(initialData.price?.ogPrice?.toString() || '');
       setStock(initialData.inventory?.totalStock?.toString() || '');
       setGettingPrice(initialData.price?.gettingPrice?.toString() || '');
-      setSizes(initialData.attributes?.sizes && initialData.attributes.sizes.length > 0 ? initialData.attributes.sizes : SIZE_MAP[mappedCategory] || SIZE_MAP['Jacket'] || []);
+      setSizes(
+        initialData.attributes?.sizes && initialData.attributes.sizes.length > 0
+          ? initialData.attributes.sizes
+          : SIZE_MAP[mappedCategory] || SIZE_MAP.Jacket || [],
+      );
 
       // Color — reverse-map from hex to color name
       const savedColorHex = initialData.attributes?.colors?.[0];
       if (savedColorHex) {
-        const matchedColor = MAJOR_COLORS.find(c => c.hex.toLowerCase() === savedColorHex.toLowerCase());
+        const matchedColor = MAJOR_COLORS.find(
+          (c) => c.hex.toLowerCase() === savedColorHex.toLowerCase(),
+        );
         setColorInput(matchedColor ? matchedColor.name : savedColorHex);
         setSelectedColorHex(savedColorHex);
       }
@@ -132,12 +158,15 @@ export function useAddProductForm(initialData?: Product) {
         allImages.push({ id: `init-${uniquePrefix}-main`, url: initialData.media.mainImage });
       }
       if ((initialData.media as any)?.promoImage) {
-        allImages.push({ id: `init-${uniquePrefix}-promo`, url: (initialData.media as any).promoImage });
+        allImages.push({
+          id: `init-${uniquePrefix}-promo`,
+          url: (initialData.media as any).promoImage,
+        });
       }
       if (initialData.media?.liveImages && initialData.media.liveImages.length > 0) {
-        initialData.media.liveImages.forEach((url, i) => {
+        for (const [i, url] of initialData.media.liveImages.entries()) {
           allImages.push({ id: `init-${uniquePrefix}-live-${i}`, url });
-        });
+        }
       }
 
       setImages(allImages.length > 0 ? allImages : []);
@@ -259,8 +288,10 @@ export function useAddProductForm(initialData?: Product) {
   const [originalFiles, setOriginalFiles] = useState<Record<string, File>>({});
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+
     setIsUploading(true);
     try {
       const newFiles = Array.from(e.target.files);
@@ -270,23 +301,22 @@ export function useAddProductForm(initialData?: Product) {
       for (const file of newFiles) {
         // Automatically crop to 3:4 center
         const croppedBlob = await autoCropImageTo3x4(file);
-        
+
         // Create a File from the Blob
         const croppedFile = new File([croppedBlob], file.name, { type: 'image/webp' });
-        
+
         // Generate a local preview URL
         const localUrl = URL.createObjectURL(croppedFile);
-        
+
         const newId = Math.random().toString(36).substring(7);
         newImages.push({ id: newId, url: localUrl, file: croppedFile, isNew: true });
-        
+
         // Store original file so it can be re-cropped later
         newOriginalFiles[newId] = file;
       }
 
       setImages((prev) => [...prev, ...newImages].slice(0, 10));
       setOriginalFiles((prev) => ({ ...prev, ...newOriginalFiles }));
-
     } catch (error) {
       console.error('Error auto-cropping images:', error);
       alert('Failed to process images. Please try again.');
@@ -301,10 +331,10 @@ export function useAddProductForm(initialData?: Product) {
   const handleReCrop = (imageId: string, croppedBlob: Blob, originalName: string) => {
     const croppedFile = new File([croppedBlob], originalName, { type: 'image/webp' });
     const localUrl = URL.createObjectURL(croppedFile);
-      
+
     setImages((prev) => {
       const newImages = [...prev];
-      const index = newImages.findIndex(img => img.id === imageId);
+      const index = newImages.findIndex((img) => img.id === imageId);
       if (index !== -1) {
         newImages[index] = { id: imageId, url: localUrl, file: croppedFile, isNew: true };
       }
@@ -360,7 +390,9 @@ export function useAddProductForm(initialData?: Product) {
     const imgToRemove = images.find((img) => img.id === idToRemove);
     if (imgToRemove) {
       setImagesToDelete((delPrev) => {
-        if (delPrev.some((img) => img.id === idToRemove)) return delPrev;
+        if (delPrev.some((img) => img.id === idToRemove)) {
+          return delPrev;
+        }
         return [...delPrev, imgToRemove];
       });
     }
@@ -371,7 +403,9 @@ export function useAddProductForm(initialData?: Product) {
     const imgToRestore = imagesToDelete.find((img) => img.id === idToRestore);
     if (imgToRestore) {
       setImages((imgPrev) => {
-        if (imgPrev.some((img) => img.id === idToRestore)) return imgPrev;
+        if (imgPrev.some((img) => img.id === idToRestore)) {
+          return imgPrev;
+        }
         return [...imgPrev, imgToRestore];
       });
     }
@@ -395,7 +429,9 @@ export function useAddProductForm(initialData?: Product) {
   useEffect(() => {
     async function loadCollections() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`,
+        );
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           const names = data.map((c: any) => c.name);
@@ -417,16 +453,20 @@ export function useAddProductForm(initialData?: Product) {
   const filteredBrands = useMemo(() => {
     const seen = new Set<string>();
     return apiBrands.filter((b) => {
-      if (!b?.name) return false;
+      if (!b?.name) {
+        return false;
+      }
       const lowerName = b.name.toLowerCase();
-      if (brandInput && !lowerName.includes(brandInput.toLowerCase())) return false;
-      if (seen.has(lowerName)) return false;
+      if (brandInput && !lowerName.includes(brandInput.toLowerCase())) {
+        return false;
+      }
+      if (seen.has(lowerName)) {
+        return false;
+      }
       seen.add(lowerName);
       return true;
     });
   }, [apiBrands, brandInput]);
-
-
 
   // Progress tracking
   const getProgress = () => {
@@ -538,4 +578,3 @@ export function useAddProductForm(initialData?: Product) {
     toggleCollection,
   };
 }
-

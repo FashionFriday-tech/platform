@@ -1,15 +1,17 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
 import { toast } from 'sonner';
-import { MOCK_CATEGORIES, ProductCategory } from '../types';
+
+import { MOCK_CATEGORIES, type ProductCategory } from '../types';
 
 export function useCategories() {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGender, setSelectedGender] = useState<'Men' | 'Women'>('Men');
-  
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<ProductCategory | null>(null);
 
@@ -18,10 +20,12 @@ export function useCategories() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`,
+        );
         const data = await res.json();
         const categoriesData = Array.isArray(data) ? data : data.data || [];
-        
+
         const mapped = categoriesData.map((c: any) => {
           const rawGender = c.gender || 'MEN';
           return {
@@ -29,7 +33,9 @@ export function useCategories() {
             name: c.name,
             slug: c.slug,
             image: c.image || '',
-            gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as 'Men' | 'Women',
+            gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
+              | 'Men'
+              | 'Women',
             productCount: c._count?.products || c.productCount || 0,
           };
         });
@@ -68,11 +74,14 @@ export function useCategories() {
         position: index,
       }));
 
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/reorder`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: payloadItems }),
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/reorder`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: payloadItems }),
+        },
+      );
       toast.success('Category order saved!');
     } catch (err) {
       console.error('Failed to reorder categories', err);
@@ -96,11 +105,14 @@ export function useCategories() {
       if (isEdit) {
         const existingCat = categories.find((c) => c.slug === originalSlug);
         if (existingCat) {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${existingCat.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(apiPayload),
-          });
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${existingCat.id}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(apiPayload),
+            },
+          );
           if (res.ok) {
             setCategories((prev) => prev.map((c) => (c.slug === originalSlug ? savedCategory : c)));
             toast.success('Category updated successfully!');
@@ -109,11 +121,14 @@ export function useCategories() {
           }
         }
       } else {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(apiPayload),
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(apiPayload),
+          },
+        );
 
         if (res.ok) {
           const created = await res.json();
@@ -123,7 +138,8 @@ export function useCategories() {
               name: created.name,
               slug: created.slug,
               image: created.image,
-              gender: created.gender.charAt(0).toUpperCase() + created.gender.slice(1).toLowerCase(),
+              gender:
+                created.gender.charAt(0).toUpperCase() + created.gender.slice(1).toLowerCase(),
               productCount: 0,
             },
             ...prev,
@@ -143,7 +159,10 @@ export function useCategories() {
     try {
       const cat = categories.find((c) => c.slug === slug);
       if (cat) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${cat.id}`, { method: 'DELETE' });
+        await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${cat.id}`,
+          { method: 'DELETE' },
+        );
         setCategories((prev) => prev.filter((c) => c.slug !== slug));
         toast.success('Category deleted successfully');
       }
@@ -170,5 +189,3 @@ export function useCategories() {
     handleDeleteCategory,
   };
 }
-
-

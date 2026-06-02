@@ -12,9 +12,12 @@ interface AddCollectionProductsPageProps {
 
 async function getCollectionBySlug(slug: string): Promise<ProductCollection | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/collections/${slug}`, {
-      cache: 'no-store',
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/collections/${slug}`,
+      {
+        cache: 'no-store',
+      },
+    );
     if (!res.ok) {
       return null;
     }
@@ -52,4 +55,3 @@ export default async function AddCollectionProductsPage({
     </div>
   );
 }
-

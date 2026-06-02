@@ -1,4 +1,5 @@
 import { type Metadata } from 'next';
+
 import { WhatsAppReviewsFeature } from '@/features/whatsapp-reviews/components/WhatsAppReviewsFeature';
 
 export const metadata: Metadata = {
