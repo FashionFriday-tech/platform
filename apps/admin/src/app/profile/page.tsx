@@ -7,13 +7,13 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProfilePage() {
   const { user, updateUser, logout } = useAuth();
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editName, setEditName] = useState(user?.name ?? '');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   if (!user) {
     return null;
   }
-
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [editName, setEditName] = useState(user.name);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -103,7 +103,11 @@ export default function ProfilePage() {
                       onChange={(e) => {
                         setEditName(e.target.value);
                       }}
-                      onKeyDown={(e) => e.key === 'Enter' && saveName()}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          saveName();
+                        }
+                      }}
                       className="rounded-xl border border-black/20 bg-white/50 px-4 py-2 text-3xl font-extrabold text-black shadow-inner backdrop-blur-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none dark:border-white/20 dark:bg-black/50 dark:text-white"
                       autoFocus
                     />
@@ -225,7 +229,7 @@ export default function ProfilePage() {
                     Contact Number
                   </label>
                   <p className="text-lg font-medium text-black dark:text-white">
-                    {user.phone || '+1 (555) 000-0000'}
+                    {user.phone ?? '+1 (555) 000-0000'}
                   </p>
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/10" />
