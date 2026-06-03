@@ -64,6 +64,7 @@ export default [
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'warn',
       '@typescript-eslint/prefer-as-const': 'error',
+      '@typescript-eslint/no-deprecated': 'warn',
 
       // ❌ Disabled (DX reasons)
       '@typescript-eslint/explicit-function-return-type': 'off',
