@@ -1,7 +1,7 @@
-import React from 'react';
+import { type StateOrderData } from '../types';
 
 interface Props {
-  sortedStates: any[];
+  sortedStates: StateOrderData[];
   maxOrders: number;
   totalOrders: number;
   totalRevenue: number;
