@@ -15,7 +15,7 @@ import {
 
 import { MOCK_AOV_DATA } from '../types';
 
-export function AOVTrendChart() {
+export function AovTrendChart() {
   const latestCurrent = MOCK_AOV_DATA[MOCK_AOV_DATA.length - 1].current;
   const latestPrevious = MOCK_AOV_DATA[MOCK_AOV_DATA.length - 1].previous;
   const delta = (((latestCurrent - latestPrevious) / latestPrevious) * 100).toFixed(1);
