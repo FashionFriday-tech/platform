@@ -128,12 +128,13 @@ export function Header() {
         <button
           onClick={() => {
             if (!document.fullscreenElement) {
-              document.documentElement.requestFullscreen().catch((err) => {
-                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+              document.documentElement.requestFullscreen().catch((err: unknown) => {
+                const message = err instanceof Error ? err.message : String(err);
+                console.error(`Error attempting to enable fullscreen: ${message}`);
               });
             } else {
               if (document.exitFullscreen) {
-                document.exitFullscreen();
+                void document.exitFullscreen();
               }
             }
           }}
