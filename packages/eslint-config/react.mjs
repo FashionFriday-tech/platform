@@ -21,6 +21,10 @@ export default [
 
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/static-components': 'error',
+      'react-hooks/purity': 'warn',
+      'react-hooks/immutability': 'warn',
     },
   },
 ];
