@@ -61,7 +61,7 @@ export default function BrandsFeature() {
               options={categoryOptions}
               value={categoryFilter}
               onChange={(val) => {
-                setCategoryFilter(val as any);
+                setCategoryFilter(val);
               }}
               className="z-50 w-48"
             />
