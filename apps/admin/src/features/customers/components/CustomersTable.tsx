@@ -16,6 +16,25 @@ interface CustomersTableProps {
   onToggleStatus: (customerId: string) => void;
 }
 
+function SortIcon({
+  field,
+  sortField,
+  sortDirection,
+}: {
+  field: SortField;
+  sortField: SortField;
+  sortDirection: 'asc' | 'desc';
+}) {
+  if (sortField !== field) {
+    return null;
+  }
+  return sortDirection === 'asc' ? (
+    <ChevronUpIcon className="ml-1 inline h-4 w-4" />
+  ) : (
+    <ChevronDownIcon className="ml-1 inline h-4 w-4" />
+  );
+}
+
 export function CustomersTable({
   customers,
   sortField,
@@ -25,17 +44,6 @@ export function CustomersTable({
 }: CustomersTableProps) {
   const router = useRouter();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) {
-      return null;
-    }
-    return sortDirection === 'asc' ? (
-      <ChevronUpIcon className="ml-1 inline h-4 w-4" />
-    ) : (
-      <ChevronDownIcon className="ml-1 inline h-4 w-4" />
-    );
-  };
 
   const getStatusBadge = (status: 'active' | 'blocked') => {
     if (status === 'active') {
@@ -64,7 +72,8 @@ export function CustomersTable({
                   onSort('name');
                 }}
               >
-                Customer <SortIcon field="name" />
+                Customer{' '}
+                <SortIcon field="name" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th className="px-6 py-4 whitespace-nowrap">Email</th>
               <th className="px-6 py-4 whitespace-nowrap">Phone</th>
@@ -74,7 +83,8 @@ export function CustomersTable({
                   onSort('joinDate');
                 }}
               >
-                Joined Date <SortIcon field="joinDate" />
+                Joined Date{' '}
+                <SortIcon field="joinDate" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th
                 className="cursor-pointer px-6 py-4 whitespace-nowrap transition-colors hover:bg-black/5 dark:hover:bg-white/5"
@@ -82,7 +92,8 @@ export function CustomersTable({
                   onSort('totalSpent');
                 }}
               >
-                Total Spent <SortIcon field="totalSpent" />
+                Total Spent{' '}
+                <SortIcon field="totalSpent" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th
                 className="cursor-pointer px-6 py-4 whitespace-nowrap transition-colors hover:bg-black/5 dark:hover:bg-white/5"
@@ -90,7 +101,8 @@ export function CustomersTable({
                   onSort('ordersCount');
                 }}
               >
-                Orders <SortIcon field="ordersCount" />
+                Orders{' '}
+                <SortIcon field="ordersCount" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th className="px-6 py-4 whitespace-nowrap">Status</th>
               <th className="sticky right-0 z-20 bg-white px-6 py-4 text-right whitespace-nowrap dark:bg-[#111111]">
