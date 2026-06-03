@@ -30,37 +30,64 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     async function loadProducts() {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
         );
         if (!res.ok) {
           return;
         }
-        const data = await res.json();
-        const allProducts = data.data || [];
+        const data = (await res.json()) as {
+          data?: {
+            id: string;
+            name: string;
+            categoryId?: string;
+            gettingPrice?: number;
+            ogPrice?: number;
+            sellingPrice?: number;
+            totalStock?: number;
+            status?: string;
+            sizes?: string[];
+            createdAt?: string;
+            mainImage?: string;
+            promoImage?: string;
+            liveImages?: string[];
+            description?: string;
+            quality?: string;
+            brand?: string[];
+            gender?: string;
+            seoTitle?: string;
+            seoDescription?: string;
+            slug?: string;
+            youtubeId?: string;
+          }[];
+        };
+        const allProducts = data.data ?? [];
 
         // Filter by category ID and map
-        const categoryProds = allProducts
-          .filter((p: any) => p.categoryId === category.id)
-          .map((p: any) => ({
+        const categoryProds: Product[] = allProducts
+          .filter((p) => p.categoryId === category.id)
+          .map((p) => ({
             id: p.id,
             name: p.name,
             sku: p.id.substring(0, 8).toUpperCase(),
-            costPrice: Number(p.gettingPrice) || 0,
-            originalPrice: Number(p.ogPrice || p.sellingPrice),
-            sellingPrice: Number(p.sellingPrice) || 0,
-            stock: Number(p.totalStock) || 0,
+            costPrice: p.gettingPrice ?? 0,
+            originalPrice: p.ogPrice ?? p.sellingPrice ?? 0,
+            sellingPrice: p.sellingPrice ?? 0,
+            stock: p.totalStock ?? 0,
             maxStock: 1000,
-            status: p.status.charAt(0).toUpperCase() + p.status.slice(1).toLowerCase(),
-            categoryId: p.categoryId,
-            category: p.category?.name || category.name,
+            status:
+              p.status === 'PUBLISHED' ? 'Active' : p.status === 'DRAFT' ? 'Draft' : 'Inactive',
+            categoryId: p.categoryId ?? '',
+            category: category.name,
             store: 'Main Store',
-            variants: p.sizes || [],
+            variants: p.sizes ?? [],
             sales: 0,
             dateAdded: p.createdAt
               ? new Date(p.createdAt).toISOString().split('T')[0]
               : new Date().toISOString().split('T')[0],
             imageUrl: p.mainImage,
-            images: [p.mainImage, p.promoImage, ...(p.liveImages || [])].filter(Boolean),
+            images: [p.mainImage, p.promoImage, ...(p.liveImages ?? [])].filter(
+              (img): img is string => Boolean(img),
+            ),
             description: p.description,
             quality: p.quality,
             brand: p.brand ? p.brand[0] : undefined,
@@ -75,7 +102,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         console.error('Failed to load category products', err);
       }
     }
-    loadProducts();
+    void loadProducts();
   }, [category.id, category.name]);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -98,7 +125,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     ) {
       try {
         await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
           {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -113,7 +140,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     // 2. Delete category from the database
     try {
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${category.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${category.id}`,
         {
           method: 'DELETE',
         },
@@ -127,12 +154,13 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   };
 
   const filteredProducts = useMemo(() => {
+    const q = searchQuery.toLowerCase();
     return categoryProducts.filter((p) => {
       const matchesSearch =
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()));
+        p.name.toLowerCase().includes(q) ||
+        (p.brand?.toLowerCase().includes(q) ?? false) ||
+        p.id.toLowerCase().includes(q) ||
+        (p.sku?.toLowerCase().includes(q) ?? false);
       const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -221,11 +249,11 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                 <span>{statusFilter === 'All' ? 'All Status' : statusFilter}</span>
 
                 <div className="invisible absolute top-full right-0 z-50 mt-3 flex w-36 flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-1 opacity-0 shadow-2xl backdrop-blur-2xl transition-all group-hover:visible group-hover:opacity-100 dark:border-white/10 dark:bg-[#111111]/95">
-                  {['All', 'Active', 'Inactive', 'Draft'].map((status) => (
+                  {(['All', 'Active', 'Inactive', 'Draft'] as const).map((status) => (
                     <div
                       key={status}
                       onClick={() => {
-                        setStatusFilter(status as any);
+                        setStatusFilter(status);
                       }}
                       className={`cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors ${statusFilter === status ? 'bg-black/5 font-semibold text-black dark:bg-white/10 dark:text-white' : 'text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/10'}`}
                     >
