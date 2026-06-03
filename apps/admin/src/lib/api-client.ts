@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3002';
 
 export interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
@@ -25,14 +25,14 @@ async function refreshAccessToken(): Promise<string | null> {
       throw new Error('Refresh failed');
     }
 
-    const data = await res.json();
+    const data = (await res.json()) as { accessToken?: string; refreshToken?: string };
     if (data.accessToken) {
       localStorage.setItem('adminAccessToken', data.accessToken);
     }
     if (data.refreshToken) {
       localStorage.setItem('adminRefreshToken', data.refreshToken);
     }
-    return data.accessToken || 'cookie-refreshed';
+    return data.accessToken ?? 'cookie-refreshed';
   } catch {
     localStorage.removeItem('adminAccessToken');
     localStorage.removeItem('adminRefreshToken');
@@ -98,8 +98,8 @@ export async function fetcher<T = unknown>(
   }
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+    const errorData = (await response.json().catch(() => ({}))) as { message?: string };
+    throw new Error(errorData.message ?? `HTTP ${response.status}: ${response.statusText}`);
   }
 
   return response.json() as Promise<T>;
