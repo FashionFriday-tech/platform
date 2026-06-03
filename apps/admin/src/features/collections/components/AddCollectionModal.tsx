@@ -49,7 +49,7 @@ export function AddCollectionModal({
 
     try {
       let finalImageUrl =
-        imageUrl.trim() ||
+        imageUrl.trim() ??
         'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200';
 
       if (fileToUpload) {
@@ -59,7 +59,7 @@ export function AddCollectionModal({
         formData.append('folder', 'collections');
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
           {
             method: 'POST',
             body: formData,
@@ -80,7 +80,7 @@ export function AddCollectionModal({
         ) {
           try {
             await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+              `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
               {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -178,7 +178,7 @@ export function AddCollectionModal({
                   type="file"
                   accept="image/*"
                   onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
+                    if (e.target.files?.[0]) {
                       setFileToUpload(e.target.files[0]);
                       setImageUrl(URL.createObjectURL(e.target.files[0]));
                     }
