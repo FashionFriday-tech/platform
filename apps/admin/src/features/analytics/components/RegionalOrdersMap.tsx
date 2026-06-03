@@ -56,7 +56,7 @@ export function RegionalOrdersMap() {
     if (!rawName) {
       return null;
     }
-    const normalizedName = NAME_MAPPINGS[rawName] || rawName;
+    const normalizedName = NAME_MAPPINGS[rawName] ?? rawName;
     return MOCK_STATE_ORDERS.find(
       (s) =>
         s.state.toLowerCase() === normalizedName.toLowerCase() ||
@@ -107,16 +107,20 @@ export function RegionalOrdersMap() {
               style={{ width: '100%', height: '100%' }}
             >
               <Geographies geography="/india.json">
-                {({ geographies }: { geographies: any[] }) =>
-                  geographies.map((geo: any) => {
-                    const stateName = geo.properties.name || geo.properties.NAME_1 || '';
+                {({
+                  geographies,
+                }: {
+                  geographies: { rsmKey: string; properties: Record<string, string> }[];
+                }) =>
+                  geographies.map((geo) => {
+                    const stateName = (geo.properties.name ?? geo.properties.NAME_1) || '';
                     if (!stateName) {
                       return null;
                     }
 
                     const data = getStateData(stateName);
                     const orders = data?.orders ?? 0;
-                    const mappedStateName = data?.state || stateName;
+                    const mappedStateName = data?.state ?? stateName;
 
                     const isHovered = hoveredState === mappedStateName;
                     const isSelected = selectedState === mappedStateName;
@@ -126,9 +130,9 @@ export function RegionalOrdersMap() {
                       <Geography
                         key={geo.rsmKey}
                         geography={geo}
-                        fill={isHovered || isSelected ? '#ec4899' : fillColor}
-                        stroke={isHovered || isSelected ? '#be185d' : 'rgba(255,255,255,0.8)'}
-                        strokeWidth={isHovered || isSelected ? 1 : 0.5}
+                        fill={(isHovered ?? isSelected) ? '#ec4899' : fillColor}
+                        stroke={(isHovered ?? isSelected) ? '#be185d' : 'rgba(255,255,255,0.8)'}
+                        strokeWidth={(isHovered ?? isSelected) ? 1 : 0.5}
                         style={{
                           default: { outline: 'none' },
                           hover: { outline: 'none', cursor: 'pointer' },
