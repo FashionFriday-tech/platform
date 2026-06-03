@@ -14,7 +14,7 @@ export function useCollections() {
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections`,
       );
       if (res.ok) {
         const data = await res.json();
@@ -28,13 +28,13 @@ export function useCollections() {
   };
 
   useEffect(() => {
-    fetchCollections();
+    void fetchCollections();
   }, []);
 
   const handleAddCollection = async (name: string, image: string, slug: string) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -53,7 +53,7 @@ export function useCollections() {
   const handleUpdateCollection = async (id: string, name: string, image: string, slug: string) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${id}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -76,7 +76,7 @@ export function useCollections() {
       if (col?.image && col.image.startsWith('http') && !col.image.includes('localhost')) {
         try {
           await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
             {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
@@ -89,7 +89,7 @@ export function useCollections() {
       }
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${id}`,
         {
           method: 'DELETE',
         },
