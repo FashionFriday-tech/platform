@@ -29,7 +29,7 @@ export function CampaignsFeature() {
 
   const renderSection = (placement: BannerPlacement) => {
     const sectionBanners = banners.filter((b) => b.placement === placement);
-    const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[placement] || 'aspect-video';
+    const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[placement] ?? 'aspect-video';
 
     let cardWidthClass = 'w-[300px]';
     if (placement === 'products-list') {
@@ -132,7 +132,7 @@ export function CampaignsFeature() {
         cancelText="Cancel"
         onConfirm={() => {
           if (deleteConfirmId) {
-            handleDeleteCampaign(deleteConfirmId);
+            void handleDeleteCampaign(deleteConfirmId);
           }
         }}
         onClose={() => {
