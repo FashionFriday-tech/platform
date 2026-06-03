@@ -30,7 +30,7 @@ export function useAddBrandModal({ initialData, isOpen, onClose, onSave }: UseAd
         streetwear: 'clothing',
         sportswear: 'clothing',
       };
-      const mapped = initialData.categories.map((c) => categoryMap[c] || c);
+      const mapped = initialData.categories.map((c) => categoryMap[c] ?? c);
       setCategories([...new Set(mapped)] as BrandCategory[]);
     } else if (isOpen) {
       setName('');
@@ -55,7 +55,7 @@ export function useAddBrandModal({ initialData, isOpen, onClose, onSave }: UseAd
         name: name.trim(),
         slug,
         color,
-        logo: logoUrl.trim() || '/images/brand-logos/zara.png', // Default fallback
+        logo: logoUrl.trim() ?? '/images/brand-logos/zara.png', // Default fallback
         categories: categories.length > 0 ? categories : ['clothing'],
       },
       !!initialData,
