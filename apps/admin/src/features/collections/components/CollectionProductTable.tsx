@@ -52,8 +52,8 @@ export function CollectionProductTable({ products, onRemoveProduct }: Collection
                   <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-black/5 bg-[#f8f9fa] dark:border-white/5 dark:bg-[#1a1a1a]">
                     <Image
                       src={
-                        product.imageUrl ||
-                        product.images?.[0] ||
+                        product.imageUrl ??
+                        product.images?.[0] ??
                         'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200'
                       }
                       alt={product.name}
