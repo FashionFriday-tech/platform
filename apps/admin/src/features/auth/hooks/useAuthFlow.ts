@@ -141,7 +141,7 @@ export function useAuthFlow() {
     } catch (error: unknown) {
       console.error('Auth Error:', error);
       const err = error as Error;
-      toast.error(err.message || 'Something went wrong');
+      toast.error(err.message ?? 'Something went wrong');
     } finally {
       setLoading(false);
     }
