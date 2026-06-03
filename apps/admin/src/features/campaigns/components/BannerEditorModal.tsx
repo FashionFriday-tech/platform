@@ -50,7 +50,7 @@ export function BannerEditorModal({
       setMediaUrl('');
       setMediaType('image');
       setLinkUrl('');
-      setPlacement(fixedPlacement || 'home-carousel');
+      setPlacement(fixedPlacement ?? 'home-carousel');
       setFileToUpload(null);
     }
   }, [initialData, isOpen, fixedPlacement]);
@@ -73,7 +73,7 @@ export function BannerEditorModal({
         formData.append('folder', `campaigns/${placement}`);
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
           {
             method: 'POST',
             body: formData,
