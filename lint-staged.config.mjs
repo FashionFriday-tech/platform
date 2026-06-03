@@ -1,13 +1,13 @@
 export default {
   // Type check TypeScript files
-  '**/*.(ts|tsx)': () => 'turbo run typecheck',
+  '**/*.(ts|tsx)': () => 'npx turbo run typecheck',
 
   // Lint and format TypeScript and JavaScript files
   '**/*.(ts|tsx|js|jsx|mjs)': (filenames) => [
-    `eslint --fix ${filenames.join(' ')}`,
-    `prettier --write ${filenames.join(' ')}`,
+    `npx eslint --fix ${filenames.join(' ')}`,
+    `npx prettier --write ${filenames.join(' ')}`,
   ],
 
   // Format MarkDown, JSON, and CSS
-  '**/*.(md|json|css|yaml|yml)': (filenames) => `prettier --write ${filenames.join(' ')}`,
+  '**/*.(md|json|css|yaml|yml)': (filenames) => `npx prettier --write ${filenames.join(' ')}`,
 };
