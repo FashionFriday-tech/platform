@@ -56,7 +56,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
 
       try {
         const uploadRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
           {
             method: 'POST',
             body: formData,
@@ -66,7 +66,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
         if (uploadRes.ok) {
           const { url } = await uploadRes.json();
           await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
+            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
             {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
@@ -82,7 +82,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
           ) {
             try {
               await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+                `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
                 {
                   method: 'DELETE',
                   headers: { 'Content-Type': 'application/json' },
@@ -111,7 +111,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       setCollection((prev) => ({ ...prev, name: editNameValue.trim() }));
       try {
         await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
           {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -141,7 +141,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       ) {
         try {
           await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
             {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
@@ -154,7 +154,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       }
 
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
         {
           method: 'DELETE',
         },
@@ -176,7 +176,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   ) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -193,12 +193,13 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   };
 
   const filteredProducts = useMemo(() => {
+    const q = searchQuery.toLowerCase();
     return collectionProducts.filter((p) => {
       const matchesSearch =
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()));
+        p.name.toLowerCase().includes(q) ||
+        (p.brand?.toLowerCase().includes(q) ?? false) ||
+        p.id.toLowerCase().includes(q) ||
+        (p.sku?.toLowerCase().includes(q) ?? false);
       const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -327,11 +328,11 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
                 <span>{statusFilter === 'All' ? 'All Status' : statusFilter}</span>
 
                 <div className="invisible absolute top-full right-0 z-50 mt-3 flex w-36 flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-1 opacity-0 shadow-2xl backdrop-blur-2xl transition-all group-hover:visible group-hover:opacity-100 dark:border-white/10 dark:bg-[#111111]/95">
-                  {['All', 'Active', 'Inactive', 'Draft'].map((status) => (
+                  {(['All', 'Active', 'Inactive', 'Draft'] as const).map((status) => (
                     <div
                       key={status}
                       onClick={() => {
-                        setStatusFilter(status as any);
+                        setStatusFilter(status);
                       }}
                       className={`cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors ${statusFilter === status ? 'bg-black/5 font-semibold text-black dark:bg-white/10 dark:text-white' : 'text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/10'}`}
                     >
