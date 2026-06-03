@@ -31,7 +31,7 @@ export function CampaignBannerCard({
   };
 
   const isFixedCategoryCard = banner.placement === 'home-categories';
-  const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[banner.placement] || 'aspect-video';
+  const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[banner.placement] ?? 'aspect-video';
 
   return (
     <div
@@ -73,7 +73,7 @@ export function CampaignBannerCard({
           ) : (
             <PlayIcon className="h-3 w-3" />
           )}
-          {PLACEMENT_LABELS[banner.placement] || banner.placement}
+          {PLACEMENT_LABELS[banner.placement] ?? banner.placement}
         </div>
       </div>
       <div className="flex flex-col gap-2 p-4">
