@@ -22,12 +22,8 @@ export function StatCard({
   href,
   trend,
 }: StatCardProps) {
-  const CardWrapper = href ? Link : 'div';
-  const wrapperProps = href ? { href } : {};
-
-  return (
-    <CardWrapper
-      {...(wrapperProps as any)}
+  const content = (
+    <div
       className={`group relative overflow-hidden rounded-3xl border border-white/50 bg-white/90 p-6 shadow-xl backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-white/10 dark:bg-[#111111]/90 ${
         href ? 'cursor-pointer hover:bg-white dark:hover:bg-[#1a1a1a]' : ''
       }`}
@@ -44,29 +40,41 @@ export function StatCard({
           >
             <Icon className="h-6 w-6" />
           </div>
-          <p className="text-sm font-bold tracking-wider text-black/70 uppercase dark:text-white/70">
-            {title}
-          </p>
+          <div>
+            <h4 className="text-sm font-semibold text-black/60 dark:text-white/60">{title}</h4>
+            <div className="text-2xl font-black text-black dark:text-white">{value}</div>
+          </div>
         </div>
 
-        <div>
-          <p className="text-4xl font-black text-black dark:text-white">{value}</p>
-          <p
-            className={`mt-2 text-sm font-medium ${
-              trend === 'up'
-                ? 'text-green-600 dark:text-green-400'
-                : trend === 'down'
-                  ? 'text-red-600 dark:text-red-400'
-                  : 'text-black/60 dark:text-white/60'
-            }`}
-          >
-            {subtitle}{' '}
-            {href && (
-              <span className="ml-1 opacity-0 transition-opacity group-hover:opacity-100">→</span>
+        {(subtitle || trend) && (
+          <div className="flex items-center justify-between border-t border-black/5 pt-3 dark:border-white/5">
+            {subtitle && (
+              <span className="text-xs font-medium text-black/50 dark:text-white/50">
+                {subtitle}
+              </span>
             )}
-          </p>
-        </div>
+            {trend && (
+              <span
+                className={`text-xs font-bold ${
+                  trend === 'up'
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : trend === 'down'
+                      ? 'text-rose-600 dark:text-rose-400'
+                      : 'text-black/60 dark:text-white/60'
+                }`}
+              >
+                {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '•'}
+              </span>
+            )}
+          </div>
+        )}
       </div>
-    </CardWrapper>
+    </div>
   );
+
+  if (href) {
+    return <Link href={href}>{content}</Link>;
+  }
+
+  return content;
 }
