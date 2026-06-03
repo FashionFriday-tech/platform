@@ -27,12 +27,13 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
 
   const unassignedProducts = mockProducts.filter((p) => !existingAssignedProductIds.has(p.id));
 
+  const q = searchQuery.toLowerCase();
   const filteredProducts = unassignedProducts.filter(
     (p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase())),
+      p.name.toLowerCase().includes(q) ||
+      (p.brand?.toLowerCase().includes(q) ?? false) ||
+      p.id.toLowerCase().includes(q) ||
+      (p.sku?.toLowerCase().includes(q) ?? false),
   );
 
   const toggleProductSelection = (id: string) => {
@@ -119,8 +120,8 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
                   <div className="relative aspect-square w-full bg-black/5 dark:bg-white/5">
                     <Image
                       src={
-                        product.imageUrl ||
-                        product.images?.[0] ||
+                        product.imageUrl ??
+                        product.images?.[0] ??
                         'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200'
                       }
                       alt={product.name}
