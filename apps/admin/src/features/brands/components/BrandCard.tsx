@@ -21,7 +21,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
     >
       <div
         className="relative flex aspect-square w-full items-center justify-center p-4 transition-colors"
-        style={{ backgroundColor: brand.color || '#000000' }}
+        style={{ backgroundColor: brand.color ?? '#000000' }}
       >
         {/* Glow effect on hover */}
         <div className="absolute inset-0 z-10 bg-white opacity-0 mix-blend-overlay transition-opacity group-hover:opacity-20" />
