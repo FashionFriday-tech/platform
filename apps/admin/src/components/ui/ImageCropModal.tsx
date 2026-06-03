@@ -21,7 +21,9 @@ export function ImageCropModal({ file, onCropComplete, onCancel }: ImageCropModa
   useEffect(() => {
     const reader = new FileReader();
     reader.addEventListener('load', () => {
-      setImgSrc(reader.result?.toString() || '');
+      if (typeof reader.result === 'string') {
+        setImgSrc(reader.result);
+      }
     });
     reader.readAsDataURL(file);
   }, [file]);
@@ -48,7 +50,7 @@ export function ImageCropModal({ file, onCropComplete, onCancel }: ImageCropModa
     setCompletedCrop(initialCrop);
   };
 
-  const handleCropSave = async () => {
+  const handleCropSave = () => {
     const image = imgRef.current;
     if (!image || !completedCrop) {
       return;
