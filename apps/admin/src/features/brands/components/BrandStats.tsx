@@ -17,7 +17,7 @@ interface BrandStatsProps {
 
 export function BrandStats({ brands }: BrandStatsProps) {
   const getCategoryCount = (category: string) =>
-    brands.filter((b) => b.categories.includes(category as any)).length;
+    brands.filter((b) => (b.categories as string[]).includes(category)).length;
 
   const stats = [
     {
