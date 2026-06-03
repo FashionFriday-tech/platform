@@ -15,7 +15,7 @@ interface Props {
   setSelectedState: (state: string | null) => void;
   setIsMapHovered: (hovered: boolean) => void;
   setTooltipPos: (pos: { x: number; y: number }) => void;
-  getStateData: (rawName: string) => any;
+  getStateData: (rawName: string) => { orders?: number; state?: string } | undefined;
   getHeatColor: (orders: number) => string;
 }
 
@@ -36,7 +36,7 @@ export function RegionalMapDisplay({
     <div className="flex flex-col p-6 lg:w-1/2">
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-black dark:text-white">🇮🇳 Regional Orders</h2>
+          <h2 className="text-lg font-bold text-black dark:text-white">🗺️ Regional Orders</h2>
           <p className="text-sm font-medium text-black/50 dark:text-white/50">
             Interactive realistic map — {MOCK_STATE_ORDERS.length} states & UTs
           </p>
@@ -69,16 +69,20 @@ export function RegionalMapDisplay({
           style={{ width: '100%', height: '100%' }}
         >
           <Geographies geography="/india.json">
-            {({ geographies }: { geographies: any[] }) =>
-              geographies.map((geo: any) => {
-                const stateName = geo.properties.name || geo.properties.NAME_1 || '';
+            {({
+              geographies,
+            }: {
+              geographies: { rsmKey: string; properties: Record<string, string> }[];
+            }) =>
+              geographies.map((geo) => {
+                const stateName = (geo.properties.name ?? geo.properties.NAME_1) || '';
                 if (!stateName) {
                   return null;
                 }
 
                 const data = getStateData(stateName);
                 const orders = data?.orders ?? 0;
-                const mappedStateName = data?.state || stateName;
+                const mappedStateName = data?.state ?? stateName;
 
                 const isHovered = hoveredState === mappedStateName;
                 const isSelected = selectedState === mappedStateName;
@@ -88,9 +92,9 @@ export function RegionalMapDisplay({
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={isHovered || isSelected ? '#ec4899' : fillColor}
-                    stroke={isHovered || isSelected ? '#be185d' : 'rgba(255,255,255,0.8)'}
-                    strokeWidth={isHovered || isSelected ? 1 : 0.5}
+                    fill={(isHovered ?? isSelected) ? '#ec4899' : fillColor}
+                    stroke={(isHovered ?? isSelected) ? '#be185d' : 'rgba(255,255,255,0.8)'}
+                    strokeWidth={(isHovered ?? isSelected) ? 1 : 0.5}
                     style={{
                       default: { outline: 'none' },
                       hover: { outline: 'none', cursor: 'pointer' },
