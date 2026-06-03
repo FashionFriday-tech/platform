@@ -30,6 +30,7 @@ export default [
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'unicorn/no-array-reduce': 'off',
       '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
 ];
