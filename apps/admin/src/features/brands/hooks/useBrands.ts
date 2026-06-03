@@ -16,13 +16,13 @@ export function useBrands() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands`)
+    void fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands`)
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: Brand[]) => {
         setBrands(Array.isArray(data) ? data : []);
         setIsLoading(false);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('Failed to fetch brands:', err);
         setBrands([]);
         setIsLoading(false);
@@ -57,17 +57,17 @@ export function useBrands() {
     try {
       if (isEdit && originalSlug) {
         // Find existing brand to get ID
-        const existingBrand = brands.find((b) => b.slug === originalSlug) as any;
+        const existingBrand = brands.find((b) => b.slug === originalSlug);
         if (existingBrand?.id) {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands/${existingBrand.id}`,
+            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands/${existingBrand.id}`,
             {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(savedBrand),
             },
           );
-          const updated = await res.json();
+          const updated = (await res.json()) as Brand;
           setBrands((prev) => prev.map((b) => (b.slug === originalSlug ? updated : b)));
           if (selectedBrand?.slug === originalSlug) {
             setSelectedBrand(updated);
@@ -75,14 +75,14 @@ export function useBrands() {
         }
       } else {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(savedBrand),
           },
         );
-        const created = await res.json();
+        const created = (await res.json()) as Brand;
         setBrands((prev) => [created, ...prev]);
       }
       setBrandToEdit(null);
@@ -96,12 +96,12 @@ export function useBrands() {
       return;
     }
 
-    const brandAsAny = selectedBrand as any;
+    const brandWithId = selectedBrand as Brand & { id?: string };
 
     try {
-      if (brandAsAny.id) {
+      if (brandWithId.id) {
         await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/brands/${brandAsAny.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands/${brandWithId.id}`,
           {
             method: 'DELETE',
           },
@@ -115,7 +115,7 @@ export function useBrands() {
       ) {
         try {
           await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
             {
               method: 'DELETE',
               headers: { 'Content-Type': 'application/json' },
