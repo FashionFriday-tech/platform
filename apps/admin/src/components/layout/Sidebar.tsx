@@ -26,7 +26,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function Sidebar() {
-  const pathname = usePathname() || '';
+  const pathname = usePathname() ?? '';
   const { user } = useAuth();
   if (!user) {
     return null;
