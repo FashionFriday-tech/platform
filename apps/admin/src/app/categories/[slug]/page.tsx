@@ -10,17 +10,27 @@ interface CategoryDetailsPageProps {
   }>;
 }
 
+interface CategoryApiItem {
+  id: string;
+  name: string;
+  slug: string;
+  image?: string;
+  gender: string;
+  productCount?: number;
+  _count?: { products?: number };
+}
+
 export async function generateMetadata({ params }: CategoryDetailsPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  let category = null;
+  let category: CategoryApiItem | null = null;
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`,
+      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories`,
       { cache: 'no-store' },
     );
-    const data = await res.json();
-    const categoriesData = Array.isArray(data) ? data : data.data || [];
-    category = categoriesData.find((c: any) => c.slug === resolvedParams.slug);
+    const data = (await res.json()) as { data?: CategoryApiItem[] } | CategoryApiItem[];
+    const categoriesData = Array.isArray(data) ? data : (data.data ?? []);
+    category = categoriesData.find((c) => c.slug === resolvedParams.slug) ?? null;
   } catch (error) {
     console.error('Failed to fetch categories:', error);
   }
@@ -35,12 +45,12 @@ export default async function CategoryDetailsPage({ params }: CategoryDetailsPag
   let category = null;
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`,
+      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories`,
       { cache: 'no-store' },
     );
-    const data = await res.json();
-    const categoriesData = Array.isArray(data) ? data : data.data || [];
-    const apiCategory = categoriesData.find((c: any) => c.slug === resolvedParams.slug);
+    const data = (await res.json()) as { data?: CategoryApiItem[] } | CategoryApiItem[];
+    const categoriesData = Array.isArray(data) ? data : (data.data ?? []);
+    const apiCategory = categoriesData.find((c) => c.slug === resolvedParams.slug);
 
     if (apiCategory) {
       category = {
@@ -50,7 +60,7 @@ export default async function CategoryDetailsPage({ params }: CategoryDetailsPag
         image: apiCategory.image,
         gender:
           apiCategory.gender.charAt(0).toUpperCase() + apiCategory.gender.slice(1).toLowerCase(),
-        productCount: apiCategory._count?.products || apiCategory.productCount || 0,
+        productCount: apiCategory._count?.products ?? apiCategory.productCount ?? 0,
       };
     }
   } catch (error) {
