@@ -21,22 +21,42 @@ export function useCategories() {
     async function load() {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories`,
         );
-        const data = await res.json();
-        const categoriesData = Array.isArray(data) ? data : data.data || [];
+        const data = (await res.json()) as
+          | {
+              id: string;
+              name: string;
+              slug: string;
+              image?: string;
+              gender?: string;
+              _count?: { products?: number };
+              productCount?: number;
+            }[]
+          | {
+              data?: {
+                id: string;
+                name: string;
+                slug: string;
+                image?: string;
+                gender?: string;
+                _count?: { products?: number };
+                productCount?: number;
+              }[];
+            };
+        const categoriesData = Array.isArray(data) ? data : (data.data ?? []);
 
-        const mapped = categoriesData.map((c: any) => {
-          const rawGender = c.gender || 'MEN';
+        const mapped: ProductCategory[] = categoriesData.map((c) => {
+          const rawGender = c.gender ?? 'MEN';
           return {
             id: c.id,
             name: c.name,
             slug: c.slug,
-            image: c.image || '',
+            image: c.image ?? '',
             gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
               | 'Men'
               | 'Women',
-            productCount: c._count?.products || c.productCount || 0,
+            productCount: c._count?.products ?? c.productCount ?? 0,
           };
         });
         setCategories(mapped);
@@ -47,7 +67,7 @@ export function useCategories() {
         setIsLoading(false);
       }
     }
-    load();
+    void load();
   }, []);
 
   const filteredCategories = useMemo(() => {
@@ -75,7 +95,7 @@ export function useCategories() {
       }));
 
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/reorder`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/reorder`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -98,7 +118,7 @@ export function useCategories() {
       const apiPayload = {
         name: savedCategory.name,
         slug: savedCategory.slug,
-        image: savedCategory.image || '',
+        image: savedCategory.image ?? '',
         gender: savedCategory.gender.toUpperCase(),
       };
 
@@ -106,7 +126,7 @@ export function useCategories() {
         const existingCat = categories.find((c) => c.slug === originalSlug);
         if (existingCat) {
           const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${existingCat.id}`,
+            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${existingCat.id}`,
             {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
@@ -122,7 +142,7 @@ export function useCategories() {
         }
       } else {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -131,15 +151,23 @@ export function useCategories() {
         );
 
         if (res.ok) {
-          const created = await res.json();
+          const created = (await res.json()) as {
+            id: string;
+            name: string;
+            slug: string;
+            image?: string;
+            gender?: string;
+          };
+          const rawGender = created.gender ?? 'MEN';
           setCategories((prev) => [
             {
               id: created.id,
               name: created.name,
               slug: created.slug,
-              image: created.image,
-              gender:
-                created.gender.charAt(0).toUpperCase() + created.gender.slice(1).toLowerCase(),
+              image: created.image ?? '',
+              gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
+                | 'Men'
+                | 'Women',
               productCount: 0,
             },
             ...prev,
@@ -160,7 +188,7 @@ export function useCategories() {
       const cat = categories.find((c) => c.slug === slug);
       if (cat) {
         await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/categories/${cat.id}`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${cat.id}`,
           { method: 'DELETE' },
         );
         setCategories((prev) => prev.filter((c) => c.slug !== slug));
