@@ -89,7 +89,7 @@ export default function CategoriesFeature() {
       const newIndex = filteredCategories.findIndex((c) => c.id === over.id);
       if (oldIndex !== -1 && newIndex !== -1) {
         const reordered = arrayMove(filteredCategories, oldIndex, newIndex);
-        handleReorderCategories(reordered);
+        void handleReorderCategories(reordered);
       }
     }
   };
