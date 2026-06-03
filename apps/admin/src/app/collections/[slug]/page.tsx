@@ -13,7 +13,7 @@ interface CollectionDetailsPageProps {
 async function getCollectionBySlug(slug: string): Promise<ProductCollection | null> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/collections/${slug}`,
+      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/collections/${slug}`,
       {
         cache: 'no-store',
       },
@@ -21,7 +21,7 @@ async function getCollectionBySlug(slug: string): Promise<ProductCollection | nu
     if (!res.ok) {
       return null;
     }
-    return res.json();
+    return await res.json();
   } catch (error) {
     return null;
   }
