@@ -30,7 +30,7 @@ export function useCustomers() {
   };
 
   useEffect(() => {
-    fetchCustomers();
+    void fetchCustomers();
   }, []);
 
   const addCustomer = async (customer: { name: string; phone: string }) => {
@@ -42,9 +42,10 @@ export function useCustomers() {
       setCustomersData((prev) => [newCustomer, ...prev]);
       toast.success('Customer registered successfully!');
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to register customer:', error);
-      toast.error(error.message || 'Failed to register customer.');
+      const msg = error instanceof Error ? error.message : 'Failed to register customer.';
+      toast.error(msg);
       return false;
     }
   };
@@ -103,12 +104,12 @@ export function useCustomers() {
     }
 
     result.sort((a, b) => {
-      let aVal: any = a[sortField];
-      let bVal: any = b[sortField];
+      let aVal: string | number = a[sortField] ?? '';
+      let bVal: string | number = b[sortField] ?? '';
 
       if (sortField === 'joinDate' || sortField === 'lastOrderDate') {
-        aVal = new Date(aVal).getTime();
-        bVal = new Date(bVal).getTime();
+        aVal = new Date(String(aVal)).getTime();
+        bVal = new Date(String(bVal)).getTime();
       }
 
       if (aVal < bVal) {
