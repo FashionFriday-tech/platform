@@ -99,7 +99,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   };
 
   useEffect(() => {
-    fetchCustomerDetails();
+    void fetchCustomerDetails();
   }, [customerId]);
 
   const validateEditForm = () => {
@@ -144,9 +144,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       toast.success('Customer profile updated successfully!');
       setIsEditModalOpen(false);
       setEditErrors({});
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update customer:', error);
-      toast.error(error.message || 'Failed to update profile');
+      const msg = error instanceof Error ? error.message : 'Failed to update profile';
+      toast.error(msg);
     } finally {
       setIsUpdatingProfile(false);
     }
@@ -239,9 +240,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       setState('');
       setPinCode('');
       setFormErrors({});
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to create order:', error);
-      toast.error(error.message || 'Failed to create order');
+      const msg = error instanceof Error ? error.message : 'Failed to create order';
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -706,7 +708,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                         <input
                           type="number"
                           placeholder="0.00"
-                          value={price || ''}
+                          value={price ?? ''}
                           onChange={(e) => {
                             setPrice(Number(e.target.value));
                           }}
@@ -724,7 +726,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                         <input
                           type="number"
                           placeholder="1"
-                          value={quantity || ''}
+                          value={quantity ?? ''}
                           onChange={(e) => {
                             setQuantity(Number(e.target.value));
                           }}
@@ -744,7 +746,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                         <select
                           value={paymentMethod}
                           onChange={(e) => {
-                            setPaymentMethod(e.target.value as any);
+                            setPaymentMethod(
+                              e.target.value as 'COD' | 'RAZORPAY' | 'STRIPE' | 'WALLET',
+                            );
                           }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         >
@@ -762,7 +766,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                         <select
                           value={paymentStatus}
                           onChange={(e) => {
-                            setPaymentStatus(e.target.value as any);
+                            setPaymentStatus(e.target.value as 'PENDING' | 'SUCCESS' | 'FAILED');
                           }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         >
