@@ -22,12 +22,51 @@ export default function EditProductPage() {
       setIsLoading(true);
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}`,
         );
         if (!res.ok) {
           throw new Error('Failed to fetch product');
         }
-        const p = await res.json();
+        const p = (await res.json()) as {
+          id: string;
+          name: string;
+          slug: string;
+          description?: string;
+          brand?: string[];
+          status?: 'PENDING' | 'DRAFT' | 'PUBLISHED' | 'REJECTED' | 'ARCHIVED';
+          categoryId?: string;
+          gender?: 'MEN' | 'WOMEN' | 'UNISEX';
+          gettingPrice?: number;
+          ogPrice?: number;
+          sellingPrice?: number;
+          totalStock?: number;
+          mainImage?: string;
+          promoImage?: string;
+          liveImages?: string[];
+          youtubeId?: string;
+          sizes?: string[];
+          colors?: string[];
+          quality?:
+            | 'UA'
+            | 'SEMI_UA'
+            | '10A'
+            | '7A'
+            | '7AA'
+            | 'STANDARD'
+            | 'SURPLUS'
+            | 'PREMIUM'
+            | 'LUXURY';
+          collections?: string[];
+          isFeatured?: boolean;
+          seoTitle?: string;
+          seoDescription?: string;
+          averageRating?: number;
+          totalReviews?: number;
+          liveWatching?: number;
+          liveSold?: number;
+          createdAt?: string;
+          updatedAt?: string;
+        };
 
         // Pass the raw API response mapped directly to the Product schema shape
         // so no data is lost or misaligned (especially images).
@@ -35,11 +74,11 @@ export default function EditProductPage() {
           id: p.id,
           name: p.name,
           slug: p.slug,
-          description: p.description || '',
-          brand: p.brand || [],
-          status: p.status || 'DRAFT',
-          category: p.category || 'CLOTHING',
-          gender: p.gender || 'UNISEX',
+          description: p.description ?? '',
+          brand: p.brand && p.brand.length > 0 ? p.brand : ['Generic'],
+          status: p.status ?? 'DRAFT',
+          categoryId: p.categoryId ?? '00000000-0000-0000-0000-000000000000',
+          gender: p.gender ?? 'UNISEX',
           price: {
             ogPrice: Number(p.ogPrice) || 0,
             sellingPrice: Number(p.sellingPrice) || 0,
@@ -49,33 +88,33 @@ export default function EditProductPage() {
             totalStock: Number(p.totalStock) || 0,
           },
           media: {
-            mainImage: p.mainImage || '',
-            promoImage: p.promoImage || undefined,
-            liveImages: p.liveImages || [],
-            youtubeId: p.youtubeId || undefined,
+            mainImage: p.mainImage ?? '',
+            promoImage: p.promoImage ?? undefined,
+            liveImages: p.liveImages ?? [],
+            youtubeId: p.youtubeId ?? undefined,
           },
           attributes: {
-            sizes: p.sizes || [],
-            colors: p.colors || [],
-            quality: p.quality || 'UA',
+            sizes: p.sizes && p.sizes.length > 0 ? p.sizes : ['Standard'],
+            colors: p.colors && p.colors.length > 0 ? p.colors : ['Default'],
+            quality: p.quality ?? 'UA',
           },
           marketing: {
-            collections: p.collections || [],
-            isFeatured: p.isFeatured || false,
-            seoTitle: p.seoTitle || '',
-            seoDescription: p.seoDescription || '',
+            collections: p.collections ?? [],
+            isFeatured: p.isFeatured ?? false,
+            seoTitle: p.seoTitle ?? '',
+            seoDescription: p.seoDescription ?? '',
           },
           rating: {
-            averageRating: p.averageRating || 4,
-            totalReviews: p.totalReviews || 0,
+            averageRating: p.averageRating ?? 4,
+            totalReviews: p.totalReviews ?? 0,
           },
           liveMatrix: {
-            liveWatching: p.liveWatching || 0,
-            liveSold: p.liveSold || 0,
+            liveWatching: p.liveWatching ?? 0,
+            liveSold: p.liveSold ?? 0,
           },
-          createdAt: new Date(p.createdAt),
-          updatedAt: new Date(p.updatedAt),
-        } as any;
+          createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
+          updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+        };
 
         setProduct(mappedProduct);
       } catch (err) {
