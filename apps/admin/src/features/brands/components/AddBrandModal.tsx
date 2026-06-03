@@ -37,7 +37,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
         streetwear: 'clothing',
         sportswear: 'clothing',
       };
-      const mapped = initialData.categories.map((c) => categoryMap[c] || c);
+      const mapped = initialData.categories.map((c) => categoryMap[c] ?? c);
       setCategories([...new Set(mapped)] as BrandCategory[]);
       setFileToUpload(null);
     } else if (isOpen) {
@@ -61,7 +61,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
     setIsUploading(true);
 
     try {
-      let finalLogoUrl = logoUrl.trim() || '/images/brand-logos/zara.png';
+      let finalLogoUrl = logoUrl.trim() ?? '/images/brand-logos/zara.png';
 
       if (fileToUpload) {
         const formData = new FormData();
@@ -70,7 +70,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
         formData.append('folder', 'brands');
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
           {
             method: 'POST',
             body: formData,
@@ -91,7 +91,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
         ) {
           try {
             await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+              `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
               {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -252,7 +252,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
+                      if (e.target.files?.[0]) {
                         const file = e.target.files[0];
                         setFileToUpload(file);
                         setLogoUrl(URL.createObjectURL(file));
