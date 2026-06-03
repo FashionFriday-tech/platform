@@ -129,8 +129,8 @@ export function AssignProductModal({
                       <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-black/5 dark:bg-white/5">
                         <Image
                           src={
-                            product.imageUrl ||
-                            product.images?.[0] ||
+                            product.imageUrl ??
+                            product.images?.[0] ??
                             'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=200'
                           }
                           alt={product.name}
