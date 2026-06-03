@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { LoaderIcon, LockIcon } from '@ff/ui';
@@ -31,7 +32,7 @@ const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
 
 export function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
-  const pathname = usePathname() || '';
+  const pathname = usePathname() ?? '';
   const router = useRouter();
 
   // Handle client-side auth state routing
@@ -126,12 +127,12 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
               .
             </p>
 
-            <a
+            <Link
               href="/"
               className="inline-flex items-center justify-center rounded-2xl bg-black px-6 py-3 text-xs font-black tracking-wider text-white uppercase transition-all duration-300 hover:bg-black/85 active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-white/90"
             >
               Return to Dashboard
-            </a>
+            </Link>
           </div>
         </main>
         <Toaster position="top-right" richColors />
