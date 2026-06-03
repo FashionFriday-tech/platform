@@ -12,7 +12,7 @@ export function useCampaigns() {
   const [editingBanner, setEditingBanner] = useState<CampaignBanner | null>(null);
   const [targetPlacement, setTargetPlacement] = useState<BannerPlacement>('home-carousel');
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
 
   const fetchBanners = async () => {
     try {
@@ -27,7 +27,7 @@ export function useCampaigns() {
   };
 
   useEffect(() => {
-    fetchBanners();
+    void fetchBanners();
   }, []);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export function useCampaigns() {
           throw new Error('Failed to create campaign');
         }
       }
-      fetchBanners();
+      void fetchBanners();
       setIsModalOpen(false);
     } catch (error) {
       alert('Error saving campaign. Please try again.');
@@ -92,7 +92,7 @@ export function useCampaigns() {
       if (!res.ok) {
         throw new Error('Failed to toggle campaign status');
       }
-      fetchBanners();
+      void fetchBanners();
     } catch (error) {
       console.error(error);
     }
@@ -106,7 +106,7 @@ export function useCampaigns() {
       if (!res.ok) {
         throw new Error('Failed to delete campaign');
       }
-      fetchBanners();
+      void fetchBanners();
     } catch (error) {
       alert('Error deleting campaign. Please try again.');
       console.error(error);
