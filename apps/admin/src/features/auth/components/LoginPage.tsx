@@ -78,7 +78,7 @@ export function LoginPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            handleNext();
+            void handleNext();
           }}
           className="space-y-6"
         >
