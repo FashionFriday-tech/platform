@@ -51,7 +51,10 @@ export default [
       'prefer-const': 'error',
 
       // 🦄 Unicorn
-      'unicorn/filename-case': ['error', { cases: { kebabCase: true, pascalCase: true } }],
+      'unicorn/filename-case': [
+        'error',
+        { cases: { kebabCase: true, pascalCase: true, camelCase: true } },
+      ],
       'unicorn/no-array-for-each': 'warn',
       'unicorn/no-array-reduce': 'warn',
       'unicorn/no-await-expression-member': 'error',
