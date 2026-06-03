@@ -42,7 +42,7 @@ export function BrandDetailsModal({
           {/* Header Image Area */}
           <div
             className="relative flex h-48 w-full items-center justify-center p-6 transition-colors"
-            style={{ backgroundColor: brand.color || '#000000' }}
+            style={{ backgroundColor: brand.color ?? '#000000' }}
           >
             <button
               onClick={onClose}
