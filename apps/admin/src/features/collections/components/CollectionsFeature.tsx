@@ -36,9 +36,9 @@ export default function CollectionsFeature() {
     id?: string,
   ) => {
     if (isEdit && id) {
-      handleUpdateCollection(id, name, image, slug);
+      void handleUpdateCollection(id, name, image, slug);
     } else {
-      handleAddCollection(name, image, slug);
+      void handleAddCollection(name, image, slug);
     }
   };
 
