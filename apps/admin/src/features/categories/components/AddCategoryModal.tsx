@@ -50,7 +50,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
     setIsUploading(true);
 
     try {
-      let finalLogoUrl = logoUrl.trim() || '/images/category-placeholder.png';
+      let finalLogoUrl = logoUrl.trim() ?? '/images/category-placeholder.png';
 
       if (fileToUpload) {
         const genderPrefix = gender === 'Unisex' ? 'unisex' : gender.toLowerCase();
@@ -62,7 +62,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
         formData.append('folder', 'categories');
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
           {
             method: 'POST',
             body: formData,
@@ -83,7 +83,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
         ) {
           try {
             await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload/batch`,
+              `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
               {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
@@ -103,12 +103,12 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
 
       onSave(
         {
-          id: initialData?.id || `cat-${Date.now()}`,
+          id: initialData?.id ?? `cat-${Date.now()}`,
           name: name.trim(),
           slug,
           gender,
           image: finalLogoUrl,
-          productCount: initialData?.productCount || 0,
+          productCount: initialData?.productCount ?? 0,
         },
         !!initialData,
         initialData?.slug,
@@ -194,11 +194,11 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                   Gender
                 </label>
                 <div className="flex flex-col gap-2">
-                  {['Men', 'Women', 'Unisex'].map((g) => (
+                  {(['Men', 'Women', 'Unisex'] as const).map((g) => (
                     <button
                       key={g}
                       onClick={() => {
-                        setGender(g as any);
+                        setGender(g);
                       }}
                       className={`flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-medium transition-all ${gender === g ? 'border-black bg-black/5 text-black dark:border-white dark:bg-white/10 dark:text-white' : 'border-transparent bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
                     >
@@ -220,7 +220,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
+                      if (e.target.files?.[0]) {
                         const file = e.target.files[0];
                         setFileToUpload(file);
                         setLogoUrl(URL.createObjectURL(file));
