@@ -5,7 +5,7 @@ import React from 'react';
 import { motion, type Variants } from 'motion/react';
 
 import { AnalyticsStats } from './AnalyticsStats';
-import { AOVTrendChart } from './AOVTrendChart';
+import { AovTrendChart } from './AovTrendChart';
 import { CategoryDistribution } from './CategoryDistribution';
 import { ConversionGauge } from './ConversionGauge';
 import { CustomerActivityRadial } from './CustomerActivityRadial';
@@ -105,7 +105,7 @@ export function AnalyticsView() {
 
         {/* ──── AOV Trend ──── */}
         <motion.div variants={item}>
-          <AOVTrendChart />
+          <AovTrendChart />
         </motion.div>
 
         {/* ──── Live Orders Ticker ──── */}
