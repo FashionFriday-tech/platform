@@ -1,9 +1,9 @@
-import { type ProductStatus } from '../types';
+import { type AdvancedFilters, type ProductStatus } from '../types';
 import { ProductPriceRangeFilter } from './ProductPriceRangeFilter';
 
 interface Props {
-  localFilters: any;
-  setLocalFilters: (val: any) => void;
+  localFilters: AdvancedFilters;
+  setLocalFilters: React.Dispatch<React.SetStateAction<AdvancedFilters>>;
   toggleCategory: (cat: string) => void;
   toggleStore: (store: string) => void;
   toggleStatus: (status: ProductStatus) => void;
