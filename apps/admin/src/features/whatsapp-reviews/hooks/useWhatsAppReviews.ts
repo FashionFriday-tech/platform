@@ -17,7 +17,7 @@ export function useWhatsAppReviews() {
   const [hasMore, setHasMore] = useState(true);
   const limit = 20;
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+  const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
 
   const fetchReviews = async (newOffset: number, clearPrevious = false) => {
     if (isLoading) {
@@ -29,7 +29,7 @@ export function useWhatsAppReviews() {
         `${API_URL}/admin/whatsapp-reviews?limit=${limit}&offset=${newOffset}`,
       );
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as WhatsAppReview[];
         if (data.length < limit) {
           setHasMore(false);
         } else {
@@ -47,12 +47,12 @@ export function useWhatsAppReviews() {
   };
 
   useEffect(() => {
-    fetchReviews(0, true);
+    void fetchReviews(0, true);
   }, []);
 
   const loadMore = () => {
     if (!isLoading && hasMore) {
-      fetchReviews(offset + limit);
+      void fetchReviews(offset + limit);
     }
   };
 
