@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { type Product } from '@ff/schemas';
+import { type Brand, type Product } from '@ff/schemas';
 
 import { LabelWithTick } from './LabelWithTick';
 import { ProductBrandColorSelector } from './ProductBrandColorSelector';
@@ -29,7 +29,7 @@ interface Props {
   setIsBrandOpen: (val: boolean) => void;
   selectedBrandLogo: string | null;
   setSelectedBrandLogo: (val: string | null) => void;
-  filteredBrands: any[];
+  filteredBrands: Brand[];
   brandRef: React.RefObject<HTMLDivElement | null>;
   colorInput: string;
   setColorInput: (val: string) => void;
@@ -37,7 +37,7 @@ interface Props {
   setIsColorOpen: (val: boolean) => void;
   selectedColorHex: string | null;
   setSelectedColorHex: (val: string | null) => void;
-  filteredColors: any[];
+  filteredColors: { name: string; hex: string }[];
   colorRef: React.RefObject<HTMLDivElement | null>;
   sizes: string[];
   availableSizes: string[];
