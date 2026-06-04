@@ -106,7 +106,7 @@ export function ProductReviews({
   const fetchReviews = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews`,
       );
       if (res.ok) {
         const data = await res.json();
@@ -118,7 +118,7 @@ export function ProductReviews({
   };
 
   useEffect(() => {
-    fetchReviews();
+    void fetchReviews();
   }, [productId]);
 
   const sortedReviews = useMemo(() => {
@@ -165,7 +165,7 @@ export function ProductReviews({
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
         {
           method: 'POST',
           body: formData,
@@ -205,12 +205,12 @@ export function ProductReviews({
         userName: newReview.userName,
         rating: newReview.rating,
         comment: newReview.comment,
-        productImage: finalImageUrl || undefined,
+        productImage: finalImageUrl ?? undefined,
         isActive: true, // Auto-verify admin created reviews
       };
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -261,11 +261,11 @@ export function ProductReviews({
         userName: editData.userName,
         rating: editData.rating,
         comment: editData.comment,
-        productImage: finalImageUrl || undefined,
+        productImage: finalImageUrl ?? undefined,
       };
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews/${editingId}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews/${editingId}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -288,7 +288,7 @@ export function ProductReviews({
     setIsLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}/reviews/${id}`,
         {
           method: 'DELETE',
         },
@@ -310,7 +310,7 @@ export function ProductReviews({
       userName: review.userName,
       rating: review.rating,
       comment: review.comment,
-      productImage: review.productImage || '',
+      productImage: review.productImage ?? '',
       imageFile: null,
     });
     setMenuOpenId(null);
@@ -374,16 +374,18 @@ export function ProductReviews({
             </button>
             {isSortOpen && (
               <div className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-xl dark:border-white/10 dark:bg-[#1a1a1a]">
-                {[
-                  { id: 'newest', label: 'Newest First' },
-                  { id: 'oldest', label: 'Oldest First' },
-                  { id: 'highest', label: 'Highest Rating' },
-                  { id: 'lowest', label: 'Lowest Rating' },
-                ].map((opt) => (
+                {(
+                  [
+                    { id: 'newest', label: 'Newest First' },
+                    { id: 'oldest', label: 'Oldest First' },
+                    { id: 'highest', label: 'Highest Rating' },
+                    { id: 'lowest', label: 'Lowest Rating' },
+                  ] as const
+                ).map((opt) => (
                   <button
                     key={opt.id}
                     onClick={() => {
-                      setSortOption(opt.id as any);
+                      setSortOption(opt.id);
                       setIsSortOpen(false);
                     }}
                     className={`w-full px-4 py-3 text-left text-xs font-bold text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5 ${sortOption === opt.id ? 'bg-black/5 dark:bg-white/5' : ''}`}
@@ -618,7 +620,7 @@ export function ProductReviews({
                     </button>
                     <button
                       onClick={() => {
-                        handleDelete(review.id);
+                        void handleDelete(review.id);
                       }}
                       className="w-full px-4 py-2.5 text-left text-xs font-bold text-red-500 hover:bg-red-500/10"
                     >
