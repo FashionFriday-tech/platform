@@ -120,7 +120,7 @@ export function ProductTableRow({
               >
                 {v}
               </span>
-            )) || <span className="text-xs text-black/30 dark:text-white/30">-</span>}
+            )) ?? <span className="text-xs text-black/30 dark:text-white/30">-</span>}
           </div>
         </td>
       )}
@@ -133,7 +133,7 @@ export function ProductTableRow({
 
       {visibleColumns.has('Date Added') && (
         <td className="px-4 py-4 text-sm text-black/60 dark:text-white/60">
-          {product.dateAdded || 'N/A'}
+          {product.dateAdded ?? 'N/A'}
         </td>
       )}
 
