@@ -1,7 +1,11 @@
-import React from 'react';
+interface PerformanceDataPoint {
+  date: string;
+  sales: number;
+  views: number;
+}
 
 interface Props {
-  chartData: any[];
+  chartData: PerformanceDataPoint[];
   width: number;
   height: number;
   paddingX: number;
