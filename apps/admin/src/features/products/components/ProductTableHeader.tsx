@@ -1,8 +1,8 @@
-import { type ColumnId, type SortOption } from '../types';
+import { type ColumnId, type Product, type SortOption } from '../types';
 
 interface Props {
   allSelected: boolean;
-  products: any[];
+  products: Product[];
   onToggleAllSelection: (ids: string[]) => void;
   sortOption: SortOption;
   setSortOption: (val: SortOption) => void;
