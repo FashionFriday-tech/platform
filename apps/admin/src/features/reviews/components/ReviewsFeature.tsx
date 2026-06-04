@@ -68,7 +68,7 @@ export default function ReviewsFeature() {
               options={verifiedOptions}
               value={verifiedFilter}
               onChange={(val) => {
-                setVerifiedFilter(val as any);
+                setVerifiedFilter(val as 'all' | 'verified' | 'unverified');
               }}
               className="z-50 w-40"
             />
@@ -77,7 +77,7 @@ export default function ReviewsFeature() {
               options={featuredOptions}
               value={featuredFilter}
               onChange={(val) => {
-                setFeaturedFilter(val as any);
+                setFeaturedFilter(val as 'all' | 'featured' | 'unfeatured');
               }}
               className="z-50 w-36"
             />
