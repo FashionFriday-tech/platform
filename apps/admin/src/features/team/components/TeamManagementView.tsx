@@ -3,8 +3,11 @@
 import { MailIcon, PlusIcon, SearchIcon, ShieldCheckIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
+import { type Role } from '@/contexts/AuthContext';
+
 import { CustomSelect } from '../../../components/ui/CustomSelect';
 import { useTeam } from '../hooks/useTeam';
+import { type TeamMember } from '../types';
 import { ROLE_LABELS } from '../types';
 import { EditMemberModal } from './EditMemberModal';
 import { InviteMemberModal } from './InviteMemberModal';
@@ -67,7 +70,7 @@ export function TeamManagementView() {
               options={roleOptions}
               value={roleFilter}
               onChange={(val) => {
-                setRoleFilter(val as any);
+                setRoleFilter(val as Role | 'ALL');
               }}
               className="z-50 w-48"
             />
@@ -76,7 +79,7 @@ export function TeamManagementView() {
               options={statusOptions}
               value={statusFilter}
               onChange={(val) => {
-                setStatusFilter(val as any);
+                setStatusFilter(val as TeamMember['status'] | 'ALL');
               }}
               className="z-50 w-40"
             />
