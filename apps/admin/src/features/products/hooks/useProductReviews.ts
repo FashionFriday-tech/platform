@@ -98,7 +98,7 @@ export function useProductReviews(productId: string) {
       userName: newReview.userName,
       rating: newReview.rating,
       comment: newReview.comment,
-      productImage: newReview.productImage || undefined,
+      productImage: newReview.productImage ?? undefined,
       createdAt: new Date(),
     };
     setReviews((prev) => [review, ...prev]);
@@ -118,7 +118,7 @@ export function useProductReviews(productId: string) {
               userName: editData.userName,
               rating: editData.rating,
               comment: editData.comment,
-              productImage: editData.productImage || undefined,
+              productImage: editData.productImage ?? undefined,
             }
           : rev,
       ),
@@ -137,7 +137,7 @@ export function useProductReviews(productId: string) {
       userName: review.userName,
       rating: review.rating,
       comment: review.comment,
-      productImage: review.productImage || '',
+      productImage: review.productImage ?? '',
     });
     setMenuOpenId(null);
   };
