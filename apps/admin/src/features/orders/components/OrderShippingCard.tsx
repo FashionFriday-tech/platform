@@ -42,7 +42,7 @@ export function OrderShippingCard({
         </div>
         <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
           <span className="text-black/50 dark:text-white/50">District :</span>
-          <span>{order.shippingAddress.district || 'N/A'}</span>
+          <span>{order.shippingAddress.district ?? 'N/A'}</span>
         </div>
         <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
           <span className="text-black/50 dark:text-white/50">State :</span>
@@ -58,7 +58,7 @@ export function OrderShippingCard({
         </div>
         <div className="grid grid-cols-[130px_1fr] items-center gap-2">
           <span className="text-black/50 dark:text-white/50">Alt Number :</span>
-          <span>{order.customer.altPhone || 'N/A'}</span>
+          <span>{order.customer.altPhone ?? 'N/A'}</span>
         </div>
 
         <div className="mt-4 flex flex-col gap-3 border-t border-black/10 pt-6 dark:border-white/10">
