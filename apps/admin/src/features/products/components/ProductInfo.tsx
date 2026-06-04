@@ -52,7 +52,7 @@ export function ProductInfo({ product, onEdit, liveSold }: Props) {
           {product.name}
         </h1>
         <p className="pr-4 text-base leading-relaxed font-medium text-black/60 md:text-lg dark:text-white/60">
-          {product.description ||
+          {product.description ??
             'Premium quality product featuring stunning design and top-tier materials. Fits perfectly into your modern wardrobe.'}
         </p>
       </div>
