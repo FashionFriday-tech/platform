@@ -34,7 +34,7 @@ interface Props {
   ) => 'empty' | 'default' | 'valid' | 'error';
 }
 
-export function ProductSEO({
+export function ProductSeo({
   initialData,
   seoError,
   generateSEO,
