@@ -55,7 +55,7 @@ export function useProducts() {
         setIsLoading(false);
       }
     }
-    loadData();
+    void loadData();
   }, []);
 
   const toggleProductStatus = (id: string) => {
