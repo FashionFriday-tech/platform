@@ -69,8 +69,8 @@ export function useOrders() {
 
     // Sorting
     result = result.sort((a, b) => {
-      let aValue: any = a[sortField];
-      let bValue: any = b[sortField];
+      let aValue: string | number = a[sortField] ?? '';
+      let bValue: string | number = b[sortField] ?? '';
 
       if (sortField === 'customer') {
         aValue = a.customer.name;
