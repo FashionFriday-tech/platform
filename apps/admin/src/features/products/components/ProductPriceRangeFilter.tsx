@@ -1,8 +1,10 @@
 import React from 'react';
 
+import { type AdvancedFilters } from '../types';
+
 interface Props {
-  localFilters: any;
-  setLocalFilters: (val: any) => void;
+  localFilters: AdvancedFilters;
+  setLocalFilters: React.Dispatch<React.SetStateAction<AdvancedFilters>>;
 }
 
 export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props) {
@@ -13,9 +15,9 @@ export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props
           Price Range (₹)
         </label>
         <div className="flex items-center space-x-1 rounded-md bg-black/5 px-2 py-0.5 text-xs font-bold text-black dark:bg-white/10 dark:text-white">
-          <span>{localFilters.minPrice || '0'}</span>
+          <span>{localFilters.minPrice ?? '0'}</span>
           <span className="text-black/30 dark:text-white/30">-</span>
-          <span>{localFilters.maxPrice || '10000'}</span>
+          <span>{localFilters.maxPrice ?? '10000'}</span>
         </div>
       </div>
 
@@ -27,8 +29,8 @@ export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props
         <div
           className="absolute h-1.5 rounded-lg bg-black dark:bg-white"
           style={{
-            left: `${(Number(localFilters.minPrice || 0) / 10000) * 100}%`,
-            right: `${100 - (Number(localFilters.maxPrice || 10000) / 10000) * 100}%`,
+            left: `${(Number(localFilters.minPrice ?? 0) / 10000) * 100}%`,
+            right: `${100 - (Number(localFilters.maxPrice ?? 10000) / 10000) * 100}%`,
           }}
         />
 
@@ -38,11 +40,11 @@ export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props
           min="0"
           max="10000"
           step="100"
-          value={localFilters.minPrice || '0'}
+          value={localFilters.minPrice ?? '0'}
           onChange={(e) => {
             const val = Math.min(
               Number(e.target.value),
-              Number(localFilters.maxPrice || 10000) - 100,
+              Number(localFilters.maxPrice ?? 10000) - 100,
             );
             setLocalFilters({ ...localFilters, minPrice: val.toString() });
           }}
@@ -55,9 +57,9 @@ export function ProductPriceRangeFilter({ localFilters, setLocalFilters }: Props
           min="0"
           max="10000"
           step="100"
-          value={localFilters.maxPrice || '10000'}
+          value={localFilters.maxPrice ?? '10000'}
           onChange={(e) => {
-            const val = Math.max(Number(e.target.value), Number(localFilters.minPrice || 0) + 100);
+            const val = Math.max(Number(e.target.value), Number(localFilters.minPrice ?? 0) + 100);
             setLocalFilters({ ...localFilters, maxPrice: val.toString() });
           }}
           className="pointer-events-none absolute z-20 w-full appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-black [&::-webkit-slider-thumb]:bg-white dark:[&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:bg-black"
