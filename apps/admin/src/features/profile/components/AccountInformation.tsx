@@ -1,7 +1,9 @@
 import React from 'react';
 
+import { type User } from '@/contexts/AuthContext';
+
 interface Props {
-  user: any;
+  user: User;
 }
 
 export function AccountInformation({ user }: Props) {
@@ -35,7 +37,7 @@ export function AccountInformation({ user }: Props) {
             Contact Number
           </label>
           <p className="text-lg font-medium text-black dark:text-white">
-            {user.phone || '+1 (555) 000-0000'}
+            {user.phone ?? '+1 (555) 000-0000'}
           </p>
         </div>
         <div className="h-px w-full bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/10" />
