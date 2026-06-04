@@ -28,7 +28,7 @@ export function useFeedback() {
   };
 
   useEffect(() => {
-    fetchFeedbackList();
+    void fetchFeedbackList();
   }, []);
 
   const filteredFeedbackList = useMemo(() => {
