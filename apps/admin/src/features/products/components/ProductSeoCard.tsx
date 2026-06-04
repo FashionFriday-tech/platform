@@ -20,14 +20,14 @@ export function ProductSeoCard({ product }: { product: Product }) {
 
         <div className="mb-8 rounded-2xl border border-black/5 bg-black/5 p-6 transition-colors group-hover:bg-black/10 dark:border-white/5 dark:bg-white/5 dark:group-hover:bg-white/10">
           <div className="mb-2 text-xs font-medium break-all text-black/60 dark:text-white/60">
-            fashionfriday.in &rsaquo; product &rsaquo; {product.seoSlug || 'item'}
+            fashionfriday.in &rsaquo; product &rsaquo; {product.seoSlug ?? 'item'}
           </div>
           <div className="mb-2 cursor-pointer text-xl leading-tight font-medium text-blue-600 hover:underline dark:text-blue-400">
-            {product.seoTitle || product.name}
+            {product.seoTitle ?? product.name}
           </div>
           <div className="text-sm leading-relaxed text-black/70 dark:text-white/70">
-            {product.seoDesc ||
-              product.description ||
+            {product.seoDesc ??
+              product.description ??
               'View this product on Fashion Friday. Discover the best styles and premium quality items.'}
           </div>
         </div>
