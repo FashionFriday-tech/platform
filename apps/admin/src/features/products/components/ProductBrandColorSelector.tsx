@@ -1,16 +1,17 @@
-import React from 'react';
+import { type Brand } from '@ff/schemas';
 
+import { type Product } from '../types';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  initialData?: any;
+  initialData?: Product;
   brandInput: string;
   setBrandInput: (val: string) => void;
   isBrandOpen: boolean;
   setIsBrandOpen: (val: boolean) => void;
   selectedBrandLogo: string | null;
   setSelectedBrandLogo: (val: string | null) => void;
-  filteredBrands: any[];
+  filteredBrands: Brand[];
   brandRef: React.RefObject<HTMLDivElement | null>;
   colorInput: string;
   setColorInput: (val: string) => void;
@@ -18,7 +19,7 @@ interface Props {
   setIsColorOpen: (val: boolean) => void;
   selectedColorHex: string | null;
   setSelectedColorHex: (val: string | null) => void;
-  filteredColors: any[];
+  filteredColors: { name: string; hex: string }[];
   colorRef: React.RefObject<HTMLDivElement | null>;
   getStatus: (
     val: string | number,
@@ -75,7 +76,7 @@ export function ProductBrandColorSelector({
                 if (filteredBrands.length > 0) {
                   const first = filteredBrands[0];
                   setBrandInput(first.name);
-                  setSelectedBrandLogo(first.logo || first.name.charAt(0).toUpperCase());
+                  setSelectedBrandLogo(first.logo ?? first.name.charAt(0).toUpperCase());
                   setIsBrandOpen(false);
                 }
               }
