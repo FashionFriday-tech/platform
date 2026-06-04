@@ -44,7 +44,7 @@ export function FaqsFeature() {
     setIsLoading(true);
     try {
       const data = await api.get<FAQItem[]>('/admin/faq');
-      setFaqs(data || []);
+      setFaqs(data ?? []);
     } catch (err) {
       console.error('Failed to load FAQs:', err);
     } finally {
@@ -53,7 +53,7 @@ export function FaqsFeature() {
   };
 
   useEffect(() => {
-    fetchFaqs();
+    void fetchFaqs();
   }, []);
 
   useEffect(() => {
@@ -83,8 +83,8 @@ export function FaqsFeature() {
     setQuestion(faq.question);
     setAnswer(faq.answer);
     setCategory(faq.category);
-    setHref(faq.href || '');
-    setLinkText(faq.linkText || '');
+    setHref(faq.href ?? '');
+    setLinkText(faq.linkText ?? '');
     setSortOrder(String(faq.sortOrder));
     setIsFormOpen(true);
   };
@@ -95,9 +95,9 @@ export function FaqsFeature() {
       question,
       answer,
       category,
-      href: href || undefined,
-      linkText: linkText || undefined,
-      sortOrder: parseInt(sortOrder, 10) || 0,
+      href: href ?? undefined,
+      linkText: linkText ?? undefined,
+      sortOrder: parseInt(sortOrder, 10) ?? 0,
     };
 
     try {
@@ -107,7 +107,7 @@ export function FaqsFeature() {
         await api.post('/admin/faq', payload);
       }
       setIsFormOpen(false);
-      fetchFaqs();
+      void fetchFaqs();
     } catch (err) {
       console.error('Failed to save FAQ:', err);
       alert('Failed to save FAQ. Please try again.');
@@ -117,7 +117,7 @@ export function FaqsFeature() {
   const handleDelete = async (id: string) => {
     try {
       await api.delete(`/admin/faq/${id}`);
-      fetchFaqs();
+      void fetchFaqs();
     } catch (err) {
       console.error('Failed to delete FAQ:', err);
       alert('Failed to delete FAQ.');
