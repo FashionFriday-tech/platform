@@ -3,8 +3,15 @@ import React from 'react';
 import { ProductMediaEmbedVideo } from './ProductMediaEmbedVideo';
 import { ProductMediaUploadGrid } from './ProductMediaUploadGrid';
 
+interface ProductImageItem {
+  id: string;
+  url: string;
+  file?: File;
+  isNew?: boolean;
+}
+
 interface Props {
-  images: any[];
+  images: ProductImageItem[];
   draggedIndex: number | null;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
