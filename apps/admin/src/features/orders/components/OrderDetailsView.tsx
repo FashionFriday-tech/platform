@@ -70,9 +70,9 @@ interface OrderDetailsViewProps {
 }
 
 export function OrderDetailsView({ order }: OrderDetailsViewProps) {
-  const [trackingId, setTrackingId] = useState(order.tracking?.trackingId || '');
+  const [trackingId, setTrackingId] = useState(order.tracking?.trackingId ?? '');
   const [courierService, setCourierService] = useState<string>(
-    order.tracking?.courierService || 'Delhivery',
+    order.tracking?.courierService ?? 'Delhivery',
   );
   const [assignedSeller, setAssignedSeller] = useState('Seller A');
   const [orderStatus, setOrderStatus] = useState<string>(order.status);
@@ -82,9 +82,9 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string>(order.status);
   const [tempCourier, setTempCourier] = useState<string>(
-    order.tracking?.courierService || 'Delhivery',
+    order.tracking?.courierService ?? 'Delhivery',
   );
-  const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId || '');
+  const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId ?? '');
   const [tempSeller, setTempSeller] = useState('Seller A');
   const [isEditingMeta, setIsEditingMeta] = useState(false);
 
@@ -120,7 +120,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     const itemsText = order.items
       .map(
         (item) =>
-          `Product Name: ${item.productName}\nSize: ${item.size || 'N/A'}\nColor: ${item.color || 'N/A'}\nQty: ${item.quantity}`,
+          `Product Name: ${item.productName}\nSize: ${item.size ?? 'N/A'}\nColor: ${item.color ?? 'N/A'}\nQty: ${item.quantity}`,
       )
       .join('\n\n');
 
@@ -129,11 +129,11 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
 Full Name : ${order.customer.name}
 Address : ${order.shippingAddress.street}
 City : ${order.shippingAddress.city}
-District : ${order.shippingAddress.district || 'N/A'}
+District : ${order.shippingAddress.district ?? 'N/A'}
 State : ${order.shippingAddress.state}
 Pincode: ${order.shippingAddress.pincode}
 Mobile Number : ${order.customer.phone}
-Alt Number : ${order.customer.altPhone || 'N/A'}
+Alt Number : ${order.customer.altPhone ?? 'N/A'}
 
 ${itemsText}
 
@@ -142,7 +142,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(getOrderSummaryText());
+    void navigator.clipboard.writeText(getOrderSummaryText());
     setIsCopied(true);
     setTimeout(() => {
       setIsCopied(false);
@@ -199,7 +199,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     }
     const item = order.items[0];
     const text = encodeURIComponent(
-      `*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size || 'N/A'}\n*Color:* ${item.color || 'N/A'} \n\n*Order ID:* ${order.orderNumber}`,
+      `*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size ?? 'N/A'}\n*Color:* ${item.color ?? 'N/A'} \n\n*Order ID:* ${order.orderNumber}`,
     );
 
     if (item.productImage) {
@@ -257,7 +257,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       if (orderStatus === 'shipped') {
                         return (
                           <a
-                            href={trackingUrl || '#'}
+                            href={trackingUrl ?? '#'}
                             target="_blank"
                             rel="noreferrer"
                             className="flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 active:scale-95"
@@ -290,7 +290,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                           disabled
                           className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-lg bg-black/5 px-4 py-2 text-xs font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
                         >
-                          {labels[orderStatus] || orderStatus}
+                          {labels[orderStatus] ?? orderStatus}
                         </button>
                       );
                     })()}
@@ -311,7 +311,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         {item.productName}
                       </h3>
                       <p className="mt-1 text-sm font-semibold text-black/40 dark:text-white/40">
-                        SKU: {item.sku || 'N/A'}
+                        SKU: {item.sku ?? 'N/A'}
                       </p>
                       <div className="mt-4 flex flex-wrap gap-3">
                         {item.size && (
@@ -356,7 +356,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                           if (orderStatus === 'shipped') {
                             return (
                               <a
-                                href={trackingUrl || '#'}
+                                href={trackingUrl ?? '#'}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 active:scale-95"
@@ -389,7 +389,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                               disabled
                               className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-3 text-sm font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
                             >
-                              {labels[orderStatus] || orderStatus}
+                              {labels[orderStatus] ?? orderStatus}
                             </button>
                           );
                         })()}
@@ -461,7 +461,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
                   <span className="text-black/50 dark:text-white/50">District :</span>
-                  <span>{order.shippingAddress.district || 'N/A'}</span>
+                  <span>{order.shippingAddress.district ?? 'N/A'}</span>
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
                   <span className="text-black/50 dark:text-white/50">State :</span>
@@ -477,7 +477,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 </div>
                 <div className="grid grid-cols-[130px_1fr] items-center gap-2">
                   <span className="text-black/50 dark:text-white/50">Alt Number :</span>
-                  <span>{order.customer.altPhone || 'N/A'}</span>
+                  <span>{order.customer.altPhone ?? 'N/A'}</span>
                 </div>
 
                 <div className="mt-4 flex flex-col gap-3 border-t border-black/10 pt-6 dark:border-white/10">
@@ -618,13 +618,13 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                     <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
                       <span className="text-sm text-black/50 dark:text-white/50">Courier</span>
                       <span className="text-sm font-bold text-black dark:text-white">
-                        {courierService || 'Not Assigned'}
+                        {courierService ?? 'Not Assigned'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
                       <span className="text-sm text-black/50 dark:text-white/50">Tracking ID</span>
                       <span className="text-sm font-bold text-black dark:text-white">
-                        {trackingId || 'Not Assigned'}
+                        {trackingId ?? 'Not Assigned'}
                       </span>
                     </div>
                     {trackingId && (
@@ -806,7 +806,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       return;
                     }
                     if (pendingStatus === 'inquiry') {
-                      handleInquiryWhatsApp();
+                      void handleInquiryWhatsApp();
                     }
                     if (pendingStatus === 'shipped') {
                       setCourierService(tempCourier);
