@@ -125,7 +125,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     if (valStr.trim().length < minLen) {
       return hasSubmitted ? 'error' : 'empty';
     }
-    if (initialData && valStr === String(initVal || '')) {
+    if (initialData && valStr === String(initVal ?? '')) {
       return 'default';
     }
     if (!initialData && fieldName && !touched[fieldName]) {
@@ -265,7 +265,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     formData.append('folder', 'products');
 
                     const res = await fetch(
-                      `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/upload`,
+                      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
                       {
                         method: 'POST',
                         body: formData,
@@ -301,11 +301,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     );
                   });
 
-                  if (!selectedApiCategory) {
-                    selectedApiCategory = uniqueCategories.find(
-                      (c) => c.name.toLowerCase() === catTarget || c.id === category,
-                    );
-                  }
+                  selectedApiCategory ??= uniqueCategories.find(
+                    (c) => c.name.toLowerCase() === catTarget || c.id === category,
+                  );
 
                   if (!selectedApiCategory) {
                     // Try mapping clothing subcategories (Jacket, Shirts, Pants, etc.)
@@ -316,16 +314,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             (c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing')) &&
                             (c.gender.toUpperCase() === selectedGender ||
                               c.gender.toUpperCase() === 'UNISEX'),
-                        ) ||
+                        ) ??
                         uniqueCategories.find(
                           (c) => c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing'),
                         );
                     }
                   }
 
-                  if (!selectedApiCategory) {
-                    selectedApiCategory = uniqueCategories[0];
-                  }
+                  selectedApiCategory ??= uniqueCategories[0];
 
                   if (!selectedApiCategory) {
                     setToast({
@@ -367,7 +363,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       mainImage: finalImages[0],
                       promoImage: finalImages[1],
                       liveImages: finalImages.slice(2),
-                      youtubeId: videoId || undefined,
+                      youtubeId: videoId ?? undefined,
                     },
                     marketing: {
                       collections: tags,
@@ -378,8 +374,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   };
 
                   const url = initialData
-                    ? `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products/${initialData.id}`
-                    : `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/products`;
+                    ? `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${initialData.id}`
+                    : `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`;
                   const res = await fetch(url, {
                     method: initialData ? 'PATCH' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -607,7 +603,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           if (filteredBrands.length > 0) {
                             const first = filteredBrands[0];
                             setBrandInput(first.name);
-                            setSelectedBrandLogo(first.logo || first.name.charAt(0).toUpperCase());
+                            setSelectedBrandLogo(first.logo ?? first.name.charAt(0).toUpperCase());
                             setIsBrandOpen(false);
                           }
                         }
@@ -620,12 +616,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   {isBrandOpen && (
                     <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl [-ms-overflow-style:none] [scrollbar-width:none] dark:border-white/10 dark:bg-[#1a1a1a] [&::-webkit-scrollbar]:hidden">
                       {filteredBrands.length > 0 ? (
-                        filteredBrands.map((b: any) => (
+                        filteredBrands.map((b) => (
                           <button
                             key={b.name}
                             onClick={() => {
                               setBrandInput(b.name);
-                              setSelectedBrandLogo(b.logo || b.name.charAt(0).toUpperCase());
+                              setSelectedBrandLogo(b.logo ?? b.name.charAt(0).toUpperCase());
                               setIsBrandOpen(false);
                             }}
                             className="flex w-full items-center space-x-3 px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
@@ -1272,7 +1268,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   ) : (
                     <iframe
                       className="absolute top-1/2 left-0 aspect-[9/16] w-full -translate-y-1/2"
-                      src={embedUrl || ''}
+                      src={embedUrl ?? ''}
                       title="YouTube Shorts player"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
