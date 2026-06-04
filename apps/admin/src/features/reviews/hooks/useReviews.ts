@@ -19,17 +19,28 @@ export function useReviews() {
   const fetchReviews = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/reviews`,
       );
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as {
+          id: string;
+          userName?: string;
+          userId?: string;
+          productId: string;
+          product?: { name?: string; image?: string };
+          productImage?: string;
+          rating: number;
+          comment: string;
+          createdAt: string;
+          isActive: boolean;
+        }[];
         // Map backend data to frontend Review format
-        const formattedReviews: Review[] = data.map((item: any) => ({
+        const formattedReviews: Review[] = data.map((item) => ({
           id: item.id,
-          customerId: item.userName || item.userId || 'guest',
+          customerId: item.userName ?? item.userId ?? 'guest',
           productId: item.productId,
-          productName: item.product?.name || 'Unknown Product',
-          productImage: item.productImage || item.product?.image || '',
+          productName: item.product?.name ?? 'Unknown Product',
+          productImage: item.productImage ?? item.product?.image ?? '',
           rating: item.rating,
           comment: item.comment,
           date: new Date(item.createdAt).toISOString().split('T')[0],
@@ -44,7 +55,7 @@ export function useReviews() {
   };
 
   useEffect(() => {
-    fetchReviews();
+    void fetchReviews();
   }, []);
 
   const ratingOptions = [
@@ -80,7 +91,7 @@ export function useReviews() {
   const handleDelete = async (reviewId: string) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
         {
           method: 'DELETE',
         },
@@ -101,7 +112,7 @@ export function useReviews() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -125,7 +136,7 @@ export function useReviews() {
   const handleEditSave = async (reviewId: string, newComment: string) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/reviews/${reviewId}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -151,7 +162,7 @@ export function useReviews() {
     }
 
     if (ratingFilter !== 'all') {
-      result = result.filter((r) => r.rating === Number(ratingFilter));
+      result = result.filter((r) => r.rating === ratingFilter);
     }
 
     if (verifiedFilter === 'verified') {
@@ -189,7 +200,7 @@ export function useReviews() {
     sortDirection,
   ]);
 
-  const editingReview = reviews.find((r) => r.id === editingReviewId) || null;
+  const editingReview = reviews.find((r) => r.id === editingReviewId) ?? null;
 
   return {
     reviews,
