@@ -14,7 +14,24 @@ interface OrdersTableProps {
   orders: Order[];
   sortField: string;
   sortDirection: 'asc' | 'desc';
-  onSort: (field: any) => void;
+  onSort: (field: string) => void;
+}
+
+function SortIcon({
+  field,
+  sortField,
+  sortDirection,
+}: {
+  field: string;
+  sortField: string;
+  sortDirection: 'asc' | 'desc';
+}) {
+  if (sortField !== field) {
+    return <span className="ml-1 opacity-0 group-hover:opacity-30">↕</span>;
+  }
+  return (
+    <span className="ml-1 text-black dark:text-white">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+  );
 }
 
 export function OrdersTable({ orders, sortField, sortDirection, onSort }: OrdersTableProps) {
@@ -27,15 +44,6 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
       </div>
     );
   }
-
-  const SortIcon = ({ field }: { field: string }) => {
-    if (sortField !== field) {
-      return <span className="ml-1 opacity-0 group-hover:opacity-30">↕</span>;
-    }
-    return (
-      <span className="ml-1 text-black dark:text-white">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-    );
-  };
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/5 dark:bg-[#111111]">
@@ -50,7 +58,8 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('orderNumber');
                 }}
               >
-                Order ID <SortIcon field="orderNumber" />
+                Order ID{' '}
+                <SortIcon field="orderNumber" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th
                 scope="col"
@@ -59,7 +68,8 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('createdAt');
                 }}
               >
-                Date <SortIcon field="createdAt" />
+                Date{' '}
+                <SortIcon field="createdAt" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th
                 scope="col"
@@ -68,7 +78,8 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('paymentType');
                 }}
               >
-                Payment Type <SortIcon field="paymentType" />
+                Payment Type{' '}
+                <SortIcon field="paymentType" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th
                 scope="col"
@@ -77,7 +88,7 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('total');
                 }}
               >
-                Total <SortIcon field="total" />
+                Total <SortIcon field="total" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th
                 scope="col"
@@ -86,7 +97,8 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                   onSort('status');
                 }}
               >
-                Status <SortIcon field="status" />
+                Status{' '}
+                <SortIcon field="status" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th scope="col" className="px-6 py-4 font-medium">
                 Tracking
@@ -155,7 +167,7 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                       );
                       return (
                         <a
-                          href={url || '#'}
+                          href={url ?? '#'}
                           onClick={(e) => {
                             e.stopPropagation();
                           }}
