@@ -72,7 +72,7 @@ export function ProductRequestsFeature() {
                   <div>
                     <span className="font-bold text-black/55 dark:text-white/55">Customer: </span>
                     <span className="font-medium text-black dark:text-white">
-                      {request.user?.name || 'Anonymous'}
+                      {request.user?.name ?? 'Anonymous'}
                     </span>
                   </div>
                   <div>
@@ -81,13 +81,13 @@ export function ProductRequestsFeature() {
                       href={`tel:${request.user?.phone}`}
                       className="text-destructive font-medium hover:underline"
                     >
-                      {request.user?.phone || 'N/A'}
+                      {request.user?.phone ?? 'N/A'}
                     </a>
                   </div>
                   <div>
                     <span className="font-bold text-black/55 dark:text-white/55">Email: </span>
                     <span className="block truncate font-medium text-black dark:text-white">
-                      {request.user?.email || 'N/A'}
+                      {request.user?.email ?? 'N/A'}
                     </span>
                   </div>
                   <div className="pt-1 text-[10px] text-black/40 dark:text-white/40">
