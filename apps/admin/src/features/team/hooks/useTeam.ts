@@ -79,7 +79,7 @@ export function useTeam() {
   };
 
   const editingMember = useMemo(() => {
-    return team.find((m) => m.id === editingMemberId) || null;
+    return team.find((m) => m.id === editingMemberId) ?? null;
   }, [team, editingMemberId]);
 
   const filteredAndSortedTeam = useMemo(() => {
@@ -101,11 +101,9 @@ export function useTeam() {
     }
 
     result.sort((a, b) => {
-      const aVal = a[sortField] || '';
-      const bVal = b[sortField] || '';
-      return sortDirection === 'asc'
-        ? String(aVal).localeCompare(String(bVal))
-        : String(bVal).localeCompare(String(aVal));
+      const aVal = a[sortField] ?? '';
+      const bVal = b[sortField] ?? '';
+      return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
     });
 
     return result;
