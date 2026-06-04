@@ -1,8 +1,16 @@
 import Image from 'next/image';
 
+export interface ReviewFormData {
+  userName: string;
+  rating: number;
+  comment: string;
+  productImage: string;
+  imageFile: File | null;
+}
+
 interface Props {
-  newReview: any;
-  setNewReview: (val: any) => void;
+  newReview: ReviewFormData;
+  setNewReview: React.Dispatch<React.SetStateAction<ReviewFormData>>;
   handleAddSubmit: () => void;
   setIsAdding: (val: boolean) => void;
 }
@@ -44,7 +52,7 @@ export function ProductReviewForm({
               max="5"
               value={newReview.rating}
               onChange={(e) => {
-                setNewReview({ ...newReview, rating: parseInt(e.target.value) || 1 });
+                setNewReview({ ...newReview, rating: parseInt(e.target.value) ?? 1 });
               }}
               className="w-full rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
             />
