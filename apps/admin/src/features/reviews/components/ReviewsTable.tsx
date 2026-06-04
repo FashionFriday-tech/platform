@@ -21,6 +21,25 @@ interface ReviewsTableProps {
   onEditReview: (reviewId: string) => void;
 }
 
+function SortIcon({
+  field,
+  sortField,
+  sortDirection,
+}: {
+  field: string;
+  sortField: string;
+  sortDirection: 'asc' | 'desc';
+}) {
+  if (sortField !== field) {
+    return null;
+  }
+  return sortDirection === 'asc' ? (
+    <ChevronUpIcon className="ml-1 inline h-4 w-4" />
+  ) : (
+    <ChevronDownIcon className="ml-1 inline h-4 w-4" />
+  );
+}
+
 export function ReviewsTable({
   reviews,
   sortField,
@@ -31,24 +50,12 @@ export function ReviewsTable({
   onToggleFeatured,
   onEditReview,
 }: ReviewsTableProps) {
-  const router = useRouter();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-
-  const SortIcon = ({ field }: { field: string }) => {
-    if (sortField !== field) {
-      return null;
-    }
-    return sortDirection === 'asc' ? (
-      <ChevronUpIcon className="ml-1 inline h-4 w-4" />
-    ) : (
-      <ChevronDownIcon className="ml-1 inline h-4 w-4" />
-    );
-  };
 
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-0.5 text-yellow-500">
-        {[...Array(5)].map((_, i) => (
+        {Array.from({ length: 5 }, (_, i) => (
           <FilledStarIcon
             key={i}
             className={`h-4 w-4 ${i < rating ? 'opacity-100' : 'opacity-20'}`}
@@ -70,7 +77,7 @@ export function ReviewsTable({
                   onSort('date');
                 }}
               >
-                Date <SortIcon field="date" />
+                Date <SortIcon field="date" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th className="px-6 py-4 whitespace-nowrap">Product</th>
               <th className="px-6 py-4 whitespace-nowrap">Customer</th>
@@ -80,7 +87,8 @@ export function ReviewsTable({
                   onSort('rating');
                 }}
               >
-                Rating <SortIcon field="rating" />
+                Rating{' '}
+                <SortIcon field="rating" sortField={sortField} sortDirection={sortDirection} />
               </th>
               <th className="min-w-[200px] px-6 py-4 whitespace-nowrap">Comment</th>
               <th className="sticky right-0 z-20 bg-[#f8f9fa] px-6 py-4 text-right whitespace-nowrap dark:bg-[#1a1a1a]">
