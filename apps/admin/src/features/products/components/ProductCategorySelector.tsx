@@ -1,10 +1,11 @@
 import React from 'react';
 
+import { type Product } from '../types';
 import { CATEGORIES, QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  initialData?: any;
+  initialData?: Product;
   category: string;
   isCategoryOpen: boolean;
   setIsCategoryOpen: (val: boolean) => void;
