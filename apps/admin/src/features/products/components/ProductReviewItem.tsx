@@ -2,6 +2,8 @@ import Image from 'next/image';
 
 import type { Review } from '@ff/schemas';
 
+import { type ReviewFormData } from './ProductReviewForm';
+
 interface Props {
   review: Review;
   menuOpenId: string | null;
@@ -10,8 +12,8 @@ interface Props {
   handleDelete: (id: string) => void;
   editingId: string | null;
   setEditingId: (id: string | null) => void;
-  editData: any;
-  setEditData: (val: any) => void;
+  editData: ReviewFormData;
+  setEditData: React.Dispatch<React.SetStateAction<ReviewFormData>>;
   handleEditSubmit: () => void;
 }
 
@@ -80,7 +82,7 @@ export function ProductReviewItem({
             max="5"
             value={editData.rating}
             onChange={(e) => {
-              setEditData({ ...editData, rating: parseInt(e.target.value) || 1 });
+              setEditData({ ...editData, rating: parseInt(e.target.value) ?? 1 });
             }}
             className="w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-bold text-black outline-none dark:border-white/10 dark:bg-black dark:text-white"
           />
