@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { type Order } from '../types';
 
 export function useOrderDetails(order: Order) {
-  const [trackingId, setTrackingId] = useState(order.tracking?.trackingId || '');
+  const [trackingId, setTrackingId] = useState(order.tracking?.trackingId ?? '');
   const [courierService, setCourierService] = useState<string>(
-    order.tracking?.courierService || 'Delhivery',
+    order.tracking?.courierService ?? 'Delhivery',
   );
   const [assignedSeller, setAssignedSeller] = useState('Seller A');
   const [orderStatus, setOrderStatus] = useState<string>(order.status);
@@ -15,9 +15,9 @@ export function useOrderDetails(order: Order) {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string>(order.status);
   const [tempCourier, setTempCourier] = useState<string>(
-    order.tracking?.courierService || 'Delhivery',
+    order.tracking?.courierService ?? 'Delhivery',
   );
-  const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId || '');
+  const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId ?? '');
   const [tempSeller, setTempSeller] = useState('Seller A');
   const [isEditingMeta, setIsEditingMeta] = useState(false);
 
@@ -51,7 +51,7 @@ export function useOrderDetails(order: Order) {
     const itemsText = order.items
       .map(
         (item) =>
-          `Product Name: ${item.productName}\nSize: ${item.size || 'N/A'}\nColor: ${item.color || 'N/A'}\nQty: ${item.quantity}`,
+          `Product Name: ${item.productName}\nSize: ${item.size ?? 'N/A'}\nColor: ${item.color ?? 'N/A'}\nQty: ${item.quantity}`,
       )
       .join('\n\n');
 
@@ -60,11 +60,11 @@ export function useOrderDetails(order: Order) {
 Full Name : ${order.customer.name}
 Address : ${order.shippingAddress.street}
 City : ${order.shippingAddress.city}
-District : ${order.shippingAddress.district || 'N/A'}
+District : ${order.shippingAddress.district ?? 'N/A'}
 State : ${order.shippingAddress.state}
 Pincode: ${order.shippingAddress.pincode}
 Mobile Number : ${order.customer.phone}
-Alt Number : ${order.customer.altPhone || 'N/A'}
+Alt Number : ${order.customer.altPhone ?? 'N/A'}
 
 ${itemsText}
 
@@ -105,7 +105,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(getOrderSummaryText());
+    void navigator.clipboard.writeText(getOrderSummaryText());
     setIsCopied(true);
     setTimeout(() => {
       setIsCopied(false);
@@ -126,7 +126,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     }
     const item = order.items[0];
     const text = encodeURIComponent(
-      `*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size || 'N/A'}\n*Color:* ${item.color || 'N/A'} \n\n*Order ID:* ${order.orderNumber}`,
+      `*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size ?? 'N/A'}\n*Color:* ${item.color ?? 'N/A'} \n\n*Order ID:* ${order.orderNumber}`,
     );
 
     if (item.productImage) {
