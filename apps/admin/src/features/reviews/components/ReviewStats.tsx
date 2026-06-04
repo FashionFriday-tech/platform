@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
+import { useMemo } from 'react';
 
-import { ActivityIcon, MessageSquareIcon, StarIcon, UserIcon, VerifiedUserIcon } from '@ff/ui';
+import { ActivityIcon, MessageSquareIcon, StarIcon, VerifiedUserIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { type Review } from '../types';
@@ -12,9 +13,14 @@ export function ReviewStats({ reviews }: { reviews: Review[] }) {
   const avgRating = (
     reviews.reduce((acc, curr) => acc + curr.rating, 0) / (totalReviews || 1)
   ).toFixed(1);
-  const recentReviews = reviews.filter(
-    (r) => new Date(r.date) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-  ).length;
+
+  const recentReviews = useMemo(() => {
+    // 30 days in milliseconds
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+    const now = new Date().getTime();
+    return reviews.filter((r) => now - new Date(r.date).getTime() < thirtyDaysMs).length;
+  }, [reviews]);
+
   const verifiedReviews = reviews.filter((r) => r.isVerified).length;
   const unverifiedReviews = totalReviews - verifiedReviews;
 
