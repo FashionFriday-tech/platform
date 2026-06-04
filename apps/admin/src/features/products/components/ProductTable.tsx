@@ -8,7 +8,7 @@ import {
   ShoeCategoryIcon,
 } from '@ff/ui';
 
-import { type ColumnId, type Product } from '../types';
+import { type ColumnId, type Product, type SortOption } from '../types';
 
 interface Props {
   products: Product[];
@@ -17,8 +17,8 @@ interface Props {
   selectedIds: Set<string>;
   onToggleSelection: (id: string) => void;
   onToggleAllSelection: (ids: string[]) => void;
-  sortOption: import('../types').SortOption;
-  setSortOption: (val: import('../types').SortOption) => void;
+  sortOption: SortOption;
+  setSortOption: (val: SortOption) => void;
   visibleColumns: Set<ColumnId>;
 }
 
@@ -201,7 +201,7 @@ export function ProductTable({
                 <tr
                   key={product.id}
                   onClick={() => {
-                    router.push(`/products/${product.seoSlug || product.id}`);
+                    router.push(`/products/${product.seoSlug ?? product.id}`);
                   }}
                   className={`group cursor-pointer whitespace-nowrap transition-colors ${isSelected ? 'bg-black/[0.03] dark:bg-white/[0.05]' : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'}`}
                 >
@@ -307,7 +307,7 @@ export function ProductTable({
                           >
                             {v}
                           </span>
-                        )) || <span className="text-xs text-black/30 dark:text-white/30">-</span>}
+                        )) ?? <span className="text-xs text-black/30 dark:text-white/30">-</span>}
                       </div>
                     </td>
                   )}
@@ -320,7 +320,7 @@ export function ProductTable({
 
                   {visibleColumns.has('Date Added') && (
                     <td className="px-4 py-4 text-sm text-black/60 dark:text-white/60">
-                      {product.dateAdded || 'N/A'}
+                      {product.dateAdded ?? 'N/A'}
                     </td>
                   )}
 
