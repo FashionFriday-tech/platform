@@ -1,9 +1,10 @@
 import React from 'react';
 
+import { type Product } from '../types';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  initialData?: any;
+  initialData?: Product;
   sizes: string[];
   availableSizes: string[];
   toggleSize: (size: string) => void;
