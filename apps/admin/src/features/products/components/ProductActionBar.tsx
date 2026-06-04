@@ -182,9 +182,9 @@ export function ProductActionBar({
                         Price Range (₹)
                       </label>
                       <div className="flex items-center space-x-1 rounded-md bg-black/5 px-2 py-0.5 text-xs font-bold text-black dark:bg-white/10 dark:text-white">
-                        <span>{localFilters.minPrice || '0'}</span>
+                        <span>{localFilters.minPrice ?? '0'}</span>
                         <span className="text-black/30 dark:text-white/30">-</span>
-                        <span>{localFilters.maxPrice || '10000'}</span>
+                        <span>{localFilters.maxPrice ?? '10000'}</span>
                       </div>
                     </div>
 
@@ -196,8 +196,8 @@ export function ProductActionBar({
                       <div
                         className="absolute h-1.5 rounded-lg bg-black dark:bg-white"
                         style={{
-                          left: `${(Number(localFilters.minPrice || 0) / 10000) * 100}%`,
-                          right: `${100 - (Number(localFilters.maxPrice || 10000) / 10000) * 100}%`,
+                          left: `${(Number(localFilters.minPrice ?? 0) / 10000) * 100}%`,
+                          right: `${100 - (Number(localFilters.maxPrice ?? 10000) / 10000) * 100}%`,
                         }}
                       />
 
@@ -207,11 +207,11 @@ export function ProductActionBar({
                         min="0"
                         max="10000"
                         step="100"
-                        value={localFilters.minPrice || '0'}
+                        value={localFilters.minPrice ?? '0'}
                         onChange={(e) => {
                           const val = Math.min(
                             Number(e.target.value),
-                            Number(localFilters.maxPrice || 10000) - 100,
+                            Number(localFilters.maxPrice ?? 10000) - 100,
                           );
                           setLocalFilters({ ...localFilters, minPrice: val.toString() });
                         }}
@@ -224,11 +224,11 @@ export function ProductActionBar({
                         min="0"
                         max="10000"
                         step="100"
-                        value={localFilters.maxPrice || '10000'}
+                        value={localFilters.maxPrice ?? '10000'}
                         onChange={(e) => {
                           const val = Math.max(
                             Number(e.target.value),
-                            Number(localFilters.minPrice || 0) + 100,
+                            Number(localFilters.minPrice ?? 0) + 100,
                           );
                           setLocalFilters({ ...localFilters, maxPrice: val.toString() });
                         }}
