@@ -31,7 +31,7 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                 if (orderStatus === 'shipped') {
                   return (
                     <a
-                      href={trackingUrl || '#'}
+                      href={trackingUrl ?? '#'}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 active:scale-95"
@@ -64,7 +64,7 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                     disabled
                     className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-lg bg-black/5 px-4 py-2 text-xs font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
                   >
-                    {labels[orderStatus] || orderStatus}
+                    {labels[orderStatus] ?? orderStatus}
                   </button>
                 );
               })()}
@@ -85,7 +85,7 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                   {item.productName}
                 </h3>
                 <p className="mt-1 text-sm font-semibold text-black/40 dark:text-white/40">
-                  SKU: {item.sku || 'N/A'}
+                  SKU: {item.sku ?? 'N/A'}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   {item.size && (
@@ -130,7 +130,7 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                     if (orderStatus === 'shipped') {
                       return (
                         <a
-                          href={trackingUrl || '#'}
+                          href={trackingUrl ?? '#'}
                           target="_blank"
                           rel="noreferrer"
                           className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 active:scale-95"
@@ -163,7 +163,7 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                         disabled
                         className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-3 text-sm font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
                       >
-                        {labels[orderStatus] || orderStatus}
+                        {labels[orderStatus] ?? orderStatus}
                       </button>
                     );
                   })()}
