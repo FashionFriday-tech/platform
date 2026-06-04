@@ -22,8 +22,11 @@ export class BrandsService {
 
   async create(dto: CreateBrandDto) {
     const result = await this.repository.create({
-      ...dto,
-      logo: dto.logo || '',
+      name: dto.name,
+      slug: dto.slug,
+      logo: dto.logo ?? '',
+      color: dto.color,
+      categories: dto.categories,
     });
     this.triggerBrandsRevalidation();
     return result;
