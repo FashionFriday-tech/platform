@@ -11,7 +11,7 @@ export function useAddProductForm(initialData?: Product) {
   const { categories: apiCategories } = useCategories();
   const { brands: apiBrands } = useBrands();
 
-  const [sizes, setSizes] = useState<string[]>(SIZE_MAP.Jacket || []);
+  const [sizes, setSizes] = useState<string[]>(SIZE_MAP.Jacket ?? []);
   const [gender, setGender] = useState<string>('Unisex');
   const [category, setCategory] = useState<string>('Jacket');
   const [quality, setQuality] = useState<string>('Original');
@@ -52,6 +52,7 @@ export function useAddProductForm(initialData?: Product) {
   const [images, setImages] = useState<{ id: string; url: string; file?: File; isNew?: boolean }[]>(
     [],
   );
+  const [imagesToDelete, setImagesToDelete] = useState<{ id: string; url: string }[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const categoryRef = useRef<HTMLDivElement>(null);
@@ -75,7 +76,7 @@ export function useAddProductForm(initialData?: Product) {
       }
 
       // Map Quality
-      let mappedUIQuality: string = initialData.attributes?.quality || 'Original';
+      let mappedUIQuality: string = initialData.attributes?.quality ?? 'Original';
       if (mappedUIQuality === 'UA') {
         mappedUIQuality = 'Original';
       }
@@ -95,7 +96,7 @@ export function useAddProductForm(initialData?: Product) {
 
       // Try to infer specific clothing type from tags
       if (initialData.categoryId === 'CLOTHING') {
-        const tags = initialData.marketing?.collections || [];
+        const tags = initialData.marketing?.collections ?? [];
         if (tags.some((t) => t.toLowerCase() === 'shirts' || t.toLowerCase() === 'shirt')) {
           mappedCategory = 'Shirts';
         } else if (tags.some((t) => t.toLowerCase() === 'pants' || t.toLowerCase() === 'pant')) {
@@ -108,23 +109,23 @@ export function useAddProductForm(initialData?: Product) {
       }
 
       // Core fields
-      setProductName(initialData.name || '');
-      setProductDesc(initialData.description || '');
+      setProductName(initialData.name ?? '');
+      setProductDesc(initialData.description ?? '');
       setCategory(mappedCategory);
       setQuality(mappedUIQuality);
       setGender(mappedGender);
-      setBrandInput(initialData.brand?.[0] || '');
+      setBrandInput(initialData.brand?.[0] ?? '');
       if (initialData.brand?.[0]) {
         setSelectedBrandLogo(initialData.brand[0].charAt(0).toUpperCase());
       }
-      setBasePrice(initialData.price?.sellingPrice?.toString() || '');
-      setOgPrice(initialData.price?.ogPrice?.toString() || '');
-      setStock(initialData.inventory?.totalStock?.toString() || '');
-      setGettingPrice(initialData.price?.gettingPrice?.toString() || '');
+      setBasePrice(initialData.price?.sellingPrice?.toString() ?? '');
+      setOgPrice(initialData.price?.ogPrice?.toString() ?? '');
+      setStock(initialData.inventory?.totalStock?.toString() ?? '');
+      setGettingPrice(initialData.price?.gettingPrice?.toString() ?? '');
       setSizes(
         initialData.attributes?.sizes && initialData.attributes.sizes.length > 0
           ? initialData.attributes.sizes
-          : SIZE_MAP[mappedCategory] || SIZE_MAP.Jacket || [],
+          : (SIZE_MAP[mappedCategory] ?? SIZE_MAP.Jacket) || [],
       );
 
       // Color — reverse-map from hex to color name
@@ -138,29 +139,32 @@ export function useAddProductForm(initialData?: Product) {
       }
 
       // Video — convert youtubeId back to a watchable URL
-      const savedYoutubeId = (initialData.media as any)?.youtubeId;
+      const savedYoutubeId = (initialData.media as { youtubeId?: string } | undefined)?.youtubeId;
       if (savedYoutubeId) {
         setVideoLink(`https://www.youtube.com/watch?v=${savedYoutubeId}`);
       }
 
       // Tags / SEO
-      setTags(initialData.marketing?.collections || []);
-      setSeoTitle(initialData.marketing?.seoTitle || '');
-      setSeoDesc(initialData.marketing?.seoDescription || '');
-      setSeoSlug(initialData.slug || '');
+      setTags(initialData.marketing?.collections ?? []);
+      setSeoTitle(initialData.marketing?.seoTitle ?? '');
+      setSeoDesc(initialData.marketing?.seoDescription ?? '');
+      setSeoSlug(initialData.slug ?? '');
 
       // Images — load ALL images (mainImage + promoImage + liveImages) into form state
       setImagesToDelete([]);
       const uniquePrefix = Math.random().toString(36).substring(7);
       const allImages: { id: string; url: string }[] = [];
 
-      if (initialData.media?.mainImage) {
-        allImages.push({ id: `init-${uniquePrefix}-main`, url: initialData.media.mainImage });
+      const media = initialData.media as
+        | { mainImage?: string; promoImage?: string; liveImages?: string[] }
+        | undefined;
+      if (media?.mainImage) {
+        allImages.push({ id: `init-${uniquePrefix}-main`, url: media.mainImage });
       }
-      if ((initialData.media as any)?.promoImage) {
+      if (media?.promoImage) {
         allImages.push({
           id: `init-${uniquePrefix}-promo`,
-          url: (initialData.media as any).promoImage,
+          url: media.promoImage,
         });
       }
       if (initialData.media?.liveImages && initialData.media.liveImages.length > 0) {
@@ -228,7 +232,7 @@ export function useAddProductForm(initialData?: Product) {
   const handleCategorySelect = (c: string) => {
     setCategory(c);
     setIsCategoryOpen(false);
-    setSizes(SIZE_MAP[c] || []);
+    setSizes(SIZE_MAP[c] ?? []);
     setBrandInput(''); // Reset brand when category changes
     setSelectedBrandLogo(null);
   };
@@ -384,8 +388,6 @@ export function useAddProductForm(initialData?: Product) {
     setDraggedIndex(null);
   };
 
-  const [imagesToDelete, setImagesToDelete] = useState<{ id: string; url: string }[]>([]);
-
   const removeImage = (idToRemove: string) => {
     const imgToRemove = images.find((img) => img.id === idToRemove);
     if (imgToRemove) {
@@ -415,7 +417,7 @@ export function useAddProductForm(initialData?: Product) {
   const filteredColors = MAJOR_COLORS.filter((c) =>
     c.name.toLowerCase().includes(colorInput.toLowerCase()),
   );
-  const availableSizes = SIZE_MAP[category] || SIZE_MAP.Jacket;
+  const availableSizes = SIZE_MAP[category] ?? SIZE_MAP.Jacket;
 
   const [availableCollections, setAvailableCollections] = useState<string[]>([
     'Summer Drop',
@@ -430,18 +432,18 @@ export function useAddProductForm(initialData?: Product) {
     async function loadCollections() {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/admin/collections`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections`,
         );
-        const data = await res.json();
+        const data = (await res.json()) as { name: string }[];
         if (Array.isArray(data) && data.length > 0) {
-          const names = data.map((c: any) => c.name);
+          const names = data.map((c) => c.name);
           setAvailableCollections((prev) => Array.from(new Set([...names, ...prev])));
         }
       } catch (err) {
         console.error('Failed to load collections in add product form', err);
       }
     }
-    loadCollections();
+    void loadCollections();
   }, []);
 
   const toggleCollection = (colName: string) => {
