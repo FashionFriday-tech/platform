@@ -48,7 +48,7 @@ export function ProductMediaEmbedVideo({ videoLink, setVideoLink, videoId, embed
           ) : (
             <iframe
               className="absolute top-1/2 left-0 aspect-[9/16] w-full -translate-y-1/2"
-              src={embedUrl || ''}
+              src={embedUrl ?? ''}
               title="YouTube Shorts player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
