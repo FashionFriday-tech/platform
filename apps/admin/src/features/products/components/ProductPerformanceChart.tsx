@@ -2,6 +2,7 @@ interface PerformanceDataPoint {
   date: string;
   sales: number;
   views: number;
+  label?: string;
 }
 
 interface Props {
