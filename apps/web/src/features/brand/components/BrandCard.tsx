@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import type { Brand } from '@ff/schemas';
 
 interface BrandCardProps {
@@ -27,14 +28,18 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
             alt={brand.name}
             width={160}
             height={160}
-            onError={() => setHasError(true)}
-            className={`object-contain duration-500 group-hover:scale-125 ${isBlackBackground ? 'invert dark:invert-0' : 'invert'
-              }`}
+            onError={() => {
+              setHasError(true);
+            }}
+            className={`object-contain duration-500 group-hover:scale-125 ${
+              isBlackBackground ? 'invert dark:invert-0' : 'invert'
+            }`}
           />
         ) : (
           <span
-            className={`px-4 text-center text-xl font-black uppercase tracking-widest ${isBlackBackground ? 'text-background' : 'text-white'
-              }`}
+            className={`px-4 text-center text-xl font-black tracking-widest uppercase ${
+              isBlackBackground ? 'text-background' : 'text-white'
+            }`}
           >
             {brand.name}
           </span>
@@ -43,4 +48,3 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
     </Link>
   );
 };
-
