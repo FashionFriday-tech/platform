@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -63,9 +63,13 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
-    const handleOpenSearch = () => setIsSearchOpen(true);
+    const handleOpenSearch = () => {
+      setIsSearchOpen(true);
+    };
     window.addEventListener('open-search', handleOpenSearch);
-    return () => window.removeEventListener('open-search', handleOpenSearch);
+    return () => {
+      window.removeEventListener('open-search', handleOpenSearch);
+    };
   }, []);
 
   // Hide header on login and signup pages
@@ -82,7 +86,7 @@ export function Header() {
         {/* DESKTOP TOP BAR */}
         <div className="text-foreground relative z-50 mx-auto hidden h-20 items-center justify-between px-6 sm:flex lg:px-12">
           <Link href="/" className="relative z-50 flex h-8 items-center">
-            <span className="text-2xl lg:text-3xl font-black tracking-tighter uppercase">
+            <span className="text-2xl font-black tracking-tighter uppercase lg:text-3xl">
               Fashion Friday
             </span>
           </Link>
@@ -150,13 +154,16 @@ export function Header() {
 
         {/* MARQUEE (Scrolling Announcement for All Screens) */}
         {pathname === '/' && (
-          <div className="bg-[#FF0000] text-white relative z-40 block w-full overflow-hidden py-1.5 sm:py-2">
+          <div className="relative z-40 block w-full overflow-hidden bg-[#FF0000] py-1.5 text-white sm:py-2">
             <div className="animate-marquee flex w-max whitespace-nowrap">
               {[0, 1].map((set) => (
-                <div key={set} className="flex items-center gap-8 sm:gap-12 px-4 sm:px-6">
+                <div key={set} className="flex items-center gap-8 px-4 sm:gap-12 sm:px-6">
                   {marqueeContent.map((text, i) => (
-                    <span key={i} className="flex items-center gap-2.5 sm:gap-3 text-[9px] sm:text-[10px] font-black tracking-[0.25em] uppercase">
-                      <span className="bg-white h-1.5 w-1.5 rounded-full shrink-0" />
+                    <span
+                      key={i}
+                      className="flex items-center gap-2.5 text-[9px] font-black tracking-[0.25em] uppercase sm:gap-3 sm:text-[10px]"
+                    >
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
                       {text}
                     </span>
                   ))}
@@ -168,14 +175,14 @@ export function Header() {
       </header>
 
       {/* MOBILE UI */}
-      <div className="bg-background text-foreground sticky top-0 z-50 flex w-full flex-col border-b border-border/20 lg:hidden">
+      <div className="bg-background text-foreground border-border/20 sticky top-0 z-50 flex w-full flex-col border-b lg:hidden">
         <div className="relative flex w-full items-center justify-between px-4 py-3.5">
           <button
             type="button"
             onClick={() => {
               window.dispatchEvent(new CustomEvent('open-menu'));
             }}
-            className="flex items-center justify-start text-foreground transition-transform active:scale-95 py-1 px-0.5"
+            className="text-foreground flex items-center justify-start px-0.5 py-1 transition-transform active:scale-95"
             aria-label="Toggle Menu"
           >
             <svg
@@ -191,12 +198,12 @@ export function Header() {
             </svg>
           </button>
 
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <Link
               href="/"
-              className="transition-transform active:scale-95 flex items-center whitespace-nowrap"
+              className="flex items-center whitespace-nowrap transition-transform active:scale-95"
             >
-              <span className="text-xl sm:text-2xl font-black tracking-tighter uppercase">
+              <span className="text-xl font-black tracking-tighter uppercase sm:text-2xl">
                 Fashion Friday
               </span>
             </Link>
@@ -215,13 +222,16 @@ export function Header() {
 
         {/* MOBILE MARQUEE ANNOUNCEMENT */}
         {pathname === '/' && (
-          <div className="bg-[#FF0000] text-white relative z-40 block w-full overflow-hidden py-1.5">
+          <div className="relative z-40 block w-full overflow-hidden bg-[#FF0000] py-1.5 text-white">
             <div className="animate-marquee flex w-max whitespace-nowrap">
               {[0, 1].map((set) => (
                 <div key={set} className="flex items-center gap-8 px-4">
                   {marqueeContent.map((text, i) => (
-                    <span key={i} className="flex items-center gap-2 text-[9px] font-black tracking-[0.25em] uppercase">
-                      <span className="bg-white h-1.5 w-1.5 rounded-full shrink-0" />
+                    <span
+                      key={i}
+                      className="flex items-center gap-2 text-[9px] font-black tracking-[0.25em] uppercase"
+                    >
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
                       {text}
                     </span>
                   ))}
@@ -268,6 +278,5 @@ export function Header() {
         )}
       </AnimatePresence>
     </>
-
   );
 }
