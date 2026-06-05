@@ -7,7 +7,6 @@ import { type Product } from '@ff/schemas';
 import { motion } from 'motion/react';
 
 import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
-
 import Request from '@/components/ui/sections/Request';
 
 interface GridProps {
@@ -68,7 +67,7 @@ export const CatalogueGrid = ({ products }: GridProps) => {
       </div>
 
       {/* Sourcing Request Section: Displayed below product lists when customer needs custom sourcing */}
-      <div className="mt-16 border-t border-border pt-12">
+      <div className="border-border mt-16 border-t pt-12">
         <Request />
       </div>
 
