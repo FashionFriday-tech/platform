@@ -26,10 +26,10 @@ export function CategoriesLanding({ categories }: CategoriesLandingProps) {
   const activeGender = GENDERS[genderIndex];
 
   const menCategories = categories.filter(
-    (c) => c.gender.toUpperCase() === 'MEN' || c.gender.toUpperCase() === 'UNISEX'
+    (c) => c.gender.toUpperCase() === 'MEN' || c.gender.toUpperCase() === 'UNISEX',
   );
   const womenCategories = categories.filter(
-    (c) => c.gender.toUpperCase() === 'WOMEN' || c.gender.toUpperCase() === 'UNISEX'
+    (c) => c.gender.toUpperCase() === 'WOMEN' || c.gender.toUpperCase() === 'UNISEX',
   );
 
   const categoriesByGender = {
