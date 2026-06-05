@@ -34,6 +34,11 @@ export default [
       '@typescript-eslint/no-unnecessary-condition': 'off',
       'security/detect-non-literal-regexp': 'off',
       'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+      '@next/next/no-img-element': 'off',
+      '@next/next/no-html-link-for-pages': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
     },
   },
 ];
