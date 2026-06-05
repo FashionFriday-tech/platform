@@ -1,11 +1,13 @@
 import React from 'react';
 
+import { type Product as SchemaProduct } from '@ff/schemas';
+
 import { type Product } from '../types';
 import { CATEGORIES, QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  initialData?: Product;
+  initialData?: Partial<Product> | SchemaProduct;
   category: string;
   isCategoryOpen: boolean;
   setIsCategoryOpen: (val: boolean) => void;
@@ -45,7 +47,14 @@ export function ProductCategorySelector({
       <div ref={categoryRef} className="relative">
         <LabelWithTick
           label="Product Category"
-          status={getStatus(category, initialData?.category, 1, 'category')}
+          status={getStatus(
+            category,
+            initialData && 'category' in initialData
+              ? initialData.category
+              : initialData?.categoryId,
+            1,
+            'category',
+          )}
         />
         <button
           onClick={() => {
