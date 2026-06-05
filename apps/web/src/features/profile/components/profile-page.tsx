@@ -20,8 +20,8 @@ import { toast } from 'sonner';
 
 import {
   sendEmailOtpAction,
-  verifyEmailOtpAction,
   sendPhoneOtpAction,
+  verifyEmailOtpAction,
   verifyPhoneOtpAction,
 } from '@/features/auth/services/auth.actions';
 import { useAuthStore } from '@/store/auth-store';
@@ -64,19 +64,18 @@ export function ProfilePage() {
   // Initials generator for profile logo
   const getInitials = (nameString: string) => {
     const parts = nameString.trim().split(/\s+/);
-    if (parts.length === 0 || !parts[0]) return '?';
-    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    if (parts.length === 0 || !parts[0]) {
+      return '?';
+    }
+    if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
     return (parts[0][0] + parts[1][0]).toUpperCase();
   };
 
   // Calculate completion percentage
   const calculateCompletion = () => {
-    const fields = [
-      formData.name,
-      formData.phone,
-      formData.email,
-      formData.dob,
-    ];
+    const fields = [formData.name, formData.phone, formData.email, formData.dob];
     const filled = fields.filter((f) => !!f).length;
     return Math.round((filled / fields.length) * 100);
   };
@@ -137,7 +136,9 @@ export function ProfilePage() {
 
   // Alert user before unload if has changes
   useEffect(() => {
-    if (!hasChanges) return;
+    if (!hasChanges) {
+      return;
+    }
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
@@ -158,20 +159,20 @@ export function ProfilePage() {
             {/* LEFT SIDEBAR SKELETON */}
             <aside className="space-y-6 md:col-span-4">
               <div className="bg-background-elevated border-border animate-pulse rounded-4xl border p-6 text-center shadow-sm">
-                <div className="mx-auto h-28 w-28 rounded-full bg-border" />
-                <div className="mx-auto mt-4 h-6 w-32 rounded-md bg-border" />
-                <div className="mx-auto mt-2 h-4 w-24 rounded-md bg-border" />
-                <div className="mt-6 h-12 w-full rounded-3xl bg-border" />
+                <div className="bg-border mx-auto h-28 w-28 rounded-full" />
+                <div className="bg-border mx-auto mt-4 h-6 w-32 rounded-md" />
+                <div className="bg-border mx-auto mt-2 h-4 w-24 rounded-md" />
+                <div className="bg-border mt-6 h-12 w-full rounded-3xl" />
               </div>
             </aside>
             {/* MAIN FORM SKELETON */}
             <div className="space-y-6 md:col-span-8">
               <div className="bg-background-elevated border-border animate-pulse rounded-4xl border p-6 shadow-sm">
-                <div className="h-6 w-48 rounded-md bg-border mb-6" />
+                <div className="bg-border mb-6 h-6 w-48 rounded-md" />
                 <div className="space-y-4">
-                  <div className="h-10 w-full rounded-2xl bg-border" />
-                  <div className="h-10 w-full rounded-2xl bg-border" />
-                  <div className="h-10 w-full rounded-2xl bg-border" />
+                  <div className="bg-border h-10 w-full rounded-2xl" />
+                  <div className="bg-border h-10 w-full rounded-2xl" />
+                  <div className="bg-border h-10 w-full rounded-2xl" />
                 </div>
               </div>
             </div>
@@ -550,7 +551,8 @@ export function ProfilePage() {
                   Verify {otpType === 'phone' ? 'WhatsApp Phone' : 'Email'}
                 </h3>
                 <p className="text-foreground-subtle text-[10px] leading-loose font-bold tracking-widest uppercase">
-                  Please enter the 6-digit verification code sent to your {otpType === 'phone' ? 'WhatsApp number' : 'email'}.
+                  Please enter the 6-digit verification code sent to your{' '}
+                  {otpType === 'phone' ? 'WhatsApp number' : 'email'}.
                 </p>
 
                 <div className="flex justify-center gap-2 py-4 sm:gap-4">
