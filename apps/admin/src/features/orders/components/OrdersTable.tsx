@@ -6,15 +6,16 @@ import { useRouter } from 'next/navigation';
 
 import { motion } from 'motion/react';
 
+import { type SortField } from '../hooks/useOrders';
 import { type Order } from '../types';
 import { getTrackingUrl } from '../utils/courier';
 import { OrderStatusBadge } from './OrderStatusBadge';
 
 interface OrdersTableProps {
   orders: Order[];
-  sortField: string;
+  sortField: SortField;
   sortDirection: 'asc' | 'desc';
-  onSort: (field: string) => void;
+  onSort: (field: SortField) => void;
 }
 
 function SortIcon({
@@ -22,8 +23,8 @@ function SortIcon({
   sortField,
   sortDirection,
 }: {
-  field: string;
-  sortField: string;
+  field: SortField;
+  sortField: SortField;
   sortDirection: 'asc' | 'desc';
 }) {
   if (sortField !== field) {
