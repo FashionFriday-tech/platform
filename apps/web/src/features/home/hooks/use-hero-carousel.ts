@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import { fetcher } from '@/lib/api-client';
 
 export interface HeroCard {
@@ -57,7 +58,9 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
   }, []);
 
   useEffect(() => {
-    if (initialCampaigns) return;
+    if (initialCampaigns) {
+      return;
+    }
     const loadHeroBanners = async () => {
       try {
         const data = await fetcher<CampaignBanner[]>('/campaigns');
@@ -67,19 +70,20 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
             setCards(carouselBanners);
           }
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Failed to load hero banners from API:', err);
       }
     };
-    loadHeroBanners();
+    void loadHeroBanners();
   }, [initialCampaigns]);
-
 
   const startTimer = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
-    if (!isPlaying || !isInView) return;
+    if (!isPlaying || !isInView) {
+      return;
+    }
     timerRef.current = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % cards.length);
     }, 3000);
@@ -96,10 +100,13 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
     };
   }, [cards.length, startTimer]);
 
-  const goToCard = useCallback((index: number) => {
-    setActiveIndex(index);
-    startTimer(); // Reset the 3-second timer on manual navigation
-  }, [startTimer]);
+  const goToCard = useCallback(
+    (index: number) => {
+      setActiveIndex(index);
+      startTimer(); // Reset the 3-second timer on manual navigation
+    },
+    [startTimer],
+  );
 
   const nextCard = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % cards.length);
