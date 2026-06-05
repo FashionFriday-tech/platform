@@ -57,9 +57,9 @@ export default async function CategoryDetailsPage({ params }: CategoryDetailsPag
         id: apiCategory.id,
         name: apiCategory.name,
         slug: apiCategory.slug,
-        image: apiCategory.image,
-        gender:
-          apiCategory.gender.charAt(0).toUpperCase() + apiCategory.gender.slice(1).toLowerCase(),
+        image: apiCategory.image ?? '',
+        gender: (apiCategory.gender.charAt(0).toUpperCase() +
+          apiCategory.gender.slice(1).toLowerCase()) as 'Men' | 'Women' | 'Unisex',
         productCount: apiCategory._count?.products ?? apiCategory.productCount ?? 0,
       };
     }
