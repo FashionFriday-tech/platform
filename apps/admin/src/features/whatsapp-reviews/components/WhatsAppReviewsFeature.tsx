@@ -9,7 +9,7 @@ import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { useWhatsAppReviews } from '../hooks/useWhatsAppReviews';
 
 export function WhatsAppReviewsFeature() {
-  const { reviews, isLoading, isInitialLoad, hasMore, loadMore, uploadReview, deleteReview } =
+  const { reviews, isLoading, isInitialLoad, loadMore, uploadReview, deleteReview } =
     useWhatsAppReviews();
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
