@@ -173,12 +173,12 @@ export default function PWAInstallSection() {
   }
 
   return (
-    <section className="relative w-full overflow-hidden pt-0 pb-16 sm:pt-0 sm:pb-20 bg-[#f5f1e6] dark:bg-[#f5f1e6] text-black dark:text-black">
+    <section className="relative w-full overflow-hidden bg-[#f5f1e6] pt-0 pb-16 text-black sm:pt-0 sm:pb-20 dark:bg-[#f5f1e6] dark:text-black">
       {/* Premium Banner Strip */}
-      <div className="w-full bg-[#eae5d8] text-black py-7 mb-20 transition-colors">
-        <div className="container mx-auto px-6 md:px-12 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+      <div className="mb-20 w-full bg-[#eae5d8] py-7 text-black transition-colors">
+        <div className="container mx-auto flex flex-col items-center justify-center gap-4 px-6 sm:flex-row sm:gap-6 md:px-12">
           {/* Brand Logo Container */}
-          <div className="relative h-[10vw] w-[10vw] max-h-16 max-w-16 sm:h-[6vw] sm:w-[6vw] lg:h-[4.5vw] lg:w-[4.5vw] overflow-hidden rounded-2xl bg-black p-[1.5vw] sm:p-[1vw] shadow-md flex items-center justify-center shrink-0">
+          <div className="relative flex h-[10vw] max-h-16 w-[10vw] max-w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-black p-[1.5vw] shadow-md sm:h-[6vw] sm:w-[6vw] sm:p-[1vw] lg:h-[4.5vw] lg:w-[4.5vw]">
             <Image
               src="/images/logos/ff-logo.png"
               alt="Fashion Friday"
@@ -188,7 +188,7 @@ export default function PWAInstallSection() {
             />
           </div>
           {/* Banner Text with matching fluid viewport sizing */}
-          <h2 className="text-center sm:text-left text-black font-black tracking-tighter uppercase leading-none text-[8.5vw] sm:text-[5vw] lg:text-[3.8vw]">
+          <h2 className="text-center text-[8.5vw] leading-none font-black tracking-tighter text-black uppercase sm:text-left sm:text-[5vw] lg:text-[3.8vw]">
             It's Better On The Web App
           </h2>
         </div>
@@ -216,17 +216,23 @@ export default function PWAInstallSection() {
         >
           <motion.span
             variants={fadeInUp}
-            className="flex w-fit items-center justify-center rounded-full border border-black/10 px-4 py-1 text-[10px] font-bold tracking-widest uppercase text-black dark:text-black"
+            className="flex w-fit items-center justify-center rounded-full border border-black/10 px-4 py-1 text-[10px] font-bold tracking-widest text-black uppercase dark:text-black"
           >
             <DownloadIcon className="mr-2 text-xl" /> Install our Web App
           </motion.span>
 
-          <motion.h1 variants={fadeInUp} className="text-4xl font-semibold md:text-5xl text-black dark:text-black">
+          <motion.h1
+            variants={fadeInUp}
+            className="text-4xl font-semibold text-black md:text-5xl dark:text-black"
+          >
             Your Daily Drop <br />
             <span className="text-neutral-500">On Your Homescreen.</span>
           </motion.h1>
 
-          <motion.p variants={fadeInUp} className="text-neutral-600 dark:text-neutral-600 max-w-md text-sm">
+          <motion.p
+            variants={fadeInUp}
+            className="max-w-md text-sm text-neutral-600 dark:text-neutral-600"
+          >
             Native-app experience. Faster loads, offline access, instant notifications and exclusive
             drops.
           </motion.p>
@@ -240,7 +246,7 @@ export default function PWAInstallSection() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold uppercase">{title}</h4>
-                  <p className="text-neutral-600 dark:text-neutral-600 text-xs">{desc}</p>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-600">{desc}</p>
                 </div>
               </div>
             ))}
