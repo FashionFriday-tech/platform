@@ -8,7 +8,7 @@ interface Props {
 
 export const dynamicParams = true;
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return [
     { category: 'watches' },
     { category: 'clothing' },
