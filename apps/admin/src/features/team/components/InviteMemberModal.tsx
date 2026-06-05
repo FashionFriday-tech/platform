@@ -25,7 +25,7 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
     setMounted(true);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (email) {
       onInvite(email, selectedRole);
