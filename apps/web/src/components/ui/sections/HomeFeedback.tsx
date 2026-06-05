@@ -45,11 +45,10 @@ export default function HomeFeedbackSection() {
   };
 
   return (
-    <div className="my-24 py-12 md:py-20 flex items-center justify-center px-4 md:px-8">
-      <div className="w-full max-w-6xl lg:flex lg:items-stretch lg:justify-between gap-8">
-        
+    <div className="my-24 flex items-center justify-center px-4 py-12 md:px-8 md:py-20">
+      <div className="w-full max-w-6xl gap-8 lg:flex lg:items-stretch lg:justify-between">
         {/* Left Box - Image Card */}
-        <div className="group relative hidden min-h-[500px] lg:block overflow-hidden rounded-[2.5rem] flex-1 border border-white/10 shadow-2xl">
+        <div className="group relative hidden min-h-[500px] flex-1 overflow-hidden rounded-[2.5rem] border border-white/10 shadow-2xl lg:block">
           {/* Sourcing/Feedback Image */}
           <Image
             src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=2070&auto=format&fit=crop"
@@ -61,63 +60,69 @@ export default function HomeFeedbackSection() {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-95 transition-opacity duration-500" />
 
           {/* Crossed Banner 1 */}
-          <div className="absolute w-[180%] top-[30%] -left-[40%] -rotate-12 bg-black/85 backdrop-blur-md py-3 border-y border-white/10 select-none pointer-events-none whitespace-nowrap overflow-hidden z-10 flex">
-            <div className="animate-marquee flex w-max gap-8 px-4 text-white text-[10px] font-black tracking-[0.3em] uppercase">
-              {Array(8).fill('SHARE YOUR EXPERIENCE • ').map((text, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  {text}
-                  <span className="bg-[#FF0000] h-1.5 w-1.5 rounded-full shrink-0" />
-                </span>
-              ))}
+          <div className="pointer-events-none absolute top-[30%] -left-[40%] z-10 flex w-[180%] -rotate-12 overflow-hidden border-y border-white/10 bg-black/85 py-3 whitespace-nowrap backdrop-blur-md select-none">
+            <div className="animate-marquee flex w-max gap-8 px-4 text-[10px] font-black tracking-[0.3em] text-white uppercase">
+              {Array(8)
+                .fill('SHARE YOUR EXPERIENCE • ')
+                .map((text, i) => (
+                  <span key={i} className="flex items-center gap-2">
+                    {text}
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#FF0000]" />
+                  </span>
+                ))}
             </div>
           </div>
 
           {/* Crossed Banner 2 */}
-          <div className="absolute w-[180%] bottom-[30%] -left-[40%] rotate-6 bg-[#FF0000] py-3 border-y border-white/20 select-none pointer-events-none whitespace-nowrap overflow-hidden z-10 flex">
-            <div className="animate-marquee flex w-max gap-8 px-4 text-white text-[10px] font-black tracking-[0.3em] uppercase">
-              {Array(8).fill('HELP US DEFINE FASHION • ').map((text, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  {text}
-                  <span className="bg-white h-1.5 w-1.5 rounded-full shrink-0" />
-                </span>
-              ))}
+          <div className="pointer-events-none absolute bottom-[30%] -left-[40%] z-10 flex w-[180%] rotate-6 overflow-hidden border-y border-white/20 bg-[#FF0000] py-3 whitespace-nowrap select-none">
+            <div className="animate-marquee flex w-max gap-8 px-4 text-[10px] font-black tracking-[0.3em] text-white uppercase">
+              {Array(8)
+                .fill('HELP US DEFINE FASHION • ')
+                .map((text, i) => (
+                  <span key={i} className="flex items-center gap-2">
+                    {text}
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
+                  </span>
+                ))}
             </div>
           </div>
 
           {/* Content Info overlay */}
-          <div className="absolute bottom-12 left-12 right-12 z-20">
-            <p className="text-[#FF0000] mb-2 text-xs font-bold tracking-[0.4em] uppercase">
+          <div className="absolute right-12 bottom-12 left-12 z-20">
+            <p className="mb-2 text-xs font-bold tracking-[0.4em] text-[#FF0000] uppercase">
               Co-Creation Node
             </p>
-            <h4 className="text-white text-4xl font-black tracking-tighter uppercase leading-none">
+            <h4 className="text-4xl leading-none font-black tracking-tighter text-white uppercase">
               Help Us <br /> Improve.
             </h4>
           </div>
         </div>
 
         {/* Right Box - Form Card */}
-        <div className="flex flex-col justify-center p-8 lg:p-16 flex-1 bg-zinc-950 rounded-[2.5rem] border border-white/10 shadow-2xl">
-          <h3 className="text-white text-3xl font-black uppercase mb-2">Feedback & suggestions</h3>
-          <p className="text-zinc-400 text-sm font-medium mb-8">
+        <div className="flex flex-1 flex-col justify-center rounded-[2.5rem] border border-white/10 bg-zinc-950 p-8 shadow-2xl lg:p-16">
+          <h3 className="mb-2 text-3xl font-black text-white uppercase">Feedback & suggestions</h3>
+          <p className="mb-8 text-sm font-medium text-zinc-400">
             Tell us what is on your mind. We read every submission.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6 text-start">
             {success && (
-              <div className="rounded-2xl bg-green-500/10 p-4 border border-green-500/20">
-                <p className="text-xs font-bold tracking-wider text-green-500 uppercase">{success}</p>
+              <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-4">
+                <p className="text-xs font-bold tracking-wider text-green-500 uppercase">
+                  {success}
+                </p>
               </div>
             )}
 
             {error && (
-              <div className="rounded-2xl bg-[#FF0000]/10 p-4 border border-[#FF0000]/20">
+              <div className="rounded-2xl border border-[#FF0000]/20 bg-[#FF0000]/10 p-4">
                 <p className="text-xs font-bold tracking-wider text-[#FF0000] uppercase">{error}</p>
               </div>
             )}
 
             {/* Type selector */}
             <div className="flex flex-col">
-              <label className="text-zinc-400 mb-3 px-1 text-[10px] font-black tracking-[0.2em] uppercase">
+              <label className="mb-3 px-1 text-[10px] font-black tracking-[0.2em] text-zinc-400 uppercase">
                 Feedback Type
               </label>
               <div className="flex flex-wrap gap-2">
@@ -125,11 +130,13 @@ export default function HomeFeedbackSection() {
                   <button
                     key={t}
                     type="button"
-                    onClick={() => setType(t)}
-                    className={`rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-all border ${
+                    onClick={() => {
+                      setType(t);
+                    }}
+                    className={`rounded-full border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all ${
                       type === t
-                        ? 'bg-white text-black border-white'
-                        : 'bg-transparent text-white border-white/20 hover:border-white/50'
+                        ? 'border-white bg-white text-black'
+                        : 'border-white/20 bg-transparent text-white hover:border-white/50'
                     }`}
                   >
                     {t}
@@ -140,36 +147,40 @@ export default function HomeFeedbackSection() {
 
             {/* Email Address */}
             <div className="flex flex-col">
-              <label className="text-zinc-400 mb-2 px-1 text-[10px] font-black tracking-[0.2em] uppercase">
+              <label className="mb-2 px-1 text-[10px] font-black tracking-[0.2em] text-zinc-400 uppercase">
                 Email Address (Optional)
               </label>
               <input
                 type="email"
                 placeholder="e.g. you@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm outline-none focus:border-white text-white placeholder:text-zinc-600 transition-colors"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition-colors outline-none placeholder:text-zinc-600 focus:border-white"
               />
             </div>
 
             {/* Message Description */}
             <div className="flex flex-col">
-              <label className="text-zinc-400 mb-2 px-1 text-[10px] font-black tracking-[0.2em] uppercase">
+              <label className="mb-2 px-1 text-[10px] font-black tracking-[0.2em] text-zinc-400 uppercase">
                 Your Message
               </label>
               <textarea
                 rows={4}
                 placeholder="What can we do better?"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm outline-none focus:border-white text-white placeholder:text-zinc-600 transition-colors resize-none"
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
+                className="resize-none rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition-colors outline-none placeholder:text-zinc-600 focus:border-white"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="bg-white text-black hover:bg-white/90 group mt-4 flex w-full items-center justify-center rounded-full px-10 py-4.5 font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-50"
+              className="group mt-4 flex w-full items-center justify-center rounded-full bg-white px-10 py-4.5 font-black tracking-widest text-black uppercase transition-all hover:bg-white/90 active:scale-95 disabled:opacity-50"
             >
               {loading ? 'Submitting...' : 'Send Feedback'}
             </button>
