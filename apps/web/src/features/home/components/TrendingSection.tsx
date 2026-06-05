@@ -21,24 +21,26 @@ export default function TrendingSection({
   initialCampaigns?: CampaignBanner[];
 }) {
   const getMappedBanners = (data: CampaignBanner[]) => {
-    const trendingBanners = data.filter(
-      (b) => b.placement === 'trending-products' && b.isActive,
-    );
+    const trendingBanners = data.filter((b) => b.placement === 'trending-products' && b.isActive);
     return trendingBanners.map((b, idx) => ({
       id: idx + 1,
       title: b.title,
-      slug: b.linkUrl.replace('/products?search=', '') || b.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      slug:
+        b.linkUrl.replace('/products?search=', '') ||
+        b.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       image: b.mediaUrl,
     }));
   };
 
   const [products, setProducts] = useState<Product[]>(
-    initialCampaigns ? getMappedBanners(initialCampaigns) : []
+    initialCampaigns ? getMappedBanners(initialCampaigns) : [],
   );
   const [isLoading, setIsLoading] = useState(!initialCampaigns);
 
   useEffect(() => {
-    if (initialCampaigns) return;
+    if (initialCampaigns) {
+      return;
+    }
     const loadTrendingBanners = async () => {
       try {
         const data = await fetcher<CampaignBanner[]>('/campaigns');
@@ -48,13 +50,13 @@ export default function TrendingSection({
             setProducts(trendingBanners);
           }
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Failed to load trending section from API:', err);
       } finally {
         setIsLoading(false);
       }
     };
-    loadTrendingBanners();
+    void loadTrendingBanners();
   }, [initialCampaigns]);
 
   if (isLoading || products.length === 0) {
@@ -63,16 +65,11 @@ export default function TrendingSection({
 
   return (
     <section className="w-full overflow-hidden py-10 sm:py-20">
-      <div className="container mx-auto px-4 text-center sm:mb-10 mb-6">
-        <h2 className="section-header">
-          Trending Now
-        </h2>
+      <div className="container mx-auto mb-6 px-4 text-center sm:mb-10">
+        <h2 className="section-header">Trending Now</h2>
       </div>
 
       <CoverflowCarousel products={products} />
-
-
     </section>
   );
 }
-
