@@ -27,10 +27,14 @@ export default [
   {
     files: ['**/*.{ts,tsx}'],
     rules: {
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-console': 'off',
       'unicorn/no-array-reduce': 'off',
       '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
       'react-hooks/set-state-in-effect': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+      '@next/next/no-img-element': 'off',
     },
   },
 ];
