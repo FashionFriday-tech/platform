@@ -6,7 +6,6 @@ import {
   type ColumnId,
   type Product,
   type SortOption,
-  StatusFilter,
   type ViewMode,
 } from '../types';
 
