@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
+import { notFound } from 'next/navigation';
 
 import { getProductsByCategory } from '@/data/filter-engine';
 import { CatalogueClient } from '@/features/catalogue';
@@ -24,7 +24,9 @@ export async function CategoryCatalog({ category }: CategoryCatalogProps): Promi
   }
 
   const products = await getProductsByCategory(formattedCategory);
-  const initialProducts = products.filter((p) => p.categoryId?.toLowerCase() === formattedCategory.toLowerCase());
+  const initialProducts = products.filter(
+    (p) => p.categoryId?.toLowerCase() === formattedCategory.toLowerCase(),
+  );
 
   return <CatalogueClient categorySlug={formattedCategory} initialProducts={initialProducts} />;
 }
