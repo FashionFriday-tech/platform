@@ -33,6 +33,7 @@ export default [
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
       'security/detect-non-literal-regexp': 'off',
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
 ];
