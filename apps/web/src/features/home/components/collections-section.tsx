@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { ArrowUpRightIcon } from '@ff/ui';
 
 interface CollectionItem {
@@ -18,9 +19,7 @@ export default function CollectionsSection({
 }: {
   initialCollections?: CollectionItem[];
 }) {
-  const [collections, setCollections] = useState<CollectionItem[]>(
-    initialCollections || [],
-  );
+  const [collections, setCollections] = useState<CollectionItem[]>(initialCollections || []);
   const [isLoading, setIsLoading] = useState(!initialCollections);
   const [isInView, setIsInView] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -39,14 +38,16 @@ export default function CollectionsSection({
   }, []);
 
   useEffect(() => {
-    if (initialCollections) return;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002'}/collections`)
+    if (initialCollections) {
+      return;
+    }
+    fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/collections`)
       .then((res) => res.json())
       .then((data) => {
         setCollections(Array.isArray(data) ? data : []);
         setIsLoading(false);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('Failed to fetch collections:', err);
         setIsLoading(false);
       });
@@ -69,19 +70,19 @@ export default function CollectionsSection({
   }
 
   return (
-    <section aria-labelledby="collections-heading" className="relative py-12 md:py-20 overflow-hidden">
+    <section
+      aria-labelledby="collections-heading"
+      className="relative overflow-hidden py-12 md:py-20"
+    >
       <div className="container mx-auto">
-        <header className="mb-10 px-4 lg:px-6 text-center">
-          <h2
-            id="collections-heading"
-            className="section-header"
-          >
+        <header className="mb-10 px-4 text-center lg:px-6">
+          <h2 id="collections-heading" className="section-header">
             Shop by Collections
           </h2>
         </header>
 
         {/* Marquee tracks: single row on desktop (sm:block), two rows on mobile (sm:hidden) */}
-        <div ref={containerRef} className="w-full overflow-hidden relative py-6">
+        <div ref={containerRef} className="relative w-full overflow-hidden py-6">
           <style>{`
             @keyframes collection-marquee-left {
               0% { transform: translateX(0); }
@@ -111,13 +112,20 @@ export default function CollectionsSection({
 
           {/* LARGE SCREENS ONLY: Single Row (Hidden on mobile under 640px) */}
           <div className="hidden sm:block">
-            <div className="animate-collection-marquee-left px-6 relative z-10" style={{ animationPlayState: isInView ? 'running' : 'paused' }}>
+            <div
+              className="animate-collection-marquee-left relative z-10 px-6"
+              style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+            >
               {desktopItems.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[400px] md:h-[480px] w-[310px] md:w-[360px] shrink-0 overflow-hidden rounded-3xl md:rounded-4xl"
+                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 overflow-hidden rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
                 >
-                  <Link href={`/collections/${item.slug}`} className="block h-full w-full" title={`Browse ${item.name}`}>
+                  <Link
+                    href={`/collections/${item.slug}`}
+                    className="block h-full w-full"
+                    title={`Browse ${item.name}`}
+                  >
                     <figure className="absolute inset-0 m-0 h-full w-full">
                       <Image
                         src={item.image}
@@ -147,13 +155,20 @@ export default function CollectionsSection({
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
           <div className="flex flex-col gap-6 sm:hidden">
             {/* ROW 1: Moves Left */}
-            <div className="animate-collection-marquee-left px-6 relative z-10" style={{ animationPlayState: isInView ? 'running' : 'paused' }}>
+            <div
+              className="animate-collection-marquee-left relative z-10 px-6"
+              style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+            >
               {row1Items.map((item, index) => (
                 <article
                   key={`r1-mobile-${item.id}-${index}`}
                   className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 overflow-hidden rounded-3xl"
                 >
-                  <Link href={`/collections/${item.slug}`} className="block h-full w-full" title={`Browse ${item.name}`}>
+                  <Link
+                    href={`/collections/${item.slug}`}
+                    className="block h-full w-full"
+                    title={`Browse ${item.name}`}
+                  >
                     <figure className="absolute inset-0 m-0 h-full w-full">
                       <Image
                         src={item.image}
@@ -180,13 +195,20 @@ export default function CollectionsSection({
             </div>
 
             {/* ROW 2: Moves Right */}
-            <div className="animate-collection-marquee-right px-6 relative z-10" style={{ animationPlayState: isInView ? 'running' : 'paused' }}>
+            <div
+              className="animate-collection-marquee-right relative z-10 px-6"
+              style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+            >
               {row2Items.map((item, index) => (
                 <article
                   key={`r2-mobile-${item.id}-${index}`}
                   className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 overflow-hidden rounded-3xl"
                 >
-                  <Link href={`/collections/${item.slug}`} className="block h-full w-full" title={`Browse ${item.name}`}>
+                  <Link
+                    href={`/collections/${item.slug}`}
+                    className="block h-full w-full"
+                    title={`Browse ${item.name}`}
+                  >
                     <figure className="absolute inset-0 m-0 h-full w-full">
                       <Image
                         src={item.image}
@@ -215,10 +237,10 @@ export default function CollectionsSection({
         </div>
 
         {/* View All Collections Button moved underneath the cards marquee */}
-        <div className="mt-10 flex justify-center w-full px-4">
+        <div className="mt-10 flex w-full justify-center px-4">
           <Link
             href="/collections"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest uppercase hover:bg-black hover:text-white transition-all active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all hover:bg-black hover:text-white active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"
           >
             View All Collections <ArrowUpRightIcon className="h-4 w-4" />
           </Link>
