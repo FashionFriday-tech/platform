@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import { MailIcon, PlusIcon, SearchIcon, ShieldCheckIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -148,10 +150,13 @@ export function TeamManagementView() {
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/10 font-bold text-black dark:bg-white/10 dark:text-white">
                             {member.avatarUrl ? (
-                              <img
+                              <Image
                                 src={member.avatarUrl}
                                 alt={member.name}
+                                width={40}
+                                height={40}
                                 className="h-full w-full object-cover"
+                                unoptimized
                               />
                             ) : (
                               member.name.charAt(0).toUpperCase()
