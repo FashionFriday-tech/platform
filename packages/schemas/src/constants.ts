@@ -6,6 +6,7 @@ export type BrandCategory =
   | 'eyewear';
 
 export interface Brand {
+  id?: string;
   name: string;
   slug: string;
   color: string;
