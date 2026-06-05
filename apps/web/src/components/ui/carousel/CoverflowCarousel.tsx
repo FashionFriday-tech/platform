@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link'; // Import Link
 
-
 import { AnimatePresence, motion, useInView } from 'motion/react';
 
 // --- TYPES ---
@@ -30,8 +29,12 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const startTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (!isInView) return;
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    if (!isInView) {
+      return;
+    }
     timerRef.current = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % products.length);
     }, 3000);
@@ -44,7 +47,9 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
   React.useEffect(() => {
     startTimer();
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, [products.length, isInView]);
 
@@ -141,7 +146,6 @@ export default function CoverflowCarousel({ products }: { products: Product[] })
             );
           })}
         </AnimatePresence>
-
       </div>
     </div>
   );
