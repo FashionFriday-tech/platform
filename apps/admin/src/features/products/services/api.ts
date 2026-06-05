@@ -122,7 +122,7 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
         ? new Date(p.createdAt).toISOString().split('T')[0]
         : new Date().toISOString().split('T')[0],
       imageUrl: p.mainImage,
-      images: [p.mainImage, p.promoImage, ...(p.liveImages ?? [])].filter(Boolean),
+      images: [p.mainImage, p.promoImage, ...(p.liveImages ?? [])].filter(Boolean) as string[],
       description: p.description,
       quality: p.quality,
       brand: p.brand ? p.brand[0] : undefined,
