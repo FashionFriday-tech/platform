@@ -2,12 +2,13 @@
 
 // Force rebuild comment
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { PlayIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+
 import { fetcher } from '@/lib/api-client';
 
 /* ---------------- TYPES ---------------- */
@@ -26,11 +27,7 @@ interface Product {
 // Handles negative modulo correctly (e.g. -1 % 6 = 5)
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 
-export default function TrendingCoverflowPage({
-  initialCampaigns,
-}: {
-  initialCampaigns?: any[];
-}) {
+export default function TrendingCoverflowPage({ initialCampaigns }: { initialCampaigns?: any[] }) {
   const router = useRouter();
 
   const getMappedBanners = (data: any[]) => {
@@ -45,7 +42,7 @@ export default function TrendingCoverflowPage({
   };
 
   const [products, setProducts] = useState<Product[]>(
-    initialCampaigns ? getMappedBanners(initialCampaigns) : []
+    initialCampaigns ? getMappedBanners(initialCampaigns) : [],
   );
   const [currentIndex, setCurrentIndex] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -66,8 +63,12 @@ export default function TrendingCoverflowPage({
   }, []);
 
   const startTimer = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (!isInView) return;
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    if (!isInView) {
+      return;
+    }
     timerRef.current = setInterval(() => {
       setCurrentIndex((prev) => prev + 1);
     }, 3000);
@@ -78,17 +79,23 @@ export default function TrendingCoverflowPage({
   };
 
   useEffect(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     if (products.length > 0 && isInView) {
       startTimer();
     }
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
     };
   }, [products.length, isInView]);
 
   useEffect(() => {
-    if (initialCampaigns) return;
+    if (initialCampaigns) {
+      return;
+    }
     const loadContentPartners = async () => {
       try {
         const data = await fetcher<any[]>('/campaigns');
@@ -98,14 +105,12 @@ export default function TrendingCoverflowPage({
             setProducts(mapped);
           }
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Failed to load dynamic content partners:', err);
       }
     };
-    loadContentPartners();
+    void loadContentPartners();
   }, [initialCampaigns]);
-
-
 
   const handleCardClick = (virtualIndex: number) => {
     setCurrentIndex(virtualIndex);
@@ -164,8 +169,6 @@ export default function TrendingCoverflowPage({
     };
   };
 
-
-
   // The 5 indices centered around the current index
   const visibleRange = [-2, -1, 0, 1, 2];
 
@@ -174,11 +177,9 @@ export default function TrendingCoverflowPage({
   }
 
   return (
-    <section ref={sectionRef} className="bg w-full overflow-hidden sm:py-24 py-12">
-      <div className="container mx-auto px-6 flex flex-col items-center md:flex-row md:items-end justify-center gap-4 sm:mb-16 mb-6">
-        <h2 className="section-header">
-          Content Partners
-        </h2>
+    <section ref={sectionRef} className="bg w-full overflow-hidden py-12 sm:py-24">
+      <div className="container mx-auto mb-6 flex flex-col items-center justify-center gap-4 px-6 sm:mb-16 md:flex-row md:items-end">
+        <h2 className="section-header">Content Partners</h2>
       </div>
 
       <div className="relative flex h-96 w-full items-center justify-center sm:my-10 sm:h-125">
@@ -238,8 +239,6 @@ export default function TrendingCoverflowPage({
           })}
         </div>
       </div>
-
-      
     </section>
   );
 }
