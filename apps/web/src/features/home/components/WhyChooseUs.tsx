@@ -1,8 +1,10 @@
 'use client';
 
-import { type CSSProperties, useState, useEffect, useRef, useCallback } from 'react';
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
+
 import { ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+
 import { fetcher } from '@/lib/api-client';
 
 // --- Data ---
@@ -50,7 +52,12 @@ interface InfiniteColumnProps {
 
 // --- Components ---
 
-const InfiniteColumn = ({ images, duration, reverse = false, active = false }: InfiniteColumnProps) => {
+const InfiniteColumn = ({
+  images,
+  duration,
+  reverse = false,
+  active = false,
+}: InfiniteColumnProps) => {
   // Ensure we have enough items to scroll nicely
   const loopImages = [...images, ...images, ...images];
 
@@ -102,7 +109,7 @@ const InfiniteColumn = ({ images, duration, reverse = false, active = false }: I
         {loopImages.map((src, i) => (
           <div
             key={i}
-            className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:opacity-100 hover:shadow-2xl w-full"
+            className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:opacity-100 hover:shadow-2xl"
           >
             <img
               src={src}
@@ -117,15 +124,9 @@ const InfiniteColumn = ({ images, duration, reverse = false, active = false }: I
 };
 
 // --- Main Section ---
-export default function SplitFeatureSection({
-  initialReviews,
-}: {
-  initialReviews?: any[];
-}) {
+export default function SplitFeatureSection({ initialReviews }: { initialReviews?: any[] }) {
   const [reviews, setReviews] = useState<string[]>(
-    initialReviews && initialReviews.length > 0
-      ? initialReviews.map((r) => r.imageUrl)
-      : []
+    initialReviews && initialReviews.length > 0 ? initialReviews.map((r) => r.imageUrl) : [],
   );
   const [isMounted, setIsMounted] = useState(!!initialReviews && initialReviews.length > 0);
   const [isInView, setIsInView] = useState(true);
@@ -146,7 +147,9 @@ export default function SplitFeatureSection({
 
   useEffect(() => {
     setIsMounted(true);
-    if (initialReviews && initialReviews.length > 0) return;
+    if (initialReviews && initialReviews.length > 0) {
+      return;
+    }
     const loadReviews = async () => {
       try {
         const data = await fetcher<any[]>('/whatsapp-reviews');
@@ -155,25 +158,27 @@ export default function SplitFeatureSection({
           return;
         }
         setReviews(FALLBACK_REVIEWS);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Failed to load dynamic reviews:', err);
         setReviews(FALLBACK_REVIEWS);
       }
     };
-    loadReviews();
+    void loadReviews();
   }, [initialReviews]);
 
   // Split reviews (max 20) evenly into 3 columns
   const getColumnImages = (colIndex: number) => {
     const limitedReviews = reviews.slice(0, 20);
-    if (limitedReviews.length === 0) return [];
-    
+    if (limitedReviews.length === 0) {
+      return [];
+    }
+
     // Chunk reviews dynamically
     const chunks: string[][] = [[], [], []];
-    limitedReviews.forEach((src, idx) => {
+    for (const [idx, src] of limitedReviews.entries()) {
       chunks[idx % 3].push(src);
-    });
-    
+    }
+
     return chunks[colIndex];
   };
 
@@ -206,7 +211,7 @@ export default function SplitFeatureSection({
             <div className="space-y-8">
               {features.map((item, idx) => (
                 <motion.div
-                   key={idx}
+                  key={idx}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -234,7 +239,7 @@ export default function SplitFeatureSection({
               <div className="mt-12">
                 <a
                   href="/whatsapp-reviews"
-                  className="inline-flex items-center justify-center rounded-full bg-black text-white hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90 px-8 py-3.5 text-sm font-bold tracking-wide uppercase transition-all active:scale-95 shadow-md"
+                  className="inline-flex items-center justify-center rounded-full bg-black px-8 py-3.5 text-sm font-bold tracking-wide text-white uppercase shadow-md transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
                 >
                   See More Reviews
                 </a>
@@ -243,42 +248,56 @@ export default function SplitFeatureSection({
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="relative flex flex-col items-center border-white/5 lg:border-l w-full">
+          <div className="relative flex w-full flex-col items-center border-white/5 lg:border-l">
             {isMounted ? (
-              <div ref={columnsRef} className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)]">
+              <div
+                ref={columnsRef}
+                className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)]"
+              >
                 <div className="from-background via-blackground pointer-events-none absolute top-0 right-0 left-0 z-20 h-24 bg-linear-to-b to-transparent" />
                 <div className="from-blackground via-background pointer-events-none absolute right-0 -bottom-6 left-0 z-20 h-24 bg-linear-to-t to-transparent" />
 
-                <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6 w-full">
+                <div className="grid h-full w-full grid-cols-3 gap-3 p-4 lg:p-6">
                   <div className="relative h-full overflow-hidden">
-                    {col1.length > 0 && <InfiniteColumn images={col1} duration={25} active={isInView} />}
+                    {col1.length > 0 && (
+                      <InfiniteColumn images={col1} duration={25} active={isInView} />
+                    )}
                   </div>
                   <div className="relative h-full overflow-hidden pt-24">
-                    {col2.length > 0 && <InfiniteColumn images={col2} duration={35} reverse={true} active={isInView} />}
+                    {col2.length > 0 && (
+                      <InfiniteColumn
+                        images={col2}
+                        duration={35}
+                        reverse={true}
+                        active={isInView}
+                      />
+                    )}
                   </div>
                   <div className="relative h-full overflow-hidden pt-12">
-                    {col3.length > 0 && <InfiniteColumn images={col3} duration={28} active={isInView} />}
+                    {col3.length > 0 && (
+                      <InfiniteColumn images={col3} duration={28} active={isInView} />
+                    )}
                   </div>
                 </div>
               </div>
             ) : (
               /* Skeleton Placeholder layout to prevent jumping/layout shifts during SSR/Hydration */
-              <div className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)] w-full">
-                <div className="grid h-full grid-cols-3 gap-3 p-4 lg:p-6 w-full">
+              <div className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)]">
+                <div className="grid h-full w-full grid-cols-3 gap-3 p-4 lg:p-6">
                   {/* Column 1 Placeholder */}
                   <div className="flex flex-col gap-4">
-                    <div className="h-64 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
-                    <div className="h-80 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
+                    <div className="h-64 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="h-80 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
                   </div>
                   {/* Column 2 Placeholder */}
                   <div className="flex flex-col gap-4 pt-24">
-                    <div className="h-80 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
-                    <div className="h-64 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
+                    <div className="h-80 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="h-64 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
                   </div>
                   {/* Column 3 Placeholder */}
                   <div className="flex flex-col gap-4 pt-12">
-                    <div className="h-64 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
-                    <div className="h-80 bg-black/5 dark:bg-white/5 rounded-2xl animate-pulse" />
+                    <div className="h-64 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="h-80 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
                   </div>
                 </div>
               </div>
