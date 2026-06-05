@@ -3,12 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import type { Brand } from '@ff/schemas';
+
 import {
   ScrollVelocityContainer,
   ScrollVelocityRow,
 } from '@/components/ui/magicUi/ScrollBasedVelocity';
 import { useBrands } from '@/features/brand';
-import type { Brand } from '@ff/schemas';
 
 // Helper for clean URLs
 const slugify = (text: string) => text.toLowerCase().replace(/\s+/g, '-');
@@ -48,11 +49,7 @@ const BrandList = ({
   </>
 );
 
-export default function BrandScroll({
-  initialBrands,
-}: {
-  initialBrands?: Brand[];
-}) {
+export default function BrandScroll({ initialBrands }: { initialBrands?: Brand[] }) {
   const { brands, isLoading } = useBrands(initialBrands);
 
   if (isLoading || brands.length === 0) {
