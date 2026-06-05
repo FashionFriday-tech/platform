@@ -53,7 +53,6 @@ export const SearchOverlay: React.FC<{
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="bg-background/95 text-foreground fixed inset-0 z-[10000] flex flex-col pt-8 backdrop-blur-2xl"
         >
-
           {/* Close Trigger - Stay positioned relative to overlay */}
           <button
             onClick={() => {
