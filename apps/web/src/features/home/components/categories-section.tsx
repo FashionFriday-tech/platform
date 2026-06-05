@@ -5,21 +5,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { ArrowUpRightIcon } from '@ff/ui';
+
 import { fetcher } from '@/lib/api-client';
 
-
-
-export default function CategoryCarousel({
-  initialCampaigns,
-}: {
-  initialCampaigns?: any[];
-}) {
+export default function CategoryCarousel({ initialCampaigns }: { initialCampaigns?: any[] }) {
   const getMappedCategories = (banners: any[]) => {
-    const categoryBanners = banners.filter(
-      (b) => b.placement === 'home-categories' && b.isActive
-    );
+    const categoryBanners = banners.filter((b) => b.placement === 'home-categories' && b.isActive);
     return categoryBanners.map((b) => {
-      const isWomen = b.title?.toLowerCase().includes('women') || b.linkUrl?.toLowerCase().includes('women');
+      const isWomen =
+        b.title?.toLowerCase().includes('women') || b.linkUrl?.toLowerCase().includes('women');
       return {
         id: b.id,
         title: b.title ?? (isWomen ? "Women's Collection" : "Men's Collection"),
@@ -32,13 +26,15 @@ export default function CategoryCarousel({
   };
 
   const [cards, setCards] = useState<any[]>(
-    initialCampaigns ? getMappedCategories(initialCampaigns) : []
+    initialCampaigns ? getMappedCategories(initialCampaigns) : [],
   );
   const [isMounted, setIsMounted] = useState(!!initialCampaigns);
 
   useEffect(() => {
     setIsMounted(true);
-    if (initialCampaigns) return;
+    if (initialCampaigns) {
+      return;
+    }
     const loadCategories = async () => {
       try {
         const data = await fetcher<any[]>('/campaigns');
@@ -48,25 +44,19 @@ export default function CategoryCarousel({
             setCards(categoryBanners);
           }
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Failed to load category banners from API:', err);
       }
     };
-    loadCategories();
+    void loadCategories();
   }, [initialCampaigns]);
 
   return (
-    <section
-      aria-labelledby="category-heading"
-      className="relative py-12 md:py-20"
-    >
+    <section aria-labelledby="category-heading" className="relative py-12 md:py-20">
       <div className="container mx-auto px-4 lg:px-6">
         {/* Header Section */}
         <header className="mb-10 text-center">
-          <h2
-            id="category-heading"
-            className="section-header"
-          >
+          <h2 id="category-heading" className="section-header">
             Shop by Category
           </h2>
         </header>
@@ -76,8 +66,8 @@ export default function CategoryCarousel({
           {!isMounted ? (
             <>
               {/* Category skeleton placeholders */}
-              <div className="aspect-square w-full rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse" />
-              <div className="aspect-square w-full rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse" />
+              <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
+              <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
             </>
           ) : cards.length > 0 ? (
             cards.map((cat) => (
@@ -100,11 +90,11 @@ export default function CategoryCarousel({
                   </figure>
 
                   {/* Content Overlay */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 z-10">
-                    <span className="text-xs font-bold tracking-widest text-zinc-300 uppercase mb-1">
+                  <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-10">
+                    <span className="mb-1 text-xs font-bold tracking-widest text-zinc-300 uppercase">
                       {cat.subtitle}
                     </span>
-                    <h3 className="text-3xl sm:text-5xl font-black tracking-tighter text-white uppercase mb-6">
+                    <h3 className="mb-6 text-3xl font-black tracking-tighter text-white uppercase sm:text-5xl">
                       {cat.title}
                     </h3>
 
@@ -121,15 +111,12 @@ export default function CategoryCarousel({
           ) : (
             <>
               {/* Category skeleton placeholders */}
-              <div className="aspect-square w-full rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse" />
-              <div className="aspect-square w-full rounded-3xl bg-black/5 dark:bg-white/5 animate-pulse" />
+              <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
+              <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
             </>
           )}
         </div>
-
-
       </div>
     </section>
   );
 }
-
