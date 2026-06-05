@@ -69,12 +69,17 @@ export function useOrders() {
 
     // Sorting
     result = result.sort((a, b) => {
-      let aValue: string | number = a[sortField] ?? '';
-      let bValue: string | number = b[sortField] ?? '';
+      let aValue: string | number;
+      let bValue: string | number;
 
       if (sortField === 'customer') {
         aValue = a.customer.name;
         bValue = b.customer.name;
+      } else {
+        const valA = a[sortField];
+        const valB = b[sortField];
+        aValue = typeof valA === 'number' ? valA : (valA ?? '');
+        bValue = typeof valB === 'number' ? valB : (valB ?? '');
       }
 
       if (aValue < bValue) {
