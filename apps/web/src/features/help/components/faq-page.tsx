@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { ArrowUpRightIcon, ChevronRightIcon, MailIcon, SearchIcon, SendIcon } from '@ff/ui';
 
-import { FAQItem } from '@/features/help/data/faq';
+import { type FAQItem } from '@/features/help/data/faq';
 
 interface FaqPageProps {
   faqs: FAQItem[];
