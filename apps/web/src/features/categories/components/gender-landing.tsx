@@ -50,31 +50,33 @@ export function GenderLanding({ initialCategories }: GenderLandingProps) {
 
   const genderTarget = activeGender.toUpperCase();
   const categoryListMap = new Map<string, { name: string; slug: string; img: string }>();
-  
-  initialCategories
-    .filter((c) => c.gender === genderTarget || c.gender === 'UNISEX')
-    .forEach((c) => {
-      const slug = c.slug.replace(/^(men-|women-|unisex-)/i, '').toLowerCase();
-      if (!categoryListMap.has(slug)) {
-        categoryListMap.set(slug, {
-          name: c.name,
-          slug,
-          img: c.image,
-        });
-      }
-    });
+
+  for (const c of initialCategories.filter(
+    (c) => c.gender === genderTarget || c.gender === 'UNISEX',
+  )) {
+    const slug = c.slug.replace(/^(men-|women-|unisex-)/i, '').toLowerCase();
+    if (!categoryListMap.has(slug)) {
+      categoryListMap.set(slug, {
+        name: c.name,
+        slug,
+        img: c.image,
+      });
+    }
+  }
 
   const categoryList = Array.from(categoryListMap.values());
 
   const currentData = {
     label: activeGender.charAt(0).toUpperCase() + activeGender.slice(1),
-    hero: activeGender === 'women' ? 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/women-clothing.webp' : 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/men-clothing.webp',
+    hero:
+      activeGender === 'women'
+        ? 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/women-clothing.webp'
+        : 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/men-clothing.webp',
     list: categoryList,
   };
 
-
   return (
-    <div className="bg-background min-h-screen overflow-x-hidden select-none lg:h-[calc(100vh-8rem)] lg:overflow-hidden lg:mt-32">
+    <div className="bg-background min-h-screen overflow-x-hidden select-none lg:mt-32 lg:h-[calc(100vh-8rem)] lg:overflow-hidden">
       {/* --- MOBILE HEADER --- */}
       <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md lg:hidden">
         <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
@@ -115,7 +117,7 @@ export function GenderLanding({ initialCategories }: GenderLandingProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:flex-row lg:items-stretch lg:justify-center lg:gap-12 lg:h-full lg:px-12 lg:pt-0 lg:pb-0"
+            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:h-full lg:flex-row lg:items-stretch lg:justify-center lg:gap-12 lg:px-12 lg:pt-0 lg:pb-0"
           >
             {/* 1. HERO SECTION */}
             <div className="flex w-full items-center justify-center lg:h-full lg:w-1/2 lg:pr-8">
@@ -142,7 +144,7 @@ export function GenderLanding({ initialCategories }: GenderLandingProps) {
             </div>
 
             {/* 2. CATEGORY LIST */}
-            <div className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-[90%] lg:w-1/2 lg:gap-6 lg:overflow-y-auto lg:pt-0 lg:pb-0 lg:my-auto">
+            <div className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:my-auto lg:h-[90%] lg:w-1/2 lg:gap-6 lg:overflow-y-auto lg:pt-0 lg:pb-0">
               <div className="w-full max-w-2xl space-y-3 lg:space-y-6">
                 {currentData.list.map((cat) => (
                   <Link
