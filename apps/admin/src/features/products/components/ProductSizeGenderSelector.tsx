@@ -1,10 +1,12 @@
 import React from 'react';
 
+import { type Product as SchemaProduct } from '@ff/schemas';
+
 import { type Product } from '../types';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  initialData?: Product;
+  initialData?: Partial<Product> | SchemaProduct;
   sizes: string[];
   availableSizes: string[];
   toggleSize: (size: string) => void;
