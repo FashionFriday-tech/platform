@@ -1,4 +1,5 @@
 import { fetcher } from '@/lib/api-client';
+
 import { type FAQItem } from '../data/faq';
 
 /**
