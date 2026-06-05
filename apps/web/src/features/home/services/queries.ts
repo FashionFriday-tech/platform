@@ -1,5 +1,6 @@
-import { fetcher } from '@/lib/api-client';
 import { type Brand } from '@ff/schemas';
+
+import { fetcher } from '@/lib/api-client';
 
 export interface CampaignBanner {
   id: string;
