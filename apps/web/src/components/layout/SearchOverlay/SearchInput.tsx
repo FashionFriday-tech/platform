@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+
 import { motion } from 'motion/react';
 
 const FASHION_KEYWORDS = [
@@ -25,7 +26,9 @@ export const SearchInput = ({ query, setQuery, onSave }: SearchInputProps) => {
     const cursorInterval = setInterval(() => {
       setShowCursor((prev) => !prev);
     }, 550);
-    return () => clearInterval(cursorInterval);
+    return () => {
+      clearInterval(cursorInterval);
+    };
   }, []);
 
   // Smoother, slightly slower typewriter animation effect
@@ -54,7 +57,9 @@ export const SearchInput = ({ query, setQuery, onSave }: SearchInputProps) => {
       }
     }, speed);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [placeholder, isDeleting, index]);
 
   const displayPlaceholder = query ? '' : `${placeholder}${showCursor ? '│' : ' '}`;
@@ -69,7 +74,9 @@ export const SearchInput = ({ query, setQuery, onSave }: SearchInputProps) => {
       <input
         type="text"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && query.trim()) {
             onSave(query);
@@ -77,10 +84,9 @@ export const SearchInput = ({ query, setQuery, onSave }: SearchInputProps) => {
           }
         }}
         placeholder={displayPlaceholder}
-        className="w-full border-b-2 border-foreground/30 focus:border-foreground bg-transparent py-4 sm:py-6 text-xl sm:text-2xl md:text-4xl font-black tracking-tighter uppercase italic transition-all duration-300 outline-none placeholder:text-foreground/40 text-foreground"
+        className="border-foreground/30 focus:border-foreground placeholder:text-foreground/40 text-foreground w-full border-b-2 bg-transparent py-4 text-xl font-black tracking-tighter uppercase italic transition-all duration-300 outline-none sm:py-6 sm:text-2xl md:text-4xl"
         autoFocus
       />
     </motion.div>
   );
 };
-
