@@ -575,7 +575,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       <div className="absolute top-1/2 left-4 flex h-5 w-5 -translate-y-1/2 items-center justify-center overflow-hidden rounded-full bg-black/10 text-[10px] font-bold text-black/80 dark:bg-white/20 dark:text-white">
                         {selectedBrandLogo.startsWith('http') ||
                         selectedBrandLogo.startsWith('/') ? (
-                          /* eslint-disable-next-line @next/next/no-img-element */
                           <img
                             src={selectedBrandLogo}
                             alt="Brand logo"
@@ -628,7 +627,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           >
                             <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-black/5 text-xs font-bold text-black/80 dark:bg-white/10 dark:text-white/80">
                               {b.logo ? (
-                                /* eslint-disable-next-line @next/next/no-img-element */
                                 <img
                                   src={b.logo}
                                   alt={b.name}
