@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { PackageIcon, ImageIcon } from '@ff/ui';
+
+import { ImageIcon, PackageIcon } from '@ff/ui';
+
 import { useAuthStore } from '@/store/auth-store';
 
 export default function SourcingSection() {
@@ -15,7 +17,7 @@ export default function SourcingSection() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validate = () => {
@@ -87,7 +89,9 @@ export default function SourcingSection() {
       setProductName('');
       setSelectedFile(null);
       setPreviewUrl(null);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (err: any) {
       setErrors({ submit: err.message || 'Something went wrong.' });
     } finally {
@@ -97,8 +101,8 @@ export default function SourcingSection() {
 
   return (
     <div className="my-10 flex items-center justify-center">
-      <div className="bg-background w-full max-w-6xl overflow-hidden rounded-[2.5rem] lg:flex lg:items-stretch lg:justify-between gap-8">
-        <div className="group relative hidden min-h-[500px] lg:block overflow-hidden rounded-[2rem] flex-1">
+      <div className="bg-background w-full max-w-6xl gap-8 overflow-hidden rounded-[2.5rem] lg:flex lg:items-stretch lg:justify-between">
+        <div className="group relative hidden min-h-[500px] flex-1 overflow-hidden rounded-[2rem] lg:block">
           {/* Main Sourcing Image */}
           <Image
             src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop"
@@ -110,42 +114,46 @@ export default function SourcingSection() {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-90 transition-opacity duration-500" />
 
           {/* Crossed Banner 1 */}
-          <div className="absolute w-[180%] top-[30%] -left-[40%] -rotate-12 bg-black/85 backdrop-blur-md py-3 border-y border-white/10 select-none pointer-events-none whitespace-nowrap overflow-hidden z-10 flex">
-            <div className="animate-marquee flex w-max gap-8 px-4 text-white text-[10px] font-black tracking-[0.3em] uppercase">
-              {Array(8).fill('SOURCING THE UNATTAINABLE • ').map((text, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  {text}
-                  <span className="bg-[#FF0000] h-1.5 w-1.5 rounded-full shrink-0" />
-                </span>
-              ))}
+          <div className="pointer-events-none absolute top-[30%] -left-[40%] z-10 flex w-[180%] -rotate-12 overflow-hidden border-y border-white/10 bg-black/85 py-3 whitespace-nowrap backdrop-blur-md select-none">
+            <div className="animate-marquee flex w-max gap-8 px-4 text-[10px] font-black tracking-[0.3em] text-white uppercase">
+              {Array(8)
+                .fill('SOURCING THE UNATTAINABLE • ')
+                .map((text, i) => (
+                  <span key={i} className="flex items-center gap-2">
+                    {text}
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#FF0000]" />
+                  </span>
+                ))}
             </div>
           </div>
 
           {/* Crossed Banner 2 */}
-          <div className="absolute w-[180%] bottom-[30%] -left-[40%] rotate-6 bg-[#FF0000] py-3 border-y border-white/20 select-none pointer-events-none whitespace-nowrap overflow-hidden z-10 flex">
-            <div className="animate-marquee flex w-max gap-8 px-4 text-white text-[10px] font-black tracking-[0.3em] uppercase">
-              {Array(8).fill('LIMITED EDITION DROP • ').map((text, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  {text}
-                  <span className="bg-white h-1.5 w-1.5 rounded-full shrink-0" />
-                </span>
-              ))}
+          <div className="pointer-events-none absolute bottom-[30%] -left-[40%] z-10 flex w-[180%] rotate-6 overflow-hidden border-y border-white/20 bg-[#FF0000] py-3 whitespace-nowrap select-none">
+            <div className="animate-marquee flex w-max gap-8 px-4 text-[10px] font-black tracking-[0.3em] text-white uppercase">
+              {Array(8)
+                .fill('LIMITED EDITION DROP • ')
+                .map((text, i) => (
+                  <span key={i} className="flex items-center gap-2">
+                    {text}
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
+                  </span>
+                ))}
             </div>
           </div>
 
           {/* Content Info overlay */}
-          <div className="absolute bottom-10 left-10 right-10 z-20">
-            <p className="text-[#FF0000] mb-2 text-xs font-bold tracking-[0.4em] uppercase">
+          <div className="absolute right-10 bottom-10 left-10 z-20">
+            <p className="mb-2 text-xs font-bold tracking-[0.4em] text-[#FF0000] uppercase">
               Bespoke Service
             </p>
-            <h4 className="text-white text-4xl font-black tracking-tighter uppercase leading-none">
+            <h4 className="text-4xl leading-none font-black tracking-tighter text-white uppercase">
               Sourcing <br /> The Unattainable
             </h4>
           </div>
         </div>
 
         {/* RIGHT: FORM SECTION */}
-        <div className="flex flex-col items-center justify-center p-8 text-center lg:p-16 flex-1">
+        <div className="flex flex-1 flex-col items-center justify-center p-8 text-center lg:p-16">
           <h3 className="text-forground mb-2 text-3xl font-black uppercase">Couldn’t Find It?</h3>
           <p className="text-foreground-muted max-w-sm text-sm font-medium">
             Missing something from our store? Drop the details and we’ll try to source it for you.
@@ -156,14 +164,18 @@ export default function SourcingSection() {
             className="mt-10 w-full max-w-xl space-y-4 text-start"
           >
             {successMsg && (
-              <div className="mb-6 rounded-2xl bg-green-500/10 p-4 border border-green-500/20">
-                <p className="text-xs font-bold tracking-wider text-green-500 uppercase">{successMsg}</p>
+              <div className="mb-6 rounded-2xl border border-green-500/20 bg-green-500/10 p-4">
+                <p className="text-xs font-bold tracking-wider text-green-500 uppercase">
+                  {successMsg}
+                </p>
               </div>
             )}
 
             {errors.submit && (
-              <div className="mb-6 rounded-2xl bg-red-500/10 p-4 border border-red-500/20">
-                <p className="text-xs font-bold tracking-wider text-red-500 uppercase">{errors.submit}</p>
+              <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
+                <p className="text-xs font-bold tracking-wider text-red-500 uppercase">
+                  {errors.submit}
+                </p>
               </div>
             )}
 
@@ -210,14 +222,14 @@ export default function SourcingSection() {
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className={`bg-foreground/2 flex items-center gap-4 rounded-full border-2 px-6 py-4 cursor-pointer transition-all ${
+                  className={`bg-foreground/2 flex cursor-pointer items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
                     errors.image
                       ? 'border-red-500'
                       : 'border-foreground-subtle hover:border-foreground'
                   }`}
                 >
                   <ImageIcon size={18} className="text-foreground-muted" />
-                  <span className="text-foreground-muted/60 text-sm truncate">
+                  <span className="text-foreground-muted/60 truncate text-sm">
                     {selectedFile ? selectedFile.name : 'Upload from Gallery'}
                   </span>
                   <input
@@ -255,8 +267,8 @@ export default function SourcingSection() {
               {!user
                 ? 'Login to File Request'
                 : loading
-                ? 'Sending the Request...'
-                : 'I Need This Product'}
+                  ? 'Sending the Request...'
+                  : 'I Need This Product'}
             </button>
           </form>
         </div>
