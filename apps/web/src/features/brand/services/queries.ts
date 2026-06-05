@@ -1,5 +1,6 @@
-import { fetcher } from '@/lib/api-client';
 import { type Brand } from '@ff/schemas';
+
+import { fetcher } from '@/lib/api-client';
 
 /**
  * Fetch all brands from the backend service database.
@@ -28,5 +29,3 @@ export async function getBrandBySlug(slug: string): Promise<Brand | null> {
     return null;
   }
 }
-
-
