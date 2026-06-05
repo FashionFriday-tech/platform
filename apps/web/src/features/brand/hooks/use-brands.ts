@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { type Brand } from '@ff/schemas';
 
 import { getBrands } from '../services/queries';
@@ -48,7 +49,7 @@ export function useBrands(initialBrands?: Brand[]) {
         }
       })
 
-      .catch((err) => {
+      .catch((err: unknown) => {
         // Reset promise on error so retry is possible if needed
         brandsPromise = null;
         if (isMounted) {
@@ -64,4 +65,3 @@ export function useBrands(initialBrands?: Brand[]) {
 
   return { brands, isLoading, error };
 }
-
