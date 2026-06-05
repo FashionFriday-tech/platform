@@ -1,10 +1,11 @@
 import { type Brand } from '@ff/schemas';
+import { type Product as SchemaProduct } from '@ff/schemas';
 
 import { type Product } from '../types';
 import { LabelWithTick } from './LabelWithTick';
 
 interface Props {
-  initialData?: Product;
+  initialData?: Partial<Product> | SchemaProduct;
   brandInput: string;
   setBrandInput: (val: string) => void;
   isBrandOpen: boolean;
@@ -52,7 +53,14 @@ export function ProductBrandColorSelector({
   return (
     <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2">
       <div ref={brandRef} className="relative">
-        <LabelWithTick label="Brand" status={getStatus(brandInput, initialData?.brand?.[0], 2)} />
+        <LabelWithTick
+          label="Brand"
+          status={getStatus(
+            brandInput,
+            Array.isArray(initialData?.brand) ? initialData.brand[0] : initialData?.brand,
+            2,
+          )}
+        />
         <div className="relative flex items-center">
           {selectedBrandLogo && (
             <div className="absolute left-3 flex h-5 w-5 items-center justify-center rounded-full bg-black/5 text-[10px] font-bold text-black dark:bg-white/10 dark:text-white">
