@@ -1,4 +1,19 @@
-export type ProductStatus = 'Active' | 'Inactive' | 'Draft';
+export type ProductStatus =
+  | 'Active'
+  | 'Inactive'
+  | 'Draft'
+  | 'PUBLISHED'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'ARCHIVED';
+
+export interface ProductAttributes {
+  colors?: string[];
+  sizes?: string[];
+  quality?: string;
+  gender?: string;
+  [key: string]: unknown;
+}
 
 export interface Product {
   id: string;
@@ -28,6 +43,8 @@ export interface Product {
   seoSlug?: string;
   images?: string[];
   videoLink?: string;
+  attributes?: ProductAttributes;
+  rating?: { average?: number; count?: number };
 }
 
 export type SortOption =
