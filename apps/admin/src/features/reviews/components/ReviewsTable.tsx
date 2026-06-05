@@ -2,10 +2,8 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 import { ChevronDownIcon, ChevronUpIcon, FilledStarIcon, SparklesIcon, VerifiedIcon } from '@ff/ui';
-import clsx from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 import { type Review } from '../types';
