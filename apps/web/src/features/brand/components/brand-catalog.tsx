@@ -1,8 +1,9 @@
-import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
+import { notFound } from 'next/navigation';
 
 import { getProductsByBrand } from '@/data/filter-engine';
 import { CatalogueClient } from '@/features/catalogue';
+
 import { getBrandBySlug } from '../services/queries';
 
 interface BrandCatalogProps {
