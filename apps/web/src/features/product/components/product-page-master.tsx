@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type JSX } from 'react';
+import { type JSX, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
