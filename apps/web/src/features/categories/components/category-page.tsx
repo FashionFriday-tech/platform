@@ -1,5 +1,5 @@
-import { notFound } from 'next/navigation';
 import type { JSX } from 'react';
+import { notFound } from 'next/navigation';
 
 import { getProductsByCategory } from '@/data/filter-engine';
 import { CatalogueClient } from '@/features/catalogue';
