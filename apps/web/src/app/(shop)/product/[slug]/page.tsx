@@ -17,7 +17,9 @@ export async function generateStaticParams() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
     // Pre-render the top 50 featured products to keep build times fast
     const res = await fetch(`${API_URL}/products/featured?take=50`);
-    if (!res.ok) return [];
+    if (!res.ok) {
+      return [];
+    }
     const json = await res.json();
     const products = json.data || [];
     return products.map((p: any) => ({
@@ -45,12 +47,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const mainImage = product.media?.mainImage || '/images/placeholder.jpg';
   const pageUrl = `https://fashionfriday.in/product/${slug}`;
   const collections = product.marketing?.collections || [];
-  const brand = Array.isArray(product.brand) ? product.brand[0] : product.brand || 'Fashion Friday';
+  const brand = Array.isArray(product.brand)
+    ? product.brand[0]
+    : (product.brand ?? 'Fashion Friday');
 
   return {
     title,
     description,
-    keywords: [product.name, String(brand), product.categoryId, ...collections].filter(Boolean),
+    keywords: [product.name, brand, product.categoryId, ...collections].filter(Boolean),
     alternates: {
       canonical: pageUrl,
     },
@@ -86,7 +90,9 @@ export default async function Page({ params }: Props) {
 
   const similarProducts = await getSimilarProducts(product.categoryId, product.id);
 
-  const brandName = Array.isArray(product.brand) ? product.brand[0] : product.brand || 'Fashion Friday';
+  const brandName = Array.isArray(product.brand)
+    ? product.brand[0]
+    : product.brand || 'Fashion Friday';
 
   // JSON-LD Schema.org for Google Product Rich Snippets
   const jsonLd = {
