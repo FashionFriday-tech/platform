@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+
 import { CategoryPage } from '@/features/categories';
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
 
 export const dynamicParams = true;
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   const categories = ['watches', 'clothing', 'accessories', 'sneakers', 'slippers'];
   const genders = ['men', 'women'];
   const params = [];
