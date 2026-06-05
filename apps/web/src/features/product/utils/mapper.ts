@@ -5,7 +5,9 @@ import { type Product } from '@ff/schemas';
  * to the nested Zod schema shape expected by the frontend.
  */
 export function mapDbProductToSchema(p: any): Product {
-  if (!p) return p;
+  if (!p) {
+    return p;
+  }
 
   return {
     id: p.id,
