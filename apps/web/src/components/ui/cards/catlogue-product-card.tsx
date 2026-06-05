@@ -18,9 +18,7 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
   const { brands } = useBrands();
 
   const brandName = product.brand?.[0] || '';
-  const brandLogo = brands.find(
-    (b) => b.name.toLowerCase() === brandName.toLowerCase(),
-  )?.logo;
+  const brandLogo = brands.find((b) => b.name.toLowerCase() === brandName.toLowerCase())?.logo;
 
   // Helper to handle original price calculation safely
   const originalPrice = product.price.ogPrice || product.price.sellingPrice * 3;
@@ -52,10 +50,10 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
                 alt={brandName}
                 width={32}
                 height={32}
-                className="invert-0 dark:invert object-contain"
+                className="object-contain invert-0 dark:invert"
               />
             ) : (
-              <span className="font-bold uppercase tracking-wider text-muted-foreground">
+              <span className="text-muted-foreground font-bold tracking-wider uppercase">
                 {brandName}
               </span>
             )}
