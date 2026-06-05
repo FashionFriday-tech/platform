@@ -1,4 +1,5 @@
 import { type Product } from '@ff/schemas';
+
 import { mapDbProductToSchema } from '@/features/product/utils/mapper';
 
 /**
@@ -91,7 +92,9 @@ export const getProductBySlug = async (slug: string): Promise<Product | undefine
     const res = await fetch(`${API_URL}/products/${slug}`, {
       next: { revalidate: 86400, tags: [`product-${slug}`] },
     });
-    if (!res.ok) return undefined;
+    if (!res.ok) {
+      return undefined;
+    }
     const p = await res.json();
     return mapDbProductToSchema(p);
   } catch (err) {
@@ -100,13 +103,18 @@ export const getProductBySlug = async (slug: string): Promise<Product | undefine
   }
 };
 
-export const getSimilarProducts = async (category: string, currentProductId?: string): Promise<Product[]> => {
+export const getSimilarProducts = async (
+  category: string,
+  currentProductId?: string,
+): Promise<Product[]> => {
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
     const res = await fetch(`${API_URL}/products/category/${category.toLowerCase()}`, {
       next: { revalidate: 86400, tags: [`similar-products-${category.toLowerCase()}`] },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      return [];
+    }
     const json = await res.json();
     const data = json.data || [];
     return data
@@ -125,7 +133,9 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
     const res = await fetch(`${API_URL}/products/category/${category.toLowerCase()}?take=100`, {
       next: { revalidate: 86400, tags: [`category-products-${category.toLowerCase()}`] },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      return [];
+    }
     const json = await res.json();
     const data = json.data || [];
     return data.map(mapDbProductToSchema);
@@ -141,7 +151,9 @@ export const getAllProducts = async (): Promise<Product[]> => {
     const res = await fetch(`${API_URL}/products?take=100`, {
       next: { revalidate: 86400, tags: ['all-products'] },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      return [];
+    }
     const json = await res.json();
     const data = json.data || [];
     return data.map(mapDbProductToSchema);
@@ -157,7 +169,9 @@ export const getProductsByBrand = async (brand: string): Promise<Product[]> => {
     const res = await fetch(`${API_URL}/products?brand=${encodeURIComponent(brand)}&take=100`, {
       next: { revalidate: 86400, tags: [`brand-products-${brand.toLowerCase()}`] },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      return [];
+    }
     const json = await res.json();
     const data = json.data || [];
     return data.map(mapDbProductToSchema);
