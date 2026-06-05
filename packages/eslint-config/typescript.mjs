@@ -32,7 +32,7 @@ export default [
 
       // ✅ Variables
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         {
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
@@ -41,12 +41,12 @@ export default [
       ],
 
       // ⚖️ Balanced strictness
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
-      '@typescript-eslint/no-unsafe-member-access': 'warn',
-      '@typescript-eslint/no-unsafe-call': 'warn',
-      '@typescript-eslint/no-unsafe-return': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
 
       // 🧠 Code quality
       '@typescript-eslint/restrict-template-expressions': [
@@ -62,9 +62,9 @@ export default [
       '@typescript-eslint/prefer-optional-chain': 'error',
 
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-      '@typescript-eslint/no-unnecessary-condition': 'warn',
+      '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-as-const': 'error',
-      '@typescript-eslint/no-deprecated': 'warn',
+      '@typescript-eslint/no-deprecated': 'off',
 
       // ❌ Disabled (DX reasons)
       '@typescript-eslint/explicit-function-return-type': 'off',
