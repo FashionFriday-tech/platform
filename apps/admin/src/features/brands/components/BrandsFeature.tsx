@@ -1,5 +1,6 @@
 'use client';
 
+import { type BrandCategory } from '@ff/schemas';
 import { PlusIcon, SearchIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -61,7 +62,7 @@ export default function BrandsFeature() {
               options={categoryOptions}
               value={categoryFilter}
               onChange={(val) => {
-                setCategoryFilter(val);
+                setCategoryFilter(val as 'all' | BrandCategory);
               }}
               className="z-50 w-48"
             />
