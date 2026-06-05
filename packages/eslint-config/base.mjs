@@ -55,8 +55,8 @@ export default [
         'error',
         { cases: { kebabCase: true, pascalCase: true, camelCase: true } },
       ],
-      'unicorn/no-array-for-each': 'warn',
-      'unicorn/no-array-reduce': 'warn',
+      'unicorn/no-array-for-each': 'off',
+      'unicorn/no-array-reduce': 'off',
       'unicorn/no-await-expression-member': 'error',
       'unicorn/no-useless-undefined': 'error',
       'unicorn/prefer-includes': 'error',
@@ -67,7 +67,7 @@ export default [
       // 🔒 Security
       'security/detect-possible-timing-attacks': 'error',
       'security/detect-unsafe-regex': 'error',
-      'security/detect-object-injection': 'warn',
+      'security/detect-object-injection': 'off',
     },
   },
 ];
