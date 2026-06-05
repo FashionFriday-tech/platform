@@ -5,8 +5,8 @@ import { Header } from '@/components/layout/Header';
 import { StoreInitializer } from '@/components/layout/StoreInitializer';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
-import { ThemeProvider } from './providers/theme-provider';
 import { SmoothScrollProvider } from './providers/smooth-scroll-provider';
+import { ThemeProvider } from './providers/theme-provider';
 
 import './globals.css';
 
