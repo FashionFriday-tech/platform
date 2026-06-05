@@ -30,7 +30,7 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
     }
   }, [member]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (member) {
       onSave(member.id, selectedRole, status);
