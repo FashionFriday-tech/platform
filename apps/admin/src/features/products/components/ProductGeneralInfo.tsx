@@ -1,14 +1,15 @@
 import React from 'react';
 
-import { type Brand, type Product } from '@ff/schemas';
+import { type Brand, type Product as SchemaProduct } from '@ff/schemas';
 
+import { type Product } from '../types';
 import { LabelWithTick } from './LabelWithTick';
 import { ProductBrandColorSelector } from './ProductBrandColorSelector';
 import { ProductCategorySelector } from './ProductCategorySelector';
 import { ProductSizeGenderSelector } from './ProductSizeGenderSelector';
 
 interface Props {
-  initialData?: Product;
+  initialData?: Partial<Product> | SchemaProduct;
   productName: string;
   setProductName: (val: string) => void;
   productDesc: string;
