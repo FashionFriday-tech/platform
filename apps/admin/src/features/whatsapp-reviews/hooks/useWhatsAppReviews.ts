@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface WhatsAppReview {
   id: string;
@@ -19,36 +19,39 @@ export function useWhatsAppReviews() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
 
-  const fetchReviews = async (newOffset: number, clearPrevious = false) => {
-    if (isLoading) {
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const res = await fetch(
-        `${API_URL}/admin/whatsapp-reviews?limit=${limit}&offset=${newOffset}`,
-      );
-      if (res.ok) {
-        const data = (await res.json()) as WhatsAppReview[];
-        if (data.length < limit) {
-          setHasMore(false);
-        } else {
-          setHasMore(true);
-        }
-        setReviews((prev) => (clearPrevious ? data : [...prev, ...data]));
-        setOffset(newOffset);
+  const fetchReviews = useCallback(
+    async (newOffset: number, clearPrevious = false) => {
+      if (isLoading) {
+        return;
       }
-    } catch (error) {
-      console.error('Failed to fetch WhatsApp reviews:', error);
-    } finally {
-      setIsLoading(false);
-      setIsInitialLoad(false);
-    }
-  };
+      setIsLoading(true);
+      try {
+        const res = await fetch(
+          `${API_URL}/admin/whatsapp-reviews?limit=${limit}&offset=${newOffset}`,
+        );
+        if (res.ok) {
+          const data = (await res.json()) as WhatsAppReview[];
+          if (data.length < limit) {
+            setHasMore(false);
+          } else {
+            setHasMore(true);
+          }
+          setReviews((prev) => (clearPrevious ? data : [...prev, ...data]));
+          setOffset(newOffset);
+        }
+      } catch (error) {
+        console.error('Failed to fetch WhatsApp reviews:', error);
+      } finally {
+        setIsLoading(false);
+        setIsInitialLoad(false);
+      }
+    },
+    [API_URL, isLoading, limit],
+  );
 
   useEffect(() => {
     void fetchReviews(0, true);
-  }, []);
+  }, [fetchReviews]);
 
   const loadMore = () => {
     if (!isLoading && hasMore) {
