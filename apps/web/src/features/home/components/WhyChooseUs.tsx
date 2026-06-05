@@ -1,6 +1,7 @@
 'use client';
 
 import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 
 import { ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
@@ -237,12 +238,12 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
             {/* See More Reviews Button */}
             {isMounted && (
               <div className="mt-12">
-                <a
+                <Link
                   href="/whatsapp-reviews"
                   className="inline-flex items-center justify-center rounded-full bg-black px-8 py-3.5 text-sm font-bold tracking-wide text-white uppercase shadow-md transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
                 >
                   See More Reviews
-                </a>
+                </Link>
               </div>
             )}
           </div>
