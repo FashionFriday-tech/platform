@@ -12,9 +12,9 @@ import {
   WhyChooseUs,
 } from '@/features/home';
 import {
+  getHomeBrands,
   getHomeCampaigns,
   getHomeCollections,
-  getHomeBrands,
   getHomeReviews,
 } from '@/features/home/services/queries';
 
@@ -45,4 +45,3 @@ export default async function HomePage() {
     </main>
   );
 }
-
