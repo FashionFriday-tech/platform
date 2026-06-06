@@ -62,8 +62,9 @@ model Product {
   updatedAt DateTime @updatedAt
 
   // Relations
-  reviews  Review[]
-  variants ProductVariant[]
+  reviews       Review[]
+  variants      ProductVariant[]
+  wishlistItems WishlistItem[]
 
   @@index([categoryId])
   @@index([status])
