@@ -173,20 +173,20 @@ export default function ProductPageMaster({
                     </span>
                   </div>
                 </div>
-                <div className="flex w-full items-start justify-between">
-                  <h1 className="text-3xl leading-8 font-bold tracking-tighter uppercase italic md:text-5xl">
+                <div className="flex w-full items-start justify-between gap-4">
+                  <h1 className="text-foreground text-3xl leading-snug font-black tracking-tight uppercase md:text-4xl lg:text-5xl lg:leading-[1.2]">
                     {product.name}
                   </h1>
                   <button
                     onClick={handleShare}
-                    className="border-border hover:bg-background-muted mr-4 rounded-full border p-2 transition-all md:mt-2"
+                    className="border-border hover:bg-background-muted shrink-0 rounded-full border p-2.5 transition-all"
                   >
                     <ShareIcon size={18} />
                   </button>
                 </div>
               </div>
 
-              <p className="text-foreground/80 mt-2 text-xs leading-4 tracking-wider capitalize italic">
+              <p className="text-foreground-muted mt-3 text-xs leading-relaxed tracking-normal md:text-sm">
                 {product.description}
               </p>
             </div>

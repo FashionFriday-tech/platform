@@ -37,7 +37,7 @@ const ColorTray = ({
         className="flex w-full items-center justify-between font-black text-white uppercase transition-colors"
       >
         <div className="flex items-center gap-4">
-          <span className="text-[10px] tracking-[0.3em] italic">Color Options</span>
+          <span className="text-[10px] tracking-[0.25em]">Color Options</span>
         </div>
         <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
           <ArrowDownIcon size={18} />
@@ -87,7 +87,7 @@ const ColorTray = ({
                     </div>
                   </Link>
                   <span
-                    className={`text-[8px] font-black tracking-widest uppercase italic ${
+                    className={`text-[8px] font-black tracking-widest uppercase ${
                       selectedValue === (opt.slug || opt.label.toLowerCase())
                         ? 'text-white'
                         : 'text-white/40'
