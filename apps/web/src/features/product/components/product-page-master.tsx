@@ -3,6 +3,7 @@
 import { type JSX, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { type Product } from '@ff/schemas';
 import {
@@ -19,7 +20,9 @@ import {
   StarIcon,
   TruckIcon,
 } from '@ff/ui';
+import { toast } from 'sonner';
 
+import { useCart } from '@/features/cart';
 import { useWishlist } from '@/features/wishlist';
 
 import { useLiveProductMetric } from '../hooks/use-live-product-metric';
@@ -36,12 +39,16 @@ export default function ProductPageMaster({
   product: Product;
   similarProducts: Product[];
 }): JSX.Element {
+  const router = useRouter();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
 
   const { isItemWishlisted, toggleWishlist } = useWishlist();
+  const { addItem } = useCart();
   const productId = product.id;
   const isWishlisted = isItemWishlisted(productId);
+
+  const displaySizes = product.attributes.sizes;
 
   const handleWishlistToggle = () => {
     void toggleWishlist({
@@ -57,7 +64,39 @@ export default function ProductPageMaster({
     });
   };
 
-  const displaySizes = product.attributes.sizes;
+  const handleAddToCart = () => {
+    if (product.inventory.totalStock <= 0) {
+      toast.error('This product is currently out of stock');
+      return;
+    }
+    const chosenSize = selectedSize || (displaySizes.length > 0 ? displaySizes[0] : 'Standard');
+    const chosenColor = product.attributes.colors?.[0] || 'Standard';
+
+    void addItem({
+      productId: product.id,
+      size: chosenSize,
+      color: chosenColor,
+      quantity: 1,
+      product: {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        brand: Array.isArray(product.brand) ? product.brand : [product.brand || 'Fashion Friday'],
+        ogPrice: product.price.ogPrice,
+        sellingPrice: product.price.sellingPrice,
+        mainImage: product.media.mainImage,
+        totalStock: product.inventory.totalStock,
+        sizes: product.attributes.sizes,
+        colors: product.attributes.colors,
+      },
+    });
+    toast.success(`Added ${product.name} (${chosenSize}) to Bag!`);
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    router.push('/checkout');
+  };
   const cols = Math.ceil(displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2);
 
   const handleShare = () => {
@@ -220,11 +259,15 @@ export default function ProductPageMaster({
             <section className="flex flex-col items-stretch gap-4 lg:flex-row">
               <div className="w-full lg:flex-1">
                 {product.inventory.totalStock > 0 ? (
-                  <div className="bg-foreground flex w-full cursor-pointer items-center justify-center rounded-full py-3.5 text-2xl font-black uppercase">
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    className="bg-foreground text-background flex w-full cursor-pointer items-center justify-center rounded-full py-3.5 text-2xl font-black uppercase transition-transform active:scale-95"
+                  >
                     <span className="light:bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#656565,#ffffff)] animate-[glaze_5s_linear_infinite] bg-size-[400%_100%] bg-clip-text text-transparent dark:bg-[linear-gradient(90deg,#000000,#9ca3af,#000000,#9ca3af,#000000)]">
                       Buy Now
                     </span>
-                  </div>
+                  </button>
                 ) : (
                   <button className="border-destructive text-destructive flex h-16 w-full items-center justify-center gap-3 rounded-full border-2 font-black tracking-[0.2em] uppercase">
                     <BellIcon size={20} />
@@ -251,7 +294,11 @@ export default function ProductPageMaster({
                   )}
                 </button>
 
-                <button className="bg-background text-foreground border-background flex h-14 flex-1 items-center justify-center gap-3 rounded-full border-2 py-4 font-bold uppercase transition-all hover:scale-[1.02] active:scale-95">
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  className="bg-background text-foreground border-background flex h-14 flex-1 cursor-pointer items-center justify-center gap-3 rounded-full border-2 py-4 font-bold uppercase transition-all hover:scale-[1.02] active:scale-95"
+                >
                   Add to Cart
                 </button>
               </div>
@@ -356,7 +403,14 @@ export default function ProductPageMaster({
 
       <ReviewSection />
       <RelatedProducts products={similarProducts} />
-      <CTAStickyButtons isWishlisted={isWishlisted} onWishlistToggle={handleWishlistToggle} />
+      <CTAStickyButtons
+        isWishlisted={isWishlisted}
+        onWishlistToggle={handleWishlistToggle}
+        onBuyNow={handleBuyNow}
+        onCartClick={() => {
+          router.push('/checkout');
+        }}
+      />
     </div>
   );
 }
