@@ -60,20 +60,17 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
             sizes="100vw"
           />
 
-          {/* Favorite Transparent Button with Black Border & Icon */}
+          {/* Favorite Borderless Button with Larger Black Icon */}
           <button
             type="button"
             onClick={handleWishlistToggle}
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            className="absolute top-5 right-5 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-black bg-transparent text-black transition-all duration-300 hover:scale-110 hover:bg-black/5 active:scale-90 dark:border-white dark:text-white dark:hover:bg-white/10"
+            className="absolute top-6 right-6 z-10 flex items-center justify-center text-black transition-all duration-300 hover:scale-125 active:scale-90"
           >
             {isWishlisted ? (
-              <HeartFilledIcon
-                size={16}
-                className="scale-110 text-black transition-transform dark:text-white"
-              />
+              <HeartFilledIcon size={26} className="text-black transition-transform" />
             ) : (
-              <HeartIcon size={16} className="text-black transition-colors dark:text-white" />
+              <HeartIcon size={26} className="text-black transition-colors" />
             )}
           </button>
         </div>
