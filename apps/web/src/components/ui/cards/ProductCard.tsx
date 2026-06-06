@@ -55,20 +55,20 @@ export default function ProductCard({ product }: { product: Product }) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
-          {/* Favorite Floating Button */}
+          {/* Favorite Transparent Button with Black Border & Icon */}
           <button
             type="button"
             onClick={handleWishlistToggle}
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            className="bg-background/80 hover:bg-background border-border/40 hover:border-border text-foreground absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border shadow-md backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
+            className="absolute top-6 right-6 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-black bg-transparent text-black transition-all duration-300 hover:scale-110 hover:bg-black/5 active:scale-90 dark:border-white dark:text-white dark:hover:bg-white/10"
           >
             {isWishlisted ? (
-              <HeartFilledIcon size={18} className="scale-110 text-red-500 transition-transform" />
-            ) : (
-              <HeartIcon
-                size={18}
-                className="text-foreground-muted hover:text-foreground transition-colors"
+              <HeartFilledIcon
+                size={16}
+                className="scale-110 text-black transition-transform dark:text-white"
               />
+            ) : (
+              <HeartIcon size={16} className="text-black transition-colors dark:text-white" />
             )}
           </button>
         </div>
