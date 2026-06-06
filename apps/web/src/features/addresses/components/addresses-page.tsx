@@ -12,6 +12,7 @@ export function AddressesPage() {
   const {
     addresses,
     sortedAddresses,
+    isLoading,
     isModalOpen,
     editingAddress,
     handleSave,
@@ -41,7 +42,16 @@ export function AddressesPage() {
           </button>
         </div>
 
-        {sortedAddresses.length === 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-background-elevated/40 border-border h-48 animate-pulse rounded-4xl border p-6"
+              />
+            ))}
+          </div>
+        ) : sortedAddresses.length === 0 ? (
           <div className="border-border text-foreground-subtle bg-background-elevated/50 flex flex-col items-center justify-center rounded-4xl border-2 border-dashed py-24">
             <MapPinIcon size={48} className="mb-4 opacity-10" />
             <p className="text-xs font-black tracking-widest uppercase">No addresses saved</p>
