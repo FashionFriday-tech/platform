@@ -5,10 +5,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { type Product } from '@ff/schemas';
-import { StarBadgeIcon, StarsIcon } from '@ff/ui';
+import { HeartFilledIcon, HeartIcon, StarBadgeIcon, StarsIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { useBrands } from '@/features/brand';
+import { useWishlist } from '@/features/wishlist';
 
 interface StoreProductCardProps {
   product: Product;
@@ -16,6 +17,10 @@ interface StoreProductCardProps {
 
 export function CatalogueProductCard({ product }: StoreProductCardProps) {
   const { brands } = useBrands();
+  const { isItemWishlisted, toggleWishlist } = useWishlist();
+
+  const productId = product.id;
+  const isWishlisted = isItemWishlisted(productId);
 
   const brandName = product.brand?.[0] || '';
   const brandLogo = brands.find((b) => b.name.toLowerCase() === brandName.toLowerCase())?.logo;
@@ -23,13 +28,27 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
   // Helper to handle original price calculation safely
   const originalPrice = product.price.ogPrice || product.price.sellingPrice * 3;
 
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    void toggleWishlist({
+      id: productId,
+      name: product.name,
+      slug: product.slug,
+      price: product.price.sellingPrice,
+      originalPrice: product.price.ogPrice,
+      image: product.media.mainImage || '/images/placeholder.png',
+      category: brandName,
+    });
+  };
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="group cursor-pointer"
+      className="group relative cursor-pointer"
     >
       <Link href={`/product/${product.slug}`} className="block cursor-pointer">
         <div className="bg-background-muted relative aspect-4/5 overflow-hidden rounded-4xl lg:rounded-[2.5rem]">
@@ -40,6 +59,23 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="100vw"
           />
+
+          {/* Favorite Floating Button */}
+          <button
+            type="button"
+            onClick={handleWishlistToggle}
+            aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            className="bg-background/80 hover:bg-background border-border/40 hover:border-border text-foreground absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-md backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
+          >
+            {isWishlisted ? (
+              <HeartFilledIcon size={16} className="scale-110 text-red-500 transition-transform" />
+            ) : (
+              <HeartIcon
+                size={16}
+                className="text-foreground-muted hover:text-foreground transition-colors"
+              />
+            )}
+          </button>
         </div>
 
         <div className="mt-1 px-1">
