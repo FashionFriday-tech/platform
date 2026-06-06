@@ -50,17 +50,7 @@ export function ProfileHero() {
   const progressPercentage = (userData.loyaltyPoints / userData.pointsToNextTier) * 100;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:pt-24">
-      {/* Header */}
-      <div className="mb-10">
-        <p className="text-foreground-muted text-xs font-bold tracking-[0.35em] uppercase">
-          Account Dashboard
-        </p>
-        <h1 className="mt-2 text-4xl font-black tracking-tighter uppercase md:text-5xl">
-          Welcome, {userData.name}
-        </h1>
-      </div>
-
+    <section className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:pt-16">
       {/* Main Grid */}
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         {/* LEFT: Premium Loyalty Card */}
