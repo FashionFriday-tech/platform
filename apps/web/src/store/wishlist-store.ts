@@ -91,6 +91,11 @@ export const useWishlistStore = create<WishlistState>()(
           return;
         }
 
+        // Prevent duplicate concurrent sync calls
+        if (get().loading) {
+          return;
+        }
+
         set({ loading: true });
         try {
           const localIds = get().items.map((item) => item.id);
@@ -120,8 +125,8 @@ export const useWishlistStore = create<WishlistState>()(
 
           // Otherwise fetch existing user wishlist from database
           const remote = await fetchUserWishlistAction();
-          const mappedItems: WishlistProductItem[] = remote
-            .filter((m) => m.product)
+          const mappedItems: WishlistProductItem[] = (remote || [])
+            .filter((m) => m?.product)
             .map((m) => ({
               id: m.product!.id,
               name: m.product!.name,
