@@ -1,34 +1,75 @@
-'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { useAuthStore } from '@/store/auth-store';
+
 import { type Address, type PincodeAPIResponse } from '../types';
+import { cleanPhoneDigits, formatPhone334 } from '../utils/phone';
 
 export function useAddressForm(initialData: Address | null, isFirstAddress: boolean) {
-  const [formData, setFormData] = useState<Partial<Address>>(
-    initialData ?? { type: 'Home', isDefault: isFirstAddress || false },
-  );
+  const user = useAuthStore((state) => state.user);
+
+  const [formData, setFormData] = useState<Partial<Address>>(() => {
+    if (initialData) {
+      return {
+        ...initialData,
+        phone: formatPhone334(initialData.phone ?? ''),
+        altPhone: initialData.altPhone ? formatPhone334(initialData.altPhone) : '',
+      };
+    }
+    const rawCleanPhone = user?.phone ? user.phone.replace(/\D/g, '').slice(-10) : '';
+    const cleanPhone = rawCleanPhone ? formatPhone334(rawCleanPhone) : '';
+    const cleanName = user?.name ?? '';
+    return {
+      type: 'Home',
+      isDefault: isFirstAddress || false,
+      phone: cleanPhone,
+      name: cleanName,
+    };
+  });
   const [loading, setLoading] = useState(false);
   const altPhoneRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!initialData && user) {
+      setFormData((prev) => {
+        const rawCleanPhone = user.phone ? user.phone.replace(/\D/g, '').slice(-10) : '';
+        const cleanPhone = rawCleanPhone ? formatPhone334(rawCleanPhone) : '';
+        const cleanName = user.name ?? '';
+        let hasChanges = false;
+        const next = { ...prev };
+
+        if (!prev.phone && cleanPhone) {
+          next.phone = cleanPhone;
+          hasChanges = true;
+        }
+        if (!prev.name && cleanName) {
+          next.name = cleanName;
+          hasChanges = true;
+        }
+
+        return hasChanges ? next : prev;
+      });
+    }
+  }, [user, initialData]);
 
   const isFormValid = useMemo(() => {
     const requiredFields = [
       formData.name,
       formData.phone,
       formData.pincode,
-      formData.addressLine1,
       formData.addressLine2,
       formData.city,
     ];
     return (
       requiredFields.every((f) => f && f.trim().length > 0) &&
-      formData.phone?.length === 10 &&
+      cleanPhoneDigits(formData.phone ?? '').length === 10 &&
       formData.pincode?.length === 6 &&
       !!formData.district
     );
   }, [formData]);
 
   useEffect(() => {
-    if (formData.phone?.length === 10) {
+    if (cleanPhoneDigits(formData.phone ?? '').length === 10) {
       altPhoneRef.current?.focus();
     }
   }, [formData.phone]);
