@@ -187,6 +187,7 @@ export default function ReviewSection() {
                       src={rev.image}
                       alt="review"
                       fill
+                      sizes="(max-width: 768px) 160px, 256px"
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -463,7 +464,13 @@ export default function ReviewSection() {
                         exit={{ opacity: 0, scale: 0.8 }}
                         className="relative h-32 w-32 shrink-0 overflow-hidden rounded-2xl border border-white/20 bg-white/5"
                       >
-                        <Image src={selectedImage} alt="Preview" fill className="object-cover" />
+                        <Image
+                          src={selectedImage}
+                          alt="Preview"
+                          fill
+                          sizes="128px"
+                          className="object-cover"
+                        />
                         <button
                           onClick={() => {
                             setSelectedImage(null);

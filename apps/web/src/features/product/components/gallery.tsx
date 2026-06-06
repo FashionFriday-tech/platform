@@ -63,7 +63,13 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                   : 'border-transparent opacity-70 hover:scale-105 hover:opacity-100'
               }`}
             >
-              <Image src={img} alt="Thumbnail" fill className="object-cover" />{' '}
+              <Image
+                src={img}
+                alt="Thumbnail"
+                fill
+                sizes="(max-width: 768px) 80px, 100px"
+                className="object-cover"
+              />{' '}
             </button>
           ))}
 
@@ -87,7 +93,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
               alt="Video Preview"
               fill
               className="object-cover blur-[1px]"
-              sizes="100vw"
+              sizes="(max-width: 768px) 80px, 100px"
             />
           </button>
         </div>

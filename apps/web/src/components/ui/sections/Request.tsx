@@ -108,6 +108,7 @@ export default function SourcingSection() {
             src="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=2012&auto=format&fit=crop"
             alt="Personal Sourcing Service"
             fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover grayscale transition-transform duration-700 group-hover:scale-105 group-hover:grayscale-0"
           />
           {/* Deep Vignette Gradient */}

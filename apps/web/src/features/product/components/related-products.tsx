@@ -44,7 +44,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                       alt={product.name}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes="100vw"
+                      sizes="(max-width: 768px) 70vw, (max-width: 1024px) 300px, 360px"
                     />
                   </div>
                 </Link>
