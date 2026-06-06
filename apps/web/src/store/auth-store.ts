@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import {
   deleteAccountAction,
@@ -33,55 +34,64 @@ interface AuthState {
   deleteAccount: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  loading: true,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      loading: true,
 
-  refreshUser: async () => {
-    try {
-      const data = await getMeAction();
-      set({ user: data });
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      set({ user: null });
-    } finally {
-      set({ loading: false });
-    }
-  },
+      refreshUser: async () => {
+        try {
+          const data = await getMeAction();
+          set({ user: data });
+        } catch (error) {
+          console.error('Failed to fetch user:', error);
+          set({ user: null });
+        } finally {
+          set({ loading: false });
+        }
+      },
 
-  login: (userData: User) => {
-    set({ user: userData, loading: false });
-  },
+      login: (userData: User) => {
+        set({ user: userData, loading: false });
+      },
 
-  logout: async () => {
-    try {
-      await logoutAction();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      set({ user: null });
-    }
-  },
+      logout: async () => {
+        try {
+          await logoutAction();
+        } catch (error) {
+          console.error('Logout error:', error);
+        } finally {
+          set({ user: null });
+        }
+      },
 
-  updateProfile: async (data) => {
-    try {
-      const updatedUser = await updateProfileAction(data);
-      if (updatedUser) {
-        set({ user: updatedUser });
-      }
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      throw error;
-    }
-  },
+      updateProfile: async (data) => {
+        try {
+          const updatedUser = await updateProfileAction(data);
+          if (updatedUser) {
+            set({ user: updatedUser });
+          }
+        } catch (error) {
+          console.error('Failed to update profile:', error);
+          throw error;
+        }
+      },
 
-  deleteAccount: async () => {
-    try {
-      await deleteAccountAction();
-      set({ user: null });
-    } catch (error) {
-      console.error('API account deletion failed:', error);
-      throw error;
-    }
-  },
-}));
+      deleteAccount: async () => {
+        try {
+          await deleteAccountAction();
+          set({ user: null });
+        } catch (error) {
+          console.error('API account deletion failed:', error);
+          throw error;
+        }
+      },
+    }),
+    {
+      name: 'ff-auth-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ user: state.user }),
+    },
+  ),
+);
