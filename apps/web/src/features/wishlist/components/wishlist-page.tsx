@@ -32,24 +32,25 @@ export function WishlistPage() {
         <AnimatePresence mode="wait">
           {hasItems ? (
             <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{
-                visible: { transition: { staggerChildren: 0.05 } },
-              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
               className="grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-2 lg:grid-cols-3 xl:gap-x-10"
             >
               {wishlistItems.map((item) => (
                 <motion.div
                   key={item.id}
                   layout
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                 >
-                  <WishlistCard product={item} onRemove={removeFromWishlist} />
+                  <WishlistCard
+                    product={item}
+                    onRemove={(id) => {
+                      void removeFromWishlist(id);
+                    }}
+                  />
                 </motion.div>
               ))}
             </motion.div>

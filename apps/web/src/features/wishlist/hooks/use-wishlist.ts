@@ -1,11 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useAuthStore } from '@/store/auth-store';
 import { useWishlistStore, type WishlistProductItem } from '@/store/wishlist-store';
 
 export function useWishlist() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const user = useAuthStore((state) => state.user);
   const items = useWishlistStore((state) => state.items);
   const loading = useWishlistStore((state) => state.loading);
@@ -13,23 +19,18 @@ export function useWishlist() {
   const toggleItem = useWishlistStore((state) => state.toggleItem);
   const removeItem = useWishlistStore((state) => state.removeItem);
   const isInWishlist = useWishlistStore((state) => state.isInWishlist);
-  const syncWithServer = useWishlistStore((state) => state.syncWithServer);
 
   const isAuthenticated = !!user;
 
-  // Auto-sync with server on mount or when user authentication state changes
-  useEffect(() => {
-    void syncWithServer(isAuthenticated);
-  }, [isAuthenticated, syncWithServer]);
-
   return {
-    wishlistItems: items,
-    hasItems: items.length > 0,
-    itemCount: items.length,
+    wishlistItems: isMounted ? items : [],
+    hasItems: isMounted ? items.length > 0 : false,
+    itemCount: isMounted ? items.length : 0,
     loading,
     isInitialized,
+    isMounted,
     toggleWishlist: (product: WishlistProductItem) => toggleItem(product, isAuthenticated),
     removeFromWishlist: (productId: string) => removeItem(productId, isAuthenticated),
-    isItemWishlisted: (productId: string) => isInWishlist(productId),
+    isItemWishlisted: (productId: string) => (isMounted ? isInWishlist(productId) : false),
   };
 }
