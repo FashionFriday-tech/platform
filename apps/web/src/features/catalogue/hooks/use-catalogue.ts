@@ -97,37 +97,98 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
   const filteredAndSortedProducts = useMemo(() => {
     const result = filterProducts(initialProducts, activeFilters);
     const sorted = [...result];
+
     switch (sortBy) {
       case 'price-asc':
-        sorted.sort((a, b) => a.price.sellingPrice - b.price.sellingPrice);
+        sorted.sort((a, b) => (a.price?.sellingPrice ?? 0) - (b.price?.sellingPrice ?? 0));
         break;
       case 'price-desc':
-        sorted.sort((a, b) => b.price.sellingPrice - a.price.sellingPrice);
+        sorted.sort((a, b) => (b.price?.sellingPrice ?? 0) - (a.price?.sellingPrice ?? 0));
         break;
-      // case "most-sold": sorted.sort((a, b) => b.salesCount - a.salesCount); break;
-      // case "popularity": sorted.sort((a, b) => b.popularityScore - a.popularityScore); break;
-      // default: sorted.sort((a, b) => b.staticNumber - a.staticNumber);
+      case 'newest':
+        sorted.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        break;
+      case 'rating':
+        sorted.sort((a, b) => (b.rating?.averageRating ?? 0) - (a.rating?.averageRating ?? 0));
+        break;
+      case 'discount':
+        sorted.sort((a, b) => {
+          const discA =
+            a.price?.ogPrice && a.price.ogPrice > a.price.sellingPrice
+              ? (a.price.ogPrice - a.price.sellingPrice) / a.price.ogPrice
+              : 0;
+          const discB =
+            b.price?.ogPrice && b.price.ogPrice > b.price.sellingPrice
+              ? (b.price.ogPrice - b.price.sellingPrice) / b.price.ogPrice
+              : 0;
+          return discB - discA;
+        });
+        break;
+      case 'popularity':
+        sorted.sort((a, b) => (b.liveMatrix?.liveSold ?? 0) - (a.liveMatrix?.liveSold ?? 0));
+        break;
+      case 'featured':
+        sorted.sort(
+          (a, b) => (b.marketing?.isFeatured ? 1 : 0) - (a.marketing?.isFeatured ? 1 : 0),
+        );
+        break;
+      default:
+        // Keep initial curated order
+        break;
     }
     return sorted;
   }, [initialProducts, activeFilters, sortBy]);
 
-  const handleFilterChange = (key: string, value: string, isSingleSelect = false) => {
+  const handleFilterChange = useCallback((key: string, value: string, isSingleSelect = false) => {
     setActiveFilters((prev) => {
       const currentValues = Object.prototype.hasOwnProperty.call(prev, key) ? prev[key] : [];
       if (isSingleSelect) {
+        // Toggle if same value is clicked again
+        if (currentValues[0] === value) {
+          const { [key]: _, ...rest } = prev;
+          return rest;
+        }
         return { ...prev, [key]: [value] };
       }
       const newValues = currentValues.includes(value)
         ? currentValues.filter((v) => v !== value)
         : [...currentValues, value];
+
+      if (newValues.length === 0) {
+        const { [key]: _, ...rest } = prev;
+        return rest;
+      }
       return { ...prev, [key]: newValues };
     });
-  };
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setActiveFilters({});
+  }, []);
+
+  const removeFilterValue = useCallback((key: string, value: string) => {
+    setActiveFilters((prev) => {
+      const currentValues = prev[key] || [];
+      const newValues = currentValues.filter((v) => v !== value);
+      if (newValues.length === 0) {
+        const { [key]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [key]: newValues };
+    });
+  }, []);
 
   return {
     products: filteredAndSortedProducts,
     activeFilters,
+    setActiveFilters,
     handleFilterChange,
+    clearFilters,
+    removeFilterValue,
     sortBy,
     setSortBy,
     totalResults: filteredAndSortedProducts.length,
