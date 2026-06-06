@@ -21,8 +21,15 @@ interface Product {
 
 export default function ProductCard({ product }: { product: Product }) {
   const { isItemWishlisted, toggleWishlist } = useWishlist();
+
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const productId = String(product.id);
-  const isWishlisted = isItemWishlisted(productId);
+  const isWishlisted = mounted ? isItemWishlisted(productId) : false;
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -58,6 +65,7 @@ export default function ProductCard({ product }: { product: Product }) {
           {/* Favorite Borderless Button with Larger Black Icon */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={handleWishlistToggle}
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             className="absolute top-6 right-6 z-10 flex items-center justify-center text-black transition-all duration-300 hover:scale-125 active:scale-90"

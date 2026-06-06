@@ -19,8 +19,14 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
   const { brands } = useBrands();
   const { isItemWishlisted, toggleWishlist } = useWishlist();
 
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const productId = product.id;
-  const isWishlisted = isItemWishlisted(productId);
+  const isWishlisted = mounted ? isItemWishlisted(productId) : false;
 
   const brandName = product.brand?.[0] || '';
   const brandLogo = brands.find((b) => b.name.toLowerCase() === brandName.toLowerCase())?.logo;
@@ -57,12 +63,13 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
             alt={product.name}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
           {/* Favorite Borderless Button with Larger Black Icon */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={handleWishlistToggle}
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             className="absolute top-6 right-6 z-10 flex items-center justify-center text-black transition-all duration-300 hover:scale-125 active:scale-90"
