@@ -1,16 +1,17 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { ChevronDownIcon, ShoppingBagIcon } from '@ff/ui';
 
-import { bagItems, CartItemsCard, OrderSummary } from '@/features/cart';
+import { CartItemsCard, OrderSummary, useCart } from '@/features/cart';
 
 import { CheckoutProgress } from './checkout-progress';
 
 export function CartStep() {
+  const { cartItems, hasItems, isMounted } = useCart();
+
   return (
     <div className="bg-background text-foreground min-h-screen px-2 transition-colors duration-300 md:px-6 lg:py-20">
       <CheckoutProgress currentStage={1} />
@@ -19,10 +20,19 @@ export function CartStep() {
           <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
             {/* Left Column: Items & Shipping */}
             <div className="flex-1 space-y-10">
-              {/* 2. Cart Items List */}
+              {/* Cart Items List */}
               <div>
-                {bagItems.length > 0 ? (
-                  bagItems.map((item) => <CartItemsCard key={item.id} item={item} />)
+                {!isMounted ? (
+                  <div className="space-y-6">
+                    {[1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="bg-background-elevated/40 border-border h-48 animate-pulse rounded-3xl border"
+                      />
+                    ))}
+                  </div>
+                ) : hasItems ? (
+                  cartItems.map((item) => <CartItemsCard key={item.id} item={item} />)
                 ) : (
                   <div className="py-24 text-center">
                     <div className="bg-background-muted text-foreground-subtle mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
@@ -35,62 +45,33 @@ export function CartStep() {
                       Seems like you haven't added anything yet.
                     </p>
                     <Link
-                      href="/shop"
+                      href="/catalogue"
                       className="bg-foreground text-background inline-block rounded-full px-10 py-4 text-xs font-black tracking-widest uppercase transition-transform active:scale-95"
                     >
                       Explore Collection
                     </Link>
                   </div>
                 )}
-                <Link
-                  href="#summary"
-                  className="bg-background/80 border-border animate-bounce-subtle group right-6 bottom-28 z-40 mt-10 flex items-center justify-between gap-3 rounded-full border px-6 py-3 backdrop-blur-xl transition-all active:scale-95 lg:hidden"
-                >
-                  <div className="flex flex-col items-start">
-                    <span className="text-foreground-subtle text-[10px] leading-none font-black tracking-[0.2em] uppercase">
-                      View
-                    </span>
-                    <span className="text-foreground font-bold tracking-widest uppercase">
-                      Summary
-                    </span>
-                  </div>
+                {hasItems && (
+                  <Link
+                    href="#summary"
+                    className="bg-background/80 border-border animate-bounce-subtle group right-6 bottom-28 z-40 mt-10 flex items-center justify-between gap-3 rounded-full border px-6 py-3 backdrop-blur-xl transition-all active:scale-95 lg:hidden"
+                  >
+                    <div className="flex flex-col items-start">
+                      <span className="text-foreground-subtle text-[10px] leading-none font-black tracking-[0.2em] uppercase">
+                        View
+                      </span>
+                      <span className="text-foreground font-bold tracking-widest uppercase">
+                        Summary
+                      </span>
+                    </div>
 
-                  <div className="bg-foreground text-background flex h-8 w-8 items-center justify-center rounded-full transition-transform group-hover:translate-y-0.5">
-                    <ChevronDownIcon size={16} />
-                  </div>
-                </Link>
+                    <div className="bg-foreground text-background flex h-8 w-8 items-center justify-center rounded-full transition-transform group-hover:translate-y-0.5">
+                      <ChevronDownIcon size={16} />
+                    </div>
+                  </Link>
+                )}
               </div>
-
-              {/* 3. Cross-sell Section */}
-              {bagItems.length > 0 && (
-                <section className="pt-10">
-                  <h3 className="text-foreground-subtle mb-6 text-sm font-bold tracking-[0.2em] uppercase">
-                    Complete the look
-                  </h3>
-                  <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="group cursor-pointer">
-                        <div className="bg-background-muted border-border relative aspect-3/4 overflow-hidden rounded-4xl border">
-                          <div className="bg-foreground/5 absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100" />
-                          <div className="absolute inset-0 flex animate-pulse items-center justify-center">
-                            <Image
-                              src="/images/placeholders/2.png"
-                              alt="Loading placeholder"
-                              width={80}
-                              height={80}
-                              className="h-auto w-20 invert-0 dark:invert"
-                            />
-                          </div>
-                        </div>
-                        <div className="mt-4 px-2">
-                          <div className="bg-background-muted mb-2 h-3 w-2/3 rounded-full" />
-                          <div className="bg-background-muted h-3 w-1/3 rounded-full" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
             </div>
 
             {/* Right Column: Sticky Summary */}
