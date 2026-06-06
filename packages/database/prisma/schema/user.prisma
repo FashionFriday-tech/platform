@@ -76,6 +76,7 @@ model User {
   referralRewardsSent     ReferralReward[]    @relation("Referrer")
   referralRewardsReceived ReferralReward[]    @relation("ReferredUser")
   productRequests         ProductRequest[]
+  wishlistItems           WishlistItem[]
 
   @@map("users")
 }
