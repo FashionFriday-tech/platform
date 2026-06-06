@@ -6,13 +6,16 @@ import Link from 'next/link';
 
 import { BellIcon, HeartMinusIcon, ShoppingBagIcon } from '@ff/ui';
 
+import { type WishlistProductItem } from '@/store/wishlist-store';
+
 import { type Product } from '../types';
 
 interface WishlistCardProps {
-  product: Product;
+  product: Product | WishlistProductItem;
+  onRemove?: (id: string) => void;
 }
 
-export function WishlistCard({ product }: WishlistCardProps) {
+export function WishlistCard({ product, onRemove }: WishlistCardProps) {
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
@@ -79,6 +82,7 @@ export function WishlistCard({ product }: WishlistCardProps) {
         <div className="mt-auto flex w-full items-center justify-between gap-2 pr-2">
           {/* Remove Button */}
           <button
+            onClick={() => onRemove?.(product.id)}
             className="border-border text-foreground-subtle hover:bg-destructive hover:text-destructive-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-full border p-2 transition-all active:scale-90"
             aria-label="Remove from favorites"
           >
