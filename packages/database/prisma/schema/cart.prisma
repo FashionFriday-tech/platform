@@ -1,0 +1,20 @@
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  size      String   @default("Standard")
+  color     String   @default("Standard")
+  quantity  Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Fast lookups & Native Deduplication per user + product + size + color variant
+  @@unique([userId, productId, size, color])
+  @@index([userId, createdAt])
+  @@index([productId])
+  @@map("cart_items")
+}

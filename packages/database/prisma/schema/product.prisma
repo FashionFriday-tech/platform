@@ -65,6 +65,7 @@ model Product {
   reviews       Review[]
   variants      ProductVariant[]
   wishlistItems WishlistItem[]
+  cartItems     CartItem[]
 
   @@index([categoryId])
   @@index([status])
