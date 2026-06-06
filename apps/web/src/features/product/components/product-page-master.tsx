@@ -9,6 +9,7 @@ import {
   BellIcon,
   EyeIcon,
   FilledStarIcon,
+  HeartFilledIcon,
   HeartIcon,
   RefreshCcwIcon,
   ShareIcon,
@@ -19,7 +20,10 @@ import {
   TruckIcon,
 } from '@ff/ui';
 
+import { useWishlist } from '@/features/wishlist';
+
 import { useLiveProductMetric } from '../hooks/use-live-product-metric';
+import CTAStickyButtons from './cta-sticky-buttons';
 import Gallery from './gallery';
 import RelatedProducts from './related-products';
 import ReviewSection from './review-section';
@@ -33,8 +37,25 @@ export default function ProductPageMaster({
   similarProducts: Product[];
 }): JSX.Element {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [isWishlisted, setIsWishlisted] = useState(true);
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
+
+  const { isItemWishlisted, toggleWishlist } = useWishlist();
+  const productId = product.id;
+  const isWishlisted = isItemWishlisted(productId);
+
+  const handleWishlistToggle = () => {
+    void toggleWishlist({
+      id: productId,
+      name: product.name,
+      slug: product.slug,
+      price: product.price.sellingPrice,
+      originalPrice: product.price.ogPrice,
+      image: product.media.mainImage,
+      category: Array.isArray(product.brand)
+        ? product.brand[0]
+        : (product.brand ?? 'Fashion Friday'),
+    });
+  };
 
   const displaySizes = product.attributes.sizes;
   const cols = Math.ceil(displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2);
@@ -214,17 +235,20 @@ export default function ProductPageMaster({
 
               <div className="bg-foreground text-background flex items-center gap-1 rounded-full p-1 shadow-2xl lg:flex-1">
                 <button
-                  onClick={() => {
-                    setIsWishlisted((prev) => !prev);
-                  }}
-                  aria-label="Toggle wishlist"
-                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
+                  type="button"
+                  onClick={handleWishlistToggle}
+                  aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full transition-all duration-300 active:scale-90 ${
                     isWishlisted
-                      ? 'bg-background text-foreground scale-100'
-                      : 'text-background hover:bg-background/10 scale-125 animate-pulse'
+                      ? 'scale-105 bg-red-500/20 text-red-500'
+                      : 'text-background hover:bg-background/10'
                   }`}
                 >
-                  <HeartIcon size={20} fill={isWishlisted ? 'currentColor' : 'none'} />
+                  {isWishlisted ? (
+                    <HeartFilledIcon size={22} className="text-red-500" />
+                  ) : (
+                    <HeartIcon size={22} />
+                  )}
                 </button>
 
                 <button className="bg-background text-foreground border-background flex h-14 flex-1 items-center justify-center gap-3 rounded-full border-2 py-4 font-bold uppercase transition-all hover:scale-[1.02] active:scale-95">
@@ -243,19 +267,19 @@ export default function ProductPageMaster({
                 },
                 {
                   icon: <ShieldCheckIcon size={18} />,
-                  label: 'Authentic Quality',
-                  sub: `${product.attributes.quality} Grade`,
+                  label: '100% Authentic',
+                  sub: 'Quality checked',
                 },
-                { icon: <StarIcon size={18} />, label: 'Top Rated', sub: 'Trusted by 5k+ users' },
-              ].map((item, i) => (
+                { icon: <StarIcon size={18} />, label: 'Top Rated', sub: '4.8/5 Star Rating' },
+              ].map((perk, i) => (
                 <div
                   key={i}
-                  className="bg-background border-border flex items-center gap-3 rounded-full border p-4"
+                  className="border-border/60 bg-foreground/2 flex items-center gap-3 rounded-2xl border p-3"
                 >
-                  <div className="text-brand shrink-0">{item.icon}</div>
+                  <div className="text-foreground-muted">{perk.icon}</div>
                   <div>
-                    <h4 className="text-[9px] leading-tight font-black uppercase">{item.label}</h4>
-                    <p className="text-foreground-subtle text-[8px] font-bold">{item.sub}</p>
+                    <p className="text-xs font-semibold">{perk.label}</p>
+                    <p className="text-foreground-muted text-[10px]">{perk.sub}</p>
                   </div>
                 </div>
               ))}
@@ -264,29 +288,40 @@ export default function ProductPageMaster({
         </div>
       </section>
 
+      {/* --- WATCHING POPUP --- */}
       {showWatchingPopup && (
-        <div className="bg-background/60 fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-2xl transition-all">
-          <div className="relative w-full max-w-90">
-            <div className="flex flex-col items-center justify-center rounded-[40px] border border-white/5 bg-black p-10 text-center text-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
-              <div className="mb-8 flex items-center gap-2">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-500" />
-                <span className="text-[10px] font-black tracking-[0.4em] text-zinc-400 uppercase">
-                  Live
+        <div
+          onClick={() => {
+            setShowWatchingPopup(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+            className="border-border bg-background relative w-full max-w-sm overflow-hidden rounded-[2rem] border p-8 shadow-2xl"
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-6 flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500"></span>
+                </span>
+                <span className="text-xs font-bold tracking-widest text-red-500 uppercase">
+                  Live Activity
                 </span>
               </div>
 
-              <div className="mb-6 flex items-center justify-center gap-4">
-                <h2 className="text-6xl leading-none font-black tracking-tighter italic">
-                  {liveMetric}
-                </h2>
-                <div className="flex animate-bounce flex-col text-red-500">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="text-4xl font-black">{liveMetric}+</span>
+                <div className="rounded-full bg-red-500/10 p-2 text-red-500">
                   <svg
-                    width="24"
-                    height="24"
+                    className="h-5 w-5"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="4"
+                    strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
@@ -321,6 +356,7 @@ export default function ProductPageMaster({
 
       <ReviewSection />
       <RelatedProducts products={similarProducts} />
+      <CTAStickyButtons isWishlisted={isWishlisted} onWishlistToggle={handleWishlistToggle} />
     </div>
   );
 }
