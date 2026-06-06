@@ -2,53 +2,54 @@
 
 import React from 'react';
 
-import { HeartIcon, HeartPlusIcon, ShoppingBagIcon } from '@ff/ui';
+import { HeartFilledIcon, HeartIcon, ShoppingBagIcon } from '@ff/ui';
 
 interface CTAStickyButtonsProps {
   isWishlisted: boolean;
-  setIsWishlisted: React.Dispatch<React.SetStateAction<boolean>>;
+  onWishlistToggle: () => void;
   onBuyNow?: () => void;
   onCartClick?: () => void;
 }
 
 const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
   isWishlisted,
-  setIsWishlisted,
+  onWishlistToggle,
   onBuyNow,
   onCartClick,
 }) => {
   return (
-    <div className="fixed right-0 bottom-0 left-0 z-[100] flex w-full items-center gap-2 border-t border-white/10 bg-black px-4 py-3 md:hidden lg:hidden">
+    <div className="border-foreground/10 bg-background/90 fixed right-0 bottom-0 left-0 z-50 flex w-full items-center gap-2 border-t px-4 py-3 backdrop-blur-md md:hidden lg:hidden">
       {/* Wishlist Button */}
       <button
-        onClick={() => {
-          setIsWishlisted((prev) => !prev);
-        }}
-        aria-label="Toggle wishlist"
-        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/50 transition-all duration-300`}
+        type="button"
+        onClick={onWishlistToggle}
+        aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+        className={`border-border hover:border-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-all duration-300 active:scale-90 ${
+          isWishlisted ? 'border-red-500 bg-red-500/10 text-red-500' : 'text-foreground'
+        }`}
       >
         {isWishlisted ? (
-          <HeartIcon size={20} fill="currentColor" />
+          <HeartFilledIcon size={20} className="scale-110 text-red-500" />
         ) : (
-          <HeartPlusIcon size={20} className="animate-pulse" />
+          <HeartIcon size={20} />
         )}
       </button>
 
       {/* Main Buy Button - Centered Pill */}
       <button
+        type="button"
         onClick={onBuyNow}
-        className="flex h-12 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-white/50 text-lg font-black uppercase transition-colors outline-none hover:bg-white/5"
+        className="bg-foreground text-background flex h-12 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-full text-lg font-black uppercase shadow-lg transition-transform outline-none active:scale-95"
       >
-        <span className="animate-glaze bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#9ca3af,#ffffff)] bg-[length:400%_100%] bg-clip-text whitespace-nowrap text-transparent">
-          Buy Now
-        </span>
+        <span className="whitespace-nowrap">Buy Now</span>
       </button>
 
       {/* Cart/Bag Button */}
       <button
+        type="button"
         onClick={onCartClick}
         aria-label="View Cart"
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/50 text-white transition-all hover:bg-white/10 active:scale-90"
+        className="border-border hover:bg-background-muted text-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-all active:scale-90"
       >
         <ShoppingBagIcon size={18} />
       </button>
