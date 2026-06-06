@@ -16,6 +16,7 @@ import {
 } from '@ff/ui';
 import { AnimatePresence } from 'motion/react';
 
+import { useCart } from '@/features/cart';
 import { useAuthStore } from '@/store/auth-store';
 
 import { SearchOverlay } from './SearchOverlay/SearchOverlay';
@@ -59,6 +60,7 @@ const navStructure = [
 
 export function Header() {
   const user = useAuthStore((state) => state.user);
+  const { itemCount, isMounted } = useCart();
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -126,9 +128,11 @@ export function Header() {
               </Link>
               <Link href="/checkout/cart" className="relative">
                 <ShoppingBagIcon className="hover:text-brand text-2xl transition-colors" />
-                <span className="bg-brand text-brand-foreground absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
-                  2
-                </span>
+                {isMounted && itemCount > 0 && (
+                  <span className="bg-brand text-brand-foreground absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
+                    {itemCount}
+                  </span>
+                )}
               </Link>
               <Link
                 href="/account"
@@ -259,13 +263,16 @@ export function Header() {
             width={32}
             height={32}
             alt="logo"
-            className="dark:invert"
-            style={{ height: 'auto' }}
+            className="h-8 w-8 object-contain dark:invert"
           />
         </Link>
         <Link href="/checkout/cart" className="relative">
           <ShoppingBagIcon className="text-[25px]" />
-          <span className="bg-brand border-background absolute top-0 right-0 h-2 w-2 rounded-full border-2" />
+          {isMounted && itemCount > 0 && (
+            <span className="bg-brand text-brand-foreground absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
+              {itemCount}
+            </span>
+          )}
         </Link>
         <Link href="/account">
           <UserIcon className="text-[25px]" />
