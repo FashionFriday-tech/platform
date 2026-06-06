@@ -4,12 +4,12 @@ import React from 'react';
 
 import { AnimatePresence, motion } from 'motion/react';
 
-import { wishlistItems } from '../data';
+import { useWishlist } from '../hooks/use-wishlist';
 import { EmptyWishlist } from './empty-wishlist';
 import { WishlistCard } from './wishlist-card';
 
 export function WishlistPage() {
-  const hasItems = wishlistItems.length > 0;
+  const { wishlistItems, hasItems, itemCount, removeFromWishlist } = useWishlist();
 
   return (
     <main className="bg-background text-foreground min-h-screen md:pt-20">
@@ -23,7 +23,7 @@ export function WishlistPage() {
 
           {/* Right: Favorite Icon */}
           <span className="px-2 py-0.5 text-3xl">
-            {wishlistItems.length} <span className="text-sm">Items</span>
+            {itemCount} <span className="text-sm">Items</span>
           </span>
         </div>
       </header>
@@ -42,12 +42,14 @@ export function WishlistPage() {
               {wishlistItems.map((item) => (
                 <motion.div
                   key={item.id}
+                  layout
                   variants={{
                     hidden: { opacity: 0, y: 20 },
                     visible: { opacity: 1, y: 0 },
                   }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                 >
-                  <WishlistCard product={item} />
+                  <WishlistCard product={item} onRemove={removeFromWishlist} />
                 </motion.div>
               ))}
             </motion.div>
