@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { AlertIcon, BriefcaseIcon, CheckIcon, CloseIcon, HomeIcon, LoaderIcon } from '@ff/ui';
+import { BriefcaseIcon, CheckIcon, CloseIcon, HomeIcon, LoaderIcon, ShieldCheckIcon } from '@ff/ui';
 
 import { useAddressForm } from '../hooks/use-address-form';
 import { type Address } from '../types';
+import { formatPhone334 } from '../utils/phone';
 import { FormInput } from './form-input';
 
 interface AddressFormModalProps {
@@ -26,16 +27,24 @@ export const AddressFormModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="bg-background/60 absolute inset-0 backdrop-blur-md" onClick={onClose} />
+      <div className="bg-background/60 absolute inset-0 backdrop-blur-md" />
       <div className="bg-background-elevated border-border relative flex max-h-[90vh] w-full max-w-lg flex-col rounded-4xl border shadow-2xl">
-        <div className="border-border bg-background-elevated sticky top-0 z-10 flex items-center justify-between rounded-t-4xl border-b px-6 py-5">
-          <h2 className="text-lg font-black tracking-tighter uppercase">Address Details</h2>
+        <div className="border-border bg-background-elevated sticky top-0 z-10 flex flex-col items-center justify-center rounded-t-4xl border-b px-6 py-5">
           <button
             onClick={onClose}
-            className="hover:bg-background-muted rounded-full p-2 transition-colors"
+            aria-label="Close modal"
+            className="hover:bg-background-muted absolute top-5 right-5 rounded-full p-2 transition-colors"
           >
-            <CloseIcon size={20} />
+            <CloseIcon size={18} />
           </button>
+
+          <h2 className="text-center text-lg font-black tracking-tight uppercase">
+            Address Details
+          </h2>
+          <p className="text-foreground-subtle mt-1 flex items-center justify-center gap-1.5 text-center text-[10px] tracking-widest uppercase">
+            <ShieldCheckIcon size={13} className="shrink-0 text-emerald-500" />
+            <span>Safe & Secure Delivery Info</span>
+          </p>
         </div>
 
         <div className="no-scrollbar space-y-6 overflow-y-auto p-4">
@@ -60,16 +69,21 @@ export const AddressFormModal = ({
                 />
               )}
             </div>
-            <div className="bg-background-muted border-border flex flex-col justify-center rounded-xl border px-3">
-              <span className="text-foreground-subtle mb-1 text-[8px] leading-none font-black tracking-widest uppercase">
-                Detected Region
-              </span>
-              <p className="text-foreground truncate text-[10px] font-bold">
-                {formData.district
-                  ? `${formData.district ?? ''}, ${formData.state ?? ''}`
-                  : 'Waiting for Pin...'}
-              </p>
-            </div>
+            <FormInput
+              label="Detected Region"
+              placeholder="waiting for pincode..."
+              value={formData.district ? `${formData.district}, ${formData.state ?? ''}` : ''}
+              readOnly
+              badge={
+                formData.district ? (
+                  <span className="text-[8px] font-bold tracking-wider text-emerald-500 uppercase opacity-80">
+                    Auto-Detected
+                  </span>
+                ) : (
+                  <span className="text-foreground-subtle text-[8px] opacity-40">Auto</span>
+                )
+              }
+            />
           </div>
 
           <div className="space-y-4">
@@ -95,7 +109,7 @@ export const AddressFormModal = ({
             </div>
             <div className="flex gap-2">
               <FormInput
-                label="Landmark"
+                label="Landmark (Optional)"
                 placeholder="Famous place nearby"
                 value={formData.landmark ?? ''}
                 onChange={(v: string) => {
@@ -103,9 +117,8 @@ export const AddressFormModal = ({
                 }}
               />
               <FormInput
-                label="Building / House No"
+                label="Building / House No (Optional)"
                 placeholder="No. / Name"
-                required
                 value={formData.addressLine1 ?? ''}
                 onChange={(v: string) => {
                   setFormData({ ...formData, addressLine1: v });
@@ -118,7 +131,7 @@ export const AddressFormModal = ({
 
           <div className="space-y-4">
             <FormInput
-              label="Recipient Name"
+              label="Full Name"
               placeholder="Full name"
               required
               value={formData.name ?? ''}
@@ -130,12 +143,13 @@ export const AddressFormModal = ({
               <FormInput
                 label="Primary Phone"
                 prefix="+91"
+                placeholder="000 000 0000"
                 required
                 value={formData.phone ?? ''}
                 onChange={(v: string) => {
                   setFormData({
                     ...formData,
-                    phone: v.replace(/\D/g, '').slice(0, 10),
+                    phone: formatPhone334(v),
                   });
                 }}
               />
@@ -143,19 +157,20 @@ export const AddressFormModal = ({
                 inputRef={altPhoneRef}
                 label="Alt Phone (Optional)"
                 prefix="+91"
+                placeholder="000 000 0000"
                 value={formData.altPhone ?? ''}
                 onChange={(v: string) => {
                   setFormData({
                     ...formData,
-                    altPhone: v.replace(/\D/g, '').slice(0, 10),
+                    altPhone: formatPhone334(v),
                   });
                 }}
               />
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-between gap-4 pt-2 sm:flex-row">
-            <div className="bg-background-muted border-border flex w-full rounded-full border p-1 sm:w-auto">
+          <div className="flex flex-col gap-4 pt-2">
+            <div className="bg-background-muted border-border flex w-full rounded-full border p-1">
               {(['Home', 'Work'] as const).map((t) => (
                 <button
                   key={t}
@@ -163,16 +178,16 @@ export const AddressFormModal = ({
                   onClick={() => {
                     setFormData({ ...formData, type: t });
                   }}
-                  className={`flex-1 rounded-full py-2 text-[10px] font-black tracking-widest uppercase transition-all sm:px-6 ${
+                  className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 text-[11px] font-black tracking-widest uppercase transition-all ${
                     formData.type === t
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-foreground-subtle'
+                      ? 'bg-foreground text-background shadow-md'
+                      : 'text-foreground-subtle hover:text-foreground'
                   }`}
                 >
                   {t === 'Home' ? (
-                    <HomeIcon size={10} className="mr-1 inline" />
+                    <HomeIcon size={12} className="inline" />
                   ) : (
-                    <BriefcaseIcon size={10} className="mr-1 inline" />
+                    <BriefcaseIcon size={12} className="inline" />
                   )}
                   {t}
                 </button>
@@ -204,12 +219,7 @@ export const AddressFormModal = ({
           </div>
         </div>
 
-        <div className="border-border bg-background-muted flex flex-col gap-2 rounded-b-4xl border-t px-6 py-5">
-          {!isFormValid && (
-            <p className="text-destructive flex items-center justify-center gap-1 text-center text-[10px] font-bold tracking-tight uppercase">
-              <AlertIcon size={12} /> Fill all required fields
-            </p>
-          )}
+        <div className="border-border bg-background-muted flex flex-col gap-2.5 rounded-b-4xl border-t px-6 py-5">
           <button
             disabled={!isFormValid}
             onClick={() => {
@@ -218,13 +228,14 @@ export const AddressFormModal = ({
                 ...formData,
               } as Address);
             }}
-            className={`w-full rounded-4xl py-4 text-xs font-black tracking-[0.2em] uppercase transition-all ${
+            className={`flex w-full items-center justify-center gap-2 rounded-4xl py-4 text-xs font-black tracking-[0.2em] uppercase transition-all ${
               isFormValid
                 ? 'bg-brand text-brand-foreground shadow-brand/20 shadow-xl active:scale-95'
                 : 'bg-border text-foreground-subtle cursor-not-allowed'
             }`}
           >
-            Save Address
+            <ShieldCheckIcon size={15} />
+            <span>Save Address</span>
           </button>
         </div>
       </div>
