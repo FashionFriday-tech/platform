@@ -2,8 +2,11 @@
 
 import React, { useState } from 'react';
 
-import { CloseIcon } from '@ff/ui';
+import { CloseIcon, ShieldCheckIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
+
+import { cleanPhoneDigits, formatPhone334 } from '@/features/addresses';
+import { useAuthStore } from '@/store/auth-store';
 
 import { type AddressDetails } from '../types';
 
@@ -20,24 +23,39 @@ export function AddressFormDrawer({
   onSave,
   initialData,
 }: AddressFormDrawerProps) {
-  const [formData, setFormData] = useState<AddressDetails>(
-    initialData ?? {
+  const user = useAuthStore((state) => state.user);
+
+  const [formData, setFormData] = useState<AddressDetails>(() => {
+    if (initialData) {
+      return {
+        ...initialData,
+        primaryPhone: formatPhone334(initialData.primaryPhone),
+        altPhone: initialData.altPhone ? formatPhone334(initialData.altPhone) : '',
+      };
+    }
+    const cleanPhone = user?.phone ? user.phone.replace(/\D/g, '').slice(-10) : '';
+    return {
       pincode: '',
       city: '',
       area: '',
       landmark: '',
       building: '',
-      recipientName: '',
-      primaryPhone: '+91 ',
-      altPhone: '+91 ',
-    },
-  );
+      recipientName: user?.name ?? '',
+      primaryPhone: cleanPhone ? formatPhone334(cleanPhone) : '',
+      altPhone: '',
+    };
+  });
 
   const validate = () => {
     if (formData.pincode.length !== 6) {
       return false;
     }
-    if (!formData.city || !formData.area || !formData.building || !formData.recipientName) {
+    if (
+      !formData.city ||
+      !formData.area ||
+      !formData.recipientName ||
+      cleanPhoneDigits(formData.primaryPhone).length !== 10
+    ) {
       return false;
     }
     return true;
@@ -51,7 +69,6 @@ export function AddressFormDrawer({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
             className="bg-background/50 fixed inset-0 z-60 backdrop-blur-xl"
           />
           <motion.div
@@ -61,13 +78,22 @@ export function AddressFormDrawer({
             transition={{ type: 'spring', damping: 20 }}
             className="bg-background border-border fixed right-0 bottom-0 left-0 z-70 mx-auto flex max-h-[92vh] max-w-3xl flex-col rounded-t-[3rem] border-t shadow-2xl"
           >
-            <div className="flex items-center justify-between p-8 pb-6 md:p-12">
-              <h2 className="text-2xl font-black tracking-tighter uppercase italic">
-                Address Details
-              </h2>
-              <button onClick={onClose} className="bg-background-muted rounded-full p-3">
+            <div className="relative flex flex-col items-center justify-center p-8 pb-6 md:p-10 md:pb-8">
+              <button
+                onClick={onClose}
+                aria-label="Close"
+                className="bg-background-muted hover:bg-background-muted/80 absolute top-8 right-8 rounded-full p-3 transition-colors md:top-10 md:right-12"
+              >
                 <CloseIcon size={20} />
               </button>
+
+              <h2 className="text-center text-2xl font-black tracking-tighter uppercase italic">
+                Address Details
+              </h2>
+              <p className="text-foreground-muted mt-1.5 flex items-center justify-center gap-1.5 text-center text-xs tracking-widest uppercase">
+                <ShieldCheckIcon size={14} className="shrink-0 text-emerald-500" />
+                <span>Safe & Secure Delivery Info</span>
+              </p>
             </div>
 
             <div className="custom-scrollbar flex-1 space-y-4 overflow-y-auto px-4 md:px-12">
@@ -112,7 +138,7 @@ export function AddressFormDrawer({
 
               <div className="grid grid-cols-2 gap-2">
                 <InputBox
-                  label="Building / House No"
+                  label="Building / House No (Optional)"
                   value={formData.building}
                   onChange={(v: string) => {
                     setFormData({ ...formData, building: v });
@@ -120,17 +146,17 @@ export function AddressFormDrawer({
                   placeholder="No. / Name"
                 />
                 <InputBox
-                  label="Landmark"
+                  label="Landmark (Optional)"
                   value={formData.landmark}
                   onChange={(v: string) => {
                     setFormData({ ...formData, landmark: v });
                   }}
-                  placeholder="Optional"
+                  placeholder="Famous place nearby"
                 />
               </div>
 
               <InputBox
-                label="Recipient Name"
+                label="Full Name"
                 value={formData.recipientName}
                 onChange={(v: string) => {
                   setFormData({ ...formData, recipientName: v });
@@ -143,15 +169,15 @@ export function AddressFormDrawer({
                   label="Primary Phone"
                   value={formData.primaryPhone}
                   onChange={(v: string) => {
-                    setFormData({ ...formData, primaryPhone: v });
+                    setFormData({ ...formData, primaryPhone: formatPhone334(v) });
                   }}
-                  placeholder="+91"
+                  placeholder="000 000 0000"
                 />
                 <InputBox
                   label="Alt Phone"
                   value={formData.altPhone}
                   onChange={(v: string) => {
-                    setFormData({ ...formData, altPhone: v });
+                    setFormData({ ...formData, altPhone: formatPhone334(v) });
                   }}
                   placeholder="Optional"
                 />
@@ -165,9 +191,10 @@ export function AddressFormDrawer({
                     onSave(formData);
                   }
                 }}
-                className="bg-foreground text-background w-full rounded-full py-6 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95"
+                className="bg-foreground text-background flex w-full items-center justify-center gap-2 rounded-full py-6 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95"
               >
-                Save Shipping Address
+                <ShieldCheckIcon size={16} />
+                <span>Save Shipping Address</span>
               </button>
             </div>
           </motion.div>
