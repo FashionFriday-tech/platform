@@ -3,6 +3,7 @@ import React from 'react';
 import { BriefcaseIcon, EditIcon, HomeIcon, PhoneIcon, StarIcon, TrashIcon } from '@ff/ui';
 
 import { type Address } from '../types';
+import { formatPhone334 } from '../utils/phone';
 
 interface AddressCardProps {
   address: Address;
@@ -80,11 +81,12 @@ export const AddressCard = ({ address, onEdit, onDelete, onSetDefault }: Address
 
       <div className="flex flex-wrap gap-2 pt-3">
         <div className="text-foreground bg-background-muted border-border flex items-center gap-2 rounded-lg border px-3 py-1.5 text-[10px] font-black">
-          <PhoneIcon size={12} className="text-brand" /> <span>+91 {address.phone}</span>
+          <PhoneIcon size={12} className="text-brand" />{' '}
+          <span>+91 {formatPhone334(address.phone)}</span>
         </div>
         {address.altPhone && (
           <div className="text-foreground-subtle bg-background-muted/50 border-border flex items-center gap-2 rounded-lg border border-dashed px-3 py-1.5 text-[10px] font-black">
-            <PhoneIcon size={12} /> <span>+91 {address.altPhone}</span>
+            <PhoneIcon size={12} /> <span>+91 {formatPhone334(address.altPhone)}</span>
           </div>
         )}
       </div>
