@@ -9,7 +9,7 @@ import { helpSections } from '../constants';
 
 export function HelpHub() {
   const handleEmailClick = () => {
-    const email = 'help@fashionfriday.in';
+    const email = 'support@fashionfriday.in';
     const subject = 'Support Request';
 
     const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
