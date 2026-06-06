@@ -4,10 +4,11 @@ import { ThrottlerModule } from '@nestjs/throttler';
 
 import { AppController } from './app.controller';
 import { PrismaModule } from './database/prisma.module';
-import { PrismaService } from './database/prisma.service';
+import { AddressesModule } from './modules/addresses/addresses.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BrandsModule } from './modules/brands/brands.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
+import { CartModule } from './modules/cart/cart.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CollectionsModule } from './modules/collections/collections.module';
 import { CustomersModule } from './modules/customers/customers.module';
@@ -25,6 +26,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,
+    AddressesModule,
     BrandsModule,
     CollectionsModule,
     ProductsModule,
@@ -38,6 +40,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     CustomersModule,
     FaqModule,
     WishlistModule,
+    CartModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
@@ -46,6 +49,6 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     ]),
   ],
   controllers: [AppController],
-  providers: [PrismaService],
+  providers: [],
 })
 export class AppModule {}
