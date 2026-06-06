@@ -218,11 +218,11 @@ export default function ProductPageMaster({
 
             <ProductVariantPage />
 
-            {product.categoryId === 'SNEAKERS' && (
+            {displaySizes && displaySizes.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-end justify-between">
                   <label className="text-[10px] font-black tracking-widest uppercase">
-                    Select Size (EU)
+                    Select Size {product.categoryId === 'SNEAKERS' ? '(EU)' : ''}
                   </label>
                   <Link
                     href="/help/size-guide"
