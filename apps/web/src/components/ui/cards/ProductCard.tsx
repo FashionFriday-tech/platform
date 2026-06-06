@@ -1,10 +1,13 @@
 'use client';
 
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { StarBadgeIcon, StarsIcon } from '@ff/ui';
+import { HeartFilledIcon, HeartIcon, StarBadgeIcon, StarsIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+
+import { useWishlist } from '@/features/wishlist';
 
 interface Product {
   id: string | number;
@@ -17,13 +20,30 @@ interface Product {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
+  const { isItemWishlisted, toggleWishlist } = useWishlist();
+  const productId = String(product.id);
+  const isWishlisted = isItemWishlisted(productId);
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    void toggleWishlist({
+      id: productId,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      image: product.promoImage || '/images/placeholder.png',
+      category: product.brand,
+    });
+  };
+
   return (
     <motion.div
       layout
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="group w-full cursor-pointer"
+      className="group relative w-full cursor-pointer"
     >
       <Link href={`/product/${product.slug}`} className="block w-full">
         <div className="bg-foreground/5 relative aspect-4/5 w-full overflow-hidden rounded-[2.5rem]">
@@ -34,6 +54,23 @@ export default function ProductCard({ product }: { product: Product }) {
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+
+          {/* Favorite Floating Button */}
+          <button
+            type="button"
+            onClick={handleWishlistToggle}
+            aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            className="bg-background/80 hover:bg-background border-border/40 hover:border-border text-foreground absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border shadow-md backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-90"
+          >
+            {isWishlisted ? (
+              <HeartFilledIcon size={18} className="scale-110 text-red-500 transition-transform" />
+            ) : (
+              <HeartIcon
+                size={18}
+                className="text-foreground-muted hover:text-foreground transition-colors"
+              />
+            )}
+          </button>
         </div>
       </Link>
 
