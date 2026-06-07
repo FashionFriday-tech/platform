@@ -30,7 +30,7 @@ async function bootstrap() {
     prefix: '/uploads/',
   });
 
-  await app.listen(process.env.PORT ?? 3002, '0.0.0.0');
+  await app.listen(process.env.PORT ?? 3002);
 }
 
 bootstrap().catch((err) => {
