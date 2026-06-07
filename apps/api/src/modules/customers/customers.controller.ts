@@ -36,4 +36,41 @@ export class CustomersController {
   async toggleCustomerStatus(@Param('id') id: string) {
     return this.service.toggleCustomerStatus(id);
   }
+
+  @Get(':id/cart')
+  async getCustomerCart(@Param('id') id: string) {
+    return this.service.getCustomerCart(id);
+  }
+
+  @Get(':id/wishlist')
+  async getCustomerWishlist(@Param('id') id: string) {
+    return this.service.getCustomerWishlist(id);
+  }
+
+  @Get(':id/addresses')
+  async getCustomerAddresses(@Param('id') id: string) {
+    return this.service.getCustomerAddresses(id);
+  }
+
+  @Post(':id/addresses')
+  async createCustomerAddress(
+    @Param('id') id: string,
+    @Body() dto: any
+  ) {
+    return this.service.createCustomerAddress(id, dto);
+  }
+
+  @Patch(':id/cart/:itemId')
+  async updateCustomerCartItem(
+    @Param('id') id: string,
+    @Param('itemId') itemId: string,
+    @Body() dto: { quantity: number }
+  ) {
+    return this.service.updateCustomerCartItem(id, itemId, dto.quantity);
+  }
+
+  @Post(':id/checkout-cart')
+  async checkoutCustomerCart(@Param('id') id: string) {
+    return this.service.checkoutCustomerCart(id);
+  }
 }

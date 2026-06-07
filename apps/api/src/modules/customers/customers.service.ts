@@ -39,6 +39,9 @@ export class CustomersService {
         totalSpent,
         joinDate: user.createdAt.toISOString(),
         lastOrderDate,
+        wishlistCount: 0,
+        cartCount: 0,
+        addressCount: 0,
       };
     });
   }
@@ -51,6 +54,13 @@ export class CustomersService {
           orderBy: { createdAt: 'desc' },
           include: {
             items: true,
+          },
+        },
+        _count: {
+          select: {
+            wishlistItems: true,
+            cartItems: true,
+            addresses: true,
           },
         },
       },
@@ -68,16 +78,21 @@ export class CustomersService {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}`,
+      avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=000000&textColor=ffffff`,
       status: user.accountStatus === 'ACTIVE' ? 'active' : 'blocked',
       ordersCount: orders.length,
       totalSpent,
+      wishlistCount: user._count.wishlistItems,
+      cartCount: user._count.cartItems,
+      addressCount: user._count.addresses,
       joinDate: user.createdAt.toISOString(),
       orders: orders.map((order) => ({
         id: order.id,
         orderNumber: order.orderNumber,
         total: Number(order.finalAmount),
         status: order.status.toLowerCase(),
+        paymentMethod: order.paymentMethod,
+        paymentStatus: order.paymentStatus,
         createdAt: order.createdAt.toISOString(),
         items: order.items.map((item) => ({
           id: item.id,
@@ -130,6 +145,9 @@ export class CustomersService {
       status: 'active',
       ordersCount: 0,
       totalSpent: 0,
+      wishlistCount: 0,
+      cartCount: 0,
+      addressCount: 0,
       joinDate: newUser.createdAt.toISOString(),
       lastOrderDate: newUser.createdAt.toISOString(),
     };
@@ -275,5 +293,226 @@ export class CustomersService {
       avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(updated.name)}`,
       status: updated.accountStatus === 'ACTIVE' ? 'active' : 'blocked',
     };
+  }
+
+  async getCustomerCart(id: string) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id },
+    });
+
+    if (user?.role !== UserRole.CUSTOMER) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const items = await this.prisma.db.cartItem.findMany({
+      where: { userId: id },
+      include: {
+        product: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return items.map((item) => ({
+      id: item.id,
+      productId: item.productId,
+      name: item.product?.name || 'Unknown Product',
+      image: item.product?.mainImage || '',
+      price: Number(item.product?.sellingPrice || 0),
+      quantity: item.quantity,
+      size: item.size,
+      color: item.color,
+      addedAt: item.createdAt.toISOString(),
+    }));
+  }
+
+  async getCustomerWishlist(id: string) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id },
+    });
+
+    if (user?.role !== UserRole.CUSTOMER) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const items = await this.prisma.db.wishlistItem.findMany({
+      where: { userId: id },
+      include: {
+        product: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return items.map((item) => ({
+      id: item.id,
+      productId: item.productId,
+      name: item.product?.name || 'Unknown Product',
+      image: item.product?.mainImage || '',
+      price: Number(item.product?.sellingPrice || 0),
+      addedAt: item.createdAt.toISOString(),
+    }));
+  }
+  async getCustomerAddresses(id: string) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id },
+    });
+
+    if (user?.role !== UserRole.CUSTOMER) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const addresses = await this.prisma.db.address.findMany({
+      where: { userId: id },
+      orderBy: { isDefault: 'desc' },
+    });
+
+    return addresses;
+  }
+
+  async createCustomerAddress(id: string, dto: any) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id },
+    });
+
+    if (user?.role !== UserRole.CUSTOMER) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const newAddress = await this.prisma.db.address.create({
+      data: {
+        userId: id,
+        fullName: dto.fullName,
+        phoneNumber: dto.phoneNumber,
+        altPhoneNumber: dto.altPhoneNumber || null,
+        label: dto.label || 'Home',
+        building: dto.building || null,
+        street: dto.street,
+        city: dto.city,
+        district: dto.district,
+        state: dto.state,
+        pincode: dto.pincode,
+        landmark: dto.landmark || null,
+        isDefault: dto.isDefault || false,
+      },
+    });
+
+    // If this is set to default, unset others
+    if (newAddress.isDefault) {
+      await this.prisma.db.address.updateMany({
+        where: { userId: id, id: { not: newAddress.id } },
+        data: { isDefault: false },
+      });
+    }
+
+    return newAddress;
+  }
+
+  async updateCustomerCartItem(id: string, itemId: string, quantity: number) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id },
+    });
+
+    if (user?.role !== UserRole.CUSTOMER) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const cartItem = await this.prisma.db.cartItem.findFirst({
+      where: { id: itemId, userId: id },
+    });
+
+    if (!cartItem) {
+      throw new NotFoundException('Cart item not found');
+    }
+
+    if (quantity <= 0) {
+      await this.prisma.db.cartItem.delete({
+        where: { id: itemId },
+      });
+    } else {
+      await this.prisma.db.cartItem.update({
+        where: { id: itemId },
+        data: { quantity },
+      });
+    }
+
+    return this.getCustomerCart(id);
+  }
+
+  async checkoutCustomerCart(id: string) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id },
+    });
+
+    if (user?.role !== UserRole.CUSTOMER) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const items = await this.prisma.db.cartItem.findMany({
+      where: { userId: id },
+      include: { product: true },
+    });
+
+    if (items.length === 0) {
+      throw new BadRequestException('Cart is empty');
+    }
+
+    const orderNumber = `FF-${Math.floor(100000 + Math.random() * 900000)}`;
+    let totalAmount = 0;
+
+    const orderItems = items.map((item) => {
+      const price = Number(item.product?.sellingPrice || 0);
+      totalAmount += price * item.quantity;
+      return {
+        productId: item.productId,
+        name: item.product?.name || 'Unknown Product',
+        image: item.product?.mainImage || '',
+        size: item.size,
+        color: item.color,
+        price,
+        quantity: item.quantity,
+      };
+    });
+
+    const defaultAddress = await this.prisma.db.address.findFirst({
+      where: { userId: id, isDefault: true },
+    });
+
+    const shippingAddress = defaultAddress
+      ? {
+          addressLine: defaultAddress.street,
+          city: defaultAddress.city,
+          state: defaultAddress.state,
+          pinCode: defaultAddress.pincode,
+        }
+      : {
+          addressLine: 'Admin Checkout',
+          city: 'N/A',
+          state: 'N/A',
+          pinCode: '000000',
+        };
+
+    return this.prisma.db.$transaction(async (tx) => {
+      const order = await tx.order.create({
+        data: {
+          userId: id,
+          orderNumber,
+          status: OrderStatus.CONFIRMED,
+          paymentStatus: PaymentStatus.PENDING,
+          paymentMethod: PaymentMethod.COD,
+          totalAmount,
+          finalAmount: totalAmount,
+          shippingAddress,
+          items: {
+            create: orderItems,
+          },
+        },
+        include: { items: true },
+      });
+
+      await tx.cartItem.deleteMany({
+        where: { userId: id },
+      });
+
+      return order;
+    });
   }
 }
