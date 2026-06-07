@@ -16,6 +16,11 @@ import { AnimatePresence, motion } from 'motion/react';
 
 import { useCheckoutPayment } from '../hooks/use-checkout-payment';
 import { CheckoutProgress } from './checkout-progress';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { useCartStore } from '@/store/cart-store';
+import { useAuthStore } from '@/store/auth-store';
+import { createOrderAction } from '@/features/orders';
 
 export function PaymentStep() {
   const {
@@ -28,7 +33,63 @@ export function PaymentStep() {
     baseTotal,
     codServiceFee,
     totalAmount,
+    cartItems,
   } = useCheckoutPayment();
+  const router = useRouter();
+  const [isPlacing, setIsPlacing] = React.useState(false);
+
+  const clearCart = useCartStore((state) => state.clearCart);
+  const user = useAuthStore((state) => state.user);
+
+  const handlePlaceOrder = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    console.log('[PaymentStep] ---------------- ORDER PROCESS STARTED ----------------');
+    console.log('[PaymentStep] Step 1: User state:', user ? { id: user.id, phone: user.phone } : 'UNAUTHENTICATED');
+    console.log('[PaymentStep] Step 1: Cart Items:', cartItems);
+    console.log('[PaymentStep] Step 1: Selected Payment Method:', paymentMethod);
+    console.log('[PaymentStep] Step 1: Base Total:', baseTotal, 'COD Fee:', codServiceFee, 'Payable:', totalAmount);
+
+    if (!user) {
+      console.warn('[PaymentStep] Blocked: User not authenticated. Redirecting to login.');
+      toast.error('Please sign in to complete your order.');
+      router.push('/login?redirect=/checkout/payment');
+      return;
+    }
+
+    if (!cartItems || cartItems.length === 0) {
+      console.warn('[PaymentStep] Blocked: Cart is empty.');
+      toast.error('Your cart is empty. Please add items before placing an order.');
+      router.push('/checkout/cart');
+      return;
+    }
+
+    try {
+      setIsPlacing(true);
+      const method = paymentMethod === 'cod' ? 'COD' : 'STRIPE';
+      console.log(`[PaymentStep] Step 2: Calling createOrderAction with method: ${method}...`);
+
+      const order = await createOrderAction({ paymentMethod: method });
+      console.log('[PaymentStep] Step 3: Order successfully created on server:', order);
+
+      // Clear local cart store and database cart
+      console.log('[PaymentStep] Step 4: Clearing cart (local and database)...');
+      await clearCart(true);
+
+      toast.success(`Order ${order.orderNumber || ''} placed successfully!`);
+      console.log('[PaymentStep] Step 5: Redirecting customer to /account/orders...');
+      router.push('/account/orders');
+    } catch (err: any) {
+      console.error('[PaymentStep] ERROR: Order placement failed:', err);
+      toast.error(err.message || 'Failed to place order. Please try again.');
+    } finally {
+      setIsPlacing(false);
+      console.log('[PaymentStep] ---------------- ORDER PROCESS FINISHED ----------------');
+    }
+  };
 
   return (
     <div className="bg-background text-foreground min-h-screen px-4 pb-40 md:px-6 lg:py-20">
@@ -221,9 +282,14 @@ export function PaymentStep() {
                 </p>
                 <p className="text-background text-2xl font-black italic">₹{totalAmount}</p>
               </div>
-              <button className="bg-background text-foreground flex w-full items-center justify-center gap-3 rounded-full px-8 py-4 text-sm font-black tracking-wide uppercase transition-all active:scale-95">
-                {paymentMethod === 'cod' ? `Pay ₹${codServiceFee} Now` : 'Pay Now'}
-                <ChevronRightIcon size={18} />
+              <button
+                type="button"
+                disabled={isPlacing}
+                onClick={handlePlaceOrder}
+                className="bg-background text-foreground flex w-full items-center justify-center gap-3 rounded-full px-8 py-4 text-sm font-black tracking-wide uppercase transition-all active:scale-95 disabled:opacity-50"
+              >
+                {isPlacing ? 'Placing Order...' : 'Place Order'}
+                {!isPlacing && <ChevronRightIcon size={18} />}
               </button>
             </div>
           </div>
