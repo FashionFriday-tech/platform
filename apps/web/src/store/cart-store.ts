@@ -137,34 +137,48 @@ export const useCartStore = create<CartState>()(
       },
 
       clearCart: async (isAuthenticated = false) => {
+        console.log('[CartStore] Clearing cart, isAuthenticated:', isAuthenticated);
         set({ items: [] });
+
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.removeItem('ff_cart_storage');
+          } catch {
+            // Ignore localStorage errors
+          }
+        }
 
         if (isAuthenticated) {
           try {
             await clearCartAction();
+            console.log('[CartStore] Successfully cleared server cart');
           } catch (error) {
-            console.error('Failed to clear cart on server:', error);
+            console.error('[CartStore] Failed to clear cart on server:', error);
           }
         }
       },
 
       syncWithServer: async (isAuthenticated = false) => {
+        console.log('[CartStore] syncWithServer called, isAuthenticated:', isAuthenticated);
         if (!isAuthenticated) {
           set({ isInitialized: true });
           return;
         }
 
         if (get().loading) {
+          console.log('[CartStore] syncWithServer already loading, skipping');
           return;
         }
 
         set({ loading: true });
         try {
           const localItems = get().items;
+          // Identify un-synced guest items (temporary IDs generated in guest session)
+          const guestItems = localItems.filter((item) => item.id.startsWith('temp_'));
 
-          // If guest added items locally, send them to sync endpoint
-          if (localItems.length > 0) {
-            const syncPayload = localItems.map((item) => ({
+          if (guestItems.length > 0) {
+            console.log(`[CartStore] Found ${guestItems.length} guest items to sync with server`);
+            const syncPayload = guestItems.map((item) => ({
               productId: item.productId,
               size: item.size || 'Standard',
               color: item.color || 'Standard',
@@ -173,31 +187,19 @@ export const useCartStore = create<CartState>()(
 
             const merged = await syncCartAction(syncPayload);
             if (merged !== null && Array.isArray(merged)) {
+              console.log('[CartStore] Guest items merged successfully:', merged.length, 'items');
               set({ items: merged, isInitialized: true });
-              // Clear guest cart cache from localStorage after successfully syncing with DB
-              if (typeof window !== 'undefined') {
-                try {
-                  localStorage.removeItem('ff_cart_storage');
-                } catch {
-                  // Ignore localStorage errors
-                }
-              }
               return;
             }
           }
 
-          // Otherwise fetch existing user cart from database
+          // Otherwise fetch current user cart from database
+          console.log('[CartStore] Fetching current user cart from database...');
           const remote = await fetchUserCartAction();
+          console.log(`[CartStore] Fetched ${Array.isArray(remote) ? remote.length : 0} items from server`);
           set({ items: Array.isArray(remote) ? remote : [], isInitialized: true });
-          if (typeof window !== 'undefined') {
-            try {
-              localStorage.removeItem('ff_cart_storage');
-            } catch {
-              // Ignore localStorage errors
-            }
-          }
         } catch (error) {
-          console.error('Failed to sync cart with server:', error);
+          console.error('[CartStore] Failed to sync cart with server:', error);
         } finally {
           set({ loading: false, isInitialized: true });
         }
