@@ -156,7 +156,7 @@ export function OrderReviewStep() {
             </section>
           </div>
 
-          <aside className="sticky top-40 hidden w-96 space-y-4 lg:block">
+          <aside className="sticky top-40 hidden w-96 shrink-0 space-y-4 self-start lg:block">
             <div className="bg-foreground text-background rounded-[2.5rem] p-8 shadow-2xl">
               <h3 className="mb-8 text-center text-[10px] font-black tracking-[0.3em] uppercase opacity-50">
                 Checkout Summary

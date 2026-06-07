@@ -75,7 +75,7 @@ export function CartStep() {
             </div>
 
             {/* Right Column: Sticky Summary */}
-            <aside className="w-full lg:sticky lg:top-40 lg:w-100">
+            <aside className="w-full self-start lg:sticky lg:top-40 lg:w-[420px] lg:shrink-0">
               <OrderSummary />
             </aside>
           </div>
