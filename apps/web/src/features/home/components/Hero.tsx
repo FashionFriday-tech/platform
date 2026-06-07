@@ -10,7 +10,6 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useHeroCarousel } from '../hooks/use-hero-carousel';
 
 export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] }): JSX.Element {
-  console.log('[Hero] initialCampaigns:', initialCampaigns ? initialCampaigns.length : 'undefined');
   const { cards, activeIndex, isPlaying, goToCard, nextCard, prevCard, containerRef, isInView } =
     useHeroCarousel(initialCampaigns);
 
@@ -144,7 +143,7 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
                 alt={card.title || 'Hero image'}
                 fill
                 priority={idx === 0}
-                sizes="100vw"
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover transition-transform duration-[10000ms] ease-out hover:scale-110"
               />
             </Link>
