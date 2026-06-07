@@ -119,6 +119,13 @@ export const useWishlistStore = create<WishlistState>()(
                   inStock: (m.product?.totalStock ?? 1) > 0,
                 }));
               set({ items: mappedItems, isInitialized: true });
+              if (typeof window !== 'undefined') {
+                try {
+                  localStorage.removeItem('ff_wishlist_storage');
+                } catch {
+                  // Ignore localStorage errors
+                }
+              }
               return;
             }
           }
@@ -141,6 +148,13 @@ export const useWishlistStore = create<WishlistState>()(
             }));
 
           set({ items: mappedItems, isInitialized: true });
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.removeItem('ff_wishlist_storage');
+            } catch {
+              // Ignore localStorage errors
+            }
+          }
         } catch (error) {
           console.error('Failed to sync wishlist with server:', error);
         } finally {

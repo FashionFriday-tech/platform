@@ -166,21 +166,36 @@ export const useCartStore = create<CartState>()(
           if (localItems.length > 0) {
             const syncPayload = localItems.map((item) => ({
               productId: item.productId,
-              size: item.size,
-              color: item.color,
-              quantity: item.quantity,
+              size: item.size || 'Standard',
+              color: item.color || 'Standard',
+              quantity: item.quantity || 1,
             }));
 
             const merged = await syncCartAction(syncPayload);
-            if (merged && merged.length > 0) {
+            if (Array.isArray(merged)) {
               set({ items: merged, isInitialized: true });
+              // Clear guest cart cache from localStorage after successfully syncing with DB
+              if (typeof window !== 'undefined') {
+                try {
+                  localStorage.removeItem('ff_cart_storage');
+                } catch {
+                  // Ignore localStorage errors
+                }
+              }
               return;
             }
           }
 
           // Otherwise fetch existing user cart from database
           const remote = await fetchUserCartAction();
-          set({ items: remote, isInitialized: true });
+          set({ items: Array.isArray(remote) ? remote : [], isInitialized: true });
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.removeItem('ff_cart_storage');
+            } catch {
+              // Ignore localStorage errors
+            }
+          }
         } catch (error) {
           console.error('Failed to sync cart with server:', error);
         } finally {
