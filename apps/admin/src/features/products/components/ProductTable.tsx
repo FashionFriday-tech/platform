@@ -281,18 +281,18 @@ export function ProductTable({
 
                   {visibleColumns.has('OG Price') && (
                     <td className="px-4 py-4 text-sm text-black/70 dark:text-white/70">
-                      ₹{product.originalPrice.toFixed(2)}
+                      ₹{Number(product.originalPrice).toFixed(2)}
                     </td>
                   )}
 
                   <td className="px-4 py-4 text-sm font-medium">
-                    {product.sellingPrice < product.originalPrice ? (
+                    {Number(product.sellingPrice) < Number(product.originalPrice) ? (
                       <span className="font-bold text-red-500">
-                        ₹{product.sellingPrice.toFixed(2)}
+                        ₹{Number(product.sellingPrice).toFixed(2)}
                       </span>
                     ) : (
                       <span className="text-black dark:text-white">
-                        ₹{product.sellingPrice.toFixed(2)}
+                        ₹{Number(product.sellingPrice).toFixed(2)}
                       </span>
                     )}
                   </td>
