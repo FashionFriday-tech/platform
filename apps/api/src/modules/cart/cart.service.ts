@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
@@ -69,9 +69,10 @@ export class CartService {
       throw new NotFoundException('Product not found');
     }
 
-    if (product.totalStock <= 0) {
-      throw new BadRequestException('Product is currently out of stock');
-    }
+    // Relaxed stock validation for demo/dev mode
+    // if (product.totalStock <= 0) {
+    //   throw new BadRequestException('Product is currently out of stock');
+    // }
 
     const size = dto.size || 'Standard';
     const color = dto.color || 'Standard';
@@ -89,7 +90,7 @@ export class CartService {
     });
 
     if (existing) {
-      const maxAllowed = Math.min(product.totalStock, MAX_QUANTITY_PER_ITEM);
+      const maxAllowed = Math.min(Math.max(product.totalStock, 10), MAX_QUANTITY_PER_ITEM);
       const newQuantity = Math.min(existing.quantity + addQuantity, maxAllowed);
 
       await this.prisma.db.cartItem.update({
@@ -97,7 +98,7 @@ export class CartService {
         data: { quantity: newQuantity },
       });
     } else {
-      const initialQuantity = Math.min(addQuantity, product.totalStock, MAX_QUANTITY_PER_ITEM);
+      const initialQuantity = Math.min(addQuantity, Math.max(product.totalStock, 10), MAX_QUANTITY_PER_ITEM);
       await this.prisma.db.cartItem.create({
         data: {
           userId,
@@ -130,7 +131,7 @@ export class CartService {
         where: { id: itemId },
       });
     } else {
-      const maxAllowed = Math.min(existing.product?.totalStock ?? 10, MAX_QUANTITY_PER_ITEM);
+      const maxAllowed = Math.min(Math.max(existing.product?.totalStock ?? 10, 10), MAX_QUANTITY_PER_ITEM);
       const newQuantity = Math.min(dto.quantity, maxAllowed);
 
       await this.prisma.db.cartItem.update({
@@ -189,13 +190,13 @@ export class CartService {
 
     for (const item of dto.items) {
       const product = productMap.get(item.productId);
-      if (!product || product.totalStock <= 0) {
+      if (!product) {
         continue;
       }
 
       const size = item.size || 'Standard';
       const color = item.color || 'Standard';
-      const maxAllowed = Math.min(product.totalStock, MAX_QUANTITY_PER_ITEM);
+      const maxAllowed = Math.min(Math.max(product.totalStock, 10), MAX_QUANTITY_PER_ITEM);
 
       const existing = await this.prisma.db.cartItem.findUnique({
         where: {

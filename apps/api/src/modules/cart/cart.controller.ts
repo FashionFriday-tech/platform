@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Request,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
@@ -18,9 +19,10 @@ import { UpdateCartQuantityDto } from './dto/update-cart-quantity.dto';
 
 interface RequestWithUser {
   user: {
-    userId: string;
-    phone: string;
-    role: string;
+    id?: string;
+    sub?: string;
+    phone?: string;
+    role?: string;
   };
 }
 
@@ -29,14 +31,22 @@ interface RequestWithUser {
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
+  private getUserId(req: RequestWithUser): string {
+    const id = req.user?.id || req.user?.sub;
+    if (!id) {
+      throw new UnauthorizedException('Authentication required');
+    }
+    return id;
+  }
+
   @Get()
   async getUserCart(@Request() req: RequestWithUser) {
-    return this.cartService.getUserCart(req.user.userId);
+    return this.cartService.getUserCart(this.getUserId(req));
   }
 
   @Post('items')
   async addToCart(@Request() req: RequestWithUser, @Body() dto: AddToCartDto) {
-    return this.cartService.addToCart(req.user.userId, dto);
+    return this.cartService.addToCart(this.getUserId(req), dto);
   }
 
   @Patch('items/:id')
@@ -45,21 +55,21 @@ export class CartController {
     @Param('id') itemId: string,
     @Body() dto: UpdateCartQuantityDto,
   ) {
-    return this.cartService.updateQuantity(req.user.userId, itemId, dto);
+    return this.cartService.updateQuantity(this.getUserId(req), itemId, dto);
   }
 
   @Delete('items/:id')
   async removeItem(@Request() req: RequestWithUser, @Param('id') itemId: string) {
-    return this.cartService.removeItem(req.user.userId, itemId);
+    return this.cartService.removeItem(this.getUserId(req), itemId);
   }
 
   @Delete()
   async clearCart(@Request() req: RequestWithUser) {
-    return this.cartService.clearCart(req.user.userId);
+    return this.cartService.clearCart(this.getUserId(req));
   }
 
   @Post('sync')
   async syncGuestCart(@Request() req: RequestWithUser, @Body() dto: SyncCartDto) {
-    return this.cartService.syncGuestCart(req.user.userId, dto);
+    return this.cartService.syncGuestCart(this.getUserId(req), dto);
   }
 }
