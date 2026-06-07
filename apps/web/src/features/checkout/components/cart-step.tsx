@@ -79,8 +79,6 @@ export function CartStep() {
               <OrderSummary />
             </aside>
           </div>
-
-          <div className="h-24 sm:h-12" />
         </div>
       </main>
     </div>
