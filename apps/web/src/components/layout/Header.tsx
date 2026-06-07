@@ -42,11 +42,11 @@ const navStructure = [
   },
   {
     label: 'Men',
-    href: '/men',
+    href: '/category/men',
   },
   {
     label: 'Women',
-    href: '/women',
+    href: '/category/women',
   },
   {
     label: 'Sale',
@@ -244,7 +244,7 @@ export function Header() {
       </div>
 
       <nav className="bg-background border-border fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between border-t px-6 py-3 lg:hidden">
-        <Link href="/men">
+        <Link href="/category/men">
           <CategoryIcon className="text-[25px]" />
         </Link>
         <button

@@ -36,7 +36,7 @@ export function GenderLanding({ initialCategories }: GenderLandingProps) {
   const activeGender = GENDERS[genderIndex];
 
   const handleGenderChange = (idx: number) => {
-    router.replace(`/${GENDERS[idx]}`, { scroll: false });
+    router.replace(`/category/${GENDERS[idx]}`, { scroll: false });
   };
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
@@ -149,7 +149,7 @@ export function GenderLanding({ initialCategories }: GenderLandingProps) {
                 {currentData.list.map((cat) => (
                   <Link
                     key={`${activeGender}-${cat.slug}`}
-                    href={`/${activeGender}/${cat.slug}`}
+                    href={`/category/${activeGender}/${cat.slug}`}
                     className="group block"
                   >
                     <div className="bg-background-muted/40 group-hover:border-border/40 flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98] lg:gap-6 lg:rounded-[2.5rem] lg:p-4">

@@ -19,7 +19,7 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
         title: b.title ?? (isWomen ? "Women's Collection" : "Men's Collection"),
         subtitle: isWomen ? 'women' : 'men',
         image: b.mediaUrl ?? b.image ?? '',
-        href: b.linkUrl ?? (isWomen ? '/women' : '/men'),
+        href: b.linkUrl?.replace(/^\/(men|women)$/, '/category/$1') ?? (isWomen ? '/category/women' : '/category/men'),
         buttonText: isWomen ? 'Shop Women' : 'Shop Men',
       };
     });
