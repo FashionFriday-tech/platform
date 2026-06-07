@@ -1,7 +1,5 @@
-import { useMemo, useState } from 'react';
-
-import { mockOrders } from '../services/mock-orders';
-import { type Order } from '../types';
+import { useMemo, useState, useEffect } from 'react';
+import { api } from '@/lib/api-client';
 
 export type SortField =
   | 'orderNumber'
@@ -21,6 +19,39 @@ export function useOrders() {
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const data = (await api.get('/orders/admin', { cache: 'no-store' })) as any[];
+      // map data to match admin shape
+      const mapped = data.map((o) => ({
+        ...o,
+        status: (o.status?.toLowerCase() || 'pending'),
+        customer: { id: o.userId, name: o.user?.name || 'Unknown', phone: o.user?.phone || '' },
+        total: Number(o.finalAmount || o.totalAmount || 0),
+        paymentType: o.paymentMethod?.toLowerCase() === 'cod' ? 'cod' : 'prepaid',
+        items: o.items?.map((item: any) => ({
+          ...item,
+          productName: item.name,
+          productImage: item.image || '/images/placeholders/2.png',
+          price: Number(item.price || 0),
+        })) || [],
+      }));
+      setOrders(mapped);
+      setLoading(false);
+    } catch (err) {
+      console.error('Failed to fetch admin orders', err);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void fetchOrders();
+  }, []);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -32,24 +63,24 @@ export function useOrders() {
   };
 
   const filteredAndSortedOrders = useMemo(() => {
-    let result = mockOrders.filter((order: Order) => {
+    let result = orders.filter((order: any) => {
       // Filter by status
-      if (statusFilter !== 'all' && order.status !== statusFilter) {
+      if (statusFilter !== 'all' && order.status?.toLowerCase() !== statusFilter.toLowerCase()) {
         return false;
       }
 
       // Filter by payment type
-      if (paymentTypeFilter !== 'all' && order.paymentType !== paymentTypeFilter) {
+      if (paymentTypeFilter !== 'all' && order.paymentType?.toLowerCase() !== paymentTypeFilter.toLowerCase()) {
         return false;
       }
 
       // Filter by search (phone or name or order number)
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const matchesOrderNumber = order.orderNumber.toLowerCase().includes(query);
+        const matchesOrderNumber = order.orderNumber?.toLowerCase().includes(query);
         const matchesCustomer =
-          order.customer.name.toLowerCase().includes(query) ||
-          order.customer.phone.toLowerCase().includes(query);
+          order.customer?.name?.toLowerCase().includes(query) ||
+          order.customer?.phone?.toLowerCase().includes(query);
 
         if (!matchesOrderNumber && !matchesCustomer) {
           return false;
@@ -73,8 +104,8 @@ export function useOrders() {
       let bValue: string | number;
 
       if (sortField === 'customer') {
-        aValue = a.customer.name;
-        bValue = b.customer.name;
+        aValue = a.customer?.name || '';
+        bValue = b.customer?.name || '';
       } else {
         const valA = a[sortField];
         const valB = b[sortField];
@@ -92,7 +123,7 @@ export function useOrders() {
     });
 
     return result;
-  }, [searchQuery, statusFilter, dateFilter, paymentTypeFilter, sortField, sortDirection]);
+  }, [searchQuery, statusFilter, dateFilter, paymentTypeFilter, sortField, sortDirection, orders]);
 
   return {
     orders: filteredAndSortedOrders,
@@ -109,5 +140,8 @@ export function useOrders() {
     sortField,
     sortDirection,
     handleSort,
+    loading,
+    refreshOrders: fetchOrders,
+    allOrders: orders,
   };
 }
