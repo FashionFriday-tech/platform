@@ -20,6 +20,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
+import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     FaqModule,
     WishlistModule,
     CartModule,
+    OrdersModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
