@@ -15,12 +15,12 @@ interface OrderStatusBadgeProps {
 export function OrderStatusBadge({ status, className }: OrderStatusBadgeProps) {
   const statusConfig: Record<OrderStatus, { label: string; classes: string }> = {
     pending: {
-      label: 'Pending',
+      label: 'Order Placed',
       classes:
         'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-400/10 dark:text-yellow-400 border-yellow-500/20',
     },
     processing: {
-      label: 'Processing',
+      label: 'Placed Order',
       classes:
         'bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400 border-blue-500/20',
     },
@@ -38,10 +38,25 @@ export function OrderStatusBadge({ status, className }: OrderStatusBadgeProps) {
       label: 'Cancelled',
       classes: 'bg-red-500/10 text-red-600 dark:bg-red-400/10 dark:text-red-400 border-red-500/20',
     },
+    confirmed: {
+      label: 'Confirmed',
+      classes: 'bg-indigo-500/10 text-indigo-600 dark:bg-indigo-400/10 dark:text-indigo-400 border-indigo-500/20',
+    },
+    returned: {
+      label: 'Returned',
+      classes: 'bg-gray-500/10 text-gray-600 dark:bg-gray-400/10 dark:text-gray-400 border-gray-500/20',
+    },
+    refunded: {
+      label: 'Refunded',
+      classes: 'bg-teal-500/10 text-teal-600 dark:bg-teal-400/10 dark:text-teal-400 border-teal-500/20',
+    },
   };
 
-  const config = statusConfig[status];
-
+  const normalizedStatus = status?.toLowerCase() as OrderStatus;
+  const config = statusConfig[normalizedStatus] || {
+    label: status || 'Unknown',
+    classes: 'bg-gray-500/10 text-gray-600 dark:bg-gray-400/10 dark:text-gray-400 border-gray-500/20',
+  };
   return (
     <span
       className={twMerge(
