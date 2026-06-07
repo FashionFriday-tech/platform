@@ -26,11 +26,12 @@ export default function OrdersFeature() {
     sortField,
     sortDirection,
     handleSort,
+    allOrders,
   } = useOrders();
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
-      <OrderStats />
+      <OrderStats orders={allOrders} />
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <OrdersFilterBar
