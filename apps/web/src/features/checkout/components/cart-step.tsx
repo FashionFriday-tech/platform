@@ -15,7 +15,7 @@ export function CartStep() {
   return (
     <div className="bg-background text-foreground min-h-screen pt-36 transition-colors duration-300 sm:pt-40">
       <CheckoutProgress currentStage={1} />
-      <main className="max-w-8xl mx-auto px-4 pt-6 md:px-8">
+      <main className="max-w-8xl mx-auto px-4 pt-8 md:px-8">
         <div className="w-full">
           <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
             {/* Left Column: Items & Shipping */}
@@ -75,7 +75,7 @@ export function CartStep() {
             </div>
 
             {/* Right Column: Sticky Summary */}
-            <aside className="w-full self-start lg:sticky lg:top-40 lg:w-[420px] lg:shrink-0">
+            <aside className="w-full self-start lg:sticky lg:top-48 lg:w-[420px] lg:shrink-0">
               <OrderSummary />
             </aside>
           </div>

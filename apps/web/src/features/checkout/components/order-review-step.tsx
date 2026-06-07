@@ -33,7 +33,7 @@ export function OrderReviewStep() {
     <div className="bg-background text-foreground min-h-screen pt-36 pb-60 transition-colors duration-300 sm:pt-40 lg:pb-24">
       <CheckoutProgress currentStage={2} />
 
-      <main className="mx-auto max-w-7xl px-4 pt-6 md:px-8">
+      <main className="mx-auto max-w-7xl px-4 pt-8 md:px-8">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
           <div className="flex-1 space-y-8">
             <section>
@@ -156,7 +156,7 @@ export function OrderReviewStep() {
             </section>
           </div>
 
-          <aside className="sticky top-40 hidden w-96 shrink-0 space-y-4 self-start lg:block">
+          <aside className="sticky top-48 hidden w-96 shrink-0 space-y-4 self-start lg:block">
             <div className="bg-foreground text-background rounded-[2.5rem] p-8 shadow-2xl">
               <h3 className="mb-8 text-center text-[10px] font-black tracking-[0.3em] uppercase opacity-50">
                 Checkout Summary
