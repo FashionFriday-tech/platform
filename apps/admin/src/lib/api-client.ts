@@ -36,6 +36,7 @@ async function refreshAccessToken(): Promise<string | null> {
   } catch {
     localStorage.removeItem('adminAccessToken');
     localStorage.removeItem('adminRefreshToken');
+    localStorage.removeItem('ff_admin_user');
     if (typeof window !== 'undefined') {
       window.location.href = '/login';
     }
