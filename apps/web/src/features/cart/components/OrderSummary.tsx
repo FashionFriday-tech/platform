@@ -54,7 +54,7 @@ export function OrderSummary() {
   return (
     <section id="summary" className="w-full transition-colors">
       {/* Container for Desktop & Mobile */}
-      <div className="bg-foreground border-border rounded-[2.5rem] border p-6 shadow-sm md:mb-20 md:p-10 lg:sticky lg:top-24 lg:p-8">
+      <div className="bg-foreground border-border rounded-[2.5rem] border p-6 shadow-sm md:p-8 lg:p-8">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-background text-2xl font-medium tracking-tight">Summary</h2>
           <span className="border-background text-background rounded-full border px-4 py-1 text-[10px] font-bold tracking-wider uppercase">
