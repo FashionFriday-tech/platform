@@ -65,6 +65,10 @@ export const useAuthStore = create<AuthState>()(
         } catch (error) {
           console.error('Logout error:', error);
         } finally {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+          }
           set({ user: null });
           useCartStore.getState().clearCart();
           useWishlistStore.getState().clearWishlist();
