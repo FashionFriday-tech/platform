@@ -210,8 +210,8 @@ export class CartService {
       });
 
       if (existing) {
-        // Merge quantities safely
-        const mergedQuantity = Math.min(existing.quantity + item.quantity, maxAllowed);
+        // Merge quantities safely without duplicate doubling
+        const mergedQuantity = Math.min(Math.max(existing.quantity, item.quantity), maxAllowed);
         await this.prisma.db.cartItem.update({
           where: { id: existing.id },
           data: { quantity: mergedQuantity },
