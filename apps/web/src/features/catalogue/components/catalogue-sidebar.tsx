@@ -194,25 +194,23 @@ export const CatalogueSidebar = ({
           : 'flex h-full w-full flex-col justify-between overflow-hidden'
       }
     >
-      {/* 1. Fixed Header (Pinned to top of sidebar) */}
-      <div className="border-border mb-3 flex shrink-0 items-center justify-between border-b pb-3">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl font-black tracking-tighter uppercase italic">Refine</h2>
-          {totalDraftFilterCount > 0 && (
+      {/* 1. Dynamic Header (Only shows when filters are active) */}
+      {totalDraftFilterCount > 0 && (
+        <div className="border-border mb-3 flex shrink-0 items-center justify-between border-b pb-3">
+          <div className="flex items-center gap-2 text-[11px] font-black tracking-widest uppercase">
+            <span className="text-foreground">Active</span>
             <span className="bg-foreground text-background flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black">
               {totalDraftFilterCount}
             </span>
-          )}
-        </div>
-        {totalDraftFilterCount > 0 && (
+          </div>
           <button
             onClick={handleReset}
             className="text-foreground-subtle text-[10px] font-black tracking-widest uppercase transition-colors hover:text-red-500"
           >
             Reset All
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* 2. Middle Scrollable Content (Isolated scroll with min-h-0 and Lenis prevention) */}
       <div
