@@ -75,13 +75,12 @@ export function OrderUpdateModal({
             </label>
             <CustomSelect
               options={[
-                { label: 'Pending', value: 'pending' },
-                { label: 'Inquiry', value: 'inquiry' },
+                { label: 'Order Placed', value: 'pending' },
                 { label: 'Confirmed', value: 'confirmed' },
+                { label: 'Placed Order', value: 'processing' },
                 { label: 'Shipped', value: 'shipped' },
                 { label: 'Delivered', value: 'delivered' },
                 { label: 'Cancelled', value: 'cancelled' },
-                { label: 'Refunding', value: 'refunding' },
                 { label: 'Refunded', value: 'refunded' },
               ]}
               value={pendingStatus}
