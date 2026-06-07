@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
 export interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
@@ -33,12 +33,10 @@ async function refreshAccessToken(): Promise<string | null> {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
     return data.accessToken || 'cookie-refreshed';
-  } catch {
+  } catch (err) {
+    console.warn('[API Client] Token refresh failed:', err);
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    if (typeof window !== 'undefined') {
-      window.location.href = '/';
-    }
     return null;
   }
 }
@@ -80,6 +78,9 @@ export async function fetcher<T = unknown>(
   };
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+  const method = options.method || 'GET';
+  console.log(`[API Client] ${method} ${url}`, { hasToken: !!token });
+
   let response = await fetch(url, {
     ...customOptions,
     credentials, // Industry Standard: Automatically attaches HttpOnly cookies
@@ -88,8 +89,10 @@ export async function fetcher<T = unknown>(
 
   // If 401 Unauthorized, attempt refresh once
   if (response.status === 401 && typeof window !== 'undefined') {
+    console.warn(`[API Client] 401 Unauthorized for ${url}, attempting refresh...`);
     const newToken = await refreshAccessToken();
     if (newToken) {
+      console.log(`[API Client] Retrying ${method} ${url} with refreshed token`);
       response = await fetch(url, {
         ...customOptions,
         credentials,
@@ -100,7 +103,9 @@ export async function fetcher<T = unknown>(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+    const errorMessage = errorData.message || `HTTP ${response.status}: ${response.statusText}`;
+    console.error(`[API Client] Request failed: ${method} ${url} (${response.status})`, errorData);
+    throw new Error(errorMessage);
   }
 
   return response.json() as Promise<T>;
