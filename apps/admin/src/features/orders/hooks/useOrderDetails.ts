@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 import { type Order } from '../types';
+import { api } from '@/lib/api-client';
+import { useRouter } from 'next/navigation';
 
 export function useOrderDetails(order: Order) {
   const [trackingId, setTrackingId] = useState(order.tracking?.trackingId ?? '');
@@ -20,6 +22,20 @@ export function useOrderDetails(order: Order) {
   const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId ?? '');
   const [tempSeller, setTempSeller] = useState('Seller A');
   const [isEditingMeta, setIsEditingMeta] = useState(false);
+  const router = useRouter();
+
+  const handleDeleteOrder = async () => {
+    if (!window.confirm('Are you sure you want to delete this order?')) {
+      return;
+    }
+    try {
+      await api.delete(`/orders/${order.id}`);
+      router.push('/orders'); // Redirect to orders list
+    } catch (err) {
+      console.error('Failed to delete order:', err);
+      alert('Failed to delete order');
+    }
+  };
 
   const handleContactClick = (mode: 'call' | 'whatsapp') => {
     if (order.customer.altPhone) {
@@ -166,5 +182,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     handleCopy,
     handleWhatsApp,
     handleInquiryWhatsApp,
+    handleDeleteOrder,
   };
 }
