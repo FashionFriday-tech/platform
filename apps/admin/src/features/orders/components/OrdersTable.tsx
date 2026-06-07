@@ -123,7 +123,7 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                     <Image
                       width={500}
                       height={500}
-                      src={order.items[0]?.productImage}
+                      src={order.items[0]?.productImage || '/images/placeholders/2.png'}
                       alt=""
                       className="h-10 w-10 rounded-lg bg-black/5 object-cover dark:bg-white/5"
                     />
