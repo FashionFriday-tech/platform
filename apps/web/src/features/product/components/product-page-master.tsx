@@ -64,10 +64,14 @@ export default function ProductPageMaster({
     });
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (): boolean => {
     if (product.inventory.totalStock <= 0) {
       toast.error('This product is currently out of stock');
-      return;
+      return false;
+    }
+    if (displaySizes && displaySizes.length > 0 && !selectedSize) {
+      toast.error('Please select a size before adding to bag');
+      return false;
     }
     const chosenSize = selectedSize || (displaySizes.length > 0 ? displaySizes[0] : 'Standard');
     const chosenColor = product.attributes.colors?.[0] || 'Standard';
@@ -91,11 +95,14 @@ export default function ProductPageMaster({
       },
     });
     toast.success(`Added ${product.name} (${chosenSize}) to Bag!`);
+    return true;
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
-    router.push('/checkout');
+    const added = handleAddToCart();
+    if (added) {
+      router.push('/checkout');
+    }
   };
   const cols = Math.ceil(displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2);
 
@@ -232,7 +239,7 @@ export default function ProductPageMaster({
                   </Link>
                 </div>
                 <div
-                  className="grid gap-2"
+                  className="grid gap-2 lg:flex lg:flex-nowrap lg:gap-2"
                   style={{
                     gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
                   }}
@@ -243,7 +250,7 @@ export default function ProductPageMaster({
                       onClick={() => {
                         setSelectedSize(size);
                       }}
-                      className={`rounded-full border py-1 font-semibold transition-all duration-300 ${
+                      className={`rounded-full border py-1 font-semibold transition-all duration-300 lg:flex-1 lg:px-2 ${
                         selectedSize === size
                           ? 'border-brand bg-brand text-brand-foreground scale-95'
                           : 'border-border hover:border-foreground'
