@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api-client';
 import { PhoneIcon, WhatsAppIcon } from '@ff/ui/icons';
 import { motion } from 'motion/react';
 
@@ -13,54 +14,89 @@ import { type Order } from '../types';
 import { COURIER_SERVICES, getTrackingUrl } from '../utils/courier';
 import { OrderStatusBadge } from './OrderStatusBadge';
 
-function OrderStatusTracker({ status }: { status: string }) {
-  const isCancelledFlow = ['cancelled', 'refunding', 'refunded'].includes(status);
-  const steps = isCancelledFlow
-    ? ['cancelled', 'refunding', 'refunded']
-    : ['pending', 'inquiry', 'confirmed', 'shipped', 'delivered'];
+interface StepConfig {
+  key: string;
+  label: string;
+}
 
-  const currentStepIndex = steps.includes(status) ? steps.indexOf(status) : 0;
+const REAL_STEPS: StepConfig[] = [
+  { key: 'pending', label: 'Order Placed' },
+  { key: 'confirmed', label: 'Confirmed' },
+  { key: 'processing', label: 'Placed Order' },
+  { key: 'shipped', label: 'Shipped' },
+  { key: 'delivered', label: 'Delivered' },
+];
+
+const CANCELLED_STEPS: StepConfig[] = [
+  { key: 'cancelled', label: 'Cancelled' },
+  { key: 'refunded', label: 'Refunded' },
+];
+
+function OrderStatusTracker({ status }: { status: string }) {
+  const normalizedStatus = (status || '').toLowerCase().trim();
+  const isCancelledFlow = ['cancelled', 'refunding', 'refunded'].includes(normalizedStatus);
+  const steps = isCancelledFlow ? CANCELLED_STEPS : REAL_STEPS;
+  const matchedIndex = steps.findIndex((s) => s.key === normalizedStatus);
+  const currentStepIndex = matchedIndex >= 0 ? matchedIndex : 0;
+  const progressPercent = steps.length > 1 ? (currentStepIndex / (steps.length - 1)) * 100 : 100;
 
   return (
-    <div className="relative mt-2 flex w-full justify-between sm:mt-0">
-      {/* Connecting Line background */}
-      <div className="absolute top-3 left-0 h-0.5 w-full -translate-y-1/2 bg-black/10 dark:bg-white/10" />
+    <div className="relative flex w-full flex-col">
+      <div className="relative flex w-full items-center justify-between">
+        {/* Connecting Line background */}
+        <div className="absolute top-4 left-4 right-4 h-0.5 -translate-y-1/2 bg-zinc-200 dark:bg-zinc-800" />
 
-      {/* Active Connecting Line */}
-      <div
-        className="absolute top-3 left-0 h-0.5 -translate-y-1/2 bg-black transition-all duration-500 dark:bg-white"
-        style={{ width: `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
-      />
+        {/* Active Connecting Line */}
+        <div
+          className="absolute top-4 left-4 h-0.5 -translate-y-1/2 bg-emerald-500 transition-all duration-500"
+          style={{ width: `calc(${progressPercent}% - 2rem * ${(progressPercent / 100).toFixed(2)})` }}
+        />
 
-      {steps.map((step, idx) => {
-        const isCompleted = idx <= currentStepIndex;
-        const isActive = idx === currentStepIndex;
-        return (
-          <div key={step} className="relative z-10 flex flex-col items-center gap-2">
-            <div
-              className={`flex h-6 w-6 items-center justify-center rounded-full transition-all duration-500 ${isCompleted ? 'bg-black text-white dark:bg-white dark:text-black' : 'bg-gray-200 dark:bg-gray-900/80'}`}
-            >
-              {isCompleted ? (
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              ) : (
-                <span className="h-1.5 w-1.5 rounded-full bg-black/20 dark:bg-white/20" />
-              )}
+        {steps.map((step, idx) => {
+          const isCompleted = idx < currentStepIndex;
+          const isActive = idx === currentStepIndex;
+
+          return (
+            <div key={step.key} className="relative z-10 flex flex-col items-center">
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 ${
+                  isCompleted
+                    ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
+                    : isActive
+                      ? 'bg-black text-white ring-4 ring-black/10 dark:bg-white dark:text-black dark:ring-white/20'
+                      : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600'
+                }`}
+              >
+                {isCompleted ? (
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : isActive ? (
+                  <span className="h-2.5 w-2.5 rounded-full bg-white dark:bg-black animate-pulse" />
+                ) : (
+                  <span className="h-1.5 w-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                )}
+              </div>
+              <span
+                className={`mt-2.5 text-center text-[11px] whitespace-nowrap transition-colors ${
+                  isActive
+                    ? 'font-extrabold text-black dark:text-white bg-black/5 dark:bg-white/10 px-2.5 py-0.5 rounded-full'
+                    : isCompleted
+                      ? 'font-bold text-emerald-600 dark:text-emerald-400'
+                      : 'font-medium text-zinc-400 dark:text-zinc-500'
+                }`}
+              >
+                {step.label}
+              </span>
             </div>
-            <span
-              className={`absolute top-8 text-center text-[10px] font-semibold capitalize transition-colors ${isActive ? 'font-bold text-black dark:text-white' : isCompleted ? 'text-black/70 dark:text-white/70' : 'text-black/40 dark:text-white/40'}`}
-            >
-              {step}
-            </span>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -70,13 +106,16 @@ interface OrderDetailsViewProps {
 }
 
 export function OrderDetailsView({ order }: OrderDetailsViewProps) {
+  const router = useRouter();
   const [trackingId, setTrackingId] = useState(order.tracking?.trackingId ?? '');
   const [courierService, setCourierService] = useState<string>(
     order.tracking?.courierService ?? 'Delhivery',
   );
   const [assignedSeller, setAssignedSeller] = useState('Seller A');
   const [orderStatus, setOrderStatus] = useState<string>(order.status);
+  const normalizedStatus = (orderStatus || '').toLowerCase().trim();
   const [isTrackingSaved, setIsTrackingSaved] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [contactMode, setContactMode] = useState<'none' | 'call' | 'whatsapp'>('none');
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -87,6 +126,46 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId ?? '');
   const [tempSeller, setTempSeller] = useState('Seller A');
   const [isEditingMeta, setIsEditingMeta] = useState(false);
+
+  const updateOrderOnBackend = async (patchData: {
+    status?: string;
+    courierPartner?: string;
+    trackingNumber?: string;
+  }) => {
+    try {
+      setIsUpdatingStatus(true);
+      const upperStatus = patchData.status ? patchData.status.toUpperCase() : undefined;
+      await api.patch(`/orders/${order.id}`, {
+        ...(upperStatus ? { status: upperStatus } : {}),
+        courierPartner: patchData.courierPartner,
+        trackingNumber: patchData.trackingNumber,
+      });
+
+      if (patchData.status) {
+        setOrderStatus(patchData.status.toLowerCase());
+        setPendingStatus(patchData.status.toLowerCase());
+      }
+      if (patchData.courierPartner) setCourierService(patchData.courierPartner);
+      if (patchData.trackingNumber !== undefined) setTrackingId(patchData.trackingNumber);
+
+      setIsUpdateModalOpen(false);
+    } catch (err: any) {
+      console.error('Failed to update order:', err);
+      alert(err.message || 'Failed to update order on server');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleSendTrackingToCustomer = () => {
+    const rawPhone = order.customer?.phone || '';
+    const cleanPhone = rawPhone.replace(/\D/g, '');
+    const currentTrackUrl = getTrackingUrl(courierService, trackingId);
+    const message = encodeURIComponent(
+      `Hello ${order.customer?.name || 'Customer'}! 👋\n\nGreat news! Your Fashion Friday order *#${order.orderNumber}* has been shipped via *${courierService}*!\n\n📦 *Tracking Number:* ${trackingId || 'N/A'}\n🔗 *Live Tracking Link:* ${currentTrackUrl}\n\nThank you for shopping with us! ✨`,
+    );
+    window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
+  };
 
   const handleContactClick = (mode: 'call' | 'whatsapp') => {
     if (order.customer.altPhone) {
@@ -109,7 +188,11 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
 
   const trackingUrl = getTrackingUrl(courierService, trackingId);
 
-  const handleSaveTracking = () => {
+  const handleSaveTracking = async () => {
+    await updateOrderOnBackend({
+      courierPartner: courierService,
+      trackingNumber: trackingId,
+    });
     setIsTrackingSaved(true);
     setTimeout(() => {
       setIsTrackingSaved(false);
@@ -213,54 +296,188 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
 
   return (
     <div className="scrollbar-hide mx-auto flex h-full w-full max-w-6xl flex-col gap-6 overflow-y-auto p-4 md:p-8">
-      {/* Top Section Tracker Box */}
-      <div className="flex flex-col gap-8 rounded-2xl border border-black/10 bg-white p-6 shadow-sm md:p-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12 dark:border-white/10 dark:bg-[#111]">
-        {/* Middle: Status Bar Tracker */}
-        <div className="w-full flex-1 lg:max-w-xl lg:px-4">
+      {/* Top Section: Unified Order Command Card */}
+      <div className="flex flex-col gap-6 rounded-3xl bg-white p-6 shadow-sm sm:p-8 dark:bg-[#141414]">
+        {/* Header row: Order ID, Status Badge & Actions */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-black tracking-tight text-black dark:text-white">
+              Order #{order.orderNumber}
+            </h1>
+            <OrderStatusBadge status={orderStatus as any} />
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2.5">
+            <button
+              onClick={async () => {
+                if (window.confirm('Are you sure you want to delete this order?')) {
+                  try {
+                    await api.delete(`/orders/${order.id}`);
+                    router.push('/orders');
+                  } catch (err) {
+                    console.error('Failed to delete order', err);
+                    alert('Failed to delete order');
+                  }
+                }
+              }}
+              className="rounded-xl bg-red-500/10 px-4 py-2.5 text-xs font-bold text-red-600 transition-all hover:bg-red-500/20 active:scale-95 dark:bg-red-500/15 dark:text-red-400"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => {
+                setIsUpdateModalOpen(true);
+              }}
+              className="rounded-xl bg-black px-5 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+            >
+              Update Status
+            </button>
+          </div>
+        </div>
+
+        {/* Status Tracker Progress Bar */}
+        <div className="w-full py-2">
           <OrderStatusTracker status={orderStatus} />
         </div>
 
-        {/* Right side: Actions */}
-        <div className="flex shrink-0">
-          <button
-            onClick={() => {
-              setIsUpdateModalOpen(true);
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 text-sm font-bold text-white shadow-lg shadow-black/20 transition-all hover:bg-black/80 active:scale-95 sm:w-auto dark:bg-white dark:text-black dark:shadow-white/20 dark:hover:bg-white/80"
-          >
-            Update
-          </button>
+        {/* Dynamic Action Sub-bar */}
+        <div className="flex flex-col gap-4 rounded-2xl bg-zinc-50 p-4 sm:flex-row sm:items-center sm:justify-between dark:bg-zinc-900/60">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm dark:bg-zinc-800">
+              {normalizedStatus === 'pending' && '🔍'}
+              {normalizedStatus === 'confirmed' && '🛒'}
+              {normalizedStatus === 'processing' && '⏳'}
+              {normalizedStatus === 'shipped' && '🚚'}
+              {normalizedStatus === 'delivered' && '🎉'}
+              {['cancelled', 'refunding', 'refunded'].includes(normalizedStatus) && '❌'}
+            </div>
+            <div>
+              <div className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
+                Next Recommended Step
+              </div>
+              <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                {normalizedStatus === 'pending' && 'Check stock with seller'}
+                {normalizedStatus === 'confirmed' && 'Stock confirmed — place order with seller'}
+                {normalizedStatus === 'processing' && 'Placed with seller — awaiting tracking ID'}
+                {normalizedStatus === 'shipped' && 'Package shipped — share live tracking with customer'}
+                {normalizedStatus === 'delivered' && 'Order completed & delivered 🎉'}
+                {['cancelled', 'refunding', 'refunded'].includes(normalizedStatus) && 'Order has been cancelled'}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {normalizedStatus === 'pending' && (
+              <>
+                <button
+                  onClick={handleInquiryWhatsApp}
+                  title="Send product image and details to seller WhatsApp to check stock availability"
+                  className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                >
+                  📲 Inquire Stock (WhatsApp)
+                </button>
+                <button
+                  disabled={isUpdatingStatus}
+                  onClick={() => updateOrderOnBackend({ status: 'confirmed' })}
+                  className="flex items-center gap-1.5 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                >
+                  ✅ Stock Available
+                </button>
+              </>
+            )}
+
+            {normalizedStatus === 'confirmed' && (
+              <>
+                <button
+                  onClick={handleWhatsApp}
+                  title="Send complete order details and image to supplier via WhatsApp"
+                  className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                >
+                  📲 Send Details to Seller
+                </button>
+                <button
+                  disabled={isUpdatingStatus}
+                  onClick={() => updateOrderOnBackend({ status: 'processing' })}
+                  className="flex items-center gap-1.5 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                >
+                  🛒 Placed Order
+                </button>
+              </>
+            )}
+
+            {normalizedStatus === 'processing' && (
+              <button
+                onClick={() => {
+                  setPendingStatus('shipped');
+                  setIsUpdateModalOpen(true);
+                }}
+                className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
+              >
+                📦 Add Tracking ID & Ship
+              </button>
+            )}
+
+            {normalizedStatus === 'shipped' && (
+              <>
+                <button
+                  onClick={handleSendTrackingToCustomer}
+                  title="Send WhatsApp message to customer with tracking ID and live tracking link"
+                  className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                >
+                  💬 Send Tracking to Customer
+                </button>
+                {trackingUrl && (
+                  <a
+                    href={trackingUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
+                  >
+                    🚚 Track Parcel
+                  </a>
+                )}
+                <button
+                  disabled={isUpdatingStatus}
+                  onClick={() => updateOrderOnBackend({ status: 'delivered' })}
+                  className="flex items-center gap-1.5 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                >
+                  🎉 Mark Delivered
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
+
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Content Area (Items & Finance) */}
         <div className="flex flex-col gap-6 lg:col-span-2">
           {/* Items Card */}
-          <div className="rounded-2xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111]">
-            <div className="flex items-center justify-between border-b border-black/5 px-6 py-4 dark:border-white/5">
+          <div className="overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-[#141414]">
+            <div className="flex items-center justify-between px-6 py-5">
               <h2 className="text-base font-bold text-black dark:text-white">Order Items</h2>
-              <span className="text-sm font-bold text-black/50 dark:text-white/50">
+              <span className="text-xs font-semibold text-zinc-400">
                 #{order.orderNumber}
               </span>
             </div>
 
-            <div className="flex flex-col gap-6 p-6">
+            <div className="flex flex-col gap-4 p-6 pt-0">
               {order.items.map((item, idx) => (
                 <div
                   key={idx}
-                  className="group relative flex flex-col gap-6 rounded-2xl border border-black/5 bg-black/[0.02] p-4 transition-all hover:bg-black/[0.04] sm:flex-row sm:items-start sm:pr-32 dark:border-white/5 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]"
+                  className="group relative flex flex-col gap-6 rounded-2xl bg-zinc-50/80 p-4 transition-all hover:bg-zinc-100/80 sm:flex-row sm:items-start sm:pr-32 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70"
                 >
                   {/* Sticky Track Button on Right Side */}
                   <div className="absolute top-4 right-4 hidden sm:block">
                     {(() => {
-                      if (orderStatus === 'shipped') {
+                      if (normalizedStatus === 'shipped') {
                         return (
                           <a
                             href={trackingUrl ?? '#'}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 active:scale-95"
+                            className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
                           >
                             <svg
                               className="h-3 w-3"
@@ -280,17 +497,18 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         );
                       }
                       const labels: Record<string, string> = {
-                        pending: 'Pending',
-                        processing: 'Processing',
+                        pending: 'Order Placed',
+                        confirmed: 'Confirmed',
+                        processing: 'Placed Order',
                         delivered: 'Delivered',
                         cancelled: 'Cancelled',
                       };
                       return (
                         <button
                           disabled
-                          className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-lg bg-black/5 px-4 py-2 text-xs font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
+                          className="flex cursor-not-allowed items-center justify-center gap-1.5 rounded-xl bg-black/5 px-3 py-1.5 text-xs font-bold text-zinc-400 dark:bg-white/5 dark:text-zinc-500"
                         >
-                          {labels[orderStatus] ?? orderStatus}
+                          {labels[normalizedStatus] ?? normalizedStatus}
                         </button>
                       );
                     })()}
@@ -310,13 +528,13 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       <h3 className="text-xl font-bold text-black sm:text-2xl dark:text-white">
                         {item.productName}
                       </h3>
-                      <p className="mt-1 text-sm font-semibold text-black/40 dark:text-white/40">
+                      <p className="mt-1 text-sm font-semibold text-zinc-400 dark:text-zinc-500">
                         SKU: {item.sku ?? 'N/A'}
                       </p>
                       <div className="mt-4 flex flex-wrap gap-3">
                         {item.size && (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] font-bold text-black/50 uppercase dark:text-white/50">
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase">
                               Size:
                             </span>
                             <span className="text-sm font-bold text-black dark:text-white">
@@ -326,7 +544,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         )}
                         {item.color && (
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] font-bold text-black/50 uppercase dark:text-white/50">
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase">
                               Color:
                             </span>
                             <span className="text-sm font-bold text-black dark:text-white">
@@ -336,9 +554,9 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         )}
                       </div>
                     </div>
-                    <div className="mt-4 flex flex-col gap-4 pt-4 sm:mt-0 dark:border-white/5">
+                    <div className="mt-4 flex flex-col gap-4 pt-4 sm:mt-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-black/50 dark:text-white/50">
+                        <span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">
                           {item.quantity} × ₹
                           {item.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </span>
@@ -353,13 +571,13 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       {/* Mobile Track Button */}
                       <div className="sm:hidden">
                         {(() => {
-                          if (orderStatus === 'shipped') {
+                          if (normalizedStatus === 'shipped') {
                             return (
                               <a
                                 href={trackingUrl ?? '#'}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-md shadow-blue-600/20 transition-all hover:bg-blue-700 active:scale-95"
+                                className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
                               >
                                 <svg
                                   className="h-4 w-4"
@@ -379,17 +597,18 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                             );
                           }
                           const labels: Record<string, string> = {
-                            pending: 'Pending',
-                            processing: 'Processing',
+                            pending: 'Order Placed',
+                            confirmed: 'Confirmed',
+                            processing: 'Placed Order',
                             delivered: 'Delivered',
                             cancelled: 'Cancelled',
                           };
                           return (
                             <button
                               disabled
-                              className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-3 text-sm font-bold text-black/40 dark:bg-white/5 dark:text-white/40"
+                              className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-3 text-sm font-bold text-zinc-400 dark:bg-white/5 dark:text-zinc-500"
                             >
-                              {labels[orderStatus] ?? orderStatus}
+                              {labels[normalizedStatus] ?? normalizedStatus}
                             </button>
                           );
                         })()}
@@ -402,14 +621,14 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
           </div>
 
           {/* Payment Summary Card */}
-          <div className="rounded-2xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111]">
-            <div className="border-b border-black/5 px-6 py-4 dark:border-white/5">
+          <div className="overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-[#141414]">
+            <div className="px-6 py-5">
               <h2 className="text-base font-bold text-black dark:text-white">Payment Summary</h2>
             </div>
-            <div className="flex flex-col gap-3 p-6 text-sm font-medium text-black/70 dark:text-white/70">
+            <div className="flex flex-col gap-3.5 px-6 pb-6 text-sm font-medium text-zinc-600 dark:text-zinc-400">
               <div className="flex justify-between">
                 <span>Subtotal ({order.items.length} items)</span>
-                <span>₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span className="font-semibold text-zinc-900 dark:text-zinc-100">₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
@@ -419,16 +638,16 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 <span>Tax</span>
                 <span>₹0.00</span>
               </div>
-              <div className="mt-3 flex justify-between border-t border-black/5 pt-4 text-lg font-black text-black dark:border-white/5 dark:text-white">
+              <div className="mt-2 flex justify-between border-t border-zinc-100 pt-4 text-base font-black text-black dark:border-zinc-800 dark:text-white">
                 <span>Total</span>
                 <span>₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
             </div>
-            <div className="rounded-b-2xl bg-black/5 px-6 py-4 dark:bg-white/5">
+            <div className="bg-zinc-50 px-6 py-4 dark:bg-zinc-900/60">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-black/50 dark:text-white/50">Mode</span>
+                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">Payment Mode</span>
                 <span
-                  className={`rounded-md px-2.5 py-1 text-xs font-bold uppercase ${order.paymentType === 'cod' ? 'bg-orange-500/20 text-orange-700 dark:bg-orange-500/30 dark:text-orange-300' : 'bg-blue-500/20 text-blue-700 dark:bg-blue-500/30 dark:text-blue-300'}`}
+                  className={`rounded-lg px-3 py-1 text-xs font-bold uppercase ${order.paymentType === 'cod' ? 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'}`}
                 >
                   {order.paymentType === 'cod' ? 'Cash on Delivery' : 'Prepaid'}
                 </span>
@@ -440,50 +659,50 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
         {/* Sidebar Cards (Customer & Shipping) */}
         <div className="lg:col-span-1">
           <div className="sticky top-6 flex flex-col gap-6">
-            {/* Customer & Address Card - HIGHLIGHTED */}
-            <div className="rounded-2xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111]">
-              <div className="border-b border-black/10 px-6 py-4 dark:border-white/10">
+            {/* Customer & Address Card */}
+            <div className="overflow-hidden rounded-3xl bg-white p-6 shadow-sm dark:bg-[#141414]">
+              <div className="mb-4">
                 <h2 className="text-base font-bold text-black dark:text-white">Shipping Details</h2>
               </div>
 
-              <div className="flex flex-col gap-3 p-6 text-sm font-semibold text-black dark:text-white">
-                <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
-                  <span className="text-black/50 dark:text-white/50">Full Name :</span>
+              <div className="flex flex-col gap-3 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                  <span className="text-xs font-medium text-zinc-400">Full Name</span>
                   <span>{order.customer.name}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
-                  <span className="text-black/50 dark:text-white/50">Address :</span>
-                  <span>{order.shippingAddress.street}</span>
+                <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                  <span className="text-xs font-medium text-zinc-400">Address</span>
+                  <span className="max-w-[180px] truncate text-right">{order.shippingAddress.street}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
-                  <span className="text-black/50 dark:text-white/50">City :</span>
+                <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                  <span className="text-xs font-medium text-zinc-400">City</span>
                   <span>{order.shippingAddress.city}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
-                  <span className="text-black/50 dark:text-white/50">District :</span>
+                <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                  <span className="text-xs font-medium text-zinc-400">District</span>
                   <span>{order.shippingAddress.district ?? 'N/A'}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
-                  <span className="text-black/50 dark:text-white/50">State :</span>
+                <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                  <span className="text-xs font-medium text-zinc-400">State</span>
                   <span>{order.shippingAddress.state}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
-                  <span className="text-black/50 dark:text-white/50">Pincode:</span>
+                <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                  <span className="text-xs font-medium text-zinc-400">Pincode</span>
                   <span>{order.shippingAddress.pincode}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
-                  <span className="text-black/50 dark:text-white/50">Mobile Number :</span>
+                <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                  <span className="text-xs font-medium text-zinc-400">Mobile Number</span>
                   <span>{order.customer.phone}</span>
                 </div>
-                <div className="grid grid-cols-[130px_1fr] items-center gap-2">
-                  <span className="text-black/50 dark:text-white/50">Alt Number :</span>
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-xs font-medium text-zinc-400">Alt Number</span>
                   <span>{order.customer.altPhone ?? 'N/A'}</span>
                 </div>
 
-                <div className="mt-4 flex flex-col gap-3 border-t border-black/10 pt-6 dark:border-white/10">
+                <div className="mt-4 flex flex-col gap-3 pt-2">
                   <button
                     onClick={handleCopy}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-bold text-black shadow-sm transition-all hover:bg-black/5 active:scale-95 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:bg-white/5"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-100 px-4 py-3 text-xs font-bold text-zinc-900 transition-all hover:bg-zinc-200 active:scale-95 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -502,7 +721,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         onClick={() => {
                           handleContactClick('whatsapp');
                         }}
-                        className="flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-[#20bd5a] active:scale-95"
+                        className="flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-4 py-3 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#20bd5a] active:scale-95"
                       >
                         <WhatsAppIcon className="h-5 w-5" />
                         Chat
@@ -511,16 +730,16 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         onClick={() => {
                           handleContactClick('call');
                         }}
-                        className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
+                        className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
                       >
                         <PhoneIcon className="h-5 w-5" />
                         Call
                       </button>
                     </div>
                   ) : (
-                    <div className="flex flex-col gap-2 rounded-xl border border-black/10 p-3 shadow-sm dark:border-white/10">
+                    <div className="flex flex-col gap-2 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-900/60">
                       <div className="flex items-center justify-between px-1 pb-1">
-                        <span className="text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
+                        <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase">
                           {contactMode === 'call'
                             ? 'Call which number?'
                             : 'Chat with which number?'}
@@ -529,7 +748,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                           onClick={() => {
                             setContactMode('none');
                           }}
-                          className="rounded-md p-1 text-black/50 transition-colors hover:bg-black/5 hover:text-black dark:text-white/50 dark:hover:bg-white/5 dark:hover:text-white"
+                          className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-black/5 hover:text-black dark:hover:bg-white/5 dark:hover:text-white"
                         >
                           <svg
                             className="h-4 w-4"
@@ -550,7 +769,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         onClick={() => {
                           executeContact(contactMode, order.customer.phone);
                         }}
-                        className="flex items-center justify-between rounded-lg bg-black/5 px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                        className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-zinc-100 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
                       >
                         <span>Primary</span>
                         <span>{order.customer.phone}</span>
@@ -560,7 +779,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                           onClick={() => {
                             executeContact(contactMode, order.customer.altPhone!);
                           }}
-                          className="flex items-center justify-between rounded-lg bg-black/5 px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                          className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-zinc-100 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
                         >
                           <span>Alternate</span>
                           <span>{order.customer.altPhone}</span>
@@ -573,15 +792,15 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
             </div>
 
             {/* Order Meta / Tracking Info Box */}
-            <div className="rounded-2xl border border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111]">
-              <div className="flex items-center justify-between border-b border-black/5 px-6 py-4 dark:border-white/5">
+            <div className="overflow-hidden rounded-3xl bg-white p-6 shadow-sm dark:bg-[#141414]">
+              <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-base font-bold text-black dark:text-white">Order Meta</h2>
                 {!isEditingMeta ? (
                   <button
                     onClick={() => {
                       setIsEditingMeta(true);
                     }}
-                    className="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Edit
                   </button>
@@ -590,16 +809,16 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                     onClick={() => {
                       setIsEditingMeta(false);
                     }}
-                    className="text-sm font-bold text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white"
+                    className="text-xs font-bold text-zinc-400 hover:text-black dark:hover:text-white"
                   >
                     Cancel
                   </button>
                 )}
               </div>
 
-              <div className="flex flex-col gap-4 p-6">
-                <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
-                  <span className="text-sm text-black/50 dark:text-white/50">Order Date</span>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800/60">
+                  <span className="text-xs font-medium text-zinc-400">Order Date</span>
                   <span className="text-sm font-bold text-black dark:text-white">
                     {new Date(order.createdAt).toLocaleString('en-IN', {
                       dateStyle: 'medium',
@@ -609,20 +828,20 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 </div>
                 {!isEditingMeta ? (
                   <>
-                    <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
-                      <span className="text-sm text-black/50 dark:text-white/50">Seller</span>
+                    <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800/60">
+                      <span className="text-xs font-medium text-zinc-400">Seller</span>
                       <span className="text-sm font-bold text-black dark:text-white">
                         {assignedSeller}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
-                      <span className="text-sm text-black/50 dark:text-white/50">Courier</span>
+                    <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800/60">
+                      <span className="text-xs font-medium text-zinc-400">Courier</span>
                       <span className="text-sm font-bold text-black dark:text-white">
                         {courierService ?? 'Not Assigned'}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
-                      <span className="text-sm text-black/50 dark:text-white/50">Tracking ID</span>
+                    <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800/60">
+                      <span className="text-xs font-medium text-zinc-400">Tracking ID</span>
                       <span className="text-sm font-bold text-black dark:text-white">
                         {trackingId ?? 'Not Assigned'}
                       </span>
@@ -632,7 +851,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         href={trackingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-black/5 px-4 py-3 text-sm font-bold text-black transition-all hover:bg-black/10 active:scale-95 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                        className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-100 px-4 py-3 text-xs font-bold text-zinc-900 transition-all hover:bg-zinc-200 active:scale-95 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
                       >
                         Track Package Live
                       </a>
@@ -729,13 +948,12 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                   </label>
                   <CustomSelect
                     options={[
-                      { label: 'Pending', value: 'pending' },
-                      { label: 'Inquiry', value: 'inquiry' },
+                      { label: 'Order Placed', value: 'pending' },
                       { label: 'Confirmed', value: 'confirmed' },
+                      { label: 'Placed Order', value: 'processing' },
                       { label: 'Shipped', value: 'shipped' },
                       { label: 'Delivered', value: 'delivered' },
                       { label: 'Cancelled', value: 'cancelled' },
-                      { label: 'Refunding', value: 'refunding' },
                       { label: 'Refunded', value: 'refunded' },
                     ]}
                     value={pendingStatus}
@@ -800,27 +1018,24 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 )}
 
                 <button
-                  onClick={() => {
+                  disabled={isUpdatingStatus}
+                  onClick={async () => {
                     if (pendingStatus === 'shipped' && (!tempCourier || !tempTracking)) {
                       alert('Please enter both Courier Service and Tracking ID');
                       return;
                     }
-                    if (pendingStatus === 'inquiry') {
-                      void handleInquiryWhatsApp();
-                    }
-                    if (pendingStatus === 'shipped') {
-                      setCourierService(tempCourier);
-                      setTrackingId(tempTracking);
-                    }
                     if (pendingStatus === 'confirmed') {
                       setAssignedSeller(tempSeller);
                     }
-                    setOrderStatus(pendingStatus);
-                    setIsUpdateModalOpen(false);
+                    await updateOrderOnBackend({
+                      status: pendingStatus,
+                      courierPartner: pendingStatus === 'shipped' ? tempCourier : courierService,
+                      trackingNumber: pendingStatus === 'shipped' ? tempTracking : trackingId,
+                    });
                   }}
-                  className="mt-4 w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-bold text-white transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
                 >
-                  Save Changes
+                  {isUpdatingStatus ? 'Saving Changes...' : 'Save Changes'}
                 </button>
               </div>
             </div>
