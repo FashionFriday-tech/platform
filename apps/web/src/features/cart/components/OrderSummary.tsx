@@ -179,7 +179,7 @@ export function OrderSummary() {
         {/* Trust Badge */}
         <div className="border-border/20 text-background mt-8 flex items-center justify-center gap-3 border-t pt-6 text-[10px] font-bold tracking-[0.2em] uppercase">
           <ShieldCheckIcon size={16} className="text-emerald-400" />
-          <span>Secure 256-Bit SSL Checkout</span>
+          <span>Secure Checkout</span>
         </div>
       </div>
 
