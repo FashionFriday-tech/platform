@@ -1,4 +1,4 @@
-export type OrderStatus = 'shipping' | 'arrived' | 'canceled';
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returned' | string;
 
 export interface OrderItem {
   id: string;
@@ -11,11 +11,16 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
+  orderNumber: string;
   status: OrderStatus;
-  statusLabel: string;
-  date: string;
-  origin: string;
-  destination: string;
+  statusLabel?: string;
+  createdAt: string | Date;
+  date?: string;
+  origin?: string;
+  destination?: string;
+  shippingAddress?: any;
   items: OrderItem[];
-  totalPrice: number;
+  totalPrice?: number;
+  courierPartner?: string;
+  trackingNumber?: string;
 }
