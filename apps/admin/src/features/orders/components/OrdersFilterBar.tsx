@@ -87,8 +87,9 @@ export function OrdersFilterBar({
           className="cursor-pointer appearance-none rounded-xl border border-black/5 bg-[#f8f9fa] py-2 pr-8 pl-3 text-sm text-black/70 transition-all outline-none hover:bg-black/5 focus:border-black/30 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:focus:border-white/30"
         >
           <option value="all">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="processing">Processing</option>
+          <option value="pending">Order Placed</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="processing">Placed Order</option>
           <option value="shipped">Shipped</option>
           <option value="delivered">Delivered</option>
           <option value="cancelled">Cancelled</option>
