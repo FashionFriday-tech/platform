@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 
 import { type CartItem, type SyncCartItem } from '../types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
 async function setAuthCookies(accessToken: string, refreshToken: string) {
   const cookieStore = await cookies();
@@ -31,7 +31,7 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
+async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response | null> {
   let authHeaders = await getAuthHeaders();
 
   const buildHeaders = (baseAuthHeaders: Record<string, string>) => {
@@ -84,10 +84,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
     return response;
   } catch (error) {
     console.error(`[Cart Service Network Error] ${endpoint}:`, error);
-    return new Response(JSON.stringify({ error: 'Backend API is currently unavailable' }), {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return null;
   }
 }
 
@@ -145,7 +142,7 @@ function fromRawCartItem(raw: RawCartItem): CartItem | null {
 export async function fetchUserCartAction(): Promise<CartItem[]> {
   try {
     const res = await fetchWithAuth('/cart');
-    if (!res.ok) {
+    if (!res || !res.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];
@@ -175,7 +172,7 @@ export async function addToCartAction(input: {
         quantity: input.quantity || 1,
       }),
     });
-    if (!res.ok) {
+    if (!res || !res.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];
@@ -198,7 +195,7 @@ export async function updateCartQuantityAction(
       method: 'PATCH',
       body: JSON.stringify({ quantity }),
     });
-    if (!res.ok) {
+    if (!res || !res.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];
@@ -217,7 +214,7 @@ export async function removeCartItemAction(itemId: string): Promise<CartItem[]> 
     const res = await fetchWithAuth(`/cart/items/${itemId}`, {
       method: 'DELETE',
     });
-    if (!res.ok) {
+    if (!res || !res.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];
@@ -236,7 +233,7 @@ export async function clearCartAction(): Promise<boolean> {
     const res = await fetchWithAuth('/cart', {
       method: 'DELETE',
     });
-    return res.ok;
+    return res ? res.ok : false;
   } catch (error) {
     console.error('Failed to clear cart:', error);
     return false;
@@ -252,7 +249,7 @@ export async function syncCartAction(items: SyncCartItem[]): Promise<CartItem[]>
       method: 'POST',
       body: JSON.stringify({ items }),
     });
-    if (!res.ok) {
+    if (!res || !res.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];

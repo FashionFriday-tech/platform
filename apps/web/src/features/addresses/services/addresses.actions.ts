@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { type Address } from '../types';
 import { cleanPhoneDigits } from '../utils/phone';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 
 async function setAuthCookies(accessToken: string, refreshToken: string) {
   const cookieStore = await cookies();
@@ -32,7 +32,7 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
+async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response | null> {
   let authHeaders = await getAuthHeaders();
 
   const buildHeaders = (baseAuthHeaders: Record<string, string>) => {
@@ -85,10 +85,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
     return response;
   } catch (error) {
     console.error(`[Address Service Network Error] ${endpoint}:`, error);
-    return new Response(JSON.stringify({ error: 'Backend API is currently unavailable' }), {
-      status: 503,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return null;
   }
 }
 
@@ -149,8 +146,8 @@ function fromApiRecord(record: RawDbAddress): Address {
 export async function fetchUserAddressesAction(): Promise<Address[]> {
   try {
     const res = await fetchWithAuth('/addresses');
-    if (!res.ok) {
-      console.warn('Fetch addresses returned status:', res.status);
+    if (!res || !res.ok) {
+      console.warn('Fetch addresses returned status:', res?.status);
       return [];
     }
     const data = (await res.json()) as RawDbAddress[];
@@ -171,9 +168,9 @@ export async function createAddressAction(address: Omit<Address, 'id'>): Promise
       method: 'POST',
       body: JSON.stringify(payload),
     });
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => '');
-      console.error('Create address error:', res.status, errorText);
+    if (!res || !res.ok) {
+      const errorText = await res?.text().catch(() => '');
+      console.error('Create address error:', res?.status, errorText);
       return null;
     }
     const created = (await res.json()) as RawDbAddress;
@@ -197,9 +194,9 @@ export async function updateAddressAction(
       method: 'PUT',
       body: JSON.stringify(payload),
     });
-    if (!res.ok) {
-      const errorText = await res.text().catch(() => '');
-      console.error('Update address error:', res.status, errorText);
+    if (!res || !res.ok) {
+      const errorText = await res?.text().catch(() => '');
+      console.error('Update address error:', res?.status, errorText);
       return null;
     }
     const updated = (await res.json()) as RawDbAddress;
@@ -218,7 +215,7 @@ export async function setDefaultAddressAction(id: string): Promise<boolean> {
     const res = await fetchWithAuth(`/addresses/${id}/default`, {
       method: 'PATCH',
     });
-    return res.ok;
+    return res ? res.ok : false;
   } catch (error) {
     console.error('Failed to set default address:', error);
     return false;
@@ -233,7 +230,7 @@ export async function deleteAddressAction(id: string): Promise<boolean> {
     const res = await fetchWithAuth(`/addresses/${id}`, {
       method: 'DELETE',
     });
-    return res.ok;
+    return res ? res.ok : false;
   } catch (error) {
     console.error('Failed to delete address:', error);
     return false;
