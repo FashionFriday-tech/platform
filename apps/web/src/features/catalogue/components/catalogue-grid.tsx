@@ -1,8 +1,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
-
 import { type Product } from '@ff/schemas';
 import { motion } from 'motion/react';
 
@@ -25,9 +23,6 @@ export const CatalogueGrid = ({
   activeFilters = {},
   onRemoveFilter,
   onClearFilters,
-  sortBy,
-  onSortChange,
-  sortOptions = [],
 }: GridProps) => {
   const ITEMS_PER_PROMO = 6;
 
