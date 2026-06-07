@@ -172,7 +172,7 @@ export const useCartStore = create<CartState>()(
             }));
 
             const merged = await syncCartAction(syncPayload);
-            if (Array.isArray(merged)) {
+            if (merged !== null && Array.isArray(merged)) {
               set({ items: merged, isInitialized: true });
               // Clear guest cart cache from localStorage after successfully syncing with DB
               if (typeof window !== 'undefined') {

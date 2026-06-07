@@ -8,6 +8,9 @@ import {
   updateProfileAction,
 } from '@/features/auth/services/auth.actions';
 
+import { useCartStore } from './cart-store';
+import { useWishlistStore } from './wishlist-store';
+
 export interface User {
   id: string;
   phone: string;
@@ -63,14 +66,8 @@ export const useAuthStore = create<AuthState>()(
           console.error('Logout error:', error);
         } finally {
           set({ user: null });
-          if (typeof window !== 'undefined') {
-            try {
-              localStorage.removeItem('ff_cart_storage');
-              localStorage.removeItem('ff_wishlist_storage');
-            } catch {
-              // Ignore
-            }
-          }
+          useCartStore.getState().clearCart();
+          useWishlistStore.getState().clearWishlist();
         }
       },
 

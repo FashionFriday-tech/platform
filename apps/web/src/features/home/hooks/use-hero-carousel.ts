@@ -68,6 +68,11 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
           const carouselBanners = getMappedBanners(data);
           if (carouselBanners.length > 0) {
             setCards(carouselBanners);
+            try {
+              localStorage.setItem('offline_hero_banners', JSON.stringify(carouselBanners));
+            } catch (e) {
+              console.error('Failed to save hero banners to localStorage', e);
+            }
           }
         }
       } catch (err: unknown) {

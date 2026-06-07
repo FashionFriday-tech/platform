@@ -243,19 +243,21 @@ export async function clearCartAction(): Promise<boolean> {
 /**
  * Merge guest cart items into user's database cart
  */
-export async function syncCartAction(items: SyncCartItem[]): Promise<CartItem[]> {
+export async function syncCartAction(items: SyncCartItem[]): Promise<CartItem[] | null> {
   try {
     const res = await fetchWithAuth('/cart/sync', {
       method: 'POST',
       body: JSON.stringify({ items }),
     });
     if (!res || !res.ok) {
-      return [];
+      const errorText = res ? await res.text() : 'No response';
+      console.error('Failed to sync guest cart:', errorText);
+      return null;
     }
     const data = (await res.json()) as RawCartItem[];
     return data.map(fromRawCartItem).filter((item): item is CartItem => item !== null);
   } catch (error) {
     console.error('Failed to sync guest cart:', error);
-    return [];
+    return null;
   }
 }

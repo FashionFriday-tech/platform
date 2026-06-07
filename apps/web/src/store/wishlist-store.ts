@@ -18,6 +18,7 @@ export interface WishlistProductItem {
   image: string;
   color?: string;
   size?: string;
+  availableSizes?: string[];
   inStock?: boolean;
 }
 
@@ -114,9 +115,10 @@ export const useWishlistStore = create<WishlistState>()(
                   price: Number(m.product!.sellingPrice),
                   originalPrice: Number(m.product!.ogPrice),
                   image: m.product!.mainImage,
-                  color: m.product?.colors?.[0] || 'Standard',
-                  size: m.product?.sizes?.[0] || 'M',
-                  inStock: (m.product?.totalStock ?? 1) > 0,
+              color: m.product?.colors?.[0] || 'Standard',
+              size: m.product?.sizes?.[0] || 'M',
+              availableSizes: m.product?.sizes || ['M'],
+              inStock: (m.product?.totalStock ?? 1) > 0,
                 }));
               set({ items: mappedItems, isInitialized: true });
               if (typeof window !== 'undefined') {
@@ -144,6 +146,7 @@ export const useWishlistStore = create<WishlistState>()(
               image: m.product!.mainImage,
               color: m.product?.colors?.[0] || 'Standard',
               size: m.product?.sizes?.[0] || 'M',
+              availableSizes: m.product?.sizes || ['M'],
               inStock: (m.product?.totalStock ?? 1) > 0,
             }));
 

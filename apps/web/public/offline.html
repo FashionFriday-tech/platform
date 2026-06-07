@@ -1,67 +1,306 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Offline | Fashion Friday</title>
 
-    <style>
-      body {
-        margin: 0;
-        font-family:
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          'Segoe UI',
-          sans-serif;
-        background: #ffffff;
-        color: #111;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        text-align: center;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Offline | Fashion Friday</title>
+  <style>
+    :root {
+      --bg-color: #050505;
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    @media (min-width: 1024px) {
       .container {
-        max-width: 420px;
-        padding: 24px;
+        flex-direction: row;
+      }
+    }
+
+    /* Left Side: Content */
+    .content-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem;
+      position: relative;
+      background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 50%);
+    }
+
+    @media (min-width: 1024px) {
+      .content-side {
+        padding: 5rem 10%;
+        max-width: 50%;
+      }
+    }
+
+    .icon-wrapper {
+      margin-bottom: 2rem;
+      color: var(--text-main);
+    }
+
+    .icon-wrapper svg {
+      width: 48px;
+      height: 48px;
+      animation: pulse-icon 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-icon {
+      0% {
+        opacity: 0.6;
+        transform: scale(0.95);
       }
 
-      h1 {
-        font-size: 1.6rem;
-        margin-bottom: 12px;
+      100% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+
+    h1 span {
+      display: block;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.4);
+    }
+
+    p {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      max-width: 400px;
+      line-height: 1.6;
+      margin-bottom: 3rem;
+    }
+
+    button {
+      background: #ffffff;
+      color: #000000;
+      border: none;
+      padding: 1.25rem 3rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-radius: 50px;
+      cursor: pointer;
+      align-self: flex-start;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: all 0.5s ease;
+    }
+
+    button:hover {
+      background: #d4d4d8;
+      transform: translateY(-2px);
+    }
+
+    button:hover::after {
+      left: 100%;
+    }
+
+    /* Right Side: Image Slideshow */
+    .image-side {
+      flex: 1;
+      position: relative;
+      height: 50vh;
+      padding: 1rem;
+    }
+
+    @media (min-width: 1024px) {
+      .image-side {
+        height: 100vh;
+        padding: 1rem 1rem 1rem 0;
+      }
+    }
+
+    .slideshow-card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 2/3;
+      border-radius: 2rem;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .slideshow-card img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      animation: crossfade 16s infinite;
+    }
+
+    /* 4 Images, changing every 4 seconds (16s total loop) */
+    .slideshow-card img:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .slideshow-card img:nth-child(2) {
+      animation-delay: 4s;
+    }
+
+    .slideshow-card img:nth-child(3) {
+      animation-delay: 8s;
+    }
+
+    .slideshow-card img:nth-child(4) {
+      animation-delay: 12s;
+    }
+
+    @keyframes crossfade {
+      0% {
+        opacity: 0;
+        transform: scale(1.05);
       }
 
-      p {
-        color: #555;
-        line-height: 1.5;
-        margin-bottom: 24px;
+      10% {
+        opacity: 1;
+        transform: scale(1.02);
       }
 
-      button {
-        background: #000;
-        color: #fff;
-        border: none;
-        padding: 12px 20px;
-        font-size: 0.95rem;
-        border-radius: 6px;
-        cursor: pointer;
+      25% {
+        opacity: 1;
+        transform: scale(1);
       }
 
-      button:active {
+      35% {
+        opacity: 0;
         transform: scale(0.98);
       }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>You’re offline</h1>
-      <p>
-        Looks like the internet stepped out for a bit. Fashion Friday will be right here when it’s
-        back.
-      </p>
-      <button onclick="location.reload()">Try again</button>
+
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(5, 5, 5, 0.8) 0%, transparent 30%);
+      z-index: 2;
+    }
+
+    @media (max-width: 1023px) {
+      .overlay {
+        background: linear-gradient(to bottom, rgba(5, 5, 5, 0.8) 0%, transparent 30%);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="content-side">
+      <div class="icon-wrapper">
+        <!-- Modern abstract broken link / offline icon -->
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244">
+          </path>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18"></path>
+        </svg>
+      </div>
+
+      <h1>
+        Connection<br>
+        <span>Lost</span>
+      </h1>
+
+      <p>The internet seems to have stepped out. Take a moment to admire the latest editorial while we wait for it to
+        return.</p>
+
+      <button onclick="location.reload()">Refresh Page</button>
     </div>
-  </body>
+
+    <div class="image-side">
+      <div class="slideshow-card" id="slideshow-container">
+        <div class="overlay"></div>
+        <img src="/images/poster/1.png" alt="Hero Image 1" />
+        <img src="/images/poster/2.png" alt="Hero Image 2" />
+        <img src="/images/poster/3.png" alt="Hero Image 3" />
+        <img src="/images/poster/4.png" alt="Hero Image 4" />
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      try {
+        const storedBanners = localStorage.getItem('offline_hero_banners');
+        if (storedBanners) {
+          const banners = JSON.parse(storedBanners);
+          if (banners && banners.length > 0) {
+            const container = document.getElementById('slideshow-container');
+            // Remove existing static images
+            const existingImages = container.querySelectorAll('img');
+            existingImages.forEach(img => img.remove());
+            
+            // Limit to 4 images to match CSS animations, or you can update CSS dynamically
+            const displayBanners = banners.slice(0, 4);
+            
+            displayBanners.forEach((banner, index) => {
+              const img = document.createElement('img');
+              img.src = banner.src;
+              img.alt = banner.title || `Dynamic Hero Image ${index + 1}`;
+              container.appendChild(img);
+            });
+          }
+        }
+      } catch (e) {
+        console.error('Error loading dynamic offline hero banners', e);
+      }
+    })();
+  </script>
+</body>
+
 </html>
