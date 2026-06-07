@@ -1,7 +1,7 @@
 'use client';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { toast } from 'sonner';
 
@@ -28,6 +28,8 @@ export function useAuthFlow() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/account';
 
   const user = useAuthStore((state) => state.user);
   const authLoading = useAuthStore((state) => state.loading);
@@ -49,9 +51,10 @@ export function useAuthFlow() {
   // Handle automatic redirect if logged in
   useEffect(() => {
     if (user && !authLoading) {
-      router.replace('/account');
+      console.log('[AuthFlow] User already logged in, redirecting to:', redirectUrl);
+      router.replace(redirectUrl);
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, redirectUrl]);
 
   const startTimer = useCallback(() => {
     setTimer(30);
@@ -146,30 +149,44 @@ export function useAuthFlow() {
           setStep('PROFILE');
         } else {
           if (response.accessToken && response.refreshToken && response.user) {
+            console.log('[AuthFlow] Login successful, saving tokens...');
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('accessToken', response.accessToken);
+              localStorage.setItem('refreshToken', response.refreshToken);
+            }
             authLogin(response.user);
             void useCartStore.getState().syncWithServer(true);
             void useWishlistStore.getState().syncWithServer(true);
             toast.success('Login successful!');
+            router.replace(redirectUrl);
           } else {
             toast.error('Invalid response from server');
           }
         }
       } else {
         const response = await signupAction(phoneNumber, profile.name, profile.email, otpToken);
+        console.log('[AuthFlow] Signup successful, saving tokens...');
+        if (response.accessToken && response.refreshToken) {
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('accessToken', response.accessToken);
+            localStorage.setItem('refreshToken', response.refreshToken);
+          }
+        }
         authLogin(response.user);
         void useCartStore.getState().syncWithServer(true);
         void useWishlistStore.getState().syncWithServer(true);
         toast.success('Welcome to Fashion Friday!');
+        router.replace(redirectUrl);
       }
     } catch (error: unknown) {
-      console.error('Auth Error:', error);
+      console.error('[AuthFlow] Auth Error:', error);
       const err = error as Error;
       const message = err.message || 'Something went wrong';
       toast.error(message);
     } finally {
       setLoading(false);
     }
-  }, [step, phoneNumber, otp, profile, otpToken, validate, startTimer, authLogin]);
+  }, [step, phoneNumber, otp, profile, otpToken, validate, startTimer, authLogin, router, redirectUrl]);
 
   const handleResendOTP = useCallback(async () => {
     if (timer > 0) {
