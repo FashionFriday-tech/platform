@@ -30,10 +30,10 @@ export function OrderReviewStep() {
   } = useCheckoutReview();
 
   return (
-    <div className="bg-background text-foreground min-h-screen px-4 pb-60 transition-colors duration-300 md:px-6 lg:py-20 lg:pb-20">
+    <div className="bg-background text-foreground min-h-screen pt-20 pb-60 transition-colors duration-300 sm:pt-24 lg:pb-24">
       <CheckoutProgress currentStage={2} />
 
-      <main className="mx-auto max-w-7xl pt-10">
+      <main className="mx-auto max-w-7xl px-4 pt-8 md:px-8 lg:pt-12">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
           <div className="flex-1 space-y-8">
             <section>
@@ -156,7 +156,7 @@ export function OrderReviewStep() {
             </section>
           </div>
 
-          <aside className="sticky top-24 hidden w-96 space-y-4 lg:block">
+          <aside className="sticky top-40 hidden w-96 space-y-4 lg:block">
             <div className="bg-foreground text-background rounded-[2.5rem] p-8 shadow-2xl">
               <h3 className="mb-8 text-center text-[10px] font-black tracking-[0.3em] uppercase opacity-50">
                 Checkout Summary
