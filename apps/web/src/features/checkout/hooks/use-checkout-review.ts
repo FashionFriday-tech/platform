@@ -87,14 +87,23 @@ export function useCheckoutReview() {
   );
 
   const handleContinue = useCallback(() => {
+    console.log('[useCheckoutReview] handleContinue called:', {
+      hasAddress: !!address,
+      isLoggedIn,
+      user: user ? { id: user.id, phone: user.phone } : null,
+    });
+
     if (!address) {
+      console.log('[useCheckoutReview] No address selected, showing address drawer');
       setShowAddressForm(true);
     } else if (!isLoggedIn) {
-      setShowOTPModal(true);
+      console.log('[useCheckoutReview] User not authenticated, navigating to login');
+      router.push('/login?redirect=/checkout/payment');
     } else {
+      console.log('[useCheckoutReview] Proceeding to payment step');
       router.push('/checkout/payment');
     }
-  }, [address, isLoggedIn, router]);
+  }, [address, isLoggedIn, user, router]);
 
   return {
     address,
