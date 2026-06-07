@@ -5,16 +5,15 @@ import React from 'react';
 import { AlertCircleIcon, CheckCircleIcon, ClockIcon, ShoppingBagIcon, TruckIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
-import { mockOrders } from '../services/mock-orders';
-
-export function OrderStats() {
-  const totalOrders = mockOrders.length;
-  const pendingOrders = mockOrders.filter(
-    (o) => o.status === 'pending' || o.status === 'processing',
+export function OrderStats({ orders = [] }: { orders: any[] }) {
+  const totalOrders = orders.length;
+  const pendingOrders = orders.filter(
+    (o) => o.status === 'PENDING' || o.status === 'PROCESSING',
   ).length;
-  const transitOrders = mockOrders.filter((o) => o.status === 'shipped').length;
-  const deliveredOrders = mockOrders.filter((o) => o.status === 'delivered').length;
-  const nonPlacedOrders = mockOrders.filter((o) => o.status === 'cancelled').length;
+  const transitOrders = orders.filter((o) => o.status === 'SHIPPED').length;
+  const deliveredOrders = orders.filter((o) => o.status === 'DELIVERED').length;
+  const nonPlacedOrders = orders.filter((o) => o.status === 'CANCELLED' || o.status === 'RETURNED').length;
+
 
   const stats = [
     {
