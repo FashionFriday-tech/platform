@@ -36,6 +36,12 @@ const CopyIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const ChevronUpIcon = ({ className }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="m18 15-6-6-6 6"/>
+  </svg>
+);
+
 interface CustomerDetailsFeatureProps {
   customerId: string;
 }
@@ -149,6 +155,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isProfileBoxOpen, setIsProfileBoxOpen] = useState(true);
   const [updatingCartItem, setUpdatingCartItem] = useState<string | null>(null);
   const [itemToRemove, setItemToRemove] = useState<string | null>(null);
   const cartUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -532,11 +539,18 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-6">
+    <div className="mx-auto w-full max-w-7xl space-y-3">
       {/* Header Profile Section */}
-      <div className="overflow-hidden rounded-3xl border border-black/5 bg-white dark:border-white/5 dark:bg-[#111111]">
-        {/* Cover Background */}
-        <div className="h-32 w-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 dark:from-emerald-500/5 dark:via-teal-500/5 dark:to-cyan-500/5" />
+      <AnimatePresence initial={false}>
+        {isProfileBoxOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="relative overflow-hidden rounded-3xl border border-black/5 bg-white dark:border-white/5 dark:bg-[#111111]"
+          >
+            {/* Cover Background */}
+            <div className="h-32 w-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 dark:from-emerald-500/5 dark:via-teal-500/5 dark:to-cyan-500/5" />
 
         <div className="px-8 pb-8">
           <div className="-mt-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
@@ -630,12 +644,52 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             </div>
           </div>
         </div>
-      </div>
+        </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Tabs and Content Section */}
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-          <div className="flex items-center gap-2 rounded-2xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#111111]">
+        <div className="sticky top-2 z-40 flex w-full items-center justify-between py-2">
+          {/* Tabs & Toggle (Left) */}
+          <div className="flex overflow-x-auto no-scrollbar">
+            <div className="flex shrink-0 items-center gap-2 rounded-2xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#111111]">
+              <button
+                onClick={() => setIsProfileBoxOpen(!isProfileBoxOpen)}
+                className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm transition-all hover:scale-105 active:scale-95 dark:bg-[#222]"
+              >
+                <AnimatePresence mode="wait">
+                  {isProfileBoxOpen ? (
+                    <motion.div
+                      key="up-arrow"
+                      initial={{ opacity: 0, rotate: -90 }}
+                      animate={{ opacity: 1, rotate: 0 }}
+                      exit={{ opacity: 0, rotate: 90 }}
+                    >
+                      <ChevronUpIcon className="h-4 w-4 text-black/70 dark:text-white/70" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="avatar"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="h-full w-full"
+                    >
+                      <Image
+                        src={customer.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${customer.name}&backgroundColor=000000&textColor=ffffff`}
+                        alt={customer.name}
+                        width={36}
+                        height={36}
+                        className="h-full w-full object-cover dark:invert"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+
+              <div className="h-5 w-[1px] bg-black/10 dark:bg-white/10" />
+
             <button
               onClick={() => fetchTabContent('orders')}
               className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${activeTab === 'orders'
@@ -687,20 +741,23 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
               Payments
             </button>
           </div>
+          </div>
+          
+          {/* Action Buttons (Right) */}
+          <div className="flex flex-1 justify-end">
+            {activeTab === 'orders' && (
+              <button
+                onClick={() => setIsOrderModalOpen(true)}
+                className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+              >
+                <PlusIcon className="h-4 w-4" />
+                Create Order
+              </button>
+            )}
 
-          {activeTab === 'orders' && (
-            <button
-              onClick={() => setIsOrderModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
-            >
-              <PlusIcon className="h-4 w-4" />
-              Create Order
-            </button>
-          )}
-
-          {activeTab === 'addresses' && (
-            <button
-              onClick={() => {
+            {activeTab === 'addresses' && (
+              <button
+                onClick={() => {
                 setAddrFullName(customer.name || '');
                 setAddrPhone(customer.phone || '');
                 setAddrAltPhone('');
@@ -730,9 +787,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
               ) : (
                 <ShoppingBagIcon className="h-4 w-4" />
               )}
-              Place Order
+              Checkout
             </button>
           )}
+          </div>
         </div>
 
         <div className="relative min-h-[300px]">
