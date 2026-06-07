@@ -61,8 +61,8 @@ export async function BrandCatalog({ brandName }: BrandCatalogProps): Promise<JS
 
               {/* Perfectly centered absolute X */}
               <div className="relative flex items-center justify-center w-8 h-8 md:w-16 md:h-16">
-                <div className="absolute w-[2px] md:w-[4px] h-24 md:h-46 bg-white/80 rotate-45" />
-                <div className="absolute w-[2px] md:w-[4px] h-12 md:h-30 bg-white/80 -rotate-45" />
+                <div className="absolute w-[2px] md:w-[4px] h-24 md:h-46 bg-white rotate-45" />
+                <div className="absolute w-[2px] md:w-[4px] h-12 md:h-30 bg-white -rotate-45" />
               </div>
 
               {brand.logo ? (
