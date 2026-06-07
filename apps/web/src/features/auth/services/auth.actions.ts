@@ -26,7 +26,7 @@ async function setAuthCookies(accessToken: string, refreshToken: string) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge: 7 * 24 * 60 * 60, // 7 days
+    maxAge: 90 * 24 * 60 * 60, // 90 days
   });
 }
 
@@ -35,6 +35,8 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   const token = cookieStore.get('accessToken')?.value;
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
+
+const refreshPromises = new Map<string, Promise<boolean>>();
 
 // Function to handle authenticated requests, including refresh token logic
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
@@ -57,11 +59,28 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
   });
 
   if (response.status === 401) {
-    // Attempt token refresh
     const cookieStore = await cookies();
     const refreshToken = cookieStore.get('refreshToken')?.value;
 
-    if (refreshToken) {
+    if (!refreshToken) {
+      return response;
+    }
+
+    // If another request is currently refreshing this token, wait for it
+    if (refreshPromises.has(refreshToken)) {
+      const success = await refreshPromises.get(refreshToken);
+      if (success) {
+        authHeaders = await getAuthHeaders();
+        return fetch(`${API_URL}${endpoint}`, {
+          ...options,
+          headers: buildHeaders(authHeaders),
+        });
+      }
+      return response;
+    }
+
+    // Start a new token refresh promise for this specific refresh token
+    const refreshPromise = (async () => {
       const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
         method: 'POST',
         headers: {
@@ -73,17 +92,26 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
       if (refreshRes.ok) {
         const data = await refreshRes.json();
         await setAuthCookies(data.accessToken, data.refreshToken);
-
-        // Retry original request
-        authHeaders = await getAuthHeaders();
-        response = await fetch(`${API_URL}${endpoint}`, {
-          ...options,
-          headers: buildHeaders(authHeaders),
-        });
+        return true;
       } else {
         // Refresh failed, clear cookies
         await logoutAction();
+        return false;
       }
+    })();
+
+    // Store the promise so other concurrent requests can await it
+    refreshPromises.set(refreshToken, refreshPromise);
+    const success = await refreshPromise;
+    refreshPromises.delete(refreshToken); // Cleanup after it completes
+
+    // Retry original request if refresh succeeded
+    if (success) {
+      authHeaders = await getAuthHeaders();
+      response = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        headers: buildHeaders(authHeaders),
+      });
     }
   }
 

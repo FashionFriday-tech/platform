@@ -44,6 +44,16 @@ const nextConfig: NextConfig = {
   },
 
 
+  async redirects() {
+    return [
+      {
+        source: '/cart',
+        destination: '/checkout/cart',
+        permanent: true,
+      },
+    ];
+  },
+
   transpilePackages: ['@ff/ui'],
 
   experimental: {

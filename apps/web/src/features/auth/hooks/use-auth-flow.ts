@@ -11,6 +11,8 @@ import {
   verifyOtpAction,
 } from '@/features/auth/services/auth.actions';
 import { useAuthStore } from '@/store/auth-store';
+import { useCartStore } from '@/store/cart-store';
+import { useWishlistStore } from '@/store/wishlist-store';
 
 export type AuthStep = 'PHONE' | 'OTP' | 'PROFILE';
 
@@ -145,6 +147,8 @@ export function useAuthFlow() {
         } else {
           if (response.accessToken && response.refreshToken && response.user) {
             authLogin(response.user);
+            void useCartStore.getState().syncWithServer(true);
+            void useWishlistStore.getState().syncWithServer(true);
             toast.success('Login successful!');
           } else {
             toast.error('Invalid response from server');
@@ -153,6 +157,8 @@ export function useAuthFlow() {
       } else {
         const response = await signupAction(phoneNumber, profile.name, profile.email, otpToken);
         authLogin(response.user);
+        void useCartStore.getState().syncWithServer(true);
+        void useWishlistStore.getState().syncWithServer(true);
         toast.success('Welcome to Fashion Friday!');
       }
     } catch (error: unknown) {
