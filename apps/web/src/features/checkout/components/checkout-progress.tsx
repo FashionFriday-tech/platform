@@ -16,7 +16,7 @@ const stages = [
 
 export function CheckoutProgress({ currentStage }: CheckoutStagesProps) {
   return (
-    <nav className="border-border bg-background w-full border-b py-4 transition-colors">
+    <nav className="border-border bg-background fixed top-16 right-0 left-0 z-40 w-full border-b py-3 transition-colors sm:top-20">
       <div className="relative mx-auto max-w-4xl px-6">
         {/* 1. The Background Connector Line (Centered) */}
         <div className="bg-border absolute top-2.5 right-12 left-12 h-0.5 overflow-hidden rounded-full">

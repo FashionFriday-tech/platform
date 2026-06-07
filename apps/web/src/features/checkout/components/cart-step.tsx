@@ -13,9 +13,9 @@ export function CartStep() {
   const { cartItems, hasItems, isMounted } = useCart();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-20 transition-colors duration-300 sm:pt-24">
+    <div className="bg-background text-foreground min-h-screen pt-36 transition-colors duration-300 sm:pt-40">
       <CheckoutProgress currentStage={1} />
-      <main className="max-w-8xl mx-auto px-4 pt-8 md:px-8 lg:pt-12">
+      <main className="max-w-8xl mx-auto px-4 pt-6 md:px-8">
         <div className="w-full">
           <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
             {/* Left Column: Items & Shipping */}
@@ -75,7 +75,7 @@ export function CartStep() {
             </div>
 
             {/* Right Column: Sticky Summary */}
-            <aside className="w-full lg:sticky lg:top-24 lg:w-100">
+            <aside className="w-full lg:sticky lg:top-40 lg:w-100">
               <OrderSummary />
             </aside>
           </div>
