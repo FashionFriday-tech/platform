@@ -4,8 +4,7 @@ import React from 'react';
 
 import { PackageIcon } from '@ff/ui';
 
-import { useOrders } from '../hooks/use-orders';
-import { type OrderStatus } from '../types';
+import { useOrders, type FrontendOrderStatus } from '../hooks/use-orders';
 import { OrderCard } from './order-card';
 import { TabButton } from './tab-button';
 
@@ -26,7 +25,7 @@ export function OrdersPage() {
                 key={tab}
                 isActive={activeTab === tab}
                 label={tab === 'shipping' ? 'Shipping' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                count={tab !== 'canceled' ? getCount(tab as OrderStatus) : undefined}
+                count={tab !== 'canceled' ? getCount(tab as FrontendOrderStatus) : undefined}
                 onClick={() => {
                   setActiveTab(tab);
                 }}
