@@ -1,16 +1,64 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
+import { api } from '../../../lib/api-client';
 
 import { OrderDetailsView } from '../../../features/orders/components/OrderDetailsView';
-import { mockOrders } from '../../../features/orders/services/mock-orders';
 
-export default async function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-  // In a real app, this would fetch from an API using the ID
-  const resolvedParams = await params;
-  const order = mockOrders.find((o) => o.id === resolvedParams.id);
+export default function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  const [order, setOrder] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  if (!order) {
-    notFound();
+  useEffect(() => {
+    async function loadOrder() {
+      try {
+        const resolvedParams = await params;
+        const data: any = await api.get(`/orders/${resolvedParams.id}`);
+        if (!data) {
+          setError(true);
+          return;
+        }
+        
+        // map data to match admin shape
+        const mapped = {
+          ...data,
+          status: data.status?.toLowerCase() || 'pending',
+          customer: { id: data.userId, name: data.user?.name || 'Unknown', phone: data.user?.phone || '', altPhone: data.user?.altPhone },
+          total: Number(data.finalAmount || data.totalAmount || 0),
+          paymentType: data.paymentMethod?.toLowerCase() === 'cod' ? 'cod' : 'prepaid',
+          tracking: {
+            trackingId: data.trackingNumber || '',
+            courierService: data.courierPartner || 'Delhivery',
+          },
+          items: data.items?.map((item: any) => ({
+             productName: item.name,
+             size: item.size,
+             color: item.color,
+             quantity: item.quantity,
+             price: Number(item.price || 0),
+             productImage: item.image || '/images/placeholders/2.png'
+          })) || [],
+        };
+        
+        setOrder(mapped);
+      } catch (err) {
+        console.error('Failed to load order details', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    void loadOrder();
+  }, [params]);
+
+  if (loading) {
+    return <div className="p-8 text-center">Loading order details...</div>;
+  }
+
+  if (error || !order) {
+    return <div className="p-8 text-center text-red-500">Order not found.</div>;
   }
 
   return <OrderDetailsView order={order} />;
