@@ -11,9 +11,8 @@ export function StatusBadge({ status, label }: StatusBadgeProps) {
   const getStatusColor = (s: OrderStatus) => {
     switch (s?.toLowerCase()) {
       case 'pending':
-        return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
       case 'confirmed':
-        return 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20';
+        return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
       case 'processing':
         return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
       case 'shipped':
@@ -30,13 +29,39 @@ export function StatusBadge({ status, label }: StatusBadgeProps) {
     }
   };
 
+  const getFormattedLabel = (s: OrderStatus, rawLabel?: string) => {
+    const norm = (s || '').toLowerCase();
+    switch (norm) {
+      case 'pending':
+      case 'confirmed':
+        return 'Order Placed';
+      case 'processing':
+        return 'Processing';
+      case 'shipped':
+      case 'shipping':
+        return 'Shipped';
+      case 'delivered':
+      case 'arrived':
+        return 'Delivered';
+      case 'canceled':
+      case 'cancelled':
+        return 'Cancelled';
+      case 'returned':
+        return 'Returned';
+      case 'refunded':
+        return 'Refunded';
+      default:
+        return rawLabel || s;
+    }
+  };
+
   return (
     <span
       className={`rounded-full border px-3 py-1 text-[10px] font-bold tracking-widest uppercase ${getStatusColor(
         status,
       )}`}
     >
-      {label}
+      {getFormattedLabel(status, label)}
     </span>
   );
 }
