@@ -20,12 +20,18 @@ export function OrdersPage() {
           </h1>
 
           <div className="bg-background-muted no-scrollbar flex items-center gap-1 overflow-x-auto rounded-3xl p-1.5 shadow-inner">
-            {(['shipping', 'arrived', 'canceled'] as const).map((tab) => (
+            {(['shipping', 'delivered', 'canceled'] as const).map((tab) => (
               <TabButton
                 key={tab}
                 isActive={activeTab === tab}
-                label={tab === 'shipping' ? 'Shipping' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                count={tab !== 'canceled' ? getCount(tab as FrontendOrderStatus) : undefined}
+                label={
+                  tab === 'shipping'
+                    ? 'Shipping'
+                    : tab === 'delivered'
+                      ? 'Delivered'
+                      : 'Cancelled'
+                }
+                count={getCount(tab as FrontendOrderStatus)}
                 onClick={() => {
                   setActiveTab(tab);
                 }}
@@ -49,7 +55,9 @@ export function OrdersPage() {
         ) : (
           <div className="bg-background-elevated border-border rounded-4xl border border-dashed py-20 text-center opacity-60">
             <PackageIcon className="text-foreground-subtle mx-auto mb-4" size={40} />
-            <p className="font-bold">No {activeTab} shipments</p>
+            <p className="font-bold">
+              No {activeTab === 'delivered' ? 'delivered' : activeTab === 'shipping' ? 'active shipping' : 'cancelled'} shipments
+            </p>
           </div>
         )}
       </main>
