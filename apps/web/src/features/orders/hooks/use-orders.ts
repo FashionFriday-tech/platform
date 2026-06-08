@@ -5,7 +5,7 @@ import { api } from '@/lib/api-client';
 import { fetchUserOrdersAction } from '../services/orders.actions';
 
 // Map DB OrderStatus to frontend generic types if needed, or just use strings.
-export type FrontendOrderStatus = 'shipping' | 'arrived' | 'canceled';
+export type FrontendOrderStatus = 'shipping' | 'delivered' | 'canceled' | 'arrived';
 
 export function useOrders() {
   const [activeTab, setActiveTab] = useState<FrontendOrderStatus>('shipping');
@@ -40,9 +40,10 @@ export function useOrders() {
   const flattenedOrders = useMemo(() => {
     return orders
       .filter((o) => {
-        if (activeTab === 'shipping') return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(o.status);
-        if (activeTab === 'arrived') return ['DELIVERED'].includes(o.status);
-        if (activeTab === 'canceled') return ['CANCELLED', 'RETURNED', 'REFUNDED'].includes(o.status);
+        const s = o.status?.toUpperCase();
+        if (activeTab === 'shipping') return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(s);
+        if (activeTab === 'delivered' || activeTab === 'arrived') return ['DELIVERED'].includes(s);
+        if (activeTab === 'canceled') return ['CANCELLED', 'CANCELED', 'RETURNED', 'REFUNDED'].includes(s);
         return false;
       })
       .flatMap((order) =>
@@ -57,9 +58,10 @@ export function useOrders() {
   const getCount = (tab: FrontendOrderStatus) => {
     return orders
       .filter((o) => {
-        if (tab === 'shipping') return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(o.status);
-        if (tab === 'arrived') return ['DELIVERED'].includes(o.status);
-        if (tab === 'canceled') return ['CANCELLED', 'RETURNED', 'REFUNDED'].includes(o.status);
+        const s = o.status?.toUpperCase();
+        if (tab === 'shipping') return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(s);
+        if (tab === 'delivered' || tab === 'arrived') return ['DELIVERED'].includes(s);
+        if (tab === 'canceled') return ['CANCELLED', 'CANCELED', 'RETURNED', 'REFUNDED'].includes(s);
         return false;
       })
       .reduce((acc, curr) => acc + (curr.items?.length || 0), 0);
