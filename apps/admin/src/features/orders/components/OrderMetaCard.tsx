@@ -1,4 +1,4 @@
-import { CustomSelect } from '../../../components/ui/CustomSelect';
+import { CustomSelect, type SelectOption } from '../../../components/ui/CustomSelect';
 import { type Order } from '../types';
 import { COURIER_SERVICES } from '../utils/courier';
 
@@ -15,6 +15,7 @@ interface Props {
   isTrackingSaved: boolean;
   handleSaveTracking: () => void;
   trackingUrl: string | null;
+  sellerOptions?: SelectOption[];
 }
 
 export function OrderMetaCard({
@@ -30,6 +31,7 @@ export function OrderMetaCard({
   isTrackingSaved,
   handleSaveTracking,
   trackingUrl,
+  sellerOptions = [{ label: 'Unassigned', value: '' }],
 }: Props) {
   const courierOptions = COURIER_SERVICES.map((c) => ({ label: c, value: c }));
 
@@ -72,7 +74,7 @@ export function OrderMetaCard({
           <>
             <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
               <span className="text-sm text-black/50 dark:text-white/50">Seller</span>
-              <span className="text-sm font-bold text-black dark:text-white">{assignedSeller}</span>
+              <span className="text-sm font-bold text-black dark:text-white">{assignedSeller || 'Unassigned'}</span>
             </div>
             <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
               <span className="text-sm text-black/50 dark:text-white/50">Courier</span>
@@ -104,11 +106,7 @@ export function OrderMetaCard({
                 Seller
               </label>
               <CustomSelect
-                options={[
-                  { label: 'Seller A', value: 'Seller A' },
-                  { label: 'Seller B', value: 'Seller B' },
-                  { label: 'Seller C', value: 'Seller C' },
-                ]}
+                options={sellerOptions}
                 value={assignedSeller}
                 onChange={setAssignedSeller}
               />
