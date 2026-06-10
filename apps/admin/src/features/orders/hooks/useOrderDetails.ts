@@ -1,17 +1,26 @@
-import { useState } from 'react';
-
-import { type Order } from '../types';
-import { api } from '@/lib/api-client';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+import { api } from '@/lib/api-client';
+
+import { type SelectOption } from '../../../components/ui/CustomSelect';
+import { type Order } from '../types';
 
 export function useOrderDetails(order: Order) {
   const [trackingId, setTrackingId] = useState(order.tracking?.trackingId ?? '');
+  const initialSeller =
+    (order as any).seller?.storeName ||
+    (order as any).seller?.name ||
+    order.items?.find((i: any) => i.seller)?.seller?.storeName ||
+    order.items?.find((i: any) => i.seller)?.seller?.name ||
+    '';
   const [courierService, setCourierService] = useState<string>(
     order.tracking?.courierService ?? 'Delhivery',
   );
-  const [assignedSeller, setAssignedSeller] = useState('Seller A');
+  const [assignedSeller, setAssignedSeller] = useState(initialSeller);
   const [orderStatus, setOrderStatus] = useState<string>(order.status);
   const [isTrackingSaved, setIsTrackingSaved] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [contactMode, setContactMode] = useState<'none' | 'call' | 'whatsapp'>('none');
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -20,9 +29,97 @@ export function useOrderDetails(order: Order) {
     order.tracking?.courierService ?? 'Delhivery',
   );
   const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId ?? '');
-  const [tempSeller, setTempSeller] = useState('Seller A');
+  const [tempSeller, setTempSeller] = useState(initialSeller);
   const [isEditingMeta, setIsEditingMeta] = useState(false);
+  const [rawSellers, setRawSellers] = useState<any[]>([]);
+  const [sellerOptions, setSellerOptions] = useState<SelectOption[]>([
+    { label: 'Unassigned', value: '' },
+  ]);
   const router = useRouter();
+
+  useEffect(() => {
+    async function loadSellers() {
+      try {
+        const res: any = await api.get('/admin/sellers');
+        const list: any[] = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+        setRawSellers(list);
+
+        if (list.length > 0) {
+          const orderProductIds = new Set(
+            (order.items || []).map((i: any) => i.productId).filter(Boolean),
+          );
+          const orderProductSellerIds = new Set(
+            (order.items || [])
+              .map((i: any) => i.productSellerId || i.sellerId || i.seller?.id)
+              .filter(Boolean),
+          );
+          const orderCategoryIds = new Set(
+            (order.items || []).map((i: any) => i.categoryId).filter(Boolean),
+          );
+          const orderCategoryNames = new Set(
+            (order.items || [])
+              .map((i: any) => i.categoryName?.toLowerCase())
+              .filter(Boolean),
+          );
+
+          const productSellers: any[] = [];
+          const categorySellers: any[] = [];
+          const otherSellers: any[] = [];
+
+          for (const seller of list) {
+            const isProductSeller =
+              orderProductSellerIds.has(seller.id) ||
+              (seller.products && seller.products.some((p: any) => orderProductIds.has(p.id)));
+
+            if (isProductSeller) {
+              productSellers.push(seller);
+              continue;
+            }
+
+            const isCategorySeller =
+              seller.categories &&
+              seller.categories.some(
+                (c: any) =>
+                  orderCategoryIds.has(c.id) ||
+                  (c.name && orderCategoryNames.has(c.name.toLowerCase())),
+              );
+
+            if (isCategorySeller) {
+              categorySellers.push(seller);
+              continue;
+            }
+
+            otherSellers.push(seller);
+          }
+
+          const formatOption = (s: any, group: string, badge?: string): SelectOption => ({
+            label: s.storeName ? `${s.storeName} (${s.name})` : s.name,
+            value: s.storeName || s.name,
+            group,
+            badge,
+          });
+
+          const options: SelectOption[] = [
+            { label: 'Unassigned', value: '' },
+            ...productSellers.map((s) => formatOption(s, 'Product Sellers', 'Product Seller')),
+            ...categorySellers.map((s) => formatOption(s, 'Category Sellers', 'Category Seller')),
+            ...otherSellers.map((s) => formatOption(s, 'Other Sellers')),
+          ];
+
+          setSellerOptions(options);
+
+          if (!initialSeller && productSellers.length > 0) {
+            const defaultSeller = productSellers[0].storeName || productSellers[0].name;
+            setAssignedSeller(defaultSeller);
+            setTempSeller(defaultSeller);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load sellers:', err);
+      }
+    }
+    void loadSellers();
+  }, [order]);
 
   const handleDeleteOrder = async () => {
     if (!window.confirm('Are you sure you want to delete this order?')) {
@@ -56,7 +153,19 @@ export function useOrderDetails(order: Order) {
     setContactMode('none');
   };
 
-  const handleSaveTracking = () => {
+  const handleSaveTracking = async () => {
+    const matchedSeller = rawSellers.find(
+      (s) => s.storeName === assignedSeller || s.name === assignedSeller || s.id === assignedSeller,
+    );
+    try {
+      await api.patch(`/orders/${order.id}`, {
+        courierPartner: courierService,
+        trackingNumber: trackingId,
+        sellerId: matchedSeller?.id || null,
+      });
+    } catch (e) {
+      console.error(e);
+    }
     setIsTrackingSaved(true);
     setTimeout(() => {
       setIsTrackingSaved(false);
@@ -174,6 +283,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     setTempTracking,
     tempSeller,
     setTempSeller,
+    sellerOptions,
     isEditingMeta,
     setIsEditingMeta,
     handleContactClick,
