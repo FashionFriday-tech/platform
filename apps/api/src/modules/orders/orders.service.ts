@@ -1,8 +1,9 @@
+import { OrderStatus, PaymentStatus } from '@ff/database';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+
 import { PrismaService } from '../../database/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { OrderStatus, PaymentStatus } from '@ff/database';
 
 @Injectable()
 export class OrdersService {
@@ -12,11 +13,13 @@ export class OrdersService {
 
   async createOrder(userId: string, dto: CreateOrderDto) {
     this.logger.log(`[OrdersService] ---------------- ORDER CREATION STARTED ----------------`);
-    this.logger.log(`[OrdersService] Processing order for userId: ${userId}, paymentMethod: ${dto.paymentMethod}`);
+    this.logger.log(
+      `[OrdersService] Processing order for userId: ${userId}, paymentMethod: ${dto.paymentMethod}`,
+    );
 
     // 1. Fetch user's cart
     this.logger.log(`[OrdersService] Step 1: Fetching cart items from DB for user: ${userId}`);
-    let cartItems = await this.prisma.db.cartItem.findMany({
+    const cartItems = await this.prisma.db.cartItem.findMany({
       where: { userId },
       include: { product: true },
     });
@@ -25,7 +28,9 @@ export class OrdersService {
 
     if (cartItems.length === 0) {
       this.logger.warn(`[OrdersService] User ${userId} cart is empty in database`);
-      throw new BadRequestException('Your cart is empty. Please add items to cart before placing an order.');
+      throw new BadRequestException(
+        'Your cart is empty. Please add items to cart before placing an order.',
+      );
     }
 
     // 2. Calculate totals
@@ -43,6 +48,7 @@ export class OrdersService {
         color: item.color || 'Standard',
         price: price,
         quantity: item.quantity,
+        sellerId: item.product?.sellerId || null,
       };
     });
 
@@ -62,7 +68,9 @@ export class OrdersService {
     });
 
     if (!defaultAddress) {
-      this.logger.warn(`[OrdersService] No address found for user ${userId}, applying fallback address for checkout`);
+      this.logger.warn(
+        `[OrdersService] No address found for user ${userId}, applying fallback address for checkout`,
+      );
       defaultAddress = {
         id: 'fallback-address',
         userId,
@@ -79,7 +87,9 @@ export class OrdersService {
         updatedAt: new Date(),
       } as any;
     } else {
-      this.logger.log(`[OrdersService] Using address for ${defaultAddress.fullName}, ${defaultAddress.city}`);
+      this.logger.log(
+        `[OrdersService] Using address for ${defaultAddress.fullName}, ${defaultAddress.city}`,
+      );
     }
 
     // 4. Create order
@@ -91,8 +101,9 @@ export class OrdersService {
         data: {
           userId,
           orderNumber,
-          status: OrderStatus.CONFIRMED,
-          paymentStatus: dto.paymentMethod === 'COD' ? PaymentStatus.PENDING : PaymentStatus.SUCCESS,
+          status: OrderStatus.PENDING,
+          paymentStatus:
+            dto.paymentMethod === 'COD' ? PaymentStatus.PENDING : PaymentStatus.SUCCESS,
           paymentMethod: dto.paymentMethod,
           totalAmount,
           discountAmount,
@@ -108,7 +119,9 @@ export class OrdersService {
         },
       });
 
-      this.logger.log(`[OrdersService] Step 5: Order created successfully with ${order.items.length} items. ID: ${order.id}`);
+      this.logger.log(
+        `[OrdersService] Step 5: Order created successfully with ${order.items.length} items. ID: ${order.id}`,
+      );
 
       // 5. Clear cart
       this.logger.log(`[OrdersService] Step 6: Clearing cart items in DB for user ${userId}...`);
@@ -119,9 +132,48 @@ export class OrdersService {
       this.logger.log(`[OrdersService] ---------------- ORDER CREATION COMPLETE ----------------`);
       return order;
     } catch (dbError: any) {
-      this.logger.error(`[OrdersService] Database error creating order: ${dbError.message}`, dbError.stack);
+      this.logger.error(
+        `[OrdersService] Database error creating order: ${dbError.message}`,
+        dbError.stack,
+      );
       throw new BadRequestException(`Failed to process order in database: ${dbError.message}`);
     }
+  }
+
+  async getOrderStats() {
+    const [totalOrders, unplacedOnSellersCount, processingCount, shippedCount, deliveredCount] =
+      await Promise.all([
+        this.prisma.db.order.count(),
+        this.prisma.db.order.count({
+          where: {
+            status: { in: [OrderStatus.PENDING, OrderStatus.CONFIRMED] },
+          },
+        }),
+        this.prisma.db.order.count({
+          where: {
+            status: OrderStatus.PROCESSING,
+          },
+        }),
+        this.prisma.db.order.count({
+          where: {
+            status: OrderStatus.SHIPPED,
+          },
+        }),
+        this.prisma.db.order.count({
+          where: {
+            status: OrderStatus.DELIVERED,
+          },
+        }),
+      ]);
+
+    return {
+      totalOrders,
+      unplacedCount: unplacedOnSellersCount,
+      nonPlacedOnSellers: unplacedOnSellersCount,
+      processingCount,
+      shippedCount,
+      deliveredCount,
+    };
   }
 
   async findAll() {
@@ -146,14 +198,50 @@ export class OrdersService {
     const order = await this.prisma.db.order.findUnique({
       where: { id },
       include: {
-        items: true,
+        items: {
+          include: {
+            seller: true,
+          },
+        },
         user: { select: { name: true, phone: true } },
       },
     });
     if (!order) {
       throw new NotFoundException('Order not found');
     }
-    return order;
+
+    const productIds = order.items.map((i) => i.productId).filter(Boolean);
+    const products =
+      productIds.length > 0
+        ? await this.prisma.db.product.findMany({
+            where: { id: { in: productIds } },
+            select: {
+              id: true,
+              sellerId: true,
+              categoryId: true,
+              category: { select: { id: true, name: true, slug: true } },
+              seller: { select: { id: true, name: true, storeName: true } },
+            },
+          })
+        : [];
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+    const enrichedItems = order.items.map((item) => {
+      const prod = productMap.get(item.productId);
+      return {
+        ...item,
+        productSellerId: prod?.sellerId ?? item.sellerId ?? null,
+        categoryId: prod?.categoryId ?? null,
+        categoryName: prod?.category?.name ?? null,
+        product: prod ?? null,
+      };
+    });
+
+    return {
+      ...order,
+      items: enrichedItems,
+    };
   }
 
   async updateOrder(id: string, dto: UpdateOrderDto) {
@@ -161,6 +249,14 @@ export class OrdersService {
     const existing = await this.prisma.db.order.findUnique({ where: { id } });
     if (!existing) {
       throw new NotFoundException('Order not found');
+    }
+
+    if ((dto as any).sellerId !== undefined) {
+      const targetSellerId = (dto as any).sellerId || null;
+      await this.prisma.db.orderItem.updateMany({
+        where: { orderId: id },
+        data: { sellerId: targetSellerId },
+      });
     }
 
     const updated = await this.prisma.db.order.update({
@@ -171,13 +267,17 @@ export class OrdersService {
         ...(dto.courierPartner !== undefined ? { courierPartner: dto.courierPartner } : {}),
       },
       include: {
-        items: true,
+        items: {
+          include: {
+            seller: true,
+          },
+        },
         user: { select: { name: true, phone: true } },
       },
     });
 
     this.logger.log(
-      `[OrdersService] Order ${id} updated. New status: ${updated.status}, tracking: ${updated.trackingNumber}`,
+      `[OrdersService] Order ${id} updated. New status: ${updated.status}, tracking: ${updated.trackingNumber ?? 'none'}`,
     );
     return updated;
   }
