@@ -14,13 +14,14 @@ import { CollectionsModule } from './modules/collections/collections.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { FaqModule } from './modules/faq/faq.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
+import { OrdersModule } from './modules/orders/orders.module';
 import { ProductRequestsModule } from './modules/product-requests/product-requests.module';
 import { ProductsModule } from './modules/products/products.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SellersModule } from './modules/sellers/sellers.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
-import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { OrdersModule } from './modules/orders/orders.module';
     WishlistModule,
     CartModule,
     OrdersModule,
+    SellersModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
