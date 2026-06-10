@@ -53,10 +53,7 @@ export class CustomersController {
   }
 
   @Post(':id/addresses')
-  async createCustomerAddress(
-    @Param('id') id: string,
-    @Body() dto: any
-  ) {
+  async createCustomerAddress(@Param('id') id: string, @Body() dto: any) {
     return this.service.createCustomerAddress(id, dto);
   }
 
@@ -64,7 +61,7 @@ export class CustomersController {
   async updateCustomerCartItem(
     @Param('id') id: string,
     @Param('itemId') itemId: string,
-    @Body() dto: { quantity: number }
+    @Body() dto: { quantity: number },
   ) {
     return this.service.updateCustomerCartItem(id, itemId, dto.quantity);
   }
