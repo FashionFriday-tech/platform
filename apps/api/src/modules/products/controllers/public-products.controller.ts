@@ -11,8 +11,14 @@ export class ProductsController {
     @Query('skip') skip?: number,
     @Query('take') take?: number,
     @Query('brand') brand?: string,
+    @Query('collection') collection?: string,
   ) {
-    return this.productsService.getPublicProducts(Number(skip) || 0, Number(take) || 10, brand);
+    return this.productsService.getPublicProducts(
+      Number(skip) || 0,
+      Number(take) || 10,
+      brand,
+      collection,
+    );
   }
 
   @Get('search')
