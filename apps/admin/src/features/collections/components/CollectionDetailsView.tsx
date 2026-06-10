@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { EditIcon, PackageIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
+import { toast } from 'sonner';
 
 // We simulate fetching all products using the products feature mock
 import { mockProducts } from '../../products/services/api';
@@ -31,16 +32,69 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
-    // In a real app, we'd fetch products by collection ID.
-    const initialProducts = mockProducts.slice(0, 10);
-    setCollectionProducts(initialProducts);
-  }, [collection.id]);
+    async function loadCollectionProducts() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : (data.data ?? []);
+        const matching: Product[] = items
+          .filter((p: any) => (p.collections || []).includes(collection.slug))
+          .map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            sku: p.id.substring(0, 8).toUpperCase(),
+            costPrice: Number(p.gettingPrice) || 0,
+            originalPrice: Number(p.ogPrice ?? p.sellingPrice) || 0,
+            sellingPrice: Number(p.sellingPrice) || 0,
+            stock: Number(p.totalStock) || 0,
+            maxStock: 1000,
+            status:
+              p.status === 'PUBLISHED' ? 'Active' : p.status === 'DRAFT' ? 'Draft' : 'Inactive',
+            category: p.category?.name || 'General',
+            categoryId: p.categoryId,
+            store: 'Main Store',
+            variants: p.sizes ?? [],
+            sales: 0,
+            dateAdded: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : '',
+            imageUrl: p.mainImage,
+            brand: Array.isArray(p.brand) ? p.brand.join(', ') : p.brand || '',
+            collections: p.collections || [],
+          }));
+        setCollectionProducts(matching);
+        setCollection((prev) => ({ ...prev, productCount: matching.length }));
+      } catch (err) {
+        console.error('Failed to load collection products:', err);
+      }
+    }
+    void loadCollectionProducts();
+  }, [collection.slug]);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleRemoveProduct = (productId: string) => {
-    setCollectionProducts((prev) => prev.filter((p) => p.id !== productId));
-    setCollection((prev) => ({ ...prev, productCount: prev.productCount - 1 }));
+  const handleRemoveProduct = async (productId: string) => {
+    try {
+      const prod = collectionProducts.find((p) => p.id === productId);
+      const existingCollections = (prod as any)?.collections || [];
+      const updated = existingCollections.filter((c: string) => c !== collection.slug);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ marketing: { collections: updated } }),
+        },
+      );
+      if (!res.ok) throw new Error('Failed to remove product from collection');
+      setCollectionProducts((prev) => prev.filter((p) => p.id !== productId));
+      setCollection((prev) => ({ ...prev, productCount: Math.max(0, prev.productCount - 1) }));
+      toast.success('Product removed from collection');
+    } catch (err: any) {
+      console.error('Failed to remove product from collection:', err);
+      toast.error(err.message || 'Failed to remove product');
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
