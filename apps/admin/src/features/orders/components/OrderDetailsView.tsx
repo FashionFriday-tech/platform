@@ -5,11 +5,13 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api-client';
+
 import { PhoneIcon, WhatsAppIcon } from '@ff/ui/icons';
 import { motion } from 'motion/react';
 
-import { CustomSelect } from '../../../components/ui/CustomSelect';
+import { api } from '@/lib/api-client';
+
+import { CustomSelect, type SelectOption } from '../../../components/ui/CustomSelect';
 import { type Order } from '../types';
 import { COURIER_SERVICES, getTrackingUrl } from '../utils/courier';
 import { OrderStatusBadge } from './OrderStatusBadge';
@@ -22,7 +24,7 @@ interface StepConfig {
 const REAL_STEPS: StepConfig[] = [
   { key: 'pending', label: 'Order Placed' },
   { key: 'confirmed', label: 'Confirmed' },
-  { key: 'processing', label: 'Placed Order' },
+  { key: 'processing', label: 'Placed with Seller' },
   { key: 'shipped', label: 'Shipped' },
   { key: 'delivered', label: 'Delivered' },
 ];
@@ -44,12 +46,14 @@ function OrderStatusTracker({ status }: { status: string }) {
     <div className="relative flex w-full flex-col">
       <div className="relative flex w-full items-center justify-between">
         {/* Connecting Line background */}
-        <div className="absolute top-4 left-4 right-4 h-0.5 -translate-y-1/2 bg-zinc-200 dark:bg-zinc-800" />
+        <div className="absolute top-4 right-4 left-4 h-0.5 -translate-y-1/2 bg-zinc-200 dark:bg-zinc-800" />
 
         {/* Active Connecting Line */}
         <div
           className="absolute top-4 left-4 h-0.5 -translate-y-1/2 bg-emerald-500 transition-all duration-500"
-          style={{ width: `calc(${progressPercent}% - 2rem * ${(progressPercent / 100).toFixed(2)})` }}
+          style={{
+            width: `calc(${progressPercent}% - 2rem * ${(progressPercent / 100).toFixed(2)})`,
+          }}
         />
 
         {steps.map((step, idx) => {
@@ -77,7 +81,7 @@ function OrderStatusTracker({ status }: { status: string }) {
                     />
                   </svg>
                 ) : isActive ? (
-                  <span className="h-2.5 w-2.5 rounded-full bg-white dark:bg-black animate-pulse" />
+                  <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-white dark:bg-black" />
                 ) : (
                   <span className="h-1.5 w-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600" />
                 )}
@@ -85,7 +89,7 @@ function OrderStatusTracker({ status }: { status: string }) {
               <span
                 className={`mt-2.5 text-center text-[11px] whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'font-extrabold text-black dark:text-white bg-black/5 dark:bg-white/10 px-2.5 py-0.5 rounded-full'
+                    ? 'rounded-full bg-black/5 px-2.5 py-0.5 font-extrabold text-black dark:bg-white/10 dark:text-white'
                     : isCompleted
                       ? 'font-bold text-emerald-600 dark:text-emerald-400'
                       : 'font-medium text-zinc-400 dark:text-zinc-500'
@@ -108,10 +112,16 @@ interface OrderDetailsViewProps {
 export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   const router = useRouter();
   const [trackingId, setTrackingId] = useState(order.tracking?.trackingId ?? '');
+  const initialSeller =
+    (order as any).seller?.storeName ||
+    (order as any).seller?.name ||
+    order.items?.find((i: any) => i.seller)?.seller?.storeName ||
+    order.items?.find((i: any) => i.seller)?.seller?.name ||
+    '';
   const [courierService, setCourierService] = useState<string>(
     order.tracking?.courierService ?? 'Delhivery',
   );
-  const [assignedSeller, setAssignedSeller] = useState('Seller A');
+  const [assignedSeller, setAssignedSeller] = useState(initialSeller);
   const [orderStatus, setOrderStatus] = useState<string>(order.status);
   const normalizedStatus = (orderStatus || '').toLowerCase().trim();
   const [isTrackingSaved, setIsTrackingSaved] = useState(false);
@@ -124,13 +134,108 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     order.tracking?.courierService ?? 'Delhivery',
   );
   const [tempTracking, setTempTracking] = useState(order.tracking?.trackingId ?? '');
-  const [tempSeller, setTempSeller] = useState('Seller A');
+  const [tempSeller, setTempSeller] = useState(initialSeller);
   const [isEditingMeta, setIsEditingMeta] = useState(false);
+  const [rawSellers, setRawSellers] = useState<any[]>([]);
+  const [sellerOptions, setSellerOptions] = useState<SelectOption[]>([
+    { label: 'Unassigned', value: '' },
+  ]);
+
+  useEffect(() => {
+    async function loadSellers() {
+      try {
+        const res: any = await api.get('/admin/sellers');
+        const list: any[] = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+        setRawSellers(list);
+
+        if (list.length > 0) {
+          // 1. Gather all product IDs, product seller IDs, and category IDs/names from order items
+          const orderProductIds = new Set(
+            (order.items || []).map((i: any) => i.productId).filter(Boolean),
+          );
+          const orderProductSellerIds = new Set(
+            (order.items || [])
+              .map((i: any) => i.productSellerId || i.sellerId || i.seller?.id)
+              .filter(Boolean),
+          );
+          const orderCategoryIds = new Set(
+            (order.items || []).map((i: any) => i.categoryId).filter(Boolean),
+          );
+          const orderCategoryNames = new Set(
+            (order.items || [])
+              .map((i: any) => i.categoryName?.toLowerCase())
+              .filter(Boolean),
+          );
+
+          // 2. Classify into 3 tiers:
+          // Top: Product Sellers
+          // Middle: Category Sellers
+          // Bottom: Other Sellers
+          const productSellers: any[] = [];
+          const categorySellers: any[] = [];
+          const otherSellers: any[] = [];
+
+          for (const seller of list) {
+            const isProductSeller =
+              orderProductSellerIds.has(seller.id) ||
+              (seller.products && seller.products.some((p: any) => orderProductIds.has(p.id)));
+
+            if (isProductSeller) {
+              productSellers.push(seller);
+              continue;
+            }
+
+            const isCategorySeller =
+              seller.categories &&
+              seller.categories.some(
+                (c: any) =>
+                  orderCategoryIds.has(c.id) ||
+                  (c.name && orderCategoryNames.has(c.name.toLowerCase())),
+              );
+
+            if (isCategorySeller) {
+              categorySellers.push(seller);
+              continue;
+            }
+
+            otherSellers.push(seller);
+          }
+
+          const formatOption = (s: any, group: string, badge?: string): SelectOption => ({
+            label: s.storeName ? `${s.storeName} (${s.name})` : s.name,
+            value: s.storeName || s.name,
+            group,
+            badge,
+          });
+
+          const options: SelectOption[] = [
+            { label: 'Unassigned', value: '' },
+            ...productSellers.map((s) => formatOption(s, 'Product Sellers', 'Product Seller')),
+            ...categorySellers.map((s) => formatOption(s, 'Category Sellers', 'Category Seller')),
+            ...otherSellers.map((s) => formatOption(s, 'Other Sellers')),
+          ];
+
+          setSellerOptions(options);
+
+          // Auto-select product seller if unassigned and exactly one product seller exists
+          if (!initialSeller && productSellers.length > 0) {
+            const defaultSeller = productSellers[0].storeName || productSellers[0].name;
+            setAssignedSeller(defaultSeller);
+            setTempSeller(defaultSeller);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load sellers in order details:', err);
+      }
+    }
+    void loadSellers();
+  }, [order]);
 
   const updateOrderOnBackend = async (patchData: {
     status?: string;
     courierPartner?: string;
     trackingNumber?: string;
+    sellerId?: string;
   }) => {
     try {
       setIsUpdatingStatus(true);
@@ -139,14 +244,19 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
         ...(upperStatus ? { status: upperStatus } : {}),
         courierPartner: patchData.courierPartner,
         trackingNumber: patchData.trackingNumber,
+        sellerId: patchData.sellerId,
       });
 
       if (patchData.status) {
         setOrderStatus(patchData.status.toLowerCase());
         setPendingStatus(patchData.status.toLowerCase());
       }
-      if (patchData.courierPartner) setCourierService(patchData.courierPartner);
-      if (patchData.trackingNumber !== undefined) setTrackingId(patchData.trackingNumber);
+      if (patchData.courierPartner) {
+        setCourierService(patchData.courierPartner);
+      }
+      if (patchData.trackingNumber !== undefined) {
+        setTrackingId(patchData.trackingNumber);
+      }
 
       setIsUpdateModalOpen(false);
     } catch (err: any) {
@@ -189,9 +299,13 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   const trackingUrl = getTrackingUrl(courierService, trackingId);
 
   const handleSaveTracking = async () => {
+    const matchedSeller = rawSellers.find(
+      (s) => s.storeName === assignedSeller || s.name === assignedSeller || s.id === assignedSeller,
+    );
     await updateOrderOnBackend({
       courierPartner: courierService,
       trackingNumber: trackingId,
+      sellerId: matchedSeller?.id || null,
     });
     setIsTrackingSaved(true);
     setTimeout(() => {
@@ -359,9 +473,11 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 {normalizedStatus === 'pending' && 'Check stock with seller'}
                 {normalizedStatus === 'confirmed' && 'Stock confirmed — place order with seller'}
                 {normalizedStatus === 'processing' && 'Placed with seller — awaiting tracking ID'}
-                {normalizedStatus === 'shipped' && 'Package shipped — share live tracking with customer'}
+                {normalizedStatus === 'shipped' &&
+                  'Package shipped — share live tracking with customer'}
                 {normalizedStatus === 'delivered' && 'Order completed & delivered 🎉'}
-                {['cancelled', 'refunding', 'refunded'].includes(normalizedStatus) && 'Order has been cancelled'}
+                {['cancelled', 'refunding', 'refunded'].includes(normalizedStatus) &&
+                  'Order has been cancelled'}
               </div>
             </div>
           </div>
@@ -400,7 +516,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                   onClick={() => updateOrderOnBackend({ status: 'processing' })}
                   className="flex items-center gap-1.5 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
                 >
-                  🛒 Placed Order
+                  🛒 Placed with Seller
                 </button>
               </>
             )}
@@ -449,7 +565,6 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
         </div>
       </div>
 
-
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Content Area (Items & Finance) */}
         <div className="flex flex-col gap-6 lg:col-span-2">
@@ -457,9 +572,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
           <div className="overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-[#141414]">
             <div className="flex items-center justify-between px-6 py-5">
               <h2 className="text-base font-bold text-black dark:text-white">Order Items</h2>
-              <span className="text-xs font-semibold text-zinc-400">
-                #{order.orderNumber}
-              </span>
+              <span className="text-xs font-semibold text-zinc-400">#{order.orderNumber}</span>
             </div>
 
             <div className="flex flex-col gap-4 p-6 pt-0">
@@ -499,7 +612,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       const labels: Record<string, string> = {
                         pending: 'Order Placed',
                         confirmed: 'Confirmed',
-                        processing: 'Placed Order',
+                        processing: 'Placed with Seller',
                         delivered: 'Delivered',
                         cancelled: 'Cancelled',
                       };
@@ -599,7 +712,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                           const labels: Record<string, string> = {
                             pending: 'Order Placed',
                             confirmed: 'Confirmed',
-                            processing: 'Placed Order',
+                            processing: 'Placed with Seller',
                             delivered: 'Delivered',
                             cancelled: 'Cancelled',
                           };
@@ -628,7 +741,9 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
             <div className="flex flex-col gap-3.5 px-6 pb-6 text-sm font-medium text-zinc-600 dark:text-zinc-400">
               <div className="flex justify-between">
                 <span>Subtotal ({order.items.length} items)</span>
-                <span className="font-semibold text-zinc-900 dark:text-zinc-100">₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                  ₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
@@ -645,7 +760,9 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
             </div>
             <div className="bg-zinc-50 px-6 py-4 dark:bg-zinc-900/60">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider dark:text-zinc-500">Payment Mode</span>
+                <span className="text-xs font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
+                  Payment Mode
+                </span>
                 <span
                   className={`rounded-lg px-3 py-1 text-xs font-bold uppercase ${order.paymentType === 'cod' ? 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'}`}
                 >
@@ -672,7 +789,9 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Address</span>
-                  <span className="max-w-[180px] truncate text-right">{order.shippingAddress.street}</span>
+                  <span className="max-w-[180px] truncate text-right">
+                    {order.shippingAddress.street}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">City</span>
@@ -831,7 +950,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                     <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800/60">
                       <span className="text-xs font-medium text-zinc-400">Seller</span>
                       <span className="text-sm font-bold text-black dark:text-white">
-                        {assignedSeller}
+                        {assignedSeller || 'Unassigned'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800/60">
@@ -864,11 +983,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         Seller
                       </label>
                       <CustomSelect
-                        options={[
-                          { label: 'Seller A', value: 'Seller A' },
-                          { label: 'Seller B', value: 'Seller B' },
-                          { label: 'Seller C', value: 'Seller C' },
-                        ]}
+                        options={sellerOptions}
                         value={assignedSeller}
                         onChange={setAssignedSeller}
                       />
@@ -950,7 +1065,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                     options={[
                       { label: 'Order Placed', value: 'pending' },
                       { label: 'Confirmed', value: 'confirmed' },
-                      { label: 'Placed Order', value: 'processing' },
+                      { label: 'Placed with Seller', value: 'processing' },
                       { label: 'Shipped', value: 'shipped' },
                       { label: 'Delivered', value: 'delivered' },
                       { label: 'Cancelled', value: 'cancelled' },
@@ -972,11 +1087,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                         Assign Seller
                       </label>
                       <CustomSelect
-                        options={[
-                          { label: 'Seller A', value: 'Seller A' },
-                          { label: 'Seller B', value: 'Seller B' },
-                          { label: 'Seller C', value: 'Seller C' },
-                        ]}
+                        options={sellerOptions}
                         value={tempSeller}
                         onChange={setTempSeller}
                       />
@@ -1027,10 +1138,14 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                     if (pendingStatus === 'confirmed') {
                       setAssignedSeller(tempSeller);
                     }
+                    const matchedSeller = rawSellers.find(
+                      (s) => s.storeName === tempSeller || s.name === tempSeller || s.id === tempSeller,
+                    );
                     await updateOrderOnBackend({
                       status: pendingStatus,
                       courierPartner: pendingStatus === 'shipped' ? tempCourier : courierService,
                       trackingNumber: pendingStatus === 'shipped' ? tempTracking : trackingId,
+                      sellerId: matchedSeller?.id,
                     });
                   }}
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-bold text-white transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
