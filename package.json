@@ -12,7 +12,8 @@
     "typecheck": "turbo run typecheck",
     "clean": "pnpm dlx rimraf node_modules .turbo",
     "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down"
+    "docker:down": "docker-compose down",
+    "db:studio": "pnpm --filter @ff/database studio"
   },
   "devDependencies": {
     "@types/node": "^25.4.0",
