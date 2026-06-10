@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { EditIcon, PackageIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
+import { toast } from 'sonner';
 
 // We simulate fetching all products using the products feature mock
 import { mockProducts } from '../../products/services/api';
@@ -24,6 +25,8 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive' | 'Draft'>('All');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -69,10 +72,10 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
             id: p.id,
             name: p.name,
             sku: p.id.substring(0, 8).toUpperCase(),
-            costPrice: p.gettingPrice ?? 0,
-            originalPrice: p.ogPrice ?? p.sellingPrice ?? 0,
-            sellingPrice: p.sellingPrice ?? 0,
-            stock: p.totalStock ?? 0,
+            costPrice: Number(p.gettingPrice) || 0,
+            originalPrice: Number(p.ogPrice ?? p.sellingPrice) || 0,
+            sellingPrice: Number(p.sellingPrice) || 0,
+            stock: Number(p.totalStock) || 0,
             maxStock: 1000,
             status:
               p.status === 'PUBLISHED' ? 'Active' : p.status === 'DRAFT' ? 'Draft' : 'Inactive',
@@ -107,50 +110,77 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleRemoveProduct = (productId: string) => {
-    setCategoryProducts((prev) => prev.filter((p) => p.id !== productId));
-    setCategory((prev) => ({ ...prev, productCount: prev.productCount - 1 }));
+  const handleRemoveProduct = async (productId: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ categoryId: null }),
+        },
+      );
+      if (!res.ok) {
+        throw new Error('Failed to remove product from category');
+      }
+      setCategoryProducts((prev) => prev.filter((p) => p.id !== productId));
+      setCategory((prev) => ({ ...prev, productCount: Math.max(0, prev.productCount - 1) }));
+      toast.success('Product removed from category');
+    } catch (err: any) {
+      console.error('Failed to remove product:', err);
+      toast.error(err.message || 'Failed to remove product from category');
+    }
   };
 
   const handleSaveCategory = (savedCategory: ProductCategory) => {
     setCategory(savedCategory);
   };
 
-  const handleDeleteCategory = async () => {
-    // 1. Delete image from Cloudflare (if it's not a local placeholder)
-    if (
-      category.image &&
-      category.image.startsWith('http') &&
-      !category.image.includes('localhost')
-    ) {
-      try {
-        await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-          {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ urls: [category.image] }),
-          },
-        );
-      } catch (err) {
-        console.error('Failed to cleanup category image:', err);
-      }
-    }
-
-    // 2. Delete category from the database
+  const confirmDeleteCategory = async () => {
+    setIsDeleting(true);
     try {
-      await fetch(
+      // 1. Delete image from Cloudflare if remote
+      if (
+        category.image &&
+        category.image.startsWith('http') &&
+        !category.image.includes('localhost')
+      ) {
+        try {
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
+            {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ urls: [category.image] }),
+            },
+          );
+        } catch (err) {
+          console.error('Failed to cleanup category image:', err);
+        }
+      }
+
+      // 2. Delete category from database
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${category.id}`,
         {
           method: 'DELETE',
         },
       );
-    } catch (err) {
-      console.error('Failed to delete category from DB:', err);
-    }
 
-    // 3. Redirect back to categories list
-    router.push('/categories');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to delete category');
+      }
+
+      toast.success('Category deleted successfully');
+      setIsDeleteModalOpen(false);
+      router.push('/categories');
+    } catch (err: any) {
+      console.error('Failed to delete category:', err);
+      toast.error(err.message || 'Failed to delete category');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const filteredProducts = useMemo(() => {
@@ -209,7 +239,9 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                 Edit
               </button>
               <button
-                onClick={handleDeleteCategory}
+                onClick={() => {
+                  setIsDeleteModalOpen(true);
+                }}
                 className="flex items-center gap-2 rounded-xl bg-[#FF0000]/10 px-4 py-2 text-sm font-semibold text-[#FF0000] transition-colors hover:bg-[#FF0000]/20"
               >
                 <TrashIcon className="h-4 w-4" />
@@ -263,7 +295,13 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                 </div>
               </div>
 
-              {/* Add Products button removed - products are managed exclusively via /products */}
+              <Link
+                href={`/categories/${category.slug}/add-products`}
+                className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
+              >
+                <PlusIcon className="h-4 w-4" />
+                <span>Add Products</span>
+              </Link>
             </div>
           </div>
         </div>
@@ -284,6 +322,52 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         initialData={category}
         onSave={handleSaveCategory}
       />
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-black/10 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#18181b]">
+            <div className="flex items-center gap-3 text-red-600 dark:text-red-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10">
+                <TrashIcon className="h-5 w-5" />
+              </div>
+              <h3 className="text-lg font-bold text-black dark:text-white">Delete Category</h3>
+            </div>
+            <div className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+              <p>
+                Are you sure you want to delete <strong className="text-black dark:text-white">{category.name}</strong>?
+              </p>
+              {categoryProducts.length > 0 ? (
+                <p className="mt-2 rounded-lg bg-blue-500/10 p-2.5 text-xs font-medium text-blue-600 dark:text-blue-400">
+                  ℹ️ {categoryProducts.length} product(s) in this category will be unassigned. The products will remain intact in your catalog.
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-zinc-500">This action cannot be undone.</p>
+              )}
+            </div>
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                }}
+                className="rounded-xl bg-black/5 px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-black/10 disabled:opacity-50 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={confirmDeleteCategory}
+                className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 disabled:opacity-50"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Category'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
