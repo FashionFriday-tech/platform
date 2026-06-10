@@ -4,9 +4,9 @@ import { InventorySchema } from './product.inventory.schema';
 
 export const ProductSchema = ProductBaseSchema.extend({
   price: z.object({
-    ogPrice: z.number().int().nonnegative(),
-    sellingPrice: z.number().int().nonnegative(),
-    gettingPrice: z.number().int().nonnegative(),
+    ogPrice: z.number().nonnegative(),
+    sellingPrice: z.number().nonnegative(),
+    gettingPrice: z.number().nonnegative(),
   }),
   inventory: InventorySchema,
   media: z.object({
