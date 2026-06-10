@@ -1,4 +1,12 @@
-export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returned' | 'refunded';
+export type OrderStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'returned'
+  | 'refunded';
 
 export type PaymentStatus = 'paid' | 'unpaid' | 'refunded';
 
@@ -21,6 +29,13 @@ export interface OrderItem {
   size?: string;
   color?: string;
   sku?: string;
+  seller?: {
+    id: string;
+    name: string;
+    storeName?: string;
+    phone?: string;
+    email?: string;
+  } | null;
 }
 
 export interface Order {
