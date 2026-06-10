@@ -28,7 +28,7 @@ export class ProductsRepository {
         take,
         where,
         orderBy,
-        include: { category: true },
+        include: { category: true, seller: true },
       }),
     ]);
   }
@@ -56,14 +56,14 @@ export class ProductsRepository {
   async findById(id: string) {
     return this.prisma.db.product.findUnique({
       where: { id },
-      include: { category: true },
+      include: { category: true, seller: true },
     });
   }
 
   async findBySlug(slug: string) {
     return this.prisma.db.product.findFirst({
       where: { slug },
-      include: { category: true },
+      include: { category: true, seller: true },
     });
   }
 
