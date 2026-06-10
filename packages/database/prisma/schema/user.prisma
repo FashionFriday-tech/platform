@@ -63,7 +63,6 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Profile Relations
-  sellerProfile SellerProfile?
   wallet        Wallet?
   referral      Referral?
 
@@ -80,24 +79,6 @@ model User {
   cartItems               CartItem[]
 
   @@map("users")
-}
-
-model SellerProfile {
-  userId String @id
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  storeName   String
-  isVerified  Boolean @default(false)
-  description String? @db.Text
-  logoUrl     String?
-
-  totalSales Int   @default(0)
-  rating     Float @default(0.0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("seller_profiles")
 }
 
 model Wallet {
