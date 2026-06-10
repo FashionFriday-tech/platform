@@ -3,7 +3,7 @@ import React from 'react';
 const STEP_LABELS: Record<string, string> = {
   pending: 'Order Placed',
   confirmed: 'Confirmed',
-  processing: 'Placed Order',
+  processing: 'Placed with Seller',
   shipped: 'Shipped',
   delivered: 'Delivered',
   cancelled: 'Cancelled',
@@ -25,12 +25,14 @@ export function OrderStatusTracker({ status }: { status: string }) {
     <div className="relative mt-2 flex w-full flex-col sm:mt-0">
       <div className="relative flex w-full items-center justify-between">
         {/* Connecting Line background */}
-        <div className="absolute top-3.5 left-4 right-4 h-0.5 -translate-y-1/2 bg-zinc-200 dark:bg-zinc-800" />
+        <div className="absolute top-3.5 right-4 left-4 h-0.5 -translate-y-1/2 bg-zinc-200 dark:bg-zinc-800" />
 
         {/* Active Connecting Line */}
         <div
           className="absolute top-3.5 left-4 h-0.5 -translate-y-1/2 bg-emerald-500 transition-all duration-500"
-          style={{ width: `calc(${progressPercent}% - 2rem * ${(progressPercent / 100).toFixed(2)})` }}
+          style={{
+            width: `calc(${progressPercent}% - 2rem * ${(progressPercent / 100).toFixed(2)})`,
+          }}
         />
 
         {steps.map((step, idx) => {
@@ -49,7 +51,12 @@ export function OrderStatusTracker({ status }: { status: string }) {
                 }`}
               >
                 {isCompleted ? (
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -58,7 +65,7 @@ export function OrderStatusTracker({ status }: { status: string }) {
                     />
                   </svg>
                 ) : isActive ? (
-                  <span className="h-2 w-2 rounded-full bg-white dark:bg-black animate-pulse" />
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-white dark:bg-black" />
                 ) : (
                   <span className="h-1.5 w-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600" />
                 )}
@@ -66,7 +73,7 @@ export function OrderStatusTracker({ status }: { status: string }) {
               <span
                 className={`mt-2 text-center text-[11px] whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'font-extrabold text-black dark:text-white bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full'
+                    ? 'rounded-full bg-black/5 px-2 py-0.5 font-extrabold text-black dark:bg-white/10 dark:text-white'
                     : isCompleted
                       ? 'font-bold text-emerald-600 dark:text-emerald-400'
                       : 'font-medium text-zinc-400 dark:text-zinc-500'
