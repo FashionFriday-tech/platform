@@ -5,6 +5,8 @@ import React from 'react';
 import { ActivityIcon, PackageIcon, ShoppingBagIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
+import { useOrderStats } from '@/features/orders';
+
 import { useDashboard } from '../hooks/useDashboard';
 import { ActivityFeed } from './ActivityFeed';
 import { QuickActions } from './QuickActions';
@@ -12,6 +14,7 @@ import { StatCard } from './StatCard';
 
 export function DashboardView() {
   const { user, hasAccess, container, item } = useDashboard();
+  const { unplacedCount, isLoading: isStatsLoading } = useOrderStats();
 
   return (
     <div className="scrollbar-hide flex h-full w-full flex-col overflow-x-hidden overflow-y-auto px-6 pt-6 pb-12">
@@ -51,7 +54,7 @@ export function DashboardView() {
           {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
             <StatCard
               title="Pending Orders"
-              value="16"
+              value={isStatsLoading ? '...' : String(unplacedCount)}
               subtitle="Needs fulfillment"
               icon={ShoppingBagIcon}
               iconBgClass="bg-orange-500/10 dark:bg-orange-500/20"
