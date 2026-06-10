@@ -6,66 +6,46 @@ interface StatCardProps {
   value: string;
   subtitle: string;
   icon: React.ElementType;
-  iconColorClass: string;
-  iconBgClass: string;
+  iconColorClass?: string;
+  iconBgClass?: string;
   href?: string;
   trend?: 'up' | 'down' | 'neutral';
 }
 
-export function StatCard({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-  iconColorClass,
-  iconBgClass,
-  href,
-  trend,
-}: StatCardProps) {
+export function StatCard({ title, value, subtitle, icon: Icon, href, trend }: StatCardProps) {
   const content = (
-    <div
-      className={`group relative overflow-hidden rounded-3xl border border-white/50 bg-white/90 p-6 shadow-xl backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-white/10 dark:bg-[#111111]/90 ${
-        href ? 'cursor-pointer hover:bg-white dark:hover:bg-[#1a1a1a]' : ''
-      }`}
-    >
-      {/* Decorative gradient orb behind the icon */}
-      <div
-        className={`absolute -top-10 -right-10 h-32 w-32 rounded-full opacity-30 blur-3xl transition-opacity group-hover:opacity-100 ${iconBgClass.replace('bg-', 'bg-')}`}
-      />
+    <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-black via-[#0d0d10] to-[#1c1c24] px-5 py-4 text-white shadow-lg dark:border-black/10 dark:bg-white dark:from-white dark:via-[#fafafa] dark:to-[#f0f0f0] dark:text-black dark:shadow-sm">
+      {/* Subtle Ambient Glow & Watermark Icon */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <Icon className="absolute -right-2 -bottom-2 h-20 w-20 text-white/[0.04] dark:text-black/[0.04]" />
+        <div className="absolute -top-6 -right-6 h-24 w-24 rounded-full bg-white/[0.03] blur-xl dark:bg-black/[0.02]" />
+      </div>
 
-      <div className="relative z-10 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <div
-            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${iconBgClass} ${iconColorClass}`}
-          >
-            <Icon className="h-6 w-6" />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold text-black/60 dark:text-white/60">{title}</h4>
-            <div className="text-2xl font-black text-black dark:text-white">{value}</div>
-          </div>
+      {/* Top Row: Title & Mini Icon Badge */}
+      <div className="relative z-10 flex items-center justify-between">
+        <dt className="text-xs font-bold tracking-wider text-white/70 uppercase dark:text-black/60">
+          {title}
+        </dt>
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white backdrop-blur-md dark:bg-black/5 dark:text-black">
+          <Icon className="h-3.5 w-3.5" />
         </div>
+      </div>
 
-        {(subtitle || trend) && (
-          <div className="flex items-center justify-between border-t border-black/5 pt-3 dark:border-white/5">
-            {subtitle && (
-              <span className="text-xs font-medium text-black/50 dark:text-white/50">
-                {subtitle}
-              </span>
-            )}
-            {trend && (
-              <span
-                className={`text-xs font-bold ${
-                  trend === 'up'
-                    ? 'text-emerald-600 dark:text-emerald-400'
-                    : trend === 'down'
-                      ? 'text-rose-600 dark:text-rose-400'
-                      : 'text-black/60 dark:text-white/60'
-                }`}
-              >
-                {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '•'}
-              </span>
-            )}
+      {/* Bottom Row: Metric & Subtitle with Trend */}
+      <div className="relative z-10 mt-3 flex items-baseline justify-between gap-2">
+        <dd className="text-2xl font-black tracking-tight text-white md:text-3xl dark:text-black">
+          {value}
+        </dd>
+        {subtitle && (
+          <div className="flex items-center gap-1.5">
+            <span
+              className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                trend === 'up' ? 'bg-emerald-400' : trend === 'down' ? 'bg-rose-400' : 'bg-blue-400'
+              }`}
+            />
+            <span className="text-[10px] font-bold tracking-wider text-white/40 uppercase dark:text-black/40">
+              {subtitle}
+            </span>
           </div>
         )}
       </div>
@@ -73,7 +53,11 @@ export function StatCard({
   );
 
   if (href) {
-    return <Link href={href}>{content}</Link>;
+    return (
+      <Link href={href} className="block h-full">
+        {content}
+      </Link>
+    );
   }
 
   return content;
