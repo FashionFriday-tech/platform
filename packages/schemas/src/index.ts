@@ -8,6 +8,7 @@ export * from './collection.schema';
 export * from './feedback.schema';
 export * from './wishlist.schema';
 export * from './cart';
+export * from './seller.schema';
 
 export * from './constants';
 
