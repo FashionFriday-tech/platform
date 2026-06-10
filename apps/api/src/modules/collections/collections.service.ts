@@ -18,8 +18,17 @@ export class CollectionsService {
     // Attach product counts dynamically
     const enrichedCollections = await Promise.all(
       collections.map(async (collection: any) => {
+        const variants = [
+          collection.slug,
+          collection.name,
+          collection.slug?.toLowerCase(),
+          collection.name?.toLowerCase(),
+        ].filter(Boolean);
         const productCount = await this.prisma.db.product.count({
-          where: { collections: { has: collection.slug } },
+          where: {
+            status: 'PUBLISHED',
+            collections: { hasSome: Array.from(new Set(variants)) },
+          },
         });
         return { ...collection, productCount };
       }),
