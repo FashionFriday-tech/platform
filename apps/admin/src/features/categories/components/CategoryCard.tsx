@@ -2,19 +2,20 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { EditIcon, PackageIcon } from '@ff/ui';
+import { EditIcon, PackageIcon, TrashIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { type ProductCategory } from '../types';
 
 interface CategoryCardProps {
   category: ProductCategory;
+  onDelete?: (category: ProductCategory) => void;
 }
 
-export function CategoryCard({ category }: CategoryCardProps) {
+export function CategoryCard({ category, onDelete }: CategoryCardProps) {
   return (
-    <Link href={`/categories/${category.slug}`}>
-      <div className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#111111]">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#111111]">
+      <Link href={`/categories/${category.slug}`} className="block">
         <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/5 dark:bg-white/5">
           {category.image ? (
             <Image
@@ -38,7 +39,22 @@ export function CategoryCard({ category }: CategoryCardProps) {
             </div>
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+
+      {onDelete && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(category);
+          }}
+          className="absolute top-3 left-3 z-30 flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl bg-black/60 text-white opacity-0 backdrop-blur-md transition-all group-hover:opacity-100 hover:bg-red-600 active:scale-95"
+          title="Delete category"
+        >
+          <TrashIcon className="h-4 w-4" />
+        </button>
+      )}
+    </div>
   );
 }
