@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom';
 
 import { motion } from 'motion/react';
 
-import { CustomSelect } from '../../../components/ui/CustomSelect';
+import { CustomSelect, type SelectOption } from '../../../components/ui/CustomSelect';
 import { COURIER_SERVICES } from '../utils/courier';
 
 interface Props {
@@ -21,6 +21,7 @@ interface Props {
   setTrackingId: (val: string) => void;
   setAssignedSeller: (val: string) => void;
   setOrderStatus: (val: string) => void;
+  sellerOptions?: SelectOption[];
 }
 
 export function OrderUpdateModal({
@@ -39,6 +40,7 @@ export function OrderUpdateModal({
   setTrackingId,
   setAssignedSeller,
   setOrderStatus,
+  sellerOptions = [{ label: 'Unassigned', value: '' }],
 }: Props) {
   if (!isUpdateModalOpen || typeof document === 'undefined') {
     return null;
@@ -71,13 +73,13 @@ export function OrderUpdateModal({
         <div className="flex flex-col gap-4">
           <div>
             <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
-              Status
+              New Status
             </label>
             <CustomSelect
               options={[
                 { label: 'Order Placed', value: 'pending' },
                 { label: 'Confirmed', value: 'confirmed' },
-                { label: 'Placed Order', value: 'processing' },
+                { label: 'Placed with Seller', value: 'processing' },
                 { label: 'Shipped', value: 'shipped' },
                 { label: 'Delivered', value: 'delivered' },
                 { label: 'Cancelled', value: 'cancelled' },
@@ -99,11 +101,7 @@ export function OrderUpdateModal({
                   Assign Seller
                 </label>
                 <CustomSelect
-                  options={[
-                    { label: 'Seller A', value: 'Seller A' },
-                    { label: 'Seller B', value: 'Seller B' },
-                    { label: 'Seller C', value: 'Seller C' },
-                  ]}
+                  options={sellerOptions}
                   value={tempSeller}
                   onChange={setTempSeller}
                 />
