@@ -14,9 +14,9 @@ import {
 import type { Request } from 'express';
 
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { OrdersService } from './orders.service';
 
 interface AuthRequest extends Request {
   user: {
@@ -36,7 +36,7 @@ export class OrdersController {
   async createOrder(@Req() req: AuthRequest, @Body() dto: CreateOrderDto) {
     const userId = req.user.id || req.user.sub;
     this.logger.log(
-      `[OrdersController] Incoming POST /orders for user: ${userId}, payload: ${JSON.stringify(dto)}`,
+      `[OrdersController] Incoming POST /orders for user: ${String(userId)}, payload: ${JSON.stringify(dto)}`,
     );
 
     if (!userId) {
@@ -63,11 +63,17 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard)
   async getMyOrders(@Req() req: AuthRequest) {
     const userId = req.user.id || req.user.sub;
-    this.logger.log(`[OrdersController] Incoming GET /orders/me for user: ${userId}`);
+    this.logger.log(`[OrdersController] Incoming GET /orders/me for user: ${String(userId)}`);
     if (!userId) {
       throw new UnauthorizedException('Authentication required');
     }
     return this.ordersService.findUserOrders(userId);
+  }
+
+  @Get('stats')
+  async getOrderStats() {
+    this.logger.log('[OrdersController] Incoming GET /orders/stats');
+    return this.ordersService.getOrderStats();
   }
 
   @Get('admin')
@@ -87,7 +93,9 @@ export class OrdersController {
 
   @Patch(':id')
   async updateOrder(@Param('id') id: string, @Body() dto: UpdateOrderDto) {
-    this.logger.log(`[OrdersController] Incoming PATCH /orders/${id} with body: ${JSON.stringify(dto)}`);
+    this.logger.log(
+      `[OrdersController] Incoming PATCH /orders/${id} with body: ${JSON.stringify(dto)}`,
+    );
     return this.ordersService.updateOrder(id, dto);
   }
 
