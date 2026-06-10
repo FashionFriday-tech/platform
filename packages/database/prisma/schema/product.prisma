@@ -21,8 +21,8 @@ model Product {
   description String        @db.Text
   brand       String[]
   status      ProductStatus @default(DRAFT)
-  categoryId  String
-  category    Category      @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  category    Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   gender      Gender
 
   // Pricing (Stored as Decimal for accuracy)
@@ -66,8 +66,11 @@ model Product {
   variants      ProductVariant[]
   wishlistItems WishlistItem[]
   cartItems     CartItem[]
+  sellerId      String?
+  seller        Seller?       @relation(fields: [sellerId], references: [id], onDelete: SetNull)
 
   @@index([categoryId])
+  @@index([sellerId])
   @@index([status])
   @@map("products")
 }
