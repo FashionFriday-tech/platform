@@ -183,19 +183,46 @@ export function useCategories() {
     }
   };
 
-  const handleDeleteCategory = async (slug: string) => {
+  const handleDeleteCategory = async (idOrSlug: string) => {
     try {
-      const cat = categories.find((c) => c.slug === slug);
-      if (cat) {
-        await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${cat.id}`,
-          { method: 'DELETE' },
-        );
-        setCategories((prev) => prev.filter((c) => c.slug !== slug));
-        toast.success('Category deleted successfully');
+      const cat = categories.find((c) => c.id === idOrSlug || c.slug === idOrSlug);
+      if (!cat) return false;
+
+      // Clean up Cloudflare image if remote
+      if (
+        cat.image &&
+        cat.image.startsWith('http') &&
+        !cat.image.includes('localhost')
+      ) {
+        fetch(
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
+          {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ urls: [cat.image] }),
+          },
+        ).catch((err) => {
+          console.error('Failed to cleanup category image:', err);
+        });
       }
-    } catch (err) {
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${cat.id}`,
+        { method: 'DELETE' },
+      );
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to delete category');
+      }
+
+      setCategories((prev) => prev.filter((c) => c.id !== cat.id));
+      toast.success('Category deleted successfully');
+      return true;
+    } catch (err: any) {
       console.error('Failed to delete category via API', err);
+      toast.error(err.message || 'Failed to delete category');
+      return false;
     }
   };
 
