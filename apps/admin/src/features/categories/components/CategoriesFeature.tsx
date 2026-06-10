@@ -1,5 +1,7 @@
 'use client';
 
+import React, { useState } from 'react';
+
 import {
   closestCenter,
   DndContext,
@@ -17,7 +19,7 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { SearchIcon } from '@ff/ui';
+import { SearchIcon, TrashIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { useCategories } from '../hooks/useCategories';
@@ -25,7 +27,13 @@ import { type ProductCategory } from '../types';
 import { AddCategoryModal } from './AddCategoryModal';
 import { CategoryCard } from './CategoryCard';
 
-function SortableCategoryItem({ category }: { category: ProductCategory }) {
+function SortableCategoryItem({
+  category,
+  onDelete,
+}: {
+  category: ProductCategory;
+  onDelete?: (category: ProductCategory) => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: category.id,
   });
@@ -56,7 +64,7 @@ function SortableCategoryItem({ category }: { category: ProductCategory }) {
           />
         </svg>
       </button>
-      <CategoryCard category={category} />
+      <CategoryCard category={category} onDelete={onDelete} />
     </div>
   );
 }
@@ -75,7 +83,22 @@ export default function CategoriesFeature() {
     categoryToEdit,
     setCategoryToEdit,
     handleSaveCategory,
+    handleDeleteCategory,
   } = useCategories();
+
+  const [categoryToDelete, setCategoryToDelete] = useState<ProductCategory | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
+    setIsDeleting(true);
+    try {
+      await handleDeleteCategory(categoryToDelete.id);
+      setCategoryToDelete(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -176,7 +199,11 @@ export default function CategoriesFeature() {
                 className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
               >
                 {filteredCategories.map((category) => (
-                  <SortableCategoryItem key={category.id} category={category} />
+                  <SortableCategoryItem
+                    key={category.id}
+                    category={category}
+                    onDelete={setCategoryToDelete}
+                  />
                 ))}
               </motion.div>
             </SortableContext>
@@ -192,6 +219,52 @@ export default function CategoriesFeature() {
         initialData={categoryToEdit}
         onSave={handleSaveCategory}
       />
+
+      {/* Delete Confirmation Modal */}
+      {categoryToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-black/10 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#18181b]">
+            <div className="flex items-center gap-3 text-red-600 dark:text-red-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10">
+                <TrashIcon className="h-5 w-5" />
+              </div>
+              <h3 className="text-lg font-bold text-black dark:text-white">Delete Category</h3>
+            </div>
+            <div className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
+              <p>
+                Are you sure you want to delete <strong className="text-black dark:text-white">{categoryToDelete.name}</strong>?
+              </p>
+              {categoryToDelete.productCount > 0 ? (
+                <p className="mt-2 rounded-lg bg-blue-500/10 p-2.5 text-xs font-medium text-blue-600 dark:text-blue-400">
+                  ℹ️ {categoryToDelete.productCount} product(s) in this category will be unassigned. The products will remain intact in your catalog.
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-zinc-500">This action cannot be undone.</p>
+              )}
+            </div>
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => {
+                  setCategoryToDelete(null);
+                }}
+                className="rounded-xl bg-black/5 px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-black/10 disabled:opacity-50 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={confirmDelete}
+                className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 disabled:opacity-50"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Category'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
