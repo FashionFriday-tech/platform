@@ -36,8 +36,27 @@ export class CategoriesRepository {
   }
 
   async delete(id: string) {
-    return this.prisma.db.category.delete({
-      where: { id },
+    return this.prisma.db.$transaction(async (tx) => {
+      // 1. Disassociate products from this category (keep products intact in catalog)
+      await tx.product.updateMany({
+        where: { categoryId: id },
+        data: { categoryId: null },
+      });
+
+      // 2. Disconnect sellers associated with this category
+      await tx.category.update({
+        where: { id },
+        data: {
+          sellers: {
+            set: [],
+          },
+        },
+      });
+
+      // 3. Delete the category
+      return tx.category.delete({
+        where: { id },
+      });
     });
   }
 
