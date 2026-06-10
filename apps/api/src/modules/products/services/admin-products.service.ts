@@ -21,6 +21,7 @@ export class AdminProductsService {
       brand: dto.brand,
       status: dto.status.toUpperCase() as ProductStatus,
       category: { connect: { id: (dto as any).categoryId } },
+      ...((dto as any).sellerId ? { seller: { connect: { id: (dto as any).sellerId } } } : {}),
       gender: dto.gender.toUpperCase() as Gender,
 
       // Pricing
@@ -102,8 +103,19 @@ export class AdminProductsService {
     if (d.status) {
       data.status = d.status.toUpperCase() as ProductStatus;
     }
-    if (d.categoryId) {
-      data.category = { connect: { id: d.categoryId } };
+    if (d.categoryId !== undefined) {
+      if (d.categoryId) {
+        data.category = { connect: { id: d.categoryId } };
+      } else {
+        data.category = { disconnect: true };
+      }
+    }
+    if (d.sellerId !== undefined) {
+      if (d.sellerId) {
+        data.seller = { connect: { id: d.sellerId } };
+      } else {
+        data.seller = { disconnect: true };
+      }
     }
     if (d.gender) {
       data.gender = d.gender.toUpperCase() as Gender;
