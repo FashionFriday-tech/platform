@@ -20,7 +20,7 @@ export class PublicProductsService {
     };
   }
 
-  async getPublicProducts(skip = 0, take = 10, brand?: string) {
+  async getPublicProducts(skip = 0, take = 10, brand?: string, collection?: string) {
     const where: any = {
       status: ProductStatus.PUBLISHED,
     };
@@ -28,6 +28,22 @@ export class PublicProductsService {
     if (brand) {
       where.brand = {
         has: brand,
+      };
+    }
+
+    if (collection) {
+      const decoded = decodeURIComponent(collection).trim();
+      const variants = [
+        decoded,
+        decoded.toLowerCase(),
+        decoded.replace(/-/g, ' '),
+        decoded
+          .split('-')
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join(' '),
+      ];
+      where.collections = {
+        hasSome: Array.from(new Set(variants.filter(Boolean))),
       };
     }
 
