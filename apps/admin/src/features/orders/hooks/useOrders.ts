@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
 import { api } from '@/lib/api-client';
 
 export type SortField =
@@ -19,7 +20,7 @@ export function useOrders() {
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [sortField, setSortField] = useState<SortField>('createdAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  
+
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,18 +29,19 @@ export function useOrders() {
       setLoading(true);
       const data = (await api.get('/orders/admin', { cache: 'no-store' })) as any[];
       // map data to match admin shape
-      const mapped = data.map((o) => ({
+      const mapped = data.map((o: any) => ({
         ...o,
-        status: (o.status?.toLowerCase() || 'pending'),
+        status: o.status?.toLowerCase() || 'pending',
         customer: { id: o.userId, name: o.user?.name || 'Unknown', phone: o.user?.phone || '' },
         total: Number(o.finalAmount || o.totalAmount || 0),
         paymentType: o.paymentMethod?.toLowerCase() === 'cod' ? 'cod' : 'prepaid',
-        items: o.items?.map((item: any) => ({
-          ...item,
-          productName: item.name,
-          productImage: item.image || '/images/placeholders/2.png',
-          price: Number(item.price || 0),
-        })) || [],
+        items:
+          o.items?.map((item: any) => ({
+            ...item,
+            productName: item.name,
+            productImage: item.image || '/images/placeholders/2.png',
+            price: Number(item.price || 0),
+          })) || [],
       }));
       setOrders(mapped);
       setLoading(false);
@@ -70,7 +72,10 @@ export function useOrders() {
       }
 
       // Filter by payment type
-      if (paymentTypeFilter !== 'all' && order.paymentType?.toLowerCase() !== paymentTypeFilter.toLowerCase()) {
+      if (
+        paymentTypeFilter !== 'all' &&
+        order.paymentType?.toLowerCase() !== paymentTypeFilter.toLowerCase()
+      ) {
         return false;
       }
 
@@ -140,6 +145,8 @@ export function useOrders() {
     sortField,
     sortDirection,
     handleSort,
+    setSortField,
+    setSortDirection,
     loading,
     refreshOrders: fetchOrders,
     allOrders: orders,
