@@ -1,0 +1,24 @@
+enum SellerStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model Seller {
+  id          String       @id @default(uuid())
+  name        String
+  storeName   String
+  email       String?
+  phone       String
+  address     String?
+  status      SellerStatus @default(ACTIVE)
+
+  categories  Category[]
+  products    Product[]
+  orderItems  OrderItem[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("sellers")
+}
