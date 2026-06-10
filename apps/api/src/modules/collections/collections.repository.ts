@@ -20,8 +20,14 @@ export class CollectionsRepository {
   }
 
   async findBySlug(slug: string) {
-    return this.prisma.db.collection.findUnique({
-      where: { slug },
+    const decoded = decodeURIComponent(slug).trim();
+    return this.prisma.db.collection.findFirst({
+      where: {
+        OR: [
+          { slug: { equals: decoded, mode: 'insensitive' } },
+          { name: { equals: decoded.replace(/-/g, ' '), mode: 'insensitive' } },
+        ],
+      },
     });
   }
 
