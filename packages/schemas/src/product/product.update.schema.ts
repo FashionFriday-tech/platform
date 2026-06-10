@@ -6,13 +6,14 @@ export const UpdateProductSchema = z.object({
   slug: z.string().optional(),
   description: z.string().optional(),
   brand: z.array(z.string()).optional(),
-  categoryId: z.string().uuid().optional(),
+  categoryId: z.string().uuid().optional().nullable(),
+  sellerId: z.string().uuid().optional().nullable(),
   gender: GenderEnum.optional(),
   status: z.enum(['PENDING', 'DRAFT', 'PUBLISHED', 'REJECTED', 'ARCHIVED']).optional(),
   price: z.object({
-    ogPrice: z.number().int().nonnegative().optional(),
-    sellingPrice: z.number().int().nonnegative().optional(),
-    gettingPrice: z.number().int().nonnegative().optional(),
+    ogPrice: z.number().nonnegative().optional(),
+    sellingPrice: z.number().nonnegative().optional(),
+    gettingPrice: z.number().nonnegative().optional(),
   }).optional(),
   inventory: z.object({
     totalStock: z.number().int().nonnegative().optional(),
