@@ -98,7 +98,11 @@ export class CartService {
         data: { quantity: newQuantity },
       });
     } else {
-      const initialQuantity = Math.min(addQuantity, Math.max(product.totalStock, 10), MAX_QUANTITY_PER_ITEM);
+      const initialQuantity = Math.min(
+        addQuantity,
+        Math.max(product.totalStock, 10),
+        MAX_QUANTITY_PER_ITEM,
+      );
       await this.prisma.db.cartItem.create({
         data: {
           userId,
@@ -131,7 +135,10 @@ export class CartService {
         where: { id: itemId },
       });
     } else {
-      const maxAllowed = Math.min(Math.max(existing.product?.totalStock ?? 10, 10), MAX_QUANTITY_PER_ITEM);
+      const maxAllowed = Math.min(
+        Math.max(existing.product?.totalStock ?? 10, 10),
+        MAX_QUANTITY_PER_ITEM,
+      );
       const newQuantity = Math.min(dto.quantity, maxAllowed);
 
       await this.prisma.db.cartItem.update({
