@@ -15,6 +15,7 @@ export const ProductBaseSchema = z.object({
   status: ProductStatusEnum,
 
   categoryId: z.string().uuid(),
+  sellerId: z.string().uuid().optional().nullable(),
 
   gender: GenderEnum,
 
