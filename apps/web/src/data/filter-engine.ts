@@ -340,18 +340,43 @@ export const getProductsByBrand = async (brand: string): Promise<Product[]> => {
   }
 };
 
-export const getProductsByCollection = async (collectionSlug: string): Promise<Product[]> => {
+export const getProductsByCollection = async (
+  collectionSlug: string,
+  collectionName?: string,
+): Promise<Product[]> => {
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
-    const res = await fetch(`${API_URL}/products?collection=${encodeURIComponent(collectionSlug)}&take=100`, {
-      next: { revalidate: 86400, tags: [`collection-products-${collectionSlug.toLowerCase()}`] },
-    });
+    const decodedSlug = decodeURIComponent(collectionSlug);
+    const res = await fetch(
+      `${API_URL}/products?collection=${encodeURIComponent(decodedSlug)}&take=100`,
+      {
+        next: { revalidate: 86400, tags: [`collection-products-${decodedSlug.toLowerCase()}`] },
+      },
+    );
     if (!res.ok) {
       return [];
     }
     const json = await res.json();
     const data = json.data || [];
-    return data.map(mapDbProductToSchema);
+    const mapped: Product[] = data.map(mapDbProductToSchema);
+
+    // Defense-in-depth: strictly filter to ensure only products belonging to this collection are returned
+    const clean = (s: string) => s?.toLowerCase().replace(/[^a-z0-9]/g, '') || '';
+    const targetSlug = clean(decodedSlug);
+    const targetName = collectionName ? clean(collectionName) : targetSlug;
+
+    return mapped.filter((p: Product) => {
+      const prodCollections = p.marketing?.collections || [];
+      return prodCollections.some((c) => {
+        const cleanC = clean(c);
+        return (
+          cleanC === targetSlug ||
+          cleanC === targetName ||
+          c.toLowerCase() === decodedSlug.toLowerCase() ||
+          (collectionName && c.toLowerCase() === collectionName.toLowerCase())
+        );
+      });
+    });
   } catch (err) {
     console.error('getProductsByCollection error:', err);
     return [];
