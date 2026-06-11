@@ -19,9 +19,10 @@ export function useFeedback() {
     setIsLoading(true);
     try {
       const data = await fetcher<Feedback[]>('/feedback/admin');
-      setFeedbackList(data);
+      setFeedbackList(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch feedback list:', error);
+      setFeedbackList([]);
     } finally {
       setIsLoading(false);
     }
