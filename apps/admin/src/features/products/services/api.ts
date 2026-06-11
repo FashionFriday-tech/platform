@@ -1,13 +1,12 @@
+import { api } from '@/lib/api-client';
+
 import { type Product } from '../types';
 
 export const mockProducts: Product[] = [];
 
 export async function fetchProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
-    );
-    const json = (await res.json()) as {
+    const json = await api.get<{
       data?: {
         id: string;
         name: string;
@@ -32,18 +31,19 @@ export async function fetchProducts(): Promise<Product[]> {
         slug?: string;
         youtubeId?: string;
       }[];
-    };
-    const data = json.data ?? [];
+    }>('/admin/products?take=200');
+
+    const data = json?.data ?? [];
 
     // Map backend product to frontend Product interface
     return data.map((p) => ({
       id: p.id,
       name: p.name,
       sku: p.id.substring(0, 8).toUpperCase(), // Assuming SKU is not directly available, use ID
-      costPrice: p.gettingPrice ?? 0,
-      originalPrice: p.ogPrice ?? p.sellingPrice ?? 0,
-      sellingPrice: p.sellingPrice ?? 0,
-      stock: p.totalStock ?? 0,
+      costPrice: Number(p.gettingPrice ?? 0),
+      originalPrice: Number(p.ogPrice ?? p.sellingPrice ?? 0),
+      sellingPrice: Number(p.sellingPrice ?? 0),
+      stock: Number(p.totalStock ?? 0),
       maxStock: 1000,
       status: p.status === 'PUBLISHED' ? 'Active' : p.status === 'DRAFT' ? 'Draft' : 'Inactive',
       categoryId: p.categoryId ?? '',
@@ -75,10 +75,7 @@ export async function fetchProducts(): Promise<Product[]> {
 
 export async function fetchProductById(id: string): Promise<Product | undefined> {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${id}`,
-    );
-    const p = (await res.json()) as {
+    const p = await api.get<{
       id: string;
       name: string;
       gettingPrice?: number;
@@ -101,7 +98,11 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
       seoDescription?: string;
       slug?: string;
       youtubeId?: string;
-    };
+    }>(`/admin/products/${id}`);
+
+    if (!p?.id) {
+      return undefined;
+    }
 
     return {
       id: p.id,
@@ -138,8 +139,20 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
   }
 }
 
+export async function updateProductStatus(
+  id: string,
+  status: 'Active' | 'Inactive',
+): Promise<boolean> {
+  const backendStatus = status === 'Active' ? 'PUBLISHED' : 'ARCHIVED';
+  await api.patch(`/admin/products/${id}`, { status: backendStatus });
+  return true;
+}
+
+export async function deleteProduct(id: string): Promise<boolean> {
+  await api.delete(`/admin/products/${id}`);
+  return true;
+}
+
 export function updateProduct(id: string, data: Partial<Product>): Promise<Product> {
-  // Update would go here, mapping frontend Product updates back to backend Payload.
-  // The current AddProductForm does this on its own, so this might not be used.
   return Promise.resolve(data as Product);
 }
