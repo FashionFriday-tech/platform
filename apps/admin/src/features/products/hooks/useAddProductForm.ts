@@ -84,28 +84,43 @@ export function useAddProductForm(initialData?: Product) {
         mappedUIQuality = '5A';
       }
 
-      // Map Category
-      let mappedCategory = 'Jacket'; // default fallback for CLOTHING
-      if (initialData.categoryId === 'SNEAKERS') {
-        mappedCategory = 'Sneakers';
-      } else if (initialData.categoryId === 'WATCHES') {
-        mappedCategory = 'Watches';
-      } else if (initialData.categoryId === 'ACCESSORIES') {
-        mappedCategory = 'Accessories';
-      }
+      // Map Category from apiCategories or attached category object
+      const foundCategory = apiCategories.find(
+        (c) => c.id === initialData.categoryId || c.slug === initialData.categoryId,
+      );
+      const rawCategoryName =
+        foundCategory?.name || (initialData as any).category?.name || '';
+      const catLower = rawCategoryName.toLowerCase();
 
-      // Try to infer specific clothing type from tags
-      if (initialData.categoryId === 'CLOTHING') {
+      let mappedCategory = 'Jacket';
+      if (catLower.includes('sneaker') || catLower.includes('shoe')) {
+        mappedCategory = 'Sneakers';
+      } else if (catLower.includes('watch')) {
+        mappedCategory = 'Watches';
+      } else if (catLower.includes('accessor')) {
+        mappedCategory = 'Accessories';
+      } else if (
+        catLower.includes('slipper') ||
+        catLower.includes('slide') ||
+        catLower.includes('clog')
+      ) {
+        mappedCategory = 'Slippers';
+      } else if (
+        catLower.includes('cloth') ||
+        catLower.includes('jacket') ||
+        catLower.includes('shirt') ||
+        catLower.includes('pant')
+      ) {
         const tags = initialData.marketing?.collections ?? [];
         if (tags.some((t) => t.toLowerCase() === 'shirts' || t.toLowerCase() === 'shirt')) {
           mappedCategory = 'Shirts';
         } else if (tags.some((t) => t.toLowerCase() === 'pants' || t.toLowerCase() === 'pant')) {
           mappedCategory = 'Pants';
-        } else if (
-          tags.some((t) => t.toLowerCase() === 'jacket' || t.toLowerCase() === 'jackets')
-        ) {
+        } else {
           mappedCategory = 'Jacket';
         }
+      } else if (rawCategoryName) {
+        mappedCategory = rawCategoryName;
       }
 
       // Core fields
@@ -175,7 +190,7 @@ export function useAddProductForm(initialData?: Product) {
 
       setImages(allImages.length > 0 ? allImages : []);
     }
-  }, [initialData]);
+  }, [initialData, apiCategories]);
 
   // Close dropdowns on outside click
   useEffect(() => {
