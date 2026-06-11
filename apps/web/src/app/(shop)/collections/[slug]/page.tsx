@@ -24,7 +24,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const collection = await getCollectionBySlug(slug);
+  const decodedSlug = decodeURIComponent(slug);
+  const collection = await getCollectionBySlug(decodedSlug);
 
   if (!collection) {
     return {
@@ -39,13 +40,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `${collection.name} Collection | Fashion Friday`,
       description: `Explore the ${collection.name} collection at Fashion Friday.`,
-      images: [collection.image],
+      images: collection.image ? [collection.image] : [],
     },
   };
 }
 
 export default async function CollectionPage({ params }: Props) {
   const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
 
-  return <CollectionDetails collectionSlug={slug} />;
+  return <CollectionDetails collectionSlug={decodedSlug} />;
 }
