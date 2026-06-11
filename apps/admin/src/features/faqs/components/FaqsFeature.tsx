@@ -195,64 +195,60 @@ export function FaqsFeature() {
         </div>
       ) : (
         /* Table of FAQs */
-        <div className="flex-1 overflow-y-auto rounded-3xl border border-black/10 bg-white dark:border-white/10 dark:bg-[#111111]">
-          <table className="w-full border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-black/10 bg-black/[0.02] dark:border-white/10 dark:bg-white/[0.02]">
-                <th className="p-4 text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
-                  Order
-                </th>
-                <th className="p-4 text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
-                  Category
-                </th>
-                <th className="w-1/3 p-4 text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
-                  Question
-                </th>
-                <th className="w-1/2 p-4 text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
-                  Answer
-                </th>
-                <th className="p-4 text-right text-xs font-black tracking-wider text-black/40 uppercase dark:text-white/40">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-black/5 dark:divide-white/5">
+        <div className="flex-1 overflow-hidden rounded-2xl border border-black/10 bg-slate-50/50 p-2.5 shadow-xs dark:border-white/10 dark:bg-black/20">
+          <div className="scrollbar-hide h-full overflow-x-auto overflow-y-auto">
+            <div className="flex min-w-[920px] flex-col gap-2.5 pb-2">
+              {/* Header Tab - Fixed / Sticky on Top (Black in Light Mode) */}
+              <div className="sticky top-0 z-20 pb-0.5">
+                <div className="grid grid-cols-[minmax(70px,0.6fr)_minmax(130px,1.2fr)_minmax(260px,2.2fr)_minmax(350px,3.2fr)_minmax(100px,0.8fr)] items-center rounded-xl border border-black/10 bg-black px-6 py-3.5 text-xs font-semibold tracking-wider text-white uppercase shadow-md backdrop-blur-md dark:border-white/10 dark:bg-white dark:text-black dark:shadow-sm">
+                  <div>Order</div>
+                  <div>Category</div>
+                  <div>Question</div>
+                  <div>Answer</div>
+                  <div className="text-right">Actions</div>
+                </div>
+              </div>
+
+              {/* FAQ Row Tabs */}
               {filteredFaqs.map((faq) => (
-                <tr key={faq.id} className="hover:bg-black/[0.01] dark:hover:bg-white/[0.01]">
-                  <td className="p-4 font-mono text-xs font-bold">{faq.sortOrder}</td>
-                  <td className="p-4">
-                    <span className="rounded-full bg-black/5 px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase dark:bg-white/5">
+                <div
+                  key={faq.id}
+                  className="grid grid-cols-[minmax(70px,0.6fr)_minmax(130px,1.2fr)_minmax(260px,2.2fr)_minmax(350px,3.2fr)_minmax(100px,0.8fr)] items-center rounded-xl border border-black/5 bg-white px-6 py-3.5 shadow-xs transition-all hover:border-black/15 hover:shadow-md dark:border-white/10 dark:bg-[#141417] dark:hover:border-white/20"
+                >
+                  <div className="font-mono text-xs font-bold text-black/70 dark:text-white/70">
+                    {faq.sortOrder}
+                  </div>
+                  <div>
+                    <span className="inline-flex rounded-full bg-black/5 px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase dark:bg-white/5">
                       {faq.category}
                     </span>
-                  </td>
-                  <td className="p-4 font-bold text-black dark:text-white">{faq.question}</td>
-                  <td className="mt-2 line-clamp-2 p-4 text-black/60 dark:text-white/60">
+                  </div>
+                  <div className="pr-4 font-bold text-black dark:text-white">{faq.question}</div>
+                  <div className="line-clamp-2 pr-4 text-xs font-medium text-black/60 dark:text-white/60">
                     {faq.answer}
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end space-x-1.5">
-                      <button
-                        onClick={() => {
-                          openEditModal(faq);
-                        }}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
-                      >
-                        <EditIcon className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDeleteConfirmId(faq.id);
-                        }}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 text-red-500 hover:bg-red-500/10 dark:border-red-500/10 dark:hover:bg-red-950/20"
-                      >
-                        <TrashIcon className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                  </div>
+                  <div className="flex items-center justify-end space-x-1.5">
+                    <button
+                      onClick={() => {
+                        openEditModal(faq);
+                      }}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/5"
+                    >
+                      <EditIcon className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeleteConfirmId(faq.id);
+                      }}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 text-red-500 hover:bg-red-500/10 dark:border-red-500/10 dark:hover:bg-red-950/20"
+                    >
+                      <TrashIcon className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       )}
 
