@@ -8,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function BrandsPage() {
-  return <BrandsFeature />;
+  return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
+      <BrandsFeature />
+    </div>
+  );
 }
