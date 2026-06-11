@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -9,10 +9,12 @@ import { type Product } from '@ff/schemas';
 
 import { ImageCropModal } from '@/components/ui/ImageCropModal';
 import { Toast } from '@/components/ui/Toast';
+import { api } from '@/lib/api-client';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
 import { QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
+import { ProductSellerSelector } from './ProductSellerSelector';
 
 interface AddProductFormProps {
   initialData?: Product;
@@ -24,6 +26,17 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     message: string;
     type: 'success' | 'error' | 'warning';
   } | null>(null);
+  const [selectedSellerId, setSelectedSellerId] = useState<string | null>(
+    (initialData as any)?.sellerId ?? (initialData as any)?.seller?.id ?? null,
+  );
+
+  useEffect(() => {
+    if (initialData) {
+      setSelectedSellerId(
+        (initialData as any)?.sellerId ?? (initialData as any)?.seller?.id ?? null,
+      );
+    }
+  }, [initialData]);
   const {
     sizes,
     toggleSize,
@@ -173,6 +186,37 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
   const uniqueCategories = dynamicCategories;
 
+  const resolvedApiCategory = useMemo(() => {
+    const catTarget = category.toLowerCase();
+    const selectedGender = gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase();
+
+    let cat = uniqueCategories.find((c) => {
+      const cName = c.name.toLowerCase();
+      const cGender = c.gender.toUpperCase();
+      return (
+        (cName === catTarget || c.id === category) &&
+        (cGender === selectedGender || cGender === 'UNISEX')
+      );
+    });
+
+    cat ??= uniqueCategories.find((c) => c.name.toLowerCase() === catTarget || c.id === category);
+
+    if (!cat) {
+      if (['jacket', 'shirts', 'pants', 'clothing', 'cloths'].includes(catTarget)) {
+        cat =
+          uniqueCategories.find(
+            (c) =>
+              (c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing')) &&
+              (c.gender.toUpperCase() === selectedGender || c.gender.toUpperCase() === 'UNISEX'),
+          ) ??
+          uniqueCategories.find(
+            (c) => c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing'),
+          );
+      }
+    }
+    return cat ?? uniqueCategories[0];
+  }, [category, gender, uniqueCategories]);
+
   return (
     <div className="scrollbar-hide h-full w-full overflow-y-auto rounded-2xl pb-20">
       {/* Top Bar */}
@@ -204,7 +248,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           </div>
           <div className="flex items-center space-x-3">
             {initialData && (
-              <button className="flex items-center space-x-2 rounded-full border border-black/10 bg-white px-5 py-2.5 text-sm font-semibold text-black/60 shadow-sm transition-colors hover:bg-black/5 dark:border-white/10 dark:bg-[#111111] dark:text-white/60 dark:hover:bg-white/5">
+              <button
+                type="button"
+                onClick={() => {
+                  router.back();
+                }}
+                className="flex items-center space-x-2 rounded-full border border-black/10 bg-white px-5 py-2.5 text-sm font-semibold text-black/60 shadow-sm transition-colors hover:bg-black/5 dark:border-white/10 dark:bg-[#111111] dark:text-white/60 dark:hover:bg-white/5"
+              >
                 <span>Cancel</span>
               </button>
             )}
@@ -344,6 +394,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     name: productName,
                     description: productDesc,
                     categoryId: selectedApiCategory.id,
+                    sellerId: selectedSellerId ?? undefined,
                     brand: brandInput ? [brandInput] : [],
                     gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
                     attributes: {
@@ -373,19 +424,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     slug: seoSlug,
                   };
 
-                  const url = initialData
-                    ? `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${initialData.id}`
-                    : `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`;
-                  const res = await fetch(url, {
-                    method: initialData ? 'PATCH' : 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                  });
-
-                  if (!res.ok) {
-                    const errorText = await res.text();
-                    console.error('Save Product Error:', res.status, errorText);
-                    throw new Error(`Failed to save product: ${errorText}`);
+                  if (initialData) {
+                    await api.patch(`/admin/products/${initialData.id}`, payload);
+                  } else {
+                    await api.post('/admin/products', payload);
                   }
 
                   setToast({
@@ -399,9 +441,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   setTimeout(() => {
                     router.push('/products');
                   }, 1500);
-                } catch (error) {
+                } catch (error: any) {
                   console.error('Error saving product:', error);
-                  setToast({ message: 'Failed to save product. Please try again.', type: 'error' });
+                  setToast({
+                    message: error?.message || 'Failed to save product. Please try again.',
+                    type: 'error',
+                  });
                 }
               }}
               className="flex items-center space-x-2 rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
@@ -561,6 +606,17 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Assigned Seller / Vendor */}
+              <div className="pt-2">
+                <ProductSellerSelector
+                  selectedSellerId={selectedSellerId}
+                  onSelectSeller={setSelectedSellerId}
+                  categoryId={resolvedApiCategory?.id}
+                  categoryName={category}
+                  status="default"
+                />
               </div>
 
               {/* Extra E-commerce Info */}
