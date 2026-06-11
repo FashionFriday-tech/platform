@@ -40,10 +40,8 @@ export function TeamManagementView() {
   } = useTeam();
 
   return (
-    <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden px-6 pb-6">
-      <div className="mt-2 shrink-0">
-        <TeamStats team={team} />
-      </div>
+    <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
+      <TeamStats team={team} />
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <motion.div
@@ -105,82 +103,121 @@ export function TeamManagementView() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm dark:border-white/5 dark:bg-[#111111]"
+            className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-black/10 bg-slate-50/50 p-2.5 shadow-xs dark:border-white/10 dark:bg-black/20"
           >
-            <div className="scrollbar-hide flex-1 overflow-x-hidden overflow-y-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="sticky top-0 z-10 border-b border-black/5 bg-[#f8f9fa] text-xs font-semibold tracking-wider text-black/60 uppercase dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/60">
-                  <tr>
-                    <th
-                      className="cursor-pointer px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5"
+            <div className="scrollbar-hide flex-1 overflow-x-auto overflow-y-auto">
+              <div className="flex min-w-[900px] flex-col gap-2.5 pb-2">
+                {/* Header Tab - Fixed / Sticky on Top (Black in Light Mode) */}
+                <div className="sticky top-0 z-20 pb-0.5">
+                  <div className="grid grid-cols-[minmax(220px,2fr)_minmax(160px,1.3fr)_minmax(130px,1fr)_minmax(120px,1fr)_minmax(120px,1fr)_minmax(80px,0.7fr)] items-center rounded-xl border border-black/10 bg-black px-6 py-3.5 text-white shadow-md backdrop-blur-md dark:border-white/10 dark:bg-white dark:text-black dark:shadow-sm">
+                    <div
+                      className="group flex cursor-pointer items-center gap-1.5 font-semibold tracking-wider transition-colors select-none"
                       onClick={() => {
                         handleSort('name');
                       }}
                     >
-                      Employee {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
-                    </th>
-                    <th className="min-w-[150px] px-6 py-4">Role</th>
-                    <th className="min-w-[150px] px-6 py-4">Status</th>
-                    <th
-                      className="cursor-pointer px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5"
+                      <span className="text-xs text-white/60 uppercase group-hover:text-white dark:text-black/60 dark:group-hover:text-black">
+                        Employee
+                      </span>
+                      {sortField === 'name' && (
+                        <span className="text-xs font-bold text-white dark:text-black">
+                          {sortDirection === 'asc' ? '↑' : '↓'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                      Role
+                    </div>
+                    <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                      Status
+                    </div>
+                    <div
+                      className="group flex cursor-pointer items-center gap-1.5 font-semibold tracking-wider transition-colors select-none"
                       onClick={() => {
                         handleSort('joinedAt');
                       }}
                     >
-                      Joined {sortField === 'joinedAt' && (sortDirection === 'asc' ? '↑' : '↓')}
-                    </th>
-                    <th
-                      className="cursor-pointer px-6 py-4 hover:bg-black/5 dark:hover:bg-white/5"
+                      <span className="text-xs text-white/60 uppercase group-hover:text-white dark:text-black/60 dark:group-hover:text-black">
+                        Joined
+                      </span>
+                      {sortField === 'joinedAt' && (
+                        <span className="text-xs font-bold text-white dark:text-black">
+                          {sortDirection === 'asc' ? '↑' : '↓'}
+                        </span>
+                      )}
+                    </div>
+                    <div
+                      className="group flex cursor-pointer items-center gap-1.5 font-semibold tracking-wider transition-colors select-none"
                       onClick={() => {
                         handleSort('updatedAt');
                       }}
                     >
-                      Updated {sortField === 'updatedAt' && (sortDirection === 'asc' ? '↑' : '↓')}
-                    </th>
-                    <th className="px-6 py-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/5 dark:divide-white/5">
-                  {filteredAndSortedTeam.map((member) => (
-                    <tr
+                      <span className="text-xs text-white/60 uppercase group-hover:text-white dark:text-black/60 dark:group-hover:text-black">
+                        Updated
+                      </span>
+                      {sortField === 'updatedAt' && (
+                        <span className="text-xs font-bold text-white dark:text-black">
+                          {sortDirection === 'asc' ? '↑' : '↓'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-right text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                      Actions
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row Tabs (White in Light Mode) */}
+                {filteredAndSortedTeam.length === 0 ? (
+                  <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-black/10 bg-white p-8 text-center shadow-xs dark:border-white/10 dark:bg-[#141417]">
+                    <p className="text-sm font-semibold text-black/60 dark:text-white/60">
+                      No team members found matching your search.
+                    </p>
+                  </div>
+                ) : (
+                  filteredAndSortedTeam.map((member) => (
+                    <div
                       key={member.id}
-                      className="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
+                      className="group grid grid-cols-[minmax(220px,2fr)_minmax(160px,1.3fr)_minmax(130px,1fr)_minmax(120px,1fr)_minmax(120px,1fr)_minmax(80px,0.7fr)] items-center rounded-xl border border-black/5 bg-white px-6 py-3.5 text-black shadow-xs transition-all duration-200 hover:border-black/15 hover:shadow-md active:scale-[0.995] dark:border-white/10 dark:bg-[#141417] dark:text-white dark:shadow-sm dark:hover:border-white/20"
                     >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/10 font-bold text-black dark:bg-white/10 dark:text-white">
-                            {member.avatarUrl ? (
-                              <Image
-                                src={member.avatarUrl}
-                                alt={member.name}
-                                width={40}
-                                height={40}
-                                className="h-full w-full object-cover"
-                                unoptimized
-                              />
-                            ) : (
-                              member.name.charAt(0).toUpperCase()
-                            )}
+                      {/* Employee Info */}
+                      <div className="flex min-w-0 items-center gap-3 pr-4">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/10 font-bold text-black dark:bg-white/10 dark:text-white">
+                          {member.avatarUrl ? (
+                            <Image
+                              src={member.avatarUrl}
+                              alt={member.name}
+                              width={40}
+                              height={40}
+                              className="h-full w-full object-cover"
+                              unoptimized
+                            />
+                          ) : (
+                            member.name.charAt(0).toUpperCase()
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="truncate font-semibold text-black dark:text-white">
+                            {member.name}
                           </div>
-                          <div>
-                            <div className="font-semibold text-black dark:text-white">
-                              {member.name}
-                            </div>
-                            <div className="text-xs text-black/60 dark:text-white/60">
-                              {member.email}
-                            </div>
+                          <div className="truncate text-xs text-black/60 dark:text-white/60">
+                            {member.email}
                           </div>
                         </div>
-                      </td>
-                      <td className="min-w-[150px] px-6 py-4">
+                      </div>
+
+                      {/* Role */}
+                      <div className="pr-4">
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold whitespace-nowrap ${getRoleBadgeColor(member.role)}`}
                         >
                           {member.role === 'SUPER_ADMIN' && <ShieldCheckIcon className="h-3 w-3" />}
                           {ROLE_LABELS[member.role]}
                         </span>
-                      </td>
-                      <td className="min-w-[150px] px-6 py-4">
+                      </div>
+
+                      {/* Status */}
+                      <div className="pr-4">
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap ${
                             member.status === 'ACTIVE'
@@ -193,14 +230,20 @@ export function TeamManagementView() {
                           {member.status === 'PENDING' && <MailIcon className="h-3 w-3" />}
                           {member.status}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-black/60 dark:text-white/60">
+                      </div>
+
+                      {/* Joined */}
+                      <div className="text-xs font-medium text-black/60 dark:text-white/60">
                         {new Date(member.joinedAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 text-black/60 dark:text-white/60">
+                      </div>
+
+                      {/* Updated */}
+                      <div className="text-xs font-medium text-black/60 dark:text-white/60">
                         {member.updatedAt ? new Date(member.updatedAt).toLocaleDateString() : 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-right">
+                      </div>
+
+                      {/* Actions */}
+                      <div className="text-right">
                         <button
                           onClick={() => {
                             setEditingMemberId(member.id);
@@ -209,21 +252,11 @@ export function TeamManagementView() {
                         >
                           Edit
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredAndSortedTeam.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={6}
-                        className="px-6 py-12 text-center text-black/60 dark:text-white/60"
-                      >
-                        No team members found matching your search.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
