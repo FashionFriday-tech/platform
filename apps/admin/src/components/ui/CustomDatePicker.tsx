@@ -192,7 +192,7 @@ export function CustomDatePicker({
         onClick={() => {
           setIsOpen(!isOpen);
         }}
-        className={`flex items-center justify-between gap-2.5 rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-sm font-medium transition-all outline-none hover:bg-black/5 focus:border-black/30 dark:border-white/5 dark:bg-[#1a1a1a] dark:hover:bg-white/5 dark:focus:border-white/30 ${
+        className={`flex items-center justify-between gap-2.5 rounded-xl bg-[#f8f9fa] px-3 py-2 text-sm font-medium transition-all outline-none hover:bg-black/5 dark:bg-[#1a1a1a] dark:hover:bg-white/5 ${
           value ? 'text-black dark:text-white' : 'text-black/60 dark:text-white/60'
         }`}
       >
@@ -256,7 +256,7 @@ export function CustomDatePicker({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 mt-2 w-72 rounded-2xl border border-black/10 bg-white p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#161616]"
+            className="absolute z-50 mt-2 w-72 rounded-2xl bg-white p-4 backdrop-blur-xl dark:bg-[#161616]"
           >
             {/* Calendar Header Navigation */}
             <div className="mb-3 flex items-center justify-between">
