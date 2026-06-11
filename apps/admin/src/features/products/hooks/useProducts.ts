@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { fetchProducts } from '../services/api';
+import { toast } from 'sonner';
+
+import {
+  deleteProduct as deleteProductApi,
+  fetchProducts,
+  updateProductStatus,
+} from '../services/api';
 import {
   type AdvancedFilters,
   type ColumnId,
@@ -57,18 +63,57 @@ export function useProducts() {
     void loadData();
   }, []);
 
-  const toggleProductStatus = (id: string) => {
-    setProducts(
-      products.map((p) => {
-        if (p.id === id) {
-          if (p.status === 'Draft') {
-            return p;
-          } // Never activate drafted products
-          return { ...p, status: p.status === 'Active' ? 'Inactive' : 'Active' };
+  const toggleProductStatus = async (id: string) => {
+    const target = products.find((p) => p.id === id);
+    if (!target) {
+      return;
+    }
+    if (target.status === 'Draft') {
+      toast.info('Drafted products cannot be activated directly. Please edit and publish.');
+      return;
+    }
+
+    const previousStatus = target.status;
+    const newStatus: 'Active' | 'Inactive' = previousStatus === 'Active' ? 'Inactive' : 'Active';
+
+    // Optimistic UI update
+    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p)));
+
+    try {
+      await updateProductStatus(id, newStatus);
+      toast.success(`Product marked as ${newStatus}`);
+    } catch (err: unknown) {
+      console.error('Failed to update product status:', err);
+      // Revert on failure
+      setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, status: previousStatus } : p)));
+      toast.error(
+        (err instanceof Error ? err.message : null) ??
+          'Failed to update product status in database',
+      );
+    }
+  };
+
+  const deleteProduct = async (id: string) => {
+    try {
+      await deleteProductApi(id);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      setSelectedIds((prev) => {
+        if (prev.has(id)) {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
         }
-        return p;
-      }),
-    );
+        return prev;
+      });
+      toast.success('Product deleted successfully');
+      return true;
+    } catch (err: unknown) {
+      console.error('Failed to delete product:', err);
+      toast.error(
+        (err instanceof Error ? err.message : null) ?? 'Failed to delete product from database',
+      );
+      return false;
+    }
   };
 
   const toggleSelection = (id: string) => {
@@ -154,6 +199,7 @@ export function useProducts() {
     sortOption,
     setSortOption,
     toggleProductStatus,
+    deleteProduct,
     viewMode,
     setViewMode,
     selectedIds,
