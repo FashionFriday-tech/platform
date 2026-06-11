@@ -81,7 +81,8 @@ export function OrderCard({ order, item }: OrderCardProps) {
   const isDelivered = normalizedStatus === 'DELIVERED';
   const isCancelled = normalizedStatus === 'CANCELLED' || normalizedStatus === 'CANCELED';
   const isProcessing = normalizedStatus === 'PROCESSING';
-  const isPlaced = normalizedStatus === 'PENDING' || normalizedStatus === 'CONFIRMED' || !normalizedStatus;
+  const isConfirmed = normalizedStatus === 'CONFIRMED';
+  const isPending = normalizedStatus === 'PENDING' || !normalizedStatus;
 
   const handleOpenTracking = () => {
     if (hasTracking) {
@@ -153,14 +154,33 @@ export function OrderCard({ order, item }: OrderCardProps) {
       );
     }
 
-    // 4. Order Placed / Confirmed -> Show "Order Placed" button
-    if (isPlaced) {
+    // 4. Confirmed -> Show "Confirmed" button
+    if (isConfirmed) {
+      return (
+        <button
+          type="button"
+          onClick={() => {
+            toast.info('Order Confirmed', {
+              description: 'Your order has been confirmed with the seller and will be dispatched soon.',
+            });
+          }}
+          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20 flex items-center gap-1.5 rounded-full border px-5 py-2 text-xs font-bold transition-all active:scale-95"
+        >
+          <CheckCircleIcon size={14} />
+          <span>Confirmed</span>
+          <ChevronRightIcon size={14} className="opacity-60" />
+        </button>
+      );
+    }
+
+    // 5. Order Placed (Pending) -> Show "Order Placed" button
+    if (isPending) {
       return (
         <button
           type="button"
           onClick={() => {
             toast.info('Order Placed', {
-              description: 'Your order has been received and is confirmed. Tracking will be available once shipped.',
+              description: 'Your order has been received and is being verified.',
             });
           }}
           className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25 hover:bg-amber-500/20 flex items-center gap-1.5 rounded-full border px-5 py-2 text-xs font-bold transition-all active:scale-95"
