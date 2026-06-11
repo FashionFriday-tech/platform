@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import { type Product } from '../types';
+import { DeleteProductModal } from './DeleteProductModal';
+import { ProductActionMenu } from './ProductActionMenu';
 
 interface Props {
   products: Product[];
   isLoading: boolean;
   onToggleStatus: (id: string) => void;
+  onDeleteProduct?: (id: string) => Promise<boolean | undefined>;
   selectedIds: Set<string>;
   onToggleSelection: (id: string) => void;
   onToggleAllSelection: (ids: string[]) => void;
@@ -16,11 +20,27 @@ export function ProductGrid({
   products,
   isLoading,
   onToggleStatus,
+  onDeleteProduct,
   selectedIds,
   onToggleSelection,
   onToggleAllSelection,
 }: Props) {
   const router = useRouter();
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    if (!productToDelete || !onDeleteProduct) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      await onDeleteProduct(productToDelete.id);
+      setProductToDelete(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -150,11 +170,11 @@ export function ProductGrid({
 
                   <div className="flex items-baseline gap-2">
                     <span className="text-lg font-extrabold text-black dark:text-white">
-                      ₹{product.sellingPrice.toFixed(2)}
+                      ₹{Number(product.sellingPrice || 0).toFixed(2)}
                     </span>
-                    {product.sellingPrice < product.originalPrice && (
+                    {Number(product.sellingPrice || 0) < Number(product.originalPrice || 0) && (
                       <span className="text-xs font-semibold text-black/30 line-through dark:text-white/30">
-                        ₹{product.originalPrice.toFixed(2)}
+                        ₹{Number(product.originalPrice || 0).toFixed(2)}
                       </span>
                     )}
                   </div>
@@ -184,29 +204,31 @@ export function ProductGrid({
                     </div>
                   </div>
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      product.status !== 'Draft' && onToggleStatus(product.id);
-                    }}
-                    disabled={product.status === 'Draft'}
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-all duration-300 ${product.status === 'Active' ? 'bg-black shadow-md dark:bg-white' : 'bg-black/10 hover:bg-black/20 dark:bg-white/10 dark:hover:bg-white/20'} ${product.status === 'Draft' ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
-                    title={
-                      product.status === 'Draft'
-                        ? 'Cannot activate drafted products'
-                        : 'Toggle Active Status'
-                    }
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full shadow-sm transition-transform duration-300 ease-out ${product.status === 'Active' ? 'translate-x-6 bg-white dark:bg-black' : 'translate-x-1 bg-white'}`}
+                  <div className="relative z-30">
+                    <ProductActionMenu
+                      product={product}
+                      onToggleStatus={onToggleStatus}
+                      onRequestDelete={(p) => {
+                        setProductToDelete(p);
+                      }}
                     />
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>
           );
         })}
       </div>
+
+      <DeleteProductModal
+        isOpen={Boolean(productToDelete)}
+        onClose={() => {
+          setProductToDelete(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        productName={productToDelete?.name}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }
