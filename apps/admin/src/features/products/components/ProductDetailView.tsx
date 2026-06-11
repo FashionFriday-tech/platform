@@ -3,9 +3,17 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
-import { fetchProductById } from '../services/api';
+import { TrashIcon } from '@ff/ui';
+
+import {
+  deleteProduct as deleteProductApi,
+  fetchProductById,
+  updateProductStatus,
+} from '../services/api';
 import { type Product } from '../types';
+import { DeleteProductModal } from './DeleteProductModal';
 import { ProductPerformance } from './ProductPerformance';
 import { ProductReviews } from './ProductReviews';
 
@@ -18,6 +26,48 @@ export function ProductDetailView({ productId }: Props) {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    if (!product) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      await deleteProductApi(product.id);
+      toast.success('Product deleted successfully');
+      router.push('/products');
+    } catch (err: any) {
+      console.error('Failed to delete product:', err);
+      toast.error(err?.message || 'Failed to delete product');
+      setIsDeleting(false);
+    }
+  };
+
+  const handleToggleStatus = async () => {
+    if (!product || product.status === 'Draft' || isUpdatingStatus) {
+      return;
+    }
+    const previousStatus = product.status;
+    const newStatus: 'Active' | 'Inactive' = previousStatus === 'Active' ? 'Inactive' : 'Active';
+
+    // Optimistic update
+    setProduct({ ...product, status: newStatus });
+    setIsUpdatingStatus(true);
+
+    try {
+      await updateProductStatus(product.id, newStatus);
+      toast.success(`Product status marked as ${newStatus}`);
+    } catch (err: any) {
+      console.error('Failed to update product status:', err);
+      setProduct({ ...product, status: previousStatus });
+      toast.error(err?.message || 'Failed to update product status');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
 
   useEffect(() => {
     async function load() {
@@ -153,24 +203,66 @@ export function ProductDetailView({ productId }: Props) {
                   {product.quality}
                 </span>
               )}
+
+              {/* Status Toggle Badge */}
+              <button
+                type="button"
+                onClick={handleToggleStatus}
+                disabled={product.status === 'Draft' || isUpdatingStatus}
+                className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                  product.status === 'Active'
+                    ? 'border-green-500/20 bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:text-green-400'
+                    : product.status === 'Draft'
+                    ? 'cursor-not-allowed border-yellow-500/20 bg-yellow-500/10 text-yellow-700 opacity-60 dark:text-yellow-500'
+                    : 'border-zinc-300 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700'
+                }`}
+                title={
+                  product.status === 'Draft'
+                    ? 'Cannot activate draft products directly'
+                    : `Click to switch to ${product.status === 'Active' ? 'Inactive' : 'Active'}`
+                }
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    product.status === 'Active'
+                      ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]'
+                      : product.status === 'Draft'
+                      ? 'bg-yellow-500'
+                      : 'bg-zinc-400'
+                  }`}
+                />
+                <span>{product.status}</span>
+              </button>
             </div>
 
-            <button
-              onClick={() => {
-                router.push(`/products/${productId}/edit`);
-              }}
-              className="flex items-center space-x-2 rounded-full bg-black px-5 py-2 text-xs font-bold text-white shadow-lg shadow-black/20 transition-all hover:scale-105 hover:shadow-xl dark:bg-white dark:text-black dark:shadow-white/20"
-            >
-              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
-              <span>Edit</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  router.push(`/products/${productId}/edit`);
+                }}
+                className="flex cursor-pointer items-center space-x-2 rounded-full bg-black px-5 py-2 text-xs font-bold text-white shadow-lg shadow-black/20 transition-all hover:scale-105 hover:shadow-xl dark:bg-white dark:text-black dark:shadow-white/20"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+                <span>Edit</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(true)}
+                className="flex cursor-pointer items-center space-x-2 rounded-full border border-red-500/20 bg-red-50 px-5 py-2 text-xs font-bold text-red-600 shadow-sm transition-all hover:scale-105 hover:bg-red-100 hover:shadow dark:border-red-500/30 dark:bg-red-950/20 dark:text-red-400 dark:hover:bg-red-900/30"
+              >
+                <TrashIcon className="h-3.5 w-3.5" />
+                <span>Delete</span>
+              </button>
+            </div>
           </div>
 
           {/* Title */}
@@ -192,11 +284,11 @@ export function ProductDetailView({ productId }: Props) {
               </span>
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-black text-black dark:text-white">
-                  ₹{product.sellingPrice.toFixed(2)}
+                  ₹{Number(product.sellingPrice || 0).toFixed(2)}
                 </span>
-                {product.originalPrice > product.sellingPrice && (
+                {Number(product.originalPrice || 0) > Number(product.sellingPrice || 0) && (
                   <span className="text-lg font-bold text-black/40 line-through dark:text-white/40">
-                    ₹{product.originalPrice.toFixed(2)}
+                    ₹{Number(product.originalPrice || 0).toFixed(2)}
                   </span>
                 )}
               </div>
@@ -325,6 +417,14 @@ export function ProductDetailView({ productId }: Props) {
         productId={product.id}
         productCategory={product.category ?? 'uncategorized'}
         productName={product.name}
+      />
+
+      <DeleteProductModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        productName={product.name}
+        isDeleting={isDeleting}
       />
     </div>
   );
