@@ -1,15 +1,20 @@
+'use client';
+
 import Image from 'next/image';
 
 import { type ColumnId, type Product } from '../types';
+import { ProductActionMenu } from './ProductActionMenu';
 
 interface Props {
   product: Product;
   isSelected: boolean;
   onToggleSelection: (id: string) => void;
   onToggleStatus: (id: string) => void;
+  onRequestDelete: (product: Product) => void;
   visibleColumns: Set<ColumnId>;
   onClick: () => void;
   getCategoryIcon: (category: string) => React.ReactNode;
+  gridTemplateColumns?: string;
 }
 
 export function ProductTableRow({
@@ -17,101 +22,108 @@ export function ProductTableRow({
   isSelected,
   onToggleSelection,
   onToggleStatus,
+  onRequestDelete,
   visibleColumns,
   onClick,
   getCategoryIcon,
+  gridTemplateColumns,
 }: Props) {
   return (
-    <tr
+    <div
       onClick={onClick}
-      className={`group cursor-pointer whitespace-nowrap transition-colors ${isSelected ? 'bg-black/[0.03] dark:bg-white/[0.05]' : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'}`}
+      style={{ gridTemplateColumns }}
+      className={`grid cursor-pointer items-center rounded-xl border px-6 py-3.5 shadow-xs transition-all ${
+        isSelected
+          ? 'border-black/20 bg-slate-100/90 dark:border-white/20 dark:bg-white/10'
+          : 'border-black/5 bg-white hover:border-black/15 hover:shadow-md dark:border-white/10 dark:bg-[#141417] dark:hover:border-white/20'
+      }`}
     >
-      {/* Sticky Left: Select & Product Info */}
-      <td
-        className={`sticky left-0 z-10 border-r border-black/5 px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] transition-colors dark:border-white/5 dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)] ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#222]' : 'bg-white group-hover:bg-[#fafafa] dark:bg-[#111111] dark:group-hover:bg-[#1a1a1a]'}`}
-      >
-        <div className="flex items-center space-x-4">
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSelection(product.id);
-            }}
-            className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${isSelected ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 group-hover:border-black/50 dark:border-white/20 dark:group-hover:border-white/50'}`}
-          >
-            {isSelected && (
-              <svg
-                className="h-3.5 w-3.5 text-white dark:text-black"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+      {/* Select & Product Info */}
+      <div className="flex items-center space-x-3">
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelection(product.id);
+          }}
+          className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${
+            isSelected
+              ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+              : 'border-black/20 hover:border-black/50 dark:border-white/20 dark:hover:border-white/50'
+          }`}
+        >
+          {isSelected && (
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={3}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          )}
+        </div>
+        <div className="flex items-center space-x-3">
+          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/10">
+            {product.imageUrl ? (
+              <Image
+                width={500}
+                height={500}
+                src={product.imageUrl}
+                alt={product.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span className="text-xs font-bold text-black/30 dark:text-white/30">IMG</span>
             )}
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/10">
-              {product.imageUrl ? (
-                <Image
-                  width={500}
-                  height={500}
-                  src={product.imageUrl}
-                  alt={product.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-xs font-bold text-black/30 dark:text-white/30">IMG</span>
-              )}
-            </div>
-            <div className="min-w-[180px]">
-              <p
-                className="max-w-[220px] truncate text-sm font-medium text-black/90 dark:text-white/90"
-                title={product.name}
-              >
-                {product.name}
-              </p>
-              <p className="mt-1 text-xs text-black/40 dark:text-white/40">ID: {product.sku}</p>
-            </div>
+          <div className="min-w-0 pr-2">
+            <p
+              className="truncate text-sm font-semibold text-black/90 dark:text-white/90"
+              title={product.name}
+            >
+              {product.name}
+            </p>
+            <p className="mt-0.5 text-xs text-black/40 dark:text-white/40">ID: {product.sku}</p>
           </div>
         </div>
-      </td>
+      </div>
 
       {visibleColumns.has('Category') && (
-        <td className="px-4 py-4">
-          <span className="inline-flex min-w-[100px] items-center justify-center rounded-md bg-black/5 px-2.5 py-1 text-xs font-medium text-black/70 dark:bg-white/5 dark:text-white/70">
+        <div>
+          <span className="inline-flex min-w-[90px] items-center justify-center rounded-md bg-black/5 px-2.5 py-1 text-xs font-medium text-black/70 dark:bg-white/5 dark:text-white/70">
             {getCategoryIcon(product.category)}
             {product.category}
           </span>
-        </td>
+        </div>
       )}
 
       {visibleColumns.has('Cost Price') && (
-        <td className="px-4 py-4 text-sm text-black/70 dark:text-white/70">
-          ₹{product.costPrice.toFixed(2)}
-        </td>
+        <div className="text-sm font-medium text-black/70 dark:text-white/70">
+          ₹{Number(product.costPrice ?? 0).toFixed(2)}
+        </div>
       )}
 
       {visibleColumns.has('OG Price') && (
-        <td className="px-4 py-4 text-sm text-black/70 dark:text-white/70">
-          ₹{product.originalPrice.toFixed(2)}
-        </td>
+        <div className="text-sm font-medium text-black/70 dark:text-white/70">
+          ₹{Number(product.originalPrice ?? 0).toFixed(2)}
+        </div>
       )}
 
-      <td className="px-4 py-4 text-sm font-medium">
-        {product.sellingPrice < product.originalPrice ? (
-          <span className="font-bold text-red-500">₹{product.sellingPrice.toFixed(2)}</span>
+      {/* Selling Price */}
+      <div className="text-sm font-semibold">
+        {Number(product.sellingPrice ?? 0) < Number(product.originalPrice ?? 0) ? (
+          <span className="font-bold text-red-500">
+            ₹{Number(product.sellingPrice ?? 0).toFixed(2)}
+          </span>
         ) : (
-          <span className="text-black dark:text-white">₹{product.sellingPrice.toFixed(2)}</span>
+          <span className="text-black dark:text-white">
+            ₹{Number(product.sellingPrice ?? 0).toFixed(2)}
+          </span>
         )}
-      </td>
+      </div>
 
       {visibleColumns.has('Variants') && (
-        <td className="px-4 py-4">
+        <div>
           <div className="grid w-max grid-flow-col grid-rows-2 gap-1">
             {product.variants?.map((v) => (
               <span
@@ -122,64 +134,77 @@ export function ProductTableRow({
               </span>
             )) ?? <span className="text-xs text-black/30 dark:text-white/30">-</span>}
           </div>
-        </td>
+        </div>
       )}
 
       {visibleColumns.has('Sales') && (
-        <td className="px-4 py-4 text-sm font-medium text-black/80 dark:text-white/80">
+        <div className="text-sm font-semibold text-black/80 dark:text-white/80">
           {product.sales ? product.sales.toLocaleString() : '0'}
-        </td>
+        </div>
       )}
 
       {visibleColumns.has('Date Added') && (
-        <td className="px-4 py-4 text-sm text-black/60 dark:text-white/60">
-          {product.dateAdded ?? 'N/A'}
-        </td>
+        <div className="text-sm text-black/60 dark:text-white/60">{product.dateAdded ?? 'N/A'}</div>
       )}
 
-      <td className="px-4 py-4 text-sm">
+      {/* Status */}
+      <div>
         <span
-          className={`inline-flex min-w-[100px] items-center justify-center rounded-md border px-2.5 py-1 text-xs font-medium ${product.status === 'Active' ? 'border-black/10 bg-black/5 text-black dark:border-white/20 dark:bg-white/10 dark:text-white' : product.status === 'Draft' ? 'border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-500' : 'border-transparent bg-black/5 text-black/50 dark:bg-white/5 dark:text-white/50'}`}
+          className={`inline-flex min-w-[85px] items-center justify-center rounded-md border px-2.5 py-1 text-xs font-medium ${
+            product.status === 'Active'
+              ? 'border-black/10 bg-black/5 text-black dark:border-white/20 dark:bg-white/10 dark:text-white'
+              : product.status === 'Draft'
+                ? 'border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-500'
+                : 'border-transparent bg-black/5 text-black/50 dark:bg-white/5 dark:text-white/50'
+          }`}
         >
           {product.status}
         </span>
-      </td>
+      </div>
 
       {visibleColumns.has('Stock') && (
-        <td className="px-4 py-4">
+        <div>
           <div className="flex w-24 flex-col justify-center">
             <div className="mb-1 h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
               <div
-                className={`h-full rounded-full transition-all duration-1000 ease-out ${product.stock < 100 ? 'bg-red-500' : product.stock < 500 ? 'bg-yellow-500' : 'bg-green-500'}`}
+                className={`h-full rounded-full transition-all duration-1000 ease-out ${
+                  product.stock < 100
+                    ? 'bg-red-500'
+                    : product.stock < 500
+                      ? 'bg-yellow-500'
+                      : 'bg-green-500'
+                }`}
                 style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
               />
             </div>
             <p
-              className={`text-right text-[10px] font-medium ${product.stock < 100 ? 'text-red-500' : product.stock < 500 ? 'text-yellow-600 dark:text-yellow-500' : 'text-green-600 dark:text-green-500'}`}
+              className={`text-right text-[10px] font-medium ${
+                product.stock < 100
+                  ? 'text-red-500'
+                  : product.stock < 500
+                    ? 'text-yellow-600 dark:text-yellow-500'
+                    : 'text-green-600 dark:text-green-500'
+              }`}
             >
               {product.stock}/{product.maxStock}
             </p>
           </div>
-        </td>
+        </div>
       )}
 
-      {/* Sticky Right: Activation */}
-      <td
-        className={`sticky right-0 z-10 border-l border-black/5 px-6 py-4 text-right shadow-[-4px_0_12px_rgba(0,0,0,0.03)] transition-colors dark:border-white/5 dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)] ${isSelected ? 'bg-[#f4f4f4] dark:bg-[#222]' : 'bg-white group-hover:bg-[#fafafa] dark:bg-[#111111] dark:group-hover:bg-[#1a1a1a]'}`}
+      {/* Actions */}
+      <div
+        className="flex justify-end"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       >
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            product.status !== 'Draft' && onToggleStatus(product.id);
-          }}
-          disabled={product.status === 'Draft'}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${product.status === 'Active' ? 'bg-black/90 dark:bg-white/90' : 'border border-black/20 bg-black/10 dark:border-white/20 dark:bg-white/10'} ${product.status === 'Draft' ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
-        >
-          <span
-            className={`inline-block h-4 w-4 transform rounded-full transition-transform ${product.status === 'Active' ? 'translate-x-6 bg-white dark:bg-black' : 'translate-x-1 bg-black/50 dark:bg-white/50'}`}
-          />
-        </button>
-      </td>
-    </tr>
+        <ProductActionMenu
+          product={product}
+          onToggleStatus={onToggleStatus}
+          onRequestDelete={onRequestDelete}
+        />
+      </div>
+    </div>
   );
 }
