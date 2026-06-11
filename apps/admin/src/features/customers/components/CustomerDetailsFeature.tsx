@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -9,13 +9,13 @@ import {
   CloseIcon,
   HeartIcon,
   MailIcon,
+  MapPinIcon,
   PhoneIcon,
   PlusIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
   StarIcon,
   UserIcon,
-  MapPinIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
@@ -23,22 +23,55 @@ import { toast } from 'sonner';
 import { fetcher } from '@/lib/api-client';
 
 const CreditCardIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
     <rect width="20" height="14" x="2" y="5" rx="2" />
     <line x1="2" x2="22" y1="10" y2="10" />
   </svg>
 );
 
 const CopyIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
     <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
     <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
   </svg>
 );
 
 const ChevronUpIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="m18 15-6-6-6 6"/>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="m18 15-6-6-6 6" />
   </svg>
 );
 
@@ -125,7 +158,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   const [isLoading, setIsLoading] = useState(true);
 
   // Tab states
-  const [activeTab, setActiveTab] = useState<'orders' | 'favorites' | 'cart' | 'addresses' | 'payments'>('orders');
+  const [activeTab, setActiveTab] = useState<
+    'orders' | 'favorites' | 'cart' | 'addresses' | 'payments'
+  >('orders');
   const [isFetchingTab, setIsFetchingTab] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(null);
@@ -145,7 +180,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   const [color, setColor] = useState('');
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'RAZORPAY' | 'STRIPE' | 'WALLET'>('COD');
+  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'RAZORPAY' | 'STRIPE' | 'WALLET'>(
+    'COD',
+  );
   const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED'>('PENDING');
   const [addressLine, setAddressLine] = useState('');
   const [city, setCity] = useState('');
@@ -178,18 +215,24 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
   const fetchCustomerDetails = async (silent = false) => {
     try {
-      if (!silent) setIsLoading(true);
+      if (!silent) {
+        setIsLoading(true);
+      }
       const data = await fetcher<CustomerDetails>(`/admin/customers/${customerId}`);
       setCustomer(data);
     } catch (error) {
       console.error('Failed to load customer details:', error);
       toast.error('Failed to load customer profile details.');
     } finally {
-      if (!silent) setIsLoading(false);
+      if (!silent) {
+        setIsLoading(false);
+      }
     }
   };
 
-  const fetchTabContent = async (tab: 'orders' | 'favorites' | 'cart' | 'addresses' | 'payments') => {
+  const fetchTabContent = async (
+    tab: 'orders' | 'favorites' | 'cart' | 'addresses' | 'payments',
+  ) => {
     setActiveTab(tab);
     if (tab === 'cart' && cartItems === null) {
       setIsFetchingTab(true);
@@ -232,14 +275,18 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
     // Optimistically update UI
     if (cartItems) {
-      setCartItems((prev) => 
-        prev?.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item)) || prev
+      setCartItems(
+        (prev) =>
+          prev?.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item)) ||
+          prev,
       );
     }
 
     // Debounce backend call
-    if (cartUpdateTimeoutRef.current) clearTimeout(cartUpdateTimeoutRef.current);
-    
+    if (cartUpdateTimeoutRef.current) {
+      clearTimeout(cartUpdateTimeoutRef.current);
+    }
+
     setUpdatingCartItem(itemId);
     cartUpdateTimeoutRef.current = setTimeout(async () => {
       try {
@@ -257,16 +304,20 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   };
 
   const handleConfirmRemoveItem = async () => {
-    if (!itemToRemove) return;
-    
+    if (!itemToRemove) {
+      return;
+    }
+
     // Clear any pending updates for this item
-    if (cartUpdateTimeoutRef.current) clearTimeout(cartUpdateTimeoutRef.current);
-    
+    if (cartUpdateTimeoutRef.current) {
+      clearTimeout(cartUpdateTimeoutRef.current);
+    }
+
     // Optimistically update
     if (cartItems) {
-      setCartItems((prev) => prev?.filter(i => i.id !== itemToRemove) || prev);
+      setCartItems((prev) => prev?.filter((i) => i.id !== itemToRemove) || prev);
     }
-    
+
     setUpdatingCartItem(itemToRemove);
     try {
       await fetcher(`/admin/customers/${customerId}/cart/${itemToRemove}`, {
@@ -454,21 +505,37 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
   const validateAddressForm = () => {
     const errors: Record<string, string> = {};
-    if (!addrFullName.trim()) errors.fullName = 'Name is required';
-    if (!addrPhone.trim()) errors.phone = 'Phone is required';
-    if (!addrStreet.trim()) errors.street = 'Address is required';
-    if (!addrCity.trim()) errors.city = 'City is required';
-    if (!addrDistrict.trim()) errors.district = 'District is required';
-    if (!addrState.trim()) errors.state = 'State is required';
-    if (!addrPincode.trim() || !/^\d{6}$/.test(addrPincode)) errors.pincode = 'Valid 6-digit pin code required';
+    if (!addrFullName.trim()) {
+      errors.fullName = 'Name is required';
+    }
+    if (!addrPhone.trim()) {
+      errors.phone = 'Phone is required';
+    }
+    if (!addrStreet.trim()) {
+      errors.street = 'Address is required';
+    }
+    if (!addrCity.trim()) {
+      errors.city = 'City is required';
+    }
+    if (!addrDistrict.trim()) {
+      errors.district = 'District is required';
+    }
+    if (!addrState.trim()) {
+      errors.state = 'State is required';
+    }
+    if (!addrPincode.trim() || !/^\d{6}$/.test(addrPincode)) {
+      errors.pincode = 'Valid 6-digit pin code required';
+    }
     setAddrErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleCreateAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateAddressForm()) return;
-    
+    if (!validateAddressForm()) {
+      return;
+    }
+
     setIsSubmittingAddress(true);
     try {
       await fetcher(`/admin/customers/${customerId}/addresses`, {
@@ -484,14 +551,14 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
           state: addrState,
           pincode: addrPincode,
           landmark: addrLandmark,
-          isDefault: addrIsDefault
+          isDefault: addrIsDefault,
         }),
       });
 
       toast.success('Address added successfully!');
       setIsAddressModalOpen(false);
       void fetchTabContent('addresses');
-      
+
       // Reset form
       setAddrFullName('');
       setAddrPhone('');
@@ -552,99 +619,102 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             {/* Cover Background */}
             <div className="h-32 w-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 dark:from-emerald-500/5 dark:via-teal-500/5 dark:to-cyan-500/5" />
 
-        <div className="px-8 pb-8">
-          <div className="-mt-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="flex items-end gap-6">
-              <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-4 border-white bg-black dark:border-[#111111]">
-                <Image
-                  src={customer.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${customer.name}&backgroundColor=000000&textColor=ffffff`}
-                  alt={customer.name}
-                  fill
-                  className="object-cover dark:invert"
-                />
+            <div className="px-8 pb-8">
+              <div className="-mt-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                <div className="flex items-end gap-6">
+                  <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-3xl border-4 border-white bg-black dark:border-[#111111]">
+                    <Image
+                      src={
+                        customer.avatar ||
+                        `https://api.dicebear.com/7.x/initials/svg?seed=${customer.name}&backgroundColor=000000&textColor=ffffff`
+                      }
+                      alt={customer.name}
+                      fill
+                      className="object-cover dark:invert"
+                    />
+                  </div>
+
+                  <div className="flex flex-col pb-2">
+                    <div className="flex items-center gap-3">
+                      <h1 className="text-3xl font-extrabold tracking-tight text-black dark:text-white">
+                        {customer.name}
+                      </h1>
+                      <span className="flex h-6 items-center rounded-full bg-emerald-500/10 px-2.5 text-[10px] font-bold tracking-wider text-emerald-600 uppercase dark:bg-emerald-500/20 dark:text-emerald-400">
+                        {customer.status}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-4 text-sm font-semibold text-black/60 dark:text-white/60">
+                      <span className="flex items-center gap-1.5">
+                        <MailIcon className="h-4 w-4" />
+                        {customer.email}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <PhoneIcon className="h-4 w-4" />
+                        {customer.phone || 'No phone number'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 pb-2 md:flex-row md:items-center">
+                  <button
+                    onClick={() => {
+                      setEditName(customer.name);
+                      setEditPhone(customer.phone || '+91');
+                      setEditErrors({});
+                      setIsEditModalOpen(true);
+                    }}
+                    className="flex h-10 items-center justify-center gap-2 rounded-xl border border-black/10 bg-transparent px-5 text-sm font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                  >
+                    Edit Profile
+                  </button>
+                </div>
               </div>
 
-              <div className="flex flex-col pb-2">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-extrabold tracking-tight text-black dark:text-white">
-                    {customer.name}
-                  </h1>
-                  <span className="flex h-6 items-center rounded-full bg-emerald-500/10 px-2.5 text-[10px] font-bold text-emerald-600 uppercase tracking-wider dark:bg-emerald-500/20 dark:text-emerald-400">
-                    {customer.status}
+              <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-5">
+                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                  <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                    Total Orders
+                  </span>
+                  <span className="mt-2 text-3xl font-black text-black dark:text-white">
+                    {customer.ordersCount}
                   </span>
                 </div>
-                <div className="mt-2 flex flex-wrap items-center gap-4 text-sm font-semibold text-black/60 dark:text-white/60">
-                  <span className="flex items-center gap-1.5">
-                    <MailIcon className="h-4 w-4" />
-                    {customer.email}
+                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                  <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                    Total Spent
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <PhoneIcon className="h-4 w-4" />
-                    {customer.phone || 'No phone number'}
+                  <span className="mt-2 text-3xl font-black text-black dark:text-white">
+                    ₹{customer.totalSpent.toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                  <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                    Favorites
+                  </span>
+                  <span className="mt-2 text-3xl font-black text-black dark:text-white">
+                    {customer._count?.wishlist || 0}
+                  </span>
+                </div>
+                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                  <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                    Cart Items
+                  </span>
+                  <span className="mt-2 text-3xl font-black text-black dark:text-white">
+                    {customer._count?.cart || 0}
+                  </span>
+                </div>
+                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                  <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                    Addresses
+                  </span>
+                  <span className="mt-2 text-3xl font-black text-black dark:text-white">
+                    {customer._count?.addresses || 0}
                   </span>
                 </div>
               </div>
             </div>
-
-            <div className="flex flex-col gap-3 pb-2 md:flex-row md:items-center">
-              <button
-                onClick={() => {
-                  setEditName(customer.name);
-                  setEditPhone(customer.phone || '+91');
-                  setEditErrors({});
-                  setIsEditModalOpen(true);
-                }}
-                className="flex h-10 items-center justify-center gap-2 rounded-xl border border-black/10 bg-transparent px-5 text-sm font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
-              >
-                Edit Profile
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-5">
-            <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
-              <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Total Orders
-              </span>
-              <span className="mt-2 text-3xl font-black text-black dark:text-white">
-                {customer.ordersCount}
-              </span>
-            </div>
-            <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
-              <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Total Spent
-              </span>
-              <span className="mt-2 text-3xl font-black text-black dark:text-white">
-                ₹{customer.totalSpent.toLocaleString('en-IN')}
-              </span>
-            </div>
-            <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
-              <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Favorites
-              </span>
-              <span className="mt-2 text-3xl font-black text-black dark:text-white">
-                {customer._count?.wishlist || 0}
-              </span>
-            </div>
-            <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
-              <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Cart Items
-              </span>
-              <span className="mt-2 text-3xl font-black text-black dark:text-white">
-                {customer._count?.cart || 0}
-              </span>
-            </div>
-            <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
-              <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Addresses
-              </span>
-              <span className="mt-2 text-3xl font-black text-black dark:text-white">
-                {customer._count?.addresses || 0}
-              </span>
-            </div>
-          </div>
-        </div>
-        </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -652,10 +722,12 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       <div className="flex flex-col gap-6">
         <div className="sticky top-2 z-40 flex w-full items-center justify-between py-2">
           {/* Tabs & Toggle (Left) */}
-          <div className="flex overflow-x-auto no-scrollbar">
+          <div className="no-scrollbar flex overflow-x-auto">
             <div className="flex shrink-0 items-center gap-2 rounded-2xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#111111]">
               <button
-                onClick={() => setIsProfileBoxOpen(!isProfileBoxOpen)}
+                onClick={() => {
+                  setIsProfileBoxOpen(!isProfileBoxOpen);
+                }}
                 className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm transition-all hover:scale-105 active:scale-95 dark:bg-[#222]"
               >
                 <AnimatePresence mode="wait">
@@ -677,7 +749,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       className="h-full w-full"
                     >
                       <Image
-                        src={customer.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${customer.name}&backgroundColor=000000&textColor=ffffff`}
+                        src={
+                          customer.avatar ||
+                          `https://api.dicebear.com/7.x/initials/svg?seed=${customer.name}&backgroundColor=000000&textColor=ffffff`
+                        }
                         alt={customer.name}
                         width={36}
                         height={36}
@@ -690,64 +765,71 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
               <div className="h-5 w-[1px] bg-black/10 dark:bg-white/10" />
 
-            <button
-              onClick={() => fetchTabContent('orders')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${activeTab === 'orders'
-                ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+              <button
+                onClick={() => fetchTabContent('orders')}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                  activeTab === 'orders'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
                 }`}
-            >
-              <ShoppingBagIcon className="h-4 w-4" />
-              Orders
-            </button>
-            <button
-              onClick={() => fetchTabContent('favorites')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${activeTab === 'favorites'
-                ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+              >
+                <ShoppingBagIcon className="h-4 w-4" />
+                Orders
+              </button>
+              <button
+                onClick={() => fetchTabContent('favorites')}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                  activeTab === 'favorites'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
                 }`}
-            >
-              <HeartIcon className="h-4 w-4" />
-              Favorites
-            </button>
-            <button
-              onClick={() => fetchTabContent('cart')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${activeTab === 'cart'
-                ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+              >
+                <HeartIcon className="h-4 w-4" />
+                Favorites
+              </button>
+              <button
+                onClick={() => fetchTabContent('cart')}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                  activeTab === 'cart'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
                 }`}
-            >
-              <ShoppingCartIcon className="h-4 w-4" />
-              Cart
-            </button>
-            <button
-              onClick={() => fetchTabContent('addresses')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${activeTab === 'addresses'
-                ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+              >
+                <ShoppingCartIcon className="h-4 w-4" />
+                Cart
+              </button>
+              <button
+                onClick={() => fetchTabContent('addresses')}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                  activeTab === 'addresses'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
                 }`}
-            >
-              <MapPinIcon className="h-4 w-4" />
-              Addresses
-            </button>
-            <button
-              onClick={() => fetchTabContent('payments')}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${activeTab === 'payments'
-                ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+              >
+                <MapPinIcon className="h-4 w-4" />
+                Addresses
+              </button>
+              <button
+                onClick={() => fetchTabContent('payments')}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                  activeTab === 'payments'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
                 }`}
-            >
-              <CreditCardIcon className="h-4 w-4" />
-              Payments
-            </button>
+              >
+                <CreditCardIcon className="h-4 w-4" />
+                Payments
+              </button>
+            </div>
           </div>
-          </div>
-          
+
           {/* Action Buttons (Right) */}
           <div className="flex flex-1 justify-end">
             {activeTab === 'orders' && (
               <button
-                onClick={() => setIsOrderModalOpen(true)}
+                onClick={() => {
+                  setIsOrderModalOpen(true);
+                }}
                 className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
               >
                 <PlusIcon className="h-4 w-4" />
@@ -758,38 +840,38 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             {activeTab === 'addresses' && (
               <button
                 onClick={() => {
-                setAddrFullName(customer.name || '');
-                setAddrPhone(customer.phone || '');
-                setAddrAltPhone('');
-                setAddrStreet('');
-                setAddrCity('');
-                setAddrDistrict('');
-                setAddrState('');
-                setAddrPincode('');
-                setAddrLandmark('');
-                setIsAddressModalOpen(true);
-              }}
-              className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
-            >
-              <PlusIcon className="h-4 w-4" />
-              Add Address
-            </button>
-          )}
+                  setAddrFullName(customer.name || '');
+                  setAddrPhone(customer.phone || '');
+                  setAddrAltPhone('');
+                  setAddrStreet('');
+                  setAddrCity('');
+                  setAddrDistrict('');
+                  setAddrState('');
+                  setAddrPincode('');
+                  setAddrLandmark('');
+                  setIsAddressModalOpen(true);
+                }}
+                className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+              >
+                <PlusIcon className="h-4 w-4" />
+                Add Address
+              </button>
+            )}
 
-          {activeTab === 'cart' && cartItems && cartItems.length > 0 && (
-            <button
-              onClick={() => handleCartCheckout()}
-              disabled={isCheckingOut}
-              className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
-            >
-              {isCheckingOut ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white dark:border-black/20 dark:border-t-black" />
-              ) : (
-                <ShoppingBagIcon className="h-4 w-4" />
-              )}
-              Checkout
-            </button>
-          )}
+            {activeTab === 'cart' && cartItems && cartItems.length > 0 && (
+              <button
+                onClick={() => handleCartCheckout()}
+                disabled={isCheckingOut}
+                className="flex items-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+              >
+                {isCheckingOut ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white dark:border-black/20 dark:border-t-black" />
+                ) : (
+                  <ShoppingBagIcon className="h-4 w-4" />
+                )}
+                Checkout
+              </button>
+            )}
           </div>
         </div>
 
@@ -802,55 +884,62 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
           {activeTab === 'orders' && (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {customer.orders.flatMap(o => o.items.map(i => ({ order: o, item: i }))).length > 0 ? (
-                customer.orders.flatMap(o => o.items.map(i => ({ order: o, item: i }))).map(({ order, item }) => (
-                  <div
-                    key={item.id}
-                    className="group flex flex-col gap-4 rounded-3xl border border-black/5 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-[#111111]"
-                  >
-                    <div className="flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
-                      <div className="flex flex-col">
-                        <span className="text-xs font-bold text-black/40 dark:text-white/40">
-                          {order.orderNumber}
-                        </span>
-                        <span className="text-sm font-semibold text-black/60 dark:text-white/60">
-                          Ordered on {new Date(order.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <span
-                        className={`flex h-7 items-center rounded-full px-3 text-xs font-bold uppercase tracking-wider ${order.status === 'delivered'
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                          : order.status === 'cancelled'
-                            ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+              {customer.orders.flatMap((o) => o.items.map((i) => ({ order: o, item: i }))).length >
+              0 ? (
+                customer.orders
+                  .flatMap((o) => o.items.map((i) => ({ order: o, item: i })))
+                  .map(({ order, item }) => (
+                    <div
+                      key={item.id}
+                      className="group flex flex-col gap-4 rounded-3xl border border-black/5 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-[#111111]"
+                    >
+                      <div className="flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-black/40 dark:text-white/40">
+                            {order.orderNumber}
+                          </span>
+                          <span className="text-sm font-semibold text-black/60 dark:text-white/60">
+                            Ordered on {new Date(order.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <span
+                          className={`flex h-7 items-center rounded-full px-3 text-xs font-bold tracking-wider uppercase ${
+                            order.status === 'delivered'
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                              : order.status === 'cancelled'
+                                ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
                           }`}
-                      >
-                        {order.status}
-                      </span>
-                    </div>
+                        >
+                          {order.status}
+                        </span>
+                      </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-black/5 dark:border-white/5">
-                        {item.image ? (
-                          <Image src={item.image} alt={item.name} fill className="object-cover" />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-black/5 dark:bg-white/5">
-                            <ShoppingBagIcon className="h-6 w-6 text-black/20 dark:text-white/20" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-1 flex-col">
-                        <span className="font-bold text-black dark:text-white">{item.name}</span>
-                        <span className="mt-1 text-xs text-black/50 dark:text-white/50">
-                          Size: {item.size} • Color: {item.color} • Qty: {item.quantity}
-                        </span>
-                        <span className="mt-2 text-lg font-bold text-black dark:text-white">
-                          ₹{(item.price * item.quantity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                        </span>
+                      <div className="flex items-center gap-4">
+                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-black/5 dark:border-white/5">
+                          {item.image ? (
+                            <Image src={item.image} alt={item.name} fill className="object-cover" />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-black/5 dark:bg-white/5">
+                              <ShoppingBagIcon className="h-6 w-6 text-black/20 dark:text-white/20" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-1 flex-col">
+                          <span className="font-bold text-black dark:text-white">{item.name}</span>
+                          <span className="mt-1 text-xs text-black/50 dark:text-white/50">
+                            Size: {item.size} • Color: {item.color} • Qty: {item.quantity}
+                          </span>
+                          <span className="mt-2 text-lg font-bold text-black dark:text-white">
+                            ₹
+                            {(item.price * item.quantity).toLocaleString('en-IN', {
+                              minimumFractionDigits: 2,
+                            })}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))
               ) : (
                 <div className="col-span-2 flex flex-col items-center justify-center rounded-[32px] border border-dashed border-black/10 p-12 text-center dark:border-white/10">
                   <ShoppingBagIcon className="mb-4 h-8 w-8 text-black/20 dark:text-white/20" />
@@ -866,7 +955,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {wishlistItems && wishlistItems.length > 0 ? (
                 wishlistItems.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111111]">
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111111]"
+                  >
                     <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-black/5 dark:border-white/5">
                       {item.image ? (
                         <Image src={item.image} alt={item.name} fill className="object-cover" />
@@ -902,7 +994,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {cartItems && cartItems.length > 0 ? (
                 cartItems.map((item) => (
-                  <div key={item.id} className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111111]">
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111111]"
+                  >
                     <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-black/5 dark:border-white/5">
                       {item.image ? (
                         <Image src={item.image} alt={item.name} fill className="object-cover" />
@@ -923,10 +1018,12 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                         <span className="text-sm font-semibold text-black dark:text-white">
                           ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                         </span>
-                        
+
                         <div className="flex items-center gap-2 rounded-full border border-black/10 bg-black/5 p-1 dark:border-white/10 dark:bg-white/5">
                           <button
-                            onClick={() => handleUpdateCartQuantity(item.id, item.quantity - 1)}
+                            onClick={() => {
+                              handleUpdateCartQuantity(item.id, item.quantity - 1);
+                            }}
                             disabled={updatingCartItem === item.id}
                             className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black shadow-sm transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 dark:bg-[#222] dark:text-white"
                           >
@@ -936,7 +1033,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                             {updatingCartItem === item.id ? '...' : item.quantity}
                           </span>
                           <button
-                            onClick={() => handleUpdateCartQuantity(item.id, item.quantity + 1)}
+                            onClick={() => {
+                              handleUpdateCartQuantity(item.id, item.quantity + 1);
+                            }}
                             disabled={updatingCartItem === item.id}
                             className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white shadow-sm transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black"
                           >
@@ -962,12 +1061,25 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {addresses && addresses.length > 0 ? (
                 addresses.map((address) => (
-                  <div key={address.id} className="relative flex flex-col gap-3 rounded-3xl border border-black/5 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-                    <button 
+                  <div
+                    key={address.id}
+                    className="relative flex flex-col gap-3 rounded-3xl border border-black/5 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-[#111111]"
+                  >
+                    <button
                       onClick={() => {
-                         const streetWithLandmark = address.street + (address.landmark ? ` (near ${address.landmark})` : '');
-                         const fullAddress = [address.building, streetWithLandmark, address.city, address.district, address.state, address.pincode].filter(Boolean).join(', ');
-                         const text = `Name : ${address.fullName}
+                        const streetWithLandmark =
+                          address.street + (address.landmark ? ` (near ${address.landmark})` : '');
+                        const fullAddress = [
+                          address.building,
+                          streetWithLandmark,
+                          address.city,
+                          address.district,
+                          address.state,
+                          address.pincode,
+                        ]
+                          .filter(Boolean)
+                          .join(', ');
+                        const text = `Name : ${address.fullName}
 Address : ${fullAddress}
 City : ${address.city}
 District : ${address.district}
@@ -975,44 +1087,98 @@ State : ${address.state}
 Pincode : ${address.pincode}
 ${address.landmark ? `Landmark : ${address.landmark}\n` : ''}Mobile Number : ${address.phoneNumber}
 ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim();
-                         navigator.clipboard.writeText(text);
-                         toast.success('Address copied to clipboard!');
+                        navigator.clipboard.writeText(text);
+                        toast.success('Address copied to clipboard!');
                       }}
-                      className="absolute top-6 right-6 p-2 rounded-xl bg-black/5 hover:bg-black/10 transition-colors dark:bg-white/5 dark:hover:bg-white/10"
+                      className="absolute top-6 right-6 rounded-xl bg-black/5 p-2 transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"
                       title="Copy Address"
                     >
                       <CopyIcon className="h-4 w-4 text-black/60 dark:text-white/60" />
                     </button>
-                    
+
                     <div className="flex items-center gap-2 border-b border-black/5 pb-3 dark:border-white/5">
-                      <span className="rounded-md bg-black px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white dark:bg-white dark:text-black">
+                      <span className="rounded-md bg-black px-2 py-1 text-[10px] font-bold tracking-wider text-white uppercase dark:bg-white dark:text-black">
                         {address.label || 'Home'}
                       </span>
                       {address.isDefault && (
-                        <span className="rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                        <span className="rounded-md bg-emerald-500/10 px-2 py-1 text-[10px] font-bold tracking-wider text-emerald-600 uppercase dark:bg-emerald-500/20 dark:text-emerald-400">
                           Default
                         </span>
                       )}
                     </div>
 
                     <div className="mt-2 flex flex-col gap-2 text-sm text-black/80 dark:text-white/80">
-                      <div className="flex items-start gap-2"><span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">Name :</span><span className="font-medium text-black dark:text-white">{address.fullName}</span></div>
                       <div className="flex items-start gap-2">
-                        <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">Address :</span>
-                        <span className="leading-relaxed text-black dark:text-white">
-                          {[address.building, address.street + (address.landmark ? ` (near ${address.landmark})` : ''), address.city, address.district, address.state, address.pincode].filter(Boolean).join(', ')}
+                        <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          Name :
+                        </span>
+                        <span className="font-medium text-black dark:text-white">
+                          {address.fullName}
                         </span>
                       </div>
-                      <div className="flex items-start gap-2"><span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">City :</span><span>{address.city}</span></div>
-                      <div className="flex items-start gap-2"><span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">District :</span><span>{address.district}</span></div>
-                      <div className="flex items-start gap-2"><span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">State :</span><span>{address.state}</span></div>
-                      <div className="flex items-start gap-2"><span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">Pincode :</span><span>{address.pincode}</span></div>
+                      <div className="flex items-start gap-2">
+                        <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          Address :
+                        </span>
+                        <span className="leading-relaxed text-black dark:text-white">
+                          {[
+                            address.building,
+                            address.street +
+                              (address.landmark ? ` (near ${address.landmark})` : ''),
+                            address.city,
+                            address.district,
+                            address.state,
+                            address.pincode,
+                          ]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          City :
+                        </span>
+                        <span>{address.city}</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          District :
+                        </span>
+                        <span>{address.district}</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          State :
+                        </span>
+                        <span>{address.state}</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          Pincode :
+                        </span>
+                        <span>{address.pincode}</span>
+                      </div>
                       {address.landmark && (
-                        <div className="flex items-start gap-2"><span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">Landmark :</span><span>{address.landmark}</span></div>
+                        <div className="flex items-start gap-2">
+                          <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                            Landmark :
+                          </span>
+                          <span>{address.landmark}</span>
+                        </div>
                       )}
-                      <div className="flex items-start gap-2"><span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">Mobile Number :</span><span>{address.phoneNumber}</span></div>
+                      <div className="flex items-start gap-2">
+                        <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          Mobile Number :
+                        </span>
+                        <span>{address.phoneNumber}</span>
+                      </div>
                       {address.altPhoneNumber && (
-                        <div className="flex items-start gap-2"><span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">Alt Number :</span><span>{address.altPhoneNumber}</span></div>
+                        <div className="flex items-start gap-2">
+                          <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                            Alt Number :
+                          </span>
+                          <span>{address.altPhoneNumber}</span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -1056,12 +1222,13 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         ₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </span>
                       <span
-                        className={`flex h-6 items-center rounded-full px-2.5 text-[10px] font-bold uppercase tracking-wider ${order.paymentStatus === 'SUCCESS'
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                          : order.paymentStatus === 'FAILED'
-                            ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                          }`}
+                        className={`flex h-6 items-center rounded-full px-2.5 text-[10px] font-bold tracking-wider uppercase ${
+                          order.paymentStatus === 'SUCCESS'
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                            : order.paymentStatus === 'FAILED'
+                              ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                        }`}
                       >
                         {order.paymentStatus}
                       </span>
@@ -1091,7 +1258,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/40 backdrop-blur-sm dark:bg-[#111111]/80"
               onClick={() => {
-                if (!isSubmitting) setIsOrderModalOpen(false);
+                if (!isSubmitting) {
+                  setIsOrderModalOpen(false);
+                }
               }}
             />
 
@@ -1105,7 +1274,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                 <h2 className="text-xl font-bold text-black dark:text-white">Create New Order</h2>
                 <button
                   onClick={() => {
-                    if (!isSubmitting) setIsOrderModalOpen(false);
+                    if (!isSubmitting) {
+                      setIsOrderModalOpen(false);
+                    }
                   }}
                   className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5"
                 >
@@ -1128,7 +1299,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         type="text"
                         placeholder="e.g., Premium Cotton T-Shirt"
                         value={productName}
-                        onChange={(e) => setProductName(e.target.value)}
+                        onChange={(e) => {
+                          setProductName(e.target.value);
+                        }}
                         className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                       />
                       {formErrors.productName && (
@@ -1143,7 +1316,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         </label>
                         <select
                           value={size}
-                          onChange={(e) => setSize(e.target.value)}
+                          onChange={(e) => {
+                            setSize(e.target.value);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         >
                           <option value="">Select Size</option>
@@ -1167,7 +1342,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                           type="text"
                           placeholder="e.g., Black"
                           value={color}
-                          onChange={(e) => setColor(e.target.value)}
+                          onChange={(e) => {
+                            setColor(e.target.value);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
                         {formErrors.color && (
@@ -1185,7 +1362,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                           type="number"
                           min="0"
                           value={price || ''}
-                          onChange={(e) => setPrice(Number(e.target.value))}
+                          onChange={(e) => {
+                            setPrice(Number(e.target.value));
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
                         {formErrors.price && (
@@ -1201,7 +1380,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                           type="number"
                           min="1"
                           value={quantity || ''}
-                          onChange={(e) => setQuantity(Number(e.target.value))}
+                          onChange={(e) => {
+                            setQuantity(Number(e.target.value));
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
                         {formErrors.quantity && (
@@ -1217,7 +1398,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         </label>
                         <select
                           value={paymentMethod}
-                          onChange={(e) => setPaymentMethod(e.target.value as any)}
+                          onChange={(e) => {
+                            setPaymentMethod(e.target.value as any);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         >
                           <option value="COD">Cash on Delivery</option>
@@ -1233,7 +1416,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         </label>
                         <select
                           value={paymentStatus}
-                          onChange={(e) => setPaymentStatus(e.target.value as any)}
+                          onChange={(e) => {
+                            setPaymentStatus(e.target.value as any);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         >
                           <option value="PENDING">Pending</option>
@@ -1257,7 +1442,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         rows={3}
                         placeholder="Flat, House no., Building, Street, Area..."
                         value={addressLine}
-                        onChange={(e) => setAddressLine(e.target.value)}
+                        onChange={(e) => {
+                          setAddressLine(e.target.value);
+                        }}
                         className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                       />
                       {formErrors.addressLine && (
@@ -1273,7 +1460,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         type="text"
                         placeholder="e.g., Mumbai"
                         value={city}
-                        onChange={(e) => setCity(e.target.value)}
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                        }}
                         className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                       />
                       {formErrors.city && (
@@ -1290,7 +1479,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                           type="text"
                           placeholder="e.g., Maharashtra"
                           value={state}
-                          onChange={(e) => setState(e.target.value)}
+                          onChange={(e) => {
+                            setState(e.target.value);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
                         {formErrors.state && (
@@ -1306,7 +1497,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                           type="text"
                           placeholder="e.g., 400001"
                           value={pinCode}
-                          onChange={(e) => setPinCode(e.target.value)}
+                          onChange={(e) => {
+                            setPinCode(e.target.value);
+                          }}
                           className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
                         />
                         {formErrors.pinCode && (
@@ -1329,7 +1522,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                     <button
                       type="button"
                       disabled={isSubmitting}
-                      onClick={() => setIsOrderModalOpen(false)}
+                      onClick={() => {
+                        setIsOrderModalOpen(false);
+                      }}
                       className="rounded-xl border border-black/5 bg-transparent px-4 py-2.5 text-sm font-semibold text-black/70 hover:bg-black/5 disabled:opacity-50 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
                     >
                       Cancel
@@ -1362,7 +1557,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/40 backdrop-blur-sm dark:bg-[#111111]/80"
-              onClick={() => setIsEditModalOpen(false)}
+              onClick={() => {
+                setIsEditModalOpen(false);
+              }}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -1373,7 +1570,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
               <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
                 <h2 className="text-xl font-bold text-black dark:text-white">Edit Profile</h2>
                 <button
-                  onClick={() => setIsEditModalOpen(false)}
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                  }}
                   className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5"
                 >
                   <CloseIcon className="h-5 w-5 text-black/60 dark:text-white/60" />
@@ -1388,7 +1587,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                   <input
                     type="text"
                     value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
+                    onChange={(e) => {
+                      setEditName(e.target.value);
+                    }}
                     className="rounded-2xl border border-black/10 bg-black/5 px-4 py-3 text-black transition-colors focus:border-black/20 focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white/20 dark:focus:bg-[#111]"
                     placeholder="John Doe"
                   />
@@ -1404,7 +1605,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                   <input
                     type="text"
                     value={editPhone}
-                    onChange={(e) => setEditPhone(e.target.value)}
+                    onChange={(e) => {
+                      setEditPhone(e.target.value);
+                    }}
                     className="rounded-2xl border border-black/10 bg-black/5 px-4 py-3 text-black transition-colors focus:border-black/20 focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white/20 dark:focus:bg-[#111]"
                     placeholder="+919999999999"
                   />
@@ -1416,7 +1619,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                 <div className="mt-4 flex gap-3">
                   <button
                     type="button"
-                    onClick={() => setIsEditModalOpen(false)}
+                    onClick={() => {
+                      setIsEditModalOpen(false);
+                    }}
                     className="flex-1 rounded-xl bg-black/5 py-3 font-bold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                   >
                     Cancel
@@ -1444,7 +1649,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/40 backdrop-blur-sm dark:bg-[#111111]/80"
-              onClick={() => setItemToRemove(null)}
+              onClick={() => {
+                setItemToRemove(null);
+              }}
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -1456,11 +1663,13 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
               <p className="mt-2 text-sm text-black/60 dark:text-white/60">
                 Are you sure you want to remove this item from the cart?
               </p>
-              
+
               <div className="mt-8 flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setItemToRemove(null)}
+                  onClick={() => {
+                    setItemToRemove(null);
+                  }}
                   className="flex-1 rounded-xl bg-black/5 py-3 font-bold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                 >
                   Cancel
@@ -1487,7 +1696,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/40 backdrop-blur-sm dark:bg-[#111111]/80"
               onClick={() => {
-                if (!isSubmittingAddress) setIsAddressModalOpen(false);
+                if (!isSubmittingAddress) {
+                  setIsAddressModalOpen(false);
+                }
               }}
             />
 
@@ -1501,7 +1712,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                 <h2 className="text-xl font-bold text-black dark:text-white">Add New Address</h2>
                 <button
                   onClick={() => {
-                    if (!isSubmittingAddress) setIsAddressModalOpen(false);
+                    if (!isSubmittingAddress) {
+                      setIsAddressModalOpen(false);
+                    }
                   }}
                   className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5"
                 >
@@ -1512,95 +1725,145 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
               <form onSubmit={handleCreateAddress} className="max-h-[80vh] overflow-y-auto p-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Full Name</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      Full Name
+                    </label>
                     <input
                       type="text"
                       value={addrFullName}
-                      onChange={(e) => setAddrFullName(e.target.value)}
+                      onChange={(e) => {
+                        setAddrFullName(e.target.value);
+                      }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
-                    {addrErrors.fullName && <span className="text-xs text-red-500">{addrErrors.fullName}</span>}
+                    {addrErrors.fullName && (
+                      <span className="text-xs text-red-500">{addrErrors.fullName}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Phone Number</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      Phone Number
+                    </label>
                     <input
                       type="text"
                       value={addrPhone}
-                      onChange={(e) => setAddrPhone(e.target.value)}
+                      onChange={(e) => {
+                        setAddrPhone(e.target.value);
+                      }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
-                    {addrErrors.phone && <span className="text-xs text-red-500">{addrErrors.phone}</span>}
+                    {addrErrors.phone && (
+                      <span className="text-xs text-red-500">{addrErrors.phone}</span>
+                    )}
                   </div>
-                  
+
                   <div className="md:col-span-2">
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Full Address (House No, Building, Street, Area)</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      Full Address (House No, Building, Street, Area)
+                    </label>
                     <textarea
                       rows={2}
                       value={addrStreet}
-                      onChange={(e) => setAddrStreet(e.target.value)}
+                      onChange={(e) => {
+                        setAddrStreet(e.target.value);
+                      }}
                       placeholder="e.g. Flat 4B, Taj Apartments, Chungam"
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
-                    {addrErrors.street && <span className="text-xs text-red-500">{addrErrors.street}</span>}
+                    {addrErrors.street && (
+                      <span className="text-xs text-red-500">{addrErrors.street}</span>
+                    )}
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">City</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      City
+                    </label>
                     <input
                       type="text"
                       value={addrCity}
-                      onChange={(e) => setAddrCity(e.target.value)}
+                      onChange={(e) => {
+                        setAddrCity(e.target.value);
+                      }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
-                    {addrErrors.city && <span className="text-xs text-red-500">{addrErrors.city}</span>}
+                    {addrErrors.city && (
+                      <span className="text-xs text-red-500">{addrErrors.city}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">District</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      District
+                    </label>
                     <input
                       type="text"
                       value={addrDistrict}
-                      onChange={(e) => setAddrDistrict(e.target.value)}
+                      onChange={(e) => {
+                        setAddrDistrict(e.target.value);
+                      }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
-                    {addrErrors.district && <span className="text-xs text-red-500">{addrErrors.district}</span>}
+                    {addrErrors.district && (
+                      <span className="text-xs text-red-500">{addrErrors.district}</span>
+                    )}
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">State</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      State
+                    </label>
                     <input
                       type="text"
                       value={addrState}
-                      onChange={(e) => setAddrState(e.target.value)}
+                      onChange={(e) => {
+                        setAddrState(e.target.value);
+                      }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
-                    {addrErrors.state && <span className="text-xs text-red-500">{addrErrors.state}</span>}
+                    {addrErrors.state && (
+                      <span className="text-xs text-red-500">{addrErrors.state}</span>
+                    )}
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Pincode</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      Pincode
+                    </label>
                     <input
                       type="text"
                       value={addrPincode}
-                      onChange={(e) => setAddrPincode(e.target.value)}
+                      onChange={(e) => {
+                        setAddrPincode(e.target.value);
+                      }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
-                    {addrErrors.pincode && <span className="text-xs text-red-500">{addrErrors.pincode}</span>}
+                    {addrErrors.pincode && (
+                      <span className="text-xs text-red-500">{addrErrors.pincode}</span>
+                    )}
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Landmark (Optional)</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      Landmark (Optional)
+                    </label>
                     <input
                       type="text"
                       value={addrLandmark}
-                      onChange={(e) => setAddrLandmark(e.target.value)}
+                      onChange={(e) => {
+                        setAddrLandmark(e.target.value);
+                      }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">Alt Number (Optional)</label>
+                    <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
+                      Alt Number (Optional)
+                    </label>
                     <input
                       type="text"
                       value={addrAltPhone}
-                      onChange={(e) => setAddrAltPhone(e.target.value)}
+                      onChange={(e) => {
+                        setAddrAltPhone(e.target.value);
+                      }}
                       className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a]"
                     />
                   </div>
@@ -1612,10 +1875,15 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                       type="checkbox"
                       id="isDefault"
                       checked={addrIsDefault}
-                      onChange={(e) => setAddrIsDefault(e.target.checked)}
+                      onChange={(e) => {
+                        setAddrIsDefault(e.target.checked);
+                      }}
                       className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-black focus:ring-black dark:border-gray-600 dark:bg-gray-700"
                     />
-                    <label htmlFor="isDefault" className="text-sm font-medium text-black/80 dark:text-white/80">
+                    <label
+                      htmlFor="isDefault"
+                      className="text-sm font-medium text-black/80 dark:text-white/80"
+                    >
                       Set as default
                     </label>
                   </div>
@@ -1624,7 +1892,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                     <button
                       type="button"
                       disabled={isSubmittingAddress}
-                      onClick={() => setIsAddressModalOpen(false)}
+                      onClick={() => {
+                        setIsAddressModalOpen(false);
+                      }}
                       className="rounded-xl border border-black/5 bg-transparent px-4 py-2.5 text-sm font-semibold text-black/70 hover:bg-black/5 disabled:opacity-50 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
                     >
                       Cancel
