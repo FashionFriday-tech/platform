@@ -6,7 +6,8 @@ export const mockCustomers: Customer[] = [
     name: 'Emily Chen',
     email: 'emily.chen@example.com',
     phone: '+91 98765 43210',
-    avatar: 'https://i.pravatar.cc/150?u=emily',
+    avatar:
+      'https://api.dicebear.com/7.x/initials/svg?seed=Emily%20Chen&backgroundColor=000000&textColor=ffffff',
     status: 'active',
     ordersCount: 12,
     totalSpent: 45999.0,
@@ -18,7 +19,8 @@ export const mockCustomers: Customer[] = [
     name: 'Michael Rodriguez',
     email: 'm.rodriguez@example.com',
     phone: '+91 87654 32109',
-    avatar: 'https://i.pravatar.cc/150?u=michael',
+    avatar:
+      'https://api.dicebear.com/7.x/initials/svg?seed=Michael%20Rodriguez&backgroundColor=000000&textColor=ffffff',
     status: 'active',
     ordersCount: 5,
     totalSpent: 12450.5,
@@ -30,7 +32,8 @@ export const mockCustomers: Customer[] = [
     name: 'Sarah Jenkins',
     email: 'sarah.j@example.com',
     phone: '+91 76543 21098',
-    avatar: 'https://i.pravatar.cc/150?u=sarah',
+    avatar:
+      'https://api.dicebear.com/7.x/initials/svg?seed=Sarah%20Jenkins&backgroundColor=000000&textColor=ffffff',
     status: 'blocked',
     ordersCount: 2,
     totalSpent: 3200.0,
@@ -42,7 +45,8 @@ export const mockCustomers: Customer[] = [
     name: 'David Kim',
     email: 'dkim.designs@example.com',
     phone: '+91 65432 10987',
-    avatar: 'https://i.pravatar.cc/150?u=david',
+    avatar:
+      'https://api.dicebear.com/7.x/initials/svg?seed=David%20Kim&backgroundColor=000000&textColor=ffffff',
     status: 'active',
     ordersCount: 28,
     totalSpent: 184500.0,
@@ -54,7 +58,8 @@ export const mockCustomers: Customer[] = [
     name: 'Aisha Patel',
     email: 'aisha.p@example.com',
     phone: '+91 54321 09876',
-    avatar: 'https://i.pravatar.cc/150?u=aisha',
+    avatar:
+      'https://api.dicebear.com/7.x/initials/svg?seed=Aisha%20Patel&backgroundColor=000000&textColor=ffffff',
     status: 'active',
     ordersCount: 7,
     totalSpent: 28600.0,
@@ -66,7 +71,8 @@ export const mockCustomers: Customer[] = [
     name: 'Robert Fox',
     email: 'robert.fox@example.com',
     phone: '+91 43210 98765',
-    avatar: 'https://i.pravatar.cc/150?u=robert',
+    avatar:
+      'https://api.dicebear.com/7.x/initials/svg?seed=Robert%20Fox&backgroundColor=000000&textColor=ffffff',
     status: 'active',
     ordersCount: 0,
     totalSpent: 0,
