@@ -65,11 +65,11 @@ export function ProductInfo({ product, onEdit, liveSold }: Props) {
           </span>
           <div className="flex items-baseline gap-3">
             <span className="text-4xl font-black text-black dark:text-white">
-              ₹{product.sellingPrice.toFixed(2)}
+              ₹{Number(product.sellingPrice || 0).toFixed(2)}
             </span>
-            {product.originalPrice > product.sellingPrice && (
+            {Number(product.originalPrice || 0) > Number(product.sellingPrice || 0) && (
               <span className="text-lg font-bold text-black/40 line-through dark:text-white/40">
-                ₹{product.originalPrice.toFixed(2)}
+                ₹{Number(product.originalPrice || 0).toFixed(2)}
               </span>
             )}
           </div>
