@@ -7,6 +7,7 @@ interface Props {
   sortOption: SortOption;
   setSortOption: (val: SortOption) => void;
   visibleColumns: Set<ColumnId>;
+  gridTemplateColumns?: string;
 }
 
 export function ProductTableHeader({
@@ -16,81 +17,52 @@ export function ProductTableHeader({
   sortOption,
   setSortOption,
   visibleColumns,
+  gridTemplateColumns,
 }: Props) {
   return (
-    <thead className="sticky top-0 z-30 border-b border-black/5 bg-[#f8f9fa] dark:bg-[#1a1a1a]">
-      <tr className="text-xs font-medium whitespace-nowrap text-black/50 dark:border-white/10 dark:text-white/50">
-        {/* Sticky Left: Select & Product Info */}
-        <th className="sticky top-0 left-0 z-40 border-r border-black/5 bg-[#f8f9fa] px-4 py-4 shadow-[4px_0_12px_rgba(0,0,0,0.03)] dark:border-white/5 dark:bg-[#1a1a1a] dark:shadow-[4px_0_12px_rgba(255,255,255,0.02)]">
-          <div className="flex items-center space-x-4">
-            <div
-              onClick={() => {
-                onToggleAllSelection(products.map((p) => p.id));
-              }}
-              className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${allSelected ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 hover:border-black/50 dark:border-white/20 dark:hover:border-white/50'}`}
-            >
-              {allSelected && (
-                <svg
-                  className="h-3.5 w-3.5 text-white dark:text-black"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-            </div>
-            <div
-              className="flex cursor-pointer items-center space-x-1 hover:text-black dark:hover:text-white"
-              onClick={() => {
-                setSortOption(sortOption === 'Name: A to Z' ? 'Name: Z to A' : 'Name: A to Z');
-              }}
-            >
-              <span className={sortOption.includes('Name') ? 'text-black dark:text-white' : ''}>
-                Product info
-              </span>
-              <svg
-                className={`h-3 w-3 transition-transform ${sortOption === 'Name: Z to A' ? 'rotate-180 text-black dark:text-white' : sortOption === 'Name: A to Z' ? 'text-black dark:text-white' : ''}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+    <div className="sticky top-0 z-20 pb-0.5">
+      <div
+        style={{ gridTemplateColumns }}
+        className="grid items-center rounded-xl border border-black/10 bg-black px-6 py-3.5 text-xs font-semibold tracking-wider text-white uppercase shadow-md backdrop-blur-md dark:border-white/10 dark:bg-white dark:text-black dark:shadow-sm"
+      >
+        {/* Select & Product Info */}
+        <div className="flex items-center space-x-3">
+          <div
+            onClick={() => {
+              onToggleAllSelection(products.map((p) => p.id));
+            }}
+            className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${
+              allSelected
+                ? 'border-white bg-white text-black dark:border-black dark:bg-black dark:text-white'
+                : 'border-white/40 hover:border-white dark:border-black/40 dark:hover:border-black'
+            }`}
+          >
+            {allSelected && (
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
+                  strokeWidth={3}
+                  d="M5 13l4 4L19 7"
                 />
               </svg>
-            </div>
+            )}
           </div>
-        </th>
-
-        {visibleColumns.has('Category') && <th className="px-4 py-4 font-medium">Category</th>}
-
-        {visibleColumns.has('Cost Price') && <th className="px-4 py-4 font-medium">Cost Price</th>}
-        {visibleColumns.has('OG Price') && <th className="px-4 py-4 font-medium">OG Price</th>}
-
-        {/* Always show Selling Price */}
-        <th
-          className="cursor-pointer px-4 py-4 font-medium hover:text-black dark:hover:text-white"
-          onClick={() => {
-            setSortOption(
-              sortOption === 'Price: Low to High' ? 'Price: High to Low' : 'Price: Low to High',
-            );
-          }}
-        >
-          <div className="flex items-center space-x-1">
-            <span className={sortOption.includes('Price') ? 'text-black dark:text-white' : ''}>
-              Selling Price
-            </span>
+          <div
+            className="flex cursor-pointer items-center space-x-1 hover:text-white/80 dark:hover:text-black/80"
+            onClick={() => {
+              setSortOption(sortOption === 'Name: A to Z' ? 'Name: Z to A' : 'Name: A to Z');
+            }}
+          >
+            <span className={sortOption.includes('Name') ? 'font-bold' : ''}>Product info</span>
             <svg
-              className={`h-3 w-3 transition-transform ${sortOption === 'Price: High to Low' ? 'rotate-180 text-black dark:text-white' : sortOption === 'Price: Low to High' ? 'text-black dark:text-white' : ''}`}
+              className={`h-3 w-3 transition-transform ${
+                sortOption === 'Name: Z to A'
+                  ? 'rotate-180 text-white dark:text-black'
+                  : sortOption === 'Name: A to Z'
+                    ? 'text-white dark:text-black'
+                    : ''
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -103,22 +75,50 @@ export function ProductTableHeader({
               />
             </svg>
           </div>
-        </th>
+        </div>
 
-        {visibleColumns.has('Variants') && <th className="px-4 py-4 font-medium">Variants</th>}
-        {visibleColumns.has('Sales') && <th className="px-4 py-4 font-medium">Sales</th>}
-        {visibleColumns.has('Date Added') && <th className="px-4 py-4 font-medium">Date Added</th>}
+        {visibleColumns.has('Category') && <div>Category</div>}
+        {visibleColumns.has('Cost Price') && <div>Cost Price</div>}
+        {visibleColumns.has('OG Price') && <div>OG Price</div>}
 
-        {/* Always show Status */}
-        <th className="px-4 py-4 font-medium">Status</th>
+        {/* Selling Price */}
+        <div
+          className="flex cursor-pointer items-center space-x-1 hover:text-white/80 dark:hover:text-black/80"
+          onClick={() => {
+            setSortOption(
+              sortOption === 'Price: Low to High' ? 'Price: High to Low' : 'Price: Low to High',
+            );
+          }}
+        >
+          <span className={sortOption.includes('Price') ? 'font-bold' : ''}>Selling Price</span>
+          <svg
+            className={`h-3 w-3 transition-transform ${
+              sortOption === 'Price: High to Low'
+                ? 'rotate-180 text-white dark:text-black'
+                : sortOption === 'Price: Low to High'
+                  ? 'text-white dark:text-black'
+                  : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
 
-        {visibleColumns.has('Stock') && <th className="px-4 py-4 font-medium">Stock</th>}
+        {visibleColumns.has('Variants') && <div>Variants</div>}
+        {visibleColumns.has('Sales') && <div>Sales</div>}
+        {visibleColumns.has('Date Added') && <div>Date Added</div>}
 
-        {/* Sticky Right: Activation */}
-        <th className="sticky top-0 right-0 z-40 border-l border-black/5 bg-[#f8f9fa] px-6 py-4 text-right font-medium shadow-[-4px_0_12px_rgba(0,0,0,0.03)] dark:border-white/5 dark:bg-[#1a1a1a] dark:shadow-[-4px_0_12px_rgba(255,255,255,0.02)]">
-          Active
-        </th>
-      </tr>
-    </thead>
+        {/* Status */}
+        <div>Status</div>
+
+        {visibleColumns.has('Stock') && <div>Stock</div>}
+
+        {/* Actions */}
+        <div className="text-right">Actions</div>
+      </div>
+    </div>
   );
 }
