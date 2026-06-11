@@ -5,5 +5,9 @@ export const metadata = {
 };
 
 export default function TeamPage() {
-  return <TeamManagementView />;
+  return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
+      <TeamManagementView />
+    </div>
+  );
 }
