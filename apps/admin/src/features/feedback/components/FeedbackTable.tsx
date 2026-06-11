@@ -38,89 +38,103 @@ export function FeedbackTable({ feedbackList, isLoading }: FeedbackTableProps) {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/5 bg-white dark:border-white/5 dark:bg-[#111111]">
-      <div className="scrollbar-hide flex-1 overflow-auto">
-        <table className="relative w-full text-left text-sm text-black dark:text-white">
-          <thead className="sticky top-0 z-30 border-b border-black/5 bg-[#f8f9fa] text-xs font-medium text-black/60 uppercase dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/60">
-            <tr>
-              <th className="px-6 py-4 whitespace-nowrap">Submitted At</th>
-              <th className="px-6 py-4 whitespace-nowrap">Type</th>
-              <th className="px-6 py-4 whitespace-nowrap">Email Address</th>
-              <th className="px-6 py-4">Description</th>
-              <th className="px-6 py-4 text-right whitespace-nowrap">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-black/5 dark:divide-white/5">
-            {isLoading ? (
-              <tr>
-                <td colSpan={5} className="py-10 text-center text-black/40 dark:text-white/40">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-black/10 border-t-black dark:border-white/10 dark:border-t-white" />
-                    <span>Loading feedback items...</span>
-                  </div>
-                </td>
-              </tr>
-            ) : feedbackList.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-16 text-center text-black/40 dark:text-white/40">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <InfoIcon className="h-8 w-8 text-black/30 dark:text-white/30" />
-                    <span className="text-base font-semibold">No feedback found</span>
-                    <span className="text-xs">Adjust your search or filters to see more.</span>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              feedbackList.map((item) => (
-                <tr
-                  key={item.id}
-                  className="group relative transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-black/60 dark:text-white/60">
-                    <div className="flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4 opacity-50" />
-                      <span>{formatDate(item.createdAt)}</span>
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-slate-50/50 p-2.5 shadow-xs dark:border-white/10 dark:bg-black/20">
+      <div className="scrollbar-hide flex-1 overflow-x-auto overflow-y-auto">
+        <div className="flex min-w-[950px] flex-col gap-2.5 pb-2">
+          {/* Header Tab - Fixed / Sticky on Top (Black in Light Mode) */}
+          <div className="sticky top-0 z-20 pb-0.5">
+            <div className="grid grid-cols-[minmax(160px,1.2fr)_minmax(130px,1fr)_minmax(200px,1.5fr)_minmax(280px,2.5fr)_minmax(110px,1fr)] items-center rounded-xl border border-black/10 bg-black px-6 py-3.5 text-white shadow-md backdrop-blur-md dark:border-white/10 dark:bg-white dark:text-black dark:shadow-sm">
+              <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                Submitted At
+              </div>
+              <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                Type
+              </div>
+              <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                Email Address
+              </div>
+              <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                Description
+              </div>
+              <div className="text-right text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                Actions
+              </div>
+            </div>
+          </div>
+
+          {/* Body Content */}
+          {isLoading ? (
+            <div className="flex h-64 items-center justify-center rounded-xl border border-black/10 bg-white shadow-xs dark:border-white/10 dark:bg-[#141417]">
+              <div className="flex flex-col items-center justify-center gap-2 text-black/40 dark:text-white/40">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-black/10 border-t-black dark:border-white/10 dark:border-t-white" />
+                <span>Loading feedback items...</span>
+              </div>
+            </div>
+          ) : feedbackList.length === 0 ? (
+            <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-xl border border-black/10 bg-white p-8 text-center shadow-xs dark:border-white/10 dark:bg-[#141417]">
+              <InfoIcon className="h-8 w-8 text-black/30 dark:text-white/30" />
+              <span className="text-base font-semibold text-black dark:text-white">
+                No feedback found
+              </span>
+              <span className="text-xs text-black/50 dark:text-white/50">
+                Adjust your search or filters to see more.
+              </span>
+            </div>
+          ) : (
+            feedbackList.map((item) => (
+              <div
+                key={item.id}
+                className="group grid grid-cols-[minmax(160px,1.2fr)_minmax(130px,1fr)_minmax(200px,1.5fr)_minmax(280px,2.5fr)_minmax(110px,1fr)] items-center rounded-xl border border-black/5 bg-white px-6 py-3.5 text-black shadow-xs transition-all duration-200 hover:border-black/15 hover:shadow-md active:scale-[0.995] dark:border-white/10 dark:bg-[#141417] dark:text-white dark:shadow-sm dark:hover:border-white/20"
+              >
+                {/* Date */}
+                <div className="flex items-center gap-2 pr-4 text-xs font-medium text-black/70 dark:text-white/70">
+                  <CalendarIcon className="h-4 w-4 opacity-50" />
+                  <span>{formatDate(item.createdAt)}</span>
+                </div>
+
+                {/* Type */}
+                <div>
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${getBadgeClass(item.type)}`}
+                  >
+                    {item.type}
+                  </span>
+                </div>
+
+                {/* Email */}
+                <div className="truncate pr-4 text-xs font-medium text-black/70 dark:text-white/70">
+                  {item.email ? (
+                    <div className="flex items-center gap-2 truncate">
+                      <MailIcon className="h-4 w-4 opacity-55" />
+                      <span className="truncate">{item.email}</span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${getBadgeClass(item.type)}`}
-                    >
-                      {item.type}
+                  ) : (
+                    <span className="text-xs text-black/30 italic dark:text-white/30">
+                      Anonymous
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-black/70 dark:text-white/70">
-                    {item.email ? (
-                      <div className="flex items-center gap-2">
-                        <MailIcon className="h-4 w-4 opacity-55" />
-                        <span>{item.email}</span>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-black/30 italic dark:text-white/30">
-                        Anonymous
-                      </span>
-                    )}
-                  </td>
-                  <td className="max-w-md px-6 py-4">
-                    <p className="line-clamp-2 text-sm text-black/70 dark:text-white/70">
-                      {item.description}
-                    </p>
-                  </td>
-                  <td className="px-6 py-4 text-right whitespace-nowrap">
-                    <button
-                      onClick={() => {
-                        setSelectedFeedback(item);
-                      }}
-                      className="rounded-xl border border-black/10 px-3 py-1.5 text-xs font-semibold transition-all hover:bg-black hover:text-white dark:border-white/10 dark:hover:bg-white dark:hover:text-black"
-                    >
-                      View Details
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div className="pr-4 text-xs text-black/70 dark:text-white/70">
+                  <p className="line-clamp-2 max-w-md">{item.description}</p>
+                </div>
+
+                {/* Actions */}
+                <div className="text-right">
+                  <button
+                    onClick={() => {
+                      setSelectedFeedback(item);
+                    }}
+                    className="rounded-xl border border-black/10 px-3 py-1.5 text-xs font-semibold transition-all hover:bg-black hover:text-white dark:border-white/10 dark:hover:bg-white dark:hover:text-black"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Details Modal */}
