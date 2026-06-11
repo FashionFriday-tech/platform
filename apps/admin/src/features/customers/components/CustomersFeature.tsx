@@ -65,7 +65,13 @@ export default function CustomersFeature() {
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
-      <CustomerStats customers={customers} />
+      <CustomerStats
+        customers={customers}
+        onFilterClick={(status, orders) => {
+          setStatusFilter(status);
+          setOrdersFilter(orders);
+        }}
+      />
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <CustomersFilterBar
