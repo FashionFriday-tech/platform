@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
-import { api } from '../../../lib/api-client';
 
 import { OrderDetailsView } from '../../../features/orders/components/OrderDetailsView';
+import { api } from '../../../lib/api-client';
 
 export default function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const [order, setOrder] = useState<any>(null);
@@ -20,28 +20,45 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
           setError(true);
           return;
         }
-        
+
         // map data to match admin shape
         const mapped = {
           ...data,
           status: data.status?.toLowerCase() || 'pending',
-          customer: { id: data.userId, name: data.user?.name || 'Unknown', phone: data.user?.phone || '', altPhone: data.user?.altPhone },
+          customer: {
+            id: data.userId,
+            name: data.user?.name || 'Unknown',
+            phone: data.user?.phone || '',
+            altPhone: data.user?.altPhone,
+          },
           total: Number(data.finalAmount || data.totalAmount || 0),
           paymentType: data.paymentMethod?.toLowerCase() === 'cod' ? 'cod' : 'prepaid',
           tracking: {
             trackingId: data.trackingNumber || '',
             courierService: data.courierPartner || 'Delhivery',
           },
-          items: data.items?.map((item: any) => ({
-             productName: item.name,
-             size: item.size,
-             color: item.color,
-             quantity: item.quantity,
-             price: Number(item.price || 0),
-             productImage: item.image || '/images/placeholders/2.png'
-          })) || [],
+          seller:
+            data.items?.find((i: any) => i.seller)?.seller ||
+            data.items?.find((i: any) => i.product?.seller)?.product?.seller ||
+            null,
+          items:
+            data.items?.map((item: any) => ({
+              id: item.id,
+              productId: item.productId,
+              sellerId: item.sellerId,
+              productSellerId: item.productSellerId,
+              categoryId: item.categoryId,
+              categoryName: item.categoryName,
+              seller: item.seller || item.product?.seller || null,
+              productName: item.name,
+              size: item.size,
+              color: item.color,
+              quantity: item.quantity,
+              price: Number(item.price || 0),
+              productImage: item.image || '/images/placeholders/2.png',
+            })) || [],
         };
-        
+
         setOrder(mapped);
       } catch (err) {
         console.error('Failed to load order details', err);
