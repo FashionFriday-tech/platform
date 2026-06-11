@@ -33,8 +33,9 @@ export function StatusBadge({ status, label }: StatusBadgeProps) {
     const norm = (s || '').toLowerCase();
     switch (norm) {
       case 'pending':
-      case 'confirmed':
         return 'Order Placed';
+      case 'confirmed':
+        return 'Confirmed';
       case 'processing':
         return 'Processing';
       case 'shipped':
