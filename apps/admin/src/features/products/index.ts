@@ -1,3 +1,9 @@
 export { AddProductForm } from './components/AddProductForm';
+export { DeleteProductModal } from './components/DeleteProductModal';
+export { EditProductView } from './components/EditProductView';
+export { ProductActionMenu } from './components/ProductActionMenu';
+export { ProductDetailView } from './components/ProductDetailView';
 export { ProductListView } from './components/ProductListView';
 export { ProductPerformance } from './components/ProductPerformance';
+export { ProductSellerSelector } from './components/ProductSellerSelector';
+export { ProductTable } from './components/ProductTable';
