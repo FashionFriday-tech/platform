@@ -2,7 +2,14 @@
 
 import React from 'react';
 
-import { RefreshCcwIcon, SearchIcon } from '@ff/ui';
+import {
+  ActivityIcon,
+  AlertCircleIcon,
+  CheckCircleIcon,
+  MessageSquareIcon,
+  RefreshCcwIcon,
+  SearchIcon,
+} from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { CustomSelect } from '../../../components/ui/CustomSelect';
@@ -38,35 +45,81 @@ export default function FeedbackFeature() {
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
       {/* Stats Cards */}
-      <div className="grid shrink-0 grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-          <span className="text-xs font-bold tracking-wider text-black/45 uppercase dark:text-white/45">
-            Total Submissions
-          </span>
-          <h3 className="mt-1 text-2xl font-black">{totalCount}</h3>
-        </div>
-        <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-          <span className="text-xs font-bold tracking-wider text-red-500/80 uppercase dark:text-red-400">
-            Issues / Bugs
-          </span>
-          <h3 className="mt-1 text-2xl font-black text-red-600 dark:text-red-400">{issueCount}</h3>
-        </div>
-        <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-          <span className="text-xs font-bold tracking-wider text-emerald-500/80 uppercase dark:text-emerald-400">
-            Suggestions
-          </span>
-          <h3 className="mt-1 text-2xl font-black text-emerald-600 dark:text-emerald-400">
-            {suggestionCount}
-          </h3>
-        </div>
-        <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-          <span className="text-xs font-bold tracking-wider text-violet-500/80 uppercase dark:text-violet-400">
-            Improvements
-          </span>
-          <h3 className="mt-1 text-2xl font-black text-violet-600 dark:text-violet-400">
-            {improvementCount}
-          </h3>
-        </div>
+      <div className="grid shrink-0 grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          {
+            name: 'Total Submissions',
+            value: totalCount,
+            subLabel: 'ALL ENTRIES',
+            dotColor: 'bg-blue-400',
+            icon: MessageSquareIcon,
+            typeKey: 'all',
+          },
+          {
+            name: 'Issues / Bugs',
+            value: issueCount,
+            subLabel: 'REPORTS',
+            dotColor: 'bg-rose-400',
+            icon: AlertCircleIcon,
+            typeKey: 'issue',
+          },
+          {
+            name: 'Suggestions',
+            value: suggestionCount,
+            subLabel: 'USER IDEAS',
+            dotColor: 'bg-emerald-400',
+            icon: CheckCircleIcon,
+            typeKey: 'suggestion',
+          },
+          {
+            name: 'Improvements',
+            value: improvementCount,
+            subLabel: 'ENHANCEMENTS',
+            dotColor: 'bg-purple-400',
+            icon: ActivityIcon,
+            typeKey: 'improvement',
+          },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.name}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.04 }}
+            onClick={() => {
+              setSelectedType(stat.typeKey);
+            }}
+            className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-black via-[#0d0d10] to-[#1c1c24] px-4 py-3 text-white shadow-lg dark:border-black/10 dark:bg-white dark:from-white dark:via-[#fafafa] dark:to-[#f0f0f0] dark:text-black dark:shadow-sm"
+          >
+            {/* Subtle Ambient Glow & Watermark Icon */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              <stat.icon className="absolute -right-2 -bottom-2 h-16 w-16 text-white/[0.04] dark:text-black/[0.04]" />
+              <div className="absolute -top-6 -right-6 h-20 w-20 rounded-full bg-white/[0.03] blur-xl dark:bg-black/[0.02]" />
+            </div>
+
+            {/* Top Row: Title & Mini Icon Badge */}
+            <div className="relative z-10 flex items-center justify-between">
+              <dt className="text-[11px] font-bold tracking-wider text-white/70 uppercase dark:text-black/60">
+                {stat.name}
+              </dt>
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/10 text-white backdrop-blur-md dark:bg-black/5 dark:text-black">
+                <stat.icon className="h-3 w-3" />
+              </div>
+            </div>
+
+            {/* Bottom Row: Metric & Subtitle with Dot */}
+            <div className="relative z-10 mt-2 flex items-baseline justify-between gap-2">
+              <dd className="text-2xl font-black tracking-tight text-white md:text-3xl dark:text-black">
+                {stat.value}
+              </dd>
+              <div className="flex items-center gap-1.5">
+                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${stat.dotColor}`} />
+                <span className="text-[9px] font-bold tracking-widest text-white/40 uppercase dark:text-black/40">
+                  {stat.subLabel}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4">
