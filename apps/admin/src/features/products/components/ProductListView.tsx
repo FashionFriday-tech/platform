@@ -15,6 +15,7 @@ export function ProductListView() {
     sortOption,
     setSortOption,
     toggleProductStatus,
+    deleteProduct,
     viewMode,
     setViewMode,
     selectedIds,
@@ -48,6 +49,7 @@ export function ProductListView() {
               products={products}
               isLoading={isLoading}
               onToggleStatus={toggleProductStatus}
+              onDeleteProduct={deleteProduct}
               selectedIds={selectedIds}
               onToggleSelection={toggleSelection}
               onToggleAllSelection={toggleAllSelection}
@@ -60,6 +62,7 @@ export function ProductListView() {
               products={products}
               isLoading={isLoading}
               onToggleStatus={toggleProductStatus}
+              onDeleteProduct={deleteProduct}
               selectedIds={selectedIds}
               onToggleSelection={toggleSelection}
               onToggleAllSelection={toggleAllSelection}
