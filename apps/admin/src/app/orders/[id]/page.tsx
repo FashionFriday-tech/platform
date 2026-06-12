@@ -54,8 +54,14 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
               size: item.size,
               color: item.color,
               quantity: item.quantity,
-              price: Number(item.price || 0),
-              productImage: item.image || '/images/placeholders/2.png',
+              productImage:
+                (item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
+                  ? item.image
+                  : null) ||
+                item.product?.mainImage ||
+                item.product?.image ||
+                item.image ||
+                '',
             })) || [],
         };
 
