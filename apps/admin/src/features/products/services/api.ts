@@ -4,8 +4,11 @@ import { type Product } from '../types';
 
 export const mockProducts: Product[] = [];
 
-export async function fetchProducts(): Promise<Product[]> {
+export async function fetchProducts(search?: string): Promise<Product[]> {
   try {
+    const query = search?.trim()
+      ? `/admin/products?take=50&search=${encodeURIComponent(search.trim())}`
+      : '/admin/products?take=200';
     const json = await api.get<{
       data?: {
         id: string;
@@ -31,7 +34,7 @@ export async function fetchProducts(): Promise<Product[]> {
         slug?: string;
         youtubeId?: string;
       }[];
-    }>('/admin/products?take=200');
+    }>(query);
 
     const data = json?.data ?? [];
 
