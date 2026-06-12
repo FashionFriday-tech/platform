@@ -5,9 +5,11 @@ import { z } from 'zod';
 export class CreateCustomerDto extends createZodDto(CreateCustomerAdminSchema) {}
 
 export const CreateCustomerOrderSchema = z.object({
-  productName: z.string().min(3),
+  productId: z.string().optional(),
+  productName: z.string().min(1),
+  image: z.string().optional(),
   size: z.string().min(1),
-  color: z.string().min(1),
+  color: z.string().optional().default('Standard'),
   price: z.number().min(0.01),
   quantity: z.number().int().min(1),
   paymentMethod: z.enum(['COD', 'RAZORPAY', 'STRIPE', 'WALLET']),
