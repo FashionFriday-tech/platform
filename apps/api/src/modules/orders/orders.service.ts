@@ -177,13 +177,59 @@ export class OrdersService {
   }
 
   async findAll() {
-    return this.prisma.db.order.findMany({
+    const orders = await this.prisma.db.order.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
         items: true,
         user: { select: { name: true, phone: true } },
       },
     });
+
+    const allProductIds = orders
+      .flatMap((o) => o.items.map((i) => i.productId))
+      .filter((id) => id && !id.startsWith('prod-manual'));
+    const allItemNames = orders
+      .flatMap((o) => o.items)
+      .map((i) => i.name)
+      .filter(Boolean);
+
+    const products =
+      allProductIds.length > 0 || allItemNames.length > 0
+        ? await this.prisma.db.product.findMany({
+            where: {
+              OR: [
+                ...(allProductIds.length > 0 ? [{ id: { in: allProductIds } }] : []),
+                ...(allItemNames.length > 0 ? [{ name: { in: allItemNames } }] : []),
+              ],
+            },
+            select: {
+              id: true,
+              name: true,
+              mainImage: true,
+              promoImage: true,
+              liveImages: true,
+            },
+          })
+        : [];
+
+    const productById = new Map(products.map((p) => [p.id, p]));
+    const productByName = new Map(products.map((p) => [p.name.toLowerCase(), p]));
+
+    return orders.map((order) => ({
+      ...order,
+      items: order.items.map((item) => {
+        const prod = productById.get(item.productId) || productByName.get(item.name.toLowerCase());
+        const prodImg = prod?.mainImage || prod?.promoImage || prod?.liveImages?.[0] || '';
+        const resolvedImage =
+          item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
+            ? item.image
+            : prodImg || '';
+        return {
+          ...item,
+          image: resolvedImage,
+        };
+      }),
+    }));
   }
 
   async findUserOrders(userId: string) {
@@ -210,13 +256,26 @@ export class OrdersService {
       throw new NotFoundException('Order not found');
     }
 
-    const productIds = order.items.map((i) => i.productId).filter(Boolean);
+    const productIds = order.items
+      .map((i) => i.productId)
+      .filter((id) => id && !id.startsWith('prod-manual'));
+    const itemNames = order.items.map((i) => i.name).filter(Boolean);
+
     const products =
-      productIds.length > 0
+      productIds.length > 0 || itemNames.length > 0
         ? await this.prisma.db.product.findMany({
-            where: { id: { in: productIds } },
+            where: {
+              OR: [
+                ...(productIds.length > 0 ? [{ id: { in: productIds } }] : []),
+                ...(itemNames.length > 0 ? [{ name: { in: itemNames } }] : []),
+              ],
+            },
             select: {
               id: true,
+              name: true,
+              mainImage: true,
+              promoImage: true,
+              liveImages: true,
               sellerId: true,
               categoryId: true,
               category: { select: { id: true, name: true, slug: true } },
@@ -226,15 +285,23 @@ export class OrdersService {
         : [];
 
     const productMap = new Map(products.map((p) => [p.id, p]));
+    const productByNameMap = new Map(products.map((p) => [p.name.toLowerCase(), p]));
 
     const enrichedItems = order.items.map((item) => {
-      const prod = productMap.get(item.productId);
+      const prod = productMap.get(item.productId) || productByNameMap.get(item.name.toLowerCase());
+      const prodImg = prod?.mainImage || prod?.promoImage || prod?.liveImages?.[0] || '';
+      const resolvedImage =
+        item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
+          ? item.image
+          : prodImg || '';
+
       return {
         ...item,
+        image: resolvedImage,
         productSellerId: prod?.sellerId ?? item.sellerId ?? null,
         categoryId: prod?.categoryId ?? null,
         categoryName: prod?.category?.name ?? null,
-        product: prod ?? null,
+        product: prod ? { ...prod, image: resolvedImage } : null,
       };
     });
 
