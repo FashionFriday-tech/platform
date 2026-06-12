@@ -39,7 +39,10 @@ export function useOrders() {
           o.items?.map((item: any) => ({
             ...item,
             productName: item.name,
-            productImage: item.image || '/images/placeholders/2.png',
+            productImage:
+              item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
+                ? item.image
+                : item.product?.mainImage || '',
             price: Number(item.price || 0),
           })) || [],
       }));
