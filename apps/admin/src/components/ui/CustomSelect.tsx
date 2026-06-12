@@ -98,7 +98,7 @@ export function CustomSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.15 }}
-            className={`scrollbar-hide absolute z-50 mt-2 max-h-60 min-w-full w-max max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl bg-white p-1.5 dark:bg-[#1a1a1a] ${
+            className={`scrollbar-hide absolute z-50 mt-2 max-h-60 min-w-full w-max max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-black/10 bg-white p-1.5 shadow-md dark:border-white/10 dark:bg-[#1a1a1a] dark:shadow-black/40 ${
               align === 'right' ? 'right-0' : 'left-0'
             } ${dropdownClassName ?? ''}`}
           >
