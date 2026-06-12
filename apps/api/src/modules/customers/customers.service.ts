@@ -73,6 +73,36 @@ export class CustomersService {
     const orders = user.orders || [];
     const totalSpent = orders.reduce((sum, order) => sum + Number(order.finalAmount), 0);
 
+    const allProductIds = orders
+      .flatMap((o) => o.items.map((i) => i.productId))
+      .filter((id) => id && !id.startsWith('prod-manual'));
+    const allItemNames = orders
+      .flatMap((o) => o.items)
+      .map((i) => i.name)
+      .filter(Boolean);
+
+    const matchedProducts =
+      allProductIds.length > 0 || allItemNames.length > 0
+        ? await this.prisma.db.product.findMany({
+            where: {
+              OR: [
+                ...(allProductIds.length > 0 ? [{ id: { in: allProductIds } }] : []),
+                ...(allItemNames.length > 0 ? [{ name: { in: allItemNames } }] : []),
+              ],
+            },
+            select: {
+              id: true,
+              name: true,
+              mainImage: true,
+              promoImage: true,
+              liveImages: true,
+            },
+          })
+        : [];
+
+    const productById = new Map(matchedProducts.map((p) => [p.id, p]));
+    const productByName = new Map(matchedProducts.map((p) => [p.name.toLowerCase(), p]));
+
     return {
       id: user.id,
       name: user.name,
@@ -94,15 +124,24 @@ export class CustomersService {
         paymentMethod: order.paymentMethod,
         paymentStatus: order.paymentStatus,
         createdAt: order.createdAt.toISOString(),
-        items: order.items.map((item) => ({
-          id: item.id,
-          name: item.name,
-          price: Number(item.price),
-          quantity: item.quantity,
-          size: item.size,
-          color: item.color,
-          image: item.image,
-        })),
+        items: order.items.map((item) => {
+          const prod = productById.get(item.productId) || productByName.get(item.name.toLowerCase());
+          const prodImg = prod?.mainImage || prod?.promoImage || prod?.liveImages?.[0] || '';
+          const resolvedImage =
+            item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
+              ? item.image
+              : prodImg || '';
+
+          return {
+            id: item.id,
+            name: item.name,
+            price: Number(item.price),
+            quantity: item.quantity,
+            size: item.size,
+            color: item.color,
+            image: resolvedImage,
+          };
+        }),
       })),
     };
   }
@@ -189,6 +228,37 @@ export class CustomersService {
 
     // Use prisma transaction to make sure Order and OrderItem are created together
     return this.prisma.db.$transaction(async (tx) => {
+      let resolvedImage =
+        (details as any).image && !(details as any).image.includes('photo-1523381210434-271e8be1f52b')
+          ? (details as any).image.trim()
+          : '';
+      let targetProductId = (details as any).productId;
+
+      const dbProduct = targetProductId
+        ? await tx.product.findUnique({
+            where: { id: targetProductId },
+            select: { id: true, mainImage: true, promoImage: true, liveImages: true },
+          })
+        : await tx.product.findFirst({
+            where: { name: { equals: details.productName, mode: 'insensitive' } },
+            select: { id: true, mainImage: true, promoImage: true, liveImages: true },
+          });
+
+      if (dbProduct) {
+        targetProductId = dbProduct.id;
+        const dbImage =
+          dbProduct.mainImage ||
+          dbProduct.promoImage ||
+          dbProduct.liveImages?.[0];
+        if (dbImage) {
+          resolvedImage = dbImage;
+        }
+      }
+
+      if (!resolvedImage && (details as any).image && !(details as any).image.includes('photo-1523381210434-271e8be1f52b')) {
+        resolvedImage = (details as any).image.trim();
+      }
+
       const order = await tx.order.create({
         data: {
           userId: customerId,
@@ -201,12 +271,11 @@ export class CustomersService {
           shippingAddress,
           items: {
             create: {
-              productId: `prod-manual-${Date.now()}`,
+              productId: targetProductId || `prod-manual-${Date.now()}`,
               name: details.productName,
-              image:
-                'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=150&q=80',
+              image: resolvedImage,
               size: details.size,
-              color: details.color,
+              color: details.color || 'Standard',
               price: details.price,
               quantity: details.quantity,
             },
@@ -222,6 +291,8 @@ export class CustomersService {
         orderNumber: order.orderNumber,
         total: Number(order.finalAmount),
         status: order.status.toLowerCase(),
+        paymentMethod: order.paymentMethod,
+        paymentStatus: order.paymentStatus,
         createdAt: order.createdAt.toISOString(),
         items: order.items.map((item) => ({
           id: item.id,
