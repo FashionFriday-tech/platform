@@ -22,6 +22,8 @@ import { toast } from 'sonner';
 
 import { fetcher } from '@/lib/api-client';
 
+import { CreateCustomerOrderModal } from './CreateCustomerOrderModal';
+
 const CreditCardIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -173,23 +175,8 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   const [editErrors, setEditErrors] = useState<Record<string, string>>({});
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
-  // Order creation form states
+  // Order creation modal state
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [productName, setProductName] = useState('');
-  const [size, setSize] = useState('');
-  const [color, setColor] = useState('');
-  const [price, setPrice] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'RAZORPAY' | 'STRIPE' | 'WALLET'>(
-    'COD',
-  );
-  const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED'>('PENDING');
-  const [addressLine, setAddressLine] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [pinCode, setPinCode] = useState('');
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isProfileBoxOpen, setIsProfileBoxOpen] = useState(true);
@@ -407,101 +394,6 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
     }
   };
 
-  const validateOrderForm = () => {
-    const errors: Record<string, string> = {};
-    if (!productName.trim() || productName.trim().length < 3) {
-      errors.productName = 'Product name must be at least 3 characters';
-    }
-    if (!size.trim()) {
-      errors.size = 'Size is required';
-    }
-    if (!color.trim()) {
-      errors.color = 'Color is required';
-    }
-    if (price <= 0) {
-      errors.price = 'Price must be greater than 0';
-    }
-    if (quantity <= 0) {
-      errors.quantity = 'Quantity must be at least 1';
-    }
-    if (!addressLine.trim()) {
-      errors.addressLine = 'Address line is required';
-    }
-    if (!city.trim()) {
-      errors.city = 'City is required';
-    }
-    if (!state.trim()) {
-      errors.state = 'State is required';
-    }
-    if (!pinCode.trim() || !/^\d{6}$/.test(pinCode)) {
-      errors.pinCode = 'Pin code must be exactly 6 digits';
-    }
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleCreateOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateOrderForm()) {
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      const newOrder = await fetcher<Order>(`/admin/customers/${customerId}/orders`, {
-        method: 'POST',
-        body: JSON.stringify({
-          productName,
-          size,
-          color,
-          price,
-          quantity,
-          paymentMethod,
-          paymentStatus,
-          addressLine,
-          city,
-          state,
-          pinCode,
-        }),
-      });
-
-      // Update local state to immediately show the new order
-      setCustomer((prev) => {
-        if (!prev) {
-          return null;
-        }
-        const updatedOrders = [newOrder, ...prev.orders];
-        const newTotalSpent = prev.totalSpent + price * quantity;
-        return {
-          ...prev,
-          ordersCount: updatedOrders.length,
-          totalSpent: newTotalSpent,
-          orders: updatedOrders,
-        };
-      });
-
-      toast.success('Order created successfully!');
-      setIsOrderModalOpen(false);
-      // Reset form fields
-      setProductName('');
-      setSize('');
-      setColor('');
-      setPrice(0);
-      setQuantity(1);
-      setPaymentMethod('COD');
-      setPaymentStatus('PENDING');
-      setAddressLine('');
-      setCity('');
-      setState('');
-      setPinCode('');
-      setFormErrors({});
-    } catch (error: unknown) {
-      console.error('Failed to create order:', error);
-      const msg = error instanceof Error ? error.message : 'Failed to create order';
-      toast.error(msg);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const validateAddressForm = () => {
     const errors: Record<string, string> = {};
@@ -891,33 +783,40 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   .map(({ order, item }) => (
                     <div
                       key={item.id}
-                      className="group flex flex-col gap-4 rounded-3xl border border-black/5 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-[#111111]"
+                      onClick={() => router.push(`/orders/${order.id}`)}
+                      className="group flex cursor-pointer flex-col gap-4 rounded-3xl border border-black/5 bg-white p-6 shadow-xs transition-all duration-200 hover:border-black/20 hover:bg-black/[0.01] hover:shadow-md dark:border-white/5 dark:bg-[#111111] dark:hover:border-white/20 dark:hover:bg-white/[0.01]"
                     >
                       <div className="flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-black/40 dark:text-white/40">
+                          <span className="text-xs font-bold text-black/40 transition-colors group-hover:text-black dark:text-white/40 dark:group-hover:text-white">
                             {order.orderNumber}
                           </span>
                           <span className="text-sm font-semibold text-black/60 dark:text-white/60">
                             Ordered on {new Date(order.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <span
-                          className={`flex h-7 items-center rounded-full px-3 text-xs font-bold tracking-wider uppercase ${
-                            order.status === 'delivered'
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                              : order.status === 'cancelled'
-                                ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                          }`}
-                        >
-                          {order.status}
-                        </span>
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className={`flex h-7 items-center rounded-full px-3 text-xs font-bold tracking-wider uppercase ${
+                              order.status === 'delivered'
+                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                : order.status === 'cancelled'
+                                  ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                            }`}
+                          >
+                            {order.status}
+                          </span>
+                          <span className="text-sm font-bold text-black/30 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-black dark:text-white/30 dark:group-hover:text-white">
+                            →
+                          </span>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-4">
                         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-black/5 dark:border-white/5">
-                          {item.image ? (
+                          {item.image &&
+                          !item.image.includes('photo-1523381210434-271e8be1f52b') ? (
                             <Image src={item.image} alt={item.name} fill className="object-cover" />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center bg-black/5 dark:bg-white/5">
@@ -946,6 +845,16 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   <p className="font-semibold text-black/50 dark:text-white/50">
                     No orders placed yet.
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsOrderModalOpen(true);
+                    }}
+                    className="mt-4 flex items-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                    Create Order
+                  </button>
                 </div>
               )}
             </div>
@@ -1249,304 +1158,27 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
       </div>
 
       {/* Premium Create Order Modal */}
-      <AnimatePresence>
-        {isOrderModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm dark:bg-[#111111]/80"
-              onClick={() => {
-                if (!isSubmitting) {
-                  setIsOrderModalOpen(false);
-                }
-              }}
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative z-10 w-full max-w-4xl overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-2xl dark:border-white/5 dark:bg-[#1a1a1a]"
-            >
-              <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
-                <h2 className="text-xl font-bold text-black dark:text-white">Create New Order</h2>
-                <button
-                  onClick={() => {
-                    if (!isSubmitting) {
-                      setIsOrderModalOpen(false);
-                    }
-                  }}
-                  className="rounded-full p-2 hover:bg-black/5 dark:hover:bg-white/5"
-                >
-                  <CloseIcon className="h-5 w-5 text-black/60 dark:text-white/60" />
-                </button>
-              </div>
-
-              <form onSubmit={handleCreateOrder} className="p-6">
-                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                      Product Details
-                    </h4>
-
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                        Product Name
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g., Premium Cotton T-Shirt"
-                        value={productName}
-                        onChange={(e) => {
-                          setProductName(e.target.value);
-                        }}
-                        className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                      />
-                      {formErrors.productName && (
-                        <span className="mt-1 text-xs text-red-500">{formErrors.productName}</span>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                          Size
-                        </label>
-                        <select
-                          value={size}
-                          onChange={(e) => {
-                            setSize(e.target.value);
-                          }}
-                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                        >
-                          <option value="">Select Size</option>
-                          <option value="XS">XS</option>
-                          <option value="S">S</option>
-                          <option value="M">M</option>
-                          <option value="L">L</option>
-                          <option value="XL">XL</option>
-                          <option value="XXL">XXL</option>
-                        </select>
-                        {formErrors.size && (
-                          <span className="mt-1 text-xs text-red-500">{formErrors.size}</span>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                          Color
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g., Black"
-                          value={color}
-                          onChange={(e) => {
-                            setColor(e.target.value);
-                          }}
-                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                        />
-                        {formErrors.color && (
-                          <span className="mt-1 text-xs text-red-500">{formErrors.color}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                          Price (₹)
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={price || ''}
-                          onChange={(e) => {
-                            setPrice(Number(e.target.value));
-                          }}
-                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                        />
-                        {formErrors.price && (
-                          <span className="mt-1 text-xs text-red-500">{formErrors.price}</span>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                          Quantity
-                        </label>
-                        <input
-                          type="number"
-                          min="1"
-                          value={quantity || ''}
-                          onChange={(e) => {
-                            setQuantity(Number(e.target.value));
-                          }}
-                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                        />
-                        {formErrors.quantity && (
-                          <span className="mt-1 text-xs text-red-500">{formErrors.quantity}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                          Payment Method
-                        </label>
-                        <select
-                          value={paymentMethod}
-                          onChange={(e) => {
-                            setPaymentMethod(e.target.value as any);
-                          }}
-                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                        >
-                          <option value="COD">Cash on Delivery</option>
-                          <option value="RAZORPAY">Razorpay</option>
-                          <option value="STRIPE">Stripe</option>
-                          <option value="WALLET">Wallet</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                          Payment Status
-                        </label>
-                        <select
-                          value={paymentStatus}
-                          onChange={(e) => {
-                            setPaymentStatus(e.target.value as any);
-                          }}
-                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                        >
-                          <option value="PENDING">Pending</option>
-                          <option value="SUCCESS">Success</option>
-                          <option value="FAILED">Failed</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                      Shipping Address
-                    </h4>
-
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                        Address Line
-                      </label>
-                      <textarea
-                        rows={3}
-                        placeholder="Flat, House no., Building, Street, Area..."
-                        value={addressLine}
-                        onChange={(e) => {
-                          setAddressLine(e.target.value);
-                        }}
-                        className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                      />
-                      {formErrors.addressLine && (
-                        <span className="mt-1 text-xs text-red-500">{formErrors.addressLine}</span>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                        City
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g., Mumbai"
-                        value={city}
-                        onChange={(e) => {
-                          setCity(e.target.value);
-                        }}
-                        className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                      />
-                      {formErrors.city && (
-                        <span className="mt-1 text-xs text-red-500">{formErrors.city}</span>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                          State
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g., Maharashtra"
-                          value={state}
-                          onChange={(e) => {
-                            setState(e.target.value);
-                          }}
-                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                        />
-                        {formErrors.state && (
-                          <span className="mt-1 text-xs text-red-500">{formErrors.state}</span>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="mb-1 block text-xs font-semibold text-black/60 dark:text-white/60">
-                          Pin Code
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="e.g., 400001"
-                          value={pinCode}
-                          onChange={(e) => {
-                            setPinCode(e.target.value);
-                          }}
-                          className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm text-black outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white"
-                        />
-                        {formErrors.pinCode && (
-                          <span className="mt-1 text-xs text-red-500">{formErrors.pinCode}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex items-center justify-between border-t border-black/5 pt-6 dark:border-white/5">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-black/50 dark:text-white/50">Total Amount</span>
-                    <span className="text-xl font-extrabold text-black dark:text-white">
-                      ₹{(price * quantity).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                    </span>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      disabled={isSubmitting}
-                      onClick={() => {
-                        setIsOrderModalOpen(false);
-                      }}
-                      className="rounded-xl border border-black/5 bg-transparent px-4 py-2.5 text-sm font-semibold text-black/70 hover:bg-black/5 disabled:opacity-50 dark:border-white/5 dark:text-white/70 dark:hover:bg-white/5"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex items-center justify-center gap-2 rounded-xl bg-black px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-black/80 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
-                    >
-                      {isSubmitting ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white dark:border-black/20 dark:border-t-black" />
-                      ) : (
-                        'Create Order'
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <CreateCustomerOrderModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        customerId={customerId}
+        customerName={customer?.name ?? ''}
+        customerPhone={customer?.phone}
+        onOrderCreated={(newOrder) => {
+          setCustomer((prev) => {
+            if (!prev) return null;
+            const updatedOrders = [newOrder as Order, ...prev.orders];
+            const newTotalSpent = prev.totalSpent + (newOrder.total ?? 0);
+            return {
+              ...prev,
+              ordersCount: updatedOrders.length,
+              totalSpent: newTotalSpent,
+              orders: updatedOrders,
+            };
+          });
+          fetchCustomerDetails(true);
+        }}
+      />
 
       {/* Edit Profile Modal */}
       <AnimatePresence>
