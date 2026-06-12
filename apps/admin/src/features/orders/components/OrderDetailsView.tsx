@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { PhoneIcon, WhatsAppIcon } from '@ff/ui/icons';
+import { ShoppingBagIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { api } from '@/lib/api-client';
@@ -627,14 +628,20 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                     })()}
                   </div>
 
-                  <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-xl shadow-sm sm:h-40 sm:w-40">
-                    <Image
-                      width={500}
-                      height={500}
-                      src={item.productImage}
-                      alt={item.productName}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                  <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-xl shadow-sm sm:h-40 sm:w-40 bg-black/5 dark:bg-white/5">
+                    {item.productImage && !item.productImage.includes('photo-1523381210434-271e8be1f52b') ? (
+                      <Image
+                        width={500}
+                        height={500}
+                        src={item.productImage}
+                        alt={item.productName}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <ShoppingBagIcon className="h-10 w-10 text-black/20 dark:text-white/20" />
+                      </div>
+                    )}
                   </div>
                   <div className="flex w-full flex-col justify-between sm:h-40">
                     <div>
