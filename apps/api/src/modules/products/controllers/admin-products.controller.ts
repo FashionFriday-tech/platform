@@ -29,8 +29,12 @@ export class AdminProductsController {
   }
 
   @Get()
-  async getProducts(@Query('skip') skip?: number, @Query('take') take?: number) {
-    return this.productsService.getProducts(Number(skip) || 0, Number(take) || 100);
+  async getProducts(
+    @Query('skip') skip?: number,
+    @Query('take') take?: number,
+    @Query('search') search?: string,
+  ) {
+    return this.productsService.getProducts(Number(skip) || 0, Number(take) || 100, search);
   }
 
   @Get(':id')
