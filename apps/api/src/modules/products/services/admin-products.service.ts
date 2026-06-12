@@ -68,8 +68,18 @@ export class AdminProductsService {
     };
   }
 
-  async getProducts(skip = 0, take = 10) {
-    const result = await this.productsRepository.findAll({ skip, take });
+  async getProducts(skip = 0, take = 10, search?: string) {
+    const trimmed = search?.trim();
+    const where: Prisma.ProductWhereInput = trimmed
+      ? {
+          OR: [
+            { id: { contains: trimmed, mode: 'insensitive' } },
+            { name: { contains: trimmed, mode: 'insensitive' } },
+            { slug: { contains: trimmed, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+    const result = await this.productsRepository.findAll({ skip, take, where });
     return this.paginate(result, skip, take);
   }
 
