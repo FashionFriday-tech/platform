@@ -1,14 +1,15 @@
 import {
+  BadRequestException,
   Controller,
   Delete,
   Get,
   Param,
   Post,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 
 import { UploadService } from '../upload/upload.service';
 import { WhatsAppReviewsService } from './whatsapp-reviews.service';
@@ -28,21 +29,55 @@ export class WhatsAppReviewsController {
     return this.reviewsService.getAllReviews(limitNum, offsetNum);
   }
 
-  // Admin endpoint: List all reviews
+  // Admin endpoint: List all reviews with total count
   @Get('admin/whatsapp-reviews')
   async getAllReviews(@Query('limit') limit?: string, @Query('offset') offset?: string) {
     const limitNum = limit ? parseInt(limit, 10) : undefined;
     const offsetNum = offset ? parseInt(offset, 10) : undefined;
-    return this.reviewsService.getAllReviews(limitNum, offsetNum);
+    return this.reviewsService.getAllReviewsWithCount(limitNum, offsetNum);
   }
 
-  // Admin endpoint: Upload a new review image
+  // Admin endpoint: Upload one or multiple review images
   @Post('admin/whatsapp-reviews')
-  @UseInterceptors(FileInterceptor('file'))
-  async createReview(@UploadedFile() file: Express.Multer.File) {
-    // Upload the image — folder 'whatsapp-reviews' tells upload service NOT to crop
-    const imageUrl = await this.uploadService.uploadFile(file, undefined, 'whatsapp-reviews');
-    return this.reviewsService.createReview(imageUrl);
+  @UseInterceptors(AnyFilesInterceptor())
+  async createReviews(@UploadedFiles() files: Express.Multer.File[]) {
+    if (!files || files.length === 0) {
+      throw new BadRequestException('At least one image file is required');
+    }
+
+    const imageFiles = files.filter((f) => f.mimetype.startsWith('image/'));
+    if (imageFiles.length === 0) {
+      throw new BadRequestException('Uploaded files must be images');
+    }
+
+    // Get next review number starting from 1000
+    const startNumber = await this.reviewsService.getNextReviewNumber();
+
+    // Upload all images in parallel with sequential names (fashion-friday-whatsapp-sales-review-1001, etc.)
+    const uploadPromises = imageFiles.map((f, index) =>
+      this.uploadService.uploadFile(
+        f,
+        `fashion-friday-whatsapp-sales-review-${startNumber + index}`,
+        'whatsapp-reviews',
+      ),
+    );
+
+    let imageUrls: string[];
+    try {
+      imageUrls = await Promise.all(uploadPromises);
+    } catch (uploadError) {
+      // If any upload fails, wait for settled promises and delete any successfully uploaded images to prevent orphans
+      const settled = await Promise.allSettled(uploadPromises);
+      for (const res of settled) {
+        if (res.status === 'fulfilled' && res.value) {
+          await this.uploadService.deleteFile(res.value).catch(() => {});
+        }
+      }
+      throw uploadError;
+    }
+
+    const created = await this.reviewsService.createReviews(imageUrls);
+    return created;
   }
 
   // Admin endpoint: Delete a review

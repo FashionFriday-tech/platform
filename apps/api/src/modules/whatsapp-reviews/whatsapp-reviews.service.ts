@@ -19,22 +19,69 @@ export class WhatsAppReviewsService {
     });
   }
 
+  async getAllReviewsWithCount(limit?: number, offset?: number) {
+    const [items, total] = await Promise.all([
+      this.prisma.db.whatsAppReview.findMany({
+        orderBy: { sortOrder: 'asc' },
+        ...(limit !== undefined ? { take: limit } : {}),
+        ...(offset !== undefined ? { skip: offset } : {}),
+      }),
+      this.prisma.db.whatsAppReview.count(),
+    ]);
+
+    return { items, total };
+  }
+
+  async getNextReviewNumber(): Promise<number> {
+    const reviews = await this.prisma.db.whatsAppReview.findMany({
+      select: { imageUrl: true },
+    });
+
+    let maxNum = 1000;
+    for (const r of reviews) {
+      const match =
+        r.imageUrl.match(/fashion-friday-whatsapp-sales-review-(\d+)\.webp/i) ||
+        r.imageUrl.match(/\/review-(\d+)\.webp/i) ||
+        r.imageUrl.match(/review-(\d+)/i);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        // Exclude legacy millisecond timestamps (> 1 billion) so count starts cleanly from 1000
+        if (!isNaN(num) && num >= 1000 && num < 1000000000 && num > maxNum) {
+          maxNum = num;
+        }
+      }
+    }
+
+    return maxNum + 1;
+  }
+
   async createReview(imageUrl: string) {
+    const results = await this.createReviews([imageUrl]);
+    return results[0];
+  }
+
+  async createReviews(imageUrls: string[]) {
+    if (imageUrls.length === 0) return [];
+
     // Get current max sortOrder to append at the end
     const last = await this.prisma.db.whatsAppReview.findFirst({
       orderBy: { sortOrder: 'desc' },
     });
-    const nextOrder = (last?.sortOrder ?? -1) + 1;
+    const baseOrder = (last?.sortOrder ?? -1) + 1;
 
-    const result = await this.prisma.db.whatsAppReview.create({
-      data: {
-        imageUrl,
-        sortOrder: nextOrder,
-      },
-    });
+    const results = await this.prisma.db.$transaction(
+      imageUrls.map((imageUrl, index) =>
+        this.prisma.db.whatsAppReview.create({
+          data: {
+            imageUrl,
+            sortOrder: baseOrder + index,
+          },
+        }),
+      ),
+    );
 
     this.triggerReviewsRevalidation();
-    return result;
+    return results;
   }
 
   async deleteReview(id: string) {
