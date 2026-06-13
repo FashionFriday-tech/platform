@@ -12,13 +12,46 @@ export class CategoriesRepository {
   }
 
   async findAll() {
-    return this.prisma.db.category.findMany({
-      orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
-      include: {
-        _count: {
-          select: { products: true },
+    const [categories, products] = await this.prisma.db.$transaction([
+      this.prisma.db.category.findMany({
+        orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
+        include: {
+          _count: {
+            select: { products: true },
+          },
         },
-      },
+      }),
+      this.prisma.db.product.findMany({
+        select: {
+          id: true,
+          gender: true,
+          categoryId: true,
+          category: {
+            select: { id: true, name: true, gender: true },
+          },
+        },
+      }),
+    ]);
+
+    return categories.map((cat) => {
+      const catName = cat.name.toLowerCase();
+      const catGender = cat.gender;
+      const matchingCount = products.filter((p) => {
+        const pCatName = p.category?.name?.toLowerCase();
+        const matchesCategory = p.categoryId === cat.id || pCatName === catName;
+        if (!matchesCategory) return false;
+        const pGender = p.gender;
+        if (pGender === 'UNISEX') return true;
+        return pGender === catGender;
+      }).length;
+
+      return {
+        ...cat,
+        productCount: matchingCount,
+        _count: {
+          products: matchingCount,
+        },
+      };
     });
   }
 
