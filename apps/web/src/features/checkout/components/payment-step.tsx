@@ -20,7 +20,8 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
-import { createOrderAction } from '@/features/orders';
+import { createOrderAction } from '@/features/orders/services/orders.actions';
+import { api } from '@/lib/api-client';
 
 export function PaymentStep() {
   const {
@@ -70,9 +71,13 @@ export function PaymentStep() {
     try {
       setIsPlacing(true);
       const method = paymentMethod === 'cod' ? 'COD' : 'STRIPE';
-      console.log(`[PaymentStep] Step 2: Calling createOrderAction with method: ${method}...`);
-
-      const order = await createOrderAction({ paymentMethod: method });
+      let order: any;
+      try {
+        order = await createOrderAction({ paymentMethod: method });
+      } catch (actionErr: any) {
+        console.warn('[PaymentStep] Server Action failed, attempting direct API fallback:', actionErr);
+        order = await api.post<any>('/orders', { paymentMethod: method });
+      }
       console.log('[PaymentStep] Step 3: Order successfully created on server:', order);
 
       // Clear local cart store and database cart
