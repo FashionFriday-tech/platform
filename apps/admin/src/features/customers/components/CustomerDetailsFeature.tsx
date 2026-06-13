@@ -775,72 +775,126 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
           )}
 
           {activeTab === 'orders' && (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {customer.orders.flatMap((o) => o.items.map((i) => ({ order: o, item: i }))).length >
-              0 ? (
-                customer.orders
-                  .flatMap((o) => o.items.map((i) => ({ order: o, item: i })))
-                  .map(({ order, item }) => (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {customer.orders.length > 0 ? (
+                customer.orders.map((order) => {
+                  const firstItem = order.items?.[0];
+                  const totalQty =
+                    order.items?.reduce((acc, it) => acc + (it.quantity || 1), 0) || 1;
+                  const itemImage =
+                    firstItem?.image &&
+                    !firstItem.image.includes('photo-1523381210434-271e8be1f52b')
+                      ? firstItem.image
+                      : null;
+
+                  return (
                     <div
-                      key={item.id}
+                      key={order.id}
                       onClick={() => router.push(`/orders/${order.id}`)}
-                      className="group flex cursor-pointer flex-col gap-4 rounded-3xl border border-black/5 bg-white p-6 shadow-xs transition-all duration-200 hover:border-black/20 hover:bg-black/[0.01] hover:shadow-md dark:border-white/5 dark:bg-[#111111] dark:hover:border-white/20 dark:hover:bg-white/[0.01]"
+                      className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-black/10 bg-white p-3 shadow-xs transition-all hover:border-black/30 hover:shadow-md dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/30"
                     >
-                      <div className="flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-bold text-black/40 transition-colors group-hover:text-black dark:text-white/40 dark:group-hover:text-white">
-                            {order.orderNumber}
-                          </span>
-                          <span className="text-sm font-semibold text-black/60 dark:text-white/60">
-                            Ordered on {new Date(order.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2.5">
-                          <span
-                            className={`flex h-7 items-center rounded-full px-3 text-xs font-bold tracking-wider uppercase ${
-                              order.status === 'delivered'
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                                : order.status === 'cancelled'
-                                  ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                            }`}
-                          >
-                            {order.status}
-                          </span>
-                          <span className="text-sm font-bold text-black/30 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-black dark:text-white/30 dark:group-hover:text-white">
-                            →
-                          </span>
-                        </div>
+                      {/* Product Image Area */}
+                      <div className="relative mb-3 aspect-[4/3] w-full overflow-hidden rounded-xl bg-black/5 dark:bg-white/5">
+                        {itemImage ? (
+                          <Image
+                            src={itemImage}
+                            alt={firstItem?.name || order.orderNumber}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-black/30 dark:text-white/30">
+                            <ShoppingBagIcon className="h-8 w-8 opacity-30" />
+                          </div>
+                        )}
+
+                        {/* Order ID badge */}
+                        <span className="absolute top-2 left-2 rounded-md bg-black/80 px-2 py-0.5 font-mono text-[10px] font-bold text-white shadow-sm backdrop-blur-md">
+                          ID: {order.orderNumber}
+                        </span>
+
+                        {/* Status Badge */}
+                        <span
+                          className={`absolute top-2 right-2 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider uppercase shadow-sm backdrop-blur-md ${
+                            order.status?.toLowerCase() === 'delivered'
+                              ? 'bg-emerald-500 text-white'
+                              : order.status?.toLowerCase() === 'cancelled'
+                                ? 'bg-red-500 text-white'
+                                : order.status?.toLowerCase() === 'shipped' ||
+                                    order.status?.toLowerCase() === 'confirmed'
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-amber-400 text-amber-950'
+                          }`}
+                        >
+                          {order.status}
+                        </span>
+
+                        {/* Order Date badge */}
+                        <span className="absolute bottom-2 left-2 rounded-md bg-white/95 px-2 py-0.5 text-[10px] font-semibold text-black/75 shadow-sm backdrop-blur-md dark:bg-black/85 dark:text-white/75">
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </span>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-black/5 dark:border-white/5">
-                          {item.image &&
-                          !item.image.includes('photo-1523381210434-271e8be1f52b') ? (
-                            <Image src={item.image} alt={item.name} fill className="object-cover" />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center bg-black/5 dark:bg-white/5">
-                              <ShoppingBagIcon className="h-6 w-6 text-black/20 dark:text-white/20" />
-                            </div>
-                          )}
+                      {/* Info Header */}
+                      <div className="flex flex-1 flex-col justify-between">
+                        <div>
+                          <h4
+                            className="line-clamp-1 text-sm font-bold text-black transition-colors group-hover:text-black/80 dark:text-white dark:group-hover:text-white/80"
+                            title={firstItem?.name || `Order ${order.orderNumber}`}
+                          >
+                            {firstItem?.name || `Order ${order.orderNumber}`}
+                          </h4>
+
+                          {/* Price & Payment Method */}
+                          <div className="mt-1 flex items-baseline justify-between">
+                            <span className="text-base font-extrabold text-black dark:text-white">
+                              ₹
+                              {Number(order.total || 0).toLocaleString('en-IN', {
+                                minimumFractionDigits: 2,
+                              })}
+                            </span>
+                            <span className="rounded-md bg-black/5 px-2 py-0.5 text-[10px] font-semibold uppercase text-black/60 dark:bg-white/10 dark:text-white/70">
+                              {order.paymentMethod || 'Prepaid'}
+                            </span>
+                          </div>
+
+                          {/* Available Sizes / Variants / Items Preview */}
+                          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                            {firstItem?.size && (
+                              <span className="rounded-md bg-black/5 px-1.5 py-0.5 text-[9px] font-semibold text-black/60 dark:bg-white/10 dark:text-white/70">
+                                Size: {firstItem.size}
+                              </span>
+                            )}
+                            {firstItem?.color && (
+                              <span className="rounded-md bg-black/5 px-1.5 py-0.5 text-[9px] font-semibold text-black/60 dark:bg-white/10 dark:text-white/70">
+                                {firstItem.color}
+                              </span>
+                            )}
+                            <span className="rounded-md bg-black/5 px-1.5 py-0.5 text-[9px] font-semibold text-black/60 dark:bg-white/10 dark:text-white/70">
+                              Qty: {totalQty}
+                            </span>
+                            {order.items && order.items.length > 1 && (
+                              <span className="rounded-md border border-blue-500/20 bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-bold text-blue-600 dark:border-blue-500/30 dark:bg-blue-500/20 dark:text-blue-400">
+                                +{order.items.length - 1} more items
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex flex-1 flex-col">
-                          <span className="font-bold text-black dark:text-white">{item.name}</span>
-                          <span className="mt-1 text-xs text-black/50 dark:text-white/50">
-                            Size: {item.size} • Color: {item.color} • Qty: {item.quantity}
-                          </span>
-                          <span className="mt-2 text-lg font-bold text-black dark:text-white">
-                            ₹
-                            {(item.price * item.quantity).toLocaleString('en-IN', {
-                              minimumFractionDigits: 2,
-                            })}
-                          </span>
-                        </div>
+
+                        {/* Action Button styled like Create Order product card */}
+                        <button
+                          type="button"
+                          className="mt-3.5 w-full rounded-xl bg-black/5 py-2 text-center text-xs font-bold text-black transition-colors group-hover:bg-black group-hover:text-white dark:bg-white/10 dark:text-white dark:group-hover:bg-white dark:group-hover:text-black"
+                        >
+                          View Order Details →
+                        </button>
                       </div>
                     </div>
-                  ))
+                  );
+                })
               ) : (
-                <div className="col-span-2 flex flex-col items-center justify-center rounded-[32px] border border-dashed border-black/10 p-12 text-center dark:border-white/10">
+                <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col items-center justify-center rounded-[32px] border border-dashed border-black/10 p-12 text-center dark:border-white/10">
                   <ShoppingBagIcon className="mb-4 h-8 w-8 text-black/20 dark:text-white/20" />
                   <p className="font-semibold text-black/50 dark:text-white/50">
                     No orders placed yet.
