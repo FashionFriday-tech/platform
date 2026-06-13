@@ -6,9 +6,15 @@ import { type Product } from '../types';
 import { CATEGORIES, QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 
+interface CategoryItem {
+  id: string;
+  name: string;
+}
+
 interface Props {
   initialData?: Partial<Product> | SchemaProduct;
   category: string;
+  categories?: CategoryItem[] | string[];
   isCategoryOpen: boolean;
   setIsCategoryOpen: (val: boolean) => void;
   handleCategorySelect: (val: string) => void;
@@ -30,6 +36,7 @@ interface Props {
 export function ProductCategorySelector({
   initialData,
   category,
+  categories,
   isCategoryOpen,
   setIsCategoryOpen,
   handleCategorySelect,
@@ -42,6 +49,19 @@ export function ProductCategorySelector({
   markTouched,
   getStatus,
 }: Props) {
+  const seen = new Set<string>();
+  const displayCategories: { id: string; name: string }[] = [];
+  const rawList = categories
+    ? categories.map((c) => (typeof c === 'string' ? { id: c, name: c } : c))
+    : CATEGORIES.map((c) => ({ id: c, name: c }));
+
+  for (const c of rawList) {
+    if (c.name && !seen.has(c.name.toLowerCase())) {
+      seen.add(c.name.toLowerCase());
+      displayCategories.push(c);
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2">
       <div ref={categoryRef} className="relative">
@@ -63,7 +83,7 @@ export function ProductCategorySelector({
           }}
           className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${isCategoryOpen ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white' : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'}`}
         >
-          <span>{category}</span>
+          <span>{category || 'Select Category'}</span>
           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
             <svg
               className={`h-3 w-3 text-black transition-transform dark:text-white ${isCategoryOpen ? 'rotate-180' : ''}`}
@@ -83,30 +103,18 @@ export function ProductCategorySelector({
 
         {isCategoryOpen && (
           <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl [-ms-overflow-style:none] [scrollbar-width:none] dark:border-white/10 dark:bg-[#1a1a1a] [&::-webkit-scrollbar]:hidden">
-            {CATEGORIES.map((c) => (
+            {displayCategories.map((c) => (
               <button
-                key={c}
+                key={c.id}
                 onClick={() => {
-                  handleCategorySelect(c);
+                  handleCategorySelect(c.name);
                   markTouched('category');
                 }}
-                className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${category === c ? 'bg-black/5 text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
+                className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${category === c.name ? 'bg-black/5 text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
               >
-                {c}
+                {c.name}
               </button>
             ))}
-            <div className="my-1 border-t border-black/10 dark:border-white/10" />
-            <button className="flex w-full items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5">
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              <span>Add Category</span>
-            </button>
           </div>
         )}
       </div>

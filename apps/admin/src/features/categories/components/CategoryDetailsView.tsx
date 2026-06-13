@@ -33,7 +33,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     async function loadProducts() {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products?take=500`,
         );
         if (!res.ok) {
           return;
@@ -61,13 +61,38 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
             seoDescription?: string;
             slug?: string;
             youtubeId?: string;
+            category?: { id: string; name: string; slug: string };
           }[];
         };
         const allProducts = data.data ?? [];
 
-        // Filter by category ID and map
+        const targetCatName = category.name.toLowerCase();
+        const catGender = (category.gender ?? 'MEN').toUpperCase();
+
+        // Filter products: matching category name, and gender is matching or UNISEX
         const categoryProds: Product[] = allProducts
-          .filter((p) => p.categoryId === category.id)
+          .filter((p) => {
+            const pCatName = p.category?.name?.toLowerCase();
+            const pCatSlug = p.category?.slug?.toLowerCase();
+            const matchesCategory =
+              p.categoryId === category.id ||
+              pCatName === targetCatName ||
+              pCatSlug === category.slug.toLowerCase() ||
+              pCatSlug?.includes(targetCatName);
+
+            if (!matchesCategory) return false;
+
+            const pGender = (p.gender ?? 'UNISEX').toUpperCase();
+            if (pGender === 'UNISEX') return true;
+
+            if (catGender === 'WOMEN' || catGender === 'WOMAN') {
+              return pGender === 'WOMEN' || pGender === 'WOMAN';
+            }
+            if (catGender === 'MEN') {
+              return pGender === 'MEN';
+            }
+            return true;
+          })
           .map((p) => ({
             id: p.id,
             name: p.name,
@@ -221,7 +246,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
               </h1>
               <div className="mt-4 flex items-center gap-2 text-sm font-medium text-black/60 dark:text-white/60">
                 <PackageIcon className="h-5 w-5" />
-                <span>{category.productCount} Total Products Assigned</span>
+                <span>{categoryProducts.length} Total Products Assigned</span>
               </div>
             </div>
 
@@ -296,11 +321,11 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
               </div>
 
               <Link
-                href={`/categories/${category.slug}/add-products`}
+                href={`/products/add?categoryId=${category.id}&categoryName=${encodeURIComponent(category.name)}&gender=${category.gender}`}
                 className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
               >
                 <PlusIcon className="h-4 w-4" />
-                <span>Add Products</span>
+                <span>Add Product</span>
               </Link>
             </div>
           </div>
