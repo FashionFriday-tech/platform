@@ -42,7 +42,7 @@ export async function fetchProducts(search?: string): Promise<Product[]> {
     return data.map((p) => ({
       id: p.id,
       name: p.name,
-      sku: p.id.substring(0, 8).toUpperCase(), // Assuming SKU is not directly available, use ID
+      sku: p.id,
       costPrice: Number(p.gettingPrice ?? 0),
       originalPrice: Number(p.ogPrice ?? p.sellingPrice ?? 0),
       sellingPrice: Number(p.sellingPrice ?? 0),
@@ -110,7 +110,7 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
     return {
       id: p.id,
       name: p.name,
-      sku: p.id.substring(0, 8).toUpperCase(),
+      sku: p.id,
       costPrice: p.gettingPrice ?? 0,
       originalPrice: p.ogPrice ?? p.sellingPrice ?? 0,
       sellingPrice: p.sellingPrice ?? 0,

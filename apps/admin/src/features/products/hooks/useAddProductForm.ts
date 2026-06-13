@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { MAJOR_COLORS, type Product } from '@ff/schemas';
 
@@ -8,12 +9,29 @@ import { SIZE_MAP } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export function useAddProductForm(initialData?: Product) {
+  const searchParams = useSearchParams();
+  const paramCategoryId = searchParams?.get('categoryId') ?? null;
+  const paramCategoryName = searchParams?.get('categoryName') ?? null;
+  const paramGender = searchParams?.get('gender') ?? null;
+
   const { categories: apiCategories } = useCategories();
   const { brands: apiBrands } = useBrands();
 
-  const [sizes, setSizes] = useState<string[]>(SIZE_MAP.Jacket ?? []);
-  const [gender, setGender] = useState<string>('Unisex');
-  const [category, setCategory] = useState<string>('Jacket');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    initialData?.categoryId ?? (initialData as any)?.category?.id ?? paramCategoryId,
+  );
+  const [sizes, setSizes] = useState<string[]>(SIZE_MAP.Clothing ?? []);
+  const [gender, setGender] = useState<string>(() => {
+    if (initialData?.gender === 'MEN') return 'Men';
+    if (initialData?.gender === 'WOMEN') return 'Woman';
+    if (paramGender === 'Men' || paramGender === 'Women') {
+      return paramGender === 'Women' ? 'Woman' : 'Men';
+    }
+    return 'Unisex';
+  });
+  const [category, setCategory] = useState<string>(
+    paramCategoryName ?? (initialData as any)?.category?.name ?? '',
+  );
   const [quality, setQuality] = useState<string>('Original');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
@@ -85,48 +103,27 @@ export function useAddProductForm(initialData?: Product) {
       }
 
       // Map Category from apiCategories or attached category object
-      const foundCategory = apiCategories.find(
-        (c) => c.id === initialData.categoryId || c.slug === initialData.categoryId,
-      );
-      const rawCategoryName =
-        foundCategory?.name || (initialData as any).category?.name || '';
-      const catLower = rawCategoryName.toLowerCase();
-
-      let mappedCategory = 'Jacket';
-      if (catLower.includes('sneaker') || catLower.includes('shoe')) {
-        mappedCategory = 'Sneakers';
-      } else if (catLower.includes('watch')) {
-        mappedCategory = 'Watches';
-      } else if (catLower.includes('accessor')) {
-        mappedCategory = 'Accessories';
-      } else if (
-        catLower.includes('slipper') ||
-        catLower.includes('slide') ||
-        catLower.includes('clog')
-      ) {
-        mappedCategory = 'Slippers';
-      } else if (
-        catLower.includes('cloth') ||
-        catLower.includes('jacket') ||
-        catLower.includes('shirt') ||
-        catLower.includes('pant')
-      ) {
-        const tags = initialData.marketing?.collections ?? [];
-        if (tags.some((t) => t.toLowerCase() === 'shirts' || t.toLowerCase() === 'shirt')) {
-          mappedCategory = 'Shirts';
-        } else if (tags.some((t) => t.toLowerCase() === 'pants' || t.toLowerCase() === 'pant')) {
-          mappedCategory = 'Pants';
-        } else {
-          mappedCategory = 'Jacket';
+      const catId = initialData.categoryId || (initialData as any).category?.id;
+      let matchedCategoryName = '';
+      if (catId) {
+        setSelectedCategoryId(catId);
+        const foundCategory = apiCategories.find(
+          (c) => c.id === catId || c.slug === catId,
+        );
+        if (foundCategory) {
+          matchedCategoryName = foundCategory.name;
         }
-      } else if (rawCategoryName) {
-        mappedCategory = rawCategoryName;
+      }
+      if (!matchedCategoryName && (initialData as any).category?.name) {
+        matchedCategoryName = (initialData as any).category.name;
+      }
+      if (matchedCategoryName) {
+        setCategory(matchedCategoryName);
       }
 
       // Core fields
       setProductName(initialData.name ?? '');
       setProductDesc(initialData.description ?? '');
-      setCategory(mappedCategory);
       setQuality(mappedUIQuality);
       setGender(mappedGender);
       setBrandInput(initialData.brand?.[0] ?? '');
@@ -140,7 +137,7 @@ export function useAddProductForm(initialData?: Product) {
       setSizes(
         initialData.attributes?.sizes && initialData.attributes.sizes.length > 0
           ? initialData.attributes.sizes
-          : (SIZE_MAP[mappedCategory] ?? SIZE_MAP.Jacket) || [],
+          : (SIZE_MAP[matchedCategoryName] ?? SIZE_MAP.Clothing) || [],
       );
 
       // Color — reverse-map from hex to color name
@@ -244,11 +241,41 @@ export function useAddProductForm(initialData?: Product) {
     }
   }, [videoLink]);
 
-  const handleCategorySelect = (c: string) => {
-    setCategory(c);
+  const handleCategorySelect = (
+    idOrCategory: string | { id: string; name: string },
+    maybeName?: string,
+  ) => {
+    if (typeof idOrCategory === 'object') {
+      setSelectedCategoryId(idOrCategory.id);
+      setCategory(idOrCategory.name);
+      setIsCategoryOpen(false);
+      setSizes(SIZE_MAP[idOrCategory.name] ?? SIZE_MAP.Clothing ?? []);
+      setBrandInput('');
+      setSelectedBrandLogo(null);
+      return;
+    }
+    if (maybeName) {
+      setSelectedCategoryId(idOrCategory);
+      setCategory(maybeName);
+      setIsCategoryOpen(false);
+      setSizes(SIZE_MAP[maybeName] ?? SIZE_MAP.Clothing ?? []);
+      setBrandInput('');
+      setSelectedBrandLogo(null);
+      return;
+    }
+    const found = apiCategories.find(
+      (c) => c.id === idOrCategory || c.name.toLowerCase() === idOrCategory.toLowerCase(),
+    );
+    if (found) {
+      setSelectedCategoryId(found.id);
+      setCategory(found.name);
+      setSizes(SIZE_MAP[found.name] ?? SIZE_MAP.Clothing ?? []);
+    } else {
+      setCategory(idOrCategory);
+      setSizes(SIZE_MAP[idOrCategory] ?? SIZE_MAP.Clothing ?? []);
+    }
     setIsCategoryOpen(false);
-    setSizes(SIZE_MAP[c] ?? []);
-    setBrandInput(''); // Reset brand when category changes
+    setBrandInput('');
     setSelectedBrandLogo(null);
   };
 
@@ -432,7 +459,7 @@ export function useAddProductForm(initialData?: Product) {
   const filteredColors = MAJOR_COLORS.filter((c) =>
     c.name.toLowerCase().includes(colorInput.toLowerCase()),
   );
-  const availableSizes = SIZE_MAP[category] ?? SIZE_MAP.Jacket;
+  const availableSizes = SIZE_MAP[category] ?? SIZE_MAP.Clothing ?? SIZE_MAP.Jacket;
 
   const [availableCollections, setAvailableCollections] = useState<string[]>([
     'Summer Drop',
@@ -593,5 +620,7 @@ export function useAddProductForm(initialData?: Product) {
     apiCategories,
     availableCollections,
     toggleCollection,
+    selectedCategoryId,
+    setSelectedCategoryId,
   };
 }

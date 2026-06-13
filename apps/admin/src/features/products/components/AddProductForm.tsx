@@ -117,6 +117,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     apiCategories,
     availableCollections,
     toggleCollection,
+    selectedCategoryId,
+    setSelectedCategoryId,
   } = useAddProductForm(initialData);
 
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
@@ -168,54 +170,32 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     return 'valid';
   };
 
-  const dynamicCategories = apiCategories.filter((c) => {
-    if (c.gender === 'Unisex') {
-      return true;
-    }
-    if (gender === 'Men' && c.gender === 'Men') {
-      return true;
-    }
-    if (gender === 'Women' && c.gender === 'Women') {
-      return true;
-    }
-    if (gender === 'Unisex') {
-      return true;
-    }
-    return false;
-  });
-
-  const uniqueCategories = dynamicCategories;
-
-  const resolvedApiCategory = useMemo(() => {
-    const catTarget = category.toLowerCase();
-    const selectedGender = gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase();
-
-    let cat = uniqueCategories.find((c) => {
-      const cName = c.name.toLowerCase();
-      const cGender = c.gender.toUpperCase();
-      return (
-        (cName === catTarget || c.id === category) &&
-        (cGender === selectedGender || cGender === 'UNISEX')
-      );
-    });
-
-    cat ??= uniqueCategories.find((c) => c.name.toLowerCase() === catTarget || c.id === category);
-
-    if (!cat) {
-      if (['jacket', 'shirts', 'pants', 'clothing', 'cloths'].includes(catTarget)) {
-        cat =
-          uniqueCategories.find(
-            (c) =>
-              (c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing')) &&
-              (c.gender.toUpperCase() === selectedGender || c.gender.toUpperCase() === 'UNISEX'),
-          ) ??
-          uniqueCategories.find(
-            (c) => c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing'),
-          );
+  const distinctCategoryNames = useMemo<string[]>(() => {
+    const seen = new Set<string>();
+    const names: string[] = [];
+    for (const c of apiCategories) {
+      if (c.name && !seen.has(c.name.toLowerCase())) {
+        seen.add(c.name.toLowerCase());
+        names.push(c.name);
       }
     }
-    return cat ?? uniqueCategories[0];
-  }, [category, gender, uniqueCategories]);
+    return names;
+  }, [apiCategories]);
+
+  const resolvedApiCategory = useMemo(() => {
+    const targetCatName = category.toLowerCase();
+    const selectedCatGender =
+      gender.toUpperCase() === 'WOMAN' || gender.toUpperCase() === 'WOMEN' ? 'WOMEN' : 'MEN';
+
+    return (
+      apiCategories.find(
+        (c) =>
+          c.name.toLowerCase() === targetCatName && c.gender?.toUpperCase() === selectedCatGender,
+      ) ??
+      apiCategories.find((c) => c.name.toLowerCase() === targetCatName) ??
+      apiCategories[0]
+    );
+  }, [category, gender, apiCategories]);
 
   return (
     <div className="scrollbar-hide h-full w-full overflow-y-auto rounded-2xl pb-20">
@@ -338,48 +318,30 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     }),
                   );
 
-                  const catTarget = category.toLowerCase();
-                  const selectedGender =
-                    gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase();
+                  const targetCatName = category.toLowerCase();
+                  const selectedCatGender =
+                    gender.toUpperCase() === 'WOMAN' || gender.toUpperCase() === 'WOMEN'
+                      ? 'WOMEN'
+                      : 'MEN';
 
-                  let selectedApiCategory = uniqueCategories.find((c) => {
-                    const cName = c.name.toLowerCase();
-                    const cGender = c.gender.toUpperCase();
-                    return (
-                      (cName === catTarget || c.id === category) &&
-                      (cGender === selectedGender || cGender === 'UNISEX')
-                    );
-                  });
-
-                  selectedApiCategory ??= uniqueCategories.find(
-                    (c) => c.name.toLowerCase() === catTarget || c.id === category,
+                  let selectedApiCategory = apiCategories.find(
+                    (c) =>
+                      c.name.toLowerCase() === targetCatName &&
+                      c.gender?.toUpperCase() === selectedCatGender,
+                  );
+                  selectedApiCategory ??= apiCategories.find(
+                    (c) => c.name.toLowerCase() === targetCatName,
                   );
 
                   if (!selectedApiCategory) {
-                    // Try mapping clothing subcategories (Jacket, Shirts, Pants, etc.)
-                    if (['jacket', 'shirts', 'pants', 'clothing', 'cloths'].includes(catTarget)) {
-                      selectedApiCategory =
-                        uniqueCategories.find(
-                          (c) =>
-                            (c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing')) &&
-                            (c.gender.toUpperCase() === selectedGender ||
-                              c.gender.toUpperCase() === 'UNISEX'),
-                        ) ??
-                        uniqueCategories.find(
-                          (c) => c.name.toLowerCase() === 'clothing' || c.slug.includes('clothing'),
-                        );
-                    }
-                  }
-
-                  selectedApiCategory ??= uniqueCategories[0];
-
-                  if (!selectedApiCategory) {
                     setToast({
-                      message: 'Please create at least one category first.',
+                      message: 'Please select a product category first.',
                       type: 'warning',
                     });
                     return;
                   }
+
+                  const finalCategoryId = selectedApiCategory.id;
 
                   // Map frontend quality to backend enum
                   let mappedQuality = quality.toUpperCase().replace(/\s+/g, '_');
@@ -540,13 +502,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     status={getStatus(category, initialData?.categoryId, 1, 'category')}
                   />
                   <button
+                    type="button"
                     onClick={() => {
                       setIsCategoryOpen(!isCategoryOpen);
                       markTouched('category');
                     }}
                     className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${isCategoryOpen ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white' : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'}`}
                   >
-                    <span>{category}</span>
+                    <span>{category || 'Select Category'}</span>
                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
                       <svg
                         className={`h-3 w-3 text-black transition-transform dark:text-white ${isCategoryOpen ? 'rotate-180' : ''}`}
@@ -566,43 +529,27 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
                   {isCategoryOpen && (
                     <div className="absolute z-10 mt-2 max-h-60 w-full overflow-x-hidden overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
-                      {uniqueCategories.map((c) => (
-                        <button
-                          key={c.id}
-                          onClick={() => {
-                            handleCategorySelect(c.name);
-                            markTouched('category');
-                          }}
-                          className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${category === c.name ? 'bg-black/5 text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
-                        >
-                          {c.name}
-                        </button>
-                      ))}
-                      {uniqueCategories.length === 0 && (
+                      {distinctCategoryNames.map((catName) => {
+                        const isSelected = category.toLowerCase() === catName.toLowerCase();
+                        return (
+                          <button
+                            key={catName}
+                            type="button"
+                            onClick={() => {
+                              handleCategorySelect(catName);
+                              markTouched('category');
+                            }}
+                            className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${isSelected ? 'bg-black/5 font-bold text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
+                          >
+                            <span>{catName}</span>
+                          </button>
+                        );
+                      })}
+                      {distinctCategoryNames.length === 0 && (
                         <div className="px-4 py-3 text-center text-sm font-medium text-black/50 dark:text-white/50">
-                          No categories for this gender.
+                          No categories found.
                         </div>
                       )}
-                      <div className="my-1 border-t border-black/10 dark:border-white/10" />
-                      <Link
-                        href="/categories"
-                        className="flex w-full items-center justify-center space-x-2 px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:text-white dark:hover:bg-white/5"
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          />
-                        </svg>
-                        <span>Manage Categories</span>
-                      </Link>
                     </div>
                   )}
                 </div>
