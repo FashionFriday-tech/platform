@@ -71,7 +71,7 @@ export function SellerDetailsModal({
           <div className="border-b border-black/5 p-6 pb-0 dark:border-white/5">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-black/5 to-black/15 text-xl font-black text-black dark:from-white/10 dark:to-white/5 dark:text-white">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-black text-xl font-black text-white dark:bg-white dark:text-black">
                   {seller.storeName.charAt(0).toUpperCase()}
                 </div>
                 <div>
