@@ -1,4 +1,4 @@
-import { AccountStatus, OrderStatus, PaymentMethod, PaymentStatus, UserRole } from '@ff/database';
+import { AccountStatus, OrderStatus, PaymentMethod, PaymentStatus, UserRole, generateBrandId } from '@ff/database';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
@@ -161,7 +161,7 @@ export class CustomersService {
       throw new BadRequestException('A customer with this phone number already exists.');
     }
 
-    const shortId = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const shortId = generateBrandId('CUST');
 
     const newUser = await this.prisma.db.user.create({
       data: {
@@ -216,7 +216,7 @@ export class CustomersService {
       throw new NotFoundException('Customer not found');
     }
 
-    const orderNumber = `FF-${Math.floor(100000 + Math.random() * 900000)}`;
+    const orderNumber = generateBrandId('ORD');
     const lineTotal = details.price * details.quantity;
 
     const shippingAddress = {
@@ -261,6 +261,7 @@ export class CustomersService {
 
       const order = await tx.order.create({
         data: {
+          id: orderNumber,
           userId: customerId,
           orderNumber,
           status: OrderStatus.CONFIRMED,
@@ -526,7 +527,7 @@ export class CustomersService {
       throw new BadRequestException('Cart is empty');
     }
 
-    const orderNumber = `FF-${Math.floor(100000 + Math.random() * 900000)}`;
+    const orderNumber = generateBrandId('ORD');
     let totalAmount = 0;
 
     const orderItems = items.map((item) => {
@@ -564,6 +565,7 @@ export class CustomersService {
     return this.prisma.db.$transaction(async (tx) => {
       const order = await tx.order.create({
         data: {
+          id: orderNumber,
           userId: id,
           orderNumber,
           status: OrderStatus.CONFIRMED,

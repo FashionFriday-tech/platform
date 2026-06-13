@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus } from '@ff/database';
+import { OrderStatus, PaymentStatus, generateBrandId } from '@ff/database';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
@@ -93,12 +93,13 @@ export class OrdersService {
     }
 
     // 4. Create order
-    const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const orderNumber = generateBrandId('ORD');
     this.logger.log(`[OrdersService] Step 4: Creating Order record ${orderNumber} in database...`);
 
     try {
       const order = await this.prisma.db.order.create({
         data: {
+          id: orderNumber,
           userId,
           orderNumber,
           status: OrderStatus.PENDING,
@@ -241,17 +242,25 @@ export class OrdersService {
   }
 
   async findOne(id: string) {
-    const order = await this.prisma.db.order.findUnique({
-      where: { id },
-      include: {
-        items: {
-          include: {
-            seller: true,
-          },
+    const includeConfig = {
+      items: {
+        include: {
+          seller: true,
         },
-        user: { select: { name: true, phone: true } },
       },
-    });
+      user: { select: { name: true, phone: true } },
+    };
+
+    const order =
+      (await this.prisma.db.order.findUnique({
+        where: { id },
+        include: includeConfig,
+      })) ||
+      (await this.prisma.db.order.findUnique({
+        where: { orderNumber: id },
+        include: includeConfig,
+      }));
+
     if (!order) {
       throw new NotFoundException('Order not found');
     }
@@ -313,7 +322,10 @@ export class OrdersService {
 
   async updateOrder(id: string, dto: UpdateOrderDto) {
     this.logger.log(`[OrdersService] Updating order ${id} with: ${JSON.stringify(dto)}`);
-    const existing = await this.prisma.db.order.findUnique({ where: { id } });
+    const existing =
+      (await this.prisma.db.order.findUnique({ where: { id } })) ||
+      (await this.prisma.db.order.findUnique({ where: { orderNumber: id } }));
+
     if (!existing) {
       throw new NotFoundException('Order not found');
     }
@@ -321,13 +333,13 @@ export class OrdersService {
     if ((dto as any).sellerId !== undefined) {
       const targetSellerId = (dto as any).sellerId || null;
       await this.prisma.db.orderItem.updateMany({
-        where: { orderId: id },
+        where: { orderId: existing.id },
         data: { sellerId: targetSellerId },
       });
     }
 
     const updated = await this.prisma.db.order.update({
-      where: { id },
+      where: { id: existing.id },
       data: {
         ...(dto.status ? { status: dto.status } : {}),
         ...(dto.trackingNumber !== undefined ? { trackingNumber: dto.trackingNumber } : {}),
@@ -344,14 +356,21 @@ export class OrdersService {
     });
 
     this.logger.log(
-      `[OrdersService] Order ${id} updated. New status: ${updated.status}, tracking: ${updated.trackingNumber ?? 'none'}`,
+      `[OrdersService] Order ${existing.id} updated. New status: ${updated.status}, tracking: ${updated.trackingNumber ?? 'none'}`,
     );
     return updated;
   }
 
   async remove(id: string) {
+    const existing =
+      (await this.prisma.db.order.findUnique({ where: { id } })) ||
+      (await this.prisma.db.order.findUnique({ where: { orderNumber: id } }));
+
+    if (!existing) {
+      throw new NotFoundException('Order not found');
+    }
     return this.prisma.db.order.delete({
-      where: { id },
+      where: { id: existing.id },
     });
   }
 }
