@@ -1,6 +1,11 @@
+'use client';
+
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+
+import { ShoppingBagIcon } from '@ff/ui';
 
 import { type Product } from '../types';
 import { DeleteProductModal } from './DeleteProductModal';
@@ -11,9 +16,9 @@ interface Props {
   isLoading: boolean;
   onToggleStatus: (id: string) => void;
   onDeleteProduct?: (id: string) => Promise<boolean | undefined>;
-  selectedIds: Set<string>;
-  onToggleSelection: (id: string) => void;
-  onToggleAllSelection: (ids: string[]) => void;
+  selectedIds?: Set<string>;
+  onToggleSelection?: (id: string) => void;
+  onToggleAllSelection?: (ids: string[]) => void;
 }
 
 export function ProductGrid({
@@ -21,13 +26,11 @@ export function ProductGrid({
   isLoading,
   onToggleStatus,
   onDeleteProduct,
-  selectedIds,
-  onToggleSelection,
-  onToggleAllSelection,
 }: Props) {
   const router = useRouter();
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
   const handleDeleteConfirm = async () => {
     if (!productToDelete || !onDeleteProduct) {
@@ -58,160 +61,179 @@ export function ProductGrid({
     );
   }
 
-  const allSelected = products.length > 0 && selectedIds.size === products.length;
-
   return (
-    <div className="scrollbar-hide h-full w-full overflow-y-auto pb-4">
+    <div className="scrollbar-hide h-full w-full overflow-y-auto pb-6">
+      {/* Top Controls: Counts */}
       <div className="mb-4 flex items-center justify-between px-2">
         <div className="text-sm font-medium text-black/60 dark:text-white/60">
-          Showing {products.length} products
-        </div>
-        <div
-          onClick={() => {
-            onToggleAllSelection(products.map((p) => p.id));
-          }}
-          className="flex cursor-pointer items-center space-x-2 text-sm font-medium transition-colors hover:text-black/80 dark:hover:text-white/80"
-        >
-          <div
-            className={`flex h-5 w-5 items-center justify-center rounded-md border transition-colors ${allSelected ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/30 dark:border-white/30'}`}
-          >
-            {allSelected && (
-              <svg
-                className="h-3.5 w-3.5 text-white dark:text-black"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            )}
-          </div>
-          <span>Select All</span>
+          Showing <span className="font-bold text-black dark:text-white">{products.length}</span> products
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 px-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+      {/* Modern Product Cards Grid */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {products.map((product) => {
-          const isSelected = selectedIds.has(product.id);
+          const hasDiscount = Number(product.originalPrice || 0) > Number(product.sellingPrice || 0);
+
           return (
             <div
               key={product.id}
               onClick={() => {
                 router.push(`/products/${product.seoSlug ?? product.id}`);
               }}
-              className={`group relative flex h-[180px] cursor-pointer flex-row overflow-hidden rounded-[24px] transition-all duration-300 ${isSelected ? 'bg-black/5 shadow-md ring-2 ring-black/20 dark:bg-white/5 dark:ring-white/20' : 'bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1.5 hover:shadow-[0_12px_40px_rgb(0,0,0,0.08)] dark:bg-[#161616] dark:shadow-[0_8px_30px_rgb(255,255,255,0.02)] dark:hover:shadow-[0_12px_40px_rgb(255,255,255,0.04)]'}`}
+              className={`group relative flex cursor-pointer flex-col rounded-2xl border border-black/10 bg-white shadow-[0_2px_12px_rgb(0,0,0,0.03)] transition-colors hover:border-black/30 dark:border-white/10 dark:bg-[#151517] dark:hover:border-white/25 ${
+                activeMenuId === product.id ? 'z-40' : 'hover:z-10'
+              }`}
             >
-              {/* Checkbox */}
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSelection(product.id);
-                }}
-                className={`absolute top-4 left-4 z-20 flex h-6 w-6 cursor-pointer items-center justify-center rounded-md backdrop-blur-md transition-all ${isSelected ? 'bg-black text-white shadow-md dark:bg-white dark:text-black' : 'bg-white/90 text-transparent shadow-[0_2px_10px_rgba(0,0,0,0.1)] group-hover:text-black/20 hover:bg-white dark:bg-black/80 dark:shadow-[0_2px_10px_rgba(255,255,255,0.05)] dark:group-hover:text-white/20 dark:hover:bg-black'}`}
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-
-              {/* Status Badge */}
-              <div className="absolute bottom-4 left-4 z-20">
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-extrabold tracking-widest uppercase shadow-lg backdrop-blur-md transition-colors ${product.status === 'Active' ? 'bg-black/90 text-white dark:bg-white/90 dark:text-black' : product.status === 'Draft' ? 'bg-yellow-400 text-yellow-900 dark:bg-yellow-500' : 'bg-white/90 text-black/60 dark:bg-black/90 dark:text-white/60'}`}
-                >
-                  {product.status}
-                </span>
-              </div>
-
-              {/* Image Area - Left side */}
-              <div className="relative flex h-full w-[110px] flex-shrink-0 items-center justify-center overflow-hidden bg-black/5 dark:bg-white/5">
+              {/* Product Image Area with Overlays */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-2xl bg-black/5 dark:bg-white/5">
                 {product.imageUrl ? (
-                  <>
-                    <Image
-                      width={500}
-                      height={500}
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
-                  </>
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 20vw"
+                  />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-black/5 to-black/10 dark:from-white/5 dark:to-white/10">
-                    <span className="text-xs font-bold tracking-widest text-black/30 uppercase dark:text-white/30">
-                      IMG
-                    </span>
+                  <div className="flex h-full w-full items-center justify-center text-black/30 dark:text-white/30">
+                    <ShoppingBagIcon className="h-10 w-10 opacity-30" />
                   </div>
                 )}
+
+                {/* Top-Right: Status Badge */}
+                <div className="absolute top-2.5 right-2.5 z-20">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleStatus(product.id);
+                    }}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider uppercase shadow-md backdrop-blur-md transition-all ${
+                      product.status === 'Active'
+                        ? 'border border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                        : product.status === 'Draft'
+                          ? 'border border-amber-400/40 bg-amber-400 text-amber-950'
+                          : 'border border-zinc-600 bg-zinc-800 text-zinc-200'
+                    }`}
+                    title={`Status: ${product.status} (Click to toggle)`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        product.status === 'Active'
+                          ? 'bg-emerald-400 dark:bg-emerald-600'
+                          : 'bg-current'
+                      }`}
+                    />
+                    {product.status}
+                  </button>
+                </div>
+
+                {/* Bottom-Left: Full Brand ID Pill on Image */}
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void navigator.clipboard.writeText(product.id);
+                    toast.success('Product ID copied to clipboard');
+                  }}
+                  className="absolute bottom-2.5 left-2.5 z-20 flex items-center gap-1 rounded-md border border-black/10 bg-white/95 px-2 py-0.5 font-mono text-[10px] font-bold text-black shadow-sm backdrop-blur-md transition-colors hover:bg-white dark:border-white/15 dark:bg-black/85 dark:text-white"
+                  title="Click to copy ID"
+                >
+                  <span>ID: {product.id}</span>
+                </div>
               </div>
 
-              {/* Content Area - Right side */}
-              <div className="flex min-w-0 flex-1 flex-col justify-between p-4">
-                <div>
-                  <h3
-                    className="mb-1 line-clamp-2 text-base leading-tight font-bold text-black dark:text-white"
+              {/* Product Card Content: Name, Brand, Quality, Price, Stock */}
+              <div className="flex flex-1 flex-col justify-between p-3.5 space-y-2.5">
+                <div className="space-y-1.5">
+                  {/* Brand & Quality Tags */}
+                  {(product.brand || product.quality) && (
+                    <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                      {product.brand && (
+                        <span className="rounded-md bg-black/5 px-2 py-0.5 font-bold uppercase tracking-wider text-black/80 dark:bg-white/10 dark:text-white/80">
+                          {product.brand}
+                        </span>
+                      )}
+                      {product.quality && (
+                        <span className="rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 font-bold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/20 dark:text-blue-400">
+                          {product.quality}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Product Name */}
+                  <h4
+                    className="line-clamp-2 text-sm leading-snug font-bold text-black transition-colors group-hover:text-black/70 dark:text-white dark:group-hover:text-white/70"
                     title={product.name}
                   >
                     {product.name}
-                  </h3>
-                  <p className="mb-2 font-mono text-[10px] font-medium text-black/40 dark:text-white/40">
-                    ID: {product.sku}
-                  </p>
+                  </h4>
 
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-extrabold text-black dark:text-white">
-                      ₹{Number(product.sellingPrice || 0).toFixed(2)}
+                  {/* Price */}
+                  <div className="flex items-baseline gap-2 pt-0.5">
+                    <span className="text-base font-black text-black dark:text-white">
+                      ₹{Number(product.sellingPrice || 0).toLocaleString('en-IN')}
                     </span>
-                    {Number(product.sellingPrice || 0) < Number(product.originalPrice || 0) && (
-                      <span className="text-xs font-semibold text-black/30 line-through dark:text-white/30">
-                        ₹{Number(product.originalPrice || 0).toFixed(2)}
+                    {hasDiscount && (
+                      <span className="text-xs font-semibold text-black/40 line-through dark:text-white/40">
+                        ₹{Number(product.originalPrice || 0).toLocaleString('en-IN')}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-2 flex items-end justify-between gap-3">
-                  <div className="mb-1 flex-1">
-                    <div className="mb-1.5 flex items-center justify-between text-[9px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                      <span>Stock</span>
-                      <span
-                        className={
-                          product.stock < 100
-                            ? 'text-red-500'
-                            : product.stock < 500
-                              ? 'text-yellow-500'
-                              : 'text-green-500'
-                        }
-                      >
-                        {product.stock}
-                      </span>
+                {/* Stock Level & Action Menu */}
+                <div className="border-t border-black/5 pt-2.5 dark:border-white/5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1">
+                      <div className="mb-1 flex items-center justify-between text-[10px] font-bold text-black/50 dark:text-white/50">
+                        <span>Stock</span>
+                        <span
+                          className={
+                            product.stock < 10
+                              ? 'font-extrabold text-red-500'
+                              : product.stock < 50
+                                ? 'font-bold text-amber-500'
+                                : 'font-bold text-black dark:text-white'
+                          }
+                        >
+                          {product.stock} units
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            product.stock < 10
+                              ? 'bg-red-500'
+                              : product.stock < 50
+                                ? 'bg-amber-500'
+                                : 'bg-black dark:bg-white'
+                          }`}
+                          style={{
+                            width: `${Math.min(100, Math.max(5, (product.stock / (product.maxStock || 100)) * 100))}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
-                      <div
-                        className={`h-full rounded-full transition-all duration-1000 ease-out ${product.stock < 100 ? 'bg-red-500' : product.stock < 500 ? 'bg-yellow-500' : 'bg-green-500'}`}
-                        style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
+
+                    {/* 3-Dot Actions Menu */}
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="relative z-30 ml-2"
+                    >
+                      <ProductActionMenu
+                        product={product}
+                        onToggleStatus={onToggleStatus}
+                        onRequestDelete={(p) => {
+                          setProductToDelete(p);
+                        }}
+                        isOpen={activeMenuId === product.id}
+                        onOpenChange={(open) => {
+                          setActiveMenuId(open ? product.id : null);
+                        }}
                       />
                     </div>
-                  </div>
-
-                  <div className="relative z-30">
-                    <ProductActionMenu
-                      product={product}
-                      onToggleStatus={onToggleStatus}
-                      onRequestDelete={(p) => {
-                        setProductToDelete(p);
-                      }}
-                    />
                   </div>
                 </div>
               </div>

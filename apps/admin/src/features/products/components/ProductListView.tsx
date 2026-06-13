@@ -18,9 +18,6 @@ export function ProductListView() {
     deleteProduct,
     viewMode,
     setViewMode,
-    selectedIds,
-    toggleSelection,
-    toggleAllSelection,
     visibleColumns,
     toggleColumn,
     appliedAdvancedFilters,
@@ -50,9 +47,6 @@ export function ProductListView() {
               isLoading={isLoading}
               onToggleStatus={toggleProductStatus}
               onDeleteProduct={deleteProduct}
-              selectedIds={selectedIds}
-              onToggleSelection={toggleSelection}
-              onToggleAllSelection={toggleAllSelection}
               sortOption={sortOption}
               setSortOption={setSortOption}
               visibleColumns={visibleColumns}
@@ -63,9 +57,6 @@ export function ProductListView() {
               isLoading={isLoading}
               onToggleStatus={toggleProductStatus}
               onDeleteProduct={deleteProduct}
-              selectedIds={selectedIds}
-              onToggleSelection={toggleSelection}
-              onToggleAllSelection={toggleAllSelection}
             />
           )}
         </div>
