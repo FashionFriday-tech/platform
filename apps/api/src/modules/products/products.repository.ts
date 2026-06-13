@@ -1,4 +1,4 @@
-import { Prisma } from '@ff/database';
+import { Prisma, generateBrandId } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
@@ -9,7 +9,10 @@ export class ProductsRepository {
 
   async create(data: Prisma.ProductCreateInput) {
     return this.prisma.db.product.create({
-      data,
+      data: {
+        id: data.id || generateBrandId('PROD'),
+        ...data,
+      },
     });
   }
 
@@ -61,7 +64,7 @@ export class ProductsRepository {
   }
 
   async findBySlug(slug: string) {
-    return this.prisma.db.product.findFirst({
+    return this.prisma.db.product.findUnique({
       where: { slug },
       include: { category: true, seller: true },
     });

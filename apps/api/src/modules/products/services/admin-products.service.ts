@@ -1,4 +1,4 @@
-import { Gender, Prisma, ProductStatus } from '@ff/database';
+import { Gender, Prisma, ProductStatus, generateBrandId } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
 import { triggerRevalidation } from '../../revalidate-helper';
@@ -15,6 +15,7 @@ export class AdminProductsService {
 
   async createProduct(dto: CreateProductDto) {
     const data: Prisma.ProductCreateInput = {
+      id: generateBrandId('PROD'),
       name: dto.name,
       slug: dto.slug,
       description: dto.description,
@@ -68,17 +69,20 @@ export class AdminProductsService {
     };
   }
 
-  async getProducts(skip = 0, take = 10, search?: string) {
+  async getProducts(skip = 0, take = 10, search?: string, categoryId?: string) {
     const trimmed = search?.trim();
-    const where: Prisma.ProductWhereInput = trimmed
-      ? {
-          OR: [
-            { id: { contains: trimmed, mode: 'insensitive' } },
-            { name: { contains: trimmed, mode: 'insensitive' } },
-            { slug: { contains: trimmed, mode: 'insensitive' } },
-          ],
-        }
-      : {};
+    const where: Prisma.ProductWhereInput = {
+      ...(trimmed
+        ? {
+            OR: [
+              { id: { contains: trimmed, mode: 'insensitive' } },
+              { name: { contains: trimmed, mode: 'insensitive' } },
+              { slug: { contains: trimmed, mode: 'insensitive' } },
+            ],
+          }
+        : {}),
+      ...(categoryId ? { categoryId } : {}),
+    };
     const result = await this.productsRepository.findAll({ skip, take, where });
     return this.paginate(result, skip, take);
   }

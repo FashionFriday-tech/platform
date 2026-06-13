@@ -33,8 +33,14 @@ export class AdminProductsController {
     @Query('skip') skip?: number,
     @Query('take') take?: number,
     @Query('search') search?: string,
+    @Query('categoryId') categoryId?: string,
   ) {
-    return this.productsService.getProducts(Number(skip) || 0, Number(take) || 100, search);
+    return this.productsService.getProducts(
+      Number(skip) || 0,
+      Number(take) || 100,
+      search,
+      categoryId,
+    );
   }
 
   @Get(':id')
