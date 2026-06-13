@@ -1,4 +1,4 @@
-import { Prisma, SellerStatus } from '@ff/database';
+import { Prisma, SellerStatus, generateBrandId } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
@@ -208,11 +208,14 @@ export class SellersRepository {
     const { categoryIds, ...data } = dto;
     return this.prisma.db.seller.create({
       data: {
+        id: generateBrandId('DLR'),
         name: data.name,
         storeName: data.storeName,
         email: data.email || null,
         phone: data.phone,
         address: data.address || null,
+        website: data.website || null,
+        instagram: data.instagram || null,
         status: data.status ?? SellerStatus.ACTIVE,
         categories: {
           connect: categoryIds.map((id) => ({ id })),
@@ -245,6 +248,8 @@ export class SellersRepository {
       ...(data.email !== undefined && { email: data.email || null }),
       ...(data.phone !== undefined && { phone: data.phone }),
       ...(data.address !== undefined && { address: data.address || null }),
+      ...(data.website !== undefined && { website: data.website || null }),
+      ...(data.instagram !== undefined && { instagram: data.instagram || null }),
       ...(data.status !== undefined && { status: data.status }),
     };
 
