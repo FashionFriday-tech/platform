@@ -54,6 +54,8 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
               size: item.size,
               color: item.color,
               quantity: item.quantity,
+              price: Number(item.price ?? 0),
+              sku: item.sku || (item.productId ? `SKU-${String(item.productId).slice(-6).toUpperCase()}` : 'N/A'),
               productImage:
                 (item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
                   ? item.image

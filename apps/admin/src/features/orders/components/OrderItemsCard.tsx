@@ -122,11 +122,11 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold text-black/50 dark:text-white/50">
                     {item.quantity} × ₹
-                    {item.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    {(Number(item.price) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                   <span className="text-xl font-black text-black sm:text-2xl dark:text-white">
                     ₹
-                    {(item.price * item.quantity).toLocaleString('en-IN', {
+                    {((Number(item.price) || 0) * (item.quantity || 1)).toLocaleString('en-IN', {
                       minimumFractionDigits: 2,
                     })}
                   </span>

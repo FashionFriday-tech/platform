@@ -678,11 +678,11 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">
                           {item.quantity} × ₹
-                          {item.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                          {(Number(item.price) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                         </span>
                         <span className="text-xl font-black text-black sm:text-2xl dark:text-white">
                           ₹
-                          {(item.price * item.quantity).toLocaleString('en-IN', {
+                          {((Number(item.price) || 0) * (item.quantity || 1)).toLocaleString('en-IN', {
                             minimumFractionDigits: 2,
                           })}
                         </span>
@@ -749,7 +749,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
               <div className="flex justify-between">
                 <span>Subtotal ({order.items.length} items)</span>
                 <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                  ₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  ₹{(Number(order.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -762,7 +762,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
               </div>
               <div className="mt-2 flex justify-between border-t border-zinc-100 pt-4 text-base font-black text-black dark:border-zinc-800 dark:text-white">
                 <span>Total</span>
-                <span>₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span>₹{(Number(order.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
               </div>
             </div>
             <div className="bg-zinc-50 px-6 py-4 dark:bg-zinc-900/60">
