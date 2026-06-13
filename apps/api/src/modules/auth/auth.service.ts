@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 
 import { PrismaService } from '../../database/prisma.service';
+import { generateBrandId } from '@ff/database';
 import { SendOtpDto, SignupDto, VerifyOtpDto } from './dto/auth.dto';
 import { Msg91Service } from './msg91.service';
 
@@ -186,6 +187,7 @@ export class AuthService {
     try {
       const newUser = await this.prisma.db.user.create({
         data: {
+          id: generateBrandId('CUST'),
           phone,
           email,
           name,
@@ -209,7 +211,7 @@ export class AuthService {
 
       // Fallback: Create mock user in memory
       const mockUser = {
-        id: `mock-${Date.now()}`,
+        id: generateBrandId('CUST'),
         phone,
         email,
         name,

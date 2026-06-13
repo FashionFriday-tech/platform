@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { type NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
 import { ZodValidationPipe } from 'nestjs-zod';
+import fs from 'fs';
 import { join } from 'path';
 
 import { AppModule } from './app.module';
@@ -26,7 +27,11 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // Serve the uploads directory statically
-  app.useStaticAssets(join(process.cwd(), 'uploads'), {
+  const uploadsDir = join(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  app.useStaticAssets(uploadsDir, {
     prefix: '/uploads/',
   });
 
