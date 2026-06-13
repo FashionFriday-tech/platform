@@ -65,10 +65,10 @@ export async function getHomeBrands(): Promise<Brand[]> {
 
 export async function getHomeReviews(): Promise<WhatsappReview[]> {
   try {
-    const data = await fetcher<WhatsappReview[]>('/whatsapp-reviews', {
+    const data = await fetcher<WhatsappReview[]>('/whatsapp-reviews?limit=20', {
       next: { tags: ['home-reviews'] },
     });
-    return data || [];
+    return (data || []).slice(0, 20);
   } catch (error) {
     console.error('Failed to fetch home reviews:', error);
     return [];

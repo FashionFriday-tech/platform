@@ -49,15 +49,17 @@ interface InfiniteColumnProps {
   duration: number;
   reverse?: boolean;
   active?: boolean;
+  onSelectImage?: (src: string) => void;
 }
 
 // --- Components ---
 
 const InfiniteColumn = ({
   images,
-  duration,
+  duration = 75,
   reverse = false,
   active = false,
+  onSelectImage,
 }: InfiniteColumnProps) => {
   // Ensure we have enough items to scroll nicely
   const loopImages = [...images, ...images, ...images];
@@ -110,13 +112,21 @@ const InfiniteColumn = ({
         {loopImages.map((src, i) => (
           <div
             key={i}
-            className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:scale-[1.02] hover:border-white/30 hover:opacity-100 hover:shadow-2xl"
+            onClick={() => onSelectImage?.(src)}
+            className="group relative aspect-[9/19] w-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:border-white/30 hover:opacity-100 hover:shadow-2xl"
           >
             <img
               src={src}
               alt={`Customer Review ${i}`}
-              className="block h-auto w-full object-contain"
+              className="h-full w-full object-cover object-top"
+              loading="lazy"
             />
+            {/* Hover overlay with action indicator */}
+            <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 p-3">
+              <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-black shadow-md backdrop-blur-xs uppercase tracking-wider dark:bg-black/95 dark:text-white">
+                View Chat
+              </span>
+            </div>
           </div>
         ))}
       </div>
@@ -127,10 +137,14 @@ const InfiniteColumn = ({
 // --- Main Section ---
 export default function SplitFeatureSection({ initialReviews }: { initialReviews?: any[] }) {
   const [reviews, setReviews] = useState<string[]>(
-    initialReviews && initialReviews.length > 0 ? initialReviews.map((r) => r.imageUrl) : [],
+    initialReviews && initialReviews.length > 0
+      ? initialReviews.slice(0, 20).map((r) => r.imageUrl)
+      : [],
   );
   const [isMounted, setIsMounted] = useState(!!initialReviews && initialReviews.length > 0);
   const [isInView, setIsInView] = useState(true);
+  const [activeReviewIndex, setActiveReviewIndex] = useState<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   const columnsRef = useCallback((node: HTMLDivElement | null) => {
@@ -149,23 +163,82 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
   useEffect(() => {
     setIsMounted(true);
     if (initialReviews && initialReviews.length > 0) {
+      setReviews(initialReviews.slice(0, 20).map((r) => r.imageUrl));
       return;
     }
     const loadReviews = async () => {
       try {
-        const data = await fetcher<any[]>('/whatsapp-reviews');
+        const data = await fetcher<any[]>('/whatsapp-reviews?limit=20');
         if (Array.isArray(data) && data.length > 0) {
-          setReviews(data.map((r) => r.imageUrl));
+          setReviews(data.slice(0, 20).map((r) => r.imageUrl));
           return;
         }
-        setReviews(FALLBACK_REVIEWS);
+        setReviews(FALLBACK_REVIEWS.slice(0, 20));
       } catch (err: unknown) {
         console.error('Failed to load dynamic reviews:', err);
-        setReviews(FALLBACK_REVIEWS);
+        setReviews(FALLBACK_REVIEWS.slice(0, 20));
       }
     };
     void loadReviews();
   }, [initialReviews]);
+
+  const handleSelectImage = useCallback((src: string) => {
+    const idx = reviews.indexOf(src);
+    if (idx !== -1) {
+      setActiveReviewIndex(idx);
+    }
+  }, [reviews]);
+
+  const navigateNext = useCallback(() => {
+    setActiveReviewIndex((prev) => {
+      if (prev === null) return null;
+      return prev < reviews.length - 1 ? prev + 1 : 0;
+    });
+  }, [reviews.length]);
+
+  const navigatePrev = useCallback(() => {
+    setActiveReviewIndex((prev) => {
+      if (prev === null) return null;
+      return prev > 0 ? prev - 1 : reviews.length - 1;
+    });
+  }, [reviews.length]);
+
+  // Keyboard navigation for Lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (activeReviewIndex === null) return;
+      if (e.key === 'Escape') {
+        setActiveReviewIndex(null);
+      } else if (e.key === 'ArrowRight') {
+        navigateNext();
+      } else if (e.key === 'ArrowLeft') {
+        navigatePrev();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeReviewIndex, navigateNext, navigatePrev]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diffX = touchStartX.current - e.changedTouches[0].clientX;
+    const threshold = 50;
+    if (Math.abs(diffX) > threshold) {
+      if (diffX > 0) {
+        navigateNext();
+      } else {
+        navigatePrev();
+      }
+    }
+    touchStartX.current = null;
+  };
 
   // Split reviews (max 20) evenly into 3 columns
   const getColumnImages = (colIndex: number) => {
@@ -261,22 +334,33 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                 <div className="grid h-full w-full grid-cols-3 gap-3 p-4 lg:p-6">
                   <div className="relative h-full overflow-hidden">
                     {col1.length > 0 && (
-                      <InfiniteColumn images={col1} duration={25} active={isInView} />
+                      <InfiniteColumn
+                        images={col1}
+                        duration={65}
+                        active={isInView}
+                        onSelectImage={handleSelectImage}
+                      />
                     )}
                   </div>
                   <div className="relative h-full overflow-hidden pt-24">
                     {col2.length > 0 && (
                       <InfiniteColumn
                         images={col2}
-                        duration={35}
+                        duration={85}
                         reverse={true}
                         active={isInView}
+                        onSelectImage={handleSelectImage}
                       />
                     )}
                   </div>
                   <div className="relative h-full overflow-hidden pt-12">
                     {col3.length > 0 && (
-                      <InfiniteColumn images={col3} duration={28} active={isInView} />
+                      <InfiniteColumn
+                        images={col3}
+                        duration={72}
+                        active={isInView}
+                        onSelectImage={handleSelectImage}
+                      />
                     )}
                   </div>
                 </div>
@@ -287,18 +371,18 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                 <div className="grid h-full w-full grid-cols-3 gap-3 p-4 lg:p-6">
                   {/* Column 1 Placeholder */}
                   <div className="flex flex-col gap-4">
-                    <div className="h-64 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
-                    <div className="h-80 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="aspect-[9/19] animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="aspect-[9/19] animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
                   </div>
                   {/* Column 2 Placeholder */}
                   <div className="flex flex-col gap-4 pt-24">
-                    <div className="h-80 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
-                    <div className="h-64 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="aspect-[9/19] animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="aspect-[9/19] animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
                   </div>
                   {/* Column 3 Placeholder */}
                   <div className="flex flex-col gap-4 pt-12">
-                    <div className="h-64 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
-                    <div className="h-80 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="aspect-[9/19] animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
+                    <div className="aspect-[9/19] animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
                   </div>
                 </div>
               </div>
@@ -306,6 +390,75 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
           </div>
         </div>
       </div>
+
+      {/* Full-screen Lightbox Modal for detailed image view */}
+      {activeReviewIndex !== null && reviews[activeReviewIndex] && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 select-none"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setActiveReviewIndex(null)}
+            className="absolute top-6 right-6 z-50 p-2 text-white/60 transition-colors hover:text-white"
+            aria-label="Close"
+          >
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          {/* Desktop Left Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigatePrev();
+            }}
+            className="absolute left-8 z-50 hidden rounded-full p-4 text-white/60 transition-all hover:bg-white/10 hover:text-white md:flex"
+            aria-label="Previous Review"
+          >
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Review Image Wrapper */}
+          <div
+            className="relative flex max-h-screen max-w-full flex-col items-center justify-center p-4"
+            onClick={() => setActiveReviewIndex(null)}
+          >
+            <img
+              src={reviews[activeReviewIndex]}
+              alt="WhatsApp Review Fullscreen"
+              className="pointer-events-none max-h-[85vh] max-w-[95vw] rounded-lg object-contain shadow-2xl md:max-w-[85vw]"
+            />
+            <div className="mt-4 flex items-center gap-4">
+              <Link
+                href="/whatsapp-reviews"
+                onClick={(e) => e.stopPropagation()}
+                className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold text-white/80 backdrop-blur-xs transition-colors hover:bg-white/20 hover:text-white"
+              >
+                View all reviews &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Desktop Right Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigateNext();
+            }}
+            className="absolute right-8 z-50 hidden rounded-full p-4 text-white/60 transition-all hover:bg-white/10 hover:text-white md:flex"
+            aria-label="Next Review"
+          >
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
     </section>
   );
 }
