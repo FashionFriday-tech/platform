@@ -11,14 +11,28 @@ interface ProductActionMenuProps {
   product: Product;
   onToggleStatus: (id: string) => void;
   onRequestDelete: (product: Product) => void;
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export function ProductActionMenu({
   product,
   onToggleStatus,
   onRequestDelete,
+  isOpen: controlledIsOpen,
+  onOpenChange,
 }: ProductActionMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(false);
+  const isControlled = controlledIsOpen !== undefined;
+  const isOpen = isControlled ? controlledIsOpen : uncontrolledIsOpen;
+
+  const setIsOpen = (valOrFn: boolean | ((prev: boolean) => boolean)) => {
+    const nextVal = typeof valOrFn === 'function' ? valOrFn(isOpen) : valOrFn;
+    if (!isControlled) {
+      setUncontrolledIsOpen(nextVal);
+    }
+    onOpenChange?.(nextVal);
+  };
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
