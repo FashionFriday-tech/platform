@@ -20,9 +20,9 @@ interface Props {
   isLoading: boolean;
   onToggleStatus: (id: string) => void;
   onDeleteProduct: (id: string) => Promise<boolean | undefined>;
-  selectedIds: Set<string>;
-  onToggleSelection: (id: string) => void;
-  onToggleAllSelection: (ids: string[]) => void;
+  selectedIds?: Set<string>;
+  onToggleSelection?: (id: string) => void;
+  onToggleAllSelection?: (ids: string[]) => void;
   sortOption: SortOption;
   setSortOption: (val: SortOption) => void;
   visibleColumns: Set<ColumnId>;
@@ -35,7 +35,7 @@ const getCategoryIcon = (category: string) => {
       return <JacketCategoryIcon className="mr-1.5 h-3.5 w-3.5" />;
     case 'footwear':
     case 'sneakers':
-    case 'shoes':
+      case 'shoes':
       return <ShoeCategoryIcon className="mr-1.5 h-3.5 w-3.5" />;
     case 'shirts':
     case 't-shirts':
@@ -50,9 +50,6 @@ export function ProductTable({
   isLoading,
   onToggleStatus,
   onDeleteProduct,
-  selectedIds,
-  onToggleSelection,
-  onToggleAllSelection,
   sortOption,
   setSortOption,
   visibleColumns,
@@ -76,8 +73,6 @@ export function ProductTable({
       </div>
     );
   }
-
-  const allSelected = products.length > 0 && selectedIds.size === products.length;
 
   const handleDeleteConfirm = async () => {
     if (!productToDelete) {
@@ -114,9 +109,7 @@ export function ProductTable({
         <div className="scrollbar-hide flex-1 overflow-x-auto overflow-y-auto">
           <div className="flex min-w-[1200px] flex-col gap-2.5 pb-2">
             <ProductTableHeader
-              allSelected={allSelected}
               products={products}
-              onToggleAllSelection={onToggleAllSelection}
               sortOption={sortOption}
               setSortOption={setSortOption}
               visibleColumns={visibleColumns}
@@ -126,8 +119,6 @@ export function ProductTable({
               <ProductTableRow
                 key={product.id}
                 product={product}
-                isSelected={selectedIds.has(product.id)}
-                onToggleSelection={onToggleSelection}
                 onToggleStatus={onToggleStatus}
                 onRequestDelete={(p) => {
                   setProductToDelete(p);

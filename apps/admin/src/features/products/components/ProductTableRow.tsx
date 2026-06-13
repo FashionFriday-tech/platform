@@ -7,8 +7,8 @@ import { ProductActionMenu } from './ProductActionMenu';
 
 interface Props {
   product: Product;
-  isSelected: boolean;
-  onToggleSelection: (id: string) => void;
+  isSelected?: boolean;
+  onToggleSelection?: (id: string) => void;
   onToggleStatus: (id: string) => void;
   onRequestDelete: (product: Product) => void;
   visibleColumns: Set<ColumnId>;
@@ -19,8 +19,6 @@ interface Props {
 
 export function ProductTableRow({
   product,
-  isSelected,
-  onToggleSelection,
   onToggleStatus,
   onRequestDelete,
   visibleColumns,
@@ -32,36 +30,10 @@ export function ProductTableRow({
     <div
       onClick={onClick}
       style={{ gridTemplateColumns }}
-      className={`grid cursor-pointer items-center rounded-xl border px-6 py-3.5 shadow-xs transition-all ${
-        isSelected
-          ? 'border-black/20 bg-slate-100/90 dark:border-white/20 dark:bg-white/10'
-          : 'border-black/5 bg-white hover:border-black/15 hover:shadow-md dark:border-white/10 dark:bg-[#141417] dark:hover:border-white/20'
-      }`}
+      className="grid cursor-pointer items-center rounded-xl border border-black/5 bg-white px-6 py-3.5 shadow-xs transition-all hover:border-black/15 hover:shadow-md dark:border-white/10 dark:bg-[#141417] dark:hover:border-white/20"
     >
-      {/* Select & Product Info */}
+      {/* Product Info */}
       <div className="flex items-center space-x-3">
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleSelection(product.id);
-          }}
-          className={`flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-md border transition-colors ${
-            isSelected
-              ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-              : 'border-black/20 hover:border-black/50 dark:border-white/20 dark:hover:border-white/50'
-          }`}
-        >
-          {isSelected && (
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          )}
-        </div>
         <div className="flex items-center space-x-3">
           <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/10">
             {product.imageUrl ? (
@@ -83,7 +55,12 @@ export function ProductTableRow({
             >
               {product.name}
             </p>
-            <p className="mt-0.5 text-xs text-black/40 dark:text-white/40">ID: {product.sku}</p>
+            <p
+              className="mt-0.5 font-mono text-xs text-black/40 dark:text-white/40"
+              title={product.id}
+            >
+              ID: {product.id}
+            </p>
           </div>
         </div>
       </div>
@@ -111,12 +88,12 @@ export function ProductTableRow({
 
       {/* Selling Price */}
       <div className="text-sm font-semibold">
-        {Number(product.sellingPrice ?? 0) < Number(product.originalPrice ?? 0) ? (
-          <span className="font-bold text-red-500">
+        {Number(product.sellingPrice ?? 0) < Number(product.costPrice ?? 0) ? (
+          <span className="font-bold text-red-600 dark:text-red-500">
             ₹{Number(product.sellingPrice ?? 0).toFixed(2)}
           </span>
         ) : (
-          <span className="text-black dark:text-white">
+          <span className="font-bold text-green-600 dark:text-green-500">
             ₹{Number(product.sellingPrice ?? 0).toFixed(2)}
           </span>
         )}
