@@ -14,13 +14,17 @@ export interface Seller {
   email?: string | null;
   phone: string;
   address?: string | null;
+  website?: string | null;
+  instagram?: string | null;
   status: SellerStatus;
   categories: SellerCategory[];
   productCount?: number;
   orderCount?: number;
+  complaintsCount?: number;
   _count?: {
     products?: number;
     orderItems?: number;
+    complaints?: number;
   };
   createdAt: string;
   updatedAt: string;

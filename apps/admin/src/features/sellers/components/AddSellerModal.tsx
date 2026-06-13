@@ -17,6 +17,8 @@ interface AddSellerModalProps {
       email?: string | null;
       phone: string;
       address?: string | null;
+      website?: string | null;
+      instagram?: string | null;
       status: SellerStatus;
       categoryIds: string[];
     },
@@ -39,6 +41,8 @@ export function AddSellerModal({
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
+  const [website, setWebsite] = useState('');
+  const [instagram, setInstagram] = useState('');
   const [status, setStatus] = useState<SellerStatus>('ACTIVE');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -51,6 +55,8 @@ export function AddSellerModal({
       setPhone(sellerToEdit.phone);
       setEmail(sellerToEdit.email ?? '');
       setAddress(sellerToEdit.address ?? '');
+      setWebsite(sellerToEdit.website ?? '');
+      setInstagram(sellerToEdit.instagram ?? '');
       setStatus(sellerToEdit.status);
       setSelectedCategoryIds(sellerToEdit.categories?.map((c) => c.id) ?? []);
     } else {
@@ -59,6 +65,8 @@ export function AddSellerModal({
       setPhone('');
       setEmail('');
       setAddress('');
+      setWebsite('');
+      setInstagram('');
       setStatus('ACTIVE');
       setSelectedCategoryIds([]);
     }
@@ -106,6 +114,17 @@ export function AddSellerModal({
 
     try {
       setIsSubmitting(true);
+
+      let cleanWebsite: string | null = website.trim() ? website.trim() : null;
+      if (cleanWebsite && !/^https?:\/\//i.test(cleanWebsite)) {
+        cleanWebsite = `https://${cleanWebsite}`;
+      }
+
+      let cleanInstagram: string | null = instagram.trim() ? instagram.trim() : null;
+      if (cleanInstagram) {
+        cleanInstagram = cleanInstagram.replace(/^@/, '');
+      }
+
       await onSave(
         {
           name: name.trim(),
@@ -113,6 +132,8 @@ export function AddSellerModal({
           phone: phone.trim(),
           email: email.trim() ? email.trim() : null,
           address: address.trim() ? address.trim() : null,
+          website: cleanWebsite,
+          instagram: cleanInstagram,
           status,
           categoryIds: selectedCategoryIds,
         },
@@ -239,6 +260,38 @@ export function AddSellerModal({
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
+                  }}
+                  className="w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 text-sm font-medium text-black transition-all outline-none focus:border-black focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white dark:focus:bg-[#1a1a1a]"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1.5 block text-xs font-bold tracking-wider text-black/70 uppercase dark:text-white/70">
+                  Website Link (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. royalsilks.com or https://..."
+                  value={website}
+                  onChange={(e) => {
+                    setWebsite(e.target.value);
+                  }}
+                  className="w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 text-sm font-medium text-black transition-all outline-none focus:border-black focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white dark:focus:bg-[#1a1a1a]"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-xs font-bold tracking-wider text-black/70 uppercase dark:text-white/70">
+                  Instagram (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. @royalsilks or royalsilks"
+                  value={instagram}
+                  onChange={(e) => {
+                    setInstagram(e.target.value);
                   }}
                   className="w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 text-sm font-medium text-black transition-all outline-none focus:border-black focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white dark:focus:bg-[#1a1a1a]"
                 />

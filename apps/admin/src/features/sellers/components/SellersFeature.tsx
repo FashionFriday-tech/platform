@@ -4,7 +4,6 @@ import React from 'react';
 
 import { useSellers } from '../hooks/useSellers';
 import { AddSellerModal } from './AddSellerModal';
-import { SellerDetailsModal } from './SellerDetailsModal';
 import { SellersFilterBar } from './SellersFilterBar';
 import { SellersTable } from './SellersTable';
 import { SellerStats } from './SellerStats';
@@ -21,17 +20,11 @@ export function SellersFeature() {
     setCategoryFilter,
     isAddModalOpen,
     setIsAddModalOpen,
-    selectedSeller,
-    setSelectedSeller,
-    detailsDefaultTab,
     sellerToEdit,
     setSellerToEdit,
     isLoading,
     filteredSellers,
     handleSaveSeller,
-    handleDeleteSeller,
-    handleToggleStatus,
-    openSellerOrders,
   } = useSellers();
 
   return (
@@ -59,16 +52,6 @@ export function SellersFeature() {
         <SellersTable
           sellers={filteredSellers}
           isLoading={isLoading}
-          onSelectSeller={(seller) => {
-            setSelectedSeller(seller);
-          }}
-          onEditSeller={(seller) => {
-            setSellerToEdit(seller);
-            setIsAddModalOpen(true);
-          }}
-          onDeleteSeller={handleDeleteSeller}
-          onToggleStatus={handleToggleStatus}
-          onOpenOrders={openSellerOrders}
         />
       </div>
 
@@ -82,22 +65,6 @@ export function SellersFeature() {
         onSave={handleSaveSeller}
         sellerToEdit={sellerToEdit}
         categories={categories}
-      />
-
-      {/* Seller Details & Orders Modal */}
-      <SellerDetailsModal
-        seller={selectedSeller}
-        isOpen={!!selectedSeller}
-        onClose={() => {
-          setSelectedSeller(null);
-        }}
-        defaultTab={detailsDefaultTab}
-        onEdit={(seller) => {
-          setSelectedSeller(null);
-          setSellerToEdit(seller);
-          setIsAddModalOpen(true);
-        }}
-        onToggleStatus={handleToggleStatus}
       />
     </div>
   );

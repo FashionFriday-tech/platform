@@ -104,6 +104,8 @@ export function useSellers() {
       email?: string | null;
       phone: string;
       address?: string | null;
+      website?: string | null;
+      instagram?: string | null;
       status: SellerStatus;
       categoryIds: string[];
     },
