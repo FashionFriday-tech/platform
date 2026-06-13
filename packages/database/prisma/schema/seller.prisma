@@ -11,6 +11,8 @@ model Seller {
   email       String?
   phone       String
   address     String?
+  website     String?
+  instagram   String?
   status      SellerStatus @default(ACTIVE)
 
   categories  Category[]

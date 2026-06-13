@@ -15,6 +15,14 @@ export const CreateSellerSchema = z.object({
     .union([z.string().trim(), z.literal(''), z.null(), z.undefined()])
     .optional()
     .transform((val) => (val && typeof val === 'string' && val.trim() !== '' ? val.trim() : null)),
+  website: z
+    .union([z.string().trim(), z.literal(''), z.null(), z.undefined()])
+    .optional()
+    .transform((val) => (val && typeof val === 'string' && val.trim() !== '' ? val.trim() : null)),
+  instagram: z
+    .union([z.string().trim(), z.literal(''), z.null(), z.undefined()])
+    .optional()
+    .transform((val) => (val && typeof val === 'string' && val.trim() !== '' ? val.trim() : null)),
   status: SellerStatusEnum.default('ACTIVE'),
   categoryIds: z.array(z.string().min(1)).min(1, 'Select at least one category'),
 });
@@ -38,6 +46,8 @@ export interface Seller {
   email?: string | null;
   phone: string;
   address?: string | null;
+  website?: string | null;
+  instagram?: string | null;
   status: SellerStatus;
   categories: SellerCategoryRef[];
   _count?: {
