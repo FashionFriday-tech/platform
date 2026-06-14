@@ -12,6 +12,7 @@ import {
   LifeBuoyIcon,
   MessageSquareIcon,
   PackageIcon,
+  SearchIcon,
   SettingsIcon,
   ShieldCheckIcon,
   ShoppingBagIcon,
@@ -29,15 +30,26 @@ import { useOrderStats } from '@/features/orders';
 
 import { SidebarFooter } from './SidebarFooter';
 
-export function Sidebar() {
+interface SidebarProps {
+  isMobileOpen?: boolean;
+  setIsMobileOpen?: (open: boolean) => void;
+}
+
+export function Sidebar({
+  isMobileOpen: controlledMobileOpen,
+  setIsMobileOpen: setControlledMobileOpen,
+}: SidebarProps = {}) {
   const pathname = usePathname() ?? '';
   const { user } = useAuth();
   const { unplacedCount, isLoading: isStatsLoading } = useOrderStats();
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [internalMobileOpen, setInternalMobileOpen] = useState(false);
+
+  const isMobileOpen = controlledMobileOpen ?? internalMobileOpen;
+  const setIsMobileOpen = setControlledMobileOpen ?? setInternalMobileOpen;
 
   useEffect(() => {
     setIsMobileOpen(false);
-  }, [pathname]);
+  }, [pathname, setIsMobileOpen]);
 
   if (!user) {
     return null;
@@ -55,46 +67,18 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Menu Trigger Button */}
-      <button
-        type="button"
-        onClick={() => {
-          setIsMobileOpen(!isMobileOpen);
-        }}
-        className="fixed top-4 left-4 z-40 flex h-10 w-10 items-center justify-center rounded-2xl border border-black/10 bg-white/80 text-black shadow-md backdrop-blur-md md:hidden dark:border-white/10 dark:bg-[#111]/80 dark:text-white"
-        aria-label="Toggle Navigation Menu"
-      >
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          {isMobileOpen ? (
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          ) : (
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          )}
-        </svg>
-      </button>
-
       {/* Mobile Backdrop Overlay */}
       {isMobileOpen && (
         <div
           onClick={() => {
             setIsMobileOpen(false);
           }}
-          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-xs md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs md:hidden"
         />
       )}
 
       <aside
-        className={`fixed inset-y-3 left-3 z-40 flex h-[calc(100vh-1.5rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-3xl border border-black/5 bg-white/85 shadow-lg shadow-black/5 backdrop-blur-2xl transition-transform duration-300 md:static md:my-3 md:ml-3 md:translate-x-0 dark:border-white/10 dark:bg-[#0e0e0e]/85 dark:shadow-black/40 ${
+        className={`fixed inset-y-3 left-3 z-50 flex h-[calc(100vh-1.5rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-3xl border border-black/5 bg-white/85 shadow-lg shadow-black/5 backdrop-blur-2xl transition-transform duration-300 md:static md:my-3 md:ml-3 md:translate-x-0 dark:border-white/10 dark:bg-[#0e0e0e]/85 dark:shadow-black/40 ${
           isMobileOpen
             ? 'translate-x-0 shadow-2xl'
             : '-translate-x-[calc(100%+2rem)] md:translate-x-0'
@@ -177,6 +161,12 @@ export function Sidebar() {
                     <MessageSquareIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
                   </div>
                   <span className="text-sm font-medium">Feedback</span>
+                </Link>
+                <Link href="/searches" className={getLinkClass('/searches')}>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                    <SearchIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                  </div>
+                  <span className="text-sm font-medium">User Searches</span>
                 </Link>
               </div>
             </div>
