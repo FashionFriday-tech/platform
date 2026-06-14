@@ -563,8 +563,8 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 </div>
               </div>
 
-              <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-5">
-                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+              <div className="scrollbar-hide mt-8 flex gap-4 overflow-x-auto pb-1 md:grid md:grid-cols-5 md:overflow-visible md:pb-0">
+                <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
                   <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                     Total Orders
                   </span>
@@ -572,7 +572,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     {customer.ordersCount}
                   </span>
                 </div>
-                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
                   <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                     Total Spent
                   </span>
@@ -580,7 +580,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     ₹{customer.totalSpent.toLocaleString('en-IN')}
                   </span>
                 </div>
-                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
                   <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                     Favorites
                   </span>
@@ -588,7 +588,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     {customer._count?.wishlist || 0}
                   </span>
                 </div>
-                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
                   <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                     Cart Items
                   </span>
@@ -596,7 +596,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     {customer._count?.cart || 0}
                   </span>
                 </div>
-                <div className="flex flex-col rounded-2xl bg-[#f8f9fa] p-5 dark:bg-[#1a1a1a]">
+                <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
                   <span className="text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                     Addresses
                   </span>
