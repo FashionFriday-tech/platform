@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
 
+import { useProductActionBar } from '../hooks/useProductActionBar';
 import { type AdvancedFilters, type ColumnId, type ProductStatus, type ViewMode } from '../types';
 
 interface Props {
@@ -14,7 +17,15 @@ interface Props {
   setAppliedAdvancedFilters: (val: AdvancedFilters) => void;
 }
 
-import { useProductActionBar } from '../hooks/useProductActionBar';
+const ALL_COLUMNS: ColumnId[] = [
+  'Category',
+  'Cost Price',
+  'OG Price',
+  'Variants',
+  'Sales',
+  'Date Added',
+  'Stock',
+];
 
 export function ProductActionBar({
   searchQuery,
@@ -41,29 +52,33 @@ export function ProductActionBar({
   } = useProductActionBar(appliedAdvancedFilters, setAppliedAdvancedFilters);
 
   return (
-    <div className="relative z-50 flex flex-col gap-4 rounded-2xl border border-black/5 bg-white p-4 xl:flex-row xl:items-center xl:justify-between dark:border-white/5 dark:bg-[#111111]">
-      <div className="flex flex-1 items-center gap-3">
-        <div className="flex rounded-xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#1a1a1a]">
+    <div className="relative z-30 flex items-center justify-between gap-2 rounded-2xl border border-black/5 bg-white p-2.5 sm:p-3 md:p-4 dark:border-white/5 dark:bg-[#111111]">
+      {/* Left: View Mode (desktop) + Search Input (fills remaining width) */}
+      <div className="flex flex-1 items-center gap-2 sm:gap-3 min-w-0">
+        <div className="hidden md:flex rounded-xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#1a1a1a]">
           <button
-            onClick={() => {
-              setViewMode('list');
-            }}
-            className={`rounded-lg p-1.5 transition-all duration-200 ${viewMode === 'list' ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white' : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white'}`}
+            type="button"
+            onClick={() => setViewMode('list')}
+            aria-label="List View"
+            className={`rounded-lg p-1.5 transition-all duration-200 ${
+              viewMode === 'list'
+                ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white'
+                : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white'
+            }`}
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
           <button
-            onClick={() => {
-              setViewMode('grid');
-            }}
-            className={`rounded-lg p-1.5 transition-all duration-200 ${viewMode === 'grid' ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white' : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white'}`}
+            type="button"
+            onClick={() => setViewMode('grid')}
+            aria-label="Grid View"
+            className={`rounded-lg p-1.5 transition-all duration-200 ${
+              viewMode === 'grid'
+                ? 'bg-white text-black shadow-sm dark:bg-[#2a2a2a] dark:text-white'
+                : 'text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white'
+            }`}
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -76,8 +91,8 @@ export function ProductActionBar({
           </button>
         </div>
 
-        <div className="relative max-w-md flex-1">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+        <div className="relative flex-1 min-w-0">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-3.5">
             <svg
               className="h-4 w-4 text-black/30 dark:text-white/30"
               fill="none"
@@ -94,19 +109,29 @@ export function ProductActionBar({
           </div>
           <input
             type="text"
-            placeholder="Search products by name, SKU or category..."
+            placeholder="Search products..."
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-11 text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2 sm:py-2.5 pr-8 pl-9 sm:pl-10 text-xs sm:text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5 truncate"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Columns Dropdown */}
-        <div className="group relative z-50 flex cursor-pointer items-center space-x-2 rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm font-medium whitespace-nowrap text-black/70 transition-colors hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white">
+      {/* Right Side: Columns (desktop) + Single Filter Button + Add Button */}
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        {/* Columns Dropdown (Desktop Only) */}
+        <div className="group relative z-40 hidden md:flex cursor-pointer items-center space-x-2 rounded-xl border border-black/5 bg-[#f8f9fa] px-3.5 py-2 text-sm font-medium whitespace-nowrap text-black/70 transition-colors hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white">
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
@@ -117,18 +142,8 @@ export function ProductActionBar({
           </svg>
           <span>Columns</span>
 
-          <div className="invisible absolute top-full right-0 z-50 mt-3 flex w-48 flex-col rounded-2xl border border-black/10 bg-white/95 p-3 opacity-0 shadow-2xl backdrop-blur-2xl transition-all group-hover:visible group-hover:opacity-100 dark:border-white/10 dark:bg-[#111111]/95">
-            {(
-              [
-                'Category',
-                'Cost Price',
-                'OG Price',
-                'Variants',
-                'Sales',
-                'Date Added',
-                'Stock',
-              ] as ColumnId[]
-            ).map((col) => (
+          <div className="invisible absolute top-full right-0 z-50 mt-2 flex w-48 flex-col rounded-2xl border border-black/10 bg-white/95 p-3 opacity-0 shadow-2xl backdrop-blur-2xl transition-all group-hover:visible group-hover:opacity-100 dark:border-white/10 dark:bg-[#111111]/95">
+            {ALL_COLUMNS.map((col) => (
               <label
                 key={col}
                 className="flex cursor-pointer items-center space-x-3 rounded-lg px-3 py-2 text-sm text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/10"
@@ -136,9 +151,7 @@ export function ProductActionBar({
                 <input
                   type="checkbox"
                   checked={visibleColumns.has(col)}
-                  onChange={() => {
-                    toggleColumn(col);
-                  }}
+                  onChange={() => toggleColumn(col)}
                   className="rounded border-black/20 text-black focus:ring-black/20 dark:border-white/20 dark:text-white dark:focus:ring-white/20"
                 />
                 <span>{col}</span>
@@ -147,15 +160,18 @@ export function ProductActionBar({
           </div>
         </div>
 
-        {/* Detailed Filter Pop-up Trigger */}
-        <div className="relative z-40" ref={popupRef}>
+        {/* Single Filter Button (Opens Detailed Filters Box) */}
+        <div className="relative" ref={popupRef}>
           <button
-            onClick={() => {
-              setIsFilterOpen(!isFilterOpen);
-            }}
-            className={`flex items-center space-x-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${isAdvancedActive ? 'border-transparent bg-black text-white shadow-md dark:bg-white dark:text-black' : 'border-black/5 bg-[#f8f9fa] text-black/70 hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white'}`}
+            type="button"
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className={`flex items-center space-x-1 sm:space-x-1.5 rounded-xl border px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-medium transition-all ${
+              isAdvancedActive
+                ? 'border-transparent bg-black text-white shadow-md dark:bg-white dark:text-black'
+                : 'border-black/5 bg-[#f8f9fa] text-black/70 hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white'
+            }`}
           >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -163,22 +179,105 @@ export function ProductActionBar({
                 d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
               />
             </svg>
-            <span>Filters</span>
-            {isAdvancedActive && <span className="ml-1 flex h-2 w-2 rounded-full bg-red-500" />}
+            <span className="hidden sm:inline">Filters</span>
+            {isAdvancedActive && <span className="flex h-1.5 w-1.5 rounded-full bg-red-500" />}
           </button>
 
+          {/* Detailed Filters Modal (Bottom Drawer on Mobile, Popover on Desktop) */}
           {isFilterOpen && (
-            <div className="animate-in fade-in zoom-in-95 absolute top-full right-0 z-50 mt-3 flex max-h-[70vh] w-[320px] flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 shadow-2xl backdrop-blur-2xl duration-200 dark:border-white/10 dark:bg-[#111111]/95">
-              <div className="scrollbar-hide flex-1 overflow-y-auto p-5">
-                <h3 className="mb-4 text-lg font-semibold text-black dark:text-white">
-                  Detailed Filters
-                </h3>
+            <>
+              {/* Mobile Backdrop Overlay */}
+              <div
+                className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs md:hidden"
+                onClick={() => setIsFilterOpen(false)}
+              />
 
-                <div className="space-y-5">
+              <div className="fixed inset-x-3 bottom-3 z-50 max-h-[85vh] md:absolute md:top-full md:right-0 md:bottom-auto md:left-auto md:mt-2 md:w-[340px] flex flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 shadow-2xl backdrop-blur-2xl duration-200 dark:border-white/10 dark:bg-[#111111]/95">
+                <div className="flex items-center justify-between border-b border-black/5 p-4 pb-3 dark:border-white/5">
+                  <h3 className="text-base font-bold text-black dark:text-white">
+                    Detailed Filters
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setIsFilterOpen(false)}
+                    className="flex h-7 w-7 items-center justify-center rounded-full text-black/50 hover:bg-black/5 hover:text-black dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="scrollbar-hide flex-1 space-y-4 overflow-y-auto p-4">
+                  {/* Mobile-Only View Mode Selector */}
+                  <div className="md:hidden">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">
+                      View Mode
+                    </label>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setViewMode('list')}
+                        className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2 text-xs font-semibold transition-all ${
+                          viewMode === 'list'
+                            ? 'bg-black text-white dark:bg-white dark:text-black'
+                            : 'bg-black/5 text-black/60 dark:bg-white/5 dark:text-white/60'
+                        }`}
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <span>List</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setViewMode('grid')}
+                        className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2 text-xs font-semibold transition-all ${
+                          viewMode === 'grid'
+                            ? 'bg-black text-white dark:bg-white dark:text-black'
+                            : 'bg-black/5 text-black/60 dark:bg-white/5 dark:text-white/60'
+                        }`}
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                          />
+                        </svg>
+                        <span>Grid</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mobile-Only Columns Selector */}
+                  <div className="md:hidden">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">
+                      Visible Columns
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ALL_COLUMNS.map((col) => (
+                        <button
+                          key={col}
+                          type="button"
+                          onClick={() => toggleColumn(col)}
+                          className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-all ${
+                            visibleColumns.has(col)
+                              ? 'border-transparent bg-black text-white dark:bg-white dark:text-black'
+                              : 'border-black/10 bg-black/5 text-black/60 dark:border-white/10 dark:bg-white/5 dark:text-white/60'
+                          }`}
+                        >
+                          {col}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Price Range Dual Slider */}
                   <div>
                     <div className="mb-2 flex items-center justify-between">
-                      <label className="block text-sm font-medium text-black/70 dark:text-white/70">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">
                         Price Range (₹)
                       </label>
                       <div className="flex items-center space-x-1 rounded-md bg-black/5 px-2 py-0.5 text-xs font-bold text-black dark:bg-white/10 dark:text-white">
@@ -189,10 +288,7 @@ export function ProductActionBar({
                     </div>
 
                     <div className="relative mt-2 flex h-6 items-center">
-                      {/* Track background */}
                       <div className="absolute h-1.5 w-full rounded-lg bg-black/10 dark:bg-white/10" />
-
-                      {/* Highlight between min and max */}
                       <div
                         className="absolute h-1.5 rounded-lg bg-black dark:bg-white"
                         style={{
@@ -200,8 +296,6 @@ export function ProductActionBar({
                           right: `${100 - (Number(localFilters.maxPrice ?? 10000) / 10000) * 100}%`,
                         }}
                       />
-
-                      {/* Min Slider */}
                       <input
                         type="range"
                         min="0"
@@ -217,8 +311,6 @@ export function ProductActionBar({
                         }}
                         className="pointer-events-none absolute z-10 w-full appearance-none bg-transparent [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-black [&::-webkit-slider-thumb]:bg-white dark:[&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:bg-black"
                       />
-
-                      {/* Max Slider */}
                       <input
                         type="range"
                         min="0"
@@ -244,7 +336,7 @@ export function ProductActionBar({
 
                   {/* Categories */}
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-black/70 dark:text-white/70">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">
                       Categories
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -258,25 +350,19 @@ export function ProductActionBar({
                           }}
                         >
                           <div
-                            className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${localFilters.categories.has(cat) ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'}`}
+                            className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
+                              localFilters.categories.has(cat)
+                                ? 'border-black bg-black dark:border-white dark:bg-white'
+                                : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'
+                            }`}
                           >
                             {localFilters.categories.has(cat) && (
-                              <svg
-                                className="h-2.5 w-2.5 text-white dark:text-black"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={3}
-                                  d="M5 13l4 4L19 7"
-                                />
+                              <svg className="h-2.5 w-2.5 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                               </svg>
                             )}
                           </div>
-                          <span className="text-sm text-black/80 select-none dark:text-white/80">
+                          <span className="text-xs text-black/80 select-none dark:text-white/80">
                             {cat}
                           </span>
                         </label>
@@ -286,7 +372,7 @@ export function ProductActionBar({
 
                   {/* Store */}
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-black/70 dark:text-white/70">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">
                       Store
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -300,25 +386,19 @@ export function ProductActionBar({
                           }}
                         >
                           <div
-                            className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${localFilters.stores?.has(store) ? 'border-black bg-black dark:border-white dark:bg-white' : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'}`}
+                            className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
+                              localFilters.stores?.has(store)
+                                ? 'border-black bg-black dark:border-white dark:bg-white'
+                                : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'
+                            }`}
                           >
                             {localFilters.stores?.has(store) && (
-                              <svg
-                                className="h-2.5 w-2.5 text-white dark:text-black"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={3}
-                                  d="M5 13l4 4L19 7"
-                                />
+                              <svg className="h-2.5 w-2.5 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                               </svg>
                             )}
                           </div>
-                          <span className="text-sm text-black/80 select-none dark:text-white/80">
+                          <span className="text-xs text-black/80 select-none dark:text-white/80">
                             {store}
                           </span>
                         </label>
@@ -328,17 +408,19 @@ export function ProductActionBar({
 
                   {/* Status */}
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-black/70 dark:text-white/70">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">
                       Status
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {(['Active', 'Inactive', 'Draft'] as ProductStatus[]).map((status) => (
                         <div
                           key={status}
-                          onClick={() => {
-                            toggleStatus(status);
-                          }}
-                          className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${localFilters.statuses.has(status) ? 'border-transparent bg-black text-white dark:bg-white dark:text-black' : 'border-black/10 bg-black/5 text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
+                          onClick={() => toggleStatus(status)}
+                          className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                            localFilters.statuses.has(status)
+                              ? 'border-transparent bg-black text-white dark:bg-white dark:text-black'
+                              : 'border-black/10 bg-black/5 text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60'
+                          }`}
                         >
                           {status}
                         </div>
@@ -346,40 +428,39 @@ export function ProductActionBar({
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Actions - Sticky at bottom */}
-              <div className="flex items-center space-x-3 border-t border-black/10 bg-white/5 p-5 backdrop-blur-md dark:border-white/10 dark:bg-black/5">
-                <button
-                  onClick={clearFilters}
-                  className="flex-1 rounded-lg px-4 py-2 text-sm font-medium text-black/60 transition-colors hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
-                >
-                  Clear
-                </button>
-                <button
-                  onClick={applyFilters}
-                  className="flex-1 rounded-lg bg-black px-4 py-2 text-sm font-medium text-white shadow-md transition-colors hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
-                >
-                  Apply
-                </button>
+                {/* Actions - Sticky at bottom */}
+                <div className="flex items-center space-x-3 border-t border-black/10 bg-white/5 p-4 backdrop-blur-md dark:border-white/10 dark:bg-black/5">
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="flex-1 rounded-xl px-4 py-2 text-xs font-medium text-black/60 transition-colors hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={applyFilters}
+                    className="flex-1 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-md transition-colors hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
+                  >
+                    Apply
+                  </button>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
 
+        {/* Add Product Button (Rightmost) */}
         <Link
           href="/products/add"
-          className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
+          className="flex items-center justify-center gap-1.5 rounded-xl bg-black px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
         >
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
+          <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          <span>Add new product</span>
+          <span className="hidden sm:inline">Add new product</span>
+          <span className="sm:hidden">Add</span>
         </Link>
       </div>
     </div>
