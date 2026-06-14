@@ -1,0 +1,13 @@
+model SearchLog {
+  id    String @id @default(uuid())
+  query String
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("search_logs")
+}
