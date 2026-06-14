@@ -381,8 +381,8 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="mt-8 grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-5">
-            <div className="flex flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 dark:border-white/5 dark:bg-[#1a1a1a]">
+          <div className="scrollbar-hide mt-8 flex gap-3.5 overflow-x-auto pb-1 md:grid md:grid-cols-5 md:overflow-visible md:pb-0">
+            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Total Products
               </span>
@@ -391,7 +391,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
               </span>
             </div>
 
-            <div className="flex flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 dark:border-white/5 dark:bg-[#1a1a1a]">
+            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Total Orders
               </span>
@@ -400,7 +400,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
               </span>
             </div>
 
-            <div className="flex flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 dark:border-white/5 dark:bg-[#1a1a1a]">
+            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Complaints
               </span>
@@ -415,7 +415,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
               </span>
             </div>
 
-            <div className="flex flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 dark:border-white/5 dark:bg-[#1a1a1a]">
+            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Items Sold
               </span>
@@ -424,7 +424,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
               </span>
             </div>
 
-            <div className="flex flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 dark:border-white/5 dark:bg-[#1a1a1a]">
+            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Total Revenue
               </span>
