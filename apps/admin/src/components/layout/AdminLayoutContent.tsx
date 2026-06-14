@@ -10,6 +10,7 @@ import { Toaster } from 'sonner';
 import { type Role, useAuth } from '@/contexts/AuthContext';
 import { LoginPage } from '@/features/auth';
 
+import { MobileHeader } from './Header';
 import { Sidebar } from './Sidebar';
 
 // Route prefix permission rules
@@ -19,6 +20,8 @@ const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
   { prefix: '/customers', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
   { prefix: '/reviews', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
   { prefix: '/feedback', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
+  { prefix: '/searches', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
+  { prefix: '/product-requests', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
   { prefix: '/products', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
   { prefix: '/categories', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
   { prefix: '/brands', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
@@ -33,6 +36,11 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
   const { user, isLoading } = useAuth();
   const pathname = usePathname() ?? '';
   const router = useRouter();
+  const [isMobileNavOpen, setIsMobileNavOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMobileNavOpen(false);
+  }, [pathname]);
 
   // Handle client-side auth state routing
   React.useEffect(() => {
@@ -108,8 +116,15 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
   if (!isAuthorized()) {
     return (
       <>
-        <Sidebar />
-        <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
+        <MobileHeader
+          isMobileOpen={isMobileNavOpen}
+          onToggleMobileMenu={() => setIsMobileNavOpen((prev) => !prev)}
+        />
+        <Sidebar
+          isMobileOpen={isMobileNavOpen}
+          setIsMobileOpen={setIsMobileNavOpen}
+        />
+        <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden pt-14 md:pt-0">
           <div className="z-10 flex min-h-0 flex-1 flex-col items-center justify-center p-6 text-center">
             <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-red-500/20 bg-red-500/10 text-red-500 dark:border-red-500/10 dark:bg-red-950/20 dark:text-red-400">
               <LockIcon className="h-10 w-10 animate-pulse" />
@@ -145,8 +160,15 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <Sidebar />
-      <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden">
+      <MobileHeader
+        isMobileOpen={isMobileNavOpen}
+        onToggleMobileMenu={() => setIsMobileNavOpen((prev) => !prev)}
+      />
+      <Sidebar
+        isMobileOpen={isMobileNavOpen}
+        setIsMobileOpen={setIsMobileNavOpen}
+      />
+      <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden pt-14 md:pt-0">
         <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </main>
       <Toaster position="top-right" richColors />
