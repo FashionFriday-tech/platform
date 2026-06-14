@@ -45,7 +45,7 @@ export default function FeedbackFeature() {
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
       {/* Stats Cards */}
-      <div className="grid shrink-0 grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="scrollbar-hide flex w-full shrink-0 gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-4 sm:overflow-visible sm:pb-0">
         {[
           {
             name: 'Total Submissions',
@@ -88,7 +88,7 @@ export default function FeedbackFeature() {
             onClick={() => {
               setSelectedType(stat.typeKey);
             }}
-            className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-black via-[#0d0d10] to-[#1c1c24] px-4 py-3 text-white shadow-lg dark:border-black/10 dark:bg-white dark:from-white dark:via-[#fafafa] dark:to-[#f0f0f0] dark:text-black dark:shadow-sm"
+            className="group relative flex min-w-[200px] shrink-0 cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-black via-[#0d0d10] to-[#1c1c24] px-4 py-3 text-white shadow-lg sm:min-w-0 sm:shrink dark:border-black/10 dark:bg-white dark:from-white dark:via-[#fafafa] dark:to-[#f0f0f0] dark:text-black dark:shadow-sm"
           >
             {/* Subtle Ambient Glow & Watermark Icon */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
