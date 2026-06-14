@@ -14,7 +14,7 @@ interface StatCardProps {
 
 export function StatCard({ title, value, subtitle, icon: Icon, href, trend }: StatCardProps) {
   const content = (
-    <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-black via-[#0d0d10] to-[#1c1c24] px-5 py-4 text-white shadow-lg dark:border-black/10 dark:bg-white dark:from-white dark:via-[#fafafa] dark:to-[#f0f0f0] dark:text-black dark:shadow-sm">
+    <div className="group relative flex h-full min-w-[240px] shrink-0 flex-col justify-between overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-black via-[#0d0d10] to-[#1c1c24] px-5 py-4 text-white shadow-lg md:min-w-0 md:shrink dark:border-black/10 dark:bg-white dark:from-white dark:via-[#fafafa] dark:to-[#f0f0f0] dark:text-black dark:shadow-sm">
       {/* Subtle Ambient Glow & Watermark Icon */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <Icon className="absolute -right-2 -bottom-2 h-20 w-20 text-white/[0.04] dark:text-black/[0.04]" />
@@ -54,7 +54,7 @@ export function StatCard({ title, value, subtitle, icon: Icon, href, trend }: St
 
   if (href) {
     return (
-      <Link href={href} className="block h-full">
+      <Link href={href} className="block h-full min-w-[240px] shrink-0 md:min-w-0 md:shrink">
         {content}
       </Link>
     );
