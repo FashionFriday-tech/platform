@@ -37,7 +37,7 @@ export function DashboardView() {
         {/* Stats Grid */}
         <motion.div
           variants={item}
-          className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
+          className="scrollbar-hide flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 md:overflow-visible md:pb-0"
         >
           {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
             <StatCard
