@@ -77,10 +77,10 @@ export default function CollectionsFeature() {
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
       {/* Top Bar for Search and Add */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between gap-2 rounded-2xl border border-black/5 bg-white p-2.5 sm:p-3 md:p-4 dark:border-white/5 dark:bg-[#111111]">
         {/* Search Bar */}
-        <div className="relative w-full sm:max-w-xs">
-          <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-black/40 dark:text-white/40" />
+        <div className="relative flex-1 min-w-0 sm:max-w-xs">
+          <SearchIcon className="absolute top-1/2 left-3 sm:left-3.5 h-4 w-4 -translate-y-1/2 text-black/40 dark:text-white/40" />
           <input
             type="text"
             placeholder="Search collections..."
@@ -88,8 +88,19 @@ export default function CollectionsFeature() {
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
-            className="w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-10 text-sm text-black placeholder-black/40 transition-colors outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222]"
+            className="w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2 sm:py-2.5 pr-8 pl-9 sm:pl-10 text-xs sm:text-sm text-black placeholder-black/40 transition-colors outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222] truncate"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Add Collection Button */}
@@ -98,10 +109,11 @@ export default function CollectionsFeature() {
             setEditingCollection(null);
             setIsAddModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:scale-105 hover:bg-black/90 hover:shadow-lg active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
+          className="flex items-center justify-center gap-1.5 rounded-xl bg-black px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90 shrink-0"
         >
-          <PlusIcon className="h-4 w-4" />
-          <span>Create Collection</span>
+          <PlusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Create Collection</span>
+          <span className="sm:hidden">Create</span>
         </button>
       </div>
 
