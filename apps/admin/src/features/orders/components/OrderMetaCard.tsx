@@ -74,7 +74,9 @@ export function OrderMetaCard({
           <>
             <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
               <span className="text-sm text-black/50 dark:text-white/50">Seller</span>
-              <span className="text-sm font-bold text-black dark:text-white">{assignedSeller || 'Unassigned'}</span>
+              <span className="text-sm font-bold text-black dark:text-white">
+                {assignedSeller || 'Unassigned'}
+              </span>
             </div>
             <div className="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
               <span className="text-sm text-black/50 dark:text-white/50">Courier</span>
