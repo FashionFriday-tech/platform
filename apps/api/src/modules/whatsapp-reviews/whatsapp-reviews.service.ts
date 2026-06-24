@@ -40,9 +40,9 @@ export class WhatsAppReviewsService {
     let maxNum = 1000;
     for (const r of reviews) {
       const match =
-        r.imageUrl.match(/fashion-friday-whatsapp-sales-review-(\d+)\.webp/i) ||
-        r.imageUrl.match(/\/review-(\d+)\.webp/i) ||
-        r.imageUrl.match(/review-(\d+)/i);
+        /fashion-friday-whatsapp-sales-review-(\d+)\.webp/i.exec(r.imageUrl) ||
+        /\/review-(\d+)\.webp/i.exec(r.imageUrl) ||
+        /review-(\d+)/i.exec(r.imageUrl);
       if (match) {
         const num = parseInt(match[1], 10);
         // Exclude legacy millisecond timestamps (> 1 billion) so count starts cleanly from 1000
@@ -61,7 +61,9 @@ export class WhatsAppReviewsService {
   }
 
   async createReviews(imageUrls: string[]) {
-    if (imageUrls.length === 0) return [];
+    if (imageUrls.length === 0) {
+      return [];
+    }
 
     // Get current max sortOrder to append at the end
     const last = await this.prisma.db.whatsAppReview.findFirst({
