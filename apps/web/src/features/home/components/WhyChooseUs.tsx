@@ -56,7 +56,7 @@ interface InfiniteColumnProps {
 
 const InfiniteColumn = ({
   images,
-  duration = 75,
+  duration,
   reverse = false,
   active = false,
   onSelectImage,
@@ -122,8 +122,8 @@ const InfiniteColumn = ({
               loading="lazy"
             />
             {/* Hover overlay with action indicator */}
-            <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 p-3">
-              <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-black shadow-md backdrop-blur-xs uppercase tracking-wider dark:bg-black/95 dark:text-white">
+            <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/70 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold tracking-wider text-black uppercase shadow-md backdrop-blur-xs dark:bg-black/95 dark:text-white">
                 View Chat
               </span>
             </div>
@@ -182,23 +182,30 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
     void loadReviews();
   }, [initialReviews]);
 
-  const handleSelectImage = useCallback((src: string) => {
-    const idx = reviews.indexOf(src);
-    if (idx !== -1) {
-      setActiveReviewIndex(idx);
-    }
-  }, [reviews]);
+  const handleSelectImage = useCallback(
+    (src: string) => {
+      const idx = reviews.indexOf(src);
+      if (idx !== -1) {
+        setActiveReviewIndex(idx);
+      }
+    },
+    [reviews],
+  );
 
   const navigateNext = useCallback(() => {
     setActiveReviewIndex((prev) => {
-      if (prev === null) return null;
+      if (prev === null) {
+        return null;
+      }
       return prev < reviews.length - 1 ? prev + 1 : 0;
     });
   }, [reviews.length]);
 
   const navigatePrev = useCallback(() => {
     setActiveReviewIndex((prev) => {
-      if (prev === null) return null;
+      if (prev === null) {
+        return null;
+      }
       return prev > 0 ? prev - 1 : reviews.length - 1;
     });
   }, [reviews.length]);
@@ -206,7 +213,9 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
   // Keyboard navigation for Lightbox
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (activeReviewIndex === null) return;
+      if (activeReviewIndex === null) {
+        return;
+      }
       if (e.key === 'Escape') {
         setActiveReviewIndex(null);
       } else if (e.key === 'ArrowRight') {
@@ -227,7 +236,9 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
+    if (touchStartX.current === null) {
+      return;
+    }
     const diffX = touchStartX.current - e.changedTouches[0].clientX;
     const threshold = 50;
     if (Math.abs(diffX) > threshold) {
@@ -400,12 +411,19 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
         >
           {/* Close button */}
           <button
-            onClick={() => setActiveReviewIndex(null)}
+            onClick={() => {
+              setActiveReviewIndex(null);
+            }}
             className="absolute top-6 right-6 z-50 p-2 text-white/60 transition-colors hover:text-white"
             aria-label="Close"
           >
             <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
 
@@ -419,14 +437,21 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
             aria-label="Previous Review"
           >
             <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
 
           {/* Review Image Wrapper */}
           <div
             className="relative flex max-h-screen max-w-full flex-col items-center justify-center p-4"
-            onClick={() => setActiveReviewIndex(null)}
+            onClick={() => {
+              setActiveReviewIndex(null);
+            }}
           >
             <img
               src={reviews[activeReviewIndex]}
@@ -436,7 +461,9 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
             <div className="mt-4 flex items-center gap-4">
               <Link
                 href="/whatsapp-reviews"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
                 className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold text-white/80 backdrop-blur-xs transition-colors hover:bg-white/20 hover:text-white"
               >
                 View all reviews &rarr;
@@ -454,7 +481,12 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
             aria-label="Next Review"
           >
             <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>
