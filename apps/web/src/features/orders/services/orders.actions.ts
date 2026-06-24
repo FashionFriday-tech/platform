@@ -29,7 +29,10 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response | null> {
+async function fetchWithAuth(
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<Response | null> {
   let authHeaders = await getAuthHeaders();
 
   const buildHeaders = (baseAuthHeaders: Record<string, string>) => {
@@ -50,7 +53,9 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
     });
 
     if (response.status === 401) {
-      console.warn(`[orders.actions] 401 Unauthorized for ${endpoint}, attempting token refresh...`);
+      console.warn(
+        `[orders.actions] 401 Unauthorized for ${endpoint}, attempting token refresh...`,
+      );
       const cookieStore = await cookies();
       const refreshToken = cookieStore.get('refreshToken')?.value;
 
@@ -135,13 +140,15 @@ export async function fetchUserOrdersAction() {
   console.log('[orders.actions] Fetching user orders...');
   try {
     const res = await fetchWithAuth('/orders/me');
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       const errorText = res ? await res.text().catch(() => '') : 'No response';
       console.error('[orders.actions] Failed to fetch orders:', res?.status, errorText);
       return [];
     }
     const orders = await res.json();
-    console.log(`[orders.actions] Fetched ${Array.isArray(orders) ? orders.length : 0} user orders`);
+    console.log(
+      `[orders.actions] Fetched ${Array.isArray(orders) ? orders.length : 0} user orders`,
+    );
     return Array.isArray(orders) ? orders : [];
   } catch (err) {
     console.error('[orders.actions] Exception in fetchUserOrdersAction:', err);
