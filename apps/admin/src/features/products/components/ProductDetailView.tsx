@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 
 import { TrashIcon } from '@ff/ui';
+import { toast } from 'sonner';
 
 import {
   deleteProduct as deleteProductApi,
@@ -213,8 +213,8 @@ export function ProductDetailView({ productId }: Props) {
                   product.status === 'Active'
                     ? 'border-green-500/20 bg-green-500/10 text-green-700 hover:bg-green-500/20 dark:text-green-400'
                     : product.status === 'Draft'
-                    ? 'cursor-not-allowed border-yellow-500/20 bg-yellow-500/10 text-yellow-700 opacity-60 dark:text-yellow-500'
-                    : 'border-zinc-300 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700'
+                      ? 'cursor-not-allowed border-yellow-500/20 bg-yellow-500/10 text-yellow-700 opacity-60 dark:text-yellow-500'
+                      : 'border-zinc-300 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700'
                 }`}
                 title={
                   product.status === 'Draft'
@@ -227,8 +227,8 @@ export function ProductDetailView({ productId }: Props) {
                     product.status === 'Active'
                       ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]'
                       : product.status === 'Draft'
-                      ? 'bg-yellow-500'
-                      : 'bg-zinc-400'
+                        ? 'bg-yellow-500'
+                        : 'bg-zinc-400'
                   }`}
                 />
                 <span>{product.status}</span>
@@ -252,12 +252,7 @@ export function ProductDetailView({ productId }: Props) {
                   className="ml-1 cursor-pointer text-black/40 transition-colors hover:text-black dark:text-white/40 dark:hover:text-white"
                   title="Copy Product ID"
                 >
-                  <svg
-                    className="h-3 w-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -290,7 +285,9 @@ export function ProductDetailView({ productId }: Props) {
 
               <button
                 type="button"
-                onClick={() => setIsDeleteModalOpen(true)}
+                onClick={() => {
+                  setIsDeleteModalOpen(true);
+                }}
                 className="flex cursor-pointer items-center space-x-2 rounded-full border border-red-500/20 bg-red-50 px-5 py-2 text-xs font-bold text-red-600 shadow-sm transition-all hover:scale-105 hover:bg-red-100 hover:shadow dark:border-red-500/30 dark:bg-red-950/20 dark:text-red-400 dark:hover:bg-red-900/30"
               >
                 <TrashIcon className="h-3.5 w-3.5" />
@@ -302,7 +299,7 @@ export function ProductDetailView({ productId }: Props) {
           {/* Title & Product ID */}
           <div>
             <div className="mb-2 flex items-center gap-2 font-mono text-xs text-black/50 dark:text-white/50">
-              <span className="text-[10px] font-bold tracking-wider uppercase text-black/40 dark:text-white/40">
+              <span className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Product ID:
               </span>
               <span className="font-bold text-black select-all dark:text-white">{product.id}</span>
@@ -479,7 +476,9 @@ export function ProductDetailView({ productId }: Props) {
 
       <DeleteProductModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+        }}
         onConfirm={handleDeleteConfirm}
         productName={product.name}
         isDeleting={isDeleting}
