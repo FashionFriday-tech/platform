@@ -44,7 +44,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
         );
-        if (!res.ok) throw new Error('Failed to load products');
+        if (!res.ok) {
+          throw new Error('Failed to load products');
+        }
         const data = await res.json();
         const items: ApiProduct[] = Array.isArray(data) ? data : (data.data ?? []);
         setProducts(items);
@@ -68,15 +70,16 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
         p.id.toLowerCase().includes(q);
 
       const matchesGender =
-        genderFilter === 'All' ||
-        (p.gender && p.gender.toUpperCase() === genderFilter.toUpperCase());
+        genderFilter === 'All' || p.gender?.toUpperCase() === genderFilter.toUpperCase();
 
       return matchesSearch && matchesGender;
     });
   }, [products, searchQuery, genderFilter]);
 
   const toggleProductSelection = (id: string, isAlreadyInThisCollection: boolean) => {
-    if (isAlreadyInThisCollection) return;
+    if (isAlreadyInThisCollection) {
+      return;
+    }
     const newSelected = new Set(selectedProductIds);
     if (newSelected.has(id)) {
       newSelected.delete(id);
@@ -100,7 +103,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
   };
 
   const handleSave = async () => {
-    if (selectedProductIds.size === 0) return;
+    if (selectedProductIds.size === 0) {
+      return;
+    }
     setIsSaving(true);
     const count = selectedProductIds.size;
 
@@ -118,7 +123,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
             body: JSON.stringify({ marketing: { collections: updatedCollections } }),
           },
         ).then((res) => {
-          if (!res.ok) throw new Error(`Failed to update product ${productId}`);
+          if (!res.ok) {
+            throw new Error(`Failed to update product ${productId}`);
+          }
           return res.json();
         });
       });
@@ -192,11 +199,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
                 <span>Saving...</span>
               </>
             ) : (
-              <>
-                <span>
-                  Add {selectedProductIds.size} Product{selectedProductIds.size === 1 ? '' : 's'}
-                </span>
-              </>
+              <span>
+                Add {selectedProductIds.size} Product{selectedProductIds.size === 1 ? '' : 's'}
+              </span>
             )}
           </button>
         </div>
@@ -211,7 +216,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
               type="text"
               placeholder="Search by name, brand, or SKU..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
               className="w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-10 text-sm text-black placeholder-black/40 outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222]"
             />
           </div>
@@ -221,7 +228,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
               <button
                 key={g}
                 type="button"
-                onClick={() => setGenderFilter(g)}
+                onClick={() => {
+                  setGenderFilter(g);
+                }}
                 className={`rounded-lg px-3 py-1.5 transition-colors ${
                   genderFilter === g
                     ? 'bg-white text-black shadow-sm dark:bg-[#282828] dark:text-white'
@@ -276,12 +285,14 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
               return (
                 <div
                   key={product.id}
-                  onClick={() => toggleProductSelection(product.id, isAlreadyInThisCollection)}
+                  onClick={() => {
+                    toggleProductSelection(product.id, isAlreadyInThisCollection);
+                  }}
                   className={`group relative flex flex-col overflow-hidden rounded-2xl border transition-all ${
                     isAlreadyInThisCollection
                       ? 'cursor-not-allowed border-black/5 bg-black/[0.02] opacity-60 dark:border-white/5 dark:bg-white/[0.02]'
                       : isSelected
-                        ? 'cursor-pointer border-black bg-black/5 ring-2 ring-black/20 shadow-md dark:border-white dark:bg-white/5 dark:ring-white/20'
+                        ? 'cursor-pointer border-black bg-black/5 shadow-md ring-2 ring-black/20 dark:border-white dark:bg-white/5 dark:ring-white/20'
                         : 'cursor-pointer border-black/5 bg-white hover:border-black/20 hover:shadow-md dark:border-white/5 dark:bg-[#141414] dark:hover:border-white/20'
                   }`}
                 >
