@@ -15,7 +15,9 @@ interface EditProductViewProps {
 
 export function EditProductView({ productId }: EditProductViewProps) {
   const router = useRouter();
-  const [product, setProduct] = useState<(Product & { sellerId?: string | null; category?: any }) | null>(null);
+  const [product, setProduct] = useState<
+    (Product & { sellerId?: string | null; category?: any }) | null
+  >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +36,7 @@ export function EditProductView({ productId }: EditProductViewProps) {
       try {
         const p = await api.get<any>(`/admin/products/${productId}`);
 
-        if (!p || !p.id) {
+        if (!p?.id) {
           throw new Error('Product not found');
         }
 
@@ -44,7 +46,12 @@ export function EditProductView({ productId }: EditProductViewProps) {
           name: p.name,
           slug: p.slug,
           description: p.description ?? '',
-          brand: Array.isArray(p.brand) && p.brand.length > 0 ? p.brand : p.brand ? [p.brand] : ['Generic'],
+          brand:
+            Array.isArray(p.brand) && p.brand.length > 0
+              ? p.brand
+              : p.brand
+                ? [p.brand]
+                : ['Generic'],
           status: p.status ?? 'DRAFT',
           categoryId: p.categoryId ?? '',
           sellerId: p.sellerId ?? p.seller?.id ?? null,
@@ -113,7 +120,9 @@ export function EditProductView({ productId }: EditProductViewProps) {
     return (
       <div className="flex min-h-[60vh] flex-1 flex-col items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-black/10 border-t-black dark:border-white/10 dark:border-t-white" />
-        <p className="mt-4 text-sm font-medium text-black/40 dark:text-white/40">Loading product details...</p>
+        <p className="mt-4 text-sm font-medium text-black/40 dark:text-white/40">
+          Loading product details...
+        </p>
       </div>
     );
   }
@@ -123,12 +132,18 @@ export function EditProductView({ productId }: EditProductViewProps) {
       <div className="flex min-h-[60vh] flex-1 flex-col items-center justify-center rounded-3xl border border-black/5 bg-white/50 p-8 shadow-xl backdrop-blur-xl dark:border-white/5 dark:bg-black/50">
         <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500 dark:bg-red-950/30">
           <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
           </svg>
         </div>
         <h2 className="mb-2 text-2xl font-black text-black dark:text-white">Product Not Found</h2>
         <p className="mb-6 max-w-md text-center text-sm font-medium text-black/50 dark:text-white/50">
-          Could not load the requested product for editing. It may have been deleted or the link is incorrect.
+          Could not load the requested product for editing. It may have been deleted or the link is
+          incorrect.
         </p>
         <button
           onClick={() => {
