@@ -39,9 +39,13 @@ export class CategoriesRepository {
       const matchingCount = products.filter((p) => {
         const pCatName = p.category?.name?.toLowerCase();
         const matchesCategory = p.categoryId === cat.id || pCatName === catName;
-        if (!matchesCategory) return false;
+        if (!matchesCategory) {
+          return false;
+        }
         const pGender = p.gender;
-        if (pGender === 'UNISEX') return true;
+        if (pGender === 'UNISEX') {
+          return true;
+        }
         return pGender === catGender;
       }).length;
 
