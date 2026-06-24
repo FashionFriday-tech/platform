@@ -80,11 +80,7 @@ export function ProductActionMenu({
             : 'border-transparent text-black/50 hover:border-black/10 hover:bg-black/5 hover:text-black dark:text-white/50 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-white'
         }`}
       >
-        <svg
-          className="h-4 w-4"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
           <circle cx="12" cy="5" r="2" />
           <circle cx="12" cy="12" r="2" />
           <circle cx="12" cy="19" r="2" />
@@ -94,8 +90,10 @@ export function ProductActionMenu({
       {/* Action Popup Box */}
       {isOpen && (
         <div
-          onClick={(e) => e.stopPropagation()}
-          className="animate-in fade-in zoom-in-95 absolute right-0 top-full z-50 mt-1.5 w-56 origin-top-right rounded-2xl border border-black/10 bg-white/95 p-1.5 shadow-2xl backdrop-blur-2xl duration-150 dark:border-white/10 dark:bg-[#181818]/95"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          className="animate-in fade-in zoom-in-95 absolute top-full right-0 z-50 mt-1.5 w-56 origin-top-right rounded-2xl border border-black/10 bg-white/95 p-1.5 shadow-2xl backdrop-blur-2xl duration-150 dark:border-white/10 dark:bg-[#181818]/95"
         >
           {/* Active / Inactive Toggle Option */}
           <div
@@ -107,8 +105,8 @@ export function ProductActionMenu({
             }}
             className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
               isDraft
-                ? 'cursor-not-allowed opacity-50 text-black/40 dark:text-white/40'
-                : 'cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 text-black/80 dark:text-white/80'
+                ? 'cursor-not-allowed text-black/40 opacity-50 dark:text-white/40'
+                : 'cursor-pointer text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/10'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -117,8 +115,8 @@ export function ProductActionMenu({
                   isActive
                     ? 'bg-green-500 shadow-[0_0_6px_rgba(34,197,94,0.6)]'
                     : isDraft
-                    ? 'bg-yellow-500'
-                    : 'bg-zinc-400'
+                      ? 'bg-yellow-500'
+                      : 'bg-zinc-400'
                 }`}
               />
               <span>{isDraft ? 'Draft (Inactive)' : isActive ? 'Active' : 'Inactive'}</span>
