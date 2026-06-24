@@ -37,7 +37,9 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
         );
-        if (!res.ok) return;
+        if (!res.ok) {
+          return;
+        }
         const data = await res.json();
         const items = Array.isArray(data) ? data : (data.data ?? []);
         const matching: Product[] = items
@@ -87,7 +89,9 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
           body: JSON.stringify({ marketing: { collections: updated } }),
         },
       );
-      if (!res.ok) throw new Error('Failed to remove product from collection');
+      if (!res.ok) {
+        throw new Error('Failed to remove product from collection');
+      }
       setCollectionProducts((prev) => prev.filter((p) => p.id !== productId));
       setCollection((prev) => ({ ...prev, productCount: Math.max(0, prev.productCount - 1) }));
       toast.success('Product removed from collection');
