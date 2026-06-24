@@ -11,7 +11,9 @@ interface CollectionDetailsProps {
   collectionSlug: string;
 }
 
-export async function CollectionDetails({ collectionSlug }: CollectionDetailsProps): Promise<JSX.Element> {
+export async function CollectionDetails({
+  collectionSlug,
+}: CollectionDetailsProps): Promise<JSX.Element> {
   if (!collectionSlug) {
     return notFound();
   }
@@ -26,14 +28,15 @@ export async function CollectionDetails({ collectionSlug }: CollectionDetailsPro
   const collectionProducts = await getProductsByCollection(collection.slug, collection.name);
 
   // 3. Determine initial sidebar context
-  const contextCategory = collectionProducts.length > 0 ? collectionProducts[0].categoryId : 'sneakers';
+  const contextCategory =
+    collectionProducts.length > 0 ? collectionProducts[0].categoryId : 'sneakers';
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex w-full flex-col">
       {/* Hero Section aligned with the product grid to avoid sidebar overlap */}
       <div className="w-full max-w-none px-4 pt-24 md:px-8 md:pt-32 xl:px-10 2xl:px-14">
         <div className="w-full lg:pl-80">
-          <section className="relative w-full h-[40vh] md:h-[50vh] flex items-center justify-center overflow-hidden bg-black rounded-[2.5rem]">
+          <section className="relative flex h-[40vh] w-full items-center justify-center overflow-hidden rounded-[2.5rem] bg-black md:h-[50vh]">
             {collection.image ? (
               <Image
                 src={collection.image}
@@ -45,10 +48,10 @@ export async function CollectionDetails({ collectionSlug }: CollectionDetailsPro
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-950" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
-            
-            <div className="relative z-10 text-center px-4">
-              <h1 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter text-white drop-shadow-lg">
+            <div className="from-background/50 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+
+            <div className="relative z-10 px-4 text-center">
+              <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic drop-shadow-lg md:text-7xl">
                 {collection.name}
               </h1>
             </div>
