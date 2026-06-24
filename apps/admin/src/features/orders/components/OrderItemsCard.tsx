@@ -72,8 +72,9 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
               })()}
             </div>
 
-            <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-xl shadow-sm sm:h-40 sm:w-40 bg-black/5 dark:bg-white/5">
-              {item.productImage && !item.productImage.includes('photo-1523381210434-271e8be1f52b') ? (
+            <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-xl bg-black/5 shadow-sm sm:h-40 sm:w-40 dark:bg-white/5">
+              {item.productImage &&
+              !item.productImage.includes('photo-1523381210434-271e8be1f52b') ? (
                 <Image
                   width={500}
                   height={500}
@@ -122,7 +123,9 @@ export function OrderItemsCard({ order, orderStatus, trackingUrl }: Props) {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold text-black/50 dark:text-white/50">
                     {item.quantity} × ₹
-                    {(Number(item.price) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    {(Number(item.price) || 0).toLocaleString('en-IN', {
+                      minimumFractionDigits: 2,
+                    })}
                   </span>
                   <span className="text-xl font-black text-black sm:text-2xl dark:text-white">
                     ₹
