@@ -101,7 +101,7 @@ export async function fetcher<T = unknown>(
   if (!response.ok) {
     const errorData = (await response.json().catch(() => ({}))) as {
       message?: string | string[];
-      errors?: Array<{ message?: string; path?: (string | number)[] }>;
+      errors?: { message?: string; path?: (string | number)[] }[];
     };
     let errorMsg: string | undefined;
     if (Array.isArray(errorData.errors) && errorData.errors.length > 0) {
