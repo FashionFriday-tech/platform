@@ -80,10 +80,14 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
               pCatSlug === category.slug.toLowerCase() ||
               pCatSlug?.includes(targetCatName);
 
-            if (!matchesCategory) return false;
+            if (!matchesCategory) {
+              return false;
+            }
 
             const pGender = (p.gender ?? 'UNISEX').toUpperCase();
-            if (pGender === 'UNISEX') return true;
+            if (pGender === 'UNISEX') {
+              return true;
+            }
 
             if (catGender === 'WOMEN' || catGender === 'WOMAN') {
               return pGender === 'WOMEN' || pGender === 'WOMAN';
@@ -360,11 +364,13 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
             </div>
             <div className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
               <p>
-                Are you sure you want to delete <strong className="text-black dark:text-white">{category.name}</strong>?
+                Are you sure you want to delete{' '}
+                <strong className="text-black dark:text-white">{category.name}</strong>?
               </p>
               {categoryProducts.length > 0 ? (
                 <p className="mt-2 rounded-lg bg-blue-500/10 p-2.5 text-xs font-medium text-blue-600 dark:text-blue-400">
-                  ℹ️ {categoryProducts.length} product(s) in this category will be unassigned. The products will remain intact in your catalog.
+                  ℹ️ {categoryProducts.length} product(s) in this category will be unassigned. The
+                  products will remain intact in your catalog.
                 </p>
               ) : (
                 <p className="mt-1 text-xs text-zinc-500">This action cannot be undone.</p>
