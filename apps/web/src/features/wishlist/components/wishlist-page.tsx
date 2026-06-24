@@ -2,13 +2,12 @@
 
 import React from 'react';
 
+import { HamburgerMenuIcon, MenuIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { useWishlist } from '../hooks/use-wishlist';
 import { EmptyWishlist } from './empty-wishlist';
 import { WishlistCard } from './wishlist-card';
-
-import { HamburgerMenuIcon, MenuIcon } from '@ff/ui';
 
 export function WishlistPage() {
   const { wishlistItems, hasItems, itemCount, removeFromWishlist } = useWishlist();
@@ -18,20 +17,25 @@ export function WishlistPage() {
   const categories = React.useMemo(() => {
     const cats = new Set<string>();
     wishlistItems.forEach((item) => {
-      if (item.category) cats.add(item.category);
-      else cats.add('Apparel');
+      if (item.category) {
+        cats.add(item.category);
+      } else {
+        cats.add('Apparel');
+      }
     });
     return ['All', ...Array.from(cats).sort()];
   }, [wishlistItems]);
 
   const filteredItems = React.useMemo(() => {
-    if (selectedCategory === 'All') return wishlistItems;
+    if (selectedCategory === 'All') {
+      return wishlistItems;
+    }
     return wishlistItems.filter((item) => (item.category || 'Apparel') === selectedCategory);
   }, [wishlistItems, selectedCategory]);
 
   return (
     <main className="bg-background text-foreground min-h-screen md:pt-20">
-      <div className="sticky top-[3.5rem] md:top-[5rem] z-40 bg-background/95 pb-4 pt-2 backdrop-blur-xl">
+      <div className="bg-background/95 sticky top-[3.5rem] z-40 pt-2 pb-4 backdrop-blur-xl md:top-[5rem]">
         {/* Header Section */}
         <header className="border-foreground/10 right-0 left-0 rounded-4xl border-b px-2">
           <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
@@ -44,18 +48,26 @@ export function WishlistPage() {
             <div className="flex items-center gap-4">
               <div className="bg-background-muted flex items-center rounded-full p-1">
                 <button
-                  onClick={() => setLayoutMode('list')}
+                  onClick={() => {
+                    setLayoutMode('list');
+                  }}
                   className={`rounded-full p-1.5 transition-colors ${
-                    layoutMode === 'list' ? 'bg-foreground text-background shadow-sm' : 'text-foreground-subtle hover:text-foreground'
+                    layoutMode === 'list'
+                      ? 'bg-foreground text-background shadow-sm'
+                      : 'text-foreground-subtle hover:text-foreground'
                   }`}
                   aria-label="List View"
                 >
                   <HamburgerMenuIcon size={14} />
                 </button>
                 <button
-                  onClick={() => setLayoutMode('grid')}
+                  onClick={() => {
+                    setLayoutMode('grid');
+                  }}
                   className={`rounded-full p-1.5 transition-colors ${
-                    layoutMode === 'grid' ? 'bg-foreground text-background shadow-sm' : 'text-foreground-subtle hover:text-foreground'
+                    layoutMode === 'grid'
+                      ? 'bg-foreground text-background shadow-sm'
+                      : 'text-foreground-subtle hover:text-foreground'
                   }`}
                   aria-label="Grid View"
                 >
@@ -75,8 +87,10 @@ export function WishlistPage() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+                onClick={() => {
+                  setSelectedCategory(cat);
+                }}
+                className={`rounded-full px-4 py-1.5 text-xs font-bold tracking-wider whitespace-nowrap uppercase transition-colors ${
                   selectedCategory === cat
                     ? 'bg-foreground text-background'
                     : 'bg-background-muted text-foreground border-border hover:bg-background-muted/80 border'
@@ -100,8 +114,8 @@ export function WishlistPage() {
                 transition={{ duration: 0.3 }}
                 className={
                   layoutMode === 'list'
-                    ? "grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-3 xl:gap-x-10"
-                    : "grid grid-cols-1 gap-4 md:grid-cols-3 xl:gap-6"
+                    ? 'grid grid-cols-1 gap-x-4 gap-y-6 md:grid-cols-3 xl:gap-x-10'
+                    : 'grid grid-cols-1 gap-4 md:grid-cols-3 xl:gap-6'
                 }
               >
                 {filteredItems.map((item) => (
@@ -123,8 +137,14 @@ export function WishlistPage() {
                 ))}
               </motion.div>
             ) : (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-20 text-center">
-                <p className="text-foreground-subtle text-sm uppercase tracking-widest">No items in this category.</p>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="py-20 text-center"
+              >
+                <p className="text-foreground-subtle text-sm tracking-widest uppercase">
+                  No items in this category.
+                </p>
               </motion.div>
             )
           ) : (
