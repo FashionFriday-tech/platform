@@ -1,7 +1,9 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
 import { api } from '@/lib/api-client';
+
 import { fetchUserOrdersAction } from '../services/orders.actions';
 
 // Map DB OrderStatus to frontend generic types if needed, or just use strings.
@@ -41,9 +43,15 @@ export function useOrders() {
     return orders
       .filter((o) => {
         const s = o.status?.toUpperCase();
-        if (activeTab === 'shipping') return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(s);
-        if (activeTab === 'delivered' || activeTab === 'arrived') return ['DELIVERED'].includes(s);
-        if (activeTab === 'canceled') return ['CANCELLED', 'CANCELED', 'RETURNED', 'REFUNDED'].includes(s);
+        if (activeTab === 'shipping') {
+          return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(s);
+        }
+        if (activeTab === 'delivered' || activeTab === 'arrived') {
+          return ['DELIVERED'].includes(s);
+        }
+        if (activeTab === 'canceled') {
+          return ['CANCELLED', 'CANCELED', 'RETURNED', 'REFUNDED'].includes(s);
+        }
         return false;
       })
       .flatMap((order) =>
@@ -59,12 +67,18 @@ export function useOrders() {
     return orders
       .filter((o) => {
         const s = o.status?.toUpperCase();
-        if (tab === 'shipping') return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(s);
-        if (tab === 'delivered' || tab === 'arrived') return ['DELIVERED'].includes(s);
-        if (tab === 'canceled') return ['CANCELLED', 'CANCELED', 'RETURNED', 'REFUNDED'].includes(s);
+        if (tab === 'shipping') {
+          return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(s);
+        }
+        if (tab === 'delivered' || tab === 'arrived') {
+          return ['DELIVERED'].includes(s);
+        }
+        if (tab === 'canceled') {
+          return ['CANCELLED', 'CANCELED', 'RETURNED', 'REFUNDED'].includes(s);
+        }
         return false;
       })
-      .reduce((acc, curr) => acc + (curr.items?.length || 0), 0);
+      .reduce((acc: number, curr: any) => acc + Number(curr.items?.length ?? 0), 0);
   };
 
   return {
