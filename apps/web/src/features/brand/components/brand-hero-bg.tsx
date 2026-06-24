@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
+
 import { useInView } from 'motion/react';
 
 interface BrandHeroBgProps {
@@ -41,7 +42,7 @@ export function BrandHeroBg({ poster, name }: BrandHeroBgProps) {
         src={poster || '/images/bg-hero.png'}
         alt={name}
         fill
-        className="object-cover opacity-80 animate-hero-bg"
+        className="animate-hero-bg object-cover opacity-80"
         style={{ animationPlayState: isInView ? 'running' : 'paused' }}
         priority
       />
