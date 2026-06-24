@@ -3,14 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
-import {
-  CheckIcon,
-  CloseIcon,
-  MapPinIcon,
-  PlusIcon,
-  SearchIcon,
-  ShoppingBagIcon,
-} from '@ff/ui';
+import { CheckIcon, CloseIcon, MapPinIcon, PlusIcon, SearchIcon, ShoppingBagIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
@@ -67,7 +60,9 @@ type Step = 'product' | 'configure' | 'address' | 'payment';
 const STANDARD_SIZES = ['Free Size', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 
 export function getProductFirstImage(p?: Product | null): string {
-  if (!p) return '';
+  if (!p) {
+    return '';
+  }
   const raw = p as any;
   return (
     (typeof p.imageUrl === 'string' && p.imageUrl.trim()) ||
@@ -130,23 +125,6 @@ export function CreateCustomerOrderModal({
   const [paymentStatus, setPaymentStatus] = useState<'PENDING' | 'SUCCESS' | 'FAILED'>('PENDING');
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
-  // Reset or load initial data when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setCurrentStep('product');
-      setSelectedProduct(null);
-      setSelectedSize('');
-      setSelectedColor('');
-      setQuantity(1);
-      setSelectedAddressId(null);
-      setShowAddAddressForm(false);
-      setNewAddrFullName(customerName || '');
-      setNewAddrPhone(customerPhone || '');
-      loadInitialProducts();
-      loadCustomerAddresses();
-    }
-  }, [isOpen, customerName, customerPhone]);
-
   const loadInitialProducts = async () => {
     setIsSearching(true);
     try {
@@ -154,21 +132,6 @@ export function CreateCustomerOrderModal({
       setProducts(items.slice(0, 12));
     } catch (err) {
       console.error('Failed to load products:', err);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleSearchProducts = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setIsSearching(true);
-    setHasSearched(true);
-    try {
-      const results = await fetchProducts(searchQuery);
-      setProducts(results);
-    } catch (err) {
-      console.error('Failed searching products:', err);
-      toast.error('Failed to search products');
     } finally {
       setIsSearching(false);
     }
@@ -196,6 +159,40 @@ export function CreateCustomerOrderModal({
     }
   };
 
+  // Reset or load initial data when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStep('product');
+      setSelectedProduct(null);
+      setSelectedSize('');
+      setSelectedColor('');
+      setQuantity(1);
+      setSelectedAddressId(null);
+      setShowAddAddressForm(false);
+      setNewAddrFullName(customerName || '');
+      setNewAddrPhone(customerPhone || '');
+      void loadInitialProducts();
+      void loadCustomerAddresses();
+    }
+  }, [isOpen, customerName, customerPhone]);
+
+  const handleSearchProducts = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    setIsSearching(true);
+    setHasSearched(true);
+    try {
+      const results = await fetchProducts(searchQuery);
+      setProducts(results);
+    } catch (err) {
+      console.error('Failed searching products:', err);
+      toast.error('Failed to search products');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     // Auto-select first available size or default
@@ -209,11 +206,21 @@ export function CreateCustomerOrderModal({
 
   const validateAddressForm = () => {
     const errors: Record<string, string> = {};
-    if (!newAddrFullName.trim()) errors.fullName = 'Full name is required';
-    if (!newAddrPhone.trim()) errors.phone = 'Phone number is required';
-    if (!newAddrStreet.trim()) errors.street = 'Street / Address is required';
-    if (!newAddrCity.trim()) errors.city = 'City is required';
-    if (!newAddrState.trim()) errors.state = 'State is required';
+    if (!newAddrFullName.trim()) {
+      errors.fullName = 'Full name is required';
+    }
+    if (!newAddrPhone.trim()) {
+      errors.phone = 'Phone number is required';
+    }
+    if (!newAddrStreet.trim()) {
+      errors.street = 'Street / Address is required';
+    }
+    if (!newAddrCity.trim()) {
+      errors.city = 'City is required';
+    }
+    if (!newAddrState.trim()) {
+      errors.state = 'State is required';
+    }
     if (!newAddrPincode.trim() || !/^\d{6}$/.test(newAddrPincode.trim())) {
       errors.pincode = 'Valid 6-digit pin code is required';
     }
@@ -223,7 +230,9 @@ export function CreateCustomerOrderModal({
 
   const handleSaveNewAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateAddressForm()) return;
+    if (!validateAddressForm()) {
+      return;
+    }
 
     setIsSavingAddress(true);
     try {
@@ -281,7 +290,11 @@ export function CreateCustomerOrderModal({
 
     setIsSubmittingOrder(true);
     try {
-      const addressLine = [selectedAddress.building, selectedAddress.street, selectedAddress.landmark]
+      const addressLine = [
+        selectedAddress.building,
+        selectedAddress.street,
+        selectedAddress.landmark,
+      ]
         .filter(Boolean)
         .join(', ');
 
@@ -340,7 +353,9 @@ export function CreateCustomerOrderModal({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const unitPrice = selectedProduct?.sellingPrice ?? 0;
   const totalPrice = unitPrice * quantity;
@@ -354,7 +369,9 @@ export function CreateCustomerOrderModal({
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/60 backdrop-blur-sm"
         onClick={() => {
-          if (!isSubmittingOrder) onClose();
+          if (!isSubmittingOrder) {
+            onClose();
+          }
         }}
       />
 
@@ -370,15 +387,20 @@ export function CreateCustomerOrderModal({
         <div className="shrink-0 border-b border-black/5 bg-[#fafafa] px-6 py-5 dark:border-white/5 dark:bg-[#161616]">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-black dark:text-white">Create Order for Customer</h2>
+              <h2 className="text-lg font-bold text-black dark:text-white">
+                Create Order for Customer
+              </h2>
               <p className="text-xs text-black/50 dark:text-white/50">
-                Customer: <span className="font-semibold text-black dark:text-white">{customerName}</span>
+                Customer:{' '}
+                <span className="font-semibold text-black dark:text-white">{customerName}</span>
               </p>
             </div>
             <button
               type="button"
               onClick={() => {
-                if (!isSubmittingOrder) onClose();
+                if (!isSubmittingOrder) {
+                  onClose();
+                }
               }}
               className="rounded-full p-2 text-black/40 transition-colors hover:bg-black/5 hover:text-black dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white"
             >
@@ -401,12 +423,12 @@ export function CreateCustomerOrderModal({
               return (
                 <div
                   key={step.id}
-                  className={`flex items-center justify-center rounded-xl py-2 px-2 text-center transition-all ${
+                  className={`flex items-center justify-center rounded-xl px-2 py-2 text-center transition-all ${
                     isCurrent
-                      ? 'bg-black text-white dark:bg-white dark:text-black shadow-xs'
+                      ? 'bg-black text-white shadow-xs dark:bg-white dark:text-black'
                       : isPassed
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                      : 'bg-black/5 text-black/40 dark:bg-white/5 dark:text-white/40'
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                        : 'bg-black/5 text-black/40 dark:bg-white/5 dark:text-white/40'
                   }`}
                 >
                   <span className="truncate">{step.label}</span>
@@ -422,7 +444,9 @@ export function CreateCustomerOrderModal({
           {currentStep === 'product' && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-base font-bold text-black dark:text-white">Find Product to Order</h3>
+                <h3 className="text-base font-bold text-black dark:text-white">
+                  Find Product to Order
+                </h3>
                 <p className="text-xs text-black/50 dark:text-white/50">
                   Search by product name, slug, or exact product ID.
                 </p>
@@ -438,8 +462,10 @@ export function CreateCustomerOrderModal({
                     type="text"
                     placeholder="Search by product name or ID (e.g. Cotton Shirt, prod-123)..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="block w-full rounded-xl border border-black/10 bg-[#f8f9fa] py-2.5 pr-4 pl-10 text-sm text-black outline-none transition-all focus:border-black/30 focus:bg-white dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-white/30"
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                    }}
+                    className="block w-full rounded-xl border border-black/10 bg-[#f8f9fa] py-2.5 pr-4 pl-10 text-sm text-black transition-all outline-none focus:border-black/30 focus:bg-white dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-white/30"
                   />
                 </div>
                 <button
@@ -471,7 +497,9 @@ export function CreateCustomerOrderModal({
               ) : products.length > 0 ? (
                 <div>
                   <div className="mb-2 text-xs font-semibold text-black/40 uppercase dark:text-white/40">
-                    {hasSearched ? `Search Results (${products.length})` : 'Popular & Recent Products'}
+                    {hasSearched
+                      ? `Search Results (${products.length})`
+                      : 'Popular & Recent Products'}
                   </div>
                   <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-3">
                     {products.map((product) => {
@@ -481,7 +509,9 @@ export function CreateCustomerOrderModal({
                       return (
                         <div
                           key={product.id}
-                          onClick={() => handleSelectProduct(product)}
+                          onClick={() => {
+                            handleSelectProduct(product);
+                          }}
                           className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-3 transition-colors ${
                             isSelected
                               ? 'border-black bg-black/5 dark:border-white dark:bg-white/10'
@@ -559,7 +589,9 @@ export function CreateCustomerOrderModal({
               ) : (
                 <div className="flex h-56 flex-col items-center justify-center rounded-2xl border border-dashed border-black/10 p-6 text-center text-black/50 dark:border-white/10 dark:text-white/50">
                   <ShoppingBagIcon className="mb-2 h-10 w-10 opacity-30" />
-                  <p className="text-sm font-semibold">No products found matching &quot;{searchQuery}&quot;</p>
+                  <p className="text-sm font-semibold">
+                    No products found matching &quot;{searchQuery}&quot;
+                  </p>
                   <p className="text-xs">Try searching by partial name or check the product ID.</p>
                 </div>
               )}
@@ -589,7 +621,9 @@ export function CreateCustomerOrderModal({
                   <span className="font-mono text-[10px] text-black/50 dark:text-white/50">
                     ID: {selectedProduct.sku || selectedProduct.id}
                   </span>
-                  <h3 className="text-base font-bold text-black dark:text-white">{selectedProduct.name}</h3>
+                  <h3 className="text-base font-bold text-black dark:text-white">
+                    {selectedProduct.name}
+                  </h3>
                   <div className="mt-1 flex items-center gap-2">
                     <span className="text-base font-extrabold text-black dark:text-white">
                       ₹{selectedProduct.sellingPrice?.toLocaleString('en-IN')}
@@ -603,7 +637,9 @@ export function CreateCustomerOrderModal({
                 </div>
                 <button
                   type="button"
-                  onClick={() => setCurrentStep('product')}
+                  onClick={() => {
+                    setCurrentStep('product');
+                  }}
                   className="rounded-xl border border-black/10 px-3 py-1.5 text-xs font-semibold text-black/60 hover:bg-black/5 dark:border-white/10 dark:text-white/60 dark:hover:bg-white/10"
                 >
                   Change Product
@@ -623,7 +659,9 @@ export function CreateCustomerOrderModal({
                     <button
                       key={s}
                       type="button"
-                      onClick={() => setSelectedSize(s)}
+                      onClick={() => {
+                        setSelectedSize(s);
+                      }}
                       className={`min-w-[48px] rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
                         selectedSize === s
                           ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
@@ -645,7 +683,9 @@ export function CreateCustomerOrderModal({
                   <div className="flex items-center rounded-xl border border-black/10 bg-[#f8f9fa] dark:border-white/10 dark:bg-[#1a1a1a]">
                     <button
                       type="button"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      onClick={() => {
+                        setQuantity(Math.max(1, quantity - 1));
+                      }}
                       className="px-4 py-2 text-base font-bold text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white"
                     >
                       −
@@ -654,19 +694,26 @@ export function CreateCustomerOrderModal({
                       type="number"
                       min="1"
                       value={quantity}
-                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                      onChange={(e) => {
+                        setQuantity(Math.max(1, parseInt(e.target.value) || 1));
+                      }}
                       className="w-16 bg-transparent text-center text-sm font-bold text-black outline-none dark:text-white"
                     />
                     <button
                       type="button"
-                      onClick={() => setQuantity(quantity + 1)}
+                      onClick={() => {
+                        setQuantity(quantity + 1);
+                      }}
                       className="px-4 py-2 text-base font-bold text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white"
                     >
                       +
                     </button>
                   </div>
                   <span className="text-xs text-black/50 dark:text-white/50">
-                    Subtotal: <strong className="text-black dark:text-white">₹{totalPrice.toLocaleString('en-IN')}</strong>
+                    Subtotal:{' '}
+                    <strong className="text-black dark:text-white">
+                      ₹{totalPrice.toLocaleString('en-IN')}
+                    </strong>
                   </span>
                 </div>
               </div>
@@ -675,14 +722,18 @@ export function CreateCustomerOrderModal({
               <div className="flex items-center justify-between border-t border-black/5 pt-5 dark:border-white/5">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep('product')}
+                  onClick={() => {
+                    setCurrentStep('product');
+                  }}
                   className="rounded-xl border border-black/10 px-4 py-2.5 text-xs font-semibold text-black/70 hover:bg-black/5 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10"
                 >
                   ← Back to Products
                 </button>
                 <button
                   type="button"
-                  onClick={() => setCurrentStep('address')}
+                  onClick={() => {
+                    setCurrentStep('address');
+                  }}
                   className="rounded-xl bg-black px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/90"
                 >
                   Continue to Delivery Address →
@@ -696,7 +747,9 @@ export function CreateCustomerOrderModal({
             <div className="mx-auto max-w-2xl space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-black dark:text-white">Delivery Address</h3>
+                  <h3 className="text-base font-bold text-black dark:text-white">
+                    Delivery Address
+                  </h3>
                   <p className="text-xs text-black/50 dark:text-white/50">
                     Select a saved address for this customer or create a new one.
                   </p>
@@ -704,7 +757,9 @@ export function CreateCustomerOrderModal({
                 {!showAddAddressForm && addresses.length > 0 && (
                   <button
                     type="button"
-                    onClick={() => setShowAddAddressForm(true)}
+                    onClick={() => {
+                      setShowAddAddressForm(true);
+                    }}
                     className="flex items-center gap-1.5 rounded-xl bg-black/5 px-3 py-1.5 text-xs font-bold text-black hover:bg-black/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
                   >
                     <PlusIcon className="h-3.5 w-3.5" />
@@ -730,7 +785,9 @@ export function CreateCustomerOrderModal({
                     {addresses.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => setShowAddAddressForm(false)}
+                        onClick={() => {
+                          setShowAddAddressForm(false);
+                        }}
                         className="text-xs font-semibold text-black/60 hover:underline dark:text-white/60"
                       >
                         Cancel & Pick Existing
@@ -747,7 +804,9 @@ export function CreateCustomerOrderModal({
                         type="text"
                         placeholder="e.g. Rahul Sharma"
                         value={newAddrFullName}
-                        onChange={(e) => setNewAddrFullName(e.target.value)}
+                        onChange={(e) => {
+                          setNewAddrFullName(e.target.value);
+                        }}
                         className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white"
                       />
                       {addressErrors.fullName && (
@@ -763,7 +822,9 @@ export function CreateCustomerOrderModal({
                         type="text"
                         placeholder="10-digit mobile number"
                         value={newAddrPhone}
-                        onChange={(e) => setNewAddrPhone(e.target.value)}
+                        onChange={(e) => {
+                          setNewAddrPhone(e.target.value);
+                        }}
                         className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white"
                       />
                       {addressErrors.phone && (
@@ -779,7 +840,9 @@ export function CreateCustomerOrderModal({
                         type="text"
                         placeholder="Apartment 4B, Sunrise Heights..."
                         value={newAddrBuilding}
-                        onChange={(e) => setNewAddrBuilding(e.target.value)}
+                        onChange={(e) => {
+                          setNewAddrBuilding(e.target.value);
+                        }}
                         className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white"
                       />
                     </div>
@@ -792,7 +855,9 @@ export function CreateCustomerOrderModal({
                         type="text"
                         placeholder="MG Road, Indiranagar..."
                         value={newAddrStreet}
-                        onChange={(e) => setNewAddrStreet(e.target.value)}
+                        onChange={(e) => {
+                          setNewAddrStreet(e.target.value);
+                        }}
                         className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white"
                       />
                       {addressErrors.street && (
@@ -808,7 +873,9 @@ export function CreateCustomerOrderModal({
                         type="text"
                         placeholder="e.g. Bangalore"
                         value={newAddrCity}
-                        onChange={(e) => setNewAddrCity(e.target.value)}
+                        onChange={(e) => {
+                          setNewAddrCity(e.target.value);
+                        }}
                         className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white"
                       />
                       {addressErrors.city && (
@@ -824,7 +891,9 @@ export function CreateCustomerOrderModal({
                         type="text"
                         placeholder="e.g. Karnataka"
                         value={newAddrState}
-                        onChange={(e) => setNewAddrState(e.target.value)}
+                        onChange={(e) => {
+                          setNewAddrState(e.target.value);
+                        }}
                         className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white"
                       />
                       {addressErrors.state && (
@@ -841,7 +910,9 @@ export function CreateCustomerOrderModal({
                         placeholder="6-digit pin code"
                         maxLength={6}
                         value={newAddrPincode}
-                        onChange={(e) => setNewAddrPincode(e.target.value)}
+                        onChange={(e) => {
+                          setNewAddrPincode(e.target.value);
+                        }}
                         className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white"
                       />
                       {addressErrors.pincode && (
@@ -855,7 +926,9 @@ export function CreateCustomerOrderModal({
                       </label>
                       <select
                         value={newAddrLabel}
-                        onChange={(e) => setNewAddrLabel(e.target.value)}
+                        onChange={(e) => {
+                          setNewAddrLabel(e.target.value);
+                        }}
                         className="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white"
                       >
                         <option value="Home">Home</option>
@@ -869,7 +942,9 @@ export function CreateCustomerOrderModal({
                     {addresses.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => setShowAddAddressForm(false)}
+                        onClick={() => {
+                          setShowAddAddressForm(false);
+                        }}
                         className="rounded-xl border border-black/10 px-4 py-2 text-xs font-semibold text-black/70 hover:bg-black/5 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10"
                       >
                         Cancel
@@ -889,14 +964,22 @@ export function CreateCustomerOrderModal({
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {addresses.map((addr) => {
                     const isSelected = selectedAddressId === addr.id;
-                    const fullAddr = [addr.building, addr.street, addr.city, addr.state, addr.pincode]
+                    const fullAddr = [
+                      addr.building,
+                      addr.street,
+                      addr.city,
+                      addr.state,
+                      addr.pincode,
+                    ]
                       .filter(Boolean)
                       .join(', ');
 
                     return (
                       <div
                         key={addr.id}
-                        onClick={() => setSelectedAddressId(addr.id)}
+                        onClick={() => {
+                          setSelectedAddressId(addr.id);
+                        }}
                         className={`group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all ${
                           isSelected
                             ? 'border-black bg-black/5 shadow-md dark:border-white dark:bg-white/10'
@@ -950,7 +1033,9 @@ export function CreateCustomerOrderModal({
               <div className="flex items-center justify-between border-t border-black/5 pt-5 dark:border-white/5">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep('configure')}
+                  onClick={() => {
+                    setCurrentStep('configure');
+                  }}
                   className="rounded-xl border border-black/10 px-4 py-2.5 text-xs font-semibold text-black/70 hover:bg-black/5 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10"
                 >
                   ← Back to Item Details
@@ -971,7 +1056,9 @@ export function CreateCustomerOrderModal({
           {currentStep === 'payment' && selectedProduct && selectedAddress && (
             <div className="mx-auto max-w-2xl space-y-6">
               <div>
-                <h3 className="text-base font-bold text-black dark:text-white">Review & Payment Details</h3>
+                <h3 className="text-base font-bold text-black dark:text-white">
+                  Review & Payment Details
+                </h3>
                 <p className="text-xs text-black/50 dark:text-white/50">
                   Select payment configuration and review the order summary before creating.
                 </p>
@@ -1004,11 +1091,12 @@ export function CreateCustomerOrderModal({
                         {selectedProduct.name}
                       </h5>
                       <p className="mt-0.5 text-[11px] text-black/60 dark:text-white/60">
-                        Size: <strong className="text-black dark:text-white">{selectedSize}</strong> | Qty:{' '}
-                        <strong className="text-black dark:text-white">{quantity}</strong>
+                        Size: <strong className="text-black dark:text-white">{selectedSize}</strong>{' '}
+                        | Qty: <strong className="text-black dark:text-white">{quantity}</strong>
                       </p>
                       <p className="mt-1 text-xs font-extrabold text-black dark:text-white">
-                        ₹{unitPrice.toLocaleString('en-IN')} × {quantity} = ₹{totalPrice.toLocaleString('en-IN')}
+                        ₹{unitPrice.toLocaleString('en-IN')} × {quantity} = ₹
+                        {totalPrice.toLocaleString('en-IN')}
                       </p>
                     </div>
                   </div>
@@ -1022,16 +1110,28 @@ export function CreateCustomerOrderModal({
                     </h4>
                     <button
                       type="button"
-                      onClick={() => setCurrentStep('address')}
+                      onClick={() => {
+                        setCurrentStep('address');
+                      }}
                       className="text-[11px] font-semibold text-black/60 hover:underline dark:text-white/60"
                     >
                       Change
                     </button>
                   </div>
-                  <p className="text-xs font-bold text-black dark:text-white">{selectedAddress.fullName}</p>
-                  <p className="text-[11px] text-black/60 dark:text-white/60">{selectedAddress.phoneNumber}</p>
+                  <p className="text-xs font-bold text-black dark:text-white">
+                    {selectedAddress.fullName}
+                  </p>
+                  <p className="text-[11px] text-black/60 dark:text-white/60">
+                    {selectedAddress.phoneNumber}
+                  </p>
                   <p className="mt-1 line-clamp-2 text-xs text-black/70 dark:text-white/70">
-                    {[selectedAddress.building, selectedAddress.street, selectedAddress.city, selectedAddress.state, selectedAddress.pincode]
+                    {[
+                      selectedAddress.building,
+                      selectedAddress.street,
+                      selectedAddress.city,
+                      selectedAddress.state,
+                      selectedAddress.pincode,
+                    ]
                       .filter(Boolean)
                       .join(', ')}
                   </p>
@@ -1056,12 +1156,15 @@ export function CreateCustomerOrderModal({
                         type="button"
                         onClick={() => {
                           setPaymentMethod(m.id as any);
-                          if (m.id === 'COD') setPaymentStatus('PENDING');
-                          else setPaymentStatus('SUCCESS');
+                          if (m.id === 'COD') {
+                            setPaymentStatus('PENDING');
+                          } else {
+                            setPaymentStatus('SUCCESS');
+                          }
                         }}
                         className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${
                           paymentMethod === m.id
-                            ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black shadow-xs'
+                            ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
                             : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
                         }`}
                       >
@@ -1083,10 +1186,12 @@ export function CreateCustomerOrderModal({
                       <button
                         key={s.id}
                         type="button"
-                        onClick={() => setPaymentStatus(s.id as any)}
+                        onClick={() => {
+                          setPaymentStatus(s.id as any);
+                        }}
                         className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${
                           paymentStatus === s.id
-                            ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black shadow-xs'
+                            ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
                             : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
                         }`}
                       >
@@ -1110,7 +1215,9 @@ export function CreateCustomerOrderModal({
                   <button
                     type="button"
                     disabled={isSubmittingOrder}
-                    onClick={() => setCurrentStep('address')}
+                    onClick={() => {
+                      setCurrentStep('address');
+                    }}
                     className="rounded-xl border border-black/10 px-4 py-2.5 text-xs font-semibold text-black/70 hover:bg-black/5 disabled:opacity-50 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10"
                   >
                     Back
