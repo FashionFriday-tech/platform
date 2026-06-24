@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
-import { useInView } from 'motion/react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
+
+import { useInView } from 'motion/react';
 
 interface PromoVideoProps {
   src: string;
@@ -28,7 +29,7 @@ export function PromoVideo({ src }: PromoVideoProps) {
   }, [isInView, isGif]);
 
   return (
-    <div ref={containerRef} className="w-full h-full relative bg-background-muted">
+    <div ref={containerRef} className="bg-background-muted relative h-full w-full">
       {isGif ? (
         isInView && (
           <Image
@@ -44,7 +45,7 @@ export function PromoVideo({ src }: PromoVideoProps) {
         <video
           ref={videoRef}
           src={src}
-          className="object-cover w-full h-full transition-transform duration-700 hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
           loop
           muted
           playsInline
