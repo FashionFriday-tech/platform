@@ -1,5 +1,5 @@
 import React from 'react';
-import { Metadata } from 'next';
+import { type Metadata } from 'next';
 
 import { CollectionDetails } from '@/features/collections';
 import { getAllCollections, getCollectionBySlug } from '@/features/collections/services/queries';
