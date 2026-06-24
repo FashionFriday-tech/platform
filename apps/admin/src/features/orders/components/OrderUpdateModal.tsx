@@ -100,11 +100,7 @@ export function OrderUpdateModal({
                 <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
                   Assign Seller
                 </label>
-                <CustomSelect
-                  options={sellerOptions}
-                  value={tempSeller}
-                  onChange={setTempSeller}
-                />
+                <CustomSelect options={sellerOptions} value={tempSeller} onChange={setTempSeller} />
               </div>
             </motion.div>
           )}
