@@ -70,7 +70,7 @@ export const useAuthStore = create<AuthState>()(
             localStorage.removeItem('refreshToken');
           }
           set({ user: null });
-          useCartStore.getState().clearCart();
+          await useCartStore.getState().clearCart();
           useWishlistStore.getState().clearWishlist();
         }
       },
