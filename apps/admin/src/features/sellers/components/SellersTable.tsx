@@ -3,13 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-import {
-  GlobeIcon,
-  InstagramIcon,
-  MailIcon,
-  PhoneIcon,
-  StoreIcon,
-} from '@ff/ui';
+import { GlobeIcon, InstagramIcon, MailIcon, PhoneIcon, StoreIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { type Seller, type SellerStatus } from '../types';
@@ -24,11 +18,7 @@ interface SellersTableProps {
   onOpenOrders?: (seller: Seller) => void;
 }
 
-export function SellersTable({
-  sellers,
-  isLoading,
-  onSelectSeller,
-}: SellersTableProps) {
+export function SellersTable({ sellers, isLoading, onSelectSeller }: SellersTableProps) {
   const router = useRouter();
 
   if (isLoading) {
@@ -142,7 +132,7 @@ export function SellersTable({
                       {seller.storeName.charAt(0).toUpperCase()}
                     </div>
                     <span
-                      className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#141417] ${getStatusDot(
+                      className={`absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-white dark:border-[#141417] ${getStatusDot(
                         seller.status,
                       )}`}
                     />
@@ -189,7 +179,8 @@ export function SellersTable({
                     {seller.instagram && (
                       <a
                         href={
-                          seller.instagram.startsWith('http://') || seller.instagram.startsWith('https://')
+                          seller.instagram.startsWith('http://') ||
+                          seller.instagram.startsWith('https://')
                             ? seller.instagram
                             : `https://instagram.com/${seller.instagram.replace(/^@/, '')}`
                         }
@@ -216,13 +207,14 @@ export function SellersTable({
                   {seller.website ? (
                     <a
                       href={
-                        seller.website.startsWith('http://') || seller.website.startsWith('https://')
+                        seller.website.startsWith('http://') ||
+                        seller.website.startsWith('https://')
                           ? seller.website
                           : `https://${seller.website}`
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex max-w-full items-center gap-1.5 truncate text-xs font-semibold text-blue-600 transition-colors hover:underline hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                      className="inline-flex max-w-full items-center gap-1.5 truncate text-xs font-semibold text-blue-600 transition-colors hover:text-blue-700 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
                       title={seller.website}
                     >
                       <GlobeIcon className="h-3.5 w-3.5 shrink-0 opacity-70" />
