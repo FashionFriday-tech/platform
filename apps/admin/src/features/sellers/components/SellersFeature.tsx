@@ -49,10 +49,7 @@ export function SellersFeature() {
 
       {/* Sellers Data Table */}
       <div className="scrollbar-hide min-h-0 flex-1 overflow-auto pb-6">
-        <SellersTable
-          sellers={filteredSellers}
-          isLoading={isLoading}
-        />
+        <SellersTable sellers={filteredSellers} isLoading={isLoading} />
       </div>
 
       {/* Create / Edit Modal */}
