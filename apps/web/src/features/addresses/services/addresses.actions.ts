@@ -32,7 +32,10 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response | null> {
+async function fetchWithAuth(
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<Response | null> {
   let authHeaders = await getAuthHeaders();
 
   const buildHeaders = (baseAuthHeaders: Record<string, string>) => {
@@ -146,7 +149,7 @@ function fromApiRecord(record: RawDbAddress): Address {
 export async function fetchUserAddressesAction(): Promise<Address[]> {
   try {
     const res = await fetchWithAuth('/addresses');
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       console.warn('Fetch addresses returned status:', res?.status);
       return [];
     }
@@ -168,7 +171,7 @@ export async function createAddressAction(address: Omit<Address, 'id'>): Promise
       method: 'POST',
       body: JSON.stringify(payload),
     });
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       const errorText = await res?.text().catch(() => '');
       console.error('Create address error:', res?.status, errorText);
       return null;
@@ -194,7 +197,7 @@ export async function updateAddressAction(
       method: 'PUT',
       body: JSON.stringify(payload),
     });
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       const errorText = await res?.text().catch(() => '');
       console.error('Update address error:', res?.status, errorText);
       return null;
