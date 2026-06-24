@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 import {
   ChevronRightIcon,
@@ -13,15 +14,15 @@ import {
   ZapIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
+import { toast } from 'sonner';
+
+import { createOrderAction } from '@/features/orders/services/orders.actions';
+import { api } from '@/lib/api-client';
+import { useAuthStore } from '@/store/auth-store';
+import { useCartStore } from '@/store/cart-store';
 
 import { useCheckoutPayment } from '../hooks/use-checkout-payment';
 import { CheckoutProgress } from './checkout-progress';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { useCartStore } from '@/store/cart-store';
-import { useAuthStore } from '@/store/auth-store';
-import { createOrderAction } from '@/features/orders/services/orders.actions';
-import { api } from '@/lib/api-client';
 
 export function PaymentStep() {
   const {
@@ -49,10 +50,20 @@ export function PaymentStep() {
     }
 
     console.log('[PaymentStep] ---------------- ORDER PROCESS STARTED ----------------');
-    console.log('[PaymentStep] Step 1: User state:', user ? { id: user.id, phone: user.phone } : 'UNAUTHENTICATED');
+    console.log(
+      '[PaymentStep] Step 1: User state:',
+      user ? { id: user.id, phone: user.phone } : 'UNAUTHENTICATED',
+    );
     console.log('[PaymentStep] Step 1: Cart Items:', cartItems);
     console.log('[PaymentStep] Step 1: Selected Payment Method:', paymentMethod);
-    console.log('[PaymentStep] Step 1: Base Total:', baseTotal, 'COD Fee:', codServiceFee, 'Payable:', totalAmount);
+    console.log(
+      '[PaymentStep] Step 1: Base Total:',
+      baseTotal,
+      'COD Fee:',
+      codServiceFee,
+      'Payable:',
+      totalAmount,
+    );
 
     if (!user) {
       console.warn('[PaymentStep] Blocked: User not authenticated. Redirecting to login.');
@@ -75,7 +86,10 @@ export function PaymentStep() {
       try {
         order = await createOrderAction({ paymentMethod: method });
       } catch (actionErr: any) {
-        console.warn('[PaymentStep] Server Action failed, attempting direct API fallback:', actionErr);
+        console.warn(
+          '[PaymentStep] Server Action failed, attempting direct API fallback:',
+          actionErr,
+        );
         order = await api.post<any>('/orders', { paymentMethod: method });
       }
       console.log('[PaymentStep] Step 3: Order successfully created on server:', order);
