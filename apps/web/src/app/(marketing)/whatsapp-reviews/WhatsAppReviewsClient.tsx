@@ -18,6 +18,7 @@ export function WhatsAppReviewsClient({ initialReviews }: Props) {
   const [reviews, setReviews] = useState<WhatsAppReview[]>(initialReviews);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialReviews.length >= 20);
+  const [isPendingAdvance, setIsPendingAdvance] = useState(false);
   const limit = 20;
 
   const isLoadingRef = useRef(false);
@@ -28,56 +29,62 @@ export function WhatsAppReviewsClient({ initialReviews }: Props) {
   const [activeReviewIndex, setActiveReviewIndex] = useState<number | null>(null);
   const touchStartX = useRef<number | null>(null);
 
-  const fetchReviews = useCallback(async (newOffset: number) => {
-    if (isLoadingRef.current || !hasMoreRef.current) {
-      return;
-    }
-    isLoadingRef.current = true;
-    setIsLoading(true);
-    try {
-      const data = await fetcher<WhatsAppReview[]>(
-        `/whatsapp-reviews?limit=${limit}&offset=${newOffset}`,
-      );
-      if (Array.isArray(data)) {
-        const moreAvailable = data.length >= limit;
-        hasMoreRef.current = moreAvailable;
-        setHasMore(moreAvailable);
+  const fetchReviews = useCallback(
+    async (newOffset: number) => {
+      if (isLoadingRef.current || !hasMoreRef.current) {
+        return;
+      }
+      isLoadingRef.current = true;
+      setIsLoading(true);
+      try {
+        const data = await fetcher<WhatsAppReview[]>(
+          `/whatsapp-reviews?limit=${limit}&offset=${newOffset}`,
+        );
+        if (Array.isArray(data)) {
+          const moreAvailable = data.length >= limit;
+          hasMoreRef.current = moreAvailable;
+          setHasMore(moreAvailable);
 
-        if (data.length > 0) {
-          setReviews((prev) => {
-            const existingIds = new Set(prev.map((r) => r.id));
-            const newUnique = data.filter((r) => !existingIds.has(r.id));
-            const updated = [...prev, ...newUnique];
+          if (data.length > 0) {
+            setReviews((prev) => {
+              const existingIds = new Set(prev.map((r) => r.id));
+              const newUnique = data.filter((r) => !existingIds.has(r.id));
+              const updated = [...prev, ...newUnique];
 
-            // If user clicked next at the end of the batch and was waiting for the new batch
+              // If user clicked next at the end of the batch and was waiting for the new batch
+              if (pendingAdvanceRef.current) {
+                pendingAdvanceRef.current = false;
+                setIsPendingAdvance(false);
+                if (newUnique.length > 0) {
+                  setActiveReviewIndex(prev.length);
+                }
+              }
+
+              return updated;
+            });
+            offsetRef.current = newOffset;
+          } else {
+            hasMoreRef.current = false;
+            setHasMore(false);
+            // If waiting to advance and no more exist, rotate to 0
             if (pendingAdvanceRef.current) {
               pendingAdvanceRef.current = false;
-              if (newUnique.length > 0) {
-                setActiveReviewIndex(prev.length);
-              }
+              setIsPendingAdvance(false);
+              setActiveReviewIndex(0);
             }
-
-            return updated;
-          });
-          offsetRef.current = newOffset;
-        } else {
-          hasMoreRef.current = false;
-          setHasMore(false);
-          // If waiting to advance and no more exist, rotate to 0
-          if (pendingAdvanceRef.current) {
-            pendingAdvanceRef.current = false;
-            setActiveReviewIndex(0);
           }
         }
+      } catch (err) {
+        console.error('Failed to load whatsapp reviews:', err);
+        pendingAdvanceRef.current = false;
+        setIsPendingAdvance(false);
+      } finally {
+        isLoadingRef.current = false;
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error('Failed to load whatsapp reviews:', err);
-      pendingAdvanceRef.current = false;
-    } finally {
-      isLoadingRef.current = false;
-      setIsLoading(false);
-    }
-  }, [limit]);
+    },
+    [limit],
+  );
 
   // Pre-fetch next batch 5 images before reaching the end of the loaded reviews in detail view
   useEffect(() => {
@@ -127,6 +134,7 @@ export function WhatsAppReviewsClient({ initialReviews }: Props) {
             void fetchReviews(offsetRef.current + limit);
           }
           pendingAdvanceRef.current = true;
+          setIsPendingAdvance(true);
           return prev;
         }
         // When all reviews in the entire store have ended, rotate back to 0
@@ -211,8 +219,8 @@ export function WhatsAppReviewsClient({ initialReviews }: Props) {
               />
 
               {/* Hover overlay with action indicator */}
-              <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 p-3">
-                <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold text-black shadow-md backdrop-blur-xs uppercase tracking-wider dark:bg-black/95 dark:text-white">
+              <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/60 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold tracking-wider text-black uppercase shadow-md backdrop-blur-xs dark:bg-black/95 dark:text-white">
                   View Chat
                 </span>
               </div>
@@ -231,16 +239,14 @@ export function WhatsAppReviewsClient({ initialReviews }: Props) {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={`skel-${i}`}
-              className="relative aspect-[9/19] w-full overflow-hidden rounded-2xl border border-black/10 bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.04] animate-pulse"
+              className="relative aspect-[9/19] w-full animate-pulse overflow-hidden rounded-2xl border border-black/10 bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.04]"
             />
           ))}
         </div>
       )}
 
       {/* Bottom spacing when all items are loaded (no count displayed on client) */}
-      {!hasMore && reviews.length > 0 && !isLoading && (
-        <div className="py-12" />
-      )}
+      {!hasMore && reviews.length > 0 && !isLoading && <div className="py-12" />}
 
       {/* Full-screen Lightbox Modal */}
       {activeReviewIndex !== null && reviews[activeReviewIndex] && (
@@ -297,8 +303,8 @@ export function WhatsAppReviewsClient({ initialReviews }: Props) {
               alt="WhatsApp Review Fullscreen"
               className="pointer-events-none max-h-[90vh] max-w-[95vw] rounded-lg object-contain shadow-2xl md:max-w-[85vw]"
             />
-            {isLoading && pendingAdvanceRef.current && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-xs rounded-lg">
+            {isLoading && isPendingAdvance && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/40 backdrop-blur-xs">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
               </div>
             )}
