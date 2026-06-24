@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { AlertCircleIcon, CheckCircleIcon, CloseIcon } from '@ff/ui';
 
 export interface UploadItemProgress {
@@ -22,7 +23,9 @@ interface WhatsAppReviewsUploadModalProps {
 }
 
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) {
+    return '0 B';
+  }
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -43,7 +46,7 @@ export function WhatsAppReviewsUploadModal({
   const total = items.length;
   const completed = items.filter((i) => i.status === 'success').length;
   const failed = items.filter((i) => i.status === 'error').length;
-  const allFinished = !isUploading && (completed + failed === total);
+  const allFinished = !isUploading && completed + failed === total;
   const percent = total > 0 ? Math.round(((completed + failed) / total) * 100) : 0;
 
   return (
@@ -128,7 +131,7 @@ export function WhatsAppReviewsUploadModal({
         </div>
 
         {/* Live List of Upload Items */}
-        <div className="scrollbar-thin max-h-72 overflow-y-auto p-6 space-y-3">
+        <div className="scrollbar-thin max-h-72 space-y-3 overflow-y-auto p-6">
           {items.map((item, index) => (
             <div
               key={item.id}
@@ -139,13 +142,13 @@ export function WhatsAppReviewsUploadModal({
                     ? 'border-black/5 bg-black/[0.01] dark:border-white/5 dark:bg-white/[0.01]'
                     : item.status === 'error'
                       ? 'border-red-500/30 bg-red-500/5 dark:border-red-500/30 dark:bg-red-500/5'
-                      : 'border-black/5 bg-transparent dark:border-white/5 opacity-60'
+                      : 'border-black/5 bg-transparent opacity-60 dark:border-white/5'
               }`}
             >
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex min-w-0 items-center gap-3">
                 {/* Thumbnail Preview */}
                 <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded-xl border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {}
                   <img
                     src={item.previewUrl}
                     alt={item.fileName}
@@ -162,7 +165,7 @@ export function WhatsAppReviewsUploadModal({
                     {formatFileSize(item.fileSize)}
                   </p>
                   {item.errorMessage && (
-                    <p className="mt-0.5 text-[10px] font-semibold text-red-500 line-clamp-1">
+                    <p className="mt-0.5 line-clamp-1 text-[10px] font-semibold text-red-500">
                       {item.errorMessage}
                     </p>
                   )}
