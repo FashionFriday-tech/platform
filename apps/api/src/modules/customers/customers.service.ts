@@ -1,4 +1,11 @@
-import { AccountStatus, OrderStatus, PaymentMethod, PaymentStatus, UserRole, generateBrandId } from '@ff/database';
+import {
+  AccountStatus,
+  generateBrandId,
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+  UserRole,
+} from '@ff/database';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
@@ -125,7 +132,8 @@ export class CustomersService {
         paymentStatus: order.paymentStatus,
         createdAt: order.createdAt.toISOString(),
         items: order.items.map((item) => {
-          const prod = productById.get(item.productId) || productByName.get(item.name.toLowerCase());
+          const prod =
+            productById.get(item.productId) || productByName.get(item.name.toLowerCase());
           const prodImg = prod?.mainImage || prod?.promoImage || prod?.liveImages?.[0] || '';
           const resolvedImage =
             item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
@@ -229,7 +237,8 @@ export class CustomersService {
     // Use prisma transaction to make sure Order and OrderItem are created together
     return this.prisma.db.$transaction(async (tx) => {
       let resolvedImage =
-        (details as any).image && !(details as any).image.includes('photo-1523381210434-271e8be1f52b')
+        (details as any).image &&
+        !(details as any).image.includes('photo-1523381210434-271e8be1f52b')
           ? (details as any).image.trim()
           : '';
       let targetProductId = (details as any).productId;
@@ -246,16 +255,17 @@ export class CustomersService {
 
       if (dbProduct) {
         targetProductId = dbProduct.id;
-        const dbImage =
-          dbProduct.mainImage ||
-          dbProduct.promoImage ||
-          dbProduct.liveImages?.[0];
+        const dbImage = dbProduct.mainImage || dbProduct.promoImage || dbProduct.liveImages?.[0];
         if (dbImage) {
           resolvedImage = dbImage;
         }
       }
 
-      if (!resolvedImage && (details as any).image && !(details as any).image.includes('photo-1523381210434-271e8be1f52b')) {
+      if (
+        !resolvedImage &&
+        (details as any).image &&
+        !(details as any).image.includes('photo-1523381210434-271e8be1f52b')
+      ) {
         resolvedImage = (details as any).image.trim();
       }
 
