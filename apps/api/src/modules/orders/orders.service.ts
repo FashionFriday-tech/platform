@@ -1,4 +1,4 @@
-import { OrderStatus, PaymentStatus, generateBrandId } from '@ff/database';
+import { generateBrandId, OrderStatus, PaymentStatus } from '@ff/database';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
