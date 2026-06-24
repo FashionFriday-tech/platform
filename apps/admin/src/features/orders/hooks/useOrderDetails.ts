@@ -41,7 +41,7 @@ export function useOrderDetails(order: Order) {
     async function loadSellers() {
       try {
         const res: any = await api.get('/admin/sellers');
-        const list: any[] = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+        const list: any[] = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
         setRawSellers(list);
 
         if (list.length > 0) {
@@ -57,9 +57,7 @@ export function useOrderDetails(order: Order) {
             (order.items || []).map((i: any) => i.categoryId).filter(Boolean),
           );
           const orderCategoryNames = new Set(
-            (order.items || [])
-              .map((i: any) => i.categoryName?.toLowerCase())
-              .filter(Boolean),
+            (order.items || []).map((i: any) => i.categoryName?.toLowerCase()).filter(Boolean),
           );
 
           const productSellers: any[] = [];
@@ -69,20 +67,18 @@ export function useOrderDetails(order: Order) {
           for (const seller of list) {
             const isProductSeller =
               orderProductSellerIds.has(seller.id) ||
-              (seller.products && seller.products.some((p: any) => orderProductIds.has(p.id)));
+              seller.products?.some((p: any) => orderProductIds.has(p.id));
 
             if (isProductSeller) {
               productSellers.push(seller);
               continue;
             }
 
-            const isCategorySeller =
-              seller.categories &&
-              seller.categories.some(
-                (c: any) =>
-                  orderCategoryIds.has(c.id) ||
-                  (c.name && orderCategoryNames.has(c.name.toLowerCase())),
-              );
+            const isCategorySeller = seller.categories?.some(
+              (c: any) =>
+                orderCategoryIds.has(c.id) ||
+                (c.name && orderCategoryNames.has(c.name.toLowerCase())),
+            );
 
             if (isCategorySeller) {
               categorySellers.push(seller);
