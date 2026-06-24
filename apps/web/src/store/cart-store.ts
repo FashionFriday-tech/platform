@@ -196,7 +196,9 @@ export const useCartStore = create<CartState>()(
           // Otherwise fetch current user cart from database
           console.log('[CartStore] Fetching current user cart from database...');
           const remote = await fetchUserCartAction();
-          console.log(`[CartStore] Fetched ${Array.isArray(remote) ? remote.length : 0} items from server`);
+          console.log(
+            `[CartStore] Fetched ${Array.isArray(remote) ? remote.length : 0} items from server`,
+          );
           set({ items: Array.isArray(remote) ? remote : [], isInitialized: true });
         } catch (error) {
           console.error('[CartStore] Failed to sync cart with server:', error);
