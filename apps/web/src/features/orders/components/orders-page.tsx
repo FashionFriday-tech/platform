@@ -4,7 +4,7 @@ import React from 'react';
 
 import { PackageIcon } from '@ff/ui';
 
-import { useOrders, type FrontendOrderStatus } from '../hooks/use-orders';
+import { type FrontendOrderStatus, useOrders } from '../hooks/use-orders';
 import { OrderCard } from './order-card';
 import { TabButton } from './tab-button';
 
@@ -25,11 +25,7 @@ export function OrdersPage() {
                 key={tab}
                 isActive={activeTab === tab}
                 label={
-                  tab === 'shipping'
-                    ? 'Shipping'
-                    : tab === 'delivered'
-                      ? 'Delivered'
-                      : 'Cancelled'
+                  tab === 'shipping' ? 'Shipping' : tab === 'delivered' ? 'Delivered' : 'Cancelled'
                 }
                 count={getCount(tab as FrontendOrderStatus)}
                 onClick={() => {
@@ -56,7 +52,13 @@ export function OrdersPage() {
           <div className="bg-background-elevated border-border rounded-4xl border border-dashed py-20 text-center opacity-60">
             <PackageIcon className="text-foreground-subtle mx-auto mb-4" size={40} />
             <p className="font-bold">
-              No {activeTab === 'delivered' ? 'delivered' : activeTab === 'shipping' ? 'active shipping' : 'cancelled'} shipments
+              No{' '}
+              {activeTab === 'delivered'
+                ? 'delivered'
+                : activeTab === 'shipping'
+                  ? 'active shipping'
+                  : 'cancelled'}{' '}
+              shipments
             </p>
           </div>
         )}
