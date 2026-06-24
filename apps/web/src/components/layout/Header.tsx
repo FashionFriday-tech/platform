@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { AnimatedLogo } from '@/components/ui/animated-logo';
 import {
   BellIcon,
   CategoryIcon,
@@ -17,6 +16,7 @@ import {
 } from '@ff/ui';
 import { AnimatePresence } from 'motion/react';
 
+import { AnimatedLogo } from '@/components/ui/animated-logo';
 import { useCart } from '@/features/cart';
 import { useAuthStore } from '@/store/auth-store';
 
