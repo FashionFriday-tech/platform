@@ -394,7 +394,6 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
     }
   };
 
-
   const validateAddressForm = () => {
     const errors: Record<string, string> = {};
     if (!addrFullName.trim()) {
@@ -790,7 +789,9 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   return (
                     <div
                       key={order.id}
-                      onClick={() => router.push(`/orders/${order.id}`)}
+                      onClick={() => {
+                        router.push(`/orders/${order.id}`);
+                      }}
                       className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-black/10 bg-white p-3 shadow-xs transition-all hover:border-black/30 hover:shadow-md dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/30"
                     >
                       {/* Product Image Area */}
@@ -854,7 +855,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                                 minimumFractionDigits: 2,
                               })}
                             </span>
-                            <span className="rounded-md bg-black/5 px-2 py-0.5 text-[10px] font-semibold uppercase text-black/60 dark:bg-white/10 dark:text-white/70">
+                            <span className="rounded-md bg-black/5 px-2 py-0.5 text-[10px] font-semibold text-black/60 uppercase dark:bg-white/10 dark:text-white/70">
                               {order.paymentMethod || 'Prepaid'}
                             </span>
                           </div>
@@ -894,7 +895,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   );
                 })
               ) : (
-                <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col items-center justify-center rounded-[32px] border border-dashed border-black/10 p-12 text-center dark:border-white/10">
+                <div className="col-span-1 flex flex-col items-center justify-center rounded-[32px] border border-dashed border-black/10 p-12 text-center sm:col-span-2 lg:col-span-3 dark:border-white/10">
                   <ShoppingBagIcon className="mb-4 h-8 w-8 text-black/20 dark:text-white/20" />
                   <p className="font-semibold text-black/50 dark:text-white/50">
                     No orders placed yet.
@@ -1050,7 +1051,7 @@ State : ${address.state}
 Pincode : ${address.pincode}
 ${address.landmark ? `Landmark : ${address.landmark}\n` : ''}Mobile Number : ${address.phoneNumber}
 ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim();
-                        navigator.clipboard.writeText(text);
+                        void navigator.clipboard.writeText(text);
                         toast.success('Address copied to clipboard!');
                       }}
                       className="absolute top-6 right-6 rounded-xl bg-black/5 p-2 transition-colors hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10"
@@ -1214,14 +1215,18 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
       {/* Premium Create Order Modal */}
       <CreateCustomerOrderModal
         isOpen={isOrderModalOpen}
-        onClose={() => setIsOrderModalOpen(false)}
+        onClose={() => {
+          setIsOrderModalOpen(false);
+        }}
         customerId={customerId}
         customerName={customer?.name ?? ''}
         customerPhone={customer?.phone}
         onOrderCreated={(newOrder) => {
           setCustomer((prev) => {
-            if (!prev) return null;
-            const updatedOrders = [newOrder as Order, ...prev.orders];
+            if (!prev) {
+              return null;
+            }
+            const updatedOrders = [newOrder, ...prev.orders];
             const newTotalSpent = prev.totalSpent + (newOrder.total ?? 0);
             return {
               ...prev,
@@ -1230,7 +1235,7 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
               orders: updatedOrders,
             };
           });
-          fetchCustomerDetails(true);
+          void fetchCustomerDetails(true);
         }}
       />
 
