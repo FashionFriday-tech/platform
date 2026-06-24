@@ -25,7 +25,9 @@ export function useSearchLogs() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
 
   const fetchLogs = useCallback(async () => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     setIsLoading(true);
     try {
       const token = localStorage.getItem('accessToken');
@@ -45,11 +47,12 @@ export function useSearchLogs() {
 
   useEffect(() => {
     void fetchLogs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredLogs = useMemo(() => {
-    if (!searchQuery.trim()) return logs;
+    if (!searchQuery.trim()) {
+      return logs;
+    }
     const q = searchQuery.toLowerCase();
     return logs.filter(
       (log) =>
