@@ -186,7 +186,18 @@ export function useAuthFlow() {
     } finally {
       setLoading(false);
     }
-  }, [step, phoneNumber, otp, profile, otpToken, validate, startTimer, authLogin, router, redirectUrl]);
+  }, [
+    step,
+    phoneNumber,
+    otp,
+    profile,
+    otpToken,
+    validate,
+    startTimer,
+    authLogin,
+    router,
+    redirectUrl,
+  ]);
 
   const handleResendOTP = useCallback(async () => {
     if (timer > 0) {
