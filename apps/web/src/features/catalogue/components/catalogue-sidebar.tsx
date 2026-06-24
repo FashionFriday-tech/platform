@@ -237,8 +237,9 @@ export const CatalogueSidebar = ({
                 Sort By
               </span>
               <ChevronDownIcon
-                className={`h-4 w-4 transition-transform duration-300 ${openSections.sort ? 'rotate-180' : ''
-                  }`}
+                className={`h-4 w-4 transition-transform duration-300 ${
+                  openSections.sort ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
@@ -258,10 +259,11 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           setDraftSort(opt.value);
                         }}
-                        className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-[11px] uppercase transition-all ${isSelected
-                          ? 'bg-foreground text-background font-black shadow-xs'
-                          : 'text-foreground-subtle hover:bg-background-muted font-bold'
-                          }`}
+                        className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-[11px] uppercase transition-all ${
+                          isSelected
+                            ? 'bg-foreground text-background font-black shadow-xs'
+                            : 'text-foreground-subtle hover:bg-background-muted font-bold'
+                        }`}
                       >
                         <span>{opt.label}</span>
                         {isSelected && <div className="bg-background h-1.5 w-1.5 rounded-full" />}
@@ -291,8 +293,9 @@ export const CatalogueSidebar = ({
               )}
             </span>
             <ChevronDownIcon
-              className={`h-4 w-4 transition-transform duration-300 ${openSections.priceRange ? 'rotate-180' : ''
-                }`}
+              className={`h-4 w-4 transition-transform duration-300 ${
+                openSections.priceRange ? 'rotate-180' : ''
+              }`}
             />
           </button>
 
@@ -331,10 +334,11 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('priceRange', preset.range, true);
                         }}
-                        className={`rounded-full border px-2.5 py-1 text-[9px] font-black tracking-wider uppercase transition-all ${isActive
-                          ? 'bg-foreground text-background border-foreground'
-                          : 'border-border bg-background hover:border-foreground/40'
-                          }`}
+                        className={`rounded-full border px-2.5 py-1 text-[9px] font-black tracking-wider uppercase transition-all ${
+                          isActive
+                            ? 'bg-foreground text-background border-foreground'
+                            : 'border-border bg-background hover:border-foreground/40'
+                        }`}
                       >
                         {preset.label}
                       </button>
@@ -364,8 +368,9 @@ export const CatalogueSidebar = ({
                 ) : null}
               </span>
               <ChevronDownIcon
-                className={`h-4 w-4 transition-transform duration-300 ${openSections.brand ? 'rotate-180' : ''
-                  }`}
+                className={`h-4 w-4 transition-transform duration-300 ${
+                  openSections.brand ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
@@ -403,10 +408,11 @@ export const CatalogueSidebar = ({
                           onClick={() => {
                             handleDraftToggle('brand', b.value);
                           }}
-                          className={`group/brand flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase transition-all duration-200 active:scale-95 ${isActive
-                            ? 'bg-foreground text-background border-foreground shadow-md'
-                            : 'bg-background border-border hover:border-foreground/40'
-                            }`}
+                          className={`group/brand flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase transition-all duration-200 active:scale-95 ${
+                            isActive
+                              ? 'bg-foreground text-background border-foreground shadow-md'
+                              : 'bg-background border-border hover:border-foreground/40'
+                          }`}
                         >
                           {logoUrl && (
                             <span className="relative flex h-3.5 w-3.5 shrink-0 items-center justify-center">
@@ -415,10 +421,11 @@ export const CatalogueSidebar = ({
                                 alt={b.label}
                                 width={14}
                                 height={14}
-                                className={`h-full w-full object-contain ${isActive
-                                  ? 'brightness-0 invert dark:brightness-100 dark:invert-0'
-                                  : 'invert-0 dark:invert'
-                                  }`}
+                                className={`h-full w-full object-contain ${
+                                  isActive
+                                    ? 'brightness-0 invert dark:brightness-100 dark:invert-0'
+                                    : 'invert-0 dark:invert'
+                                }`}
                                 onError={(e) => {
                                   e.currentTarget.style.display = 'none';
                                 }}
@@ -455,8 +462,9 @@ export const CatalogueSidebar = ({
                 ) : null}
               </span>
               <ChevronDownIcon
-                className={`h-4 w-4 transition-transform duration-300 ${openSections.quality ? 'rotate-180' : ''
-                  }`}
+                className={`h-4 w-4 transition-transform duration-300 ${
+                  openSections.quality ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
@@ -479,10 +487,11 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('quality', q.value);
                         }}
-                        className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${isActive
-                          ? 'bg-foreground text-background border-foreground shadow-md'
-                          : 'bg-background border-border hover:border-foreground/40'
-                          }`}
+                        className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
+                          isActive
+                            ? 'bg-foreground text-background border-foreground shadow-md'
+                            : 'bg-background border-border hover:border-foreground/40'
+                        }`}
                       >
                         {q.label}
                         <span className="text-[9px] opacity-60">({q.count})</span>
@@ -513,8 +522,9 @@ export const CatalogueSidebar = ({
                 ) : null}
               </span>
               <ChevronDownIcon
-                className={`h-4 w-4 transition-transform duration-300 ${openSections.colors ? 'rotate-180' : ''
-                  }`}
+                className={`h-4 w-4 transition-transform duration-300 ${
+                  openSections.colors ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
@@ -538,10 +548,11 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('colors', c.value);
                         }}
-                        className={`flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${isActive
-                          ? 'bg-foreground text-background border-foreground shadow-md'
-                          : 'bg-background border-border hover:border-foreground/40'
-                          }`}
+                        className={`flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
+                          isActive
+                            ? 'bg-foreground text-background border-foreground shadow-md'
+                            : 'bg-background border-border hover:border-foreground/40'
+                        }`}
                       >
                         {swatch ? (
                           <span
@@ -583,8 +594,9 @@ export const CatalogueSidebar = ({
                 ) : null}
               </span>
               <ChevronDownIcon
-                className={`h-4 w-4 transition-transform duration-300 ${openSections.sizes ? 'rotate-180' : ''
-                  }`}
+                className={`h-4 w-4 transition-transform duration-300 ${
+                  openSections.sizes ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
@@ -607,10 +619,11 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('sizes', s.value);
                         }}
-                        className={`flex flex-col items-center justify-center rounded-2xl border py-1.5 text-[10px] font-black uppercase transition-all duration-200 active:scale-95 ${isActive
-                          ? 'bg-foreground text-background border-foreground shadow-md'
-                          : 'bg-background border-border hover:border-foreground/40'
-                          }`}
+                        className={`flex flex-col items-center justify-center rounded-2xl border py-1.5 text-[10px] font-black uppercase transition-all duration-200 active:scale-95 ${
+                          isActive
+                            ? 'bg-foreground text-background border-foreground shadow-md'
+                            : 'bg-background border-border hover:border-foreground/40'
+                        }`}
                       >
                         <span>{s.label}</span>
                         <span className="text-[8px] opacity-60">({s.count})</span>
@@ -630,10 +643,11 @@ export const CatalogueSidebar = ({
           <button
             onClick={handleApply}
             disabled={!hasChanges}
-            className={`w-full rounded-2xl py-3.5 text-center text-xs font-black tracking-widest uppercase transition-all duration-300 ${hasChanges
-              ? 'bg-foreground text-background hover:bg-foreground/90 cursor-pointer shadow-xl active:scale-95'
-              : 'bg-foreground/10 text-foreground/30 border-border/40 cursor-not-allowed border shadow-none'
-              }`}
+            className={`w-full rounded-2xl py-3.5 text-center text-xs font-black tracking-widest uppercase transition-all duration-300 ${
+              hasChanges
+                ? 'bg-foreground text-background hover:bg-foreground/90 cursor-pointer shadow-xl active:scale-95'
+                : 'bg-foreground/10 text-foreground/30 border-border/40 cursor-not-allowed border shadow-none'
+            }`}
           >
             {hasChanges
               ? `Apply Filters • (${previewMatchingProducts.length} Items)`
