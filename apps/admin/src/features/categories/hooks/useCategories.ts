@@ -186,22 +186,17 @@ export function useCategories() {
   const handleDeleteCategory = async (idOrSlug: string) => {
     try {
       const cat = categories.find((c) => c.id === idOrSlug || c.slug === idOrSlug);
-      if (!cat) return false;
+      if (!cat) {
+        return false;
+      }
 
       // Clean up Cloudflare image if remote
-      if (
-        cat.image &&
-        cat.image.startsWith('http') &&
-        !cat.image.includes('localhost')
-      ) {
-        fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-          {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ urls: [cat.image] }),
-          },
-        ).catch((err) => {
+      if (cat.image && cat.image.startsWith('http') && !cat.image.includes('localhost')) {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ urls: [cat.image] }),
+        }).catch((err: unknown) => {
           console.error('Failed to cleanup category image:', err);
         });
       }
