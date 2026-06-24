@@ -6,8 +6,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { PhoneIcon, WhatsAppIcon } from '@ff/ui/icons';
 import { ShoppingBagIcon } from '@ff/ui';
+import { PhoneIcon, WhatsAppIcon } from '@ff/ui/icons';
 import { motion } from 'motion/react';
 
 import { api } from '@/lib/api-client';
@@ -146,7 +146,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     async function loadSellers() {
       try {
         const res: any = await api.get('/admin/sellers');
-        const list: any[] = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+        const list: any[] = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
         setRawSellers(list);
 
         if (list.length > 0) {
@@ -163,9 +163,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
             (order.items || []).map((i: any) => i.categoryId).filter(Boolean),
           );
           const orderCategoryNames = new Set(
-            (order.items || [])
-              .map((i: any) => i.categoryName?.toLowerCase())
-              .filter(Boolean),
+            (order.items || []).map((i: any) => i.categoryName?.toLowerCase()).filter(Boolean),
           );
 
           // 2. Classify into 3 tiers:
@@ -179,20 +177,18 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
           for (const seller of list) {
             const isProductSeller =
               orderProductSellerIds.has(seller.id) ||
-              (seller.products && seller.products.some((p: any) => orderProductIds.has(p.id)));
+              seller.products?.some((p: any) => orderProductIds.has(p.id));
 
             if (isProductSeller) {
               productSellers.push(seller);
               continue;
             }
 
-            const isCategorySeller =
-              seller.categories &&
-              seller.categories.some(
-                (c: any) =>
-                  orderCategoryIds.has(c.id) ||
-                  (c.name && orderCategoryNames.has(c.name.toLowerCase())),
-              );
+            const isCategorySeller = seller.categories?.some(
+              (c: any) =>
+                orderCategoryIds.has(c.id) ||
+                (c.name && orderCategoryNames.has(c.name.toLowerCase())),
+            );
 
             if (isCategorySeller) {
               categorySellers.push(seller);
@@ -628,8 +624,9 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                     })()}
                   </div>
 
-                  <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-xl shadow-sm sm:h-40 sm:w-40 bg-black/5 dark:bg-white/5">
-                    {item.productImage && !item.productImage.includes('photo-1523381210434-271e8be1f52b') ? (
+                  <div className="relative h-48 w-full shrink-0 overflow-hidden rounded-xl bg-black/5 shadow-sm sm:h-40 sm:w-40 dark:bg-white/5">
+                    {item.productImage &&
+                    !item.productImage.includes('photo-1523381210434-271e8be1f52b') ? (
                       <Image
                         width={500}
                         height={500}
@@ -678,13 +675,18 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       <div className="flex items-center justify-between">
                         <span className="text-sm font-bold text-zinc-400 dark:text-zinc-500">
                           {item.quantity} × ₹
-                          {(Number(item.price) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                          {(Number(item.price) || 0).toLocaleString('en-IN', {
+                            minimumFractionDigits: 2,
+                          })}
                         </span>
                         <span className="text-xl font-black text-black sm:text-2xl dark:text-white">
                           ₹
-                          {((Number(item.price) || 0) * (item.quantity || 1)).toLocaleString('en-IN', {
-                            minimumFractionDigits: 2,
-                          })}
+                          {((Number(item.price) || 0) * (item.quantity || 1)).toLocaleString(
+                            'en-IN',
+                            {
+                              minimumFractionDigits: 2,
+                            },
+                          )}
                         </span>
                       </div>
 
@@ -749,7 +751,8 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
               <div className="flex justify-between">
                 <span>Subtotal ({order.items.length} items)</span>
                 <span className="font-semibold text-zinc-900 dark:text-zinc-100">
-                  ₹{(Number(order.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  ₹
+                  {(Number(order.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -762,7 +765,10 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
               </div>
               <div className="mt-2 flex justify-between border-t border-zinc-100 pt-4 text-base font-black text-black dark:border-zinc-800 dark:text-white">
                 <span>Total</span>
-                <span>₹{(Number(order.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                <span>
+                  ₹
+                  {(Number(order.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                </span>
               </div>
             </div>
             <div className="bg-zinc-50 px-6 py-4 dark:bg-zinc-900/60">
@@ -1021,7 +1027,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                     </div>
                     <button
                       onClick={() => {
-                        handleSaveTracking();
+                        void handleSaveTracking();
                         setIsEditingMeta(false);
                       }}
                       className="mt-2 w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
@@ -1146,7 +1152,8 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       setAssignedSeller(tempSeller);
                     }
                     const matchedSeller = rawSellers.find(
-                      (s) => s.storeName === tempSeller || s.name === tempSeller || s.id === tempSeller,
+                      (s) =>
+                        s.storeName === tempSeller || s.name === tempSeller || s.id === tempSeller,
                     );
                     await updateOrderOnBackend({
                       status: pendingStatus,
