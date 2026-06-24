@@ -1,4 +1,4 @@
-import { Gender, Prisma, ProductStatus, generateBrandId } from '@ff/database';
+import { Gender, generateBrandId, Prisma, ProductStatus } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
 import { triggerRevalidation } from '../../revalidate-helper';
