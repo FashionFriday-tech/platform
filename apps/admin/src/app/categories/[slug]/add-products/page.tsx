@@ -26,11 +26,15 @@ async function getCategoryBySlug(slug: string): Promise<ProductCategory | null> 
       `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories`,
       { cache: 'no-store' },
     );
-    if (!res.ok) return null;
+    if (!res.ok) {
+      return null;
+    }
     const data = (await res.json()) as { data?: CategoryApiItem[] } | CategoryApiItem[];
     const categoriesData = Array.isArray(data) ? data : (data.data ?? []);
     const apiCategory = categoriesData.find((c) => c.slug === slug);
-    if (!apiCategory) return null;
+    if (!apiCategory) {
+      return null;
+    }
 
     return {
       id: apiCategory.id,
@@ -58,9 +62,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function AddCategoryProductsPage({
-  params,
-}: AddCategoryProductsPageProps) {
+export default async function AddCategoryProductsPage({ params }: AddCategoryProductsPageProps) {
   const resolvedParams = await params;
   const category = await getCategoryBySlug(resolvedParams.slug);
 
