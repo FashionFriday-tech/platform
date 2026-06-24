@@ -70,7 +70,9 @@ export class WhatsAppReviewsController {
       const settled = await Promise.allSettled(uploadPromises);
       for (const res of settled) {
         if (res.status === 'fulfilled' && res.value) {
-          await this.uploadService.deleteFile(res.value).catch(() => {});
+          await this.uploadService.deleteFile(res.value).catch(() => {
+            // Ignore cleanup error
+          });
         }
       }
       throw uploadError;
