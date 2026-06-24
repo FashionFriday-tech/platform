@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+
 import { type Product } from '@ff/schemas';
 import { motion } from 'motion/react';
 
 import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
 import Request from '@/components/ui/sections/Request';
+
 import { PromoVideo } from './promo-video';
 
 interface GridProps {
@@ -51,8 +53,6 @@ export const CatalogueGrid = ({
       <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Results Count & Active Filter Chips */}
         <div className="flex flex-wrap items-center gap-2">
-
-
           {activeChips.length > 0 && (
             <div className="border-border flex flex-wrap items-center gap-1.5 pl-2 sm:border-l">
               {activeChips.map((chip) => (
@@ -106,7 +106,7 @@ export const CatalogueGrid = ({
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-background-muted relative col-span-2 aspect-[8/5] sm:aspect-auto sm:h-full w-full overflow-hidden rounded-4xl lg:rounded-[2.5rem]"
+                  className="bg-background-muted relative col-span-2 aspect-[8/5] w-full overflow-hidden rounded-4xl sm:aspect-auto sm:h-full lg:rounded-[2.5rem]"
                 >
                   <PromoVideo src="/gif/ad.gif" />
                 </motion.div>
