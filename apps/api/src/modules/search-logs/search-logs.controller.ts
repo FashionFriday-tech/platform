@@ -16,7 +16,9 @@ export class SearchLogsController {
   @Post()
   @UseGuards(OptionalJwtAuthGuard)
   async logSearch(@Body('query') query: string, @Req() req: AuthRequest) {
-    if (!query?.trim()) return { success: false };
+    if (!query?.trim()) {
+      return { success: false };
+    }
     const userId = req.user?.id ?? req.user?.sub ?? undefined;
     await this.service.logSearch(query, userId);
     return { success: true };
