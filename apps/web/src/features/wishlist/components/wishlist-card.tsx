@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'motion/react';
 
-import { BellIcon, HeartMinusIcon, ShoppingBagIcon, CloseIcon } from '@ff/ui';
+import { BellIcon, CloseIcon, HeartMinusIcon, ShoppingBagIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
 import { useCart } from '@/features/cart';
@@ -67,7 +67,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
 
   if (layoutMode === 'grid') {
     return (
-      <article className="group relative aspect-square w-full overflow-hidden rounded-2xl bg-background-muted transition-all">
+      <article className="group bg-background-muted relative aspect-square w-full overflow-hidden rounded-2xl transition-all">
         <Link href={`/products/${product.slug}`} className="relative block h-full w-full">
           <Image
             src={product.image || '/images/placeholder.png'}
@@ -79,19 +79,19 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
         </Link>
 
         {/* Hover Overlay */}
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-background/40 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:opacity-100">
+        <div className="bg-background/40 absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 opacity-0 backdrop-blur-sm transition-all duration-300 group-hover:opacity-100">
           <button
             onClick={() => onRemove?.(product.id)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-lg hover:scale-110 transition-transform"
+            className="bg-background text-foreground flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110"
             aria-label="Remove item"
           >
             <HeartMinusIcon size={20} />
           </button>
-          
+
           <button
             disabled={!product.inStock}
             onClick={handleAddToCartClick}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background shadow-lg hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100"
+            className="bg-foreground text-background flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 disabled:opacity-50 disabled:hover:scale-100"
             aria-label="Add to cart"
           >
             {product.inStock ? <ShoppingBagIcon size={20} /> : <BellIcon size={20} />}
@@ -105,21 +105,27 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/90 backdrop-blur-md p-4"
+              className="bg-background/90 absolute inset-0 z-20 flex flex-col items-center justify-center p-4 backdrop-blur-md"
             >
               <button
-                onClick={() => setIsSelectingSize(false)}
-                className="absolute top-2 right-2 text-foreground-subtle hover:text-foreground"
+                onClick={() => {
+                  setIsSelectingSize(false);
+                }}
+                className="text-foreground-subtle hover:text-foreground absolute top-2 right-2"
               >
                 <CloseIcon size={18} />
               </button>
-              <span className="text-[10px] uppercase font-black tracking-widest text-foreground-subtle mb-3">Select Size</span>
+              <span className="text-foreground-subtle mb-3 text-[10px] font-black tracking-widest uppercase">
+                Select Size
+              </span>
               <div className="flex flex-wrap justify-center gap-2">
                 {productSizes.map((size) => (
                   <button
                     key={size}
-                    onClick={() => addToCartWithSize(size)}
-                    className="h-8 min-w-8 px-2 rounded-md border border-border bg-background hover:bg-foreground hover:text-background text-xs font-bold transition-colors"
+                    onClick={() => {
+                      addToCartWithSize(size);
+                    }}
+                    className="border-border bg-background hover:bg-foreground hover:text-background h-8 min-w-8 rounded-md border px-2 text-xs font-bold transition-colors"
                   >
                     {size}
                   </button>
@@ -130,7 +136,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
         </AnimatePresence>
 
         {!product.inStock && !isSelectingSize && (
-          <div className="absolute top-2 left-2 z-10 rounded-full bg-background/80 px-2 py-0.5 text-[9px] font-black tracking-wider text-foreground uppercase backdrop-blur-sm">
+          <div className="bg-background/80 text-foreground absolute top-2 left-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-black tracking-wider uppercase backdrop-blur-sm">
             Sold Out
           </div>
         )}
@@ -164,7 +170,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
       </div>
 
       {/* 2. Right Side: Product Details */}
-      <div className="flex flex-1 flex-col justify-between py-1 relative">
+      <div className="relative flex flex-1 flex-col justify-between py-1">
         <div>
           {/* Brand/Category & Delete Action */}
           <div className="mb-1 flex items-start justify-between gap-2">
@@ -232,21 +238,27 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/95 backdrop-blur-md rounded-2xl"
+              className="bg-background/95 absolute inset-0 z-20 flex flex-col items-center justify-center rounded-2xl backdrop-blur-md"
             >
               <button
-                onClick={() => setIsSelectingSize(false)}
-                className="absolute top-1 right-1 text-foreground-subtle hover:text-foreground p-1"
+                onClick={() => {
+                  setIsSelectingSize(false);
+                }}
+                className="text-foreground-subtle hover:text-foreground absolute top-1 right-1 p-1"
               >
                 <CloseIcon size={16} />
               </button>
-              <span className="text-[10px] uppercase font-black tracking-widest text-foreground-subtle mb-2">Select Size</span>
+              <span className="text-foreground-subtle mb-2 text-[10px] font-black tracking-widest uppercase">
+                Select Size
+              </span>
               <div className="flex flex-wrap justify-center gap-1.5 px-4">
                 {productSizes.map((size) => (
                   <button
                     key={size}
-                    onClick={() => addToCartWithSize(size)}
-                    className="h-7 min-w-7 px-1.5 rounded border border-border bg-background hover:bg-foreground hover:text-background text-[11px] font-bold transition-colors"
+                    onClick={() => {
+                      addToCartWithSize(size);
+                    }}
+                    className="border-border bg-background hover:bg-foreground hover:text-background h-7 min-w-7 rounded border px-1.5 text-[11px] font-bold transition-colors"
                   >
                     {size}
                   </button>
