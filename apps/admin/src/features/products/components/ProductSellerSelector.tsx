@@ -50,22 +50,32 @@ export function ProductSellerSelector({
     setIsLoading(true);
     fetch(`${API_BASE_URL}/admin/sellers`)
       .then((res) => (res.ok ? res.json() : []))
-      .then((data: Array<{ id: string; name: string; storeName: string; phone?: string; categories?: { id: string; name: string; slug: string }[] }>) => {
-        if (isMounted) {
-          setAllSellers(
-            Array.isArray(data)
-              ? data.map((s) => ({
-                  id: s.id,
-                  name: s.name,
-                  storeName: s.storeName,
-                  phone: s.phone,
-                  categories: s.categories ?? [],
-                }))
-              : [],
-          );
-          setIsLoading(false);
-        }
-      })
+      .then(
+        (
+          data: {
+            id: string;
+            name: string;
+            storeName: string;
+            phone?: string;
+            categories?: { id: string; name: string; slug: string }[];
+          }[],
+        ) => {
+          if (isMounted) {
+            setAllSellers(
+              Array.isArray(data)
+                ? data.map((s) => ({
+                    id: s.id,
+                    name: s.name,
+                    storeName: s.storeName,
+                    phone: s.phone,
+                    categories: s.categories ?? [],
+                  }))
+                : [],
+            );
+            setIsLoading(false);
+          }
+        },
+      )
       .catch((err: unknown) => {
         console.error('Failed to load sellers:', err);
         if (isMounted) {
