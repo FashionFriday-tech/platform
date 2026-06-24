@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { type NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
-import { ZodValidationPipe } from 'nestjs-zod';
 import fs from 'fs';
+import { ZodValidationPipe } from 'nestjs-zod';
 import { join } from 'path';
 
 import { AppModule } from './app.module';
