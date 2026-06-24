@@ -54,7 +54,9 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
           ) : logs.length === 0 ? (
             <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-xl border border-black/10 bg-white p-8 text-center shadow-xs dark:border-white/10 dark:bg-[#141417]">
               <InfoIcon className="h-8 w-8 text-black/30 dark:text-white/30" />
-              <span className="text-base font-semibold text-black dark:text-white">No searches yet</span>
+              <span className="text-base font-semibold text-black dark:text-white">
+                No searches yet
+              </span>
               <span className="text-xs text-black/50 dark:text-white/50">
                 Searches from the storefront will appear here automatically.
               </span>
@@ -99,7 +101,7 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
                       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/5 dark:bg-white/10">
                         <UserIcon className="h-3.5 w-3.5 text-black/40 dark:text-white/40" />
                       </div>
-                      <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-500/20">
+                      <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
                         Guest
                       </span>
                     </>
@@ -107,7 +109,7 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
                 </div>
 
                 {/* Email */}
-                <div className="flex items-center gap-1.5 pr-4 truncate">
+                <div className="flex items-center gap-1.5 truncate pr-4">
                   {log.user?.email ? (
                     <>
                       <MailIcon className="h-3.5 w-3.5 shrink-0 text-black/30 dark:text-white/30" />
