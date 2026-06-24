@@ -22,7 +22,9 @@ export function useProductRequests() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
 
   const fetchRequests = useCallback(async () => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
     setIsLoading(true);
     try {
       const token = localStorage.getItem('accessToken');
@@ -42,11 +44,12 @@ export function useProductRequests() {
 
   useEffect(() => {
     void fetchRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredRequests = useMemo(() => {
-    if (!searchQuery.trim()) return requests;
+    if (!searchQuery.trim()) {
+      return requests;
+    }
     const q = searchQuery.toLowerCase();
     return requests.filter(
       (r) =>
