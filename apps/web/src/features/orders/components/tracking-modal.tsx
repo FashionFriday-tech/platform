@@ -1,9 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { toast } from 'sonner';
-import { AnimatePresence, motion } from 'motion/react';
 
 import {
   CheckIcon,
@@ -14,6 +12,8 @@ import {
   MapPinIcon,
   TruckIcon,
 } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
+import { toast } from 'sonner';
 
 import { type Order, type OrderItem } from '../types';
 
@@ -41,27 +41,34 @@ export function TrackingModal({
   // Automatically copy tracking ID to clipboard on modal open
   useEffect(() => {
     if (isOpen && trackingNumber) {
-      void navigator.clipboard.writeText(trackingNumber).then(() => {
-        setCopied(true);
-        toast.success('Tracking ID Copied!', {
-          description: `AWB ${trackingNumber} is ready to paste.`,
+      void navigator.clipboard
+        .writeText(trackingNumber)
+        .then(() => {
+          setCopied(true);
+          toast.success('Tracking ID Copied!', {
+            description: `AWB ${trackingNumber} is ready to paste.`,
+          });
+        })
+        .catch(() => {
+          // Fallback if clipboard permission is denied
         });
-      }).catch(() => {
-        // Fallback if clipboard permission is denied
-      });
     } else {
       setCopied(false);
     }
   }, [isOpen, trackingNumber]);
 
   const handleCopy = () => {
-    if (!trackingNumber) return;
+    if (!trackingNumber) {
+      return;
+    }
     void navigator.clipboard.writeText(trackingNumber).then(() => {
       setCopied(true);
       toast.success('Copied to clipboard!', {
         description: `AWB ${trackingNumber} copied.`,
       });
-      setTimeout(() => setCopied(false), 2500);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2500);
     });
   };
 
@@ -127,7 +134,7 @@ export function TrackingModal({
                   {courier}
                 </span>
                 {copied && (
-                  <span className="text-emerald-500 flex items-center gap-1 text-[11px] font-bold">
+                  <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-500">
                     <CheckIcon size={14} /> Auto-Copied!
                   </span>
                 )}
@@ -160,7 +167,8 @@ export function TrackingModal({
             {/* Helpful Notice */}
             <div className="bg-brand/5 border-brand/20 text-foreground-muted mb-6 rounded-xl border p-3 text-xs leading-relaxed">
               <p>
-                💡 <strong>Tracking ID copied!</strong> Some couriers require you to paste the number on their tracking page. Click below to open the official carrier portal.
+                💡 <strong>Tracking ID copied!</strong> Some couriers require you to paste the
+                number on their tracking page. Click below to open the official carrier portal.
               </p>
             </div>
 
@@ -192,7 +200,7 @@ export function TrackingModal({
               <button
                 type="button"
                 onClick={handleOpenOfficial}
-                className="bg-brand text-brand-foreground shadow-brand/20 hover:opacity-90 active:scale-[0.98] flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-bold shadow-lg transition-all"
+                className="bg-brand text-brand-foreground shadow-brand/20 flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-bold shadow-lg transition-all hover:opacity-90 active:scale-[0.98]"
               >
                 <span>Open {courier} Tracking Portal</span>
                 <ExternalLinkIcon size={16} />
@@ -201,7 +209,7 @@ export function TrackingModal({
               <button
                 type="button"
                 onClick={handleOpenUniversal}
-                className="bg-background-muted hover:bg-background-muted/80 text-foreground active:scale-[0.98] flex w-full items-center justify-center gap-2 rounded-2xl py-2.5 text-xs font-semibold transition-all"
+                className="bg-background-muted hover:bg-background-muted/80 text-foreground flex w-full items-center justify-center gap-2 rounded-2xl py-2.5 text-xs font-semibold transition-all active:scale-[0.98]"
               >
                 <span>Direct Pre-filled Tracking (17TRACK)</span>
                 <ChevronRightIcon size={14} />
