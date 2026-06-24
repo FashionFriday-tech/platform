@@ -35,7 +35,7 @@ const getCategoryIcon = (category: string) => {
       return <JacketCategoryIcon className="mr-1.5 h-3.5 w-3.5" />;
     case 'footwear':
     case 'sneakers':
-      case 'shoes':
+    case 'shoes':
       return <ShoeCategoryIcon className="mr-1.5 h-3.5 w-3.5" />;
     case 'shirts':
     case 't-shirts':
