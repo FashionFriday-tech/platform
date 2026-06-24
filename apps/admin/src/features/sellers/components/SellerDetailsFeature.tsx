@@ -23,11 +23,7 @@ import { toast } from 'sonner';
 import { api } from '@/lib/api-client';
 
 import { useSellerDetails } from '../hooks/useSellerDetails';
-import {
-  type Seller,
-  type SellerCategory,
-  type SellerStatus,
-} from '../types';
+import { type Seller, type SellerCategory, type SellerStatus } from '../types';
 import { AddSellerModal } from './AddSellerModal';
 import { SellerOrdersList } from './SellerOrdersList';
 
@@ -77,7 +73,9 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
   }, [fetchSeller, fetchCategories]);
 
   const handleToggleStatus = async (newStatus: SellerStatus) => {
-    if (!seller) return;
+    if (!seller) {
+      return;
+    }
     try {
       const updated = await api.patch<Seller>(`/admin/sellers/${seller.id}`, { status: newStatus });
       setSeller(updated);
@@ -89,7 +87,9 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
   };
 
   const handleDeleteSeller = async () => {
-    if (!seller) return;
+    if (!seller) {
+      return;
+    }
     if (
       !window.confirm(
         `Are you sure you want to delete seller "${seller.storeName}"? This action cannot be undone.`,
@@ -128,7 +128,9 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
   ) => {
     try {
       const targetId = id ?? seller?.id;
-      if (!targetId) return;
+      if (!targetId) {
+        return;
+      }
       const updated = await api.patch<Seller>(`/admin/sellers/${targetId}`, payload);
       setSeller(updated);
       setIsEditModalOpen(false);
@@ -210,7 +212,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
 
               <div className="flex flex-col pb-1">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-2xl font-black tracking-tight text-black dark:text-white md:text-3xl">
+                  <h1 className="text-2xl font-black tracking-tight text-black md:text-3xl dark:text-white">
                     {seller.storeName}
                   </h1>
                   <span
@@ -241,7 +243,10 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                     </span>
                   )}
                   {seller.address && (
-                    <span className="flex items-center gap-1.5 truncate max-w-sm" title={seller.address}>
+                    <span
+                      className="flex max-w-sm items-center gap-1.5 truncate"
+                      title={seller.address}
+                    >
                       <MapPinIcon className="h-3.5 w-3.5 text-black/40 dark:text-white/40" />
                       {seller.address}
                     </span>
@@ -249,7 +254,8 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                   {seller.website && (
                     <a
                       href={
-                        seller.website.startsWith('http://') || seller.website.startsWith('https://')
+                        seller.website.startsWith('http://') ||
+                        seller.website.startsWith('https://')
                           ? seller.website
                           : `https://${seller.website}`
                       }
@@ -259,7 +265,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                       title={seller.website}
                     >
                       <GlobeIcon className="h-3.5 w-3.5" />
-                      <span className="truncate max-w-[200px]">
+                      <span className="max-w-[200px] truncate">
                         {seller.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
                       </span>
                     </a>
@@ -267,7 +273,8 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                   {seller.instagram && (
                     <a
                       href={
-                        seller.instagram.startsWith('http://') || seller.instagram.startsWith('https://')
+                        seller.instagram.startsWith('http://') ||
+                        seller.instagram.startsWith('https://')
                           ? seller.instagram
                           : `https://instagram.com/${seller.instagram.replace(/^@/, '')}`
                       }
@@ -277,7 +284,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                       title={seller.instagram}
                     >
                       <InstagramIcon className="h-3.5 w-3.5" />
-                      <span className="truncate max-w-[200px]">
+                      <span className="max-w-[200px] truncate">
                         {seller.instagram.startsWith('@')
                           ? seller.instagram
                           : `@${seller.instagram.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '')}`}
@@ -332,7 +339,8 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
               {seller.instagram ? (
                 <a
                   href={
-                    seller.instagram.startsWith('http://') || seller.instagram.startsWith('https://')
+                    seller.instagram.startsWith('http://') ||
+                    seller.instagram.startsWith('https://')
                       ? seller.instagram
                       : `https://instagram.com/${seller.instagram.replace(/^@/, '')}`
                   }
@@ -545,32 +553,41 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="rounded-3xl border border-black/5 bg-white p-6 shadow-xs dark:border-white/5 dark:bg-[#111111]">
-              <h3 className="mb-4 text-sm font-bold text-black dark:text-white">Store Information</h3>
+              <h3 className="mb-4 text-sm font-bold text-black dark:text-white">
+                Store Information
+              </h3>
               <div className="space-y-3 text-xs">
-                <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
+                <div className="flex justify-between border-b border-black/5 py-1.5 dark:border-white/5">
                   <span className="font-medium text-black/50 dark:text-white/50">Store Name</span>
                   <span className="font-bold text-black dark:text-white">{seller.storeName}</span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
-                  <span className="font-medium text-black/50 dark:text-white/50">Contact Person</span>
+                <div className="flex justify-between border-b border-black/5 py-1.5 dark:border-white/5">
+                  <span className="font-medium text-black/50 dark:text-white/50">
+                    Contact Person
+                  </span>
                   <span className="font-bold text-black dark:text-white">{seller.name}</span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
-                  <span className="font-medium text-black/50 dark:text-white/50">Registered Phone</span>
+                <div className="flex justify-between border-b border-black/5 py-1.5 dark:border-white/5">
+                  <span className="font-medium text-black/50 dark:text-white/50">
+                    Registered Phone
+                  </span>
                   <span className="font-bold text-black dark:text-white">{seller.phone}</span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
-                  <span className="font-medium text-black/50 dark:text-white/50">Registered Email</span>
+                <div className="flex justify-between border-b border-black/5 py-1.5 dark:border-white/5">
+                  <span className="font-medium text-black/50 dark:text-white/50">
+                    Registered Email
+                  </span>
                   <span className="font-bold text-black dark:text-white">
                     {seller.email ?? 'Not provided'}
                   </span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
+                <div className="flex justify-between border-b border-black/5 py-1.5 dark:border-white/5">
                   <span className="font-medium text-black/50 dark:text-white/50">Website</span>
                   {seller.website ? (
                     <a
                       href={
-                        seller.website.startsWith('http://') || seller.website.startsWith('https://')
+                        seller.website.startsWith('http://') ||
+                        seller.website.startsWith('https://')
                           ? seller.website
                           : `https://${seller.website}`
                       }
@@ -584,12 +601,13 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                     <span className="text-black/40 italic dark:text-white/40">Not provided</span>
                   )}
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-black/5 dark:border-white/5">
+                <div className="flex justify-between border-b border-black/5 py-1.5 dark:border-white/5">
                   <span className="font-medium text-black/50 dark:text-white/50">Instagram</span>
                   {seller.instagram ? (
                     <a
                       href={
-                        seller.instagram.startsWith('http://') || seller.instagram.startsWith('https://')
+                        seller.instagram.startsWith('http://') ||
+                        seller.instagram.startsWith('https://')
                           ? seller.instagram
                           : `https://instagram.com/${seller.instagram.replace(/^@/, '')}`
                       }
