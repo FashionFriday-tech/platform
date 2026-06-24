@@ -31,7 +31,10 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response | null> {
+async function fetchWithAuth(
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<Response | null> {
   let authHeaders = await getAuthHeaders();
 
   const buildHeaders = (baseAuthHeaders: Record<string, string>) => {
@@ -142,7 +145,7 @@ function fromRawCartItem(raw: RawCartItem): CartItem | null {
 export async function fetchUserCartAction(): Promise<CartItem[]> {
   try {
     const res = await fetchWithAuth('/cart');
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];
@@ -172,7 +175,7 @@ export async function addToCartAction(input: {
         quantity: input.quantity || 1,
       }),
     });
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];
@@ -195,7 +198,7 @@ export async function updateCartQuantityAction(
       method: 'PATCH',
       body: JSON.stringify({ quantity }),
     });
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];
@@ -214,7 +217,7 @@ export async function removeCartItemAction(itemId: string): Promise<CartItem[]> 
     const res = await fetchWithAuth(`/cart/items/${itemId}`, {
       method: 'DELETE',
     });
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       return [];
     }
     const data = (await res.json()) as RawCartItem[];
@@ -249,7 +252,7 @@ export async function syncCartAction(items: SyncCartItem[]): Promise<CartItem[] 
       method: 'POST',
       body: JSON.stringify({ items }),
     });
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       const errorText = res ? await res.text() : 'No response';
       console.error('Failed to sync guest cart:', errorText);
       return null;
