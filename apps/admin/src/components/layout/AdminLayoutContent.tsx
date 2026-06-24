@@ -118,12 +118,11 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
       <>
         <MobileHeader
           isMobileOpen={isMobileNavOpen}
-          onToggleMobileMenu={() => setIsMobileNavOpen((prev) => !prev)}
+          onToggleMobileMenu={() => {
+            setIsMobileNavOpen((prev) => !prev);
+          }}
         />
-        <Sidebar
-          isMobileOpen={isMobileNavOpen}
-          setIsMobileOpen={setIsMobileNavOpen}
-        />
+        <Sidebar isMobileOpen={isMobileNavOpen} setIsMobileOpen={setIsMobileNavOpen} />
         <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden pt-14 md:pt-0">
           <div className="z-10 flex min-h-0 flex-1 flex-col items-center justify-center p-6 text-center">
             <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-red-500/20 bg-red-500/10 text-red-500 dark:border-red-500/10 dark:bg-red-950/20 dark:text-red-400">
@@ -162,12 +161,11 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
     <>
       <MobileHeader
         isMobileOpen={isMobileNavOpen}
-        onToggleMobileMenu={() => setIsMobileNavOpen((prev) => !prev)}
+        onToggleMobileMenu={() => {
+          setIsMobileNavOpen((prev) => !prev);
+        }}
       />
-      <Sidebar
-        isMobileOpen={isMobileNavOpen}
-        setIsMobileOpen={setIsMobileNavOpen}
-      />
+      <Sidebar isMobileOpen={isMobileNavOpen} setIsMobileOpen={setIsMobileNavOpen} />
       <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden pt-14 md:pt-0">
         <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </main>
