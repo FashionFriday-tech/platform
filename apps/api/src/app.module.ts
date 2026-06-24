@@ -18,10 +18,10 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { ProductRequestsModule } from './modules/product-requests/product-requests.module';
 import { ProductsModule } from './modules/products/products.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SearchLogsModule } from './modules/search-logs/search-logs.module';
 import { SellersModule } from './modules/sellers/sellers.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
-import { SearchLogsModule } from './modules/search-logs/search-logs.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 
 @Module({
