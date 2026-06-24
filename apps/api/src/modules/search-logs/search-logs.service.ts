@@ -8,7 +8,9 @@ export class SearchLogsService {
 
   async logSearch(query: string, userId?: string) {
     const trimmed = query.trim();
-    if (!trimmed || trimmed.length < 2) return null;
+    if (!trimmed || trimmed.length < 2) {
+      return null;
+    }
 
     return this.prisma.db.searchLog.create({
       data: {
