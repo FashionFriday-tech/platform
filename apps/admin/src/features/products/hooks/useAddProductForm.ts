@@ -22,8 +22,12 @@ export function useAddProductForm(initialData?: Product) {
   );
   const [sizes, setSizes] = useState<string[]>(SIZE_MAP.Clothing ?? []);
   const [gender, setGender] = useState<string>(() => {
-    if (initialData?.gender === 'MEN') return 'Men';
-    if (initialData?.gender === 'WOMEN') return 'Woman';
+    if (initialData?.gender === 'MEN') {
+      return 'Men';
+    }
+    if (initialData?.gender === 'WOMEN') {
+      return 'Woman';
+    }
     if (paramGender === 'Men' || paramGender === 'Women') {
       return paramGender === 'Women' ? 'Woman' : 'Men';
     }
@@ -107,9 +111,7 @@ export function useAddProductForm(initialData?: Product) {
       let matchedCategoryName = '';
       if (catId) {
         setSelectedCategoryId(catId);
-        const foundCategory = apiCategories.find(
-          (c) => c.id === catId || c.slug === catId,
-        );
+        const foundCategory = apiCategories.find((c) => c.id === catId || c.slug === catId);
         if (foundCategory) {
           matchedCategoryName = foundCategory.name;
         }
