@@ -11,41 +11,105 @@ interface MobileHeaderProps {
 }
 
 function getPageTitle(pathname: string): string {
-  if (pathname === '/') return 'Dashboard';
-  if (pathname.startsWith('/orders/')) return 'Order Details';
-  if (pathname === '/orders') return 'Orders';
-  if (pathname.startsWith('/products/add')) return 'Add Product';
-  if (pathname.endsWith('/edit')) return 'Edit Product';
-  if (pathname.startsWith('/products/')) return 'Product Details';
-  if (pathname === '/products') return 'Products';
-  if (pathname.startsWith('/customers/')) return 'Customer Details';
-  if (pathname === '/customers') return 'Customers';
-  if (pathname === '/reviews') return 'Reviews';
-  if (pathname === '/feedback') return 'Feedback';
-  if (pathname === '/searches') return 'User Searches';
-  if (pathname === '/product-requests') return 'Product Requests';
-  if (pathname.includes('/add-products')) return 'Add Products';
-  if (pathname.startsWith('/categories/add')) return 'Add Category';
-  if (pathname.startsWith('/categories/')) return 'Category Details';
-  if (pathname === '/categories') return 'Categories';
-  if (pathname.startsWith('/collections/add')) return 'Add Collection';
-  if (pathname.startsWith('/collections/')) return 'Collection Details';
-  if (pathname === '/collections') return 'Collections';
-  if (pathname === '/brands') return 'Brands';
-  if (pathname.startsWith('/sellers/')) return 'Seller Details';
-  if (pathname === '/sellers') return 'Sellers';
-  if (pathname === '/campaigns') return 'Campaigns';
-  if (pathname === '/whatsapp-reviews') return 'WhatsApp Reviews';
-  if (pathname === '/faqs') return 'FAQs';
-  if (pathname === '/team') return 'Team & Roles';
-  if (pathname === '/profile') return 'Profile';
-  if (pathname.startsWith('/notifications')) return 'Notifications';
-  if (pathname === '/activity') return 'Activity';
-  if (pathname === '/analytics') return 'Analytics';
+  if (pathname === '/') {
+    return 'Dashboard';
+  }
+  if (pathname.startsWith('/orders/')) {
+    return 'Order Details';
+  }
+  if (pathname === '/orders') {
+    return 'Orders';
+  }
+  if (pathname.startsWith('/products/add')) {
+    return 'Add Product';
+  }
+  if (pathname.endsWith('/edit')) {
+    return 'Edit Product';
+  }
+  if (pathname.startsWith('/products/')) {
+    return 'Product Details';
+  }
+  if (pathname === '/products') {
+    return 'Products';
+  }
+  if (pathname.startsWith('/customers/')) {
+    return 'Customer Details';
+  }
+  if (pathname === '/customers') {
+    return 'Customers';
+  }
+  if (pathname === '/reviews') {
+    return 'Reviews';
+  }
+  if (pathname === '/feedback') {
+    return 'Feedback';
+  }
+  if (pathname === '/searches') {
+    return 'User Searches';
+  }
+  if (pathname === '/product-requests') {
+    return 'Product Requests';
+  }
+  if (pathname.includes('/add-products')) {
+    return 'Add Products';
+  }
+  if (pathname.startsWith('/categories/add')) {
+    return 'Add Category';
+  }
+  if (pathname.startsWith('/categories/')) {
+    return 'Category Details';
+  }
+  if (pathname === '/categories') {
+    return 'Categories';
+  }
+  if (pathname.startsWith('/collections/add')) {
+    return 'Add Collection';
+  }
+  if (pathname.startsWith('/collections/')) {
+    return 'Collection Details';
+  }
+  if (pathname === '/collections') {
+    return 'Collections';
+  }
+  if (pathname === '/brands') {
+    return 'Brands';
+  }
+  if (pathname.startsWith('/sellers/')) {
+    return 'Seller Details';
+  }
+  if (pathname === '/sellers') {
+    return 'Sellers';
+  }
+  if (pathname === '/campaigns') {
+    return 'Campaigns';
+  }
+  if (pathname === '/whatsapp-reviews') {
+    return 'WhatsApp Reviews';
+  }
+  if (pathname === '/faqs') {
+    return 'FAQs';
+  }
+  if (pathname === '/team') {
+    return 'Team & Roles';
+  }
+  if (pathname === '/profile') {
+    return 'Profile';
+  }
+  if (pathname.startsWith('/notifications')) {
+    return 'Notifications';
+  }
+  if (pathname === '/activity') {
+    return 'Activity';
+  }
+  if (pathname === '/analytics') {
+    return 'Analytics';
+  }
 
   // Fallback for custom or deeply nested route
   const segments = pathname.split('/').filter(Boolean);
-  if (segments.length === 0) return 'Dashboard';
+  if (segments.length === 0) {
+    return 'Dashboard';
+  }
   const lastSegment = segments[segments.length - 1];
   return lastSegment
     .split('-')
@@ -53,10 +117,7 @@ function getPageTitle(pathname: string): string {
     .join(' ');
 }
 
-export function MobileHeader({
-  isMobileOpen = false,
-  onToggleMobileMenu,
-}: MobileHeaderProps) {
+export function MobileHeader({ isMobileOpen = false, onToggleMobileMenu }: MobileHeaderProps) {
   const pathname = usePathname() ?? '';
   const router = useRouter();
   const { user } = useAuth();
@@ -87,12 +148,7 @@ export function MobileHeader({
             aria-label="Go back"
             className="flex h-10 w-10 items-center justify-center rounded-full text-black/80 transition-colors hover:bg-black/5 hover:text-black active:scale-95 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
           >
-            <svg
-              className="h-6 w-6 -ml-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="-ml-0.5 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
