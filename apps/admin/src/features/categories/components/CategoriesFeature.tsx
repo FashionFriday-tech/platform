@@ -106,7 +106,9 @@ export default function CategoriesFeature() {
   }, [isFilterOpen]);
 
   const confirmDelete = async () => {
-    if (!categoryToDelete) return;
+    if (!categoryToDelete) {
+      return;
+    }
     setIsDeleting(true);
     try {
       await handleDeleteCategory(categoryToDelete.id);
@@ -138,7 +140,7 @@ export default function CategoriesFeature() {
       {/* Top Bar for Search and Filtering */}
       <div className="flex items-center justify-between gap-2 rounded-2xl border border-black/5 bg-white p-2.5 sm:p-3 md:p-4 dark:border-white/5 dark:bg-[#111111]">
         {/* Desktop Gender Tabs (Only Men & Women) */}
-        <div className="hidden sm:flex space-x-1 rounded-xl bg-black/5 p-1 dark:bg-white/5 shrink-0">
+        <div className="hidden shrink-0 space-x-1 rounded-xl bg-black/5 p-1 sm:flex dark:bg-white/5">
           {genders.map((gender) => (
             <button
               key={gender}
@@ -157,7 +159,7 @@ export default function CategoriesFeature() {
         </div>
 
         {/* Search Bar (Fills remaining space) */}
-        <div className="relative flex-1 min-w-0">
+        <div className="relative min-w-0 flex-1">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-3.5">
             <SearchIcon className="h-4 w-4 text-black/40 dark:text-white/40" />
           </div>
@@ -165,29 +167,40 @@ export default function CategoriesFeature() {
             type="text"
             placeholder="Search categories..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2 sm:py-2.5 pr-8 pl-9 sm:pl-10 text-xs sm:text-sm text-black placeholder-black/40 transition-colors outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222] truncate"
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            className="block w-full truncate rounded-xl border border-black/5 bg-[#f8f9fa] py-2 pr-8 pl-9 text-xs text-black placeholder-black/40 transition-colors outline-none focus:border-black/20 focus:bg-white sm:py-2.5 sm:pl-10 sm:text-sm dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222]"
           />
           {searchQuery && (
             <button
               type="button"
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+              }}
               className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white"
             >
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           )}
         </div>
 
         {/* Right Controls: Unified Filter Button (mobile) + Add Button */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           {/* Mobile Filter Button */}
           <div className="relative sm:hidden" ref={filterRef}>
             <button
               type="button"
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              onClick={() => {
+                setIsFilterOpen(!isFilterOpen);
+              }}
               className="flex items-center space-x-1 rounded-xl border border-black/5 bg-[#f8f9fa] px-2.5 py-2 text-xs font-medium text-black/70 hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white"
             >
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,7 +218,9 @@ export default function CategoriesFeature() {
               <>
                 <div
                   className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs sm:hidden"
-                  onClick={() => setIsFilterOpen(false)}
+                  onClick={() => {
+                    setIsFilterOpen(false);
+                  }}
                 />
                 <div className="fixed inset-x-3 bottom-3 z-50 flex flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 shadow-2xl backdrop-blur-2xl duration-200 dark:border-white/10 dark:bg-[#111111]/95">
                   <div className="flex items-center justify-between border-b border-black/5 p-4 pb-3 dark:border-white/5">
@@ -214,15 +229,27 @@ export default function CategoriesFeature() {
                     </h3>
                     <button
                       type="button"
-                      onClick={() => setIsFilterOpen(false)}
+                      onClick={() => {
+                        setIsFilterOpen(false);
+                      }}
                       className="flex h-7 w-7 items-center justify-center rounded-full text-black/50 hover:bg-black/5 hover:text-black dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white"
                     >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                     </button>
                   </div>
-                  <div className="p-4 space-y-2">
+                  <div className="space-y-2 p-4">
                     {genders.map((gender) => (
                       <button
                         key={gender}
@@ -252,9 +279,14 @@ export default function CategoriesFeature() {
               setCategoryToEdit(null);
               setIsAddModalOpen(true);
             }}
-            className="flex items-center justify-center gap-1.5 rounded-xl bg-black px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white shadow-md transition-transform hover:scale-105 active:scale-95 dark:bg-white dark:text-black"
+            className="flex items-center justify-center gap-1.5 rounded-xl bg-black px-3 py-2 text-xs font-semibold whitespace-nowrap text-white shadow-md transition-transform hover:scale-105 active:scale-95 sm:px-4 sm:text-sm dark:bg-white dark:text-black"
           >
-            <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -326,11 +358,13 @@ export default function CategoriesFeature() {
             </div>
             <div className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">
               <p>
-                Are you sure you want to delete <strong className="text-black dark:text-white">{categoryToDelete.name}</strong>?
+                Are you sure you want to delete{' '}
+                <strong className="text-black dark:text-white">{categoryToDelete.name}</strong>?
               </p>
               {categoryToDelete.productCount > 0 ? (
                 <p className="mt-2 rounded-lg bg-blue-500/10 p-2.5 text-xs font-medium text-blue-600 dark:text-blue-400">
-                  ℹ️ {categoryToDelete.productCount} product(s) in this category will be unassigned. The products will remain intact in your catalog.
+                  ℹ️ {categoryToDelete.productCount} product(s) in this category will be unassigned.
+                  The products will remain intact in your catalog.
                 </p>
               ) : (
                 <p className="mt-1 text-xs text-zinc-500">This action cannot be undone.</p>
