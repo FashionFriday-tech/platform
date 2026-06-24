@@ -27,9 +27,9 @@ export function useOrders() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const data = (await api.get('/orders/admin', { cache: 'no-store' })) as any[];
+      const data = await api.get<any[]>('/orders/admin', { cache: 'no-store' });
       // map data to match admin shape
-      const mapped = data.map((o: any) => ({
+      const mapped = (data || []).map((o: any) => ({
         ...o,
         status: o.status?.toLowerCase() || 'pending',
         customer: { id: o.userId, name: o.user?.name || 'Unknown', phone: o.user?.phone || '' },
