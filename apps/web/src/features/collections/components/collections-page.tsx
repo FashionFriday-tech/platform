@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { CollectionCard } from './collection-card';
+
 import type { CollectionItem } from '../types';
+import { CollectionCard } from './collection-card';
 
 interface CollectionsPageProps {
   collections: CollectionItem[];
