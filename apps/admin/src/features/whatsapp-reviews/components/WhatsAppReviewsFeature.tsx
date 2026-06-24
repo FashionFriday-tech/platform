@@ -3,16 +3,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { toast } from 'sonner';
 
 import { PlusIcon, TrashIcon } from '@ff/ui';
+import { toast } from 'sonner';
 
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { useWhatsAppReviews } from '../hooks/useWhatsAppReviews';
-import {
-  UploadItemProgress,
-  WhatsAppReviewsUploadModal,
-} from './WhatsAppReviewsUploadModal';
+import { type UploadItemProgress, WhatsAppReviewsUploadModal } from './WhatsAppReviewsUploadModal';
 
 export function WhatsAppReviewsFeature() {
   const {
@@ -98,7 +95,7 @@ export function WhatsAppReviewsFeature() {
 
     // Refresh reviews from the server
     if (successCount > 0) {
-      refreshReviews();
+      void refreshReviews();
     }
 
     if (failCount === 0) {
@@ -124,7 +121,9 @@ export function WhatsAppReviewsFeature() {
     uploadItems.forEach((item) => {
       try {
         URL.revokeObjectURL(item.previewUrl);
-      } catch { }
+      } catch {
+        // ignore revoke error
+      }
     });
     setIsUploadModalOpen(false);
     setUploadItems([]);
@@ -135,7 +134,9 @@ export function WhatsAppReviewsFeature() {
       .map((item, idx) => (item.status === 'error' ? idx : -1))
       .filter((idx) => idx !== -1);
 
-    if (failedIndices.length === 0) return;
+    if (failedIndices.length === 0) {
+      return;
+    }
 
     setIsUploading(true);
 
@@ -153,8 +154,7 @@ export function WhatsAppReviewsFeature() {
           prev.map((it, i) => (i === idx ? { ...it, status: 'success' } : it)),
         );
       } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to upload to Cloudflare';
+        const errorMessage = err instanceof Error ? err.message : 'Failed to upload to Cloudflare';
         setUploadItems((prev) =>
           prev.map((it, i) => (i === idx ? { ...it, status: 'error', errorMessage } : it)),
         );
@@ -162,7 +162,7 @@ export function WhatsAppReviewsFeature() {
     }
 
     setIsUploading(false);
-    refreshReviews();
+    void refreshReviews();
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,13 +176,17 @@ export function WhatsAppReviewsFeature() {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!isDragging) setIsDragging(true);
+    if (!isDragging) {
+      setIsDragging(true);
+    }
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+    if (e.currentTarget.contains(e.relatedTarget as Node)) {
+      return;
+    }
     setIsDragging(false);
   };
 
@@ -225,7 +229,9 @@ export function WhatsAppReviewsFeature() {
 
   const navigateNext = useCallback(() => {
     setPreviewReviewIndex((prev) => {
-      if (prev === null) return null;
+      if (prev === null) {
+        return null;
+      }
 
       // 5 images before end of currently loaded batch, trigger loadMore
       if (prev >= reviews.length - 5 && hasMore && !isLoading) {
@@ -250,7 +256,9 @@ export function WhatsAppReviewsFeature() {
 
   const navigatePrev = useCallback(() => {
     setPreviewReviewIndex((prev) => {
-      if (prev === null) return null;
+      if (prev === null) {
+        return null;
+      }
       return prev > 0 ? prev - 1 : reviews.length - 1;
     });
   }, [reviews.length]);
@@ -258,7 +266,9 @@ export function WhatsAppReviewsFeature() {
   // Keyboard navigation for Lightbox
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (previewReviewIndex === null) return;
+      if (previewReviewIndex === null) {
+        return;
+      }
       if (e.key === 'Escape') {
         setPreviewReviewIndex(null);
       } else if (e.key === 'ArrowRight') {
@@ -280,7 +290,9 @@ export function WhatsAppReviewsFeature() {
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current === null) return;
+    if (touchStartX.current === null) {
+      return;
+    }
     const diffX = touchStartX.current - e.changedTouches[0].clientX;
     const threshold = 50;
     if (Math.abs(diffX) > threshold) {
@@ -298,13 +310,14 @@ export function WhatsAppReviewsFeature() {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`relative flex min-h-0 flex-1 flex-col overflow-hidden transition-colors ${isDragging ? 'ring-2 ring-emerald-500/50 bg-emerald-500/5' : ''
-        }`}
+      className={`relative flex min-h-0 flex-1 flex-col overflow-hidden transition-colors ${
+        isDragging ? 'bg-emerald-500/5 ring-2 ring-emerald-500/50' : ''
+      }`}
     >
       {/* Dragging Overlay */}
       {isDragging && (
         <div className="pointer-events-none absolute inset-0 z-50 flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-emerald-500 bg-emerald-500/10 backdrop-blur-xs">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-xl animate-bounce">
+          <div className="flex h-16 w-16 animate-bounce items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-xl">
             <PlusIcon className="h-8 w-8" />
           </div>
           <p className="mt-4 text-base font-bold text-emerald-800 dark:text-emerald-200">
@@ -363,7 +376,7 @@ export function WhatsAppReviewsFeature() {
             {Array.from({ length: 10 }).map((_, i) => (
               <div
                 key={`initial-skel-${i}`}
-                className="relative aspect-[9/19] w-full overflow-hidden rounded-2xl border border-black/10 bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.04] animate-pulse"
+                className="relative aspect-[9/19] w-full animate-pulse overflow-hidden rounded-2xl border border-black/10 bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.04]"
               >
                 <div className="flex h-full flex-col justify-between p-4">
                   <div className="flex items-center space-x-2.5">
@@ -399,7 +412,9 @@ export function WhatsAppReviewsFeature() {
             {reviews.map((review, index) => (
               <div
                 key={review.id}
-                onClick={() => setPreviewReviewIndex(index)}
+                onClick={() => {
+                  setPreviewReviewIndex(index);
+                }}
                 className="group relative cursor-pointer overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-white/10 dark:bg-[#111111]"
               >
                 {/* Image — 9:19 ratio preview, object-top */}
@@ -447,7 +462,7 @@ export function WhatsAppReviewsFeature() {
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={`more-skel-${i}`}
-                className="relative aspect-[9/19] w-full overflow-hidden rounded-2xl border border-black/10 bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.04] animate-pulse"
+                className="relative aspect-[9/19] w-full animate-pulse overflow-hidden rounded-2xl border border-black/10 bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.04]"
               >
                 <div className="flex h-full flex-col justify-between p-4">
                   <div className="flex items-center space-x-2.5">
@@ -511,12 +526,19 @@ export function WhatsAppReviewsFeature() {
           >
             {/* Close button */}
             <button
-              onClick={() => setPreviewReviewIndex(null)}
+              onClick={() => {
+                setPreviewReviewIndex(null);
+              }}
               className="absolute top-5 right-5 z-[10000] flex items-center justify-center rounded-full bg-white/15 p-3 text-white shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:bg-white/30 active:scale-95"
               aria-label="Close"
             >
               <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
 
@@ -526,10 +548,15 @@ export function WhatsAppReviewsFeature() {
                 e.stopPropagation();
                 navigatePrev();
               }}
-              className="absolute left-4 sm:left-8 md:left-12 z-[10000] flex items-center justify-center rounded-full bg-white/15 p-3.5 sm:p-4 text-white shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:bg-white/30 active:scale-95"
+              className="absolute left-4 z-[10000] flex items-center justify-center rounded-full bg-white/15 p-3.5 text-white shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:bg-white/30 active:scale-95 sm:left-8 sm:p-4 md:left-12"
               aria-label="Previous Review"
             >
-              <svg className="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                className="h-6 w-6 sm:h-8 sm:w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -542,7 +569,9 @@ export function WhatsAppReviewsFeature() {
             {/* Review Image Wrapper */}
             <div
               className="relative flex max-h-screen max-w-full items-center justify-center p-4"
-              onClick={() => setPreviewReviewIndex(null)}
+              onClick={() => {
+                setPreviewReviewIndex(null);
+              }}
             >
               <img
                 src={reviews[previewReviewIndex].imageUrl}
@@ -557,10 +586,15 @@ export function WhatsAppReviewsFeature() {
                 e.stopPropagation();
                 navigateNext();
               }}
-              className="absolute right-4 sm:right-8 md:right-12 z-[10000] flex items-center justify-center rounded-full bg-white/15 p-3.5 sm:p-4 text-white shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:bg-white/30 active:scale-95"
+              className="absolute right-4 z-[10000] flex items-center justify-center rounded-full bg-white/15 p-3.5 text-white shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:bg-white/30 active:scale-95 sm:right-8 sm:p-4 md:right-12"
               aria-label="Next Review"
             >
-              <svg className="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg
+                className="h-6 w-6 sm:h-8 sm:w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
