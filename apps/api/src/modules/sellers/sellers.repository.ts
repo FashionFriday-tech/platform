@@ -1,4 +1,4 @@
-import { Prisma, SellerStatus, generateBrandId } from '@ff/database';
+import { generateBrandId, Prisma, SellerStatus } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
