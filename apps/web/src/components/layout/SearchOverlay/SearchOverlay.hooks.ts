@@ -93,7 +93,9 @@ export const useSearchData = (storageLimit = 10) => {
       // Fire-and-forget: log to backend for analytics
       const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
       const token =
-        typeof window !== 'undefined' ? (localStorage.getItem('accessToken') ?? undefined) : undefined;
+        typeof window !== 'undefined'
+          ? (localStorage.getItem('accessToken') ?? undefined)
+          : undefined;
       fetch(`${API_URL}/search-logs`, {
         method: 'POST',
         headers: {
