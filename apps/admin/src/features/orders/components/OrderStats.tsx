@@ -67,7 +67,7 @@ export function OrderStats({ orders, onStatusClick }: OrderStatsProps) {
   ];
 
   return (
-    <div className="scrollbar-hide flex w-full gap-3 overflow-x-auto pb-1 md:grid md:grid-cols-3 lg:grid-cols-5 md:overflow-visible md:pb-0">
+    <div className="scrollbar-hide flex w-full gap-3 overflow-x-auto pb-1 md:grid md:grid-cols-3 md:overflow-visible md:pb-0 lg:grid-cols-5">
       {stats.map((stat, i) => (
         <motion.div
           key={stat.name}
