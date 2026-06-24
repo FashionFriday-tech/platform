@@ -373,7 +373,7 @@ export const getProductsByCollection = async (
           cleanC === targetSlug ||
           cleanC === targetName ||
           c.toLowerCase() === decodedSlug.toLowerCase() ||
-          (collectionName && c.toLowerCase() === collectionName.toLowerCase())
+          c.toLowerCase() === collectionName?.toLowerCase()
         );
       });
     });
