@@ -89,7 +89,7 @@ export function useWhatsAppReviews() {
       const err = await res.json().catch(() => ({}));
       const errorMsg = Array.isArray(err.message)
         ? err.message.join(', ')
-        : (err.message || 'Failed to upload review image to Cloudflare');
+        : err.message || 'Failed to upload review image to Cloudflare';
       throw new Error(errorMsg);
     }
 
@@ -97,7 +97,9 @@ export function useWhatsAppReviews() {
   };
 
   const uploadReviews = async (files: File[]) => {
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+      return;
+    }
 
     const formData = new FormData();
     files.forEach((file) => {
@@ -113,7 +115,7 @@ export function useWhatsAppReviews() {
       const err = await res.json().catch(() => ({}));
       const errorMsg = Array.isArray(err.message)
         ? err.message.join(', ')
-        : (err.message || 'Failed to upload review images to Cloudflare');
+        : err.message || 'Failed to upload review images to Cloudflare';
       throw new Error(errorMsg);
     }
 
