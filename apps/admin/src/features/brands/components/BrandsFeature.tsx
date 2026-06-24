@@ -64,7 +64,7 @@ export default function BrandsFeature() {
           className="relative z-40 flex items-center justify-between gap-2 rounded-2xl border border-black/5 bg-white p-2.5 sm:p-3 md:p-4 dark:border-white/5 dark:bg-[#111111]"
         >
           {/* Left: Search Input (fills remaining space) */}
-          <div className="relative flex-1 min-w-0">
+          <div className="relative min-w-0 flex-1">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 sm:pl-3.5">
               <SearchIcon className="h-4 w-4 text-black/30 dark:text-white/30" />
             </div>
@@ -72,24 +72,33 @@ export default function BrandsFeature() {
               type="text"
               placeholder="Search brands..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2 sm:py-2.5 pr-8 pl-9 sm:pl-10 text-xs sm:text-sm text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5 truncate"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+              className="block w-full truncate rounded-xl border border-black/5 bg-[#f8f9fa] py-2 pr-8 pl-9 text-xs text-black placeholder-black/30 transition-all outline-none focus:border-black/20 focus:bg-white focus:ring-4 focus:ring-black/5 sm:py-2.5 sm:pl-10 sm:text-sm dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/20 dark:focus:bg-[#222222] dark:focus:ring-white/5"
             />
             {searchQuery && (
               <button
                 type="button"
-                onClick={() => setSearchQuery('')}
+                onClick={() => {
+                  setSearchQuery('');
+                }}
                 className="absolute inset-y-0 right-0 flex items-center pr-2.5 text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white"
               >
                 <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             )}
           </div>
 
           {/* Desktop Inline Controls (xl:flex) */}
-          <div className="hidden xl:flex items-center gap-3">
+          <div className="hidden items-center gap-3 xl:flex">
             <CustomSelect
               options={categoryOptions}
               value={categoryFilter}
@@ -101,19 +110,26 @@ export default function BrandsFeature() {
           </div>
 
           {/* Right Controls: Unified Filter Button + Add Brand Button */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             {/* Single Filter Button (Visible on screens < xl) */}
             <div className="relative xl:hidden" ref={filterRef}>
               <button
                 type="button"
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`flex items-center space-x-1 sm:space-x-1.5 rounded-xl border px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all ${
+                onClick={() => {
+                  setIsFilterOpen(!isFilterOpen);
+                }}
+                className={`flex items-center space-x-1 rounded-xl border px-2.5 py-2 text-xs font-medium transition-all sm:space-x-1.5 sm:px-3 sm:text-sm ${
                   hasActiveFilters
                     ? 'border-transparent bg-black text-white shadow-md dark:bg-white dark:text-black'
                     : 'border-black/5 bg-[#f8f9fa] text-black/70 hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white'
                 }`}
               >
-                <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="h-3.5 w-3.5 sm:h-4 sm:w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -122,9 +138,7 @@ export default function BrandsFeature() {
                   />
                 </svg>
                 <span className="hidden sm:inline">Filters</span>
-                {hasActiveFilters && (
-                  <span className="flex h-1.5 w-1.5 rounded-full bg-red-500" />
-                )}
+                {hasActiveFilters && <span className="flex h-1.5 w-1.5 rounded-full bg-red-500" />}
               </button>
 
               {/* Detailed Filters Modal */}
@@ -133,28 +147,42 @@ export default function BrandsFeature() {
                   {/* Mobile Backdrop */}
                   <div
                     className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs md:hidden"
-                    onClick={() => setIsFilterOpen(false)}
+                    onClick={() => {
+                      setIsFilterOpen(false);
+                    }}
                   />
 
-                  <div className="fixed inset-x-3 bottom-3 z-50 max-h-[85vh] md:absolute md:top-full md:right-0 md:bottom-auto md:left-auto md:mt-2 md:w-[320px] flex flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 shadow-2xl backdrop-blur-2xl duration-200 dark:border-white/10 dark:bg-[#111111]/95">
+                  <div className="fixed inset-x-3 bottom-3 z-50 flex max-h-[85vh] flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 shadow-2xl backdrop-blur-2xl duration-200 md:absolute md:top-full md:right-0 md:bottom-auto md:left-auto md:mt-2 md:w-[320px] dark:border-white/10 dark:bg-[#111111]/95">
                     <div className="flex items-center justify-between border-b border-black/5 p-4 pb-3 dark:border-white/5">
                       <h3 className="text-base font-bold text-black dark:text-white">
                         Detailed Filters
                       </h3>
                       <button
                         type="button"
-                        onClick={() => setIsFilterOpen(false)}
+                        onClick={() => {
+                          setIsFilterOpen(false);
+                        }}
                         className="flex h-7 w-7 items-center justify-center rounded-full text-black/50 hover:bg-black/5 hover:text-black dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white"
                       >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </div>
 
                     <div className="scrollbar-hide flex-1 space-y-4 overflow-y-auto p-4">
                       <div>
-                        <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">
+                        <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
                           Brand Category
                         </label>
                         <div className="flex flex-wrap gap-1.5">
@@ -162,7 +190,9 @@ export default function BrandsFeature() {
                             <button
                               key={opt.value}
                               type="button"
-                              onClick={() => setCategoryFilter(opt.value as 'all' | BrandCategory)}
+                              onClick={() => {
+                                setCategoryFilter(opt.value as 'all' | BrandCategory);
+                              }}
                               className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
                                 categoryFilter === opt.value
                                   ? 'border-transparent bg-black text-white dark:bg-white dark:text-black'
@@ -180,14 +210,18 @@ export default function BrandsFeature() {
                     <div className="flex items-center space-x-3 border-t border-black/10 bg-white/5 p-4 backdrop-blur-md dark:border-white/10 dark:bg-black/5">
                       <button
                         type="button"
-                        onClick={() => setCategoryFilter('all')}
+                        onClick={() => {
+                          setCategoryFilter('all');
+                        }}
                         className="flex-1 rounded-xl px-4 py-2 text-xs font-medium text-black/60 transition-colors hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
                       >
                         Clear
                       </button>
                       <button
                         type="button"
-                        onClick={() => setIsFilterOpen(false)}
+                        onClick={() => {
+                          setIsFilterOpen(false);
+                        }}
                         className="flex-1 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-md transition-colors hover:bg-black/90 dark:bg-white dark:text-black dark:hover:bg-white/90"
                       >
                         Done
@@ -204,7 +238,7 @@ export default function BrandsFeature() {
                 setBrandToEdit(null);
                 setIsAddModalOpen(true);
               }}
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-black px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white shadow-md transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
+              className="flex items-center justify-center gap-1.5 rounded-xl bg-black px-3 py-2 text-xs font-semibold whitespace-nowrap text-white shadow-md transition-all hover:bg-black/90 active:scale-95 sm:px-4 sm:text-sm dark:bg-white dark:text-black dark:hover:bg-white/90"
             >
               <PlusIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               <span className="hidden sm:inline">Add Brand</span>
