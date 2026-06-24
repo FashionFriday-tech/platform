@@ -6,8 +6,8 @@ interface AnimatedLogoProps {
 
 export function AnimatedLogo({ className = '' }: AnimatedLogoProps) {
   return (
-    <div 
-      className={`relative inline-grid items-center justify-items-center text-center ${className}`} 
+    <div
+      className={`relative inline-grid items-center justify-items-center text-center ${className}`}
       style={{ gridTemplateColumns: '1fr', gridTemplateRows: '1fr' }}
     >
       <style>
@@ -54,10 +54,22 @@ export function AnimatedLogo({ className = '' }: AnimatedLogoProps) {
           }
         `}
       </style>
-      <span className="animate-zoom" style={{ animationDelay: '0s' }}>Fashion Friday</span>
-      <span className="animate-zoom tracking-[0.1em]" style={{ animationDelay: '5s' }}>时尚星期五</span>
-      <span className="animate-zoom font-hindi tracking-[0.05em]" style={{ animationDelay: '10s' }}>फैशन फ्राइडे</span>
-      <span className="animate-zoom font-arabic tracking-[0.05em]" style={{ animationDelay: '15s' }} dir="rtl">فاشن فرايدي</span>
+      <span className="animate-zoom" style={{ animationDelay: '0s' }}>
+        Fashion Friday
+      </span>
+      <span className="animate-zoom tracking-[0.1em]" style={{ animationDelay: '5s' }}>
+        时尚星期五
+      </span>
+      <span className="animate-zoom font-hindi tracking-[0.05em]" style={{ animationDelay: '10s' }}>
+        फैशन फ्राइडे
+      </span>
+      <span
+        className="animate-zoom font-arabic tracking-[0.05em]"
+        style={{ animationDelay: '15s' }}
+        dir="rtl"
+      >
+        فاشن فرايدي
+      </span>
     </div>
   );
 }
