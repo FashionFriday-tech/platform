@@ -221,15 +221,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       // Upload any new images first
       setToast({ message: 'Uploading images and saving product...', type: 'success' });
 
-      const uploadBlob = async (
-        blob: Blob | File,
-        originalName: string,
-        pName?: string,
-      ) => {
+      const uploadBlob = async (blob: Blob | File, originalName: string, pName?: string) => {
         const file =
-          blob instanceof File
-            ? blob
-            : new File([blob], originalName, { type: 'image/webp' });
+          blob instanceof File ? blob : new File([blob], originalName, { type: 'image/webp' });
         const formData = new FormData();
         formData.append('file', file);
         if (pName) {
@@ -263,18 +257,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
       const targetCatName = category.toLowerCase();
       const selectedCatGender =
-        gender.toUpperCase() === 'WOMAN' || gender.toUpperCase() === 'WOMEN'
-          ? 'WOMEN'
-          : 'MEN';
+        gender.toUpperCase() === 'WOMAN' || gender.toUpperCase() === 'WOMEN' ? 'WOMEN' : 'MEN';
 
       let selectedApiCategory = apiCategories.find(
         (c) =>
-          c.name.toLowerCase() === targetCatName &&
-          c.gender?.toUpperCase() === selectedCatGender,
+          c.name.toLowerCase() === targetCatName && c.gender?.toUpperCase() === selectedCatGender,
       );
-      selectedApiCategory ??= apiCategories.find(
-        (c) => c.name.toLowerCase() === targetCatName,
-      );
+      selectedApiCategory ??= apiCategories.find((c) => c.name.toLowerCase() === targetCatName);
 
       if (!selectedApiCategory) {
         setToast({
@@ -336,9 +325,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       }
 
       setToast({
-        message: initialData
-          ? 'Product updated successfully!'
-          : 'Product created successfully!',
+        message: initialData ? 'Product updated successfully!' : 'Product created successfully!',
         type: 'success',
       });
 
@@ -358,10 +345,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   return (
     <div className="scrollbar-hide h-full w-full overflow-y-auto rounded-2xl pb-20">
       {/* Top Bar */}
-      <div className="sticky top-0 z-30 mb-4 sm:mb-6 rounded-2xl border-b border-black/5 bg-gray-50/90 p-3 sm:px-4 sm:py-2.5 backdrop-blur-md dark:border-white/5 dark:bg-black/90">
+      <div className="sticky top-0 z-30 mb-4 rounded-2xl border-b border-black/5 bg-gray-50/90 p-3 backdrop-blur-md sm:mb-6 sm:px-4 sm:py-2.5 dark:border-white/5 dark:bg-black/90">
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Left: Icon + Page Name */}
-          <div className="flex min-w-0 items-center space-x-2.5 sm:space-x-3 pl-0">
+          <div className="flex min-w-0 items-center space-x-2.5 pl-0 sm:space-x-3">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black text-white shadow-md dark:bg-white dark:text-black">
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -373,19 +360,19 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               </svg>
             </div>
             <div className="min-w-0">
-              <h1 className="truncate text-base sm:text-lg md:text-xl font-bold tracking-tight text-black dark:text-white">
+              <h1 className="truncate text-base font-bold tracking-tight text-black sm:text-lg md:text-xl dark:text-white">
                 {initialData ? 'Edit Product' : 'Add New Product'}
               </h1>
             </div>
           </div>
 
           {/* Right Desktop/Tablet Actions */}
-          <div className="hidden sm:flex items-center">
-            <div className="mr-3 md:mr-4 flex items-center space-x-2 rounded-full border border-black/5 bg-white px-3 md:px-4 py-2 shadow-sm dark:border-white/5 dark:bg-[#111111]">
-              <span className="text-[11px] md:text-xs font-bold tracking-wider text-black/60 uppercase dark:text-white/60">
+          <div className="hidden items-center sm:flex">
+            <div className="mr-3 flex items-center space-x-2 rounded-full border border-black/5 bg-white px-3 py-2 shadow-sm md:mr-4 md:px-4 dark:border-white/5 dark:bg-[#111111]">
+              <span className="text-[11px] font-bold tracking-wider text-black/60 uppercase md:text-xs dark:text-white/60">
                 Completion
               </span>
-              <span className="text-xs md:text-sm font-black text-black dark:text-white">
+              <span className="text-xs font-black text-black md:text-sm dark:text-white">
                 {progress.filled}/{progress.total}
               </span>
             </div>
@@ -396,14 +383,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   onClick={() => {
                     router.back();
                   }}
-                  className="flex items-center space-x-2 rounded-full border border-black/10 bg-white px-4 md:px-5 py-2 text-xs md:text-sm font-semibold text-black/60 shadow-sm transition-colors hover:bg-black/5 dark:border-white/10 dark:bg-[#111111] dark:text-white/60 dark:hover:bg-white/5"
+                  className="flex items-center space-x-2 rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-semibold text-black/60 shadow-sm transition-colors hover:bg-black/5 md:px-5 md:text-sm dark:border-white/10 dark:bg-[#111111] dark:text-white/60 dark:hover:bg-white/5"
                 >
                   <span>Cancel</span>
                 </button>
               )}
               <button
                 type="button"
-                className="flex items-center space-x-2 rounded-full border border-black/10 bg-white px-4 md:px-5 py-2 text-xs md:text-sm font-semibold shadow-sm transition-colors hover:bg-black/5 dark:border-white/10 dark:bg-[#111111] dark:hover:bg-white/5"
+                className="flex items-center space-x-2 rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-semibold shadow-sm transition-colors hover:bg-black/5 md:px-5 md:text-sm dark:border-white/10 dark:bg-[#111111] dark:hover:bg-white/5"
               >
                 <svg
                   className="h-4 w-4 text-black/60 dark:text-white/60"
@@ -423,7 +410,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <button
                 type="button"
                 onClick={handleSaveProduct}
-                className="flex items-center space-x-2 rounded-full bg-black px-5 md:px-6 py-2 text-xs md:text-sm font-bold text-white shadow-lg transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
+                className="flex items-center space-x-2 rounded-full bg-black px-5 py-2 text-xs font-bold text-white shadow-lg transition-opacity hover:opacity-90 md:px-6 md:text-sm dark:bg-white dark:text-black"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -439,11 +426,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           </div>
 
           {/* Right Mobile Actions (Save button + 3-dots action menu) */}
-          <div className="flex sm:hidden items-center space-x-1.5 relative">
+          <div className="relative flex items-center space-x-1.5 sm:hidden">
             <button
               type="button"
               onClick={handleSaveProduct}
-              className="flex items-center space-x-1 rounded-full bg-black px-3.5 py-1.5 text-xs font-bold text-white shadow-md active:scale-95 transition-transform dark:bg-white dark:text-black"
+              className="flex items-center space-x-1 rounded-full bg-black px-3.5 py-1.5 text-xs font-bold text-white shadow-md transition-transform active:scale-95 dark:bg-white dark:text-black"
             >
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -459,7 +446,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             {/* 3-dots popup trigger */}
             <button
               type="button"
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              onClick={() => {
+                setIsMobileMenuOpen((prev) => !prev);
+              }}
               aria-label="More actions"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-black shadow-sm active:bg-black/5 dark:border-white/10 dark:bg-[#111111] dark:text-white dark:active:bg-white/5"
             >
@@ -475,10 +464,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <>
                 <div
                   className="fixed inset-0 z-40"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                  }}
                 />
-                <div className="absolute right-0 top-10 z-50 w-52 rounded-2xl border border-black/10 bg-white p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#181818]">
-                  <div className="flex items-center justify-between px-3 py-2 border-b border-black/5 dark:border-white/5 mb-1">
+                <div className="absolute top-10 right-0 z-50 w-52 rounded-2xl border border-black/10 bg-white p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#181818]">
+                  <div className="mb-1 flex items-center justify-between border-b border-black/5 px-3 py-2 dark:border-white/5">
                     <span className="text-[11px] font-bold tracking-wider text-black/60 uppercase dark:text-white/60">
                       Completion
                     </span>
@@ -520,8 +511,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       }}
                       className="flex w-full items-center space-x-2.5 rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-red-600 hover:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/10"
                     >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
                       </svg>
                       <span>Cancel</span>
                     </button>
@@ -535,10 +536,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Left Column (General info, Pricing, SEO) - Order 2 on mobile/tablet (< lg), Order 1 on desktop (lg+) */}
-        <div className="order-2 lg:order-1 space-y-4 lg:col-span-2">
+        <div className="order-2 space-y-4 lg:order-1 lg:col-span-2">
           {/* General Information */}
-          <div className="rounded-2xl sm:rounded-[2rem] bg-white p-4 sm:p-7 shadow-sm dark:bg-[#111]">
-            <h2 className="mb-4 sm:mb-6 text-base sm:text-lg font-bold text-black dark:text-white">
+          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+            <h2 className="mb-4 text-base font-bold text-black sm:mb-6 sm:text-lg dark:text-white">
               General Information
             </h2>
 
@@ -905,8 +906,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           </div>
 
           {/* Pricing And Stock */}
-          <div className="rounded-2xl sm:rounded-[2rem] bg-white p-4 sm:p-7 shadow-sm dark:bg-[#111]">
-            <h2 className="mb-4 sm:mb-6 text-base sm:text-lg font-bold text-black dark:text-white">Pricing And Stock</h2>
+          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+            <h2 className="mb-4 text-base font-bold text-black sm:mb-6 sm:text-lg dark:text-white">
+              Pricing And Stock
+            </h2>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
@@ -991,10 +994,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           </div>
 
           {/* Search Engine Optimization */}
-          <div className="rounded-2xl sm:rounded-[2rem] bg-white p-4 sm:p-7 shadow-sm dark:bg-[#111]">
-            <div className="mb-4 sm:mb-6 flex items-center justify-between">
+          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+            <div className="mb-4 flex items-center justify-between sm:mb-6">
               <div className="flex items-center space-x-2 sm:space-x-3">
-                <h2 className="text-base sm:text-lg font-bold text-black dark:text-white">
+                <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
                   Search Engine Optimization
                 </h2>
                 {seoError && (
@@ -1022,8 +1025,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             <div className="space-y-6">
               <div>
                 <LabelWithTick label="URL Slug" status={getStatus(seoSlug, initialData?.slug, 3)} />
-                <div className="flex flex-col sm:flex-row sm:items-center overflow-hidden rounded-xl bg-black/5 dark:bg-white/5 border border-transparent focus-within:border-black/20 dark:focus-within:border-white/20 transition-all">
-                  <span className="px-4 py-2 sm:py-3.5 text-xs sm:text-sm font-medium text-black/40 dark:text-white/40 shrink-0 bg-black/[0.02] sm:bg-transparent border-b sm:border-b-0 sm:border-r border-black/5 dark:border-white/5">
+                <div className="flex flex-col overflow-hidden rounded-xl border border-transparent bg-black/5 transition-all focus-within:border-black/20 sm:flex-row sm:items-center dark:bg-white/5 dark:focus-within:border-white/20">
+                  <span className="shrink-0 border-b border-black/5 bg-black/[0.02] px-4 py-2 text-xs font-medium text-black/40 sm:border-r sm:border-b-0 sm:bg-transparent sm:py-3.5 sm:text-sm dark:border-white/5 dark:text-white/40">
                     fashionfriday.in/product/
                   </span>
                   <input
@@ -1033,7 +1036,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       setSeoSlug(e.target.value);
                     }}
                     placeholder="product-name"
-                    className="w-full bg-transparent px-4 py-2.5 sm:py-3.5 text-sm font-medium text-black lowercase transition-all outline-none dark:text-white"
+                    className="w-full bg-transparent px-4 py-2.5 text-sm font-medium text-black lowercase transition-all outline-none sm:py-3.5 dark:text-white"
                   />
                 </div>
               </div>
@@ -1084,11 +1087,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         </div>
 
         {/* Media & Video Column - Order 1 on mobile/tablet (< lg), Order 2 on desktop (lg+) */}
-        <div className="order-1 lg:order-2 space-y-4 sm:space-y-6">
+        <div className="order-1 space-y-4 sm:space-y-6 lg:order-2">
           {/* Upload Img */}
-          <div className="rounded-2xl sm:rounded-[2rem] bg-white p-4 sm:p-7 shadow-sm dark:bg-[#111]">
-            <div className="mb-4 sm:mb-6 flex items-center justify-between">
-              <h2 className="text-base sm:text-lg font-bold text-black dark:text-white">Upload Media</h2>
+          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+            <div className="mb-4 flex items-center justify-between sm:mb-6">
+              <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
+                Upload Media
+              </h2>
               <span className="text-xs font-bold text-black/50 dark:text-white/50">
                 {images.length}/10 Images
               </span>
@@ -1410,8 +1415,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           </div>
 
           {/* Product Collections */}
-          <div className="rounded-2xl sm:rounded-[2rem] bg-white p-4 sm:p-7 shadow-sm dark:bg-[#111]">
-            <h2 className="mb-3 sm:mb-4 text-base sm:text-lg font-bold text-black dark:text-white">
+          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+            <h2 className="mb-3 text-base font-bold text-black sm:mb-4 sm:text-lg dark:text-white">
               Product Collections
             </h2>
 
