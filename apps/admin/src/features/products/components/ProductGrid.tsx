@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 
 import { ShoppingBagIcon } from '@ff/ui';
+import { toast } from 'sonner';
 
 import { type Product } from '../types';
 import { DeleteProductModal } from './DeleteProductModal';
@@ -21,12 +21,7 @@ interface Props {
   onToggleAllSelection?: (ids: string[]) => void;
 }
 
-export function ProductGrid({
-  products,
-  isLoading,
-  onToggleStatus,
-  onDeleteProduct,
-}: Props) {
+export function ProductGrid({ products, isLoading, onToggleStatus, onDeleteProduct }: Props) {
   const router = useRouter();
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -66,14 +61,16 @@ export function ProductGrid({
       {/* Top Controls: Counts */}
       <div className="mb-4 flex items-center justify-between px-2">
         <div className="text-sm font-medium text-black/60 dark:text-white/60">
-          Showing <span className="font-bold text-black dark:text-white">{products.length}</span> products
+          Showing <span className="font-bold text-black dark:text-white">{products.length}</span>{' '}
+          products
         </div>
       </div>
 
       {/* Modern Product Cards Grid */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {products.map((product) => {
-          const hasDiscount = Number(product.originalPrice || 0) > Number(product.sellingPrice || 0);
+          const hasDiscount =
+            Number(product.originalPrice || 0) > Number(product.sellingPrice || 0);
 
           return (
             <div
@@ -144,13 +141,13 @@ export function ProductGrid({
               </div>
 
               {/* Product Card Content: Name, Brand, Quality, Price, Stock */}
-              <div className="flex flex-1 flex-col justify-between p-3.5 space-y-2.5">
+              <div className="flex flex-1 flex-col justify-between space-y-2.5 p-3.5">
                 <div className="space-y-1.5">
                   {/* Brand & Quality Tags */}
                   {(product.brand || product.quality) && (
                     <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
                       {product.brand && (
-                        <span className="rounded-md bg-black/5 px-2 py-0.5 font-bold uppercase tracking-wider text-black/80 dark:bg-white/10 dark:text-white/80">
+                        <span className="rounded-md bg-black/5 px-2 py-0.5 font-bold tracking-wider text-black/80 uppercase dark:bg-white/10 dark:text-white/80">
                           {product.brand}
                         </span>
                       )}
@@ -219,7 +216,9 @@ export function ProductGrid({
 
                     {/* 3-Dot Actions Menu */}
                     <div
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
                       className="relative z-30 ml-2"
                     >
                       <ProductActionMenu
