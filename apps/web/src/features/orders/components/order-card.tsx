@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import { toast } from 'sonner';
 
 import {
   CalendarIcon,
@@ -13,6 +12,7 @@ import {
   PackageIcon,
   TruckIcon,
 } from '@ff/ui';
+import { toast } from 'sonner';
 
 import { type Order, type OrderItem } from '../types';
 import { StatusBadge } from './status-badge';
@@ -48,7 +48,11 @@ function getOfficialCourierUrl(courier: string, trackingId: string): string {
   if (cleanCourier.includes('ecomexpress') || cleanCourier.includes('ecom')) {
     return `https://ecomexpress.in/tracking/?awb=${cleanId}`;
   }
-  if (cleanCourier.includes('indiapost') || cleanCourier.includes('speedpost') || cleanCourier.includes('post')) {
+  if (
+    cleanCourier.includes('indiapost') ||
+    cleanCourier.includes('speedpost') ||
+    cleanCourier.includes('post')
+  ) {
     return `https://www.indiapost.gov.in/_layouts/15/dop.portal.tracking/trackconsignment.aspx`;
   }
   if (cleanCourier.includes('shiprocket')) {
@@ -73,7 +77,9 @@ export function OrderCard({ order, item }: OrderCardProps) {
   const [isTrackingModalOpen, setIsTrackingModalOpen] = React.useState(false);
 
   const hasTracking = Boolean(order.trackingNumber);
-  const officialTrackUrl = hasTracking ? getOfficialCourierUrl(order.courierPartner || '', order.trackingNumber || '') : '';
+  const officialTrackUrl = hasTracking
+    ? getOfficialCourierUrl(order.courierPartner || '', order.trackingNumber || '')
+    : '';
   const universalTrackUrl = hasTracking ? getUniversalTrackingUrl(order.trackingNumber || '') : '';
 
   const normalizedStatus = (order.status || '').toUpperCase();
@@ -103,7 +109,7 @@ export function OrderCard({ order, item }: OrderCardProps) {
         <button
           type="button"
           onClick={handleOpenTracking}
-          className="bg-brand text-brand-foreground shadow-brand/20 flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold shadow-md transition-all hover:opacity-90 active:scale-95 cursor-pointer"
+          className="bg-brand text-brand-foreground shadow-brand/20 flex cursor-pointer items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold shadow-md transition-all hover:opacity-90 active:scale-95"
         >
           <TruckIcon size={16} />
           <span>Track</span>
@@ -122,11 +128,12 @@ export function OrderCard({ order, item }: OrderCardProps) {
               setIsTrackingModalOpen(true);
             } else {
               toast.success('Package Delivered', {
-                description: 'Your order has been delivered successfully to your destination address.',
+                description:
+                  'Your order has been delivered successfully to your destination address.',
               });
             }
           }}
-          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20 flex items-center gap-1.5 rounded-full border px-5 py-2 text-xs font-bold transition-all active:scale-95 cursor-pointer"
+          className="flex cursor-pointer items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-5 py-2 text-xs font-bold text-emerald-600 transition-all hover:bg-emerald-500/20 active:scale-95 dark:text-emerald-400"
         >
           <CheckCircleIcon size={15} />
           <span>Delivered</span>
@@ -145,7 +152,7 @@ export function OrderCard({ order, item }: OrderCardProps) {
               description: 'Your package is being prepared and packed at the warehouse.',
             });
           }}
-          className="bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/25 hover:bg-purple-500/20 flex items-center gap-1.5 rounded-full border px-5 py-2 text-xs font-bold transition-all active:scale-95"
+          className="flex items-center gap-1.5 rounded-full border border-purple-500/25 bg-purple-500/10 px-5 py-2 text-xs font-bold text-purple-600 transition-all hover:bg-purple-500/20 active:scale-95 dark:text-purple-400"
         >
           <ClockIcon size={14} />
           <span>Processing</span>
@@ -161,10 +168,11 @@ export function OrderCard({ order, item }: OrderCardProps) {
           type="button"
           onClick={() => {
             toast.info('Order Confirmed', {
-              description: 'Your order has been confirmed with the seller and will be dispatched soon.',
+              description:
+                'Your order has been confirmed with the seller and will be dispatched soon.',
             });
           }}
-          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20 flex items-center gap-1.5 rounded-full border px-5 py-2 text-xs font-bold transition-all active:scale-95"
+          className="flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-5 py-2 text-xs font-bold text-emerald-600 transition-all hover:bg-emerald-500/20 active:scale-95 dark:text-emerald-400"
         >
           <CheckCircleIcon size={14} />
           <span>Confirmed</span>
@@ -183,7 +191,7 @@ export function OrderCard({ order, item }: OrderCardProps) {
               description: 'Your order has been received and is being verified.',
             });
           }}
-          className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25 hover:bg-amber-500/20 flex items-center gap-1.5 rounded-full border px-5 py-2 text-xs font-bold transition-all active:scale-95"
+          className="flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/10 px-5 py-2 text-xs font-bold text-amber-600 transition-all hover:bg-amber-500/20 active:scale-95 dark:text-amber-400"
         >
           <PackageIcon size={14} />
           <span>Order Placed</span>
@@ -237,7 +245,9 @@ export function OrderCard({ order, item }: OrderCardProps) {
           </p>
           <div className="text-foreground-muted flex items-center gap-2">
             <CalendarIcon size={14} />
-            <span className="text-xs font-bold">{new Date(order.createdAt).toLocaleDateString()}</span>
+            <span className="text-xs font-bold">
+              {new Date(order.createdAt).toLocaleDateString()}
+            </span>
           </div>
         </div>
         <StatusBadge status={order.status.toLowerCase()} label={order.status} />
@@ -248,10 +258,11 @@ export function OrderCard({ order, item }: OrderCardProps) {
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
-              className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${isShipped || isDelivered
-                ? 'bg-brand text-brand-foreground border-brand'
-                : 'bg-background border-border text-brand'
-                }`}
+              className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
+                isShipped || isDelivered
+                  ? 'bg-brand text-brand-foreground border-brand'
+                  : 'bg-background border-border text-brand'
+              }`}
             >
               <TruckIcon size={16} />
             </div>
@@ -262,24 +273,28 @@ export function OrderCard({ order, item }: OrderCardProps) {
           </div>
 
           <div
-            className={`mx-4 h-px flex-1 border-t-2 transition-colors ${isDelivered
-              ? 'border-emerald-500/60 border-solid'
-              : isShipped
-                ? 'border-brand border-dashed'
-                : 'border-border border-dashed'
-              }`}
+            className={`mx-4 h-px flex-1 border-t-2 transition-colors ${
+              isDelivered
+                ? 'border-solid border-emerald-500/60'
+                : isShipped
+                  ? 'border-brand border-dashed'
+                  : 'border-border border-dashed'
+            }`}
           />
 
           <div className="flex items-center gap-3 text-right">
             <div className="xs:block hidden">
               <p className="text-foreground-subtle text-[9px] font-bold uppercase">Destination</p>
-              <p className="max-w-20 truncate text-xs font-bold">{order.shippingAddress?.city || 'N/A'}</p>
+              <p className="max-w-20 truncate text-xs font-bold">
+                {order.shippingAddress?.city || 'N/A'}
+              </p>
             </div>
             <div
-              className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${isDelivered
-                ? 'bg-emerald-500 text-white border-emerald-500'
-                : 'bg-background border-border text-foreground-muted'
-                }`}
+              className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
+                isDelivered
+                  ? 'border-emerald-500 bg-emerald-500 text-white'
+                  : 'bg-background border-border text-foreground-muted'
+              }`}
             >
               {isDelivered ? <CheckCircleIcon size={16} /> : <MapPinIcon size={16} />}
             </div>
@@ -288,20 +303,22 @@ export function OrderCard({ order, item }: OrderCardProps) {
 
         {hasTracking && (
           <div className="border-border/50 text-foreground-muted mt-3 flex items-center justify-between border-t pt-2 text-[10px] font-bold">
-            <span className="text-brand font-black tracking-wider uppercase">{order.courierPartner || 'Courier'}</span>
+            <span className="text-brand font-black tracking-wider uppercase">
+              {order.courierPartner || 'Courier'}
+            </span>
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 if (order.trackingNumber) {
-                  navigator.clipboard.writeText(order.trackingNumber);
+                  void navigator.clipboard.writeText(order.trackingNumber);
                   toast.success('Tracking ID Copied', {
                     description: `AWB ${order.trackingNumber} copied to clipboard.`,
                   });
                 }
               }}
               title="Click to copy tracking number"
-              className="hover:text-foreground font-mono group flex cursor-pointer items-center gap-1.5 transition-colors"
+              className="hover:text-foreground group flex cursor-pointer items-center gap-1.5 font-mono transition-colors"
             >
               <span>{order.trackingNumber}</span>
               <CopyIcon size={12} className="opacity-60 group-hover:opacity-100" />
@@ -330,7 +347,7 @@ export function OrderCard({ order, item }: OrderCardProps) {
             <p className="text-foreground-subtle mt-1 text-xs">
               Size {item.size} • Qty {item.quantity}
             </p>
-            <p className="text-brand mt-2 text-sm font-black">₹{Number(item.price).toLocaleString()}</p>
+            <p className="text-brand mt-2 text-sm font-black">₹{item.price.toLocaleString()}</p>
           </div>
         </div>
       </div>
@@ -339,7 +356,7 @@ export function OrderCard({ order, item }: OrderCardProps) {
       <div className="border-border mt-auto flex items-center justify-between border-t pt-5">
         <div>
           <p className="text-foreground-subtle text-[10px] font-bold uppercase">Shipment Total</p>
-          <p className="text-xl font-black">₹{(Number(item.price) * item.quantity).toLocaleString()}</p>
+          <p className="text-xl font-black">₹{(item.price * item.quantity).toLocaleString()}</p>
         </div>
         {renderActionButton()}
       </div>
@@ -348,7 +365,9 @@ export function OrderCard({ order, item }: OrderCardProps) {
       {hasTracking && (
         <TrackingModal
           isOpen={isTrackingModalOpen}
-          onClose={() => setIsTrackingModalOpen(false)}
+          onClose={() => {
+            setIsTrackingModalOpen(false);
+          }}
           order={order}
           item={item}
           officialTrackUrl={officialTrackUrl}
