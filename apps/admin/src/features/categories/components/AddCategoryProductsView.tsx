@@ -43,7 +43,9 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
         );
-        if (!res.ok) throw new Error('Failed to load products');
+        if (!res.ok) {
+          throw new Error('Failed to load products');
+        }
         const data = await res.json();
         const items: ApiProduct[] = Array.isArray(data) ? data : (data.data ?? []);
         setProducts(items);
@@ -67,15 +69,16 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
         p.id.toLowerCase().includes(q);
 
       const matchesGender =
-        genderFilter === 'All' ||
-        (p.gender && p.gender.toUpperCase() === genderFilter.toUpperCase());
+        genderFilter === 'All' || p.gender?.toUpperCase() === genderFilter.toUpperCase();
 
       return matchesSearch && matchesGender;
     });
   }, [products, searchQuery, genderFilter]);
 
   const toggleProductSelection = (id: string, isAlreadyInThisCategory: boolean) => {
-    if (isAlreadyInThisCategory) return;
+    if (isAlreadyInThisCategory) {
+      return;
+    }
     const newSelected = new Set(selectedProductIds);
     if (newSelected.has(id)) {
       newSelected.delete(id);
@@ -97,7 +100,9 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
   };
 
   const handleSave = async () => {
-    if (selectedProductIds.size === 0) return;
+    if (selectedProductIds.size === 0) {
+      return;
+    }
     setIsSaving(true);
     const count = selectedProductIds.size;
 
@@ -111,13 +116,17 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
             body: JSON.stringify({ categoryId: category.id }),
           },
         ).then((res) => {
-          if (!res.ok) throw new Error(`Failed to update product ${productId}`);
+          if (!res.ok) {
+            throw new Error(`Failed to update product ${productId}`);
+          }
           return res.json();
         }),
       );
 
       await Promise.all(updatePromises);
-      toast.success(`Successfully added ${count} product${count > 1 ? 's' : ''} to ${category.name}`);
+      toast.success(
+        `Successfully added ${count} product${count > 1 ? 's' : ''} to ${category.name}`,
+      );
       router.push(`/categories/${category.slug}`);
       router.refresh();
     } catch (err: any) {
@@ -186,11 +195,9 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
                 <span>Saving...</span>
               </>
             ) : (
-              <>
-                <span>
-                  Add {selectedProductIds.size} Product{selectedProductIds.size === 1 ? '' : 's'}
-                </span>
-              </>
+              <span>
+                Add {selectedProductIds.size} Product{selectedProductIds.size === 1 ? '' : 's'}
+              </span>
             )}
           </button>
         </div>
@@ -205,7 +212,9 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
               type="text"
               placeholder="Search by name, brand, or SKU..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
               className="w-full rounded-xl border border-black/5 bg-[#f8f9fa] py-2.5 pr-4 pl-10 text-sm text-black placeholder-black/40 outline-none focus:border-black/20 focus:bg-white dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/40 dark:focus:border-white/20 dark:focus:bg-[#222222]"
             />
           </div>
@@ -215,7 +224,9 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
               <button
                 key={g}
                 type="button"
-                onClick={() => setGenderFilter(g)}
+                onClick={() => {
+                  setGenderFilter(g);
+                }}
                 className={`rounded-lg px-3 py-1.5 transition-colors ${
                   genderFilter === g
                     ? 'bg-white text-black shadow-sm dark:bg-[#282828] dark:text-white'
@@ -268,12 +279,14 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
               return (
                 <div
                   key={product.id}
-                  onClick={() => toggleProductSelection(product.id, isAlreadyInThisCategory)}
+                  onClick={() => {
+                    toggleProductSelection(product.id, isAlreadyInThisCategory);
+                  }}
                   className={`group relative flex flex-col overflow-hidden rounded-2xl border transition-all ${
                     isAlreadyInThisCategory
                       ? 'cursor-not-allowed border-black/5 bg-black/[0.02] opacity-60 dark:border-white/5 dark:bg-white/[0.02]'
                       : isSelected
-                        ? 'cursor-pointer border-black bg-black/5 ring-2 ring-black/20 shadow-md dark:border-white dark:bg-white/5 dark:ring-white/20'
+                        ? 'cursor-pointer border-black bg-black/5 shadow-md ring-2 ring-black/20 dark:border-white dark:bg-white/5 dark:ring-white/20'
                         : 'cursor-pointer border-black/5 bg-white hover:border-black/20 hover:shadow-md dark:border-white/5 dark:bg-[#141414] dark:hover:border-white/20'
                   }`}
                 >
@@ -328,11 +341,13 @@ export function AddCategoryProductsView({ category }: AddCategoryProductsViewPro
                         {product.name}
                       </h3>
                       <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
-                        {Array.isArray(product.brand) ? product.brand.join(', ') : product.brand || 'No Brand'}
+                        {Array.isArray(product.brand)
+                          ? product.brand.join(', ')
+                          : product.brand || 'No Brand'}
                       </p>
                     </div>
 
-                    <div className="mt-3 flex items-baseline justify-between pt-2 border-t border-black/5 dark:border-white/5">
+                    <div className="mt-3 flex items-baseline justify-between border-t border-black/5 pt-2 dark:border-white/5">
                       <span className="text-sm font-bold text-black dark:text-white">
                         ₹{Number(product.sellingPrice || 0).toFixed(2)}
                       </span>
