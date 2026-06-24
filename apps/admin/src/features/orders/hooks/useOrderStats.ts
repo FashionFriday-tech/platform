@@ -32,7 +32,7 @@ export function useOrderStats(): OrderStatsSummary {
       }
 
       // 2. Fallback to /orders/admin
-      const orders = (await api.get('/orders/admin', { cache: 'no-store' })) as any[];
+      const orders = await api.get('/orders/admin', { cache: 'no-store' });
       if (Array.isArray(orders)) {
         const unplaced = orders.filter((o: any) => {
           const status = (o.status || '').toLowerCase();
@@ -57,7 +57,9 @@ export function useOrderStats(): OrderStatsSummary {
       void fetchStats();
     }, 30000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchStats]);
 
   return {
