@@ -11,7 +11,7 @@ import { CatalogueGrid } from './catalogue-grid';
 import { CatalogueSidebar } from './catalogue-sidebar';
 
 // Sort Options
-export const SORT_OPTIONS = [
+const SORT_OPTIONS = [
   { label: 'Newest Arrivals (New to Old)', value: 'newest' },
   { label: 'Price: Low to High', value: 'price-asc' },
   { label: 'Price: High to Low', value: 'price-desc' },
