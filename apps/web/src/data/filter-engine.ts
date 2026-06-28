@@ -3,29 +3,6 @@ import { type Product } from '@ff/schemas';
 import { mapDbProductToSchema } from '@/features/product/utils/mapper';
 
 /**
- * 1. SIDEBAR CONFIGURATION
- */
-export const CATEGORY_FILTERS: Record<string, { id: string; label: string; options: string[] }[]> =
-  {
-    Sneakers: [
-      { id: 'brand', label: 'Brand', options: ['Nike', 'Adidas', 'Jordan', 'Kobe', 'Yeezy'] },
-      { id: 'quality', label: 'Quality', options: ['UA', '7AA', 'Standard'] },
-      { id: 'colors', label: 'Colors', options: ['Red', 'White', 'Black', 'Blue', 'Zebra'] },
-      { id: 'sizes', label: 'Sizes', options: ['7', '8', '9', '10', '11'] },
-    ],
-    Watches: [
-      { id: 'brand', label: 'Brand', options: ['Seiko', 'Casio', 'Rolex', 'Titan'] },
-      { id: 'quality', label: 'Grade', options: ['10A Master', 'Original', 'Super Copy'] },
-    ],
-    Clothing: [
-      { id: 'brand', label: 'Brand', options: ['Zara', 'H&M', 'Fear of God'] },
-      { id: 'quality', label: 'Fabric', options: ['Premium Cotton', 'Standard'] },
-    ],
-    Accessories: [],
-    Slippers: [],
-  };
-
-/**
  * 1. COLOR PALETTE METADATA (For luxury visual swatches)
  */
 export const COLOR_SWATCH_MAP: Record<string, { bg: string; border?: string; isLight?: boolean }> =
@@ -169,7 +146,6 @@ export function extractFacets(products: Product[]) {
   const colorMap = new Map<string, number>();
   const sizeMap = new Map<string, number>();
 
-  let inStockCount = 0;
   let minPrice = Infinity;
   let maxPrice = 0;
 
@@ -180,10 +156,6 @@ export function extractFacets(products: Product[]) {
     }
     if (price > maxPrice) {
       maxPrice = price;
-    }
-
-    if ((product.inventory?.totalStock ?? 1) > 0) {
-      inStockCount++;
     }
 
     // Brands
@@ -304,24 +276,6 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
   }
 };
 
-export const getAllProducts = async (): Promise<Product[]> => {
-  try {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
-    const res = await fetch(`${API_URL}/products?take=100`, {
-      next: { revalidate: 86400, tags: ['all-products'] },
-    });
-    if (!res.ok) {
-      return [];
-    }
-    const json = await res.json();
-    const data = json.data || [];
-    return data.map(mapDbProductToSchema);
-  } catch (err) {
-    console.error('getAllProducts error:', err);
-    return [];
-  }
-};
-
 export const getProductsByBrand = async (brand: string): Promise<Product[]> => {
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
@@ -381,14 +335,4 @@ export const getProductsByCollection = async (
     console.error('getProductsByCollection error:', err);
     return [];
   }
-};
-
-export const getMaxPrice = (products: Product[]): number => {
-  if (products.length === 0) {
-    return 50000;
-  }
-  const prices = products.map((p) => p.price.sellingPrice);
-  const max = Math.max(...prices);
-
-  return Number.isFinite(max) ? max : 50000;
 };
