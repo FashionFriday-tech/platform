@@ -2,7 +2,6 @@ import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { CategoryDetailsView } from '../../../features/categories/components/CategoryDetailsView';
-import { MOCK_CATEGORIES } from '../../../features/categories/types';
 
 interface CategoryDetailsPageProps {
   params: Promise<{
