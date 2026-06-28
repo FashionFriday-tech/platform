@@ -13,8 +13,6 @@ export class FeedbackController {
   }
 
   @Get('admin')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.SUPER_ADMIN, UserRole.STAFF_ADMIN)
   async getAllFeedback(@Query('limit') limit?: string, @Query('offset') offset?: string) {
     const parsedLimit = limit ? parseInt(limit, 10) : 50;
     const parsedOffset = offset ? parseInt(offset, 10) : 0;
