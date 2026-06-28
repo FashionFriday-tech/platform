@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 
 import { ImageIcon } from '@ff/ui';
-import { randomUUID } from 'crypto';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { type ProductCategory } from '../types';
