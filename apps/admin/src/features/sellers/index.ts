@@ -1,6 +1,5 @@
 export * from './components/AddSellerModal';
 export * from './components/SellerDetailsFeature';
-export * from './components/SellerDetailsModal';
 export * from './components/SellerOrdersList';
 export * from './components/SellersFeature';
 export * from './components/SellersFilterBar';
