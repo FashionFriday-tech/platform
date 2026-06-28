@@ -3,6 +3,7 @@ import { globalIgnores } from 'eslint/config';
 import security from 'eslint-plugin-security';
 import unicorn from 'eslint-plugin-unicorn';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import unusedImports from 'eslint-plugin-unused-imports';
 import prettier from 'eslint-plugin-prettier/recommended';
 
 export default [
@@ -28,8 +29,20 @@ export default [
     plugins: {
       unicorn,
       'simple-import-sort': simpleImportSort,
+      'unused-imports': unusedImports,
     },
     rules: {
+      // 🔄 Unused imports & exports
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
       // 🔄 Imports
       'simple-import-sort/exports': 'error',
       'simple-import-sort/imports': [
