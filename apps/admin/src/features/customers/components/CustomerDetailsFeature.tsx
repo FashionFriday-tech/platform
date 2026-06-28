@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import {
-  ChevronLeftIcon,
   CloseIcon,
   HeartIcon,
   MailIcon,
@@ -14,7 +13,6 @@ import {
   PlusIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
-  StarIcon,
   UserIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
