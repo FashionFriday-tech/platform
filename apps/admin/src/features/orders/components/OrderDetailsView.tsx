@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { ShoppingBagIcon } from '@ff/ui';
