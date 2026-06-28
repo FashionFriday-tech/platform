@@ -6,7 +6,6 @@ export { default as ProductPerks } from './components/product-perks';
 export { default as RelatedProducts } from './components/related-products';
 export { default as ReviewSection } from './components/review-section';
 export { default as VariantDropdown } from './components/variant-dropdown';
-export { reviews } from './data/reviews';
 export { useLiveProductMetric } from './hooks/use-live-product-metric';
 export { getGlobalSlot, getPageSlot } from './utils/time';
 export { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
