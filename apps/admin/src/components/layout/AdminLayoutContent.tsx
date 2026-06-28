@@ -8,7 +8,6 @@ import { LoaderIcon, LockIcon } from '@ff/ui';
 import { Toaster } from 'sonner';
 
 import { type Role, useAuth } from '@/contexts/AuthContext';
-import { LoginPage } from '@/features/auth';
 
 import { MobileHeader } from './Header';
 import { Sidebar } from './Sidebar';
