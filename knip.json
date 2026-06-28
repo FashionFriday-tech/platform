@@ -1,0 +1,56 @@
+{
+  "$schema": "https://unpkg.com/knip@5/resources/knip-schema.json",
+  "rules": {
+    "files": "error",
+    "dependencies": "error",
+    "unlisted": "error",
+    "unresolved": "error",
+    "exports": "warn",
+    "types": "off",
+    "nsExports": "off",
+    "nsTypes": "off",
+    "duplicates": "warn"
+  },
+  "workspaces": {
+    "apps/web": {
+      "next": true
+    },
+    "apps/admin": {
+      "next": true
+    },
+    "apps/api": {
+      "entry": ["src/main.ts"]
+    },
+    "packages/ui": {
+      "entry": ["src/index.tsx"]
+    },
+    "packages/eslint-config": {
+      "entry": ["*.mjs"]
+    },
+    "packages/schemas": {},
+    "packages/database": {
+      "ignore": ["seed-whatsapp-reviews.mjs"]
+    },
+    "packages/tsconfig": {}
+  },
+  "ignore": [
+    "eslint.config.mjs",
+    "apps/web/public/sw.js",
+    "packages/database/prisma/seed-*.ts",
+    "packages/database/prisma/mock-products.ts",
+    "**/*.e2e-spec.ts"
+  ],
+  "ignoreDependencies": [
+    "server-only",
+    "class-variance-authority",
+    "uuid",
+    "zod",
+    "zustand",
+    "@types/d3-scale",
+    "d3-scale",
+    "@nestjs/*",
+    "sharp",
+    "pg",
+    "@prisma/adapter-pg"
+  ]
+}
