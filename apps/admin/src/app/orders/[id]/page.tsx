@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { notFound } from 'next/navigation';
 
 import { OrderDetailsView } from '../../../features/orders/components/OrderDetailsView';
 import { api } from '../../../lib/api-client';
