@@ -2,8 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { EditIcon, PackageIcon, TrashIcon } from '@ff/ui';
-import { motion } from 'motion/react';
+import { PackageIcon, TrashIcon } from '@ff/ui';
 
 import { type ProductCategory } from '../types';
 
