@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { toast } from 'sonner';
 
-import { MOCK_CATEGORIES, type ProductCategory } from '../types';
+import { type ProductCategory } from '../types';
 
 export function useCategories() {
   const [categories, setCategories] = useState<ProductCategory[]>([]);
