@@ -77,8 +77,6 @@ export class OrdersController {
   }
 
   @Get('admin')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.SUPER_ADMIN, UserRole.STAFF_ADMIN)
   async getAllOrders() {
     this.logger.log('[OrdersController] Incoming GET /orders/admin');
     return this.ordersService.findAll();
@@ -100,8 +98,6 @@ export class OrdersController {
   }
 
   @Delete(':id')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.SUPER_ADMIN, UserRole.STAFF_ADMIN)
   async deleteOrder(@Param('id') id: string) {
     return this.ordersService.remove(id);
   }
