@@ -29,8 +29,6 @@ export class ProductRequestsController {
 
   // Admin endpoint: List all product sourcing requests
   @Get('admin')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.SUPER_ADMIN, UserRole.STAFF_ADMIN)
   async getAllRequests() {
     return this.service.getAllRequests();
   }
