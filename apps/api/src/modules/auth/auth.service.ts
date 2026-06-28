@@ -300,7 +300,7 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const { refreshToken, ...userWithoutToken } = user;
+    const { refreshToken: _refreshToken, ...userWithoutToken } = user;
     return userWithoutToken;
   }
 
@@ -334,7 +334,7 @@ export class AuthService {
         },
       });
 
-      const { refreshToken, ...userWithoutToken } = updatedUser;
+      const { refreshToken: _refreshToken, ...userWithoutToken } = updatedUser;
       return userWithoutToken;
     } catch {
       throw new BadRequestException('Failed to update profile');
