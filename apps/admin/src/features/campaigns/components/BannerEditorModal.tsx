@@ -5,12 +5,7 @@ import Image from 'next/image';
 
 import { CloseIcon, ImageIcon, PlayIcon, PlusIcon } from '@ff/ui';
 
-import {
-  type BannerPlacement,
-  type CampaignBanner,
-  type MediaType,
-  PLACEMENT_ASPECT_RATIOS,
-} from '../types';
+import { type BannerPlacement, type CampaignBanner, type MediaType } from '../types';
 
 interface BannerEditorModalProps {
   isOpen: boolean;
