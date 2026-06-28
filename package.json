@@ -13,11 +13,16 @@
     "clean": "pnpm dlx rimraf node_modules .turbo",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "db:studio": "pnpm --filter @ff/database studio"
+    "db:studio": "pnpm --filter @ff/database studio",
+    "audit:deadcode": "knip --include files",
+    "knip": "knip --include files",
+    "knip:full": "knip",
+    "knip:fix": "knip --fix --allow-remove-files"
   },
   "devDependencies": {
     "@types/node": "^25.4.0",
     "husky": "^9.1.7",
+    "knip": "^6.38.0",
     "lint-staged": "^16.2.7",
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
