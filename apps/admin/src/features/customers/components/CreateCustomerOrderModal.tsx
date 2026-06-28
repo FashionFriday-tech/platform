@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 
-import { CheckIcon, CloseIcon, MapPinIcon, PlusIcon, SearchIcon, ShoppingBagIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'motion/react';
+import { CheckIcon, CloseIcon, PlusIcon, SearchIcon, ShoppingBagIcon } from '@ff/ui';
+import { motion } from 'motion/react';
 import { toast } from 'sonner';
 
 import { fetchProducts } from '@/features/products/services/api';
@@ -59,7 +59,7 @@ type Step = 'product' | 'configure' | 'address' | 'payment';
 
 const STANDARD_SIZES = ['Free Size', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
 
-export function getProductFirstImage(p?: Product | null): string {
+function getProductFirstImage(p?: Product | null): string {
   if (!p) {
     return '';
   }
