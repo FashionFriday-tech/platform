@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { ActivityType, MOCK_ACTIVITY_LOG } from '../types';
+import { MOCK_ACTIVITY_LOG } from '../types';
 
 export function useActivityLog() {
   const [filterType, setFilterType] = useState<string>('all');
