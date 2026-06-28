@@ -9,7 +9,6 @@ import { EditIcon, PackageIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
 // We simulate fetching all products using the products feature mock
-import { mockProducts } from '../../products/services/api';
 import { type Product } from '../../products/types';
 import { type ProductCategory } from '../types';
 import { AddCategoryModal } from './AddCategoryModal';
