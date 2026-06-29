@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/knip@5/resources/knip-schema.json",
+  "$schema": "https://unpkg.com/knip@6/schema.json",
   "rules": {
     "files": "error",
     "dependencies": "error",
