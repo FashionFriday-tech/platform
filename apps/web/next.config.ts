@@ -58,7 +58,15 @@ const nextConfig: NextConfig = {
 
   experimental: {
     serverActions: {
-      allowedOrigins: ['localhost:3000', '127.0.0.1:3000', 'localhost:3001', '127.0.0.1:3001'],
+      allowedOrigins: [
+        'localhost:3000',
+        '127.0.0.1:3000',
+        'localhost:3001',
+        '127.0.0.1:3001',
+        'fashionfriday.in',
+        'www.fashionfriday.in',
+        '*.vercel.app',
+      ],
     },
     optimizePackageImports: ['@ff/ui', 'motion/react', 'lucide-react'],
   },
