@@ -11,15 +11,20 @@ export class AppController {
     try {
       await this.prisma.db.$connect();
       return {
-        message: 'Hello World! Fashion Friday API is running',
+        message: 'Fashion Friday API is running',
         database: 'Connected',
       };
     } catch (error) {
       return {
-        message: 'Hello World! Fashion Friday API is running',
+        message: 'Fashion Friday API is running',
         database: 'Disconnected',
         error: error instanceof Error ? error.message : String(error),
       };
     }
+  }
+
+  @Get('health')
+  async health() {
+    return { status: 'ok', timestamp: new Date().toISOString() };
   }
 }
