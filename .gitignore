@@ -120,3 +120,6 @@ docker-data/
 docker-compose.override.yml
 
 /generated/prisma
+.neon
+.agents/
+skills-lock.json
