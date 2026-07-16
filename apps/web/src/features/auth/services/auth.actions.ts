@@ -208,13 +208,26 @@ export async function verifyEmailOtpAction(
 }
 
 export async function getMeAction(): Promise<SignupResponse['user'] | null> {
-  const res = await fetchWithAuth('/auth/me', { method: 'GET' });
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('accessToken')?.value;
+    const refreshToken = cookieStore.get('refreshToken')?.value;
 
-  if (!res.ok) {
+    // If no tokens present in cookies, user is guest
+    if (!token && !refreshToken) {
+      return null;
+    }
+
+    const res = await fetchWithAuth('/auth/me', { method: 'GET' });
+    if (!res.ok) {
+      return null;
+    }
+
+    return res.json();
+  } catch {
+    // Unauthenticated or temporary network disconnect
     return null;
   }
-
-  return res.json();
 }
 
 export async function updateProfileAction(

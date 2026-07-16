@@ -80,21 +80,40 @@ export async function fetcher<T = unknown>(
   };
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('adminAccessToken') : null;
-  let response = await fetch(url, {
-    ...customOptions,
-    credentials, // Industry Standard: Automatically attaches HttpOnly cookies
-    headers: buildHeaders(token),
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...customOptions,
+      credentials, // Industry Standard: Automatically attaches HttpOnly cookies
+      headers: buildHeaders(token),
+    });
+  } catch (initialErr) {
+    // If transient network disconnect/bootup error occurs, retry once after brief delay
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    try {
+      response = await fetch(url, {
+        ...customOptions,
+        credentials,
+        headers: buildHeaders(token),
+      });
+    } catch {
+      throw initialErr;
+    }
+  }
 
   // If 401 Unauthorized, attempt refresh once
   if (response.status === 401 && typeof window !== 'undefined') {
     const newToken = await refreshAccessToken();
     if (newToken) {
-      response = await fetch(url, {
-        ...customOptions,
-        credentials,
-        headers: buildHeaders(newToken !== 'cookie-refreshed' ? newToken : null),
-      });
+      try {
+        response = await fetch(url, {
+          ...customOptions,
+          credentials,
+          headers: buildHeaders(newToken !== 'cookie-refreshed' ? newToken : null),
+        });
+      } catch {
+        // Fall through
+      }
     }
   }
 
