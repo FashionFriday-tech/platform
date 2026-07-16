@@ -169,4 +169,24 @@ export class AuthController {
     }
     return this.authService.verifyPhoneOtp(id, body.otp);
   }
+
+  @Post('admin/verify-pin')
+  @HttpCode(HttpStatus.OK)
+  async verifyAdminPin(@Body() body: { phone: string; pin: string }) {
+    if (!body.phone || !body.pin) {
+      throw new BadRequestException('Phone and PIN are required');
+    }
+    return this.authService.verifyAdminPin(body.phone, body.pin);
+  }
+
+  @Patch('admin/update-pin')
+  @HttpCode(HttpStatus.OK)
+  async updateAdminPin(
+    @Body() body: { adminPhone: string; targetPhone: string; newPin: string },
+  ) {
+    if (!body.adminPhone || !body.targetPhone || !body.newPin) {
+      throw new BadRequestException('adminPhone, targetPhone, and newPin are required');
+    }
+    return this.authService.updateAdminPin(body.adminPhone, body.targetPhone, body.newPin);
+  }
 }
