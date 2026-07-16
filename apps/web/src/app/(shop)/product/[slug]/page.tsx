@@ -88,7 +88,9 @@ export default async function Page({ params }: Props) {
     return <EditorialError slug={slug} />;
   }
 
-  const similarProducts = await getSimilarProducts(product.categoryId, product.id);
+  const similarProducts = product.categoryId
+    ? await getSimilarProducts(product.categoryId, product.id)
+    : [];
 
   const brandName = Array.isArray(product.brand)
     ? product.brand[0]
