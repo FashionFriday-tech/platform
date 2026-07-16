@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from 'next-themes';
 
 import {
@@ -18,6 +17,7 @@ import {
   WishlistIcon,
   YoutubeIcon,
 } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { AnimatedLogo } from '@/components/ui/animated-logo';
 import { usePwaInstall } from '@/lib/pwa/usePwaInstall';
@@ -30,7 +30,9 @@ interface MobileMenuProps {
 }
 
 const getInitials = (name: string) => {
-  if (!name) return '';
+  if (!name) {
+    return '';
+  }
   const parts = name.trim().split(' ');
   if (parts.length >= 2) {
     return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
@@ -102,10 +104,14 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen, onClose]);
 
-  if (!mounted) return null;
+  if (!mounted) {
+    return null;
+  }
 
   return createPortal(
     <AnimatePresence>
@@ -144,14 +150,14 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
             data-lenis-prevent="true"
             data-lenis-prevent-wheel="true"
             data-lenis-prevent-touch="true"
-            className="relative z-10 flex h-[100dvh] w-[86vw] max-w-sm flex-col bg-background text-foreground shadow-2xl border-r border-border/20 overscroll-contain"
+            className="bg-background text-foreground border-border/20 relative z-10 flex h-[100dvh] w-[86vw] max-w-sm flex-col overscroll-contain border-r shadow-2xl"
           >
             {/* Top Bar with Brand Centered & Close Button on Left */}
-            <div className="relative flex min-h-[64px] items-center justify-center border-b border-border/30 px-5 py-4 shrink-0">
+            <div className="border-border/30 relative flex min-h-[64px] shrink-0 items-center justify-center border-b px-5 py-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute left-4 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all"
+                className="bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground absolute top-1/2 left-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full transition-all active:scale-95"
                 aria-label="Close Menu"
               >
                 <svg
@@ -170,21 +176,70 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
               </button>
 
               <Link href="/" onClick={onClose} className="flex items-center justify-center">
-                <AnimatedLogo className="text-xl font-black tracking-tighter uppercase text-center" />
+                <AnimatedLogo className="text-center text-xl font-black tracking-tighter uppercase" />
               </Link>
+
+              {/* Fixed Top-Right Theme Toggle */}
+              {mounted && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+                  }}
+                  className="bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground border-border/30 absolute top-1/2 right-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border transition-all active:scale-95"
+                  aria-label={
+                    resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'
+                  }
+                  title={resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  {resolvedTheme === 'dark' ? (
+                    <svg
+                      className="h-4.5 w-4.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="5" />
+                      <line x1="12" y1="1" x2="12" y2="3" />
+                      <line x1="12" y1="21" x2="12" y2="23" />
+                      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                      <line x1="1" y1="12" x2="3" y2="12" />
+                      <line x1="21" y1="12" x2="23" y2="12" />
+                      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="h-4.5 w-4.5"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                  )}
+                </button>
+              )}
             </div>
 
             {/* FIXED TOP SEARCH BAR (doesn't move when scrolling sidebar) */}
-            <div className="shrink-0 border-b border-border/20 bg-background px-5 py-3">
+            <div className="border-border/20 bg-background shrink-0 border-b px-5 py-3">
               <button
                 type="button"
                 onClick={() => {
                   onClose();
                   onOpenSearch();
                 }}
-                className="flex w-full items-center gap-2.5 rounded-xl border border-border/60 bg-foreground/5 px-3.5 py-2.5 text-left text-xs font-medium text-foreground/60 transition-all hover:bg-foreground/10 active:scale-98"
+                className="border-border/60 bg-foreground/5 text-foreground/60 hover:bg-foreground/10 flex w-full items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-left text-xs font-medium transition-all active:scale-98"
               >
-                <SearchIcon className="text-base text-foreground/70" />
+                <SearchIcon className="text-foreground/70 text-base" />
                 <span>Search sneakers, apparel, brands...</span>
               </button>
             </div>
@@ -194,7 +249,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
               data-lenis-prevent="true"
               data-lenis-prevent-wheel="true"
               data-lenis-prevent-touch="true"
-              className="flex-1 overflow-y-auto overscroll-contain px-5 py-4 scrollbar-none [touch-action:pan-y] [-webkit-overflow-scrolling:touch]"
+              className="scrollbar-none flex-1 [touch-action:pan-y] overflow-y-auto overscroll-contain px-5 py-4 [-webkit-overflow-scrolling:touch]"
               onTouchMove={(e) => {
                 e.stopPropagation();
               }}
@@ -215,7 +270,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
 
               {/* User Profile Banner - shown when logged in */}
               {user && (
-                <div className="mb-4 overflow-hidden rounded-2xl bg-foreground/5 p-3.5 border border-border/40">
+                <div className="bg-foreground/5 border-border/40 mb-4 overflow-hidden rounded-2xl border p-3.5">
                   <Link
                     href="/account"
                     onClick={onClose}
@@ -223,7 +278,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                   >
                     <div className="flex items-center gap-3">
                       {user.avatarUrl ? (
-                        <div className="relative h-10 w-10 overflow-hidden rounded-full border border-border">
+                        <div className="border-border relative h-10 w-10 overflow-hidden rounded-full border">
                           <Image
                             src={user.avatarUrl}
                             alt={user.name}
@@ -232,19 +287,19 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                           />
                         </div>
                       ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background text-xs font-black uppercase">
+                        <div className="bg-foreground text-background flex h-10 w-10 items-center justify-center rounded-full text-xs font-black uppercase">
                           {getInitials(user.name)}
                         </div>
                       )}
                       <div>
-                        <p className="text-xs font-bold tracking-tight text-foreground line-clamp-1">
+                        <p className="text-foreground line-clamp-1 text-xs font-bold tracking-tight">
                           {user.name}
                         </p>
-                        <p className="text-[10px] text-foreground/60">View Profile</p>
+                        <p className="text-foreground/60 text-[10px]">View Profile</p>
                       </div>
                     </div>
                     <svg
-                      className="h-4 w-4 text-foreground/40"
+                      className="text-foreground/40 h-4 w-4"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -256,49 +311,9 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                 </div>
               )}
 
-              {/* PWA App Install Banner */}
-              {!isInstalled && (
-                <div className="mb-6 overflow-hidden rounded-2xl border border-border/40 bg-foreground/5 p-3.5">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-background shadow-sm">
-                        <svg
-                          className="h-5 w-5"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                          <polyline points="7 10 12 15 17 10" />
-                          <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-black uppercase tracking-tight text-foreground truncate">
-                          Install App
-                        </p>
-                        <p className="text-[10px] text-foreground/60 truncate">
-                          Faster drops & smooth shopping
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={install}
-                      className="shrink-0 rounded-xl bg-foreground px-3.5 py-1.5 text-xs font-extrabold uppercase text-background shadow-sm transition-opacity hover:opacity-90 active:scale-95"
-                    >
-                      GET
-                    </button>
-                  </div>
-                </div>
-              )}
-
               {/* Main Categories Navigation */}
               <div className="mb-6 flex flex-col gap-1">
-                <span className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">
+                <span className="text-foreground/40 mb-2 text-[10px] font-black tracking-[0.2em] uppercase">
                   Categories
                 </span>
                 {MAIN_NAV_ITEMS.map((item) => (
@@ -306,13 +321,13 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                     key={item.label}
                     href={item.href}
                     onClick={onClose}
-                    className={`group flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-black tracking-wide uppercase transition-all hover:bg-foreground/5 active:scale-98 ${
+                    className={`group hover:bg-foreground/5 flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-black tracking-wide uppercase transition-all active:scale-98 ${
                       item.isRed ? 'text-destructive' : 'text-foreground'
                     }`}
                   >
                     <span className="flex items-center gap-2">{item.label}</span>
                     {item.badge && (
-                      <span className="animate-badge-blink rounded-md bg-foreground px-1.5 py-0.5 text-[9px] font-black tracking-widest text-background">
+                      <span className="animate-badge-blink bg-foreground text-background rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-widest">
                         {item.badge}
                       </span>
                     )}
@@ -321,8 +336,8 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
               </div>
 
               {/* Account & Support Section */}
-              <div className="mb-6 flex flex-col gap-1 border-t border-border/30 pt-4">
-                <span className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">
+              <div className="border-border/30 mb-6 flex flex-col gap-1 border-t pt-4">
+                <span className="text-foreground/40 mb-2 text-[10px] font-black tracking-[0.2em] uppercase">
                   Account & Help
                 </span>
                 {ACCOUNT_LINKS.map((item) => {
@@ -332,9 +347,9 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                       key={item.label}
                       href={item.href}
                       onClick={onClose}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold text-foreground/80 transition-all hover:bg-foreground/5 hover:text-foreground active:scale-98"
+                      className="text-foreground/80 hover:bg-foreground/5 hover:text-foreground flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold transition-all active:scale-98"
                     >
-                      <Icon className="text-lg text-foreground/60" />
+                      <Icon className="text-foreground/60 text-lg" />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -343,104 +358,88 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
             </div>
 
             {/* Bottom Sticky Utility Bar */}
-            <div className="shrink-0 border-t border-border/30 bg-background/95 backdrop-blur-sm p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex flex-col gap-3">
-              {/* Sign In Button: Sticky bottom, top of the social icons. After login don't show it! */}
-              {!user && (
-                <Link
-                  href="/login"
-                  onClick={onClose}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-foreground py-3 text-xs font-black tracking-wider uppercase text-background shadow-md transition-all hover:opacity-90 active:scale-98"
-                >
-                  <UserIcon className="text-base" />
-                  <span>Sign In</span>
-                </Link>
+            <div className="border-border/30 bg-background/95 flex shrink-0 flex-col gap-3 border-t p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-sm">
+              {/* Action Buttons: Sign In and Install App in the same row */}
+              {(!user || !isInstalled) && (
+                <div className="flex w-full items-center gap-2.5">
+                  {!user && (
+                    <Link
+                      href="/login"
+                      onClick={onClose}
+                      className={`bg-foreground text-background flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-black tracking-wider uppercase shadow-md transition-all hover:opacity-90 active:scale-98 ${
+                        !isInstalled ? 'flex-1' : 'w-full'
+                      }`}
+                    >
+                      <UserIcon className="text-sm" />
+                      <span>Sign In</span>
+                    </Link>
+                  )}
+
+                  {!isInstalled && (
+                    <button
+                      type="button"
+                      onClick={install}
+                      className={`border-border/60 bg-foreground/5 text-foreground hover:bg-foreground/10 flex items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-black tracking-wider uppercase shadow-sm transition-all active:scale-98 ${
+                        !user ? 'flex-1' : 'w-full'
+                      }`}
+                    >
+                      <svg
+                        className="h-4 w-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                      </svg>
+                      <span>Install App</span>
+                    </button>
+                  )}
+                </div>
               )}
 
-              {/* Social Icons (WhatsApp, Instagram, YouTube) and Dark/Light Mode Icon in the same row */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <a
-                    href="https://wa.me/+917558969093"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all border border-border/30"
-                    aria-label="Chat on WhatsApp"
-                    title="WhatsApp"
-                  >
-                    <WhatsAppIcon className="h-4.5 w-4.5" />
-                  </a>
-                  <a
-                    href="https://instagram.com/fashionfriday.in"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all border border-border/30"
-                    aria-label="Follow on Instagram"
-                    title="Instagram"
-                  >
-                    <InstagramIcon className="h-4.5 w-4.5" />
-                  </a>
-                  <a
-                    href="https://youtube.com/fashionfriday.store"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all border border-border/30"
-                    aria-label="Watch on YouTube"
-                    title="YouTube"
-                  >
-                    <YoutubeIcon className="h-4.5 w-4.5" />
-                  </a>
-                </div>
-
-                {/* Single Theme Toggle: changes icon according to the theme (Sun in dark, Moon in light) */}
-                {mounted && (
-                  <button
-                    type="button"
-                    onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all border border-border/40"
-                    aria-label={resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                    title={resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-                  >
-                    {resolvedTheme === 'dark' ? (
-                      <svg
-                        className="h-4.5 w-4.5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <circle cx="12" cy="12" r="5" />
-                        <line x1="12" y1="1" x2="12" y2="3" />
-                        <line x1="12" y1="21" x2="12" y2="23" />
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                        <line x1="1" y1="12" x2="3" y2="12" />
-                        <line x1="21" y1="12" x2="23" y2="12" />
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="h-4.5 w-4.5"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                      </svg>
-                    )}
-                  </button>
-                )}
+              {/* Social Icons (WhatsApp, Instagram, YouTube) */}
+              <div className="flex items-center gap-2.5">
+                <a
+                  href="https://wa.me/+917558969093"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground border-border/30 flex h-9 w-9 items-center justify-center rounded-full border transition-all active:scale-95"
+                  aria-label="Chat on WhatsApp"
+                  title="WhatsApp"
+                >
+                  <WhatsAppIcon className="h-4.5 w-4.5" />
+                </a>
+                <a
+                  href="https://instagram.com/fashionfriday.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground border-border/30 flex h-9 w-9 items-center justify-center rounded-full border transition-all active:scale-95"
+                  aria-label="Follow on Instagram"
+                  title="Instagram"
+                >
+                  <InstagramIcon className="h-4.5 w-4.5" />
+                </a>
+                <a
+                  href="https://youtube.com/fashionfriday.store"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground border-border/30 flex h-9 w-9 items-center justify-center rounded-full border transition-all active:scale-95"
+                  aria-label="Watch on YouTube"
+                  title="YouTube"
+                >
+                  <YoutubeIcon className="h-4.5 w-4.5" />
+                </a>
               </div>
             </div>
           </motion.div>
         </div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   );
 }
