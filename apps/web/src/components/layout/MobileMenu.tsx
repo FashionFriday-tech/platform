@@ -382,7 +382,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                     href="https://wa.me/+917558969093"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all border border-border/30"
                     aria-label="Chat on WhatsApp"
                     title="WhatsApp"
                   >
@@ -392,7 +392,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                     href="https://instagram.com/fashionfriday.in"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 hover:bg-pink-500/20 active:scale-95 transition-all"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all border border-border/30"
                     aria-label="Follow on Instagram"
                     title="Instagram"
                   >
@@ -402,7 +402,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                     href="https://youtube.com/fashionfriday.store"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 active:scale-95 transition-all"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all border border-border/30"
                     aria-label="Watch on YouTube"
                     title="YouTube"
                   >
