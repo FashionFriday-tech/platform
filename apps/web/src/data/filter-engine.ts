@@ -235,13 +235,17 @@ export const getProductBySlug = async (slug: string): Promise<Product | undefine
 };
 
 export const getSimilarProducts = async (
-  category: string,
+  category?: string | null,
   currentProductId?: string,
 ): Promise<Product[]> => {
   try {
+    if (!category || typeof category !== 'string' || !category.trim()) {
+      return [];
+    }
+    const cleanCategory = category.trim().toLowerCase();
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
-    const res = await fetch(`${API_URL}/products/category/${category.toLowerCase()}`, {
-      next: { revalidate: 86400, tags: [`similar-products-${category.toLowerCase()}`] },
+    const res = await fetch(`${API_URL}/products/category/${encodeURIComponent(cleanCategory)}`, {
+      next: { revalidate: 86400, tags: [`similar-products-${cleanCategory}`] },
     });
     if (!res.ok) {
       return [];
@@ -258,11 +262,15 @@ export const getSimilarProducts = async (
   }
 };
 
-export const getProductsByCategory = async (category: string): Promise<Product[]> => {
+export const getProductsByCategory = async (category?: string | null): Promise<Product[]> => {
   try {
+    if (!category || typeof category !== 'string' || !category.trim()) {
+      return [];
+    }
+    const cleanCategory = category.trim().toLowerCase();
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
-    const res = await fetch(`${API_URL}/products/category/${category.toLowerCase()}?take=100`, {
-      next: { revalidate: 86400, tags: [`category-products-${category.toLowerCase()}`] },
+    const res = await fetch(`${API_URL}/products/category/${encodeURIComponent(cleanCategory)}?take=100`, {
+      next: { revalidate: 86400, tags: [`category-products-${cleanCategory}`] },
     });
     if (!res.ok) {
       return [];
