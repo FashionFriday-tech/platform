@@ -28,16 +28,21 @@ export function usePushNotifications() {
       setIsSupported(true);
       setPermission(Notification.permission);
 
-      navigator.serviceWorker.ready.then((reg) => {
-        reg.pushManager.getSubscription().then((sub) => {
+      void navigator.serviceWorker.ready
+        .then((reg) => reg.pushManager.getSubscription())
+        .then((sub) => {
           setSubscription(sub);
+        })
+        .catch((err: unknown) => {
+          console.warn('[Push] Error getting subscription:', err);
         });
-      });
     }
   }, []);
 
   const subscribe = async () => {
-    if (!isSupported) return null;
+    if (!isSupported) {
+      return null;
+    }
     setIsLoading(true);
 
     try {
@@ -58,10 +63,12 @@ export function usePushNotifications() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(sub),
-      }).catch((err) => console.warn('[Push] Backend sync note:', err));
+      }).catch((err: unknown) => {
+        console.warn('[Push] Backend sync note:', err);
+      });
 
       return sub;
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('[Push] Failed to subscribe:', err);
       return null;
     } finally {
@@ -70,13 +77,15 @@ export function usePushNotifications() {
   };
 
   const unsubscribe = async () => {
-    if (!subscription) return;
+    if (!subscription) {
+      return;
+    }
     setIsLoading(true);
 
     try {
       await subscription.unsubscribe();
       setSubscription(null);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('[Push] Failed to unsubscribe:', err);
     } finally {
       setIsLoading(false);

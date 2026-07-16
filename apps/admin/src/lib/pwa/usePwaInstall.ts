@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { toast } from 'sonner';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -17,7 +18,9 @@ export function usePwaInstall() {
     setIsMounted(true);
 
     const checkIsInstalled = () => {
-      if (typeof window === 'undefined') return false;
+      if (typeof window === 'undefined') {
+        return false;
+      }
 
       // 1. Check local storage install persistence
       if (localStorage.getItem('ff_pwa_installed') === 'true') {
@@ -30,7 +33,8 @@ export function usePwaInstall() {
         window.matchMedia('(display-mode: fullscreen)').matches ||
         window.matchMedia('(display-mode: minimal-ui)').matches ||
         window.matchMedia('(display-mode: window-controls-overlay)').matches ||
-        ('standalone' in navigator && (navigator as unknown as { standalone: boolean }).standalone === true) ||
+        ('standalone' in navigator &&
+          (navigator as unknown as { standalone: boolean }).standalone) ||
         document.referrer.includes('android-app://') ||
         window.location.search.includes('source=pwa');
 
@@ -112,11 +116,16 @@ export function usePwaInstall() {
     }
 
     // iOS Safari or browser without direct prompt support
-    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream: boolean }).MSStream;
+    const isIos =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+      !(window as unknown as { MSStream: boolean }).MSStream;
     if (isIos) {
-      toast.info('To install: Tap the Share button (⎋) in Safari, then select "Add to Home Screen" 📲', {
-        duration: 6000,
-      });
+      toast.info(
+        'To install: Tap the Share button (⎋) in Safari, then select "Add to Home Screen" 📲',
+        {
+          duration: 6000,
+        },
+      );
     } else {
       toast.info('To install: Click the install icon (⊕) in your browser address bar.', {
         duration: 5000,
