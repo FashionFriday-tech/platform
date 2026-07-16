@@ -2,7 +2,7 @@
   "name": "Fashion Friday Admin",
   "short_name": "FF Admin",
   "description": "Fashion Friday business management and administration command center",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
