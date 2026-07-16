@@ -57,17 +57,42 @@ const ACCOUNT_LINKS = [
   { label: 'Customer Care & FAQ', href: '/help', icon: UserIcon },
 ];
 
+const SEARCH_PLACEHOLDERS = [
+  'Search sneakers, apparel, brands...',
+  'Search Nike, Jordan, Yeezy...',
+  'Search new arrivals & drops...',
+  'Search streetwear & hoodies...',
+  'Search luxury collections...',
+];
+
 export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const { setTheme, resolvedTheme } = useTheme();
   const { isInstalled, install } = usePwaInstall();
   const [mounted, setMounted] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const prevPathname = useRef(pathname);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Dynamic search placeholder only cycles when the side box is open
+  useEffect(() => {
+    if (!isOpen) {
+      setPlaceholderIndex(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % SEARCH_PLACEHOLDERS.length);
+    }, 2800);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isOpen]);
 
   // Lock body scroll and pause Lenis when mobile menu is open
   useEffect(() => {
@@ -239,8 +264,21 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                 }}
                 className="border-border/60 bg-foreground/5 text-foreground/60 hover:bg-foreground/10 flex w-full items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-left text-xs font-medium transition-all active:scale-98"
               >
-                <SearchIcon className="text-foreground/70 text-base" />
-                <span>Search sneakers, apparel, brands...</span>
+                <SearchIcon className="text-foreground/70 shrink-0 text-base" />
+                <div className="relative flex h-4 w-full items-center overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={placeholderIndex}
+                      initial={{ opacity: 0, y: 7, filter: 'blur(2px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, y: -7, filter: 'blur(2px)' }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="text-foreground/60 absolute truncate text-xs font-medium select-none"
+                    >
+                      {SEARCH_PLACEHOLDERS[placeholderIndex]}
+                    </motion.span>
+                  </AnimatePresence>
+                </div>
               </button>
             </div>
 
