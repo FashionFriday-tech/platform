@@ -109,7 +109,7 @@ export function SidebarFooter() {
               </svg>
               <span className="text-[11px] font-bold tracking-tight">Install App</span>
             </div>
-            <span className="rounded-md bg-white/15 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-white/90 dark:bg-black/10 dark:text-black/90">
+            <span className="rounded-md bg-white/15 px-1.5 py-0.5 text-[9px] font-extrabold tracking-wider text-white/90 uppercase dark:bg-black/10 dark:text-black/90">
               PWA
             </span>
           </button>

@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 
 import { CloseIcon, ShieldCheckIcon } from '@ff/ui';
 
-import { useAuth, type Role } from '@/contexts/AuthContext';
+import { type Role, useAuth } from '@/contexts/AuthContext';
 import { PinStorage } from '@/lib/security/pin-storage';
 
 import { ROLE_DESCRIPTIONS, ROLE_LABELS, type TeamMember } from '../types';
@@ -26,7 +26,9 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
 
   const [pinInput, setPinInput] = useState('');
   const [isUpdatingPin, setIsUpdatingPin] = useState(false);
-  const [pinMessage, setPinMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [pinMessage, setPinMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(
+    null,
+  );
 
   const roles: Role[] = ['SUPER_ADMIN', 'PRODUCT_MANAGER', 'SALES_MANAGER'];
 
@@ -41,14 +43,19 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
   }, [member]);
 
   const handlePinUpdate = async () => {
-    if (!member || pinInput.length !== 4) return;
+    if (!member || pinInput.length !== 4) {
+      return;
+    }
     setIsUpdatingPin(true);
     setPinMessage(null);
     try {
       const adminPhone = currentUser?.phone || '9999999999';
       const targetPhone = member.phone || member.email;
       const res = await PinStorage.updateBackendPin(adminPhone, targetPhone, pinInput);
-      setPinMessage({ type: 'success', text: res.message || 'PIN updated & encrypted successfully!' });
+      setPinMessage({
+        type: 'success',
+        text: res.message || 'PIN updated & encrypted successfully!',
+      });
       setPinInput('');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to update PIN';
@@ -211,13 +218,13 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
                       setPinMessage(null);
                     }}
                     placeholder="Enter new 4 digits (e.g. 1234)"
-                    className="flex-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-center text-sm font-mono tracking-widest text-black placeholder:text-black/30 focus:border-black focus:outline-none dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:placeholder:text-white/30 dark:focus:border-white"
+                    className="flex-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-center font-mono text-sm tracking-widest text-black placeholder:text-black/30 focus:border-black focus:outline-none dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:placeholder:text-white/30 dark:focus:border-white"
                   />
                   <button
                     type="button"
                     disabled={isUpdatingPin || pinInput.length !== 4}
                     onClick={handlePinUpdate}
-                    className="rounded-xl bg-black px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-40 hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                    className="rounded-xl bg-black px-4 py-2 text-xs font-semibold text-white transition-opacity hover:bg-black/80 disabled:opacity-40 dark:bg-white dark:text-black dark:hover:bg-white/80"
                   >
                     {isUpdatingPin ? 'Saving...' : 'Update PIN'}
                   </button>

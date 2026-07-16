@@ -4,7 +4,6 @@ import { Mulish } from 'next/font/google';
 import { AdminLayoutContent } from '@/components/layout/AdminLayoutContent';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
-
 import { PinLockProvider } from '@/features/pin-lock/components/PinLockProvider';
 
 import './globals.css';
