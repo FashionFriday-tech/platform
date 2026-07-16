@@ -269,9 +269,12 @@ export const getProductsByCategory = async (category?: string | null): Promise<P
     }
     const cleanCategory = category.trim().toLowerCase();
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
-    const res = await fetch(`${API_URL}/products/category/${encodeURIComponent(cleanCategory)}?take=100`, {
-      next: { revalidate: 86400, tags: [`category-products-${cleanCategory}`] },
-    });
+    const res = await fetch(
+      `${API_URL}/products/category/${encodeURIComponent(cleanCategory)}?take=100`,
+      {
+        next: { revalidate: 86400, tags: [`category-products-${cleanCategory}`] },
+      },
+    );
     if (!res.ok) {
       return [];
     }
@@ -291,9 +294,12 @@ export const getProductsByBrand = async (brand?: string | null): Promise<Product
     }
     const cleanBrand = brand.trim();
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
-    const res = await fetch(`${API_URL}/products?brand=${encodeURIComponent(cleanBrand)}&take=100`, {
-      next: { revalidate: 86400, tags: [`brand-products-${cleanBrand.toLowerCase()}`] },
-    });
+    const res = await fetch(
+      `${API_URL}/products?brand=${encodeURIComponent(cleanBrand)}&take=100`,
+      {
+        next: { revalidate: 86400, tags: [`brand-products-${cleanBrand.toLowerCase()}`] },
+      },
+    );
     if (!res.ok) {
       return [];
     }
@@ -330,20 +336,22 @@ export const getProductsByCollection = async (
     const mapped: Product[] = data.map(mapDbProductToSchema);
 
     // Defense-in-depth: strictly filter to ensure only products belonging to this collection are returned
-    const clean = (s?: string | null) => (s ? String(s).toLowerCase().replace(/[^a-z0-9]/g, '') : '');
+    const clean = (s?: string | null) => (s ? s.toLowerCase().replace(/[^a-z0-9]/g, '') : '');
     const targetSlug = clean(decodedSlug);
     const targetName = collectionName ? clean(collectionName) : targetSlug;
 
     return mapped.filter((p: Product) => {
       const prodCollections = p.marketing?.collections || [];
       return prodCollections.some((c) => {
-        if (!c) return false;
+        if (!c) {
+          return false;
+        }
         const cleanC = clean(c);
         return (
           cleanC === targetSlug ||
           cleanC === targetName ||
-          String(c).toLowerCase() === decodedSlug.toLowerCase() ||
-          (collectionName && String(c).toLowerCase() === String(collectionName).toLowerCase())
+          c.toLowerCase() === decodedSlug.toLowerCase() ||
+          c.toLowerCase() === collectionName?.toLowerCase()
         );
       });
     });
