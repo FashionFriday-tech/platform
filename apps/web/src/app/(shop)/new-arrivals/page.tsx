@@ -34,7 +34,7 @@ export default async function NewArrivalsPage() {
   const products = await getNewArrivalsProducts(100);
 
   // Determine initial filter category context from first available product or fallback
-  const contextCategory = products.length > 0 ? (products[0].categoryId || 'all') : 'all';
+  const contextCategory = products.length > 0 ? products[0].categoryId || 'all' : 'all';
 
   return (
     <div className="flex w-full flex-col">
@@ -45,7 +45,7 @@ export default async function NewArrivalsPage() {
             <div className="from-background/50 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
 
             <div className="relative z-10 px-4 text-center">
-              <span className="mb-2.5 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-[11px] font-black uppercase tracking-widest text-white">
+              <span className="mb-2.5 inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-[11px] font-black tracking-widest text-white uppercase">
                 Just Dropped
               </span>
               <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic drop-shadow-lg md:text-7xl">

@@ -3,8 +3,8 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 
-import { ArrowUpRightIcon } from '@ff/ui';
 import type { Brand } from '@ff/schemas';
+import { ArrowUpRightIcon } from '@ff/ui';
 
 import { BrandCard, useBrands } from '@/features/brand';
 
@@ -67,7 +67,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   }
 
   return (
-    <section className="relative w-full overflow-hidden py-12 md:py-20 lg:py-24 transition-colors duration-300">
+    <section className="relative w-full overflow-hidden py-12 transition-colors duration-300 md:py-20 lg:py-24">
       <div className="relative z-10">
         {/* HEADER */}
         <header className="container mx-auto mb-8 flex justify-center px-4 text-center">

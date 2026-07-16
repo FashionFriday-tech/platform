@@ -17,7 +17,7 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
   return (
     <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
       <div
-        className="group relative flex h-full w-full aspect-3/4 items-center justify-center overflow-hidden rounded-3xl duration-500 hover:scale-95 sm:rounded-4xl p-6 sm:p-8"
+        className="group relative flex aspect-3/4 h-full w-full items-center justify-center overflow-hidden rounded-3xl p-6 duration-500 hover:scale-95 sm:rounded-4xl sm:p-8"
         style={{
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
@@ -39,7 +39,7 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
           </div>
         ) : (
           <span
-            className={`px-3 text-center text-sm sm:text-lg md:text-xl font-black tracking-widest uppercase ${
+            className={`px-3 text-center text-sm font-black tracking-widest uppercase sm:text-lg md:text-xl ${
               isBlackBackground ? 'text-background' : 'text-white'
             }`}
           >

@@ -199,7 +199,7 @@ export function Header() {
               e.stopPropagation();
               handleOpenMobileMenu();
             }}
-            className="text-foreground -ml-1 flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-foreground/5 active:scale-95"
+            className="text-foreground hover:bg-foreground/5 -ml-1 flex h-10 w-10 items-center justify-center rounded-lg transition-colors active:scale-95"
             aria-label="Open Navigation Menu"
           >
             <svg

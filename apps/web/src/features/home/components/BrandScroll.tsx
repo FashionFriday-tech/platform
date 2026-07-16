@@ -27,7 +27,7 @@ const BrandList = ({
       <div key={`${slug || name}-${idx}`} className="mx-4 sm:mx-6 md:mx-8 lg:mx-10">
         <Link
           href={`/brands/${slug || slugify(name)}`}
-          className="relative block h-10 w-10 sm:h-13 sm:w-13 md:h-16 md:w-16 lg:h-16 lg:w-24 transition-transform hover:scale-110 active:scale-95"
+          className="relative block h-10 w-10 transition-transform hover:scale-110 active:scale-95 sm:h-13 sm:w-13 md:h-16 md:w-16 lg:h-16 lg:w-24"
         >
           {logo ? (
             <Image
@@ -39,7 +39,7 @@ const BrandList = ({
               priority={priorityStart && idx < 4}
             />
           ) : (
-            <span className="flex h-full w-full items-center justify-center text-[10px] sm:text-xs font-bold uppercase">
+            <span className="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase sm:text-xs">
               {name}
             </span>
           )}
