@@ -4,12 +4,13 @@ import React, { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { ArrowUpRightIcon } from '@ff/ui';
+import type { Brand } from '@ff/schemas';
 
 import { BrandCard, useBrands } from '@/features/brand';
 
 const FEATURED_BRAND_NAMES = ['nike', 'adidas', 'zara', 'crocs', 'new balance', 'asics'];
 
-export default function ShopByBrands({ initialBrands }: { initialBrands?: any[] }) {
+export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[] }) {
   const { brands, isLoading } = useBrands(initialBrands);
   const [isInView, setIsInView] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -30,58 +31,139 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: any[] 
   const featuredBrands = brands.filter((brand) =>
     FEATURED_BRAND_NAMES.includes(brand.name.toLowerCase()),
   );
-  const displayList = featuredBrands.length > 0 ? featuredBrands : brands.slice(0, 6);
+  // Limit to 6-8 brands so the section stays curated and high-impact
+  const displayList = (featuredBrands.length > 0 ? featuredBrands : brands).slice(0, 6);
+
+  // Split into two mobile rows (3 items each if 6 brands)
+  const midpoint = Math.ceil(displayList.length / 2);
+  const firstHalf = displayList.slice(0, midpoint);
+  const secondHalf = displayList.slice(midpoint);
+
+  // Repeat sufficiently to guarantee continuous seamless scrolling on any mobile screen width
+  const row1Items = [...firstHalf, ...firstHalf, ...firstHalf, ...firstHalf];
+  const row2Items = [...secondHalf, ...secondHalf, ...secondHalf, ...secondHalf];
+
+  // Desktop single-row marquee items
+  const desktopItems = [...displayList, ...displayList];
+
+  // Constant speed logic: calculate duration from distance (pixels) so speed doesn't increase with more cards
+  // 22px per second provides a calm, premium, easy-to-read scroll
+  const SPEED_PX_PER_SEC = 22;
+  const MOBILE_CARD_PX = 150 + 20; // 150px width + 20px gap (1.25rem)
+  const DESKTOP_CARD_PX = 200 + 40; // ~200px width + 40px gap (2.5rem)
+
+  // Distance of 50% track (one full cycle of the repeated items)
+  const row1Distance = (row1Items.length / 2) * MOBILE_CARD_PX;
+  const row2Distance = (row2Items.length / 2) * MOBILE_CARD_PX;
+  const desktopDistance = (desktopItems.length / 2) * DESKTOP_CARD_PX;
+
+  const row1Duration = Math.round(row1Distance / SPEED_PX_PER_SEC);
+  const row2Duration = Math.round(row2Distance / SPEED_PX_PER_SEC);
+  const desktopDuration = Math.round(desktopDistance / SPEED_PX_PER_SEC);
 
   if (isLoading && displayList.length === 0) {
     return null;
   }
 
   return (
-    <section className="relative w-screen overflow-hidden py-16 transition-colors duration-300 lg:py-24">
+    <section className="relative w-full overflow-hidden py-12 md:py-20 lg:py-24 transition-colors duration-300">
       <div className="relative z-10">
-        {/* HEADER (No background color) */}
-        <div className="container mx-auto mb-8 flex justify-center px-4 text-center">
+        {/* HEADER */}
+        <header className="container mx-auto mb-8 flex justify-center px-4 text-center">
           <h2 className="section-header">Shop by brands</h2>
-        </div>
+        </header>
 
-        {/* Cards container with cream-light background */}
-        <div className="relative w-full overflow-hidden py-10 transition-colors">
+        {/* Marquee tracks: single row on desktop (sm:block), two rows on mobile (sm:hidden) */}
+        <div ref={containerRef} className="relative w-full overflow-hidden py-6">
           <style>{`
-            @keyframes brand-marquee {
+            @keyframes brand-marquee-left {
               0% { transform: translateX(0); }
               100% { transform: translateX(-50%); }
             }
-            .animate-brand-marquee {
+            @keyframes brand-marquee-right {
+              0% { transform: translateX(-50%); }
+              100% { transform: translateX(0); }
+            }
+            .animate-brand-marquee-left {
               display: flex;
               width: max-content;
-              animation: brand-marquee 25s linear infinite;
-              gap: 1rem; /* Compact spacing on small devices */
+              animation-name: brand-marquee-left;
+              animation-timing-function: linear;
+              animation-iteration-count: infinite;
+              gap: 1.25rem;
+            }
+            .animate-brand-marquee-right {
+              display: flex;
+              width: max-content;
+              animation-name: brand-marquee-right;
+              animation-timing-function: linear;
+              animation-iteration-count: infinite;
+              gap: 1.25rem;
             }
             @media (min-width: 640px) {
-              .animate-brand-marquee {
-                gap: 3.5rem; /* Restored spacious gap on larger devices */
+              .animate-brand-marquee-left {
+                gap: 2.5rem;
               }
             }
-            .animate-brand-marquee:hover {
+            .animate-brand-marquee-left:hover,
+            .animate-brand-marquee-right:hover {
               animation-play-state: paused;
             }
           `}</style>
 
-          <div
-            ref={containerRef}
-            className="animate-brand-marquee relative z-10 px-6"
-            style={{ animationPlayState: isInView ? 'running' : 'paused' }}
-          >
-            {[...displayList, ...displayList].map((brand, idx) => (
-              <div key={`${brand.slug}-${idx}`} className="w-[180px] shrink-0 sm:w-[220px]">
-                <BrandCard brand={brand} />
-              </div>
-            ))}
+          {/* LARGE SCREENS ONLY: Single Row (Hidden on mobile under 640px) */}
+          <div className="hidden sm:block">
+            <div
+              className="animate-brand-marquee-left relative z-10 px-6"
+              style={{
+                animationDuration: `${desktopDuration}s`,
+                animationPlayState: isInView ? 'running' : 'paused',
+              }}
+            >
+              {desktopItems.map((brand, idx) => (
+                <div key={`desktop-${brand.slug}-${idx}`} className="w-[190px] shrink-0 md:w-[220px]">
+                  <BrandCard brand={brand} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
+          <div className="flex flex-col gap-4 sm:hidden">
+            {/* ROW 1: Moves Left */}
+            <div
+              className="animate-brand-marquee-left relative z-10 px-4"
+              style={{
+                animationDuration: `${row1Duration}s`,
+                animationPlayState: isInView ? 'running' : 'paused',
+              }}
+            >
+              {row1Items.map((brand, idx) => (
+                <div key={`r1-mobile-${brand.slug}-${idx}`} className="w-[150px] shrink-0">
+                  <BrandCard brand={brand} />
+                </div>
+              ))}
+            </div>
+
+            {/* ROW 2: Moves Right */}
+            <div
+              className="animate-brand-marquee-right relative z-10 px-4"
+              style={{
+                animationDuration: `${row2Duration}s`,
+                animationPlayState: isInView ? 'running' : 'paused',
+              }}
+            >
+              {row2Items.map((brand, idx) => (
+                <div key={`r2-mobile-${brand.slug}-${idx}`} className="w-[150px] shrink-0">
+                  <BrandCard brand={brand} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* View All Brands Button moved underneath the marquee for all devices */}
-        <div className="mt-10 flex w-full justify-center px-4">
+        {/* View All Brands Button underneath the marquee for all devices */}
+        <div className="mt-8 flex w-full justify-center px-4">
           <Link
             href="/brands"
             className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest text-black uppercase transition-all hover:bg-black hover:text-white active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"

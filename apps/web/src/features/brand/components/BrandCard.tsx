@@ -15,29 +15,31 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
   const isBlackBackground = brand.color === '#000000';
 
   return (
-    <Link href={`/brands/${brand.slug}`} className="group">
+    <Link href={`/brands/${brand.slug}`} className="group block w-full">
       <div
-        className="group relative flex aspect-3/4 items-center justify-center overflow-hidden rounded-4xl duration-500 hover:scale-95 md:w-62.5"
+        className="group relative flex aspect-3/4 w-full items-center justify-center overflow-hidden rounded-3xl duration-500 hover:scale-95 sm:rounded-4xl p-4 sm:p-6"
         style={{
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
       >
         {!hasError && brand.logo ? (
-          <Image
-            src={brand.logo}
-            alt={brand.name}
-            width={160}
-            height={160}
-            onError={() => {
-              setHasError(true);
-            }}
-            className={`object-contain duration-500 group-hover:scale-125 ${
-              isBlackBackground ? 'invert dark:invert-0' : 'invert'
-            }`}
-          />
+          <div className="relative flex h-full w-full items-center justify-center">
+            <Image
+              src={brand.logo}
+              alt={brand.name}
+              width={160}
+              height={160}
+              onError={() => {
+                setHasError(true);
+              }}
+              className={`max-h-[70%] max-w-[75%] object-contain duration-500 group-hover:scale-110 ${
+                isBlackBackground ? 'invert dark:invert-0' : 'invert'
+              }`}
+            />
+          </div>
         ) : (
           <span
-            className={`px-4 text-center text-xl font-black tracking-widest uppercase ${
+            className={`px-3 text-center text-sm sm:text-lg md:text-xl font-black tracking-widest uppercase ${
               isBlackBackground ? 'text-background' : 'text-white'
             }`}
           >
