@@ -78,7 +78,7 @@ export function Sidebar({
       )}
 
       <aside
-        className={`fixed inset-y-3 left-3 z-50 flex h-[calc(100vh-1.5rem)] w-64 flex-shrink-0 flex-col overflow-hidden rounded-3xl border border-black/5 bg-white/85 shadow-lg shadow-black/5 backdrop-blur-2xl transition-transform duration-300 md:static md:my-3 md:ml-3 md:translate-x-0 dark:border-white/10 dark:bg-[#0e0e0e]/85 dark:shadow-black/40 ${
+        className={`fixed top-2 bottom-2 left-2 z-50 flex h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] w-[min(17rem,calc(100vw-2rem))] flex-shrink-0 flex-col overflow-hidden rounded-3xl border border-black/5 bg-white/90 shadow-2xl backdrop-blur-2xl transition-transform duration-300 md:static md:top-auto md:bottom-auto md:left-auto md:my-3 md:ml-3 md:h-[calc(100dvh-1.5rem)] md:max-h-[calc(100dvh-1.5rem)] md:w-64 md:translate-x-0 dark:border-white/10 dark:bg-[#0e0e0e]/90 ${
           isMobileOpen
             ? 'translate-x-0 shadow-2xl'
             : '-translate-x-[calc(100%+2rem)] md:translate-x-0'

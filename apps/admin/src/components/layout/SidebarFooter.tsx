@@ -9,6 +9,8 @@ import { BellIcon, LogOutIcon } from '@ff/ui';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/features/notifications';
+import { usePinLockStore } from '@/features/pin-lock/store/pin-lock.store';
+import { usePwaInstall } from '@/lib/pwa/usePwaInstall';
 
 export function SidebarFooter() {
   const pathname = usePathname() ?? '';
@@ -17,6 +19,7 @@ export function SidebarFooter() {
   const { unreadCount } = useNotifications();
   const [mounted, setMounted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { isMounted: isPwaMounted, isInstalled, install } = usePwaInstall();
 
   useEffect(() => {
     setMounted(true);
@@ -53,7 +56,7 @@ export function SidebarFooter() {
     pathname === '/notifications' || pathname.startsWith('/notifications/');
 
   return (
-    <div className="relative shrink-0 border-t border-black/5 p-3 dark:border-white/5">
+    <div className="relative shrink-0 border-t border-black/5 p-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] dark:border-white/5">
       {/* Main Bottom Box Card */}
       <div className="flex flex-col gap-2 rounded-2xl bg-black p-2.5 text-white shadow-xl dark:bg-white dark:text-black dark:shadow-md">
         {/* Profile Info Item */}
@@ -81,6 +84,36 @@ export function SidebarFooter() {
             </svg>
           </div>
         </Link>
+
+        {/* PWA Install Button (Only visible if NOT already installed) */}
+        {isPwaMounted && !isInstalled && (
+          <button
+            type="button"
+            onClick={() => void install()}
+            className="group flex w-full items-center justify-between gap-2 rounded-xl bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-white transition-all hover:bg-white/20 active:scale-98 dark:bg-black/5 dark:text-black dark:hover:bg-black/10"
+            title="Install FF Admin PWA"
+          >
+            <div className="flex items-center gap-2">
+              <svg
+                className="h-3.5 w-3.5 text-white/80 transition-transform group-hover:scale-110 dark:text-black/80"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              <span className="text-[11px] font-bold tracking-tight">Install App</span>
+            </div>
+            <span className="rounded-md bg-white/15 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-white/90 dark:bg-black/10 dark:text-black/90">
+              PWA
+            </span>
+          </button>
+        )}
 
         {/* Action Icons Grid */}
         <div className="flex items-center justify-between border-t border-white/10 pt-2 dark:border-black/10">
@@ -187,6 +220,31 @@ export function SidebarFooter() {
               </span>
             )}
           </Link>
+
+          {/* Lock Screen Button */}
+          <button
+            type="button"
+            onClick={() => {
+              usePinLockStore.getState().lock();
+            }}
+            className="group relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-white/80 transition-all hover:bg-amber-500/20 hover:text-amber-400 active:scale-95 dark:bg-black/5 dark:text-black/80 dark:hover:bg-amber-500/20 dark:hover:text-amber-600"
+            title="Lock Screen (PIN)"
+            aria-label="Lock Screen"
+          >
+            <svg
+              className="h-4 w-4 transition-transform group-hover:scale-105"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </button>
 
           {/* Sign Out Icon Button */}
           <button
