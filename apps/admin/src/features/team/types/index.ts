@@ -4,6 +4,7 @@ export interface TeamMember {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   role: Role;
   status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
   joinedAt: string;
@@ -30,6 +31,7 @@ export const MOCK_TEAM: TeamMember[] = [
     id: '1',
     name: 'Jimmy Sullivan',
     email: 'jimmy@fashionfriday.com',
+    phone: '9999999999',
     role: 'SUPER_ADMIN',
     status: 'ACTIVE',
     joinedAt: '2025-01-15T00:00:00Z',
@@ -40,6 +42,7 @@ export const MOCK_TEAM: TeamMember[] = [
     id: '2',
     name: 'Sarah Chen',
     email: 'sarah.c@fashionfriday.com',
+    phone: '9876543210',
     role: 'PRODUCT_MANAGER',
     status: 'ACTIVE',
     joinedAt: '2025-02-20T00:00:00Z',
@@ -50,6 +53,7 @@ export const MOCK_TEAM: TeamMember[] = [
     id: '3',
     name: 'Marcus Johnson',
     email: 'marcus@fashionfriday.com',
+    phone: '9876543211',
     role: 'SALES_MANAGER',
     status: 'ACTIVE',
     joinedAt: '2025-03-10T00:00:00Z',
@@ -59,6 +63,7 @@ export const MOCK_TEAM: TeamMember[] = [
     id: '4',
     name: 'Emma Williams',
     email: 'emma.w@fashionfriday.com',
+    phone: '9876543212',
     role: 'SALES_MANAGER',
     status: 'PENDING',
     joinedAt: '2026-05-01T00:00:00Z',
