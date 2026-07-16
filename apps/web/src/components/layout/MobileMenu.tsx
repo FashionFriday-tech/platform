@@ -16,6 +16,7 @@ import {
   UserIcon,
   WhatsAppIcon,
   WishlistIcon,
+  YoutubeIcon,
 } from '@ff/ui';
 
 import { AnimatedLogo } from '@/components/ui/animated-logo';
@@ -38,7 +39,7 @@ const getInitials = (name: string) => {
 };
 
 const MAIN_NAV_ITEMS = [
-  { label: 'New Arrivals', href: '/new-arrivals', badge: 'NEW' },
+  { label: 'New Arrivals', href: '/new-arrivals', badge: 'NEW', isBling: true },
   { label: 'Men', href: '/category/men' },
   { label: 'Women', href: '/category/women' },
   { label: 'Sale', href: '/sale', isRed: true, badge: 'HOT' },
@@ -57,7 +58,7 @@ const ACCOUNT_LINKS = [
 export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
-  const { theme, setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const { isInstalled, install } = usePwaInstall();
   const [mounted, setMounted] = useState(false);
   const prevPathname = useRef(pathname);
@@ -146,7 +147,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
             className="relative z-10 flex h-[100dvh] w-[86vw] max-w-sm flex-col bg-background text-foreground shadow-2xl border-r border-border/20 overscroll-contain"
           >
             {/* Top Bar with Brand Centered & Close Button on Left */}
-            <div className="relative flex min-h-[64px] items-center justify-center border-b border-border/30 px-5 py-4">
+            <div className="relative flex min-h-[64px] items-center justify-center border-b border-border/30 px-5 py-4 shrink-0">
               <button
                 type="button"
                 onClick={onClose}
@@ -173,6 +174,21 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
               </Link>
             </div>
 
+            {/* FIXED TOP SEARCH BAR (doesn't move when scrolling sidebar) */}
+            <div className="shrink-0 border-b border-border/20 bg-background px-5 py-3">
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onOpenSearch();
+                }}
+                className="flex w-full items-center gap-2.5 rounded-xl border border-border/60 bg-foreground/5 px-3.5 py-2.5 text-left text-xs font-medium text-foreground/60 transition-all hover:bg-foreground/10 active:scale-98"
+              >
+                <SearchIcon className="text-base text-foreground/70" />
+                <span>Search sneakers, apparel, brands...</span>
+              </button>
+            </div>
+
             {/* Scrollable Content */}
             <div
               data-lenis-prevent="true"
@@ -183,9 +199,27 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                 e.stopPropagation();
               }}
             >
-              {/* User Profile / Login Banner */}
-              <div className="mb-4 overflow-hidden rounded-2xl bg-foreground/5 p-3.5 border border-border/40">
-                {user ? (
+              <style>{`
+                @keyframes badge-bling {
+                  0%, 100% {
+                    transform: scale(1);
+                    box-shadow: 0 0 6px 1px rgba(245, 158, 11, 0.45);
+                    filter: brightness(1);
+                  }
+                  50% {
+                    transform: scale(1.08);
+                    box-shadow: 0 0 14px 3px rgba(245, 158, 11, 0.85);
+                    filter: brightness(1.25);
+                  }
+                }
+                .animate-badge-bling {
+                  animation: badge-bling 1.6s ease-in-out infinite;
+                }
+              `}</style>
+
+              {/* User Profile Banner - shown when logged in */}
+              {user && (
+                <div className="mb-4 overflow-hidden rounded-2xl bg-foreground/5 p-3.5 border border-border/40">
                   <Link
                     href="/account"
                     onClick={onClose}
@@ -223,35 +257,8 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </Link>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-foreground">Welcome to Fashion Friday</p>
-                      <p className="text-[10px] text-foreground/60">Sign in for exclusive drops</p>
-                    </div>
-                    <Link
-                      href="/login"
-                      onClick={onClose}
-                      className="rounded-xl bg-foreground px-3.5 py-1.5 text-xs font-extrabold text-background transition-opacity hover:opacity-90 active:scale-95"
-                    >
-                      Sign In
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* Quick Search Trigger */}
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenSearch();
-                }}
-                className="mb-4 flex w-full items-center gap-2.5 rounded-xl border border-border/60 bg-foreground/5 px-3.5 py-2.5 text-left text-xs font-medium text-foreground/60 transition-all hover:bg-foreground/10 active:scale-98"
-              >
-                <SearchIcon className="text-base text-foreground/70" />
-                <span>Search sneakers, apparel, brands...</span>
-              </button>
+                </div>
+              )}
 
               {/* PWA App Install Banner */}
               {!isInstalled && (
@@ -309,15 +316,24 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                   >
                     <span className="flex items-center gap-2">{item.label}</span>
                     {item.badge && (
-                      <span
-                        className={`rounded-md px-1.5 py-0.5 text-[9px] font-extrabold tracking-wider ${
-                          item.isRed
-                            ? 'bg-destructive/15 text-destructive'
-                            : 'bg-foreground/10 text-foreground/80'
-                        }`}
-                      >
-                        {item.badge}
-                      </span>
+                      item.isBling ? (
+                        <span className="animate-badge-bling relative flex items-center justify-center overflow-hidden rounded-md bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 px-2 py-0.5 text-[9px] font-black tracking-widest text-black shadow-sm">
+                          <span className="relative z-10 flex items-center gap-0.5">
+                            <span className="inline-block text-[8px] leading-none">✨</span>
+                            {item.badge}
+                          </span>
+                        </span>
+                      ) : (
+                        <span
+                          className={`rounded-md px-1.5 py-0.5 text-[9px] font-extrabold tracking-wider ${
+                            item.isRed
+                              ? 'bg-destructive/15 text-destructive'
+                              : 'bg-foreground/10 text-foreground/80'
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )
                     )}
                   </Link>
                 ))}
@@ -346,11 +362,22 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
             </div>
 
             {/* Bottom Sticky Utility Bar */}
-            <div className="border-t border-border/30 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex flex-col gap-3.5">
-              {/* Connect / Socials */}
+            <div className="shrink-0 border-t border-border/30 bg-background/95 backdrop-blur-sm p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex flex-col gap-3">
+              {/* Sign In Button: Sticky bottom, top of the social icons. After login don't show it! */}
+              {!user && (
+                <Link
+                  href="/login"
+                  onClick={onClose}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-foreground py-3 text-xs font-black tracking-wider uppercase text-background shadow-md transition-all hover:opacity-90 active:scale-98"
+                >
+                  <UserIcon className="text-base" />
+                  <span>Sign In</span>
+                </Link>
+              )}
+
+              {/* Social Icons (WhatsApp, Instagram, YouTube) and Dark/Light Mode Icon in the same row */}
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-foreground/60">Connect With Us</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <a
                     href="https://wa.me/+917558969093"
                     target="_blank"
@@ -371,26 +398,30 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                   >
                     <InstagramIcon className="h-4.5 w-4.5" />
                   </a>
+                  <a
+                    href="https://youtube.com/fashionfriday.store"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 active:scale-95 transition-all"
+                    aria-label="Watch on YouTube"
+                    title="YouTube"
+                  >
+                    <YoutubeIcon className="h-4.5 w-4.5" />
+                  </a>
                 </div>
-              </div>
 
-              {/* Theme: Standard Sun/Moon Toggle */}
-              <div className="flex items-center justify-between border-t border-border/20 pt-3">
-                <span className="text-xs font-semibold text-foreground/60">Appearance</span>
+                {/* Single Theme Toggle: changes icon according to the theme (Sun in dark, Moon in light) */}
                 {mounted && (
-                  <div className="flex items-center rounded-full border border-border/40 bg-foreground/5 p-0.5">
-                    <button
-                      type="button"
-                      onClick={() => setTheme('light')}
-                      className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition-all ${
-                        theme === 'light'
-                          ? 'bg-background text-foreground shadow-sm'
-                          : 'text-foreground/50 hover:text-foreground'
-                      }`}
-                      aria-label="Light Mode"
-                    >
+                  <button
+                    type="button"
+                    onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground active:scale-95 transition-all border border-border/40"
+                    aria-label={resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                    title={resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                  >
+                    {resolvedTheme === 'dark' ? (
                       <svg
-                        className="h-3.5 w-3.5"
+                        className="h-4.5 w-4.5"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -408,20 +439,9 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                         <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                       </svg>
-                      <span>Light</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTheme('dark')}
-                      className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition-all ${
-                        theme === 'dark'
-                          ? 'bg-background text-foreground shadow-sm'
-                          : 'text-foreground/50 hover:text-foreground'
-                      }`}
-                      aria-label="Dark Mode"
-                    >
+                    ) : (
                       <svg
-                        className="h-3.5 w-3.5"
+                        className="h-4.5 w-4.5"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -431,9 +451,8 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                       >
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                       </svg>
-                      <span>Dark</span>
-                    </button>
-                  </div>
+                    )}
+                  </button>
                 )}
               </div>
             </div>
