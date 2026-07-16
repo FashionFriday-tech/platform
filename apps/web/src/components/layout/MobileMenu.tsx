@@ -39,11 +39,11 @@ const getInitials = (name: string) => {
 };
 
 const MAIN_NAV_ITEMS = [
-  { label: 'New Arrivals', href: '/new-arrivals', badge: 'NEW', isBling: true },
+  { label: 'New Arrivals', href: '/new-arrivals', badge: 'NEW' },
   { label: 'Men', href: '/category/men' },
   { label: 'Women', href: '/category/women' },
-  { label: 'Sale', href: '/sale', isRed: true, badge: 'HOT' },
-  { label: 'SNKRS', href: '/snkrs', badge: 'DROPS' },
+  { label: 'Sale', href: '/sale', isRed: true },
+  { label: 'SNKRS', href: '/snkrs' },
   { label: 'Brands', href: '/brands' },
   { label: 'Trending', href: '/collections/best-sellers' },
 ];
@@ -200,20 +200,16 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
               }}
             >
               <style>{`
-                @keyframes badge-bling {
+                @keyframes badge-blink {
                   0%, 100% {
-                    transform: scale(1);
-                    box-shadow: 0 0 6px 1px rgba(245, 158, 11, 0.45);
-                    filter: brightness(1);
+                    opacity: 1;
                   }
                   50% {
-                    transform: scale(1.08);
-                    box-shadow: 0 0 14px 3px rgba(245, 158, 11, 0.85);
-                    filter: brightness(1.25);
+                    opacity: 0;
                   }
                 }
-                .animate-badge-bling {
-                  animation: badge-bling 1.6s ease-in-out infinite;
+                .animate-badge-blink {
+                  animation: badge-blink 1s ease-in-out infinite;
                 }
               `}</style>
 
@@ -316,24 +312,9 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                   >
                     <span className="flex items-center gap-2">{item.label}</span>
                     {item.badge && (
-                      item.isBling ? (
-                        <span className="animate-badge-bling relative flex items-center justify-center overflow-hidden rounded-md bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 px-2 py-0.5 text-[9px] font-black tracking-widest text-black shadow-sm">
-                          <span className="relative z-10 flex items-center gap-0.5">
-                            <span className="inline-block text-[8px] leading-none">✨</span>
-                            {item.badge}
-                          </span>
-                        </span>
-                      ) : (
-                        <span
-                          className={`rounded-md px-1.5 py-0.5 text-[9px] font-extrabold tracking-wider ${
-                            item.isRed
-                              ? 'bg-destructive/15 text-destructive'
-                              : 'bg-foreground/10 text-foreground/80'
-                          }`}
-                        >
-                          {item.badge}
-                        </span>
-                      )
+                      <span className="animate-badge-blink rounded-md bg-foreground px-1.5 py-0.5 text-[9px] font-black tracking-widest text-background">
+                        {item.badge}
+                      </span>
                     )}
                   </Link>
                 ))}
