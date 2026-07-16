@@ -17,11 +17,12 @@ async function bootstrap() {
         origin.startsWith('http://127.0.0.1:') ||
         origin.endsWith('.fashionfriday.in') ||
         origin === 'https://fashionfriday.in' ||
-        /\.vercel\.app$/.test(origin)
+        origin.endsWith('.vercel.app')
       ) {
-        return callback(null, true);
+        callback(null, true);
+        return;
       }
-      return callback(new Error('Not allowed by CORS'));
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

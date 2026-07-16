@@ -490,7 +490,7 @@ export class AuthService {
   }
 
   async verifyAdminPin(phone: string, pin: string) {
-    if (!pin || pin.length !== 4) {
+    if (pin?.length !== 4) {
       throw new BadRequestException('4-digit PIN is required');
     }
 
@@ -556,7 +556,7 @@ export class AuthService {
       },
     });
 
-    if (!superAdmin || superAdmin.role !== 'SUPER_ADMIN') {
+    if (superAdmin?.role !== 'SUPER_ADMIN') {
       if (cleanAdminPhone !== '9999999999') {
         throw new UnauthorizedException('Only Super Admin is authorized to change security PINs');
       }
@@ -589,7 +589,9 @@ export class AuthService {
         });
       }
     } catch (err) {
-      this.logger.warn(`Could not update user pin in DB directly: ${err}`);
+      this.logger.warn(
+        `Could not update user pin in DB directly: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
 
     return {

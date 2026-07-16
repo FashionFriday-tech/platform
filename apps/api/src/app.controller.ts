@@ -24,7 +24,7 @@ export class AppController {
   }
 
   @Get('health')
-  async health() {
+  health() {
     return { status: 'ok', timestamp: new Date().toISOString() };
   }
 }

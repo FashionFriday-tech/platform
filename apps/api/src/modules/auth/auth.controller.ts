@@ -181,9 +181,7 @@ export class AuthController {
 
   @Patch('admin/update-pin')
   @HttpCode(HttpStatus.OK)
-  async updateAdminPin(
-    @Body() body: { adminPhone: string; targetPhone: string; newPin: string },
-  ) {
+  async updateAdminPin(@Body() body: { adminPhone: string; targetPhone: string; newPin: string }) {
     if (!body.adminPhone || !body.targetPhone || !body.newPin) {
       throw new BadRequestException('adminPhone, targetPhone, and newPin are required');
     }
