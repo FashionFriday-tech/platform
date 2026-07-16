@@ -23,11 +23,11 @@ async function hashPin(pin: string, saltHex: string): Promise<string> {
     enc.encode(pin),
     { name: 'PBKDF2' },
     false,
-    ['deriveBits', 'deriveKey']
+    ['deriveBits', 'deriveKey'],
   );
 
   const saltBytes = new Uint8Array(
-    saltHex.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) || []
+    saltHex.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) || [],
   );
 
   const derivedKey = await window.crypto.subtle.deriveBits(
@@ -38,7 +38,7 @@ async function hashPin(pin: string, saltHex: string): Promise<string> {
       hash: 'SHA-256',
     },
     keyMaterial,
-    256
+    256,
   );
 
   return bufferToHex(derivedKey);
@@ -46,13 +46,15 @@ async function hashPin(pin: string, saltHex: string): Promise<string> {
 
 export const PinStorage = {
   // Check if a PIN is registered on this device (always true with default 1234)
-  hasPin(userPhone?: string): boolean {
+  hasPin(_userPhone?: string): boolean {
     return true;
   },
 
   // Store new 4-digit PIN securely for a specific admin user
   async setupPin(pin: string, userPhone?: string): Promise<void> {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     const randomSalt = new Uint8Array(16);
     window.crypto.getRandomValues(randomSalt);
     const saltHex = bufferToHex(randomSalt.buffer);
@@ -68,7 +70,9 @@ export const PinStorage = {
 
   // Verify PIN against backend Argon2-encrypted DB, with local PBKDF2 & default 1234 fallback
   async verifyPin(pin: string, userPhone?: string): Promise<boolean> {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === 'undefined') {
+      return false;
+    }
 
     // Normalize phone number to pure 10 digits
     const cleanPhone = userPhone ? userPhone.replace(/\D/g, '').slice(-10) : undefined;
@@ -78,7 +82,9 @@ export const PinStorage = {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3002';
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const timeoutId = setTimeout(() => {
+          controller.abort();
+        }, 3500);
 
         const res = await fetch(`${apiUrl}/auth/admin/verify-pin`, {
           method: 'POST',
@@ -89,7 +95,11 @@ export const PinStorage = {
         clearTimeout(timeoutId);
 
         if (res.ok) {
-          const data = (await res.json()) as { valid?: boolean; verified?: boolean; success?: boolean };
+          const data = (await res.json()) as {
+            valid?: boolean;
+            verified?: boolean;
+            success?: boolean;
+          };
           const isValid = Boolean(data.valid || data.verified || data.success);
           if (isValid) {
             // Keep local cache synced for offline access
@@ -153,11 +163,12 @@ export const PinStorage = {
 
   // Reset PIN back to default
   removePin(userPhone?: string): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     if (userPhone) {
       localStorage.removeItem(`ff_admin_pin_${userPhone}`);
     }
     localStorage.removeItem(PIN_STORAGE_KEY);
   },
 };
-

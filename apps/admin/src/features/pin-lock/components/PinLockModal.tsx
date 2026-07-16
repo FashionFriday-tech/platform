@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+
 import { motion } from 'motion/react';
-import { PinStorage } from '@/lib/security/pin-storage';
-import { usePinLockStore } from '../store/pin-lock.store';
+
 import { useAuth } from '@/contexts/AuthContext';
+import { PinStorage } from '@/lib/security/pin-storage';
+
+import { usePinLockStore } from '../store/pin-lock.store';
 
 export function PinLockModal() {
   const { isLocked, unlock, failedAttempts, recordFailedAttempt, lockedUntil } = usePinLockStore();
@@ -33,20 +36,28 @@ export function PinLockModal() {
 
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [lockedUntil]);
 
   const triggerShake = (msg: string) => {
     setIsShaking(true);
     setErrorMessage(msg);
     setEnteredPin('');
-    setTimeout(() => setIsShaking(false), 500);
+    setTimeout(() => {
+      setIsShaking(false);
+    }, 500);
   };
 
   const handleDigit = useCallback(
     async (digit: string) => {
-      if (remainingLockSeconds > 0) return;
-      if (enteredPin.length >= 4) return;
+      if (remainingLockSeconds > 0) {
+        return;
+      }
+      if (enteredPin.length >= 4) {
+        return;
+      }
 
       const nextPin = enteredPin + digit;
       setEnteredPin(nextPin);
@@ -63,7 +74,7 @@ export function PinLockModal() {
         }
       }
     },
-    [enteredPin, recordFailedAttempt, remainingLockSeconds, unlock, user?.phone]
+    [enteredPin, recordFailedAttempt, remainingLockSeconds, unlock, user?.phone],
   );
 
   const handleBackspace = () => {
@@ -75,7 +86,9 @@ export function PinLockModal() {
 
   // Keyboard navigation support
   useEffect(() => {
-    if (!isLocked) return;
+    if (!isLocked) {
+      return;
+    }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (/^[0-9]$/.test(e.key)) {
@@ -86,20 +99,24 @@ export function PinLockModal() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [handleDigit, isLocked]);
 
-  if (!isLocked) return null;
+  if (!isLocked) {
+    return null;
+  }
 
   const isRateLimited = remainingLockSeconds > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white text-neutral-900 dark:bg-black dark:text-white p-4 select-none transition-colors duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white p-4 text-neutral-900 transition-colors duration-200 select-none dark:bg-black dark:text-white">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-sm flex flex-col items-center text-center"
+        className="flex w-full max-w-sm flex-col items-center text-center"
       >
         {/* Curved Brand App Icon Badge */}
         <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl border border-black/10 bg-white shadow-xl dark:border-white/15 dark:bg-black dark:shadow-2xl">
@@ -111,13 +128,15 @@ export function PinLockModal() {
         </div>
 
         {/* Title & Subtitle */}
-        <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">Enter Security PIN</h2>
+        <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">
+          Enter Security PIN
+        </h2>
         <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
           {isRateLimited
             ? `Device locked. Try again in ${remainingLockSeconds}s`
             : user?.name
-            ? `Welcome back, ${user.name}`
-            : 'Enter your 4-digit passcode (Default: 1234)'}
+              ? `Welcome back, ${user.name}`
+              : 'Enter your 4-digit passcode (Default: 1234)'}
         </p>
 
         {/* 4 Dot Indicators */}
@@ -143,11 +162,12 @@ export function PinLockModal() {
 
         {/* Error message */}
         <div className="h-5 text-xs font-semibold text-rose-500 dark:text-rose-400">
-          {errorMessage || (failedAttempts > 0 && !isRateLimited ? `Failed attempts: ${failedAttempts}/5` : '')}
+          {errorMessage ||
+            (failedAttempts > 0 && !isRateLimited ? `Failed attempts: ${failedAttempts}/5` : '')}
         </div>
 
         {/* Numeric Keypad (3x4 Grid) */}
-        <div className="mt-4 grid grid-cols-3 gap-4 w-full max-w-[270px]">
+        <div className="mt-4 grid w-full max-w-[270px] grid-cols-3 gap-4">
           {[
             { num: '1', letters: '' },
             { num: '2', letters: 'ABC' },
@@ -164,11 +184,11 @@ export function PinLockModal() {
               type="button"
               disabled={isRateLimited}
               onClick={() => void handleDigit(num)}
-              className="flex h-16 w-16 flex-col items-center justify-center rounded-full bg-neutral-100 border border-neutral-200 text-neutral-900 shadow-sm transition-all active:scale-90 active:bg-neutral-200 hover:border-neutral-300 hover:bg-neutral-200/70 disabled:opacity-30 disabled:pointer-events-none mx-auto dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:shadow-md dark:active:bg-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800/80"
+              className="mx-auto flex h-16 w-16 flex-col items-center justify-center rounded-full border border-neutral-200 bg-neutral-100 text-neutral-900 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-200/70 active:scale-90 active:bg-neutral-200 disabled:pointer-events-none disabled:opacity-30 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:shadow-md dark:hover:border-neutral-700 dark:hover:bg-neutral-800/80 dark:active:bg-neutral-800"
             >
-              <span className="text-xl font-semibold leading-none">{num}</span>
+              <span className="text-xl leading-none font-semibold">{num}</span>
               {letters && (
-                <span className="text-[9px] tracking-widest text-neutral-500 dark:text-neutral-400 mt-0.5">
+                <span className="mt-0.5 text-[9px] tracking-widest text-neutral-500 dark:text-neutral-400">
                   {letters}
                 </span>
               )}
@@ -182,16 +202,16 @@ export function PinLockModal() {
             type="button"
             disabled={isRateLimited}
             onClick={() => void handleDigit('0')}
-            className="flex h-16 w-16 flex-col items-center justify-center rounded-full bg-neutral-100 border border-neutral-200 text-neutral-900 shadow-sm transition-all active:scale-90 active:bg-neutral-200 hover:border-neutral-300 hover:bg-neutral-200/70 disabled:opacity-30 disabled:pointer-events-none mx-auto dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:shadow-md dark:active:bg-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800/80"
+            className="mx-auto flex h-16 w-16 flex-col items-center justify-center rounded-full border border-neutral-200 bg-neutral-100 text-neutral-900 shadow-sm transition-all hover:border-neutral-300 hover:bg-neutral-200/70 active:scale-90 active:bg-neutral-200 disabled:pointer-events-none disabled:opacity-30 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:shadow-md dark:hover:border-neutral-700 dark:hover:bg-neutral-800/80 dark:active:bg-neutral-800"
           >
-            <span className="text-xl font-semibold leading-none">0</span>
+            <span className="text-xl leading-none font-semibold">0</span>
           </button>
 
           <button
             type="button"
             onClick={handleBackspace}
             disabled={enteredPin.length === 0}
-            className="flex h-16 w-16 items-center justify-center rounded-full text-neutral-500 hover:text-neutral-900 transition-all active:scale-90 disabled:opacity-0 mx-auto dark:text-neutral-400 dark:hover:text-white"
+            className="mx-auto flex h-16 w-16 items-center justify-center rounded-full text-neutral-500 transition-all hover:text-neutral-900 active:scale-90 disabled:opacity-0 dark:text-neutral-400 dark:hover:text-white"
             aria-label="Backspace"
           >
             <svg
@@ -217,7 +237,7 @@ export function PinLockModal() {
             unlock();
             logout();
           }}
-          className="mt-8 text-xs text-neutral-500 hover:text-rose-500 transition-colors underline underline-offset-4 dark:text-neutral-400 dark:hover:text-rose-400"
+          className="mt-8 text-xs text-neutral-500 underline underline-offset-4 transition-colors hover:text-rose-500 dark:text-neutral-400 dark:hover:text-rose-400"
         >
           Forgot PIN? Sign In with Phone & OTP
         </button>

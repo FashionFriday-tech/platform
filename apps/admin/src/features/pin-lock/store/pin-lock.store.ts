@@ -42,8 +42,12 @@ export const usePinLockStore = create<PinLockState>((set, get) => ({
     set({ isLocked: false, failedAttempts: 0, lockedUntil: null });
   },
 
-  setHasPin: (hasPin) => set({ hasPin }),
-  setSetupMode: (isSetupMode) => set({ isSetupMode }),
+  setHasPin: (hasPin) => {
+    set({ hasPin });
+  },
+  setSetupMode: (isSetupMode) => {
+    set({ isSetupMode });
+  },
 
   recordFailedAttempt: () => {
     const attempts = get().failedAttempts + 1;

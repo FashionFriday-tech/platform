@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+
 import { useAuth } from '@/contexts/AuthContext';
 import { PinStorage } from '@/lib/security/pin-storage';
+
 import { usePinLockStore } from '../store/pin-lock.store';
 import { PinLockModal } from './PinLockModal';
 
@@ -26,7 +28,7 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
         .then((reg) => {
           console.log('[PWA] Service Worker registered with scope:', reg.scope);
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           console.warn('[PWA] Service Worker registration failed:', err);
         });
     }
@@ -34,12 +36,13 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
 
   // 2. Initialize PIN status: only lock if not already unlocked in this browser session
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
+    if (!isAuthenticated || !user) {
+      return;
+    }
     setHasPin(true);
 
     const isUnlockedInSession =
-      typeof window !== 'undefined' &&
-      sessionStorage.getItem('ff_admin_pin_unlocked') === 'true';
+      typeof window !== 'undefined' && sessionStorage.getItem('ff_admin_pin_unlocked') === 'true';
 
     if (!isUnlockedInSession) {
       lock();
@@ -49,7 +52,9 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
   // 3. Inactivity Timer (Auto-lock after 15 minutes of no touch/mouse activity)
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      return;
+    }
 
     const resetTimer = () => {
       if (inactivityTimerRef.current) {
@@ -63,14 +68,18 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
     };
 
     const events = ['mousedown', 'mousemove', 'keydown', 'touchstart', 'scroll'];
-    events.forEach((evt) => window.addEventListener(evt, resetTimer, { passive: true }));
+    events.forEach((evt) => {
+      window.addEventListener(evt, resetTimer, { passive: true });
+    });
     resetTimer();
 
     return () => {
       if (inactivityTimerRef.current) {
         clearTimeout(inactivityTimerRef.current);
       }
-      events.forEach((evt) => window.removeEventListener(evt, resetTimer));
+      events.forEach((evt) => {
+        window.removeEventListener(evt, resetTimer);
+      });
     };
   }, [isAuthenticated, lock]);
 
