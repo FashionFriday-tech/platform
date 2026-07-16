@@ -255,16 +255,74 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
               }}
             >
               <style>{`
-                @keyframes badge-blink {
+                @keyframes electric-blink {
                   0%, 100% {
                     opacity: 1;
+                    filter: drop-shadow(0 0 1px currentColor);
+                  }
+                  3% {
+                    opacity: 0.15;
+                    filter: none;
+                  }
+                  6% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 1px currentColor);
+                  }
+                  8% {
+                    opacity: 0.2;
+                    filter: none;
+                  }
+                  11% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 1px currentColor);
+                  }
+                  42% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 1px currentColor);
+                  }
+                  44% {
+                    opacity: 0.1;
+                    filter: none;
+                  }
+                  46% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 2px currentColor);
+                  }
+                  48% {
+                    opacity: 0.2;
+                    filter: none;
                   }
                   50% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 1px currentColor);
+                  }
+                  76% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 1px currentColor);
+                  }
+                  78% {
                     opacity: 0;
+                    filter: none;
+                  }
+                  80% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 2px currentColor);
+                  }
+                  82% {
+                    opacity: 0.15;
+                    filter: none;
+                  }
+                  84% {
+                    opacity: 1;
+                    filter: drop-shadow(0 0 1px currentColor);
                   }
                 }
-                .animate-badge-blink {
-                  animation: badge-blink 1s ease-in-out infinite;
+                .animate-electric-blink {
+                  animation: electric-blink 1.8s infinite;
+                  display: inline-block;
+                }
+                .dark .animate-electric-blink {
+                  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 255, 255, 0.4);
                 }
               `}</style>
 
@@ -327,7 +385,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                   >
                     <span className="flex items-center gap-2">{item.label}</span>
                     {item.badge && (
-                      <span className="animate-badge-blink bg-foreground text-background rounded-md px-1.5 py-0.5 text-[9px] font-black tracking-widest">
+                      <span className="animate-electric-blink text-foreground text-[11px] font-black tracking-widest uppercase select-none">
                         {item.badge}
                       </span>
                     )}
