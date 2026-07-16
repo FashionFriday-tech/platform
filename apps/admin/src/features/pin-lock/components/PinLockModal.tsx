@@ -94,7 +94,7 @@ export function PinLockModal() {
   const isRateLimited = remainingLockSeconds > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black p-4 select-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white text-neutral-900 dark:bg-black dark:text-white p-4 select-none transition-colors duration-200">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -102,7 +102,7 @@ export function PinLockModal() {
         className="w-full max-w-sm flex flex-col items-center text-center"
       >
         {/* Curved Brand App Icon Badge */}
-        <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl border border-white/15 bg-black shadow-2xl">
+        <div className="mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-3xl border border-black/10 bg-white shadow-xl dark:border-white/15 dark:bg-black dark:shadow-2xl">
           <img
             src="/icons/ff_admin_app_icon.png"
             alt="Fashion Friday Admin"
@@ -111,8 +111,8 @@ export function PinLockModal() {
         </div>
 
         {/* Title & Subtitle */}
-        <h2 className="text-xl font-bold tracking-tight text-white">Enter Security PIN</h2>
-        <p className="mt-1 text-xs text-neutral-400">
+        <h2 className="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">Enter Security PIN</h2>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
           {isRateLimited
             ? `Device locked. Try again in ${remainingLockSeconds}s`
             : user?.name
@@ -133,8 +133,8 @@ export function PinLockModal() {
                 key={index}
                 className={`h-4 w-4 rounded-full transition-all duration-200 ${
                   isFilled
-                    ? 'scale-110 bg-white shadow-[0_0_14px_rgba(255,255,255,0.9)]'
-                    : 'border-2 border-neutral-700 bg-neutral-900'
+                    ? 'scale-110 bg-black shadow-[0_0_12px_rgba(0,0,0,0.25)] dark:bg-white dark:shadow-[0_0_14px_rgba(255,255,255,0.9)]'
+                    : 'border-2 border-neutral-300 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900'
                 }`}
               />
             );
@@ -142,7 +142,7 @@ export function PinLockModal() {
         </motion.div>
 
         {/* Error message */}
-        <div className="h-5 text-xs font-semibold text-rose-400">
+        <div className="h-5 text-xs font-semibold text-rose-500 dark:text-rose-400">
           {errorMessage || (failedAttempts > 0 && !isRateLimited ? `Failed attempts: ${failedAttempts}/5` : '')}
         </div>
 
@@ -164,10 +164,14 @@ export function PinLockModal() {
               type="button"
               disabled={isRateLimited}
               onClick={() => void handleDigit(num)}
-              className="flex h-16 w-16 flex-col items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-white shadow-md transition-all active:scale-90 active:bg-neutral-800 hover:border-neutral-700 hover:bg-neutral-800/80 disabled:opacity-30 disabled:pointer-events-none mx-auto"
+              className="flex h-16 w-16 flex-col items-center justify-center rounded-full bg-neutral-100 border border-neutral-200 text-neutral-900 shadow-sm transition-all active:scale-90 active:bg-neutral-200 hover:border-neutral-300 hover:bg-neutral-200/70 disabled:opacity-30 disabled:pointer-events-none mx-auto dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:shadow-md dark:active:bg-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800/80"
             >
               <span className="text-xl font-semibold leading-none">{num}</span>
-              {letters && <span className="text-[9px] tracking-widest text-neutral-400 mt-0.5">{letters}</span>}
+              {letters && (
+                <span className="text-[9px] tracking-widest text-neutral-500 dark:text-neutral-400 mt-0.5">
+                  {letters}
+                </span>
+              )}
             </button>
           ))}
 
@@ -178,7 +182,7 @@ export function PinLockModal() {
             type="button"
             disabled={isRateLimited}
             onClick={() => void handleDigit('0')}
-            className="flex h-16 w-16 flex-col items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-white shadow-md transition-all active:scale-90 active:bg-neutral-800 hover:border-neutral-700 hover:bg-neutral-800/80 disabled:opacity-30 disabled:pointer-events-none mx-auto"
+            className="flex h-16 w-16 flex-col items-center justify-center rounded-full bg-neutral-100 border border-neutral-200 text-neutral-900 shadow-sm transition-all active:scale-90 active:bg-neutral-200 hover:border-neutral-300 hover:bg-neutral-200/70 disabled:opacity-30 disabled:pointer-events-none mx-auto dark:bg-neutral-900 dark:border-neutral-800 dark:text-white dark:shadow-md dark:active:bg-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-800/80"
           >
             <span className="text-xl font-semibold leading-none">0</span>
           </button>
@@ -187,7 +191,7 @@ export function PinLockModal() {
             type="button"
             onClick={handleBackspace}
             disabled={enteredPin.length === 0}
-            className="flex h-16 w-16 items-center justify-center rounded-full text-neutral-400 hover:text-white transition-all active:scale-90 disabled:opacity-0 mx-auto"
+            className="flex h-16 w-16 items-center justify-center rounded-full text-neutral-500 hover:text-neutral-900 transition-all active:scale-90 disabled:opacity-0 mx-auto dark:text-neutral-400 dark:hover:text-white"
             aria-label="Backspace"
           >
             <svg
@@ -213,7 +217,7 @@ export function PinLockModal() {
             unlock();
             logout();
           }}
-          className="mt-8 text-xs text-neutral-400 hover:text-rose-400 transition-colors underline underline-offset-4"
+          className="mt-8 text-xs text-neutral-500 hover:text-rose-500 transition-colors underline underline-offset-4 dark:text-neutral-400 dark:hover:text-rose-400"
         >
           Forgot PIN? Sign In with Phone & OTP
         </button>
