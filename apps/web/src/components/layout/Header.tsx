@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -67,20 +67,26 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const handleOpenMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(true);
+  }, []);
+
+  const handleCloseMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+
+  const handleOpenSearch = useCallback(() => {
+    setIsSearchOpen(true);
+  }, []);
+
   useEffect(() => {
-    const handleOpenSearch = () => {
-      setIsSearchOpen(true);
-    };
-    const handleOpenMenu = () => {
-      setIsMobileMenuOpen(true);
-    };
     window.addEventListener('open-search', handleOpenSearch);
-    window.addEventListener('open-menu', handleOpenMenu);
+    window.addEventListener('open-menu', handleOpenMobileMenu);
     return () => {
       window.removeEventListener('open-search', handleOpenSearch);
-      window.removeEventListener('open-menu', handleOpenMenu);
+      window.removeEventListener('open-menu', handleOpenMobileMenu);
     };
-  }, []);
+  }, [handleOpenSearch, handleOpenMobileMenu]);
 
   // Hide header on login and signup pages
   if (pathname === '/login' || pathname === '/signup') {
@@ -189,22 +195,26 @@ export function Header() {
         <div className="relative flex w-full items-center justify-between px-4 py-3.5">
           <button
             type="button"
-            onClick={() => {
-              setIsMobileMenuOpen(true);
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenMobileMenu();
             }}
-            className="text-foreground flex items-center justify-start px-0.5 py-1 transition-transform active:scale-95"
-            aria-label="Toggle Menu"
+            className="text-foreground -ml-1 flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-foreground/5 active:scale-95"
+            aria-label="Open Navigation Menu"
           >
             <svg
-              width="26"
-              height="14"
-              viewBox="0 0 26 14"
+              width="28"
+              height="24"
+              viewBox="0 0 28 24"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="stroke-current"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-6 w-7"
             >
-              <path d="M0.5 2.5H25.5" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M0.5 11.5H25.5" strokeWidth="2.5" strokeLinecap="round" />
+              <line x1="1.5" y1="8" x2="26.5" y2="8" />
+              <line x1="1.5" y1="16" x2="26.5" y2="16" />
             </svg>
           </button>
 
@@ -291,8 +301,8 @@ export function Header() {
 
       <MobileMenu
         isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-        onOpenSearch={() => setIsSearchOpen(true)}
+        onClose={handleCloseMobileMenu}
+        onOpenSearch={handleOpenSearch}
       />
     </>
   );
