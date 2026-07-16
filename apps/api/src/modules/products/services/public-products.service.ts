@@ -51,6 +51,7 @@ export class PublicProductsService {
       skip,
       take,
       where,
+      orderBy: { createdAt: 'desc' as const },
     });
     return this.paginate(result, skip, take);
   }
@@ -106,6 +107,7 @@ export class PublicProductsService {
           slug: categorySlug,
         },
       },
+      orderBy: { createdAt: 'desc' as const },
     });
     return this.paginate(result, skip, take);
   }

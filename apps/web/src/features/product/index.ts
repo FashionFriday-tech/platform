@@ -8,4 +8,4 @@ export { default as ReviewSection } from './components/review-section';
 export { default as VariantDropdown } from './components/variant-dropdown';
 export { useLiveProductMetric } from './hooks/use-live-product-metric';
 export { getGlobalSlot, getPageSlot } from './utils/time';
-export { getProductBySlug, getSimilarProducts } from '@/data/filter-engine';
+export { getProductBySlug, getSimilarProducts, getNewArrivalsProducts } from '@/data/filter-engine';

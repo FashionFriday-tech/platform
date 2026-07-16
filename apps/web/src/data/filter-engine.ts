@@ -352,3 +352,29 @@ export const getProductsByCollection = async (
     return [];
   }
 };
+
+export const getNewArrivalsProducts = async (take = 100): Promise<Product[]> => {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    // Fetch latest products with short revalidation cache so newly added products show up immediately
+    const res = await fetch(`${API_URL}/products?take=${take}`, {
+      next: { revalidate: 30, tags: ['new-arrivals-products', 'products'] },
+    });
+    if (!res.ok) {
+      return [];
+    }
+    const json = await res.json();
+    const data = json.data || [];
+    const mapped: Product[] = data.map(mapDbProductToSchema);
+
+    // Strictly ensure sorted from newest added to oldest (top to bottom)
+    return mapped.sort((a: Product, b: Product) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+  } catch (err) {
+    console.error('getNewArrivalsProducts error:', err);
+    return [];
+  }
+};
