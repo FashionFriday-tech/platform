@@ -24,22 +24,22 @@ const BrandList = ({
 }) => (
   <>
     {logos.map(({ name, logo, slug }, idx) => (
-      <div key={`${slug || name}-${idx}`} className="mx-10">
+      <div key={`${slug || name}-${idx}`} className="mx-4 sm:mx-6 md:mx-8 lg:mx-10">
         <Link
           href={`/brands/${slug || slugify(name)}`}
-          className="relative block h-16 w-16 transition-transform hover:scale-110 active:scale-95 lg:w-24"
+          className="relative block h-10 w-10 sm:h-13 sm:w-13 md:h-16 md:w-16 lg:h-16 lg:w-24 transition-transform hover:scale-110 active:scale-95"
         >
           {logo ? (
             <Image
               src={logo}
               alt={name}
               fill
-              sizes="100px"
+              sizes="(max-width: 640px) 40px, (max-width: 768px) 56px, 96px"
               className="object-contain invert-0 dark:invert"
               priority={priorityStart && idx < 4}
             />
           ) : (
-            <span className="flex h-full w-full items-center justify-center text-xs font-bold uppercase">
+            <span className="flex h-full w-full items-center justify-center text-[10px] sm:text-xs font-bold uppercase">
               {name}
             </span>
           )}
@@ -66,12 +66,12 @@ export default function BrandScroll({ initialBrands }: { initialBrands?: Brand[]
       <div className="relative flex w-full flex-col items-center justify-center">
         <ScrollVelocityContainer className="flex w-full flex-col gap-2 sm:gap-3">
           {/* Row 1: First Half (Moving Right) */}
-          <ScrollVelocityRow baseVelocity={0.35} direction={1}>
+          <ScrollVelocityRow baseVelocity={0.6} direction={1}>
             <BrandList logos={BRAND_ROW_A} priorityStart />
           </ScrollVelocityRow>
 
           {/* Row 2: Second Half (Moving Left) */}
-          <ScrollVelocityRow baseVelocity={0.35} direction={-1}>
+          <ScrollVelocityRow baseVelocity={0.6} direction={-1}>
             <BrandList logos={BRAND_ROW_B} />
           </ScrollVelocityRow>
         </ScrollVelocityContainer>
