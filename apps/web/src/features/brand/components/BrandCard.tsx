@@ -15,9 +15,9 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
   const isBlackBackground = brand.color === '#000000';
 
   return (
-    <Link href={`/brands/${brand.slug}`} className="group block w-full">
+    <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
       <div
-        className="group relative flex aspect-3/4 w-full items-center justify-center overflow-hidden rounded-3xl duration-500 hover:scale-95 sm:rounded-4xl p-4 sm:p-6"
+        className="group relative flex h-full w-full aspect-3/4 items-center justify-center overflow-hidden rounded-3xl duration-500 hover:scale-95 sm:rounded-4xl p-6 sm:p-8"
         style={{
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
@@ -27,12 +27,12 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
             <Image
               src={brand.logo}
               alt={brand.name}
-              width={160}
-              height={160}
+              width={200}
+              height={200}
               onError={() => {
                 setHasError(true);
               }}
-              className={`max-h-[70%] max-w-[75%] object-contain duration-500 group-hover:scale-110 ${
+              className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
                 isBlackBackground ? 'invert dark:invert-0' : 'invert'
               }`}
             />

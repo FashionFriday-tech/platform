@@ -47,10 +47,11 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   const desktopItems = [...displayList, ...displayList];
 
   // Constant speed logic: calculate duration from distance (pixels) so speed doesn't increase with more cards
-  // 22px per second provides a calm, premium, easy-to-read scroll
-  const SPEED_PX_PER_SEC = 22;
-  const MOBILE_CARD_PX = 150 + 20; // 150px width + 20px gap (1.25rem)
-  const DESKTOP_CARD_PX = 200 + 40; // ~200px width + 40px gap (2.5rem)
+  // Constant speed logic: calculate duration from distance (pixels) so speed doesn't increase with more cards
+  // 25px per second provides a calm, premium, easy-to-read scroll
+  const SPEED_PX_PER_SEC = 25;
+  const MOBILE_CARD_PX = 200 + 24; // 200px width + 24px gap (1.5rem)
+  const DESKTOP_CARD_PX = 310 + 24; // 310px width + 24px gap (1.5rem)
 
   // Distance of 50% track (one full cycle of the repeated items)
   const row1Distance = (row1Items.length / 2) * MOBILE_CARD_PX;
@@ -90,7 +91,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               animation-name: brand-marquee-left;
               animation-timing-function: linear;
               animation-iteration-count: infinite;
-              gap: 1.25rem;
+              gap: 1.5rem;
             }
             .animate-brand-marquee-right {
               display: flex;
@@ -98,12 +99,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               animation-name: brand-marquee-right;
               animation-timing-function: linear;
               animation-iteration-count: infinite;
-              gap: 1.25rem;
-            }
-            @media (min-width: 640px) {
-              .animate-brand-marquee-left {
-                gap: 2.5rem;
-              }
+              gap: 1.5rem;
             }
             .animate-brand-marquee-left:hover,
             .animate-brand-marquee-right:hover {
@@ -121,7 +117,10 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               }}
             >
               {desktopItems.map((brand, idx) => (
-                <div key={`desktop-${brand.slug}-${idx}`} className="w-[190px] shrink-0 md:w-[220px]">
+                <div
+                  key={`desktop-${brand.slug}-${idx}`}
+                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 overflow-hidden rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
+                >
                   <BrandCard brand={brand} />
                 </div>
               ))}
@@ -129,17 +128,20 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
           </div>
 
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
-          <div className="flex flex-col gap-4 sm:hidden">
+          <div className="flex flex-col gap-6 sm:hidden">
             {/* ROW 1: Moves Left */}
             <div
-              className="animate-brand-marquee-left relative z-10 px-4"
+              className="animate-brand-marquee-left relative z-10 px-6"
               style={{
                 animationDuration: `${row1Duration}s`,
                 animationPlayState: isInView ? 'running' : 'paused',
               }}
             >
               {row1Items.map((brand, idx) => (
-                <div key={`r1-mobile-${brand.slug}-${idx}`} className="w-[150px] shrink-0">
+                <div
+                  key={`r1-mobile-${brand.slug}-${idx}`}
+                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 overflow-hidden rounded-3xl"
+                >
                   <BrandCard brand={brand} />
                 </div>
               ))}
@@ -147,14 +149,17 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
 
             {/* ROW 2: Moves Right */}
             <div
-              className="animate-brand-marquee-right relative z-10 px-4"
+              className="animate-brand-marquee-right relative z-10 px-6"
               style={{
                 animationDuration: `${row2Duration}s`,
                 animationPlayState: isInView ? 'running' : 'paused',
               }}
             >
               {row2Items.map((brand, idx) => (
-                <div key={`r2-mobile-${brand.slug}-${idx}`} className="w-[150px] shrink-0">
+                <div
+                  key={`r2-mobile-${brand.slug}-${idx}`}
+                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 overflow-hidden rounded-3xl"
+                >
                   <BrandCard brand={brand} />
                 </div>
               ))}
