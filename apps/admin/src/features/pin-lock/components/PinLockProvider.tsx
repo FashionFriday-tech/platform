@@ -10,12 +10,12 @@ interface PinLockProviderProps {
   children: React.ReactNode;
 }
 
-const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes of zero interaction
 
 export function PinLockProvider({ children }: PinLockProviderProps) {
   const { user } = useAuth();
   const isAuthenticated = Boolean(user);
-  const { lock, setHasPin, setSetupMode } = usePinLockStore();
+  const { lock, setHasPin } = usePinLockStore();
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // 1. Service Worker Registration
@@ -32,30 +32,22 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
     }
   }, []);
 
-  // 2. Initialize PIN status when authenticated (default PIN is 1234)
+  // 2. Initialize PIN status: only lock if not already unlocked in this browser session
   useEffect(() => {
     if (!isAuthenticated || !user) return;
     setHasPin(true);
-    lock();
+
+    const isUnlockedInSession =
+      typeof window !== 'undefined' &&
+      sessionStorage.getItem('ff_admin_pin_unlocked') === 'true';
+
+    if (!isUnlockedInSession) {
+      lock();
+    }
   }, [isAuthenticated, user, lock, setHasPin]);
 
-  // 3. Visibility Change (Auto-lock when minimizing or switching apps)
-  useEffect(() => {
-    if (!isAuthenticated) return;
+  // 3. Inactivity Timer (Auto-lock after 15 minutes of no touch/mouse activity)
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        if (PinStorage.hasPin()) {
-          lock();
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [isAuthenticated, lock]);
-
-  // 4. Inactivity Timer (Auto-lock after 5 minutes of no touch/mouse activity)
   useEffect(() => {
     if (!isAuthenticated) return;
 

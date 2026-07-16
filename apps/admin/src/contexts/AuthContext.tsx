@@ -50,6 +50,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem(STORAGE_KEY);
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('ff_admin_pin_unlocked');
+    }
   };
 
   const setRole = (role: Role) => {
