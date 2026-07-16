@@ -20,6 +20,7 @@ import { AnimatedLogo } from '@/components/ui/animated-logo';
 import { useCart } from '@/features/cart';
 import { useAuthStore } from '@/store/auth-store';
 
+import { MobileMenu } from './MobileMenu';
 import { SearchOverlay } from './SearchOverlay/SearchOverlay';
 
 // --- Helper Functions ---
@@ -64,14 +65,20 @@ export function Header() {
   const { itemCount, isMounted } = useCart();
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleOpenSearch = () => {
       setIsSearchOpen(true);
     };
+    const handleOpenMenu = () => {
+      setIsMobileMenuOpen(true);
+    };
     window.addEventListener('open-search', handleOpenSearch);
+    window.addEventListener('open-menu', handleOpenMenu);
     return () => {
       window.removeEventListener('open-search', handleOpenSearch);
+      window.removeEventListener('open-menu', handleOpenMenu);
     };
   }, []);
 
@@ -183,7 +190,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => {
-              window.dispatchEvent(new CustomEvent('open-menu'));
+              setIsMobileMenuOpen(true);
             }}
             className="text-foreground flex items-center justify-start px-0.5 py-1 transition-transform active:scale-95"
             aria-label="Toggle Menu"
@@ -281,6 +288,12 @@ export function Header() {
           <SearchOverlay isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
         )}
       </AnimatePresence>
+
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        onOpenSearch={() => setIsSearchOpen(true)}
+      />
     </>
   );
 }
