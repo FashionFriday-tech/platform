@@ -494,15 +494,27 @@ export class AuthService {
       throw new BadRequestException('4-digit PIN is required');
     }
 
+    const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+
     try {
-      const user = await this.prisma.db.user.findUnique({ where: { phone } });
+      const user = await this.prisma.db.user.findFirst({
+        where: {
+          OR: [
+            { phone: cleanPhone },
+            { phone: phone },
+            { phone: `+91 ${cleanPhone}` },
+            { phone: `+91${cleanPhone}` },
+          ],
+        },
+      });
+
       const adminMeta = (user?.adminMeta as Record<string, unknown>) || {};
       const storedPinHash = adminMeta.securityPin as string | undefined;
 
       if (!storedPinHash) {
         // Default PIN is 1234
         if (pin === '1234') {
-          return { success: true, verified: true };
+          return { success: true, verified: true, valid: true };
         }
         throw new UnauthorizedException('Incorrect PIN');
       }
@@ -512,14 +524,14 @@ export class AuthService {
         throw new UnauthorizedException('Incorrect PIN');
       }
 
-      return { success: true, verified: true };
+      return { success: true, verified: true, valid: true };
     } catch (err) {
       if (err instanceof UnauthorizedException || err instanceof BadRequestException) {
         throw err;
       }
-      // If DB error, verify default 1234
+      // If DB error or user not found, verify default 1234
       if (pin === '1234') {
-        return { success: true, verified: true };
+        return { success: true, verified: true, valid: true };
       }
       throw new UnauthorizedException('Incorrect PIN');
     }
@@ -530,10 +542,22 @@ export class AuthService {
       throw new BadRequestException('New PIN must be exactly 4 digits');
     }
 
+    const cleanAdminPhone = adminPhone.replace(/\D/g, '').slice(-10);
+    const cleanTargetPhone = targetPhone.replace(/\D/g, '').slice(-10);
+
     // Only SUPER_ADMIN can change team members' PINs
-    const superAdmin = await this.prisma.db.user.findUnique({ where: { phone: adminPhone } });
+    const superAdmin = await this.prisma.db.user.findFirst({
+      where: {
+        OR: [
+          { phone: cleanAdminPhone },
+          { phone: adminPhone },
+          { phone: `+91 ${cleanAdminPhone}` },
+        ],
+      },
+    });
+
     if (!superAdmin || superAdmin.role !== 'SUPER_ADMIN') {
-      if (adminPhone !== '9999999999') {
+      if (cleanAdminPhone !== '9999999999') {
         throw new UnauthorizedException('Only Super Admin is authorized to change security PINs');
       }
     }
@@ -541,11 +565,20 @@ export class AuthService {
     const hashedPin = await argon2.hash(newPin);
 
     try {
-      const targetUser = await this.prisma.db.user.findUnique({ where: { phone: targetPhone } });
+      const targetUser = await this.prisma.db.user.findFirst({
+        where: {
+          OR: [
+            { phone: cleanTargetPhone },
+            { phone: targetPhone },
+            { phone: `+91 ${cleanTargetPhone}` },
+          ],
+        },
+      });
+
       if (targetUser) {
         const currentMeta = (targetUser.adminMeta as Record<string, unknown>) || {};
         await this.prisma.db.user.update({
-          where: { phone: targetPhone },
+          where: { id: targetUser.id },
           data: {
             adminMeta: {
               ...currentMeta,
@@ -561,6 +594,7 @@ export class AuthService {
 
     return {
       success: true,
+      valid: true,
       message: `Security PIN updated successfully for ${targetPhone}`,
     };
   }

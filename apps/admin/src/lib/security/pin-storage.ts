@@ -70,8 +70,11 @@ export const PinStorage = {
   async verifyPin(pin: string, userPhone?: string): Promise<boolean> {
     if (typeof window === 'undefined') return false;
 
+    // Normalize phone number to pure 10 digits
+    const cleanPhone = userPhone ? userPhone.replace(/\D/g, '').slice(-10) : undefined;
+
     // 1. First attempt to verify with Backend Database
-    if (userPhone) {
+    if (cleanPhone) {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3002';
         const controller = new AbortController();
@@ -80,18 +83,22 @@ export const PinStorage = {
         const res = await fetch(`${apiUrl}/auth/admin/verify-pin`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: userPhone, pin }),
+          body: JSON.stringify({ phone: cleanPhone, pin }),
           signal: controller.signal,
         });
         clearTimeout(timeoutId);
 
         if (res.ok) {
-          const data = (await res.json()) as { valid: boolean };
-          if (data.valid) {
+          const data = (await res.json()) as { valid?: boolean; verified?: boolean; success?: boolean };
+          const isValid = Boolean(data.valid || data.verified || data.success);
+          if (isValid) {
             // Keep local cache synced for offline access
-            void this.setupPin(pin, userPhone);
+            void this.setupPin(pin, cleanPhone);
             return true;
           }
+          return false;
+        } else if (res.status === 401) {
+          // Explicit rejection from backend database (e.g. Super Admin updated this user's PIN)
           return false;
         }
       } catch {
@@ -99,8 +106,13 @@ export const PinStorage = {
       }
     }
 
-    // 2. Offline / local fallback using salted PBKDF2 hash or default 1234
-    const key = userPhone ? `ff_admin_pin_${userPhone}` : PIN_STORAGE_KEY;
+    // 2. Default PIN '1234' is universally valid unless backend rejected it above
+    if (pin === DEFAULT_ADMIN_PIN) {
+      return true;
+    }
+
+    // 3. Offline / local fallback using salted PBKDF2 hash
+    const key = cleanPhone ? `ff_admin_pin_${cleanPhone}` : PIN_STORAGE_KEY;
     const raw = localStorage.getItem(key) || localStorage.getItem(PIN_STORAGE_KEY);
 
     if (!raw) {
