@@ -5,7 +5,7 @@ const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  '/icons/apple-touch-icon.png'
+  '/icons/apple-touch-icon.png',
 ];
 
 // Install: Cache essential shell assets
@@ -13,19 +13,23 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
-    })
+    }),
   );
   self.skipWaiting();
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Activate: Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
+      return Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)));
+    }),
   );
   self.clients.claim();
 });
@@ -54,7 +58,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         });
-      })
+      }),
     );
     return;
   }
@@ -66,7 +70,7 @@ self.addEventListener('fetch', (event) => {
         if (cached) return cached;
         return caches.match('/');
       });
-    })
+    }),
   );
 });
 
@@ -98,13 +102,11 @@ self.addEventListener('push', (event) => {
     data: { url: data.url || '/' },
     actions: [
       { action: 'open', title: 'View Details' },
-      { action: 'dismiss', title: 'Dismiss' }
-    ]
+      { action: 'dismiss', title: 'Dismiss' },
+    ],
   };
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+  event.waitUntil(self.registration.showNotification(data.title, options));
 
   // Update App Badge if supported
   if ('setAppBadge' in navigator && data.badgeCount !== undefined) {
@@ -130,6 +132,6 @@ self.addEventListener('notificationclick', (event) => {
       if (clients.openWindow) {
         return clients.openWindow(targetUrl);
       }
-    })
+    }),
   );
 });
