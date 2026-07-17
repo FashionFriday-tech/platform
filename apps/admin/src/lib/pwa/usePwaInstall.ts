@@ -17,60 +17,52 @@ export function usePwaInstall() {
   useEffect(() => {
     setIsMounted(true);
 
+    // Clean up any stale localStorage flag from previous versions
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('ff_pwa_installed');
+      } catch {
+        // Ignore storage access errors
+      }
+    }
+
     const checkIsInstalled = () => {
       if (typeof window === 'undefined') {
         return false;
       }
 
-      // 1. Check local storage install persistence
-      if (localStorage.getItem('ff_pwa_installed') === 'true') {
-        return true;
-      }
-
-      // 2. Check standalone / fullscreen / minimal-ui display modes
+      // Check standalone / fullscreen / minimal-ui display modes
       const isStandaloneMode =
         window.matchMedia('(display-mode: standalone)').matches ||
         window.matchMedia('(display-mode: fullscreen)').matches ||
         window.matchMedia('(display-mode: minimal-ui)').matches ||
         window.matchMedia('(display-mode: window-controls-overlay)').matches ||
         ('standalone' in navigator &&
-          (navigator as unknown as { standalone: boolean }).standalone) ||
+          Boolean((navigator as unknown as { standalone?: boolean }).standalone)) ||
         document.referrer.includes('android-app://') ||
         window.location.search.includes('source=pwa');
 
-      if (isStandaloneMode) {
-        localStorage.setItem('ff_pwa_installed', 'true');
-        return true;
-      }
-
-      return false;
+      return isStandaloneMode;
     };
 
-    const currentlyInstalled = checkIsInstalled();
-    setIsInstalled(currentlyInstalled);
+    setIsInstalled(checkIsInstalled());
 
-    // 3. Query getInstalledRelatedApps API if supported (Chromium / Edge / Android)
+    // Query getInstalledRelatedApps API if supported (Chromium / Edge / Android)
     if (typeof navigator !== 'undefined' && 'getInstalledRelatedApps' in navigator) {
       (navigator as unknown as { getInstalledRelatedApps: () => Promise<unknown[]> })
         .getInstalledRelatedApps()
         .then((apps) => {
-          if (Array.isArray(apps) && apps.length > 0) {
-            setIsInstalled(true);
-            localStorage.setItem('ff_pwa_installed', 'true');
+          if (Array.isArray(apps)) {
+            setIsInstalled(apps.length > 0 || checkIsInstalled());
           }
         })
-        .catch(() => {
-          // Ignore unsupported / permission errors
-        });
+        .catch(() => null);
     }
 
     // Listen for display-mode changes
     const mediaQuery = window.matchMedia('(display-mode: standalone)');
     const handleMediaChange = (e: MediaQueryListEvent) => {
-      if (e.matches) {
-        setIsInstalled(true);
-        localStorage.setItem('ff_pwa_installed', 'true');
-      }
+      setIsInstalled(e.matches);
     };
 
     if (mediaQuery.addEventListener) {
@@ -87,7 +79,6 @@ export function usePwaInstall() {
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
-      localStorage.setItem('ff_pwa_installed', 'true');
       toast.success('Fashion Friday Admin installed successfully!');
     };
 
@@ -110,7 +101,6 @@ export function usePwaInstall() {
       if (choice.outcome === 'accepted') {
         setDeferredPrompt(null);
         setIsInstalled(true);
-        localStorage.setItem('ff_pwa_installed', 'true');
       }
       return;
     }
@@ -127,9 +117,12 @@ export function usePwaInstall() {
         },
       );
     } else {
-      toast.info('To install: Click the install icon (⊕) in your browser address bar.', {
-        duration: 5000,
-      });
+      toast.info(
+        'To install: Click the install icon (⊕ or ⬇) in your browser address bar or menu.',
+        {
+          duration: 5000,
+        },
+      );
     }
   };
 
