@@ -28,7 +28,7 @@ export const metadata: Metadata = {
       { url: '/icons/ff_admin_app_icon.png', type: 'image/png' },
       { url: '/favicon.png', type: 'image/png' },
     ],
-    apple: '/icons/ff_admin_app_icon.png',
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
 };
 
@@ -39,6 +39,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="scrollbar-hide">
+      <head>
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png" />
+      </head>
       <body
         suppressHydrationWarning
         className={`${mulish.variable} scrollbar-hide flex min-h-screen bg-slate-50 font-sans text-black antialiased dark:bg-slate-950 dark:text-white`}
