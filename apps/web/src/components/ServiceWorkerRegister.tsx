@@ -17,8 +17,11 @@ export default function ServiceWorkerRegister() {
     });
 
     navigator.serviceWorker
-      .register('/sw.js')
+      .register('/sw.js', { updateViaCache: 'none' })
       .then((registration) => {
+        // Check for updates immediately
+        void registration.update();
+
         // Check for updates periodically
         registration.onupdatefound = () => {
           const installingWorker = registration.installing;
