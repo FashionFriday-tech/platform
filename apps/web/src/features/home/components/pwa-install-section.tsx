@@ -87,10 +87,30 @@ function usePWAInstall() {
         window.matchMedia('(display-mode: standalone)').matches ||
         window.navigator.standalone === true;
 
-      if (isStandalone) {
-        setIsInstalled(true);
-      }
+      return isStandalone;
     };
+
+    setIsInstalled(checkInstalledStatus());
+
+    if (typeof navigator !== 'undefined' && 'getInstalledRelatedApps' in navigator) {
+      (navigator as unknown as { getInstalledRelatedApps: () => Promise<unknown[]> })
+        .getInstalledRelatedApps()
+        .then((apps) => {
+          if (Array.isArray(apps)) {
+            setIsInstalled(apps.length > 0 || checkInstalledStatus());
+          }
+        })
+        .catch(() => null);
+    }
+
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleMediaChange = (e: MediaQueryListEvent) => {
+      setIsInstalled(e.matches);
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMediaChange);
+    }
 
     const beforeInstallHandler = (e: Event) => {
       // Prevent the mini-infobar from appearing on mobile
@@ -104,11 +124,13 @@ function usePWAInstall() {
       setDeferredPrompt(null);
     };
 
-    checkInstalledStatus();
     window.addEventListener('beforeinstallprompt', beforeInstallHandler);
     window.addEventListener('appinstalled', installedHandler);
 
     return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMediaChange);
+      }
       window.removeEventListener('beforeinstallprompt', beforeInstallHandler);
       window.removeEventListener('appinstalled', installedHandler);
     };
@@ -126,11 +148,12 @@ function usePWAInstall() {
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
         setDeferredPrompt(null);
+        setIsInstalled(true);
       }
       return;
     }
 
-    // iOS flow (Manual instructions needed)
+    // Browser / iOS fallback instructions
     setShowInstructions(true);
   }, [deferredPrompt, isInstalled]);
 
@@ -165,7 +188,7 @@ const fadeInUp: Variants = {
 /* ---------------- Component ---------------- */
 
 export default function PWAInstallSection() {
-  const { isInstalled, install, showInstructions, setShowInstructions } = usePWAInstall();
+  const { isInstalled, install, showInstructions, setShowInstructions, isIOS } = usePWAInstall();
 
   // If the app is already installed, we don't need to show the installation prompt.
   if (isInstalled) {
@@ -203,7 +226,10 @@ export default function PWAInstallSection() {
           transition={{ duration: 0.7 }}
           className="flex w-full justify-center md:w-1/2"
         >
-          <Iphone className="w-65 lg:w-65" src="/images/model/ff-app-product-page.webp" />
+          <Iphone
+            className="w-[280px] drop-shadow-2xl transition-all sm:w-[320px] md:w-[350px] lg:w-[380px] xl:w-[400px]"
+            src="/images/model/ff-app-product-page.webp"
+          />
         </motion.div>
 
         {/* Content: Copy & Actions */}
@@ -273,18 +299,35 @@ export default function PWAInstallSection() {
                     <CloseIcon className="h-4 w-4" />
                   </button>
 
-                  <h5 className="mb-2 flex items-center gap-2 font-bold">
-                    <AppleLogoIcon className="h-4 w-4" />
-                    iOS Installation
-                  </h5>
+                  {isIOS ? (
+                    <>
+                      <h5 className="mb-2 flex items-center gap-2 font-bold">
+                        <AppleLogoIcon className="h-4 w-4" />
+                        iOS Installation
+                      </h5>
 
-                  <ol className="list-decimal space-y-1 pl-4 text-xs">
-                    <li>
-                      Tap <ShareIcon className="inline h-3 w-3" /> Share in Safari
-                    </li>
-                    <li>Select "Add to Home Screen"</li>
-                    <li>Tap "Add" in the top right</li>
-                  </ol>
+                      <ol className="list-decimal space-y-1 pl-4 text-xs">
+                        <li>
+                          Tap <ShareIcon className="inline h-3 w-3" /> Share in Safari
+                        </li>
+                        <li>Select "Add to Home Screen"</li>
+                        <li>Tap "Add" in the top right</li>
+                      </ol>
+                    </>
+                  ) : (
+                    <>
+                      <h5 className="mb-2 flex items-center gap-2 font-bold">
+                        <DownloadIcon className="h-4 w-4" />
+                        Install Fashion Friday
+                      </h5>
+
+                      <ol className="list-decimal space-y-1 pl-4 text-xs">
+                        <li>Look for the install icon (⊕ or ⬇) in your address bar</li>
+                        <li>Or tap the browser menu (⋮ / ⋯)</li>
+                        <li>Select "Install App" or "Add to Home screen"</li>
+                      </ol>
+                    </>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

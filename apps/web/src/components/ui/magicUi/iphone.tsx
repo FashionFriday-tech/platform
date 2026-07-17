@@ -7,7 +7,7 @@ const SCREEN_X = 15;
 const SCREEN_Y = 15;
 const SCREEN_WIDTH = 400;
 const SCREEN_HEIGHT = 850;
-const SCREEN_RADIUS = 55.75;
+const SCREEN_RADIUS = 48;
 
 // Calculated percentages
 const LEFT_PCT = (SCREEN_X / PHONE_WIDTH) * 100;
@@ -28,7 +28,7 @@ export function Iphone({ src, videoSrc, className, style, ...props }: IphoneProp
 
   return (
     <div
-      className={`relative inline-block align-middle leading-none sm:w-full ${className ?? ''}`}
+      className={`relative inline-block align-middle leading-none ${className ?? ''}`}
       style={{
         aspectRatio: `${PHONE_WIDTH}/${PHONE_HEIGHT}`,
         ...style,
@@ -37,7 +37,7 @@ export function Iphone({ src, videoSrc, className, style, ...props }: IphoneProp
     >
       {hasVideo && (
         <div
-          className="pointer-events-none absolute z-0 overflow-hidden"
+          className="pointer-events-none absolute z-0 overflow-hidden bg-black"
           style={{
             left: `${LEFT_PCT}%`,
             top: `${TOP_PCT}%`,
@@ -60,7 +60,7 @@ export function Iphone({ src, videoSrc, className, style, ...props }: IphoneProp
 
       {!hasVideo && src && (
         <div
-          className="pointer-events-none absolute z-0 overflow-hidden"
+          className="pointer-events-none absolute z-0 overflow-hidden bg-black"
           style={{
             left: `${LEFT_PCT}%`,
             top: `${TOP_PCT}%`,
@@ -71,11 +71,11 @@ export function Iphone({ src, videoSrc, className, style, ...props }: IphoneProp
         >
           <Image
             src={src}
-            alt=""
+            alt="Fashion Friday App"
             fill
-            sizes="(max-width: 1024px) 260px, 260px"
-            className="object-cover object-top"
-          />{' '}
+            sizes="(max-width: 640px) 320px, (max-width: 1024px) 380px, 440px"
+            className="object-contain object-top"
+          />
         </div>
       )}
 
