@@ -294,73 +294,29 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
             >
               <style>{`
                 @keyframes electric-blink {
-                  0%, 100% {
+                  0%, 18%, 22%, 25%, 53%, 57%, 100% {
                     opacity: 1;
                     filter: drop-shadow(0 0 1px currentColor);
                   }
-                  3% {
+                  19%, 21% {
                     opacity: 0.15;
                     filter: none;
                   }
-                  6% {
-                    opacity: 1;
-                    filter: drop-shadow(0 0 1px currentColor);
+                  23%, 24% {
+                    opacity: 0.4;
+                    filter: none;
                   }
-                  8% {
+                  54%, 56% {
                     opacity: 0.2;
                     filter: none;
-                  }
-                  11% {
-                    opacity: 1;
-                    filter: drop-shadow(0 0 1px currentColor);
-                  }
-                  42% {
-                    opacity: 1;
-                    filter: drop-shadow(0 0 1px currentColor);
-                  }
-                  44% {
-                    opacity: 0.1;
-                    filter: none;
-                  }
-                  46% {
-                    opacity: 1;
-                    filter: drop-shadow(0 0 2px currentColor);
-                  }
-                  48% {
-                    opacity: 0.2;
-                    filter: none;
-                  }
-                  50% {
-                    opacity: 1;
-                    filter: drop-shadow(0 0 1px currentColor);
-                  }
-                  76% {
-                    opacity: 1;
-                    filter: drop-shadow(0 0 1px currentColor);
-                  }
-                  78% {
-                    opacity: 0;
-                    filter: none;
-                  }
-                  80% {
-                    opacity: 1;
-                    filter: drop-shadow(0 0 2px currentColor);
-                  }
-                  82% {
-                    opacity: 0.15;
-                    filter: none;
-                  }
-                  84% {
-                    opacity: 1;
-                    filter: drop-shadow(0 0 1px currentColor);
                   }
                 }
                 .animate-electric-blink {
-                  animation: electric-blink 1.8s infinite;
+                  animation: electric-blink 2.2s infinite;
                   display: inline-block;
                 }
                 .dark .animate-electric-blink {
-                  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 255, 255, 0.4);
+                  text-shadow: 0 0 2px rgba(255, 255, 255, 0.7);
                 }
               `}</style>
 
@@ -423,7 +379,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                   >
                     <span className="flex items-center gap-2">{item.label}</span>
                     {item.badge && (
-                      <span className="animate-electric-blink text-foreground text-[11px] font-black tracking-widest uppercase select-none">
+                      <span className="animate-electric-blink text-foreground text-[10px] font-black tracking-widest uppercase select-none">
                         {item.badge}
                       </span>
                     )}
@@ -433,7 +389,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
 
               {/* Account & Support Section */}
               <div className="border-border/30 mb-6 flex flex-col gap-1 border-t pt-4">
-                <span className="text-foreground/40 mb-2 text-[10px] font-black tracking-[0.2em] uppercase">
+                <span className="text-foreground/40 mb-2.5 px-3 text-[10px] font-black tracking-[0.22em] uppercase">
                   Account & Help
                 </span>
                 {ACCOUNT_LINKS.map((item) => {
@@ -443,10 +399,25 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                       key={item.label}
                       href={item.href}
                       onClick={onClose}
-                      className="text-foreground/80 hover:bg-foreground/5 hover:text-foreground flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold transition-all active:scale-98"
+                      className="group hover:bg-foreground/5 flex items-center justify-between rounded-xl px-3 py-2.5 transition-all active:scale-98"
                     >
-                      <Icon className="text-foreground/60 text-lg" />
-                      <span>{item.label}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="bg-foreground/5 text-foreground/70 group-hover:bg-foreground/10 group-hover:text-foreground flex h-8 w-8 items-center justify-center rounded-lg transition-colors">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <span className="text-foreground/90 group-hover:text-foreground text-sm font-bold tracking-tight transition-colors">
+                          {item.label}
+                        </span>
+                      </div>
+                      <svg
+                        className="text-foreground/20 group-hover:text-foreground/60 h-3.5 w-3.5 transition-all group-hover:translate-x-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
                     </Link>
                   );
                 })}
@@ -518,7 +489,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                   aria-label="Follow on Instagram"
                   title="Instagram"
                 >
-                  <InstagramIcon className="h-4.5 w-4.5" />
+                  <InstagramIcon className="h-4 w-4" />
                 </a>
                 <a
                   href="https://youtube.com/fashionfriday.store"
