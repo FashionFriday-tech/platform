@@ -20,6 +20,7 @@ export default function Loading() {
                 alt="FF logo"
                 width={40}
                 height={40}
+                style={{ width: 'auto', height: 'auto' }}
                 className="h-auto w-10 dark:invert"
                 priority
               />
