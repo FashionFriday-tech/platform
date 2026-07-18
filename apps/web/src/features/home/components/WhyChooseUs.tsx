@@ -61,35 +61,41 @@ const InfiniteColumn = ({
   active = false,
   onSelectImage,
 }: InfiniteColumnProps) => {
-  // Ensure we have enough items to scroll nicely
-  const loopImages = [...images, ...images, ...images];
+  // Two identical copies guarantee a 100% seamless mathematical loop at -50%
+  const loopImages = [...images, ...images];
 
   return (
     <>
       <style jsx global>{`
         @keyframes scrollUp {
           0% {
-            transform: translateY(0);
+            transform: translate3d(0, 0, 0);
           }
           100% {
-            transform: translateY(-50%);
+            transform: translate3d(0, -50%, 0);
           }
         }
         @keyframes scrollDown {
           0% {
-            transform: translateY(-50%);
+            transform: translate3d(0, -50%, 0);
           }
           100% {
-            transform: translateY(0);
+            transform: translate3d(0, 0, 0);
           }
         }
 
         .animate-scroll-up {
           animation: scrollUp var(--duration) linear infinite;
+          will-change: transform;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
         }
 
         .animate-scroll-down {
           animation: scrollDown var(--duration) linear infinite;
+          will-change: transform;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
         }
 
         /* Force pause on hover */
@@ -278,9 +284,10 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
           {/* LEFT SIDE */}
           <div className="relative z-10 flex flex-col justify-center py-20 lg:sticky lg:top-0 lg:h-screen lg:py-32">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               className="mb-12"
             >
               <h2 className="mb-6 text-5xl leading-[0.9] font-bold tracking-tighter uppercase md:text-7xl">
@@ -297,14 +304,14 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
               {features.map((item, idx) => (
                 <motion.div
                   key={idx}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
                   className="group flex cursor-default gap-6"
                 >
-                  <div className="border-forground relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border transition-colors duration-300">
-                    <item.icon className="text-forground z-10 h-6 w-6 transition-colors duration-300" />
+                  <div className="border-foreground/20 group-hover:border-foreground/50 relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border transition-colors duration-300">
+                    <item.icon className="text-foreground z-10 h-6 w-6 transition-colors duration-300" />
                     <div className="absolute inset-0 bg-white opacity-0 blur-xl transition-opacity duration-300" />
                   </div>
                   <div>
@@ -339,8 +346,8 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                 ref={columnsRef}
                 className="relative h-150 w-full overflow-hidden lg:h-[calc(100vh-120px)]"
               >
-                <div className="from-background via-blackground pointer-events-none absolute top-0 right-0 left-0 z-20 h-24 bg-linear-to-b to-transparent" />
-                <div className="from-blackground via-background pointer-events-none absolute right-0 -bottom-6 left-0 z-20 h-24 bg-linear-to-t to-transparent" />
+                <div className="from-background via-background/80 pointer-events-none absolute top-0 right-0 left-0 z-20 h-24 bg-gradient-to-b to-transparent" />
+                <div className="from-background via-background/80 pointer-events-none absolute right-0 -bottom-6 left-0 z-20 h-24 bg-gradient-to-t to-transparent" />
 
                 <div className="grid h-full w-full grid-cols-3 gap-3 p-4 lg:p-6">
                   <div className="relative h-full overflow-hidden">
