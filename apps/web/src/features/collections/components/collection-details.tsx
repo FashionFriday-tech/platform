@@ -34,7 +34,7 @@ export async function CollectionDetails({
   return (
     <div className="flex w-full flex-col">
       {/* Hero Section aligned with the product grid to avoid sidebar overlap */}
-      <div className="w-full max-w-none px-4 pt-24 md:px-8 md:pt-32 xl:px-10 2xl:px-14">
+      <div className="w-full max-w-none px-4 pt-2 sm:pt-4 md:px-8 md:pt-24 xl:px-10 2xl:px-14">
         <div className="w-full lg:pl-80">
           <section className="relative flex h-[40vh] w-full items-center justify-center overflow-hidden rounded-[2.5rem] bg-black md:h-[50vh]">
             {collection.image ? (
