@@ -27,11 +27,18 @@ self.addEventListener('message', (event) => {
 // Activate: Clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)));
-    }),
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)),
+        );
+      })
+      .then(() => self.clients.claim())
+      .catch((err) => {
+        console.warn('[PWA] Activation error:', err);
+      }),
   );
-  self.clients.claim();
 });
 
 // Fetch: Network-first for dynamic navigation & API, cache-fallback for assets

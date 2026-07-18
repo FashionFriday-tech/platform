@@ -35,7 +35,7 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
         .register('/sw.js', { updateViaCache: 'none' })
         .then((reg) => {
           console.log('[PWA] Service Worker registered with scope:', reg.scope);
-          void reg.update();
+          reg.update().catch(() => null);
 
           reg.onupdatefound = () => {
             const installing = reg.installing;
