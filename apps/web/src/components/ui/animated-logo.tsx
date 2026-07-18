@@ -23,34 +23,37 @@ export function AnimatedLogo({ className = '' }: AnimatedLogoProps) {
             font-weight: 700;
           }
 
-          @keyframes cinematic-zoom {
+          @keyframes luxury-text-roll {
             0% { 
               opacity: 0; 
-              transform: scale(0.8); 
-              filter: blur(6px);
+              transform: translate3d(0, 8px, 0); 
             }
-            3% { 
+            3.5% { 
               opacity: 1; 
-              transform: scale(1); 
-              filter: blur(0px);
+              transform: translate3d(0, 0, 0); 
             }
-            22% { 
+            21.5% { 
               opacity: 1; 
-              transform: scale(1); 
-              filter: blur(0px);
+              transform: translate3d(0, 0, 0); 
             }
-            25%, 100% { 
+            25% { 
               opacity: 0; 
-              transform: scale(0.8); 
-              filter: blur(6px);
+              transform: translate3d(0, -8px, 0); 
+            }
+            25.01%, 100% { 
+              opacity: 0; 
+              transform: translate3d(0, 8px, 0); 
             }
           }
+
           .animate-zoom {
-            animation: cinematic-zoom 20s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+            animation: luxury-text-roll 20s cubic-bezier(0.16, 1, 0.3, 1) infinite;
             grid-column: 1 / -1;
             grid-row: 1 / -1;
             opacity: 0;
-            will-change: transform, opacity, filter;
+            will-change: transform, opacity;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
           }
         `}
       </style>
