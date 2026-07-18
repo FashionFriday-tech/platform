@@ -271,13 +271,13 @@ export function Header() {
         >
           <SearchListIcon className="text-[25px]" />
         </button>
-        <Link href="/" className="scale-110">
+        <Link href="/" className="flex scale-110 items-center justify-center">
           <Image
             src="/images/logos/ff-logo.png"
             width={32}
             height={32}
             alt="logo"
-            className="h-8 w-8 object-contain dark:invert"
+            className="object-contain dark:invert"
           />
         </Link>
         <Link href="/checkout/cart" className="relative">
