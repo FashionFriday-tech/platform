@@ -16,13 +16,35 @@ export default function ServiceWorkerRegister() {
       }
     });
 
+    // Prevent any browser-internal service worker update rejection from surfacing in Next.js error overlay
+    const handleRejection = (event: PromiseRejectionEvent) => {
+      const reason = event.reason as unknown;
+      const message =
+        reason instanceof Error ? reason.message : typeof reason === 'string' ? reason : '';
+      if (message.includes('ServiceWorker') || message.includes('sw.js')) {
+        event.preventDefault();
+      }
+    };
+    window.addEventListener('unhandledrejection', handleRejection);
+
+    // Clean up any stale, orphan, or corrupted service worker registrations
+    navigator.serviceWorker
+      .getRegistrations()
+      .then(async (registrations) => {
+        for (const reg of registrations) {
+          const script =
+            reg.active?.scriptURL || reg.waiting?.scriptURL || reg.installing?.scriptURL;
+          if (!script?.endsWith('/sw.js')) {
+            await reg.unregister().catch(() => null);
+          }
+        }
+      })
+      .catch(() => null);
+
     navigator.serviceWorker
       .register('/sw.js', { updateViaCache: 'none' })
       .then((registration) => {
-        // Check for updates immediately
-        void registration.update();
-
-        // Check for updates periodically
+        // Listen for new worker updates
         registration.onupdatefound = () => {
           const installingWorker = registration.installing;
 
@@ -41,6 +63,10 @@ export default function ServiceWorkerRegister() {
       .catch(() => {
         // Silent catch
       });
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleRejection);
+    };
   }, []);
 
   return null;
