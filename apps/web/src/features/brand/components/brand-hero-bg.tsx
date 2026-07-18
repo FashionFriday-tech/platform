@@ -42,10 +42,12 @@ export function BrandHeroBg({ poster, name }: BrandHeroBgProps) {
         src={poster || '/images/bg-hero.png'}
         alt={name}
         fill
-        className="animate-hero-bg object-cover opacity-80"
+        className="animate-hero-bg object-cover opacity-100"
         style={{ animationPlayState: isInView ? 'running' : 'paused' }}
         priority
       />
+      {/* Neutral dark vignette for text contrast without brand color tinting */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/40" />
     </div>
   );
 }
