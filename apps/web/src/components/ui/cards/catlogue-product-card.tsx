@@ -66,18 +66,18 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
 
-          {/* Favorite Borderless Button with Larger Black Icon */}
+          {/* Favorite Borderless Button with Refined Position and 50% Opacity */}
           <button
             type="button"
             suppressHydrationWarning
             onClick={handleWishlistToggle}
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            className="absolute top-6 right-6 z-10 flex items-center justify-center text-black transition-all duration-300 hover:scale-125 active:scale-90"
+            className="absolute top-3.5 right-3.5 z-10 flex items-center justify-center text-black/50 transition-all duration-300 hover:scale-115 hover:text-black active:scale-90 sm:top-4 sm:right-4"
           >
             {isWishlisted ? (
-              <HeartFilledIcon size={26} className="text-black transition-transform" />
+              <HeartFilledIcon size={24} className="text-black transition-transform" />
             ) : (
-              <HeartIcon size={26} className="text-black transition-colors" />
+              <HeartIcon size={24} className="transition-colors" />
             )}
           </button>
         </div>
