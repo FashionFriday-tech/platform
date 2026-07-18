@@ -99,7 +99,7 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
       </div>
 
       {/* --- MAIN GRID AREA --- */}
-      <main className="w-full max-w-none px-4 pt-4 pb-20 md:px-8 xl:px-10 2xl:px-14">
+      <main className="w-full max-w-none px-4 pt-2 pb-16 sm:pt-4 sm:pb-20 md:px-8 xl:px-10 2xl:px-14">
         {/* Desktop Fixed Sidebar */}
         <div className="fixed top-20 z-20 hidden h-[calc(100vh-6rem)] w-72 shrink-0 lg:flex lg:flex-col">
           <CatalogueSidebar

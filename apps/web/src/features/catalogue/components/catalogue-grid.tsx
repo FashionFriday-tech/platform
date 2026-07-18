@@ -50,10 +50,10 @@ export const CatalogueGrid = ({
   return (
     <div className="w-full">
       {/* --- REFINEMENT & SORTING BAR --- */}
-      <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Results Count & Active Filter Chips */}
-        <div className="flex flex-wrap items-center gap-2">
-          {activeChips.length > 0 && (
+      {activeChips.length > 0 && (
+        <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Results Count & Active Filter Chips */}
+          <div className="flex flex-wrap items-center gap-2">
             <div className="border-border flex flex-wrap items-center gap-1.5 pl-2 sm:border-l">
               {activeChips.map((chip) => (
                 <button
@@ -77,53 +77,48 @@ export const CatalogueGrid = ({
                 </button>
               )}
             </div>
-          )}
+          </div>
         </div>
-
-        {/* Desktop / Tablet Sort Selector (Removed per request as it exists in sidebar) */}
-      </div>
+      )}
 
       {/* --- PRODUCT GRID --- */}
-      <div className="4xl:grid-cols-5 grid grid-cols-2 gap-4 gap-y-8 pt-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
-        {products.map((product, index) => {
-          const isPromoPosition = (index + 1) % ITEMS_PER_PROMO === 0;
+      {products.length > 0 && (
+        <div className="4xl:grid-cols-5 grid grid-cols-2 gap-4 gap-y-8 pt-2 sm:pt-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+          {products.map((product, index) => {
+            const isPromoPosition = (index + 1) % ITEMS_PER_PROMO === 0;
 
-          return (
-            <React.Fragment key={product.id}>
-              <motion.div
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <CatalogueProductCard product={product} />
-              </motion.div>
-
-              {/* PROMO BANNER: 2 product cards wide */}
-              {isPromoPosition && (
+            return (
+              <React.Fragment key={product.id}>
                 <motion.div
                   layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-background-muted relative col-span-2 aspect-[8/5] w-full overflow-hidden rounded-4xl sm:aspect-auto sm:h-full lg:rounded-[2.5rem]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <PromoVideo src="/gif/ad.gif" />
+                  <CatalogueProductCard product={product} />
                 </motion.div>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
 
-      {/* Sourcing Request Section */}
-      <div className="border-border mt-16 border-t pt-12">
-        <Request />
-      </div>
+                {/* PROMO BANNER: 2 product cards wide */}
+                {isPromoPosition && (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-background-muted relative col-span-2 aspect-[8/5] w-full overflow-hidden rounded-4xl sm:aspect-auto sm:h-full lg:rounded-[2.5rem]"
+                  >
+                    <PromoVideo src="/gif/ad.gif" />
+                  </motion.div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      )}
 
       {/* Empty State Logic */}
       {products.length === 0 && (
-        <div className="py-32 text-center">
+        <div className="py-6 text-center sm:py-12">
           <p className="text-base font-black tracking-widest uppercase opacity-70">
             No Gear Matches Your Current Refinement
           </p>
@@ -133,13 +128,22 @@ export const CatalogueGrid = ({
           {onClearFilters && (
             <button
               onClick={onClearFilters}
-              className="bg-foreground text-background mt-6 rounded-full px-6 py-3 text-[10px] font-black tracking-widest uppercase transition-transform hover:scale-105 active:scale-95"
+              className="bg-foreground text-background mt-4 rounded-full px-6 py-2.5 text-[10px] font-black tracking-widest uppercase transition-transform hover:scale-105 active:scale-95"
             >
               Reset All Filters
             </button>
           )}
         </div>
       )}
+
+      {/* Sourcing Request Section */}
+      <div
+        className={`border-border border-t ${
+          products.length > 0 ? 'mt-12 pt-8 sm:mt-16 sm:pt-12' : 'mt-3 pt-3 sm:mt-6 sm:pt-6'
+        }`}
+      >
+        <Request />
+      </div>
     </div>
   );
 };

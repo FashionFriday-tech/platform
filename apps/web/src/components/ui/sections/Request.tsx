@@ -100,7 +100,7 @@ export default function SourcingSection() {
   };
 
   return (
-    <div className="my-10 flex items-center justify-center">
+    <div className="my-2 flex items-center justify-center sm:my-6">
       <div className="bg-background w-full max-w-6xl gap-8 overflow-hidden rounded-[2.5rem] lg:flex lg:items-stretch lg:justify-between">
         <div className="group relative hidden min-h-[500px] flex-1 overflow-hidden rounded-[2rem] lg:block">
           {/* Main Sourcing Image */}
@@ -154,16 +154,13 @@ export default function SourcingSection() {
         </div>
 
         {/* RIGHT: FORM SECTION */}
-        <div className="flex flex-1 flex-col items-center justify-center p-8 text-center lg:p-16">
+        <div className="flex flex-1 flex-col items-center justify-center px-4 py-6 text-center sm:p-8 lg:p-16">
           <h3 className="text-forground mb-2 text-3xl font-black uppercase">Couldn’t Find It?</h3>
           <p className="text-foreground-muted max-w-sm text-sm font-medium">
             Missing something from our store? Drop the details and we’ll try to source it for you.
           </p>
 
-          <form
-            onSubmit={handleSourceSubmit}
-            className="mt-10 w-full max-w-xl space-y-4 text-start"
-          >
+          <form onSubmit={handleSourceSubmit} className="mt-6 w-full max-w-xl space-y-4 text-start">
             {successMsg && (
               <div className="mb-6 rounded-2xl border border-green-500/20 bg-green-500/10 p-4">
                 <p className="text-xs font-bold tracking-wider text-green-500 uppercase">
