@@ -9,6 +9,7 @@
   /* Fonts */
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
+  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
 
   /* Surfaces */
   --color-background: var(--surface-base);
@@ -99,6 +100,7 @@
 
   /* Base app styling */
   body {
+    font-family: var(--font-sans);
     @apply bg-background text-foreground antialiased;
   }
 }
@@ -148,7 +150,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none !important;
