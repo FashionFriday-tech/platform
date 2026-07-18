@@ -4,14 +4,20 @@ const ASSETS_TO_CACHE = [
   '/apple-touch-icon.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  '/images/poster/1.png',
-  '/images/poster/2.png',
-  '/images/poster/3.png',
-  '/images/poster/4.png',
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return Promise.allSettled(
+        ASSETS_TO_CACHE.map((url) =>
+          cache.add(url).catch((err) => {
+            console.warn(`[SW] Failed to cache: ${url}`, err);
+          }),
+        ),
+      );
+    }),
+  );
   self.skipWaiting();
 });
 
@@ -23,15 +29,20 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((k) => k !== CACHE_NAME && k.startsWith('ff-offline'))
-          .map((k) => caches.delete(k)),
-      );
-    }),
+    caches
+      .keys()
+      .then((keys) => {
+        return Promise.all(
+          keys
+            .filter((k) => k !== CACHE_NAME && k.startsWith('ff-offline'))
+            .map((k) => caches.delete(k)),
+        );
+      })
+      .then(() => self.clients.claim())
+      .catch((err) => {
+        console.warn('[SW] Activation error:', err);
+      }),
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
