@@ -33,12 +33,9 @@ export async function BrandCatalog({ brandName }: BrandCatalogProps): Promise<JS
   return (
     <div className="flex w-full flex-col">
       {/* Hero Section aligned with the product grid to avoid sidebar overlap */}
-      <div className="w-full max-w-none px-4 pt-4 md:px-8 md:pt-32 xl:px-10 2xl:px-14">
+      <div className="w-full max-w-none px-4 pt-2 sm:pt-4 md:px-8 md:pt-24 xl:px-10 2xl:px-14">
         <div className="w-full lg:pl-80">
-          <section
-            className="relative flex h-[40vh] w-full items-center justify-center overflow-hidden rounded-[2.5rem] md:h-[50vh]"
-            style={{ backgroundColor: brand.color || '#000' }}
-          >
+          <section className="relative flex h-[40vh] w-full items-center justify-center overflow-hidden rounded-[2.5rem] bg-black md:h-[50vh]">
             <BrandHeroBg poster={brand.poster} name={brand.name} />
 
             {/* Corner Markers */}
@@ -47,37 +44,40 @@ export async function BrandCatalog({ brandName }: BrandCatalogProps): Promise<JS
             <div className="absolute bottom-4 left-4 h-1.5 w-1.5 bg-white/80 md:bottom-6 md:left-6" />
             <div className="absolute right-4 bottom-4 h-1.5 w-1.5 bg-white/80 md:right-6 md:bottom-6" />
 
-            <div className="relative z-10 flex flex-row items-center justify-center gap-10 px-4 pb-8 pl-20 md:gap-20">
-              <div className="relative flex h-12 w-16 items-center justify-end md:h-20 md:w-28">
+            {/* Centered Brand Lockup */}
+            <div className="relative z-10 flex w-full max-w-xl flex-row items-center justify-center gap-4 px-4 pb-8 sm:gap-8 md:gap-12">
+              <div className="relative flex h-10 w-24 items-center justify-center sm:h-14 sm:w-32 md:h-18 md:w-36">
                 <div className="relative h-full w-full">
                   <Image
                     src="/images/logos/ff-logo.png"
                     alt="Fashion Friday"
                     fill
+                    sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 144px"
                     className="object-contain invert"
                   />
                 </div>
               </div>
 
-              {/* Perfectly centered absolute X */}
-              <div className="relative flex h-8 w-8 items-center justify-center md:h-16 md:w-16">
-                <div className="absolute h-24 w-[2px] rotate-45 bg-white md:h-46 md:w-[4px]" />
-                <div className="absolute h-12 w-[2px] -rotate-45 bg-white md:h-30 md:w-[4px]" />
+              {/* Symmetrical centered X */}
+              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center sm:h-10 sm:w-10 md:h-12 md:w-12">
+                <div className="absolute h-10 w-[2px] rotate-45 bg-white sm:h-14 md:h-18 md:w-[3px]" />
+                <div className="absolute h-10 w-[2px] -rotate-45 bg-white sm:h-14 md:h-18 md:w-[3px]" />
               </div>
 
               {brand.logo ? (
-                <div className="relative flex h-32 w-26 items-center justify-start md:h-42 md:w-48">
+                <div className="relative flex h-10 w-24 items-center justify-center sm:h-14 sm:w-32 md:h-18 md:w-36">
                   <div className="relative h-full w-full">
                     <Image
                       src={brand.logo}
                       alt={brand.name}
                       fill
-                      className={`object-contain ${brand.color === '#000000' || brand.color === '#000' ? 'invert' : 'invert'}`}
+                      sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 144px"
+                      className="object-contain invert"
                     />
                   </div>
                 </div>
               ) : (
-                <h1 className="text-3xl font-black tracking-tighter text-white uppercase italic md:text-5xl">
+                <h1 className="text-center text-xl font-black tracking-tighter text-white uppercase italic sm:text-2xl md:text-4xl">
                   {brand.name}
                 </h1>
               )}
