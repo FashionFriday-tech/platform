@@ -235,14 +235,14 @@ export default function Hero({
 
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
       {cards.length === 1 && (
-        <div className="relative flex w-full shrink-0 items-center justify-center overflow-hidden py-0 lg:hidden">
+        <div className="relative flex w-full shrink-0 items-center justify-center py-0 lg:hidden">
           <div
             style={mobileCardStyle}
-            className="relative overflow-hidden rounded-[38px] shadow-2xl sm:rounded-[44px]"
+            className="relative rounded-[38px] shadow-2xl sm:rounded-[44px]"
           >
             <Link
               href={cards[0].linkUrl || '/products'}
-              className="relative block h-full w-full overflow-hidden rounded-[38px] sm:rounded-[44px]"
+              className="relative block h-full w-full rounded-[38px] sm:rounded-[44px]"
             >
               <Image
                 src={cards[0].src}
@@ -253,7 +253,7 @@ export default function Hero({
                 className="object-cover"
               />
               {/* Luxury luminous shine sweep */}
-              <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-[38px] sm:rounded-[44px]">
+              <div className="pointer-events-none absolute inset-0 z-10 rounded-[38px] sm:rounded-[44px]">
                 <div className="hero-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
               </div>
             </Link>
