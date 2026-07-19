@@ -84,10 +84,9 @@ export default function BrandScroll({
         </ScrollVelocityContainer>
 
         {/* Side Gradients */}
-        <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-10 w-12 sm:w-1/4 bg-linear-to-r to-transparent" />
-        <div className="from-background pointer-events-none absolute inset-y-0 right-0 z-10 w-12 sm:w-1/4 bg-linear-to-l to-transparent" />
+        <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-linear-to-r to-transparent sm:w-1/4" />
+        <div className="from-background pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-linear-to-l to-transparent sm:w-1/4" />
       </div>
     </div>
   );
 }
-

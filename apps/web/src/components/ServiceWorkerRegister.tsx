@@ -11,14 +11,16 @@ export default function ServiceWorkerRegister() {
     // In development mode, completely unregister service workers and clear caches
     // so Next.js HMR, Hot Reloading, and latest updates render immediately without stale cache
     if (process.env.NODE_ENV === 'development') {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
+      void navigator.serviceWorker.getRegistrations().then(async (registrations) => {
         for (const reg of registrations) {
-          reg.unregister();
+          await reg.unregister().catch(() => null);
         }
       });
       if ('caches' in window) {
-        caches.keys().then((names) => {
-          names.forEach((name) => caches.delete(name));
+        void caches.keys().then((names) => {
+          names.forEach((name) => {
+            void caches.delete(name);
+          });
         });
       }
       return;
@@ -95,9 +97,12 @@ export default function ServiceWorkerRegister() {
         document.addEventListener('visibilitychange', handleVisibility);
 
         // Periodically check every 15 minutes while app is running
-        const intervalId = setInterval(() => {
-          registration.update().catch(() => null);
-        }, 15 * 60 * 1000);
+        const intervalId = setInterval(
+          () => {
+            registration.update().catch(() => null);
+          },
+          15 * 60 * 1000,
+        );
 
         cleanupVisibility = () => {
           document.removeEventListener('visibilitychange', handleVisibility);

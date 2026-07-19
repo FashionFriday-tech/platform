@@ -167,11 +167,17 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
 
   const goToCard = useCallback(
     (index: number) => {
-      if (cards.length === 0) return;
+      if (cards.length === 0) {
+        return;
+      }
       const currentMod = ((currentIndex % cards.length) + cards.length) % cards.length;
       let diff = index - currentMod;
-      if (diff > cards.length / 2) diff -= cards.length;
-      if (diff < -cards.length / 2) diff += cards.length;
+      if (diff > cards.length / 2) {
+        diff -= cards.length;
+      }
+      if (diff < -cards.length / 2) {
+        diff += cards.length;
+      }
       setCurrentIndex((prev) => prev + diff);
       startTimer(); // Reset the 3-second timer on manual navigation
     },

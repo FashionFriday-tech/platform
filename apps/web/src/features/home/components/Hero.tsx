@@ -20,7 +20,6 @@ export default function Hero({
   initialBrands?: Brand[];
   children?: React.ReactNode;
 }): JSX.Element {
-
   const {
     cards,
     currentIndex,
@@ -130,7 +129,8 @@ export default function Hero({
   // (100dvh - 138px) is the available space between top header (82px) and bottom nav (56px).
   // Scaled up to ~68% of container height while preserving at least 160px of balance for Search Box and Brand Logos.
   const mobileCardStyle = {
-    width: 'min(calc(((100dvh - 138px) - 160px) * 0.6), calc((100dvh - 138px) * 0.41), 79vw, 340px)',
+    width:
+      'min(calc(((100dvh - 138px) - 160px) * 0.6), calc((100dvh - 138px) * 0.41), 79vw, 340px)',
     aspectRatio: '3 / 5',
     height: 'auto',
   };
@@ -138,10 +138,10 @@ export default function Hero({
   return (
     <section
       ref={containerRef}
-      className="relative flex flex-col justify-evenly items-center w-full h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] pb-14 px-0 lg:h-auto lg:max-h-none lg:pb-0 lg:mt-28 lg:min-h-0 lg:block lg:p-6"
+      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center justify-evenly px-0 pb-14 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
       {/* 1. Mobile Search input */}
-      <div className="shrink-0 w-full px-4 lg:hidden">
+      <div className="w-full shrink-0 px-4 lg:hidden">
         <div
           onClick={handleOpenSearch}
           className="flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-zinc-300/80 bg-zinc-50/50 px-4 py-2.5 transition-all duration-200 active:scale-98 dark:border-zinc-700/80 dark:bg-zinc-900/50"
@@ -155,7 +155,7 @@ export default function Hero({
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, y: -8, filter: 'blur(2px)' }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute truncate text-xs font-medium text-zinc-600 select-none dark:text-zinc-300 sm:text-sm"
+                className="absolute truncate text-xs font-medium text-zinc-600 select-none sm:text-sm dark:text-zinc-300"
               >
                 {placeholders[placeholderIndex]}
               </motion.span>
@@ -183,10 +183,10 @@ export default function Hero({
 
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
       {cards.length === 1 && (
-        <div className="relative flex shrink-0 w-full items-center justify-center overflow-hidden py-0 lg:hidden">
+        <div className="relative flex w-full shrink-0 items-center justify-center overflow-hidden py-0 lg:hidden">
           <div
             style={mobileCardStyle}
-            className="relative overflow-hidden rounded-[38px] sm:rounded-[44px] shadow-2xl"
+            className="relative overflow-hidden rounded-[38px] shadow-2xl sm:rounded-[44px]"
           >
             <Link
               href={cards[0].linkUrl || '/products'}
@@ -206,23 +206,28 @@ export default function Hero({
       )}
 
       {cards.length >= 2 && (
-        <div className="relative flex shrink-0 w-full items-center justify-center overflow-hidden select-none touch-pan-y py-0 lg:hidden">
+        <div className="relative flex w-full shrink-0 touch-pan-y items-center justify-center overflow-hidden py-0 select-none lg:hidden">
           <div
-            onTouchStart={(e) => onDragStart(e.touches[0].clientX, e.touches[0].clientY)}
-            onTouchMove={(e) => onDragMove(e.touches[0].clientX, e.touches[0].clientY)}
+            onTouchStart={(e) => {
+              onDragStart(e.touches[0].clientX, e.touches[0].clientY);
+            }}
+            onTouchMove={(e) => {
+              onDragMove(e.touches[0].clientX, e.touches[0].clientY);
+            }}
             onTouchEnd={onDragEnd}
             onTouchCancel={onDragEnd}
-            onMouseDown={(e) => onDragStart(e.clientX, e.clientY)}
-            onMouseMove={(e) => onDragMove(e.clientX, e.clientY)}
+            onMouseDown={(e) => {
+              onDragStart(e.clientX, e.clientY);
+            }}
+            onMouseMove={(e) => {
+              onDragMove(e.clientX, e.clientY);
+            }}
             onMouseUp={onDragEnd}
             onMouseLeave={onDragEnd}
             className="relative flex w-full items-center justify-center"
           >
             {/* Dynamic sizing spacer ensuring strict 3:5 aspect ratio without vertical overflow */}
-            <div
-              style={mobileCardStyle}
-              className="pointer-events-none mx-auto opacity-0"
-            />
+            <div style={mobileCardStyle} className="pointer-events-none mx-auto opacity-0" />
 
             {/* Cards Track with Circular Relative Positioning & Peek Previews */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -233,7 +238,9 @@ export default function Hero({
                     ? ((virtualIndex % cards.length) + cards.length) % cards.length
                     : 0;
                 const card = cards[cardIndex];
-                if (!card) return null;
+                if (!card) {
+                  return null;
+                }
 
                 const isActive = offset === 0;
                 const isPeek = Math.abs(offset) === 1;
@@ -254,21 +261,26 @@ export default function Hero({
                       isDragging
                         ? { duration: 0 }
                         : {
-                          duration: 0.6,
-                          ease: [0.16, 1, 0.3, 1],
-                        }
+                            duration: 0.6,
+                            ease: [0.16, 1, 0.3, 1],
+                          }
                     }
                     onClick={() => {
-                      if (Math.abs(dragX) > 8) return;
-                      if (offset === -1) prevCard();
-                      else if (offset === 1) nextCard();
+                      if (Math.abs(dragX) > 8) {
+                        return;
+                      }
+                      if (offset === -1) {
+                        prevCard();
+                      } else if (offset === 1) {
+                        nextCard();
+                      }
                     }}
                     style={{
                       ...mobileCardStyle,
                       zIndex: isActive ? 20 : isPeek ? 10 : 0,
                       transformStyle: 'preserve-3d',
                     }}
-                    className={`pointer-events-auto absolute top-1/2 left-1/2 overflow-hidden rounded-[38px] sm:rounded-[44px] shadow-2xl transition-shadow ${
+                    className={`pointer-events-auto absolute top-1/2 left-1/2 overflow-hidden rounded-[38px] shadow-2xl transition-shadow sm:rounded-[44px] ${
                       isPeek ? 'cursor-pointer hover:opacity-100' : ''
                     }`}
                   >
@@ -328,13 +340,12 @@ export default function Hero({
 
       {/* 3. Brand Logo Marquee: identical gap to card */}
       {children ? (
-        <div className="shrink-0 w-full lg:flex-none lg:block">{children}</div>
+        <div className="w-full shrink-0 lg:block lg:flex-none">{children}</div>
       ) : (
-        <div className="shrink-0 w-full lg:mt-6 lg:flex-none lg:block">
+        <div className="w-full shrink-0 lg:mt-6 lg:block lg:flex-none">
           <BrandScroll initialBrands={initialBrands} />
         </div>
       )}
     </section>
   );
 }
-
