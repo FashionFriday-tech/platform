@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ff-offline-v1';
+const CACHE_NAME = 'ff-offline-v2';
 const ASSETS_TO_CACHE = [
   '/offline.html',
   '/apple-touch-icon.png',
@@ -46,36 +46,48 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // 1. Only handle GET requests - NEVER intercept POST (prevents Next.js Server Action fetch errors)
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   const url = new URL(event.request.url);
 
-  // Bypass service worker for Next.js internal requests, API routes, and HMR
+  // 2. Bypass service worker for Next.js internal requests, API routes, Server Actions, RSC, and HMR
   if (
     url.pathname.startsWith('/_next/') ||
     url.pathname.startsWith('/api/') ||
-    url.pathname.startsWith('/__nextjs_original-stack-frame')
+    url.pathname.startsWith('/__nextjs') ||
+    event.request.headers.get('next-action') ||
+    event.request.headers.get('rsc')
   ) {
     return;
   }
 
+  // 3. For page navigation: Network First, fallback to offline.html
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request).catch(() => caches.match('/offline.html')));
-  } else {
     event.respondWith(
-      caches.match(event.request).then((response) => {
-        return (
-          response ||
-          fetch(event.request).then((fetchResponse) => {
-            // Dynamically cache images
-            if (event.request.destination === 'image') {
-              const responseClone = fetchResponse.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, responseClone);
-              });
-            }
-            return fetchResponse;
-          })
-        );
-      }),
+      fetch(event.request).catch(() => caches.match('/offline.html')),
     );
+    return;
   }
+
+  // 4. For images & assets: Network First with Cache Fallback
+  // Always fetches fresh live content and updates cache in background so changes reflect immediately in PWA
+  event.respondWith(
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse.ok && event.request.destination === 'image') {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      }),
+  );
 });
+
