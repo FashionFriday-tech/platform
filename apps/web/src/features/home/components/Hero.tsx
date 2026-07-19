@@ -138,7 +138,7 @@ export default function Hero({
   return (
     <section
       ref={containerRef}
-      className="relative flex flex-col justify-evenly items-center w-full h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] pb-14 px-0 overflow-hidden lg:h-auto lg:max-h-none lg:pb-0 lg:mt-28 lg:min-h-0 lg:block lg:p-6"
+      className="relative flex flex-col justify-evenly items-center w-full h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] pb-14 px-0 lg:h-auto lg:max-h-none lg:pb-0 lg:mt-28 lg:min-h-0 lg:block lg:p-6"
     >
       {/* 1. Mobile Search input */}
       <div className="shrink-0 w-full px-4 lg:hidden">
