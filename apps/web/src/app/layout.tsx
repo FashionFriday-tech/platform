@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Toaster } from 'sonner';
 
 import { Header } from '@/components/layout/Header';
 import { StoreInitializer } from '@/components/layout/StoreInitializer';
@@ -31,7 +32,6 @@ export const metadata: Metadata = {
   },
   description:
     'Fashion Friday is an online fashion and footwear store offering trendy shoes and accessories at affordable prices in India.',
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -70,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ServiceWorkerRegister />
             <Header />
             {children}
+            <Toaster position="top-center" richColors closeButton />
           </SmoothScrollProvider>
         </ThemeProvider>
       </body>

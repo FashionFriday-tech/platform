@@ -71,7 +71,11 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const { setTheme, resolvedTheme } = useTheme();
-  const { isInstalled, install } = usePwaInstall();
+  const { isInstalled, install, platform } = usePwaInstall();
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [selectedPlatformTab, setSelectedPlatformTab] = useState<'ios' | 'android' | 'desktop'>(
+    platform,
+  );
   const [mounted, setMounted] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const prevPathname = useRef(pathname);
@@ -79,6 +83,23 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setSelectedPlatformTab(platform);
+  }, [platform]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setShowInstallGuide(false);
+    }
+  }, [isOpen]);
+
+  const handleInstallClick = async () => {
+    const prompted = await install();
+    if (!prompted) {
+      setShowInstallGuide((prev) => !prev);
+    }
+  };
 
   // Dynamic search placeholder only cycles when the side box is open
   useEffect(() => {
@@ -482,6 +503,196 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                 </a>
               </div>
 
+              {/* In-drawer installation guide for iOS Safari or manual browser install */}
+              <AnimatePresence>
+                {showInstallGuide && !isInstalled && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="border-border/60 bg-foreground/[0.04] relative rounded-2xl border p-3.5 shadow-sm dark:bg-white/[0.05]">
+                      <div className="border-border/20 mb-2.5 flex items-center justify-between border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          <svg
+                            className="text-foreground h-4 w-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                          </svg>
+                          <h4 className="text-foreground text-xs font-black tracking-wider uppercase">
+                            How to Install App
+                          </h4>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowInstallGuide(false)}
+                          className="text-foreground/50 hover:text-foreground rounded-full p-1 transition-colors"
+                          aria-label="Close guide"
+                        >
+                          <svg
+                            className="h-3.5 w-3.5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* Device Tabs: Allows user to toggle between Android, iPhone/iPad, and Computer */}
+                      <div className="bg-foreground/5 mb-3 flex items-center gap-1 rounded-xl p-1">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPlatformTab('android')}
+                          className={`flex-1 rounded-lg py-1 text-[11px] font-bold transition-all ${
+                            selectedPlatformTab === 'android'
+                              ? 'bg-foreground text-background shadow-xs'
+                              : 'text-foreground/60 hover:text-foreground'
+                          }`}
+                        >
+                          Android
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPlatformTab('ios')}
+                          className={`flex-1 rounded-lg py-1 text-[11px] font-bold transition-all ${
+                            selectedPlatformTab === 'ios'
+                              ? 'bg-foreground text-background shadow-xs'
+                              : 'text-foreground/60 hover:text-foreground'
+                          }`}
+                        >
+                          iPhone / iPad
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedPlatformTab('desktop')}
+                          className={`flex-1 rounded-lg py-1 text-[11px] font-bold transition-all ${
+                            selectedPlatformTab === 'desktop'
+                              ? 'bg-foreground text-background shadow-xs'
+                              : 'text-foreground/60 hover:text-foreground'
+                          }`}
+                        >
+                          Computer
+                        </button>
+                      </div>
+
+                      {selectedPlatformTab === 'ios' ? (
+                        <div className="text-foreground/80 flex flex-col gap-2 text-xs">
+                          <p className="text-foreground font-semibold">
+                            On iPhone / iPad (Safari):
+                          </p>
+                          <div className="flex items-start gap-2">
+                            <span className="bg-foreground/10 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                              1
+                            </span>
+                            <p>
+                              Tap the <span className="text-foreground font-bold">Share (⎋)</span>{' '}
+                              button at the bottom of Safari.
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="bg-foreground/10 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                              2
+                            </span>
+                            <p>
+                              Scroll down and tap{' '}
+                              <span className="text-foreground font-bold">
+                                "Add to Home Screen"
+                              </span>
+                              .
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="bg-foreground/10 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                              3
+                            </span>
+                            <p>
+                              Tap <span className="text-foreground font-bold">"Add"</span> in the
+                              top-right corner.
+                            </p>
+                          </div>
+                        </div>
+                      ) : selectedPlatformTab === 'android' ? (
+                        <div className="text-foreground/80 flex flex-col gap-2 text-xs">
+                          <p className="text-foreground font-semibold">
+                            On Android (Chrome / Browser):
+                          </p>
+                          <div className="flex items-start gap-2">
+                            <span className="bg-foreground/10 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                              1
+                            </span>
+                            <p>
+                              Tap the{' '}
+                              <span className="text-foreground font-bold">three dots (⋮)</span> in
+                              the top-right of Chrome.
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="bg-foreground/10 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                              2
+                            </span>
+                            <p>
+                              Tap <span className="text-foreground font-bold">"Install app"</span>{' '}
+                              or{' '}
+                              <span className="text-foreground font-bold">
+                                "Add to Home screen"
+                              </span>
+                              .
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="bg-foreground/10 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                              3
+                            </span>
+                            <p>Confirm to add Fashion Friday to your apps.</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-foreground/80 flex flex-col gap-2 text-xs">
+                          <p className="text-foreground font-semibold">
+                            On Computer (Chrome / Edge):
+                          </p>
+                          <div className="flex items-start gap-2">
+                            <span className="bg-foreground/10 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                              1
+                            </span>
+                            <p>
+                              Look for the{' '}
+                              <span className="text-foreground font-bold">
+                                Install icon (⊕ or ⬇)
+                              </span>{' '}
+                              in your browser address bar on the right.
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <span className="bg-foreground/10 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                              2
+                            </span>
+                            <p>
+                              Click it and choose{' '}
+                              <span className="text-foreground font-bold">"Install"</span>.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* Action Buttons: Sign In and Install App in the same row */}
               {(!user || !isInstalled) && (
                 <div className="flex w-full items-center gap-2.5">
@@ -501,7 +712,7 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                   {!isInstalled && (
                     <button
                       type="button"
-                      onClick={install}
+                      onClick={handleInstallClick}
                       className={`border-border/80 bg-foreground/5 text-foreground hover:bg-foreground/10 flex items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-black tracking-wider uppercase shadow-sm transition-all active:scale-98 dark:border-white ${
                         !user ? 'flex-1' : 'w-full'
                       }`}
