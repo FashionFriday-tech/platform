@@ -4,12 +4,23 @@ import { type JSX, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import type { Brand } from '@ff/schemas';
 import { SearchIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { useHeroCarousel } from '../hooks/use-hero-carousel';
+import BrandScroll from './BrandScroll';
 
-export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] }): JSX.Element {
+export default function Hero({
+  initialCampaigns,
+  initialBrands,
+  children,
+}: {
+  initialCampaigns?: any[];
+  initialBrands?: Brand[];
+  children?: React.ReactNode;
+}): JSX.Element {
+
   const {
     cards,
     currentIndex,
@@ -115,27 +126,36 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
 
   const visibleOffsets = [-2, -1, 0, 1, 2];
 
+  // Dynamic mobile card sizing keeping strict 3:5 aspect ratio and balancing container height:
+  // (100dvh - 138px) is the available space between top header (82px) and bottom nav (56px).
+  // Scaled up to ~68% of container height while preserving at least 160px of balance for Search Box and Brand Logos.
+  const mobileCardStyle = {
+    width: 'min(calc(((100dvh - 138px) - 160px) * 0.6), calc((100dvh - 138px) * 0.41), 79vw, 340px)',
+    aspectRatio: '3 / 5',
+    height: 'auto',
+  };
+
   return (
     <section
       ref={containerRef}
-      className="relative flex flex-col justify-between min-h-[calc(100dvh-76px)] w-full overflow-hidden px-0 py-2 pb-6 lg:mt-28 lg:min-h-[85vh] lg:block lg:p-6"
+      className="relative flex flex-col justify-evenly items-center w-full h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] pb-14 px-0 overflow-hidden lg:h-auto lg:max-h-none lg:pb-0 lg:mt-28 lg:min-h-0 lg:block lg:p-6"
     >
-      {/* Mobile Search input at the top of Hero section */}
-      <div className="mt-2 mb-3 px-4 lg:hidden">
+      {/* 1. Mobile Search input */}
+      <div className="shrink-0 w-full px-4 lg:hidden">
         <div
           onClick={handleOpenSearch}
-          className="flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-zinc-300 bg-transparent px-4 py-3.5 transition-all duration-200 active:scale-98 dark:border-zinc-600"
+          className="flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-zinc-300/80 bg-zinc-50/50 px-4 py-2.5 transition-all duration-200 active:scale-98 dark:border-zinc-700/80 dark:bg-zinc-900/50"
         >
-          <SearchIcon className="h-5 w-5 shrink-0 text-zinc-600 dark:text-zinc-400" />
+          <SearchIcon className="h-4.5 w-4.5 shrink-0 text-zinc-500 dark:text-zinc-400" />
           <div className="relative flex h-5 w-full items-center overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.span
                 key={placeholderIndex}
-                initial={{ opacity: 0, y: 10, filter: 'blur(3px)' }}
+                initial={{ opacity: 0, y: 8, filter: 'blur(2px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -10, filter: 'blur(3px)' }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute truncate text-sm font-semibold text-zinc-700 select-none dark:text-zinc-300"
+                exit={{ opacity: 0, y: -8, filter: 'blur(2px)' }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute truncate text-xs font-medium text-zinc-600 select-none dark:text-zinc-300 sm:text-sm"
               >
                 {placeholders[placeholderIndex]}
               </motion.span>
@@ -161,13 +181,16 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
         }
       `}</style>
 
-      {/* Mobile/Tablet View (Single Card or Circular Carousel) */}
+      {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
       {cards.length === 1 && (
-        <div className="relative flex flex-1 w-full items-center justify-center my-auto py-2 lg:hidden">
-          <div className="relative aspect-[3/5] w-[74vw] sm:w-[50vw] sm:max-w-[380px] overflow-hidden rounded-[34px] shadow-2xl">
+        <div className="relative flex shrink-0 w-full items-center justify-center overflow-hidden py-0 lg:hidden">
+          <div
+            style={mobileCardStyle}
+            className="relative overflow-hidden rounded-[38px] sm:rounded-[44px] shadow-2xl"
+          >
             <Link
               href={cards[0].linkUrl || '/products'}
-              className="relative block h-full w-full overflow-hidden rounded-[34px]"
+              className="relative block h-full w-full overflow-hidden rounded-[38px] sm:rounded-[44px]"
             >
               <Image
                 src={cards[0].src}
@@ -183,7 +206,7 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
       )}
 
       {cards.length >= 2 && (
-        <div className="relative flex flex-1 w-full items-center justify-center my-auto overflow-hidden select-none touch-pan-y lg:hidden">
+        <div className="relative flex shrink-0 w-full items-center justify-center overflow-hidden select-none touch-pan-y py-0 lg:hidden">
           <div
             onTouchStart={(e) => onDragStart(e.touches[0].clientX, e.touches[0].clientY)}
             onTouchMove={(e) => onDragMove(e.touches[0].clientX, e.touches[0].clientY)}
@@ -193,10 +216,13 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
             onMouseMove={(e) => onDragMove(e.clientX, e.clientY)}
             onMouseUp={onDragEnd}
             onMouseLeave={onDragEnd}
-            className="relative flex w-full items-center justify-center py-2"
+            className="relative flex w-full items-center justify-center"
           >
-            {/* Sizing Spacer ensuring natural height for 3:5 aspect ratio on all mobile widths */}
-            <div className="pointer-events-none mx-auto aspect-[3/5] w-[74vw] sm:w-[50vw] sm:max-w-[380px] opacity-0" />
+            {/* Dynamic sizing spacer ensuring strict 3:5 aspect ratio without vertical overflow */}
+            <div
+              style={mobileCardStyle}
+              className="pointer-events-none mx-auto opacity-0"
+            />
 
             {/* Cards Track with Circular Relative Positioning & Peek Previews */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -238,11 +264,13 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
                       else if (offset === 1) nextCard();
                     }}
                     style={{
+                      ...mobileCardStyle,
                       zIndex: isActive ? 20 : isPeek ? 10 : 0,
                       transformStyle: 'preserve-3d',
                     }}
-                    className={`pointer-events-auto absolute top-1/2 left-1/2 aspect-[3/5] w-[74vw] sm:w-[50vw] sm:max-w-[380px] overflow-hidden rounded-[34px] shadow-2xl transition-shadow ${isPeek ? 'cursor-pointer hover:opacity-100' : ''
-                      }`}
+                    className={`pointer-events-auto absolute top-1/2 left-1/2 overflow-hidden rounded-[38px] sm:rounded-[44px] shadow-2xl transition-shadow ${
+                      isPeek ? 'cursor-pointer hover:opacity-100' : ''
+                    }`}
                   >
                     {/* Pure Image Card - No Overlays or Text */}
                     <Link
@@ -252,8 +280,9 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
                           e.preventDefault();
                         }
                       }}
-                      className={`relative block h-full w-full overflow-hidden rounded-[34px] ${!isActive ? 'pointer-events-none' : ''
-                        }`}
+                      className={`relative block h-full w-full overflow-hidden rounded-[38px] sm:rounded-[44px] ${
+                        !isActive ? 'pointer-events-none' : ''
+                      }`}
                     >
                       <Image
                         src={card.src}
@@ -272,17 +301,17 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
         </div>
       )}
 
-      {/* Large screen scrolling marquee carousel (hidden on small devices, flex on lg) */}
+      {/* 3. Large screen scrolling marquee carousel (hidden on small devices, flex on lg) */}
       {cards.length > 0 && (
         <div
-          className="carousel-track hidden h-[80vh] items-stretch gap-6 px-2 lg:flex"
+          className="carousel-track hidden h-[75vh] items-stretch gap-6 px-2 lg:flex"
           style={{ animationPlayState: isInView ? 'running' : 'paused' }}
         >
           {repeatedCards.map((card, idx) => (
             <Link
               key={`${card.id}-${idx}`}
               href={card.linkUrl || '/products'}
-              className="group relative aspect-[2/3] h-full shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
+              className="group relative aspect-[3/5] h-full shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
             >
               <Image
                 src={card.src}
@@ -294,6 +323,15 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
               />
             </Link>
           ))}
+        </div>
+      )}
+
+      {/* 3. Brand Logo Marquee: identical gap to card */}
+      {children ? (
+        <div className="shrink-0 w-full lg:flex-none lg:block">{children}</div>
+      ) : (
+        <div className="shrink-0 w-full lg:mt-6 lg:flex-none lg:block">
+          <BrandScroll initialBrands={initialBrands} />
         </div>
       )}
     </section>

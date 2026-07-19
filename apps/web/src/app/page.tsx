@@ -1,7 +1,6 @@
 import Footer from '@/components/layout/Footer';
 import HomeFeedbackSection from '@/components/ui/sections/HomeFeedback';
 import {
-  BrandScroll,
   CategoriesSection,
   CollectionsSection,
   Hero,
@@ -32,8 +31,7 @@ export default async function HomePage() {
 
   return (
     <main>
-      <Hero initialCampaigns={campaigns} />
-      <BrandScroll initialBrands={brands} />
+      <Hero initialCampaigns={campaigns} initialBrands={brands} />
       <CategoriesSection initialCampaigns={campaigns} />
       <CollectionsSection initialCollections={collections} />
       <TrendingSection initialCampaigns={campaigns} />
