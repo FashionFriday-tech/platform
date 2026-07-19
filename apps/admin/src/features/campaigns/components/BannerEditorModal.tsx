@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
-import { CloseIcon, ImageIcon, PlayIcon, PlusIcon } from '@ff/ui';
+import { CloseIcon, ImageIcon, PlayIcon, PlusIcon, TrashIcon } from '@ff/ui';
 
 import { type BannerPlacement, type CampaignBanner, type MediaType } from '../types';
 
@@ -11,6 +11,7 @@ interface BannerEditorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (bannerData: Partial<CampaignBanner>) => void;
+  onDelete?: (id: string) => void;
   initialData?: CampaignBanner | null;
   fixedPlacement?: BannerPlacement;
 }
@@ -19,6 +20,7 @@ export function BannerEditorModal({
   isOpen,
   onClose,
   onSave,
+  onDelete,
   initialData,
   fixedPlacement,
 }: BannerEditorModalProps) {
@@ -27,6 +29,7 @@ export function BannerEditorModal({
   const [mediaType, setMediaType] = useState<MediaType>('image');
   const [linkUrl, setLinkUrl] = useState('');
   const [placement, setPlacement] = useState<BannerPlacement>('home-carousel');
+  const [isActive, setIsActive] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
 
@@ -39,6 +42,7 @@ export function BannerEditorModal({
       setMediaType(initialData.mediaType);
       setLinkUrl(initialData.linkUrl);
       setPlacement(initialData.placement);
+      setIsActive(initialData.isActive ?? true);
       setFileToUpload(null);
     } else {
       setTitle('');
@@ -46,6 +50,7 @@ export function BannerEditorModal({
       setMediaType('image');
       setLinkUrl('');
       setPlacement(fixedPlacement ?? 'home-carousel');
+      setIsActive(true);
       setFileToUpload(null);
     }
   }, [initialData, isOpen, fixedPlacement]);
@@ -82,7 +87,7 @@ export function BannerEditorModal({
         finalMediaUrl = data.url;
       }
 
-      onSave({ title, mediaUrl: finalMediaUrl, mediaType, linkUrl, placement });
+      onSave({ title, mediaUrl: finalMediaUrl, mediaType, linkUrl, placement, isActive });
       setFileToUpload(null);
     } catch (err) {
       alert('Failed to upload banner media. Please try again.');
@@ -222,7 +227,49 @@ export function BannerEditorModal({
               />
             </div>
 
-            <div className="mt-4 flex gap-3">
+            {/* Active Status Switch (for all except home-categories) */}
+            {placement !== 'home-categories' && (
+              <div className="flex items-center justify-between rounded-2xl border border-black/10 bg-black/[0.02] p-4 dark:border-white/10 dark:bg-white/[0.02]">
+                <div>
+                  <p className="text-sm font-bold text-black dark:text-white">Active Status</p>
+                  <p className="text-xs text-black/60 dark:text-white/60">
+                    {isActive ? 'Banner is live on the storefront' : 'Banner is hidden as draft'}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsActive((prev) => !prev);
+                  }}
+                  title={isActive ? 'Deactivate' : 'Activate'}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors ${
+                    isActive ? 'bg-black dark:bg-white' : 'bg-black/20 dark:bg-white/20'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full transition-transform ${
+                      isActive ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-1 bg-white'
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
+
+            <div className="mt-4 flex items-center gap-3">
+              {initialData && onDelete && initialData.placement !== 'home-categories' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDelete(initialData.id);
+                  }}
+                  disabled={isUploading}
+                  title="Delete this banner"
+                  className="flex items-center justify-center gap-1.5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-600 transition-colors hover:bg-red-500 hover:text-white active:scale-98 disabled:opacity-50 dark:bg-red-500/20 dark:text-red-400"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">Delete</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={onClose}
@@ -234,7 +281,7 @@ export function BannerEditorModal({
               <button
                 type="submit"
                 disabled={!mediaUrl || isUploading}
-                className="flex-1 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-black/90 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/90"
+                className="flex-1 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-black/90 active:scale-98 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/90"
               >
                 {isUploading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Banner'}
               </button>

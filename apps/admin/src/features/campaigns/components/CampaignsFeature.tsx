@@ -20,9 +20,7 @@ export function CampaignsFeature() {
     handleOpenCreate,
     handleOpenEdit,
     handleSaveBanner,
-    handleToggleActive,
     handleDeleteCampaign,
-    refreshBanners,
   } = useCampaigns();
 
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -52,15 +50,7 @@ export function CampaignsFeature() {
         <div className="scrollbar-hide flex snap-x gap-6 overflow-x-auto pb-4">
           {sectionBanners.map((banner) => (
             <div key={banner.id} className={`${cardWidthClass} shrink-0 snap-start`}>
-              <CampaignBannerCard
-                banner={banner}
-                onUpdate={refreshBanners}
-                onEdit={handleOpenEdit}
-                onDelete={(id) => {
-                  setDeleteConfirmId(id);
-                }}
-                onToggleActive={handleToggleActive}
-              />
+              <CampaignBannerCard banner={banner} onEdit={handleOpenEdit} />
             </div>
           ))}
 
@@ -120,6 +110,10 @@ export function CampaignsFeature() {
           setIsModalOpen(false);
         }}
         onSave={handleSaveBanner}
+        onDelete={(id) => {
+          setIsModalOpen(false);
+          setDeleteConfirmId(id);
+        }}
         initialData={editingBanner}
         fixedPlacement={targetPlacement}
       />

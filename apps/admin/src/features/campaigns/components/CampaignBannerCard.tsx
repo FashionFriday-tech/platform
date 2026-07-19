@@ -3,43 +3,35 @@
 import React from 'react';
 import Image from 'next/image';
 
-import { ImageIcon, PlayIcon, TrashIcon } from '@ff/ui';
-
-import { type CampaignBanner, PLACEMENT_ASPECT_RATIOS, PLACEMENT_LABELS } from '../types';
+import { type CampaignBanner, PLACEMENT_ASPECT_RATIOS } from '../types';
 
 interface CampaignBannerCardProps {
   banner: CampaignBanner;
-  onUpdate: () => void;
   onEdit: (banner: CampaignBanner) => void;
-  onDelete: (id: string) => void;
-  onToggleActive: (id: string, currentStatus: boolean) => void;
 }
 
-export function CampaignBannerCard({
-  banner,
-  onUpdate,
-  onEdit,
-  onDelete,
-  onToggleActive,
-}: CampaignBannerCardProps) {
-  const handleToggleActive = () => {
-    onToggleActive(banner.id, !banner.isActive);
-  };
-
-  const handleDelete = () => {
-    onDelete(banner.id);
-  };
-
-  const isFixedCategoryCard = banner.placement === 'home-categories';
+export function CampaignBannerCard({ banner, onEdit }: CampaignBannerCardProps) {
   const aspectRatioClass = PLACEMENT_ASPECT_RATIOS[banner.placement] ?? 'aspect-video';
 
   return (
     <div
-      className={`group flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-lg ${banner.isActive ? 'border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111111]' : 'border-black/5 bg-black/5 opacity-70 dark:border-white/5 dark:bg-white/5'}`}
+      onClick={() => {
+        onEdit(banner);
+      }}
+      className={`group flex cursor-pointer flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-lg active:scale-[0.99] ${
+        banner.isActive
+          ? 'border-black/10 bg-white shadow-sm dark:border-white/10 dark:bg-[#111111]'
+          : 'border-black/5 bg-black/5 opacity-70 dark:border-white/5 dark:bg-white/5'
+      }`}
     >
       <div className={`relative w-full bg-black/5 dark:bg-white/5 ${aspectRatioClass}`}>
         {banner.mediaType === 'image' ? (
-          <Image src={banner.mediaUrl} alt={banner.title} fill className="object-cover" />
+          <Image
+            src={banner.mediaUrl}
+            alt={banner.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
         ) : (
           <video
             src={banner.mediaUrl}
@@ -49,59 +41,25 @@ export function CampaignBannerCard({
             playsInline
           />
         )}
-        <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/50 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100">
-          <button
-            onClick={() => {
-              onEdit(banner);
-            }}
-            className="flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-black shadow-xl transition-all hover:scale-105 hover:bg-gray-50"
-          >
-            Edit Banner
-          </button>
-          {!isFixedCategoryCard && (
-            <button
-              onClick={handleDelete}
-              className="flex items-center justify-center rounded-xl bg-red-500 p-2.5 text-white shadow-xl transition-all hover:scale-105 hover:bg-red-600"
-            >
-              <TrashIcon className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-        <div className="absolute top-3 left-3 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur-md">
-          {banner.mediaType === 'image' ? (
-            <ImageIcon className="h-3 w-3" />
-          ) : (
-            <PlayIcon className="h-3 w-3" />
-          )}
-          {PLACEMENT_LABELS[banner.placement] ?? banner.placement}
-        </div>
       </div>
-      <div className="flex flex-col gap-2 p-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className="line-clamp-1 font-bold text-black dark:text-white">{banner.title}</h3>
-            <p className="mt-1 line-clamp-1 text-xs text-black/60 dark:text-white/60">
-              Link: <span className="font-mono text-black dark:text-white">{banner.linkUrl}</span>
-            </p>
-          </div>
-          {!isFixedCategoryCard && (
-            <button
-              onClick={handleToggleActive}
-              title={banner.isActive ? 'Deactivate' : 'Activate'}
-              className={`relative ml-4 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors ${
-                banner.isActive ? 'bg-black dark:bg-white' : 'bg-black/20 dark:bg-white/20'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full transition-transform ${
-                  banner.isActive
-                    ? 'translate-x-4 bg-white dark:bg-black'
-                    : 'translate-x-1 bg-white'
-                }`}
-              />
-            </button>
-          )}
+      <div className="flex flex-col gap-1 p-3.5">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="line-clamp-1 text-sm font-bold text-black dark:text-white">
+            {banner.title}
+          </h3>
+          <span
+            className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+              banner.isActive
+                ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                : 'bg-zinc-500/10 text-zinc-500 dark:bg-zinc-500/20 dark:text-zinc-400'
+            }`}
+          >
+            {banner.isActive ? 'Active' : 'Draft'}
+          </span>
         </div>
+        <p className="line-clamp-1 text-xs text-black/60 dark:text-white/60">
+          Link: <span className="font-mono text-black dark:text-white">{banner.linkUrl}</span>
+        </p>
       </div>
     </div>
   );
