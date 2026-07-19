@@ -192,7 +192,7 @@ export function Header() {
 
       {/* MOBILE UI */}
       <div className="bg-background text-foreground border-border/20 sticky top-0 z-50 flex w-full flex-col border-b lg:hidden">
-        <div className="relative flex w-full items-center justify-between px-4 py-3.5">
+        <div className="relative flex h-14 w-full items-center justify-between px-4">
           <button
             type="button"
             onClick={(e) => {
@@ -240,7 +240,7 @@ export function Header() {
 
         {/* MOBILE MARQUEE ANNOUNCEMENT */}
         {pathname === '/' && (
-          <div className="relative z-40 block w-full overflow-hidden bg-[#FF0000] py-1.5 text-white">
+          <div className="relative z-40 flex h-6.5 w-full items-center overflow-hidden bg-[#FF0000] text-white">
             <div className="animate-marquee flex w-max whitespace-nowrap">
               {[0, 1].map((set) => (
                 <div key={set} className="flex items-center gap-8 px-4">
