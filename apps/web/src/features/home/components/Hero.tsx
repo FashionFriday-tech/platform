@@ -127,10 +127,10 @@ export default function Hero({
 
   // Dynamic mobile card sizing keeping strict 3:5 aspect ratio and balancing container height:
   // (100dvh - 138px) is the available space between top header (82px) and bottom nav (56px).
-  // Scaled up to ~68% of container height while preserving at least 160px of balance for Search Box and Brand Logos.
+  // Tuned to ~72% height filling empty spaces while preserving clean clearance for Search Box and Brand Logos.
   const mobileCardStyle = {
     width:
-      'min(calc(((100dvh - 138px) - 160px) * 0.6), calc((100dvh - 138px) * 0.41), 79vw, 340px)',
+      'min(calc(((100dvh - 138px) - 142px) * 0.6), calc((100dvh - 138px) * 0.435), 82vw, 360px)',
     aspectRatio: '3 / 5',
     height: 'auto',
   };
@@ -235,7 +235,7 @@ export default function Hero({
 
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
       {cards.length === 1 && (
-        <div className="relative flex w-full shrink-0 items-center justify-center py-0 lg:hidden">
+        <div className="relative flex w-full shrink-0 items-center justify-center py-3 sm:py-4 lg:hidden">
           <div
             style={mobileCardStyle}
             className="relative rounded-[38px] shadow-2xl sm:rounded-[44px]"
@@ -262,7 +262,7 @@ export default function Hero({
       )}
 
       {cards.length >= 2 && (
-        <div className="relative flex w-full shrink-0 touch-pan-y items-center justify-center overflow-hidden py-0 select-none lg:hidden">
+        <div className="relative flex w-full shrink-0 touch-pan-y items-center justify-center overflow-hidden py-3 select-none sm:py-4 lg:hidden">
           <div
             onTouchStart={(e) => {
               onDragStart(e.touches[0].clientX, e.touches[0].clientY);
