@@ -22,6 +22,30 @@ interface CampaignBanner {
   isActive: boolean;
 }
 
+export const DEFAULT_HERO_CARDS: HeroCard[] = [
+  {
+    id: 'default-hero-1',
+    src: '/images/placeholders/1.png',
+    title: 'New Season Drops',
+    subtitle: 'Streetwear & Sneakers',
+    linkUrl: '/new-arrivals',
+  },
+  {
+    id: 'default-hero-2',
+    src: '/images/placeholders/2.png',
+    title: 'Exclusive Collection',
+    subtitle: 'Style That Moves',
+    linkUrl: '/category/men',
+  },
+  {
+    id: 'default-hero-3',
+    src: '/images/placeholders/3.png',
+    title: 'Trending Footwear',
+    subtitle: 'Step Into Friday',
+    linkUrl: '/category/women',
+  },
+];
+
 export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
   const getMappedBanners = (banners: CampaignBanner[]): HeroCard[] => {
     return banners
@@ -35,7 +59,8 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
       }));
   };
 
-  const initialCards = initialCampaigns ? getMappedBanners(initialCampaigns) : [];
+  const mappedInitial = initialCampaigns ? getMappedBanners(initialCampaigns) : [];
+  const initialCards = mappedInitial.length > 0 ? mappedInitial : DEFAULT_HERO_CARDS;
 
   const [cards, setCards] = useState<HeroCard[]>(initialCards);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -71,12 +96,11 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
             } catch {
               // ignore
             }
-          } else {
-            setCards([]);
+            return;
           }
         }
       } catch (err: unknown) {
-        console.error('Failed to load live hero banners from API:', err);
+        console.warn('Failed to load live hero banners from API, checking cache:', err);
         // Fallback to offline storage if offline
         try {
           const cached = localStorage.getItem('offline_hero_banners');
@@ -84,12 +108,15 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
             const parsed = JSON.parse(cached);
             if (Array.isArray(parsed) && parsed.length > 0) {
               setCards(parsed);
+              return;
             }
           }
         } catch {
           // ignore
         }
       }
+      // If neither API nor cache provided active banners, maintain default fallback cards
+      setCards((prev) => (prev.length > 0 ? prev : DEFAULT_HERO_CARDS));
     };
     void loadHeroBanners();
   }, []);
