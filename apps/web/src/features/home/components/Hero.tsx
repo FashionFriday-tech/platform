@@ -179,6 +179,58 @@ export default function Hero({
             animation-play-state: paused;
           }
         }
+        @keyframes hero-card-shine {
+          0% {
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+          }
+          45% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 1;
+          }
+          46%, 100% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 0;
+          }
+        }
+        @keyframes hero-card-shine-hover {
+          0% {
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0;
+          }
+          20% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 1;
+          }
+        }
+        .hero-card-shine {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.05) 20%,
+            rgba(255, 255, 255, 0.35) 50%,
+            rgba(255, 255, 255, 0.05) 75%,
+            transparent 100%
+          );
+          animation: hero-card-shine 4.5s ease-in-out infinite;
+        }
+        .hero-card-shine-hover {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.05) 20%,
+            rgba(255, 255, 255, 0.35) 50%,
+            rgba(255, 255, 255, 0.05) 75%,
+            transparent 100%
+          );
+          animation: hero-card-shine-hover 1.2s ease-out infinite;
+        }
       `}</style>
 
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
@@ -200,6 +252,10 @@ export default function Hero({
                 sizes="(max-width: 1024px) 75vw, 400px"
                 className="object-cover"
               />
+              {/* Luxury luminous shine sweep */}
+              <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-[38px] sm:rounded-[44px]">
+                <div className="hero-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+              </div>
             </Link>
           </div>
         </div>
@@ -304,6 +360,15 @@ export default function Hero({
                         sizes="(max-width: 1024px) 80vw, 400px"
                         className="object-cover"
                       />
+                      {/* Active card luxury shine animation */}
+                      {isActive && (
+                        <div
+                          key={`shine-${currentIndex}`}
+                          className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-[38px] sm:rounded-[44px]"
+                        >
+                          <div className="hero-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+                        </div>
+                      )}
                     </Link>
                   </motion.div>
                 );
@@ -333,6 +398,10 @@ export default function Hero({
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
                 priority={idx < 2}
               />
+              {/* Desktop hover shine */}
+              <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-4xl opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <div className="hero-card-shine-hover absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+              </div>
             </Link>
           ))}
         </div>
