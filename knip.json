@@ -35,7 +35,10 @@
   },
   "ignore": [
     "eslint.config.mjs",
+    "neon.ts",
     "apps/web/public/sw.js",
+    "apps/admin/public/sw.js",
+    "apps/admin/src/lib/pwa/usePushNotifications.ts",
     "packages/database/prisma/seed-*.ts",
     "packages/database/prisma/mock-products.ts",
     "**/*.e2e-spec.ts"
