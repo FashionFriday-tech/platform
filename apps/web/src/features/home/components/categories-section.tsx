@@ -54,10 +54,13 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
   }, [initialCampaigns]);
 
   return (
-    <section aria-labelledby="category-heading" className="relative py-12 md:py-20">
+    <section
+      aria-labelledby="category-heading"
+      className="relative pt-3 pb-10 sm:pt-6 sm:pb-12 md:py-20"
+    >
       <div className="container mx-auto px-4 lg:px-6">
         {/* Header Section */}
-        <header className="mb-10 text-center">
+        <header className="mb-5 text-center sm:mb-8 md:mb-10">
           <h2 id="category-heading" className="section-header">
             Shop by Category
           </h2>
