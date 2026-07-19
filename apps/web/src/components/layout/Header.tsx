@@ -98,9 +98,9 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-background fixed top-0 right-0 left-0 z-50">
+      <header className="bg-background fixed top-0 right-0 left-0 z-50 hidden lg:block">
         {/* DESKTOP TOP BAR */}
-        <div className="text-foreground relative z-50 mx-auto hidden h-20 items-center justify-between px-6 sm:flex lg:px-12">
+        <div className="text-foreground relative z-50 mx-auto flex h-20 items-center justify-between px-6 lg:px-12">
           <Link href="/" className="relative z-50 flex h-8 items-center">
             <AnimatedLogo className="text-2xl font-black tracking-tighter uppercase lg:text-3xl" />
           </Link>
@@ -168,9 +168,9 @@ export function Header() {
           </div>
         </div>
 
-        {/* MARQUEE (Scrolling Announcement for All Screens) */}
+        {/* MARQUEE (Scrolling Announcement for Desktop) */}
         {pathname === '/' && (
-          <div className="relative z-40 block w-full overflow-hidden bg-[#FF0000] py-1.5 text-white sm:py-2">
+          <div className="relative z-40 hidden w-full overflow-hidden bg-[#FF0000] py-2 text-white lg:block">
             <div className="animate-marquee flex w-max whitespace-nowrap">
               {[0, 1].map((set) => (
                 <div key={set} className="flex items-center gap-8 px-4 sm:gap-12 sm:px-6">
