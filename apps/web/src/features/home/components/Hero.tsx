@@ -1,6 +1,6 @@
 'use client';
 
-import { type JSX, useEffect, useState } from 'react';
+import { type JSX, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -10,8 +10,16 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useHeroCarousel } from '../hooks/use-hero-carousel';
 
 export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] }): JSX.Element {
-  const { cards, activeIndex, isPlaying, goToCard, nextCard, prevCard, containerRef, isInView } =
-    useHeroCarousel(initialCampaigns);
+  const {
+    cards,
+    currentIndex,
+    nextCard,
+    prevCard,
+    containerRef,
+    isInView,
+    pauseTimer,
+    resumeTimer,
+  } = useHeroCarousel(initialCampaigns);
 
   const repeatedCards = [...cards, ...cards, ...cards];
 
@@ -31,48 +39,89 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, [placeholders.length]);
 
   const handleOpenSearch = () => {
     window.dispatchEvent(new CustomEvent('open-search'));
   };
 
-  // Touch Swipe Gesture State & Handlers
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [touchEndX, setTouchEndX] = useState<number | null>(null);
-  const minSwipeDistance = 50;
+  // Touch & Pointer Gesture Tracking
+  const [dragX, setDragX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const touchStartTimeRef = useRef<number>(0);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
+  const isPointerDownRef = useRef(false);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchEndX(null);
-    setTouchStartX(e.targetTouches[0].clientX);
+  const onDragStart = (clientX: number, clientY: number) => {
+    touchStartXRef.current = clientX;
+    touchStartYRef.current = clientY;
+    touchStartTimeRef.current = Date.now();
+    isHorizontalSwipeRef.current = null;
+    isPointerDownRef.current = true;
+    pauseTimer();
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX || !touchEndX) {
+  const onDragMove = (clientX: number, clientY: number) => {
+    if (
+      !isPointerDownRef.current ||
+      touchStartXRef.current === null ||
+      touchStartYRef.current === null
+    ) {
       return;
     }
-    const distance = touchStartX - touchEndX;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+    const diffX = clientX - touchStartXRef.current;
+    const diffY = clientY - touchStartYRef.current;
+
+    // Detect direction on initial motion to avoid hijacking vertical scrolling
+    if (isHorizontalSwipeRef.current === null) {
+      if (Math.abs(diffX) > 6 || Math.abs(diffY) > 6) {
+        isHorizontalSwipeRef.current = Math.abs(diffX) > Math.abs(diffY);
+      }
+    }
+
+    if (isHorizontalSwipeRef.current) {
+      setIsDragging(true);
+      setDragX(diffX);
+    }
+  };
+
+  const onDragEnd = () => {
+    if (!isPointerDownRef.current || touchStartXRef.current === null) {
+      return;
+    }
+    isPointerDownRef.current = false;
+    const distance = dragX;
+    const elapsed = Date.now() - touchStartTimeRef.current;
+    const velocity = Math.abs(distance) / Math.max(elapsed, 1);
+
+    const isLeftSwipe = distance < -35 || (distance < -15 && velocity > 0.35);
+    const isRightSwipe = distance > 35 || (distance > 15 && velocity > 0.35);
 
     if (isLeftSwipe) {
       nextCard();
     } else if (isRightSwipe) {
       prevCard();
     }
+
+    setDragX(0);
+    setIsDragging(false);
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    isHorizontalSwipeRef.current = null;
+    resumeTimer();
   };
+
+  const visibleOffsets = [-2, -1, 0, 1, 2];
 
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[60vh] w-full overflow-hidden p-2 pb-2 lg:mt-28 lg:min-h-[85vh] lg:p-6"
+      className="relative min-h-[60vh] w-full overflow-hidden px-0 py-2 pb-4 lg:mt-28 lg:min-h-[85vh] lg:p-6"
     >
       {/* Mobile Search input at the top of Hero section */}
-      <div className="mt-2 mb-4 px-2 lg:hidden">
+      <div className="mt-2 mb-3 px-4 lg:hidden">
         <div
           onClick={handleOpenSearch}
           className="flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-zinc-300 bg-transparent px-4 py-3.5 transition-all duration-200 active:scale-98 dark:border-zinc-600"
@@ -96,13 +145,6 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
       </div>
 
       <style>{`
-        @keyframes progress-fill {
-          0% { width: 0%; }
-          100% { width: 100%; }
-        }
-        .animate-progress-bar {
-          animation: progress-fill 3s linear forwards;
-        }
         @media (min-width: 1024px) {
           @keyframes auto-scroll {
             0% { transform: translateX(0); }
@@ -119,91 +161,142 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
         }
       `}</style>
 
-      {/* Mobile/Tablet Single Card Carousel (shown on small devices, hidden on lg) */}
-      <div
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className="relative h-[60vh] w-full overflow-hidden rounded-4xl bg-black/5 lg:hidden dark:bg-white/5"
-      >
-        {cards.map((card, idx) => {
-          const isActive = idx === activeIndex;
-          return (
+      {/* Mobile/Tablet View (Single Card or Circular Carousel) */}
+      {cards.length === 1 && (
+        <div className="relative flex w-full items-center justify-center py-2 lg:hidden">
+          <div className="relative aspect-[3/5] w-[74vw] sm:w-[50vw] sm:max-w-[380px] overflow-hidden rounded-[34px] shadow-2xl">
             <Link
-              key={card.id}
+              href={cards[0].linkUrl || '/products'}
+              className="relative block h-full w-full overflow-hidden rounded-[34px]"
+            >
+              <Image
+                src={cards[0].src}
+                alt={cards[0].title || 'Hero banner'}
+                fill
+                priority
+                sizes="(max-width: 1024px) 75vw, 400px"
+                className="object-cover"
+              />
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {cards.length >= 2 && (
+        <div className="relative w-full overflow-hidden select-none touch-pan-y lg:hidden">
+          <div
+            onTouchStart={(e) => onDragStart(e.touches[0].clientX, e.touches[0].clientY)}
+            onTouchMove={(e) => onDragMove(e.touches[0].clientX, e.touches[0].clientY)}
+            onTouchEnd={onDragEnd}
+            onTouchCancel={onDragEnd}
+            onMouseDown={(e) => onDragStart(e.clientX, e.clientY)}
+            onMouseMove={(e) => onDragMove(e.clientX, e.clientY)}
+            onMouseUp={onDragEnd}
+            onMouseLeave={onDragEnd}
+            className="relative flex w-full items-center justify-center py-2"
+          >
+            {/* Sizing Spacer ensuring natural height for 3:5 aspect ratio on all mobile widths */}
+            <div className="pointer-events-none mx-auto aspect-[3/5] w-[74vw] sm:w-[50vw] sm:max-w-[380px] opacity-0" />
+
+            {/* Cards Track with Circular Relative Positioning & Peek Previews */}
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              {visibleOffsets.map((offset) => {
+                const virtualIndex = currentIndex + offset;
+                const cardIndex =
+                  cards.length > 0
+                    ? ((virtualIndex % cards.length) + cards.length) % cards.length
+                    : 0;
+                const card = cards[cardIndex];
+                if (!card) return null;
+
+                const isActive = offset === 0;
+                const isPeek = Math.abs(offset) === 1;
+
+                const translateX = `calc(-50% + ${offset * 103}% + ${dragX}px)`;
+
+                return (
+                  <motion.div
+                    key={virtualIndex}
+                    animate={{
+                      x: translateX,
+                      y: '-50%',
+                      scale: isActive ? 1 : isPeek ? 0.92 : 0.82,
+                      opacity: isActive ? 1 : isPeek ? 0.92 : 0,
+                    }}
+                    initial={false}
+                    transition={
+                      isDragging
+                        ? { duration: 0 }
+                        : {
+                          duration: 0.6,
+                          ease: [0.16, 1, 0.3, 1],
+                        }
+                    }
+                    onClick={() => {
+                      if (Math.abs(dragX) > 8) return;
+                      if (offset === -1) prevCard();
+                      else if (offset === 1) nextCard();
+                    }}
+                    style={{
+                      zIndex: isActive ? 20 : isPeek ? 10 : 0,
+                      transformStyle: 'preserve-3d',
+                    }}
+                    className={`pointer-events-auto absolute top-1/2 left-1/2 aspect-[3/5] w-[74vw] sm:w-[50vw] sm:max-w-[380px] overflow-hidden rounded-[34px] shadow-2xl transition-shadow ${isPeek ? 'cursor-pointer hover:opacity-100' : ''
+                      }`}
+                  >
+                    {/* Pure Image Card - No Overlays or Text */}
+                    <Link
+                      href={card.linkUrl || '/products'}
+                      onClick={(e) => {
+                        if (!isActive || Math.abs(dragX) > 8) {
+                          e.preventDefault();
+                        }
+                      }}
+                      className={`relative block h-full w-full overflow-hidden rounded-[34px] ${!isActive ? 'pointer-events-none' : ''
+                        }`}
+                    >
+                      <Image
+                        src={card.src}
+                        alt={card.title || 'Hero banner'}
+                        fill
+                        priority={isActive}
+                        sizes="(max-width: 1024px) 80vw, 400px"
+                        className="object-cover"
+                      />
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Large screen scrolling marquee carousel (hidden on small devices, flex on lg) */}
+      {cards.length > 0 && (
+        <div
+          className="carousel-track hidden h-[80vh] items-stretch gap-6 px-2 lg:flex"
+          style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+        >
+          {repeatedCards.map((card, idx) => (
+            <Link
+              key={`${card.id}-${idx}`}
               href={card.linkUrl || '/products'}
-              className={`absolute inset-0 h-full w-full transition-all duration-1000 ease-in-out ${
-                isActive
-                  ? 'pointer-events-auto z-10 opacity-100'
-                  : 'pointer-events-none z-0 opacity-0'
-              }`}
+              className="group relative aspect-[2/3] h-full shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
             >
               <Image
                 src={card.src}
                 alt={card.title || 'Hero image'}
                 fill
-                priority={idx === 0}
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover transition-transform duration-[10000ms] ease-out hover:scale-110"
+                sizes="(max-width: 1024px) 60vw, 40vw"
+                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                priority={idx < 2}
               />
             </Link>
-          );
-        })}
-
-        {/* Apple-style Carousel Indicators overlay at the bottom */}
-        <div className="absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/35 px-3.5 py-2 shadow-lg backdrop-blur-md">
-          {cards.map((card, idx) => {
-            const isActive = idx === activeIndex;
-            return (
-              <button
-                key={card.id}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  goToCard(idx);
-                }}
-                className={`relative overflow-hidden rounded-full transition-all duration-300 ${
-                  isActive ? 'h-1.5 w-6 bg-white/20' : 'h-1.5 w-1.5 bg-white/35 hover:bg-white/55'
-                }`}
-                aria-label={`Go to slide ${idx + 1}`}
-              >
-                {isActive && isPlaying && (
-                  <span
-                    key={`${activeIndex}-active-${String(isPlaying)}`}
-                    className="animate-progress-bar absolute inset-y-0 left-0 rounded-full bg-white"
-                  />
-                )}
-                {isActive && !isPlaying && (
-                  <span className="absolute inset-0 rounded-full bg-white" />
-                )}
-              </button>
-            );
-          })}
+          ))}
         </div>
-      </div>
-
-      {/* Large screen scrolling marquee carousel (hidden on small devices, flex on lg) */}
-      <div
-        className="carousel-track hidden h-[80vh] items-stretch gap-6 px-2 lg:flex"
-        style={{ animationPlayState: isInView ? 'running' : 'paused' }}
-      >
-        {repeatedCards.map((card, idx) => (
-          <Link
-            key={`${card.id}-${idx}`}
-            href={card.linkUrl || '/products'}
-            className="group relative aspect-[2/3] h-full shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
-          >
-            <Image
-              src={card.src}
-              alt={card.title || 'Hero image'}
-              fill
-              sizes="(max-width: 1024px) 60vw, 40vw"
-              className="object-cover transition-transform duration-1000 group-hover:scale-105"
-              priority={idx < 2}
-            />
-          </Link>
-        ))}
-      </div>
+      )}
     </section>
   );
 }
+
