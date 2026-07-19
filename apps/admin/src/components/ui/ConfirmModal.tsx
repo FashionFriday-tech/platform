@@ -26,8 +26,8 @@ export function ConfirmModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-3xl border border-black/5 bg-white p-6 shadow-2xl dark:border-white/5 dark:bg-[#111111]">
+    <div className="fixed inset-0 z-[100] flex justify-center overflow-y-auto bg-black/50 p-4 pt-[4.5rem] pb-6 backdrop-blur-sm sm:pt-20 md:items-center md:py-6 md:pr-6 md:pl-[292px]">
+      <div className="relative my-auto w-full max-w-md overflow-hidden rounded-3xl border border-black/5 bg-white p-6 shadow-2xl dark:border-white/5 dark:bg-[#111111]">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-bold text-black dark:text-white">{title}</h3>
           <button

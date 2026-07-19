@@ -110,27 +110,27 @@ export function BannerEditorModal({
   const getResponsiveClasses = (p: BannerPlacement) => {
     switch (p) {
       case 'products-list':
-        return 'w-full aspect-[21/9]';
+        return 'w-full aspect-[21/9] max-h-[160px] md:max-h-none';
       case 'home-carousel':
-        return 'h-[300px] md:h-[350px] w-auto aspect-[2/3]';
+        return 'h-[180px] sm:h-[220px] md:h-[350px] w-auto aspect-[2/3]';
       case 'home-categories':
-        return 'h-[300px] md:h-[350px] w-auto aspect-square';
+        return 'h-[160px] sm:h-[200px] md:h-[350px] w-auto aspect-square';
       case 'trending-products':
-        return 'h-[300px] md:h-[350px] w-auto aspect-[3/4]';
+        return 'h-[180px] sm:h-[220px] md:h-[350px] w-auto aspect-[3/4]';
       case 'content-partners':
-        return 'h-[300px] md:h-[350px] w-auto aspect-[3/5]';
+        return 'h-[180px] sm:h-[220px] md:h-[350px] w-auto aspect-[3/5]';
       default:
-        return 'w-full aspect-video';
+        return 'w-full aspect-video max-h-[180px] md:max-h-none';
     }
   };
 
   const responsiveClass = getResponsiveClasses(placement);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl md:flex-row dark:bg-[#111111]">
+    <div className="fixed inset-0 z-50 flex justify-center overflow-y-auto bg-black/50 p-4 pt-[4.5rem] pb-6 backdrop-blur-sm sm:pt-20 md:items-center md:py-6 md:pr-6 md:pl-[292px]">
+      <div className="relative my-auto flex max-h-[calc(100dvh-5.5rem)] w-full max-w-4xl flex-col overflow-y-auto rounded-3xl bg-white shadow-2xl md:max-h-[85vh] md:flex-row md:overflow-hidden dark:bg-[#111111]">
         {/* Left Side: Preview & Upload */}
-        <div className="flex w-full flex-col items-center justify-center border-b border-black/5 bg-black/5 p-8 md:w-1/2 md:border-r md:border-b-0 dark:border-white/5 dark:bg-white/5">
+        <div className="flex w-full flex-col items-center justify-center border-b border-black/5 bg-black/5 p-4 sm:p-6 md:w-1/2 md:border-r md:border-b-0 md:p-8 dark:border-white/5 dark:bg-white/5">
           <div
             onClick={() => fileInputRef.current?.click()}
             className={`group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black/20 bg-white transition-all hover:border-black/50 dark:border-white/20 dark:bg-[#111111] dark:hover:border-white/50 ${responsiveClass}`}
