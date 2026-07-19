@@ -42,7 +42,7 @@ export class CampaignsService {
         isActive: data.isActive ?? true,
       },
     });
-    void triggerRevalidation('home-campaigns');
+    void triggerRevalidation('home-campaigns', '/');
     return result;
   }
 
@@ -82,7 +82,7 @@ export class CampaignsService {
       where: { id },
       data,
     });
-    void triggerRevalidation('home-campaigns');
+    void triggerRevalidation('home-campaigns', '/');
     return result;
   }
 
@@ -109,7 +109,7 @@ export class CampaignsService {
     const result = await this.prisma.db.campaign.delete({
       where: { id },
     });
-    void triggerRevalidation('home-campaigns');
+    void triggerRevalidation('home-campaigns', '/');
     return result;
   }
 }

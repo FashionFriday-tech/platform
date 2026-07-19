@@ -1,4 +1,4 @@
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { timingSafeEqual } from 'node:crypto';
@@ -29,11 +29,21 @@ export function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Missing tag parameter' }, { status: 400 });
     }
 
-    // 2. Perform cache revalidation
+    // 2. Perform cache revalidation (both tag cache and page route cache)
     revalidateTag(tag, 'max');
+    if (tag === 'home-campaigns' || tag.startsWith('home-')) {
+      revalidatePath('/', 'page');
+    }
+    if (path) {
+      revalidatePath(path);
+    }
 
     // 3. Fire-and-forget cache warming
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://127.0.0.1:3000';
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ??
+      (process.env.NODE_ENV === 'production'
+        ? 'https://fashionfriday.in'
+        : 'http://127.0.0.1:3000');
     const targetUrl = `${appUrl}${path.startsWith('/') ? path : '/' + path}`;
 
     // We run this asynchronously so we can return the response immediately
