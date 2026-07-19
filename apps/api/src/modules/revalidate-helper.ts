@@ -2,9 +2,7 @@ export async function triggerRevalidation(tag: string, path?: string) {
   const secret = process.env.REVALIDATION_SECRET || 'super-secret-token';
   const frontendUrl =
     process.env.FRONTEND_URL ||
-    (process.env.NODE_ENV === 'production'
-      ? 'https://fashionfriday.in'
-      : 'http://localhost:3000');
+    (process.env.NODE_ENV === 'production' ? 'https://fashionfriday.in' : 'http://localhost:3000');
 
   try {
     let url = `${frontendUrl}/api/revalidate?secret=${secret}&tag=${tag}`;
