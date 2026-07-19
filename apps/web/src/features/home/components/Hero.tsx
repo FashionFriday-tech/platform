@@ -118,7 +118,7 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[60vh] w-full overflow-hidden px-0 py-2 pb-4 lg:mt-28 lg:min-h-[85vh] lg:p-6"
+      className="relative flex flex-col justify-between min-h-[calc(100dvh-76px)] w-full overflow-hidden px-0 py-2 pb-6 lg:mt-28 lg:min-h-[85vh] lg:block lg:p-6"
     >
       {/* Mobile Search input at the top of Hero section */}
       <div className="mt-2 mb-3 px-4 lg:hidden">
@@ -163,7 +163,7 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
 
       {/* Mobile/Tablet View (Single Card or Circular Carousel) */}
       {cards.length === 1 && (
-        <div className="relative flex w-full items-center justify-center py-2 lg:hidden">
+        <div className="relative flex flex-1 w-full items-center justify-center my-auto py-2 lg:hidden">
           <div className="relative aspect-[3/5] w-[74vw] sm:w-[50vw] sm:max-w-[380px] overflow-hidden rounded-[34px] shadow-2xl">
             <Link
               href={cards[0].linkUrl || '/products'}
@@ -183,7 +183,7 @@ export default function Hero({ initialCampaigns }: { initialCampaigns?: any[] })
       )}
 
       {cards.length >= 2 && (
-        <div className="relative w-full overflow-hidden select-none touch-pan-y lg:hidden">
+        <div className="relative flex flex-1 w-full items-center justify-center my-auto overflow-hidden select-none touch-pan-y lg:hidden">
           <div
             onTouchStart={(e) => onDragStart(e.touches[0].clientX, e.touches[0].clientY)}
             onTouchMove={(e) => onDragMove(e.touches[0].clientX, e.touches[0].clientY)}
