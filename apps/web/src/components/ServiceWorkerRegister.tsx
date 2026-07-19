@@ -41,9 +41,16 @@ export default function ServiceWorkerRegister() {
       })
       .catch(() => null);
 
+    let cleanupVisibility: (() => void) | null = null;
+
     navigator.serviceWorker
       .register('/sw.js', { updateViaCache: 'none' })
       .then((registration) => {
+        // If there's already a new worker waiting, activate it immediately
+        if (registration.waiting && navigator.serviceWorker.controller) {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+
         // Listen for new worker updates
         registration.onupdatefound = () => {
           const installingWorker = registration.installing;
@@ -59,6 +66,27 @@ export default function ServiceWorkerRegister() {
             }
           };
         };
+
+        // Proactively check for code updates immediately on launch
+        registration.update().catch(() => null);
+
+        // Check for updates whenever the user returns to the PWA (resumes app)
+        const handleVisibility = () => {
+          if (document.visibilityState === 'visible') {
+            registration.update().catch(() => null);
+          }
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
+
+        // Periodically check every 15 minutes while app is running
+        const intervalId = setInterval(() => {
+          registration.update().catch(() => null);
+        }, 15 * 60 * 1000);
+
+        cleanupVisibility = () => {
+          document.removeEventListener('visibilitychange', handleVisibility);
+          clearInterval(intervalId);
+        };
       })
       .catch(() => {
         // Silent catch
@@ -66,6 +94,9 @@ export default function ServiceWorkerRegister() {
 
     return () => {
       window.removeEventListener('unhandledrejection', handleRejection);
+      if (cleanupVisibility) {
+        cleanupVisibility();
+      }
     };
   }, []);
 
