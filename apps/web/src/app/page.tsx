@@ -18,7 +18,8 @@ import {
   getHomeReviews,
 } from '@/features/home/services/queries';
 
-export const revalidate = 3600; // 1 hour static regeneration fallback
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function HomePage() {
   // Fetch all homepage data in parallel

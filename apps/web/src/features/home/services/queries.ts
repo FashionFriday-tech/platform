@@ -30,7 +30,8 @@ export interface WhatsappReview {
 export async function getHomeCampaigns(): Promise<CampaignBanner[]> {
   try {
     const data = await fetcher<CampaignBanner[]>('/campaigns', {
-      next: { tags: ['home-campaigns'] },
+      cache: 'no-store',
+      next: { tags: ['home-campaigns'], revalidate: 0 },
     });
     return data || [];
   } catch (error) {
