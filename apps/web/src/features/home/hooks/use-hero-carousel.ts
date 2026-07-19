@@ -23,22 +23,22 @@ interface CampaignBanner {
 }
 
 export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
-  const getMappedBanners = (banners: CampaignBanner[]) => {
+  const getMappedBanners = (banners: CampaignBanner[]): HeroCard[] => {
     return banners
-      .filter((b) => b.placement === 'home-carousel' && b.isActive)
+      .filter((b) => b.placement === 'home-carousel' && b.isActive && Boolean(b.mediaUrl))
       .map((b) => ({
         id: b.id,
         src: b.mediaUrl,
-        title: b.title,
+        title: b.title || '',
         subtitle: '',
-        linkUrl: b.linkUrl,
+        linkUrl: b.linkUrl || '/products',
       }));
   };
 
-  const [cards, setCards] = useState<HeroCard[]>(
-    initialCampaigns ? getMappedBanners(initialCampaigns) : [],
-  );
-  const [activeIndex, setActiveIndex] = useState(0);
+  const initialCards = initialCampaigns ? getMappedBanners(initialCampaigns) : [];
+
+  const [cards, setCards] = useState<HeroCard[]>(initialCards);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [isInView, setIsInView] = useState(true);
@@ -57,10 +57,8 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
     }
   }, []);
 
+  // Always re-sync live campaigns on client mount to ensure real-time updates in PWA/browser
   useEffect(() => {
-    if (initialCampaigns) {
-      return;
-    }
     const loadHeroBanners = async () => {
       try {
         const data = await fetcher<CampaignBanner[]>('/campaigns');
@@ -70,17 +68,31 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
             setCards(carouselBanners);
             try {
               localStorage.setItem('offline_hero_banners', JSON.stringify(carouselBanners));
-            } catch (e) {
-              console.error('Failed to save hero banners to localStorage', e);
+            } catch {
+              // ignore
             }
+          } else {
+            setCards([]);
           }
         }
       } catch (err: unknown) {
-        console.error('Failed to load hero banners from API:', err);
+        console.error('Failed to load live hero banners from API:', err);
+        // Fallback to offline storage if offline
+        try {
+          const cached = localStorage.getItem('offline_hero_banners');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setCards(parsed);
+            }
+          }
+        } catch {
+          // ignore
+        }
       }
     };
     void loadHeroBanners();
-  }, [initialCampaigns]);
+  }, []);
 
   const startTimer = useCallback(() => {
     if (timerRef.current) {
@@ -90,9 +102,20 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
       return;
     }
     timerRef.current = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % cards.length);
+      setCurrentIndex((prev) => prev + 1);
     }, 3000);
-  }, [cards.length, isPlaying, isInView]);
+  }, [isPlaying, isInView]);
+
+  const pauseTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const resumeTimer = useCallback(() => {
+    startTimer();
+  }, [startTimer]);
 
   useEffect(() => {
     if (cards.length > 0) {
@@ -105,30 +128,40 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
     };
   }, [cards.length, startTimer]);
 
-  const goToCard = useCallback(
-    (index: number) => {
-      setActiveIndex(index);
-      startTimer(); // Reset the 3-second timer on manual navigation
-    },
-    [startTimer],
-  );
-
   const nextCard = useCallback(() => {
-    setActiveIndex((prev) => (prev + 1) % cards.length);
+    setCurrentIndex((prev) => prev + 1);
     startTimer();
-  }, [cards.length, startTimer]);
+  }, [startTimer]);
 
   const prevCard = useCallback(() => {
-    setActiveIndex((prev) => (prev - 1 + cards.length) % cards.length);
+    setCurrentIndex((prev) => prev - 1);
     startTimer();
-  }, [cards.length, startTimer]);
+  }, [startTimer]);
+
+  const goToCard = useCallback(
+    (index: number) => {
+      if (cards.length === 0) return;
+      const currentMod = ((currentIndex % cards.length) + cards.length) % cards.length;
+      let diff = index - currentMod;
+      if (diff > cards.length / 2) diff -= cards.length;
+      if (diff < -cards.length / 2) diff += cards.length;
+      setCurrentIndex((prev) => prev + diff);
+      startTimer(); // Reset the 3-second timer on manual navigation
+    },
+    [cards.length, currentIndex, startTimer],
+  );
 
   const togglePlay = useCallback(() => {
     setIsPlaying((prev) => !prev);
   }, []);
 
+  const activeIndex =
+    cards.length > 0 ? ((currentIndex % cards.length) + cards.length) % cards.length : 0;
+
   return {
     cards,
+    currentIndex,
+    setCurrentIndex,
     activeIndex,
     isPlaying,
     goToCard,
@@ -137,5 +170,7 @@ export function useHeroCarousel(initialCampaigns?: CampaignBanner[]) {
     togglePlay,
     containerRef,
     isInView,
+    pauseTimer,
+    resumeTimer,
   };
 }
