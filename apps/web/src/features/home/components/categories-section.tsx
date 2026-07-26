@@ -68,6 +68,37 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
 
         {/* 2-Card Grid (Men & Women) */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
+          <style>{`
+            @keyframes category-card-shine {
+              0% {
+                transform: translateX(-150%) skewX(-20deg);
+                opacity: 0;
+              }
+              15% {
+                opacity: 1;
+              }
+              45% {
+                transform: translateX(150%) skewX(-20deg);
+                opacity: 1;
+              }
+              46%, 100% {
+                transform: translateX(150%) skewX(-20deg);
+                opacity: 0;
+              }
+            }
+            .category-card-shine {
+              background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.05) 20%,
+                rgba(255, 255, 255, 0.35) 50%,
+                rgba(255, 255, 255, 0.05) 75%,
+                transparent 100%
+              );
+              animation: category-card-shine 4.5s ease-in-out infinite;
+            }
+          `}</style>
+
           {!isMounted ? (
             <>
               {/* Category skeleton placeholders */}
@@ -75,7 +106,7 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
               <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
             </>
           ) : cards.length > 0 ? (
-            cards.map((cat) => (
+            cards.map((cat, idx) => (
               <article
                 key={cat.id}
                 className="group relative aspect-square w-full overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl"
@@ -94,8 +125,16 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent transition-opacity duration-500 group-hover:opacity-95" />
                   </figure>
 
+                  {/* Luxury luminous shine sweep like in hero section active cards */}
+                  <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-3xl">
+                    <div
+                      className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]"
+                      style={{ animationDelay: `${idx * 1.8}s` }}
+                    />
+                  </div>
+
                   {/* Content Overlay */}
-                  <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-10">
+                  <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 sm:p-10">
                     <span className="mb-1 text-xs font-bold tracking-widest text-zinc-300 uppercase">
                       {cat.subtitle}
                     </span>
