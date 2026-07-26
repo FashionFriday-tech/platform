@@ -1,12 +1,13 @@
 'use client';
 
-import { type JSX, useEffect, useRef, useState } from 'react';
+import { type JSX, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import type { Brand } from '@ff/schemas';
-import { SearchIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'motion/react';
+import { motion } from 'motion/react';
+
+import { SearchBox } from '@/components/ui/search-box';
 
 import { useHeroCarousel } from '../hooks/use-hero-carousel';
 import BrandScroll from './BrandScroll';
@@ -32,24 +33,6 @@ export default function Hero({
   } = useHeroCarousel(initialCampaigns);
 
   const repeatedCards = [...cards, ...cards, ...cards];
-
-  const placeholders = [
-    'Search for linen shirts',
-    'Search by category',
-    'Search by brands',
-    'Search for street wear',
-    'Search for accessories',
-  ];
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-    }, 2500);
-    return () => {
-      clearInterval(timer);
-    };
-  }, [placeholders.length]);
 
   const handleOpenSearch = () => {
     window.dispatchEvent(new CustomEvent('open-search'));
@@ -142,26 +125,7 @@ export default function Hero({
     >
       {/* 1. Mobile Search input */}
       <div className="w-full shrink-0 px-4 lg:hidden">
-        <div
-          onClick={handleOpenSearch}
-          className="flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-zinc-300/80 bg-zinc-50/50 px-4 py-2.5 transition-all duration-200 active:scale-98 dark:border-zinc-700/80 dark:bg-zinc-900/50"
-        >
-          <SearchIcon className="h-4.5 w-4.5 shrink-0 text-zinc-500 dark:text-zinc-400" />
-          <div className="relative flex h-5 w-full items-center overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={placeholderIndex}
-                initial={{ opacity: 0, y: 8, filter: 'blur(2px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -8, filter: 'blur(2px)' }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute truncate text-xs font-medium text-zinc-600 select-none sm:text-sm dark:text-zinc-300"
-              >
-                {placeholders[placeholderIndex]}
-              </motion.span>
-            </AnimatePresence>
-          </div>
-        </div>
+        <SearchBox onClick={handleOpenSearch} />
       </div>
 
       <style>{`
