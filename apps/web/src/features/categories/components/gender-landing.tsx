@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -41,6 +41,7 @@ export function GenderLanding({
   const params = useParams();
   const router = useRouter();
   const genderParam = (params.gender as string).toLowerCase();
+  const rightListRef = useRef<HTMLDivElement>(null);
 
   const [heroes, setHeroes] = useState<CategoryHeroImages>(() => {
     return (
@@ -75,6 +76,13 @@ export function GenderLanding({
   const genderIndex = getIndexFromParam(genderParam);
   const activeGender = GENDERS[genderIndex];
 
+  // Reset scroll position on active gender switch
+  useEffect(() => {
+    if (rightListRef.current) {
+      rightListRef.current.scrollTop = 0;
+    }
+  }, [activeGender]);
+
   const handleGenderChange = (idx: number) => {
     router.replace(`/category/${GENDERS[idx]}`, { scroll: false });
   };
@@ -85,6 +93,13 @@ export function GenderLanding({
       handleGenderChange(0);
     } else if (info.offset.x < -swipeThreshold && genderIndex < GENDERS.length - 1) {
       handleGenderChange(1);
+    }
+  };
+
+  // Forward scroll wheel event from the fixed left section to right items list
+  const handleLeftWheel = (e: React.WheelEvent) => {
+    if (rightListRef.current) {
+      rightListRef.current.scrollTop += e.deltaY;
     }
   };
 
@@ -113,7 +128,7 @@ export function GenderLanding({
   };
 
   return (
-    <div className="bg-background min-h-screen overflow-x-hidden select-none lg:mt-32 lg:h-[calc(100vh-8rem)] lg:overflow-hidden">
+    <div className="bg-background min-h-screen overflow-x-hidden select-none lg:mt-20 lg:h-[calc(100vh-5rem)] lg:min-h-0 lg:overflow-hidden">
       {/* --- MOBILE HEADER --- */}
       <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md lg:hidden">
         <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
@@ -154,11 +169,14 @@ export function GenderLanding({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:h-full lg:flex-row lg:items-stretch lg:justify-center lg:gap-12 lg:px-12 lg:pt-0 lg:pb-0"
+            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:h-full lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-8 xl:gap-14 xl:px-14 lg:pt-0 lg:pb-0"
           >
-            {/* 1. HERO SECTION */}
-            <div className="flex w-full items-center justify-center lg:h-full lg:w-1/2 lg:pr-8">
-              <div className="border-border/50 group relative aspect-5/4 w-full overflow-hidden rounded-4xl border shadow-2xl lg:relative lg:aspect-auto lg:h-[90%] lg:w-full lg:max-w-150 lg:rounded-[3.5rem]">
+            {/* 1. HERO SECTION (STATIONARY / FIXED IN PLACE ON DESKTOP, 1:1 ASPECT RATIO) */}
+            <div
+              onWheel={handleLeftWheel}
+              className="flex w-full items-center justify-center lg:h-full lg:w-1/2 lg:shrink-0 lg:overflow-hidden"
+            >
+              <div className="border-border/50 group relative aspect-square w-full overflow-hidden rounded-4xl border shadow-2xl lg:h-auto lg:w-full lg:max-w-[min(480px,calc(100vh-8.5rem))] xl:max-w-[min(540px,calc(100vh-8.5rem))] lg:rounded-[3rem]">
                 <motion.div
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
@@ -167,11 +185,11 @@ export function GenderLanding({
                   style={{ backgroundImage: `url(${currentData.hero})` }}
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-8 left-8 lg:bottom-16 lg:left-16">
+                <div className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 xl:bottom-14 xl:left-14">
                   <p className="mb-2 text-[8px] font-black tracking-[0.4em] text-white/50 uppercase lg:text-[10px]">
                     Exclusive Collection
                   </p>
-                  <h1 className="text-3xl leading-[0.85] font-black tracking-tighter text-white uppercase italic lg:text-7xl">
+                  <h1 className="text-3xl leading-[0.85] font-black tracking-tighter text-white uppercase italic lg:text-5xl xl:text-6xl">
                     {currentData.label}&apos;s
                     <br />
                     Essentials
@@ -180,34 +198,37 @@ export function GenderLanding({
               </div>
             </div>
 
-            {/* 2. CATEGORY LIST */}
-            <div className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:my-auto lg:h-[90%] lg:w-1/2 lg:gap-6 lg:overflow-y-auto lg:pt-0 lg:pb-0">
-              <div className="w-full max-w-2xl space-y-3 lg:space-y-6">
+            {/* 2. CATEGORY LIST (ONLY THIS RIGHT-SIDE SECTION SCROLLS ON DESKTOP) */}
+            <div
+              ref={rightListRef}
+              className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:overflow-y-auto lg:overscroll-contain lg:pt-8 lg:pb-12 lg:pr-2"
+            >
+              <div className="w-full max-w-xl mx-auto space-y-3 lg:space-y-4">
                 {currentData.list.map((cat) => (
                   <Link
                     key={`${activeGender}-${cat.slug}`}
                     href={`/category/${activeGender}/${cat.slug}`}
                     className="group block"
                   >
-                    <div className="bg-background-muted/40 group-hover:border-border/40 flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98] lg:gap-6 lg:rounded-[2.5rem] lg:p-4">
-                      <div className="border-border/50 bg-background relative h-28 w-28 shrink-0 overflow-hidden rounded-4xl border shadow-md lg:h-32 lg:w-32 lg:rounded-4xl">
+                    <div className="bg-background-muted/40 hover:bg-background-muted/70 group-hover:border-border/40 flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98] lg:gap-5 lg:rounded-[2rem] lg:p-3.5">
+                      <div className="border-border/50 bg-background relative h-24 w-24 shrink-0 overflow-hidden rounded-3xl border shadow-md lg:h-28 lg:w-28 lg:rounded-3xl">
                         <Image
                           src={cat.img}
                           alt={cat.name}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
-                          sizes="(min-width: 1024px) 128px, 112px"
+                          sizes="(min-width: 1024px) 112px, 96px"
                         />
                       </div>
 
                       <div className="flex-1">
-                        <h3 className="text-foreground group-hover:text-brand text-[20px] font-bold tracking-tighter uppercase italic transition-colors lg:text-3xl">
+                        <h3 className="text-foreground group-hover:text-brand text-[20px] font-bold tracking-tighter uppercase italic transition-colors lg:text-2xl">
                           {cat.name}
                         </h3>
                       </div>
 
                       <div className="pr-3">
-                        <div className="border-border/60 group-hover:bg-foreground group-hover:text-background flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 lg:h-12 lg:w-12">
+                        <div className="border-border/60 group-hover:bg-foreground group-hover:text-background flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 lg:h-10 lg:w-10">
                           <ChevronRightIcon size={14} />
                         </div>
                       </div>

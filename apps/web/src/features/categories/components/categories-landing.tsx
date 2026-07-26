@@ -135,7 +135,7 @@ export function CategoriesLanding({
             className="mx-auto max-w-2xl px-4 pt-6"
           >
             {/* 1. HERO SECTION */}
-            <div className="bg-background-muted border-border/50 relative mb-8 aspect-15/10 w-full overflow-hidden rounded-4xl border shadow-sm">
+            <div className="bg-background-muted border-border/50 relative mb-8 aspect-square w-full overflow-hidden rounded-4xl border shadow-sm">
               <motion.div
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
