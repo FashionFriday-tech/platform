@@ -221,7 +221,10 @@ export function Header() {
                   {marqueeSegments.map((item, i) => (
                     <div
                       key={i}
-                      className={`flex items-center gap-3 px-8 py-2 text-white ${
+                      style={{
+                        clipPath: 'polygon(26px 0%, 100% 0%, calc(100% - 26px) 100%, 0% 100%)',
+                      }}
+                      className={`mx-1 flex items-center gap-3 px-12 py-2 text-white transition-all ${
                         item.isRed ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
                       }`}
                     >
@@ -301,7 +304,10 @@ export function Header() {
                   {marqueeSegments.map((item, i) => (
                     <div
                       key={i}
-                      className={`flex h-6.5 items-center gap-2 px-5 text-white ${
+                      style={{
+                        clipPath: 'polygon(18px 0%, 100% 0%, calc(100% - 18px) 100%, 0% 100%)',
+                      }}
+                      className={`mx-1 flex h-6.5 items-center gap-2 px-8 text-white ${
                         item.isRed ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
                       }`}
                     >
