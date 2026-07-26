@@ -297,7 +297,7 @@ export function Header() {
 
         {/* MOBILE ALTERNATING MARQUEE: RED SECTION THEN ELECTRIC BLUE SECTION */}
         {pathname === '/' && (
-          <div className="relative z-40 flex h-6.5 w-full items-center overflow-hidden bg-black text-white">
+          <div className="relative z-40 flex h-[26px] w-full items-center overflow-hidden bg-black text-white">
             <div className="animate-marquee flex w-max whitespace-nowrap">
               {[0, 1].map((set) => (
                 <div key={set} className="flex items-center">
@@ -307,7 +307,7 @@ export function Header() {
                       style={{
                         clipPath: 'polygon(18px 0%, 100% 0%, calc(100% - 18px) 100%, 0% 100%)',
                       }}
-                      className={`mx-1 flex h-6.5 items-center gap-2 px-8 text-white ${
+                      className={`mx-1 flex h-[26px] items-center gap-2 px-8 text-white ${
                         item.isRed ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
                       }`}
                     >

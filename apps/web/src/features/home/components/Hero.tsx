@@ -110,10 +110,10 @@ export default function Hero({
 
   // Dynamic mobile card sizing keeping strict 3:5 aspect ratio and balancing container height:
   // (100dvh - 138px) is the available space between top header (82px) and bottom nav (56px).
-  // Tuned to ~72% height filling empty spaces while preserving clean clearance for Search Box and Brand Logos.
+  // Reserving 160px ensures exact balanced space for Search Box (~70px) and BrandScroll (~90px) on any device.
   const mobileCardStyle = {
     width:
-      'min(calc(((100dvh - 138px) - 142px) * 0.6), calc((100dvh - 138px) * 0.435), 82vw, 360px)',
+      'min(calc(((100dvh - 138px) - 160px) * 0.6), calc((100dvh - 138px) * 0.44), 82vw, 350px)',
     aspectRatio: '3 / 5',
     height: 'auto',
   };
@@ -121,85 +121,16 @@ export default function Hero({
   return (
     <section
       ref={containerRef}
-      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center justify-evenly px-0 pb-14 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
+      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center px-0 pb-14 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
-      {/* 1. Mobile Search input */}
-      <div className="w-full shrink-0 px-4 lg:hidden">
+      {/* 1. Mobile Search input: Exact vertical center between marquee section and hero card */}
+      <div className="flex w-full shrink-0 items-center justify-center px-4 py-2.5 sm:py-3 lg:hidden">
         <SearchBox onClick={handleOpenSearch} />
       </div>
 
-      <style>{`
-        @media (min-width: 1024px) {
-          @keyframes auto-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(calc(-100% / 3)); }
-          }
-          .carousel-track {
-            display: flex;
-            width: max-content;
-            animation: auto-scroll 45s linear infinite;
-          }
-          .carousel-track:hover {
-            animation-play-state: paused;
-          }
-        }
-        @keyframes hero-card-shine {
-          0% {
-            transform: translateX(-150%) skewX(-20deg);
-            opacity: 0;
-          }
-          15% {
-            opacity: 1;
-          }
-          45% {
-            transform: translateX(150%) skewX(-20deg);
-            opacity: 1;
-          }
-          46%, 100% {
-            transform: translateX(150%) skewX(-20deg);
-            opacity: 0;
-          }
-        }
-        @keyframes hero-card-shine-hover {
-          0% {
-            transform: translateX(-150%) skewX(-20deg);
-            opacity: 0;
-          }
-          20% {
-            opacity: 1;
-          }
-          100% {
-            transform: translateX(150%) skewX(-20deg);
-            opacity: 1;
-          }
-        }
-        .hero-card-shine {
-          background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.05) 20%,
-            rgba(255, 255, 255, 0.35) 50%,
-            rgba(255, 255, 255, 0.05) 75%,
-            transparent 100%
-          );
-          animation: hero-card-shine 4.5s ease-in-out infinite;
-        }
-        .hero-card-shine-hover {
-          background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.05) 20%,
-            rgba(255, 255, 255, 0.35) 50%,
-            rgba(255, 255, 255, 0.05) 75%,
-            transparent 100%
-          );
-          animation: hero-card-shine-hover 1.2s ease-out infinite;
-        }
-      `}</style>
-
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
       {cards.length === 1 && (
-        <div className="relative flex w-full shrink-0 items-center justify-center py-3 sm:py-4 lg:hidden">
+        <div className="relative flex w-full shrink-0 items-center justify-center select-none lg:hidden">
           <div
             style={mobileCardStyle}
             className="relative rounded-[38px] shadow-2xl sm:rounded-[44px]"
@@ -226,7 +157,7 @@ export default function Hero({
       )}
 
       {cards.length >= 2 && (
-        <div className="relative flex w-full shrink-0 touch-pan-y items-center justify-center overflow-hidden py-3 select-none sm:py-4 lg:hidden">
+        <div className="relative flex w-full shrink-0 touch-pan-y items-center justify-center overflow-hidden select-none lg:hidden">
           <div
             onTouchStart={(e) => {
               onDragStart(e.touches[0].clientX, e.touches[0].clientY);
@@ -371,14 +302,83 @@ export default function Hero({
         </div>
       )}
 
-      {/* 3. Brand Logo Marquee: identical gap to card */}
+      {/* 3. Brand Logo Marquee: balanced bottom zone with extra clearance from hero cards */}
       {children ? (
         <div className="w-full shrink-0 lg:block lg:flex-none">{children}</div>
       ) : (
-        <div className="w-full shrink-0 lg:mt-6 lg:block lg:flex-none">
+        <div className="flex flex-1 w-full items-center justify-center pt-2 sm:pt-3 lg:mt-6 lg:block lg:flex-none lg:pt-0">
           <BrandScroll initialBrands={initialBrands} />
         </div>
       )}
+
+      <style>{`
+        @media (min-width: 1024px) {
+          @keyframes auto-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-100% / 3)); }
+          }
+          .carousel-track {
+            display: flex;
+            width: max-content;
+            animation: auto-scroll 45s linear infinite;
+          }
+          .carousel-track:hover {
+            animation-play-state: paused;
+          }
+        }
+        @keyframes hero-card-shine {
+          0% {
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+          }
+          45% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 1;
+          }
+          46%, 100% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 0;
+          }
+        }
+        @keyframes hero-card-shine-hover {
+          0% {
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0;
+          }
+          20% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 1;
+          }
+        }
+        .hero-card-shine {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.05) 20%,
+            rgba(255, 255, 255, 0.35) 50%,
+            rgba(255, 255, 255, 0.05) 75%,
+            transparent 100%
+          );
+          animation: hero-card-shine 4.5s ease-in-out infinite;
+        }
+        .hero-card-shine-hover {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.05) 20%,
+            rgba(255, 255, 255, 0.35) 50%,
+            rgba(255, 255, 255, 0.05) 75%,
+            transparent 100%
+          );
+          animation: hero-card-shine-hover 1.2s ease-out infinite;
+        }
+      `}</style>
     </section>
   );
 }
