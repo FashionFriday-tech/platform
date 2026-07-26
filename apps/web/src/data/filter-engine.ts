@@ -386,3 +386,41 @@ export const getNewArrivalsProducts = async (take = 100): Promise<Product[]> => 
     return [];
   }
 };
+
+export interface SearchResultsPayload {
+  products: Product[];
+  total: number;
+  didYouMean?: string;
+  query: string;
+}
+
+export const getSearchResults = async (query: string, take = 60): Promise<SearchResultsPayload> => {
+  try {
+    const clean = (query || '').trim();
+    if (!clean) {
+      return { products: [], total: 0, query: '' };
+    }
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const res = await fetch(
+      `${API_URL}/products/search?q=${encodeURIComponent(clean)}&take=${take}`,
+      {
+        next: { revalidate: 30, tags: [`search-${clean.toLowerCase()}`, 'products'] },
+      },
+    );
+    if (!res.ok) {
+      return { products: [], total: 0, query: clean };
+    }
+    const json = await res.json();
+    const data = json.data || [];
+    const mapped: Product[] = data.map(mapDbProductToSchema);
+    return {
+      products: mapped,
+      total: json.meta?.total ?? mapped.length,
+      didYouMean: json.meta?.didYouMean,
+      query: clean,
+    };
+  } catch (err) {
+    console.error('getSearchResults error:', err);
+    return { products: [], total: 0, query };
+  }
+};
