@@ -21,13 +21,18 @@ export class ProductsController {
     );
   }
 
+  @Get('search/suggestions')
+  async getSearchSuggestions(@Query('q') q?: string) {
+    return this.productsService.getSearchSuggestions(q);
+  }
+
   @Get('search')
   async searchProducts(
     @Query('q') q: string,
     @Query('skip') skip?: number,
     @Query('take') take?: number,
   ) {
-    return this.productsService.getProductsBySearch(q, Number(skip) || 0, Number(take) || 10);
+    return this.productsService.getProductsBySearch(q, Number(skip) || 0, Number(take) || 50);
   }
 
   @Get('featured')

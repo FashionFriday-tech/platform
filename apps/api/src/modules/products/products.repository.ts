@@ -56,6 +56,40 @@ export class ProductsRepository {
     ]);
   }
 
+  async findDistinctBrandsAndCategories() {
+    const [brands, categories] = await Promise.all([
+      this.prisma.db.brand.findMany({
+        select: { name: true, slug: true },
+      }),
+      this.prisma.db.category.findMany({
+        select: { name: true, slug: true },
+      }),
+    ]);
+    return { brands, categories };
+  }
+
+  async findQuickSuggestions(query: string, matchedBrandNames: string[] = []) {
+    const clean = query.trim();
+    return this.prisma.db.product.findMany({
+      take: 4,
+      where: {
+        status: 'PUBLISHED',
+        OR: [
+          { name: { contains: clean, mode: 'insensitive' } },
+          ...(matchedBrandNames.length > 0 ? [{ brand: { hasSome: matchedBrandNames } }] : []),
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        mainImage: true,
+        sellingPrice: true,
+        brand: true,
+      },
+    });
+  }
+
   async findById(id: string) {
     return this.prisma.db.product.findUnique({
       where: { id },
