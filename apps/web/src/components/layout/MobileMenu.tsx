@@ -535,7 +535,9 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                         </div>
                         <button
                           type="button"
-                          onClick={() => setShowInstallGuide(false)}
+                          onClick={() => {
+                            setShowInstallGuide(false);
+                          }}
                           className="text-foreground/50 hover:text-foreground rounded-full p-1 transition-colors"
                           aria-label="Close guide"
                         >
@@ -556,7 +558,9 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                       <div className="bg-foreground/5 mb-3 flex items-center gap-1 rounded-xl p-1">
                         <button
                           type="button"
-                          onClick={() => setSelectedPlatformTab('android')}
+                          onClick={() => {
+                            setSelectedPlatformTab('android');
+                          }}
                           className={`flex-1 rounded-lg py-1 text-[11px] font-bold transition-all ${
                             selectedPlatformTab === 'android'
                               ? 'bg-foreground text-background shadow-xs'
@@ -567,7 +571,9 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setSelectedPlatformTab('ios')}
+                          onClick={() => {
+                            setSelectedPlatformTab('ios');
+                          }}
                           className={`flex-1 rounded-lg py-1 text-[11px] font-bold transition-all ${
                             selectedPlatformTab === 'ios'
                               ? 'bg-foreground text-background shadow-xs'
@@ -578,7 +584,9 @@ export function MobileMenu({ isOpen, onClose, onOpenSearch }: MobileMenuProps) {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setSelectedPlatformTab('desktop')}
+                          onClick={() => {
+                            setSelectedPlatformTab('desktop');
+                          }}
                           className={`flex-1 rounded-lg py-1 text-[11px] font-bold transition-all ${
                             selectedPlatformTab === 'desktop'
                               ? 'bg-foreground text-background shadow-xs'

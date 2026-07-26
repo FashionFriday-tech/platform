@@ -16,12 +16,16 @@ if (typeof window !== 'undefined') {
   window.addEventListener('beforeinstallprompt', (e: Event) => {
     e.preventDefault();
     globalDeferredPrompt = e as BeforeInstallPromptEvent;
-    promptListeners.forEach((fn) => fn(globalDeferredPrompt));
+    promptListeners.forEach((fn) => {
+      fn(globalDeferredPrompt);
+    });
   });
 
   window.addEventListener('appinstalled', () => {
     globalDeferredPrompt = null;
-    promptListeners.forEach((fn) => fn(null));
+    promptListeners.forEach((fn) => {
+      fn(null);
+    });
     toast.success('Fashion Friday App installed successfully!');
   });
 }
