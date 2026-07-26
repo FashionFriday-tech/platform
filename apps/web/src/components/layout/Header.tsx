@@ -91,8 +91,55 @@ export function Header() {
     return null;
   }
 
-  const marqueeText = 'FREE SHIPPING ON PRE PAY • COD available +200 advance';
-  const marqueeContent = Array(10).fill(marqueeText);
+  const [redMarquee, setRedMarquee] = useState(
+    'FREE SHIPPING ON PRE PAY • COD available +200 advance',
+  );
+  const [blueMarquee, setBlueMarquee] = useState(
+    'NEW DROPS EVERY FRIDAY • 100% VERIFIED AUTHENTIC • EXPRESS DELIVERY',
+  );
+  const [redLink, setRedLink] = useState<string | null>(null);
+  const [blueLink, setBlueLink] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (pathname !== '/') {
+      return;
+    }
+    const fetchMarqueeCampaigns = async () => {
+      try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+        const res = await fetch(`${API_URL}/campaigns`);
+        if (res.ok) {
+          const campaigns: Array<{
+            placement: string;
+            title: string;
+            linkUrl?: string;
+            isActive: boolean;
+          }> = await res.json();
+          const activeRed = campaigns.find((c) => c.placement === 'marquee-red' && c.isActive);
+          const activeBlue = campaigns.find((c) => c.placement === 'marquee-blue' && c.isActive);
+          if (activeRed?.title) {
+            setRedMarquee(activeRed.title);
+            setRedLink(activeRed.linkUrl || null);
+          }
+          if (activeBlue?.title) {
+            setBlueMarquee(activeBlue.title);
+            setBlueLink(activeBlue.linkUrl || null);
+          }
+        }
+      } catch {
+        // Silent fallback to defaults
+      }
+    };
+    void fetchMarqueeCampaigns();
+  }, [pathname]);
+
+  // Unified alternating segments: when red ends, electric blue starts next!
+  const marqueeSegments = Array(8)
+    .fill([
+      { text: redMarquee, link: redLink, isRed: true },
+      { text: blueMarquee, link: blueLink, isRed: false },
+    ])
+    .flat();
 
   return (
     <>
@@ -165,20 +212,30 @@ export function Header() {
           </div>
         </div>
 
-        {/* MARQUEE (Scrolling Announcement for Desktop) */}
+        {/* SINGLE ALTERNATING MARQUEE: RED SECTION THEN ELECTRIC BLUE SECTION (Desktop) */}
         {pathname === '/' && (
-          <div className="relative z-40 hidden w-full overflow-hidden bg-[#FF0000] py-2 text-white lg:block">
+          <div className="relative z-40 hidden w-full overflow-hidden bg-black lg:block">
             <div className="animate-marquee flex w-max whitespace-nowrap">
               {[0, 1].map((set) => (
-                <div key={set} className="flex items-center gap-8 px-4 sm:gap-12 sm:px-6">
-                  {marqueeContent.map((text, i) => (
-                    <span
+                <div key={set} className="flex items-center">
+                  {marqueeSegments.map((item, i) => (
+                    <div
                       key={i}
-                      className="flex items-center gap-2.5 text-[9px] font-black tracking-[0.25em] uppercase sm:gap-3 sm:text-[10px]"
+                      className={`flex items-center gap-3 px-8 py-2 text-white ${
+                        item.isRed ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
+                      }`}
                     >
                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
-                      {text}
-                    </span>
+                      <span className="text-[10px] font-black tracking-[0.25em] uppercase">
+                        {item.link ? (
+                          <Link href={item.link} className="hover:underline">
+                            {item.text}
+                          </Link>
+                        ) : (
+                          item.text
+                        )}
+                      </span>
+                    </div>
                   ))}
                 </div>
               ))}
@@ -235,20 +292,30 @@ export function Header() {
           </div>
         </div>
 
-        {/* MOBILE MARQUEE ANNOUNCEMENT */}
+        {/* MOBILE ALTERNATING MARQUEE: RED SECTION THEN ELECTRIC BLUE SECTION */}
         {pathname === '/' && (
-          <div className="relative z-40 flex h-6.5 w-full items-center overflow-hidden bg-[#FF0000] text-white">
+          <div className="relative z-40 flex h-6.5 w-full items-center overflow-hidden bg-black text-white">
             <div className="animate-marquee flex w-max whitespace-nowrap">
               {[0, 1].map((set) => (
-                <div key={set} className="flex items-center gap-8 px-4">
-                  {marqueeContent.map((text, i) => (
-                    <span
+                <div key={set} className="flex items-center">
+                  {marqueeSegments.map((item, i) => (
+                    <div
                       key={i}
-                      className="flex items-center gap-2 text-[9px] font-black tracking-[0.25em] uppercase"
+                      className={`flex h-6.5 items-center gap-2 px-5 text-white ${
+                        item.isRed ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
+                      }`}
                     >
                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
-                      {text}
-                    </span>
+                      <span className="text-[9px] font-black tracking-[0.22em] uppercase">
+                        {item.link ? (
+                          <Link href={item.link} className="hover:underline">
+                            {item.text}
+                          </Link>
+                        ) : (
+                          item.text
+                        )}
+                      </span>
+                    </div>
                   ))}
                 </div>
               ))}
