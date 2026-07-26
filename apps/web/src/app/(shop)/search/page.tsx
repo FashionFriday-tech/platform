@@ -74,21 +74,23 @@ export default function SearchPage() {
 
       {/* 2. MAIN DISCOVERY CONTENT */}
       <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-12">
-        {/* Popular Searches: Sleek Single Horizontal Row (No Capsules!) */}
-        <div className="border-border/30 border-b pb-4">
+        {/* Popular Searches: Forward Cross-Cut Badges */}
+        <div className="border-border/30 border-b pb-5">
           <h4 className="text-foreground/40 mb-3 text-[10px] font-bold tracking-[0.25em] uppercase">
             Popular Searches
           </h4>
-          <div className="no-scrollbar flex items-center gap-6 overflow-x-auto whitespace-nowrap">
+          <div className="no-scrollbar flex items-center gap-3 overflow-x-auto py-1 whitespace-nowrap sm:gap-4">
             {popularSearches.map((tag) => (
               <button
                 key={tag}
                 onClick={() => {
                   handleExecuteSearch(tag);
                 }}
-                className="text-foreground/70 hover:text-foreground font-mono text-xs font-bold tracking-wider uppercase underline-offset-4 transition-colors hover:underline sm:text-sm"
+                className="group relative -skew-x-[12deg] sm:-skew-x-[14deg] rounded-md border border-zinc-300/80 bg-white px-4 py-1.5 transition-all duration-200 hover:border-black hover:bg-zinc-50 active:scale-95 sm:px-5 sm:py-2 dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-400 dark:hover:bg-zinc-900"
               >
-                {tag}
+                <span className="inline-block skew-x-[12deg] sm:skew-x-[14deg] font-mono text-xs font-bold tracking-wider text-zinc-700 uppercase transition-colors group-hover:text-black sm:text-xs dark:text-zinc-300 dark:group-hover:text-white">
+                  {tag}
+                </span>
               </button>
             ))}
           </div>
