@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from 'react';
 
+import Link from 'next/link';
+
+import { ArrowUpRightIcon } from '@ff/ui';
+
 import CoverflowCarousel, { type Product } from '@/components/ui/carousel/CoverflowCarousel';
 import { fetcher } from '@/lib/api-client';
 
@@ -70,6 +74,21 @@ export default function TrendingSection({
       </div>
 
       <CoverflowCarousel products={products} />
+
+      {/* View All Trending Products Button */}
+      <div className="mt-8 flex w-full justify-center px-4 sm:mt-10 md:mt-12">
+        <Link
+          href="/products"
+          className="group inline-flex items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
+        >
+          <span className="skew-x-[12deg] px-6 py-3 text-xs sm:text-sm font-black tracking-widest text-white uppercase transition-colors">
+            View All Trending
+          </span>
+          <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-4 py-3 sm:px-5 sm:py-3 text-black transition-all group-hover:bg-zinc-200">
+            <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </span>
+        </Link>
+      </div>
     </section>
   );
 }

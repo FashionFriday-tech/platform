@@ -143,9 +143,13 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
                     </h3>
 
                     <div>
-                      <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold tracking-wider text-white uppercase backdrop-blur-md transition-all duration-300 group-hover:bg-white group-hover:text-black">
-                        {cat.buttonText}
-                        <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      <span className="inline-flex items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-700 bg-black/80 shadow-lg backdrop-blur-md transition-all group-hover:border-zinc-500">
+                        <span className="skew-x-[12deg] px-5 py-2.5 text-xs sm:text-sm font-black tracking-widest text-white uppercase transition-colors">
+                          {cat.buttonText}
+                        </span>
+                        <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-3.5 py-2.5 text-black transition-all group-hover:bg-zinc-200">
+                          <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        </span>
                       </span>
                     </div>
                   </div>
