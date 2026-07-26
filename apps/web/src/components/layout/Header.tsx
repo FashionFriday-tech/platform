@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import {
   BellIcon,
@@ -14,14 +14,12 @@ import {
   UserIcon,
   WishlistIcon,
 } from '@ff/ui';
-import { AnimatePresence } from 'motion/react';
 
 import { AnimatedLogo } from '@/components/ui/animated-logo';
 import { useCart } from '@/features/cart';
 import { useAuthStore } from '@/store/auth-store';
 
 import { MobileMenu } from './MobileMenu';
-import { SearchOverlay } from './SearchOverlay/SearchOverlay';
 
 // --- Helper Functions ---
 const getInitials = (name: string) => {
@@ -64,7 +62,7 @@ export function Header() {
   const user = useAuthStore((state) => state.user);
   const { itemCount, isMounted } = useCart();
   const pathname = usePathname();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleOpenMobileMenu = useCallback(() => {
@@ -76,8 +74,8 @@ export function Header() {
   }, []);
 
   const handleOpenSearch = useCallback(() => {
-    setIsSearchOpen(true);
-  }, []);
+    router.push('/search');
+  }, [router]);
 
   useEffect(() => {
     window.addEventListener('open-search', handleOpenSearch);
@@ -125,14 +123,13 @@ export function Header() {
           </nav>
 
           <div className="z-50 flex items-center gap-5">
-            <button
-              onClick={() => {
-                setIsSearchOpen(true);
-              }}
+            <Link
+              href="/search"
               className="text-foreground hover:text-brand hidden items-center gap-2 text-[10px] font-black tracking-widest uppercase transition-colors lg:flex"
+              aria-label="Search"
             >
               <SearchIcon className="text-lg" />
-            </button>
+            </Link>
             <div className="bg-border hidden h-4 w-px lg:block" />
             <div className="text-foreground flex items-center gap-4">
               <Link href="/account/wishlist">
@@ -264,13 +261,9 @@ export function Header() {
         <Link href="/category/men">
           <CategoryIcon className="text-[25px]" />
         </Link>
-        <button
-          onClick={() => {
-            setIsSearchOpen(true);
-          }}
-        >
+        <Link href="/search" aria-label="Search">
           <SearchListIcon className="text-[25px]" />
-        </button>
+        </Link>
         <Link href="/" className="flex scale-110 items-center justify-center">
           <Image
             src="/images/logos/ff-logo.png"
@@ -292,12 +285,6 @@ export function Header() {
           <UserIcon className="text-[25px]" />
         </Link>
       </nav>
-
-      <AnimatePresence>
-        {isSearchOpen && (
-          <SearchOverlay isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />
-        )}
-      </AnimatePresence>
 
       <MobileMenu
         isOpen={isMobileMenuOpen}
