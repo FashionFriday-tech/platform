@@ -1,11 +1,20 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
 import { ChevronRightIcon } from '@ff/ui';
 import { AnimatePresence, motion, type PanInfo } from 'motion/react';
+
+import { fetcher } from '@/lib/api-client';
+
+import {
+  DEFAULT_CATEGORY_HEROES,
+  extractCategoryHeroImages,
+  type CategoryHeroImages,
+} from '../utils/category-images';
 
 const GENDERS = ['men', 'women'] as const;
 type Gender = (typeof GENDERS)[number];
@@ -20,12 +29,43 @@ export interface CategoryRecord {
 
 interface GenderLandingProps {
   initialCategories: CategoryRecord[];
+  initialCampaigns?: any[];
+  heroImages?: CategoryHeroImages;
 }
 
-export function GenderLanding({ initialCategories }: GenderLandingProps) {
+export function GenderLanding({
+  initialCategories,
+  initialCampaigns,
+  heroImages: propHeroImages,
+}: GenderLandingProps) {
   const params = useParams();
   const router = useRouter();
   const genderParam = (params.gender as string).toLowerCase();
+
+  const [heroes, setHeroes] = useState<CategoryHeroImages>(() => {
+    return (
+      propHeroImages ??
+      extractCategoryHeroImages(initialCampaigns)
+    );
+  });
+
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      try {
+        const data = await fetcher<any[]>('/campaigns');
+        if (Array.isArray(data) && data.length > 0) {
+          const imgs = extractCategoryHeroImages(data);
+          setHeroes((prev) => ({
+            men: imgs.men ?? prev.men,
+            women: imgs.women ?? prev.women,
+          }));
+        }
+      } catch (err) {
+        console.error('Failed to load category hero campaigns:', err);
+      }
+    };
+    void loadCampaigns();
+  }, []);
 
   const getIndexFromParam = (param: string | undefined) => {
     const idx = GENDERS.indexOf(param as Gender);
@@ -68,10 +108,7 @@ export function GenderLanding({ initialCategories }: GenderLandingProps) {
 
   const currentData = {
     label: activeGender.charAt(0).toUpperCase() + activeGender.slice(1),
-    hero:
-      activeGender === 'women'
-        ? 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/women-clothing.webp'
-        : 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/categories/men-clothing.webp',
+    hero: heroes[activeGender] || DEFAULT_CATEGORY_HEROES[activeGender],
     list: categoryList,
   };
 

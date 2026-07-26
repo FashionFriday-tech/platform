@@ -42,7 +42,7 @@ export class CampaignsService {
         isActive: data.isActive ?? true,
       },
     });
-    void triggerRevalidation('home-campaigns', '/');
+    this.triggerCampaignRevalidations();
     return result;
   }
 
@@ -82,7 +82,7 @@ export class CampaignsService {
       where: { id },
       data,
     });
-    void triggerRevalidation('home-campaigns', '/');
+    this.triggerCampaignRevalidations();
     return result;
   }
 
@@ -109,7 +109,14 @@ export class CampaignsService {
     const result = await this.prisma.db.campaign.delete({
       where: { id },
     });
-    void triggerRevalidation('home-campaigns', '/');
+    this.triggerCampaignRevalidations();
     return result;
+  }
+
+  private triggerCampaignRevalidations() {
+    void triggerRevalidation('home-campaigns', '/');
+    void triggerRevalidation('home-categories', '/categories');
+    void triggerRevalidation('home-categories', '/category/men');
+    void triggerRevalidation('home-categories', '/category/women');
   }
 }

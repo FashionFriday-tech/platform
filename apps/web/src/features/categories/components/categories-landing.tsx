@@ -1,11 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { ChevronRightIcon } from '@ff/ui';
 import { AnimatePresence, motion, type PanInfo } from 'motion/react';
+
+import { fetcher } from '@/lib/api-client';
+
+import {
+  extractCategoryHeroImages,
+  type CategoryHeroImages,
+} from '../utils/category-images';
 
 const GENDERS = ['Men', 'Women'] as const;
 
@@ -19,11 +26,42 @@ export interface CategoryRecord {
 
 interface CategoriesLandingProps {
   categories: CategoryRecord[];
+  initialCampaigns?: any[];
+  heroImages?: CategoryHeroImages;
 }
 
-export function CategoriesLanding({ categories }: CategoriesLandingProps) {
+export function CategoriesLanding({
+  categories,
+  initialCampaigns,
+  heroImages: propHeroImages,
+}: CategoriesLandingProps) {
   const [genderIndex, setGenderIndex] = useState(0);
   const activeGender = GENDERS[genderIndex];
+
+  const [heroes, setHeroes] = useState<CategoryHeroImages>(() => {
+    return (
+      propHeroImages ??
+      extractCategoryHeroImages(initialCampaigns)
+    );
+  });
+
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      try {
+        const data = await fetcher<any[]>('/campaigns');
+        if (Array.isArray(data) && data.length > 0) {
+          const imgs = extractCategoryHeroImages(data);
+          setHeroes((prev) => ({
+            men: imgs.men ?? prev.men,
+            women: imgs.women ?? prev.women,
+          }));
+        }
+      } catch (err) {
+        console.error('Failed to load category hero campaigns:', err);
+      }
+    };
+    void loadCampaigns();
+  }, []);
 
   const menCategories = categories.filter(
     (c) => c.gender.toUpperCase() === 'MEN' || c.gender.toUpperCase() === 'UNISEX',
@@ -34,11 +72,11 @@ export function CategoriesLanding({ categories }: CategoriesLandingProps) {
 
   const categoriesByGender = {
     Men: {
-      hero: '/images/categories/men.png',
+      hero: heroes.men || '/images/categories/men.png',
       list: menCategories,
     },
     Women: {
-      hero: '/images/categories/womens.png',
+      hero: heroes.women || '/images/categories/womens.png',
       list: womenCategories,
     },
   };
