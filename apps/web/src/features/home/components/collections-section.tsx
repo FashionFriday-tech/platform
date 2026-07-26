@@ -72,17 +72,17 @@ export default function CollectionsSection({
   return (
     <section
       aria-labelledby="collections-heading"
-      className="relative overflow-hidden py-12 md:py-20"
+      className="relative overflow-hidden pt-4 pb-0 sm:pt-8 sm:pb-2 md:pt-12 md:pb-4"
     >
       <div className="container mx-auto">
-        <header className="mb-10 px-4 text-center lg:px-6">
+        <header className="mb-4 px-4 text-center sm:mb-8 lg:px-6">
           <h2 id="collections-heading" className="section-header">
             Shop by Collections
           </h2>
         </header>
 
         {/* Marquee tracks: single row on desktop (sm:block), two rows on mobile (sm:hidden) */}
-        <div ref={containerRef} className="relative w-full overflow-hidden py-6">
+        <div ref={containerRef} className="relative w-full overflow-hidden py-1 sm:py-3">
           <style>{`
             @keyframes collection-marquee-left {
               0% { transform: translateX(0); }
@@ -119,14 +119,14 @@ export default function CollectionsSection({
               {desktopItems.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 overflow-hidden rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
+                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full">
+                    <figure className="absolute inset-0 m-0 h-full w-full scale-115 skew-x-[6deg]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
@@ -136,7 +136,7 @@ export default function CollectionsSection({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full p-8">
+                    <div className="absolute bottom-0 left-0 z-10 w-full p-8 skew-x-[6deg]">
                       <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                         <p className="mb-2 text-sm font-medium text-zinc-300">
                           {item.productCount || 0} Items
@@ -153,7 +153,7 @@ export default function CollectionsSection({
           </div>
 
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
-          <div className="flex flex-col gap-6 sm:hidden">
+          <div className="flex flex-col gap-3 sm:hidden">
             {/* ROW 1: Moves Left */}
             <div
               className="animate-collection-marquee-left relative z-10 px-6"
@@ -162,14 +162,14 @@ export default function CollectionsSection({
               {row1Items.map((item, index) => (
                 <article
                   key={`r1-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 overflow-hidden rounded-3xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full">
+                    <figure className="absolute inset-0 m-0 h-full w-full scale-115 skew-x-[6deg]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
@@ -179,7 +179,7 @@ export default function CollectionsSection({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full p-4">
+                    <div className="absolute bottom-0 left-0 z-10 w-full p-4 skew-x-[6deg]">
                       <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                         <p className="mb-1 text-[10px] font-medium text-zinc-300">
                           {item.productCount || 0} Items
@@ -202,14 +202,14 @@ export default function CollectionsSection({
               {row2Items.map((item, index) => (
                 <article
                   key={`r2-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 overflow-hidden rounded-3xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full">
+                    <figure className="absolute inset-0 m-0 h-full w-full scale-115 skew-x-[6deg]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
@@ -219,7 +219,7 @@ export default function CollectionsSection({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full p-4">
+                    <div className="absolute bottom-0 left-0 z-10 w-full p-4 skew-x-[6deg]">
                       <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                         <p className="mb-1 text-[10px] font-medium text-zinc-300">
                           {item.productCount || 0} Items
@@ -236,8 +236,8 @@ export default function CollectionsSection({
           </div>
         </div>
 
-        {/* View All Collections Button moved underneath the cards marquee */}
-        <div className="mt-10 flex w-full justify-center px-4">
+        {/* View All Collections Button */}
+        <div className="mt-3 flex w-full justify-center px-4 sm:mt-6">
           <Link
             href="/collections"
             className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all hover:bg-black hover:text-white active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"

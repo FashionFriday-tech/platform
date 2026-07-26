@@ -67,15 +67,15 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   }
 
   return (
-    <section className="relative w-full overflow-hidden py-12 transition-colors duration-300 md:py-20 lg:py-24">
+    <section className="relative w-full overflow-hidden pt-2 pb-8 transition-colors duration-300 sm:pt-6 sm:pb-12 md:pt-8 md:pb-16">
       <div className="relative z-10">
         {/* HEADER */}
-        <header className="container mx-auto mb-8 flex justify-center px-4 text-center">
+        <header className="container mx-auto mb-3 flex justify-center px-4 text-center sm:mb-6">
           <h2 className="section-header">Shop by brands</h2>
         </header>
 
         {/* Marquee tracks: single row on desktop (sm:block), two rows on mobile (sm:hidden) */}
-        <div ref={containerRef} className="relative w-full overflow-hidden py-6">
+        <div ref={containerRef} className="relative w-full overflow-hidden py-1 sm:py-3">
           <style>{`
             @keyframes brand-marquee-left {
               0% { transform: translateX(0); }
@@ -119,7 +119,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {desktopItems.map((brand, idx) => (
                 <div
                   key={`desktop-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 overflow-hidden rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
+                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -128,7 +128,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
           </div>
 
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
-          <div className="flex flex-col gap-6 sm:hidden">
+          <div className="flex flex-col gap-3 sm:hidden">
             {/* ROW 1: Moves Left */}
             <div
               className="animate-brand-marquee-left relative z-10 px-6"
@@ -140,7 +140,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row1Items.map((brand, idx) => (
                 <div
                   key={`r1-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 overflow-hidden rounded-3xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -158,7 +158,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row2Items.map((brand, idx) => (
                 <div
                   key={`r2-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 overflow-hidden rounded-3xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -168,7 +168,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
         </div>
 
         {/* View All Brands Button underneath the marquee for all devices */}
-        <div className="mt-8 flex w-full justify-center px-4">
+        <div className="mt-4 flex w-full justify-center px-4 sm:mt-6">
           <Link
             href="/brands"
             className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest text-black uppercase transition-all hover:bg-black hover:text-white active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"

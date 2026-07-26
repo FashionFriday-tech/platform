@@ -17,13 +17,13 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
   return (
     <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
       <div
-        className="group relative flex aspect-3/4 h-full w-full items-center justify-center overflow-hidden rounded-3xl p-6 duration-500 hover:scale-95 sm:rounded-4xl sm:p-8"
+        className="group relative flex aspect-3/4 h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-8 md:rounded-4xl"
         style={{
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
       >
-        {!hasError && brand.logo ? (
-          <div className="relative flex h-full w-full items-center justify-center">
+        <div className="relative flex h-full w-full items-center justify-center skew-x-[6deg]">
+          {!hasError && brand.logo ? (
             <Image
               src={brand.logo}
               alt={brand.name}
@@ -36,16 +36,16 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
                 isBlackBackground ? 'invert dark:invert-0' : 'invert'
               }`}
             />
-          </div>
-        ) : (
-          <span
-            className={`px-3 text-center text-sm font-black tracking-widest uppercase sm:text-lg md:text-xl ${
-              isBlackBackground ? 'text-background' : 'text-white'
-            }`}
-          >
-            {brand.name}
-          </span>
-        )}
+          ) : (
+            <span
+              className={`px-3 text-center text-sm font-black tracking-widest uppercase sm:text-lg md:text-xl ${
+                isBlackBackground ? 'text-background' : 'text-white'
+              }`}
+            >
+              {brand.name}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );
