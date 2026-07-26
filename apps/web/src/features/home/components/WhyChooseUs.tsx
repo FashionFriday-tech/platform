@@ -3,7 +3,7 @@
 import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
-import { ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
+import { ArrowUpRightIcon, ShieldCheckIcon, TruckIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { fetcher } from '@/lib/api-client';
@@ -105,9 +105,8 @@ const InfiniteColumn = ({
       `}</style>
 
       <div
-        className={`pause-on-hover flex cursor-pointer flex-col gap-4 ${
-          reverse ? 'animate-scroll-down' : 'animate-scroll-up'
-        }`}
+        className={`pause-on-hover flex cursor-pointer flex-col gap-4 ${reverse ? 'animate-scroll-down' : 'animate-scroll-up'
+          }`}
         style={
           {
             '--duration': `${duration}s`,
@@ -288,16 +287,12 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-12"
+              className="mb-8 w-full text-center lg:mb-12 lg:text-left"
             >
-              <h2 className="mb-6 text-5xl leading-[0.9] font-bold tracking-tighter uppercase md:text-7xl">
+              <h2 className="section-header text-center lg:!text-left">
                 Defined by <br />
-                <span className="text-foreground-muted">Trust.</span>
+                Trust
               </h2>
-              <p className="text-foreground-muted max-w-md text-lg leading-relaxed">
-                Join over 1000+ happy customers across India. We don't just ship products; we
-                deliver verified quality to every pin code in the country.
-              </p>
             </motion.div>
 
             <div className="space-y-8">
@@ -328,12 +323,12 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
 
             {/* See More Reviews Button */}
             {isMounted && (
-              <div className="mt-12">
+              <div className="mt-12 flex justify-center lg:justify-start">
                 <Link
                   href="/whatsapp-reviews"
-                  className="inline-flex items-center justify-center rounded-full bg-black px-8 py-3.5 text-sm font-bold tracking-wide text-white uppercase shadow-md transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all hover:bg-black hover:text-white active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"
                 >
-                  See More Reviews
+                  See More Reviews <ArrowUpRightIcon className="h-4 w-4" />
                 </Link>
               </div>
             )}
