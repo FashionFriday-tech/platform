@@ -376,10 +376,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               )}
 
               {/* Main Categories Navigation */}
-              <div className="mb-6 flex flex-col gap-1">
-                <span className="text-foreground/40 mb-2 text-[10px] font-black tracking-[0.2em] uppercase">
-                  Categories
-                </span>
+              <div className="mb-4 flex flex-col gap-1">
                 {MAIN_NAV_ITEMS.map((item) => (
                   <Link
                     key={item.label}
@@ -401,9 +398,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
               {/* Account & Support Section */}
               <div className="border-border/30 mb-6 flex flex-col gap-1 border-t pt-4">
-                <span className="text-foreground/40 mb-2.5 px-3 text-[10px] font-black tracking-[0.22em] uppercase">
-                  Account & Help
-                </span>
                 {ACCOUNT_LINKS.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -417,12 +411,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                         <div className="bg-foreground/5 text-foreground/70 group-hover:bg-foreground/10 group-hover:text-foreground flex h-8 w-8 items-center justify-center rounded-lg transition-colors">
                           <Icon className="h-4 w-4" />
                         </div>
-                        <span className="text-foreground/90 group-hover:text-foreground text-sm font-bold tracking-tight transition-colors">
+                        <span className="text-foreground text-sm font-black tracking-wide uppercase transition-colors">
                           {item.label}
                         </span>
                       </div>
                       <svg
-                        className="text-foreground/20 group-hover:text-foreground/60 h-3.5 w-3.5 transition-all group-hover:translate-x-0.5"
+                        className="text-foreground/40 group-hover:text-foreground h-4 w-4 transition-all group-hover:translate-x-0.5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
