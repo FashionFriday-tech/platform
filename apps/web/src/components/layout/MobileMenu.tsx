@@ -648,19 +648,21 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 )}
               </AnimatePresence>
 
-              {/* Action Buttons: Sign In and Install App in the same row */}
+              {/* Action Buttons: Sign In and Install App with Crossed Streetwear Style */}
               {(!user || !isInstalled) && (
-                <div className="flex w-full items-center gap-2.5">
+                <div className="flex w-full flex-col gap-3">
                   {!user && (
                     <Link
                       href="/login"
                       onClick={onClose}
-                      className={`bg-foreground text-background flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-black tracking-wider uppercase shadow-md transition-all hover:opacity-90 active:scale-98 ${
-                        !isInstalled ? 'flex-1' : 'w-full'
-                      }`}
+                      className="group flex w-full items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
                     >
-                      <UserIcon className="text-sm" />
-                      <span>Sign In</span>
+                      <span className="flex-1 skew-x-[12deg] px-5 py-3 text-center text-xs font-black tracking-widest text-white uppercase transition-colors">
+                        Sign In / Sign Up
+                      </span>
+                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-4 py-3 text-black transition-all group-hover:bg-zinc-200">
+                        <UserIcon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                      </span>
                     </Link>
                   )}
 
@@ -668,24 +670,26 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <button
                       type="button"
                       onClick={handleInstallClick}
-                      className={`border-border/80 bg-foreground/5 text-foreground hover:bg-foreground/10 flex items-center justify-center gap-2 rounded-xl border py-2.5 text-xs font-black tracking-wider uppercase shadow-sm transition-all active:scale-98 dark:border-white ${
-                        !user ? 'flex-1' : 'w-full'
-                      }`}
+                      className="group flex w-full items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
                     >
-                      <svg
-                        className="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                      </svg>
-                      <span>Install App</span>
+                      <span className="flex-1 skew-x-[12deg] px-5 py-3 text-center text-xs font-black tracking-widest text-white uppercase transition-colors">
+                        Install App
+                      </span>
+                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-4 py-3 text-black transition-all group-hover:bg-zinc-200">
+                        <svg
+                          className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="7 10 12 15 17 10" />
+                          <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                      </span>
                     </button>
                   )}
                 </div>
