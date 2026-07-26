@@ -67,10 +67,10 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   }
 
   return (
-    <section className="relative w-full overflow-hidden pt-2 pb-8 transition-colors duration-300 sm:pt-6 sm:pb-12 md:pt-8 md:pb-16">
+    <section className="relative w-full overflow-hidden pt-6 pb-10 transition-colors duration-300 sm:pt-10 sm:pb-14 md:pt-14 md:pb-18">
       <div className="relative z-10">
         {/* HEADER */}
-        <header className="container mx-auto mb-3 flex justify-center px-4 text-center sm:mb-6">
+        <header className="container mx-auto mb-6 flex justify-center px-4 text-center sm:mb-8 lg:mb-10">
           <h2 className="section-header">Shop by brands</h2>
         </header>
 
@@ -91,7 +91,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               animation-name: brand-marquee-left;
               animation-timing-function: linear;
               animation-iteration-count: infinite;
-              gap: 1.5rem;
+              gap: 1rem;
             }
             .animate-brand-marquee-right {
               display: flex;
@@ -99,7 +99,13 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               animation-name: brand-marquee-right;
               animation-timing-function: linear;
               animation-iteration-count: infinite;
-              gap: 1.5rem;
+              gap: 1rem;
+            }
+            @media (min-width: 640px) {
+              .animate-brand-marquee-left,
+              .animate-brand-marquee-right {
+                gap: 1.5rem;
+              }
             }
             .animate-brand-marquee-left:hover,
             .animate-brand-marquee-right:hover {
@@ -128,7 +134,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
           </div>
 
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
-          <div className="flex flex-col gap-3 sm:hidden">
+          <div className="flex flex-col gap-4 sm:hidden">
             {/* ROW 1: Moves Left */}
             <div
               className="animate-brand-marquee-left relative z-10 px-6"
@@ -168,7 +174,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
         </div>
 
         {/* View All Brands Button underneath the marquee for all devices */}
-        <div className="mt-4 flex w-full justify-center px-4 sm:mt-6">
+        <div className="mt-6 flex w-full justify-center px-4 sm:mt-8 md:mt-10">
           <Link
             href="/brands"
             className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest text-black uppercase transition-all hover:bg-black hover:text-white active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"

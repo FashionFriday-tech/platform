@@ -72,10 +72,10 @@ export default function CollectionsSection({
   return (
     <section
       aria-labelledby="collections-heading"
-      className="relative overflow-hidden pt-4 pb-0 sm:pt-8 sm:pb-2 md:pt-12 md:pb-4"
+      className="relative overflow-hidden pt-6 pb-10 sm:pt-10 sm:pb-14 md:pt-14 md:pb-18"
     >
       <div className="container mx-auto">
-        <header className="mb-4 px-4 text-center sm:mb-8 lg:px-6">
+        <header className="mb-6 px-4 text-center sm:mb-8 lg:mb-10 lg:px-6">
           <h2 id="collections-heading" className="section-header">
             Shop by Collections
           </h2>
@@ -96,13 +96,19 @@ export default function CollectionsSection({
               display: flex;
               width: max-content;
               animation: collection-marquee-left 35s linear infinite;
-              gap: 1.5rem;
+              gap: 1rem;
             }
             .animate-collection-marquee-right {
               display: flex;
               width: max-content;
               animation: collection-marquee-right 35s linear infinite;
-              gap: 1.5rem;
+              gap: 1rem;
+            }
+            @media (min-width: 640px) {
+              .animate-collection-marquee-left,
+              .animate-collection-marquee-right {
+                gap: 1.5rem;
+              }
             }
             .animate-collection-marquee-left:hover,
             .animate-collection-marquee-right:hover {
@@ -153,7 +159,7 @@ export default function CollectionsSection({
           </div>
 
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
-          <div className="flex flex-col gap-3 sm:hidden">
+          <div className="flex flex-col gap-4 sm:hidden">
             {/* ROW 1: Moves Left */}
             <div
               className="animate-collection-marquee-left relative z-10 px-6"
@@ -237,7 +243,7 @@ export default function CollectionsSection({
         </div>
 
         {/* View All Collections Button */}
-        <div className="mt-3 flex w-full justify-center px-4 sm:mt-6">
+        <div className="mt-6 flex w-full justify-center px-4 sm:mt-8 md:mt-10">
           <Link
             href="/collections"
             className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all hover:bg-black hover:text-white active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"
