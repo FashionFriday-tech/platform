@@ -8,12 +8,12 @@ import { AnimatePresence, motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 export const DEFAULT_SEARCH_PLACEHOLDERS = [
-  'Search for linen shirts',
-  'Search by category',
-  'Search by brands',
-  'Search for street wear',
-  'Search for accessories',
-  'Search sneakers & apparel',
+  'SEARCH FOR LINEN SHIRTS',
+  'SEARCH BY CATEGORY',
+  'SEARCH BY BRANDS',
+  'SEARCH FOR STREET WEAR',
+  'SEARCH FOR ACCESSORIES',
+  'SEARCH SNEAKERS & APPAREL',
 ];
 
 export interface SearchBoxProps {
@@ -109,7 +109,7 @@ export function SearchBox({
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, y: -8, filter: 'blur(2px)' }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute truncate text-xs font-medium text-zinc-600 select-none sm:text-sm dark:text-zinc-300"
+                className="absolute truncate text-xs font-medium uppercase text-zinc-600 select-none sm:text-sm dark:text-zinc-300"
               >
                 {placeholders[placeholderIndex]}
               </motion.span>
@@ -155,7 +155,7 @@ export function SearchBox({
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: -8, filter: 'blur(2px)' }}
                   transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute truncate text-xs font-medium text-zinc-500/80 select-none sm:text-sm dark:text-zinc-400/80"
+                  className="absolute truncate text-xs font-medium uppercase text-zinc-500/80 select-none sm:text-sm dark:text-zinc-400/80"
                 >
                   {placeholders[placeholderIndex]}
                 </motion.span>
@@ -177,7 +177,7 @@ export function SearchBox({
             }}
             autoFocus={autoFocus}
             placeholder={isFocused && !query ? placeholders[placeholderIndex] : ''}
-            className="w-full bg-transparent text-xs font-medium text-zinc-800 outline-none placeholder:text-zinc-400 sm:text-sm dark:text-zinc-100 dark:placeholder:text-zinc-500"
+            className="w-full bg-transparent text-xs font-medium text-zinc-800 outline-none placeholder:uppercase placeholder:text-zinc-400 sm:text-sm dark:text-zinc-100 dark:placeholder:text-zinc-500"
           />
         </div>
 
