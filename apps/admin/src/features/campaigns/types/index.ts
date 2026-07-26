@@ -1,4 +1,6 @@
 export type BannerPlacement =
+  | 'marquee-red'
+  | 'marquee-blue'
   | 'home-carousel'
   | 'home-categories'
   | 'products-list'
@@ -45,6 +47,8 @@ export const MOCK_BANNERS: CampaignBanner[] = [
 ];
 
 export const PLACEMENT_ASPECT_RATIOS: Record<BannerPlacement, string> = {
+  'marquee-red': 'aspect-auto',
+  'marquee-blue': 'aspect-auto',
   'home-carousel': 'aspect-[2/3]',
   'home-categories': 'aspect-square',
   'products-list': 'aspect-[21/9]',
@@ -54,6 +58,8 @@ export const PLACEMENT_ASPECT_RATIOS: Record<BannerPlacement, string> = {
 };
 
 export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {
+  'marquee-red': 'Announcement Marquee (Red Bar)',
+  'marquee-blue': 'Announcement Marquee (Electric Blue Bar)',
   'home-carousel': 'Home Carousel',
   'home-categories': 'Category Cards (Men & Women)',
   'products-list': 'Products List Banner',

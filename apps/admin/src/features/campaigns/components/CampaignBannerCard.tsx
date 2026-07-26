@@ -24,8 +24,21 @@ export function CampaignBannerCard({ banner, onEdit }: CampaignBannerCardProps) 
           : 'border-black/5 bg-black/5 opacity-70 dark:border-white/5 dark:bg-white/5'
       }`}
     >
-      <div className={`relative w-full bg-black/5 dark:bg-white/5 ${aspectRatioClass}`}>
-        {banner.mediaType === 'image' ? (
+      <div className={`relative flex w-full items-center justify-center p-6 ${aspectRatioClass} ${
+        banner.placement === 'marquee-red'
+          ? 'bg-[#FF0000] text-white'
+          : banner.placement === 'marquee-blue'
+            ? 'bg-[#0052FF] text-white'
+            : 'bg-black/5 dark:bg-white/5'
+      }`}>
+        {banner.placement === 'marquee-red' || banner.placement === 'marquee-blue' ? (
+          <div className="flex w-full items-center gap-2 overflow-hidden px-2 text-center">
+            <span className="h-2 w-2 shrink-0 rounded-full bg-white" />
+            <span className="line-clamp-2 font-mono text-xs font-black uppercase tracking-widest text-white">
+              {banner.title}
+            </span>
+          </div>
+        ) : banner.mediaType === 'image' ? (
           <Image
             src={banner.mediaUrl}
             alt={banner.title}

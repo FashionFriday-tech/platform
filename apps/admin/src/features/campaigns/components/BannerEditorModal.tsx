@@ -66,6 +66,10 @@ export function BannerEditorModal({
     try {
       let finalMediaUrl = mediaUrl;
 
+      if (!finalMediaUrl && (placement === 'marquee-red' || placement === 'marquee-blue')) {
+        finalMediaUrl = placement === 'marquee-red' ? 'marquee-red' : 'marquee-blue';
+      }
+
       if (fileToUpload) {
         const formData = new FormData();
         formData.append('file', fileToUpload);
@@ -107,8 +111,13 @@ export function BannerEditorModal({
     }
   };
 
+  const isMarquee = placement === 'marquee-red' || placement === 'marquee-blue';
+
   const getResponsiveClasses = (p: BannerPlacement) => {
     switch (p) {
+      case 'marquee-red':
+      case 'marquee-blue':
+        return 'w-full h-24';
       case 'products-list':
         return 'w-full aspect-[21/9] max-h-[160px] md:max-h-none';
       case 'home-carousel':
@@ -131,52 +140,70 @@ export function BannerEditorModal({
       <div className="relative my-auto flex max-h-[calc(100dvh-5.5rem)] w-full max-w-4xl flex-col overflow-y-auto rounded-3xl bg-white shadow-2xl md:max-h-[85vh] md:flex-row md:overflow-hidden dark:bg-[#111111]">
         {/* Left Side: Preview & Upload */}
         <div className="flex w-full flex-col items-center justify-center border-b border-black/5 bg-black/5 p-4 sm:p-6 md:w-1/2 md:border-r md:border-b-0 md:p-8 dark:border-white/5 dark:bg-white/5">
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className={`group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black/20 bg-white transition-all hover:border-black/50 dark:border-white/20 dark:bg-[#111111] dark:hover:border-white/50 ${responsiveClass}`}
-          >
-            {mediaUrl ? (
-              <>
-                {mediaType === 'image' ? (
-                  <Image src={mediaUrl} alt="Preview" fill className="object-cover" />
-                ) : (
-                  <video
-                    src={mediaUrl}
-                    className="h-full w-full object-cover"
-                    muted
-                    loop
-                    playsInline
-                    autoPlay
-                  />
-                )}
-                <div className="absolute top-3 left-3 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-xs font-semibold text-white backdrop-blur-md">
-                  {mediaType === 'image' ? (
-                    <ImageIcon className="h-4 w-4" />
-                  ) : (
-                    <PlayIcon className="h-4 w-4" />
-                  )}
-                  {mediaType.toUpperCase()}
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                  <span className="rounded-lg bg-white px-4 py-2 text-sm font-bold text-black">
-                    Change Media
-                  </span>
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-col items-center gap-2 text-black/40 transition-colors group-hover:text-black dark:text-white/40 dark:group-hover:text-white">
-                <PlusIcon className="h-8 w-8" />
-                <span className="text-sm font-semibold">Click to upload from Gallery</span>
+          {isMarquee ? (
+            <div
+              className={`flex w-full flex-col items-center justify-center rounded-2xl p-6 text-center text-white shadow-inner ${
+                placement === 'marquee-red' ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
+              }`}
+            >
+              <div className="mb-2 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-white" />
+                <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
+                  {placement === 'marquee-red' ? 'Red Ribbon Preview' : 'Electric Blue Ribbon Preview'}
+                </span>
               </div>
-            )}
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*,video/*"
-              className="hidden"
-            />
-          </div>
+              <p className="font-mono text-sm font-black uppercase tracking-wider">
+                {title.trim() || 'Type announcement text below...'}
+              </p>
+            </div>
+          ) : (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className={`group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black/20 bg-white transition-all hover:border-black/50 dark:border-white/20 dark:bg-[#111111] dark:hover:border-white/50 ${responsiveClass}`}
+            >
+              {mediaUrl ? (
+                <>
+                  {mediaType === 'image' ? (
+                    <Image src={mediaUrl} alt="Preview" fill className="object-cover" />
+                  ) : (
+                    <video
+                      src={mediaUrl}
+                      className="h-full w-full object-cover"
+                      muted
+                      loop
+                      playsInline
+                      autoPlay
+                    />
+                  )}
+                  <div className="absolute top-3 left-3 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-xs font-semibold text-white backdrop-blur-md">
+                    {mediaType === 'image' ? (
+                      <ImageIcon className="h-4 w-4" />
+                    ) : (
+                      <PlayIcon className="h-4 w-4" />
+                    )}
+                    {mediaType.toUpperCase()}
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="rounded-lg bg-white px-4 py-2 text-sm font-bold text-black">
+                      Change Media
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center gap-2 text-black/40 transition-colors group-hover:text-black dark:text-white/40 dark:group-hover:text-white">
+                  <PlusIcon className="h-8 w-8" />
+                  <span className="text-sm font-semibold">Click to upload from Gallery</span>
+                </div>
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*,video/*"
+                className="hidden"
+              />
+            </div>
+          )}
         </div>
 
         {/* Right Side: Form */}
@@ -197,7 +224,7 @@ export function BannerEditorModal({
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-black dark:text-white">
-                Banner Title
+                {isMarquee ? 'Announcement Marquee Text' : 'Banner Title'}
               </label>
               <input
                 required
@@ -206,23 +233,28 @@ export function BannerEditorModal({
                 onChange={(e) => {
                   setTitle(e.target.value);
                 }}
-                placeholder="e.g. Summer Collection Promo"
+                placeholder={
+                  isMarquee
+                    ? 'e.g. NEW DROPS EVERY FRIDAY • 100% VERIFIED AUTHENTIC • EXPRESS DELIVERY'
+                    : 'e.g. Summer Collection Promo'
+                }
                 className="w-full rounded-xl border border-black/10 bg-transparent px-4 py-2.5 text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
               />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-black dark:text-white">
-                Link Destination
+                Link Destination{' '}
+                {isMarquee && <span className="text-xs font-normal opacity-50">(Optional)</span>}
               </label>
               <input
-                required
+                required={!isMarquee}
                 type="text"
                 value={linkUrl}
                 onChange={(e) => {
                   setLinkUrl(e.target.value);
                 }}
-                placeholder="e.g. /collections/summer"
+                placeholder="e.g. /products or /collections/summer"
                 className="w-full rounded-xl border border-black/10 bg-transparent px-4 py-2.5 font-mono text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
               />
             </div>

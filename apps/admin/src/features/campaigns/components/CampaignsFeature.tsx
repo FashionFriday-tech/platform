@@ -38,6 +38,8 @@ export function CampaignsFeature() {
       cardWidthClass = 'w-[260px] md:w-[300px]';
     } else if (placement === 'content-partners') {
       cardWidthClass = 'w-[200px] md:w-[240px]';
+    } else if (placement === 'marquee-red' || placement === 'marquee-blue') {
+      cardWidthClass = 'w-[360px] md:w-[480px]';
     }
 
     return (
@@ -82,6 +84,8 @@ export function CampaignsFeature() {
   };
 
   const placementOrder: BannerPlacement[] = [
+    'marquee-red',
+    'marquee-blue',
     'home-carousel',
     'home-categories',
     'products-list',
