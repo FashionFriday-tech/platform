@@ -93,7 +93,7 @@ export function SearchBox({
       <div
         onClick={onClick}
         className={cn(
-          'flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-zinc-300/80 bg-zinc-50/50 px-4 py-2.5 transition-all duration-200 active:scale-98 dark:border-zinc-700/80 dark:bg-zinc-900/50',
+          'flex w-full cursor-pointer items-center gap-3 overflow-hidden rounded-full border border-zinc-300/80 bg-white px-4 py-2.5 transition-all duration-200 active:scale-98 dark:border-zinc-800 dark:bg-black',
           className,
         )}
       >
@@ -120,7 +120,7 @@ export function SearchBox({
   return (
     <div
       className={cn(
-        'relative flex w-full items-center gap-3 overflow-hidden rounded-full border border-zinc-300/80 bg-zinc-50/50 px-4 py-2.5 transition-all duration-200 focus-within:border-zinc-500 focus-within:bg-zinc-100/80 dark:border-zinc-700/80 dark:bg-zinc-900/50 dark:focus-within:border-zinc-500 dark:focus-within:bg-zinc-900/80',
+        'relative flex w-full items-center gap-3 overflow-hidden rounded-full border border-zinc-300/80 bg-white px-4 py-2.5 transition-all duration-200 focus-within:border-zinc-500 focus-within:bg-white dark:border-zinc-800 dark:bg-black dark:focus-within:border-zinc-600 dark:focus-within:bg-black',
         className,
       )}
     >
