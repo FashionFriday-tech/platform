@@ -743,8 +743,10 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-black uppercase transition-colors truncate dark:text-white">
                         Sign In
                       </span>
-                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-black px-3 sm:px-3.5 py-3 text-white transition-all group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200">
-                        <UserIcon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                      <span className="flex shrink-0 items-center justify-center bg-black px-3 sm:px-3.5 py-3 text-white transition-all group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200">
+                        <span className="skew-x-[12deg]">
+                          <UserIcon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                        </span>
                       </span>
                     </Link>
                   )}
@@ -758,20 +760,22 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-black uppercase transition-colors truncate dark:text-white">
                         Install App
                       </span>
-                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-black px-3 sm:px-3.5 py-3 text-white transition-all group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200">
-                        <svg
-                          className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                          <polyline points="7 10 12 15 17 10" />
-                          <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
+                      <span className="flex shrink-0 items-center justify-center bg-black px-3 sm:px-3.5 py-3 text-white transition-all group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200">
+                        <span className="skew-x-[12deg]">
+                          <svg
+                            className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                          </svg>
+                        </span>
                       </span>
                     </button>
                   )}

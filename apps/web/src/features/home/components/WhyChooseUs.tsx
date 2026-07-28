@@ -331,8 +331,10 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                   <span className="skew-x-[12deg] px-6 py-3 text-xs sm:text-sm font-black tracking-widest text-white uppercase transition-colors">
                     See More Reviews
                   </span>
-                  <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-4 py-3 sm:px-5 sm:py-3 text-black transition-all group-hover:bg-zinc-200">
-                    <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <span className="flex shrink-0 items-center justify-center bg-white px-4 py-3 sm:px-5 sm:py-3 text-black transition-all group-hover:bg-zinc-200">
+                    <span className="skew-x-[12deg]">
+                      <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </span>
                   </span>
                 </Link>
               </div>
