@@ -291,7 +291,7 @@ export default function ProductPageMaster({
                 )}
               </div>
 
-              <div className="flex h-14 -skew-x-[12deg] items-center overflow-hidden rounded-xl border border-zinc-800 bg-black p-1 shadow-lg lg:flex-1 dark:border-zinc-300 dark:bg-white">
+              <div className="flex h-14 -skew-x-[12deg] items-center gap-1.5 overflow-hidden rounded-xl border border-zinc-800 bg-black p-1 shadow-lg lg:flex-1 dark:border-zinc-300 dark:bg-white">
                 <button
                   type="button"
                   onClick={handleWishlistToggle}
