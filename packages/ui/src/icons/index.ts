@@ -43,13 +43,6 @@ import {
   HiOutlineArrowUpRight,
 } from 'react-icons/hi2';
 import {
-  IoIosArrowBack,
-  IoIosArrowDown,
-  IoIosArrowForward,
-  IoIosDownload,
-  IoLogoApple,
-} from 'react-icons/io';
-import {
   IoChevronBackOutline,
   IoChevronDownOutline,
   IoChevronForwardOutline,
@@ -297,11 +290,13 @@ export const MoonIcon = MdDarkMode;
 export const SunIcon = MdWbSunny;
 
 // BRAND
-export const AppleLogoIcon = IoLogoApple;
-export const DownloadIconIOS = IoIosDownload;
-export const ArrowDownIconIOS = IoIosArrowDown;
-export const ArrowBackIconIOS = IoIosArrowBack;
-export const ArrowForwardIconIOS = IoIosArrowForward;
+export {
+  IoLogoApple as AppleLogoIcon,
+  IoIosArrowBack as ArrowBackIconIOS,
+  IoIosArrowDown as ArrowDownIconIOS,
+  IoIosArrowForward as ArrowForwardIconIOS,
+  IoIosDownload as DownloadIconIOS,
+} from 'react-icons/io';
 
 export const BriefcaseIcon = PiBriefcaseFill;
 

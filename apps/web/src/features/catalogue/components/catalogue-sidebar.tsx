@@ -390,7 +390,7 @@ export const CatalogueSidebar = ({
                       onChange={(e) => {
                         setBrandSearch(e.target.value);
                       }}
-                      className="border-border bg-background-muted placeholder:uppercase placeholder:text-foreground-subtle/50 focus:border-foreground mb-2.5 w-full rounded-xl border px-3 py-1.5 text-xs outline-none"
+                      className="border-border bg-background-muted placeholder:text-foreground-subtle/50 focus:border-foreground mb-2.5 w-full rounded-xl border px-3 py-1.5 text-xs outline-none placeholder:uppercase"
                     />
                   )}
 

@@ -143,8 +143,8 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
                     </h3>
 
                     <div>
-                      <span className="inline-flex items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-700 bg-black/80 shadow-lg backdrop-blur-md transition-all group-hover:border-zinc-500">
-                        <span className="skew-x-[12deg] px-5 py-2.5 text-xs sm:text-sm font-black tracking-widest text-white uppercase transition-colors">
+                      <span className="inline-flex -skew-x-[12deg] items-center overflow-hidden rounded-xl border border-zinc-700 bg-black/80 shadow-lg backdrop-blur-md transition-all group-hover:border-zinc-500">
+                        <span className="skew-x-[12deg] px-5 py-2.5 text-xs font-black tracking-widest text-white uppercase transition-colors sm:text-sm">
                           {cat.buttonText}
                         </span>
                         <span className="flex shrink-0 items-center justify-center bg-white px-3.5 py-2.5 text-black transition-all group-hover:bg-zinc-200">

@@ -148,11 +148,13 @@ export function BannerEditorModal({
             >
               <div className="mb-2 flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-white" />
-                <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
-                  {placement === 'marquee-red' ? 'Red Ribbon Preview' : 'Electric Blue Ribbon Preview'}
+                <span className="text-[10px] font-bold tracking-widest uppercase opacity-80">
+                  {placement === 'marquee-red'
+                    ? 'Red Ribbon Preview'
+                    : 'Electric Blue Ribbon Preview'}
                 </span>
               </div>
-              <p className="font-mono text-sm font-black uppercase tracking-wider">
+              <p className="font-mono text-sm font-black tracking-wider uppercase">
                 {title.trim() || 'Type announcement text below...'}
               </p>
             </div>

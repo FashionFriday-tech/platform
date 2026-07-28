@@ -144,7 +144,7 @@ export const useLiveSearchSuggestions = (query: string) => {
         // Fallback to initial defaults
       }
     };
-    fetchPopular();
+    void fetchPopular();
   }, []);
 
   useEffect(() => {

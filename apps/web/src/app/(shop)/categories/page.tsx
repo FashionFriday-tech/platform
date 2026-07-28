@@ -33,10 +33,5 @@ export default async function StoreLandingPage() {
     console.error('Failed to fetch initial categories on server:', err);
   }
 
-  return (
-    <CategoriesLanding
-      categories={initialCategories}
-      initialCampaigns={initialCampaigns}
-    />
-  );
+  return <CategoriesLanding categories={initialCategories} initialCampaigns={initialCampaigns} />;
 }

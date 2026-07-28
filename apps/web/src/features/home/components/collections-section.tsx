@@ -142,7 +142,7 @@ export default function CollectionsSection({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full p-8 skew-x-[6deg]">
+                    <div className="absolute bottom-0 left-0 z-10 w-full skew-x-[6deg] p-8">
                       <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                         <p className="mb-2 text-sm font-medium text-zinc-300">
                           {item.productCount || 0} Items
@@ -185,7 +185,7 @@ export default function CollectionsSection({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full p-4 skew-x-[6deg]">
+                    <div className="absolute bottom-0 left-0 z-10 w-full skew-x-[6deg] p-4">
                       <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                         <p className="mb-1 text-[10px] font-medium text-zinc-300">
                           {item.productCount || 0} Items
@@ -225,7 +225,7 @@ export default function CollectionsSection({
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full p-4 skew-x-[6deg]">
+                    <div className="absolute bottom-0 left-0 z-10 w-full skew-x-[6deg] p-4">
                       <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                         <p className="mb-1 text-[10px] font-medium text-zinc-300">
                           {item.productCount || 0} Items
@@ -246,12 +246,12 @@ export default function CollectionsSection({
         <div className="mt-6 flex w-full justify-center px-4 sm:mt-8 md:mt-10">
           <Link
             href="/collections"
-            className="group inline-flex items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-white dark:hover:border-zinc-100"
+            className="group inline-flex -skew-x-[12deg] items-center overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-white dark:hover:border-zinc-100"
           >
-            <span className="skew-x-[12deg] px-6 py-3 text-xs sm:text-sm font-black tracking-widest text-white uppercase transition-colors dark:text-black">
+            <span className="skew-x-[12deg] px-6 py-3 text-xs font-black tracking-widest text-white uppercase transition-colors sm:text-sm dark:text-black">
               View All Collections
             </span>
-            <span className="flex shrink-0 items-center justify-center bg-white px-4 py-3 sm:px-5 sm:py-3 text-black transition-all group-hover:bg-zinc-200 dark:bg-black dark:text-white dark:group-hover:bg-zinc-800">
+            <span className="flex shrink-0 items-center justify-center bg-white px-4 py-3 text-black transition-all group-hover:bg-zinc-200 sm:px-5 sm:py-3 dark:bg-black dark:text-white dark:group-hover:bg-zinc-800">
               <span className="skew-x-[12deg]">
                 <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>

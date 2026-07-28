@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { motion } from 'motion/react';
 
+import { SearchBox } from '@/components/ui/search-box';
 import {
   type DiscoveryItem,
   LiveProductSuggestions,
@@ -13,7 +14,6 @@ import {
   useLiveSearchSuggestions,
   useSearchHistory,
 } from '@/features/search';
-import { SearchBox } from '@/components/ui/search-box';
 
 export default function SearchPage() {
   const router = useRouter();
@@ -86,9 +86,9 @@ export default function SearchPage() {
                 onClick={() => {
                   handleExecuteSearch(tag);
                 }}
-                className="group relative -skew-x-[12deg] sm:-skew-x-[14deg] rounded-md border border-zinc-300/80 bg-white px-4 py-1.5 transition-all duration-200 hover:border-black hover:bg-zinc-50 active:scale-95 sm:px-5 sm:py-2 dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-400 dark:hover:bg-zinc-900"
+                className="group relative -skew-x-[12deg] rounded-md border border-zinc-300/80 bg-white px-4 py-1.5 transition-all duration-200 hover:border-black hover:bg-zinc-50 active:scale-95 sm:-skew-x-[14deg] sm:px-5 sm:py-2 dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-400 dark:hover:bg-zinc-900"
               >
-                <span className="inline-block skew-x-[12deg] sm:skew-x-[14deg] font-mono text-xs font-bold tracking-wider text-zinc-700 uppercase transition-colors group-hover:text-black sm:text-xs dark:text-zinc-300 dark:group-hover:text-white">
+                <span className="inline-block skew-x-[12deg] font-mono text-xs font-bold tracking-wider text-zinc-700 uppercase transition-colors group-hover:text-black sm:skew-x-[14deg] sm:text-xs dark:text-zinc-300 dark:group-hover:text-white">
                   {tag}
                 </span>
               </button>

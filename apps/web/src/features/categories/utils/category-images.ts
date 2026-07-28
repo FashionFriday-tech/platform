@@ -14,7 +14,7 @@ export function extractCategoryHeroImages(campaigns?: any[]): CategoryHeroImages
   }
 
   const categoryBanners = campaigns.filter(
-    (b) => b && b.placement === 'home-categories' && b.isActive,
+    (b) => b?.placement === 'home-categories' && b?.isActive,
   );
 
   const menBanner = categoryBanners.find((b) => {

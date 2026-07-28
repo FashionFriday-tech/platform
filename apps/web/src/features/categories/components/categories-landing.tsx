@@ -9,10 +9,7 @@ import { AnimatePresence, motion, type PanInfo } from 'motion/react';
 
 import { fetcher } from '@/lib/api-client';
 
-import {
-  extractCategoryHeroImages,
-  type CategoryHeroImages,
-} from '../utils/category-images';
+import { type CategoryHeroImages, extractCategoryHeroImages } from '../utils/category-images';
 
 const GENDERS = ['Men', 'Women'] as const;
 
@@ -39,10 +36,7 @@ export function CategoriesLanding({
   const activeGender = GENDERS[genderIndex];
 
   const [heroes, setHeroes] = useState<CategoryHeroImages>(() => {
-    return (
-      propHeroImages ??
-      extractCategoryHeroImages(initialCampaigns)
-    );
+    return propHeroImages ?? extractCategoryHeroImages(initialCampaigns);
   });
 
   useEffect(() => {

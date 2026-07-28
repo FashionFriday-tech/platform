@@ -22,7 +22,7 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
       >
-        <div className="relative flex h-full w-full items-center justify-center skew-x-[6deg]">
+        <div className="relative flex h-full w-full skew-x-[6deg] items-center justify-center">
           {!hasError && brand.logo ? (
             <Image
               src={brand.logo}

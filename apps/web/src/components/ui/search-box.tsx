@@ -95,11 +95,11 @@ export function SearchBox({
       <div
         onClick={onClick}
         className={cn(
-          'relative flex w-full cursor-pointer items-center -skew-x-[12deg] sm:-skew-x-[14deg] overflow-hidden rounded-md sm:rounded-lg border border-zinc-300/80 bg-white px-5 py-2.5 transition-all duration-200 hover:border-zinc-400 active:scale-98 dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700',
+          'relative flex w-full -skew-x-[12deg] cursor-pointer items-center overflow-hidden rounded-md border border-zinc-300/80 bg-white px-5 py-2.5 transition-all duration-200 hover:border-zinc-400 active:scale-98 sm:-skew-x-[14deg] sm:rounded-lg dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700',
           className,
         )}
       >
-        <div className="flex w-full items-center gap-3 skew-x-[12deg] sm:skew-x-[14deg]">
+        <div className="flex w-full skew-x-[12deg] items-center gap-3 sm:skew-x-[14deg]">
           <SearchIcon className="h-4.5 w-4.5 shrink-0 text-zinc-500 dark:text-zinc-400" />
           <div className="relative flex h-5 w-full items-center overflow-hidden">
             <AnimatePresence mode="wait">
@@ -109,7 +109,7 @@ export function SearchBox({
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 exit={{ opacity: 0, y: -8, filter: 'blur(2px)' }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute truncate text-xs font-medium uppercase text-zinc-600 select-none sm:text-sm dark:text-zinc-300"
+                className="absolute truncate text-xs font-medium text-zinc-600 uppercase select-none sm:text-sm dark:text-zinc-300"
               >
                 {placeholders[placeholderIndex]}
               </motion.span>
@@ -127,11 +127,11 @@ export function SearchBox({
         inputRef.current?.focus();
       }}
       className={cn(
-        'relative flex w-full cursor-text items-center -skew-x-[12deg] sm:-skew-x-[14deg] overflow-hidden rounded-md sm:rounded-lg border border-zinc-300/80 bg-white px-5 py-2.5 transition-all duration-200 focus-within:border-zinc-500 focus-within:ring-1 focus-within:ring-zinc-400 dark:border-zinc-800 dark:bg-black dark:focus-within:border-zinc-400 dark:focus-within:ring-zinc-500',
+        'relative flex w-full -skew-x-[12deg] cursor-text items-center overflow-hidden rounded-md border border-zinc-300/80 bg-white px-5 py-2.5 transition-all duration-200 focus-within:border-zinc-500 focus-within:ring-1 focus-within:ring-zinc-400 sm:-skew-x-[14deg] sm:rounded-lg dark:border-zinc-800 dark:bg-black dark:focus-within:border-zinc-400 dark:focus-within:ring-zinc-500',
         className,
       )}
     >
-      <div className="flex w-full items-center gap-3 skew-x-[12deg] sm:skew-x-[14deg]">
+      <div className="flex w-full skew-x-[12deg] items-center gap-3 sm:skew-x-[14deg]">
         <button
           type="button"
           onClick={(e) => {
@@ -155,7 +155,7 @@ export function SearchBox({
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: -8, filter: 'blur(2px)' }}
                   transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute truncate text-xs font-medium uppercase text-zinc-500/80 select-none sm:text-sm dark:text-zinc-400/80"
+                  className="absolute truncate text-xs font-medium text-zinc-500/80 uppercase select-none sm:text-sm dark:text-zinc-400/80"
                 >
                   {placeholders[placeholderIndex]}
                 </motion.span>
@@ -177,7 +177,7 @@ export function SearchBox({
             }}
             autoFocus={autoFocus}
             placeholder={isFocused && !query ? placeholders[placeholderIndex] : ''}
-            className="w-full bg-transparent text-xs font-medium text-zinc-800 outline-none placeholder:uppercase placeholder:text-zinc-400 sm:text-sm dark:text-zinc-100 dark:placeholder:text-zinc-500"
+            className="w-full bg-transparent text-xs font-medium text-zinc-800 outline-none placeholder:text-zinc-400 placeholder:uppercase sm:text-sm dark:text-zinc-100 dark:placeholder:text-zinc-500"
           />
         </div>
 
