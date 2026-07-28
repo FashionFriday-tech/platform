@@ -738,12 +738,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link
                       href="/login"
                       onClick={onClose}
-                      className="group bg-foreground border-foreground/20 hover:border-foreground/40 flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border shadow-lg transition-all hover:shadow-xl active:scale-95"
+                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700 dark:bg-black"
                     >
-                      <span className="text-background flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest uppercase transition-colors truncate">
+                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-black uppercase transition-colors truncate dark:text-white">
                         Sign In
                       </span>
-                      <span className="bg-background text-foreground flex shrink-0 skew-x-[12deg] items-center justify-center px-3 sm:px-3.5 py-3 transition-all group-hover:opacity-90">
+                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-black px-3 sm:px-3.5 py-3 text-white transition-all group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200">
                         <UserIcon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
                       </span>
                     </Link>
@@ -753,12 +753,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <button
                       type="button"
                       onClick={handleInstallClick}
-                      className="group bg-foreground border-foreground/20 hover:border-foreground/40 flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border shadow-lg transition-all hover:shadow-xl active:scale-95"
+                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700 dark:bg-black"
                     >
-                      <span className="text-background flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest uppercase transition-colors truncate">
+                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-black uppercase transition-colors truncate dark:text-white">
                         Install App
                       </span>
-                      <span className="bg-background text-foreground flex shrink-0 skew-x-[12deg] items-center justify-center px-3 sm:px-3.5 py-3 transition-all group-hover:opacity-90">
+                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-black px-3 sm:px-3.5 py-3 text-white transition-all group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200">
                         <svg
                           className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
                           viewBox="0 0 24 24"
