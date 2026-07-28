@@ -70,6 +70,45 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const [mounted, setMounted] = useState(false);
   const prevPathname = useRef(pathname);
 
+  // Swipe to close gesture tracking
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    isHorizontalSwipeRef.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) {
+      return;
+    }
+    const diffX = e.touches[0].clientX - touchStartXRef.current;
+    const diffY = e.touches[0].clientY - touchStartYRef.current;
+
+    // Detect direction on initial motion to avoid capturing vertical scrolling
+    if (isHorizontalSwipeRef.current === null) {
+      if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) {
+        isHorizontalSwipeRef.current = Math.abs(diffX) > Math.abs(diffY);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current !== null && isHorizontalSwipeRef.current) {
+      const diffX = e.changedTouches[0].clientX - touchStartXRef.current;
+      // If user swiped left by more than 40px, trigger close!
+      if (diffX < -40) {
+        onClose();
+      }
+    }
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    isHorizontalSwipeRef.current = null;
+  };
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -169,10 +208,13 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             data-lenis-prevent="true"
             data-lenis-prevent-wheel="true"
             data-lenis-prevent-touch="true"
-            className="bg-background text-foreground border-border/20 relative z-10 flex h-[100dvh] w-[86vw] max-w-sm flex-col overscroll-contain border-r shadow-2xl"
+            className="bg-background text-foreground relative z-10 flex h-[100dvh] w-full flex-col overscroll-contain shadow-2xl"
           >
             {/* Top Bar with Brand Centered & Close Button on Left */}
             <div className="border-border/30 relative flex min-h-[64px] shrink-0 items-center justify-center border-b px-5 py-4">
@@ -648,19 +690,19 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 )}
               </AnimatePresence>
 
-              {/* Action Buttons: Sign In and Install App with Crossed Streetwear Style */}
+              {/* Action Buttons: Sign In and Install App in a Single Row */}
               {(!user || !isInstalled) && (
-                <div className="flex w-full flex-col gap-3">
+                <div className="flex w-full items-center gap-2.5 sm:gap-3">
                   {!user && (
                     <Link
                       href="/login"
                       onClick={onClose}
-                      className="group flex w-full items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
+                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
                     >
-                      <span className="flex-1 skew-x-[12deg] px-5 py-3 text-center text-xs font-black tracking-widest text-white uppercase transition-colors">
-                        Sign In / Sign Up
+                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-white uppercase transition-colors truncate">
+                        Sign In
                       </span>
-                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-4 py-3 text-black transition-all group-hover:bg-zinc-200">
+                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-3 sm:px-3.5 py-3 text-black transition-all group-hover:bg-zinc-200">
                         <UserIcon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
                       </span>
                     </Link>
@@ -670,12 +712,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <button
                       type="button"
                       onClick={handleInstallClick}
-                      className="group flex w-full items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
+                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
                     >
-                      <span className="flex-1 skew-x-[12deg] px-5 py-3 text-center text-xs font-black tracking-widest text-white uppercase transition-colors">
+                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-white uppercase transition-colors truncate">
                         Install App
                       </span>
-                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-4 py-3 text-black transition-all group-hover:bg-zinc-200">
+                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-3 sm:px-3.5 py-3 text-black transition-all group-hover:bg-zinc-200">
                         <svg
                           className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
                           viewBox="0 0 24 24"
