@@ -246,9 +246,14 @@ export default function CollectionsSection({
         <div className="mt-6 flex w-full justify-center px-4 sm:mt-8 md:mt-10">
           <Link
             href="/collections"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 px-8 py-3 text-sm font-bold tracking-widest uppercase transition-all hover:bg-black hover:text-white active:scale-95 dark:border-white/20 dark:text-white dark:hover:bg-white dark:hover:text-black"
+            className="group inline-flex items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
           >
-            View All Collections <ArrowUpRightIcon className="h-4 w-4" />
+            <span className="skew-x-[12deg] px-6 py-3 text-xs sm:text-sm font-black tracking-widest text-white uppercase transition-colors">
+              View All Collections
+            </span>
+            <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-4 py-3 sm:px-5 sm:py-3 text-black transition-all group-hover:bg-zinc-200">
+              <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </span>
           </Link>
         </div>
       </div>
