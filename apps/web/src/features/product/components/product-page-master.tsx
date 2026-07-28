@@ -346,12 +346,16 @@ export default function ProductPageMaster({
               ].map((perk, i) => (
                 <div
                   key={i}
-                  className="border-border/60 bg-foreground/2 flex items-center gap-3 rounded-2xl border p-3"
+                  className="-skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-300/80 bg-zinc-50/50 p-3 shadow-xs transition-all hover:border-zinc-400 dark:border-zinc-800 dark:bg-zinc-950/60 dark:hover:border-zinc-700"
                 >
-                  <div className="text-foreground-muted">{perk.icon}</div>
-                  <div>
-                    <p className="text-xs font-semibold">{perk.label}</p>
-                    <p className="text-foreground-muted text-[10px]">{perk.sub}</p>
+                  <div className="flex skew-x-[12deg] items-center gap-3">
+                    <div className="text-foreground-muted shrink-0">{perk.icon}</div>
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-black tracking-wider uppercase">
+                        {perk.label}
+                      </p>
+                      <p className="text-foreground-muted truncate text-[10px]">{perk.sub}</p>
+                    </div>
                   </div>
                 </div>
               ))}
