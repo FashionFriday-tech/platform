@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal, flushSync } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -130,6 +130,58 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     }
   };
 
+  // Dual-corner View Transition theme toggling:
+  // Starts from right top corner (100% 0%) and bottom left corner (0% 100%)
+  // and smoothly converges/meets at the center position (50% 50%)!
+  const toggleTheme = useCallback(async () => {
+    const isDark = resolvedTheme === 'dark';
+    const nextTheme = isDark ? 'light' : 'dark';
+
+    // Fallback if View Transitions API is not supported by the browser
+    if (!document.startViewTransition) {
+      setTheme(nextTheme);
+      return;
+    }
+
+    const transition = document.startViewTransition(() => {
+      flushSync(() => {
+        setTheme(nextTheme);
+      });
+    });
+
+    await transition.ready;
+
+    // Dual-corner converging animation:
+    // Wave 1 comes from right top corner (100% 0%)
+    // Wave 2 comes from bottom left corner (0% 100%)
+    // Both wavefronts sweep inwards and meet/converge right at the center position (50% 50%)!
+    document.documentElement.animate(
+      [
+        {
+          clipPath:
+            'polygon(100% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%, 0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%)',
+        },
+        {
+          clipPath:
+            'polygon(100% 0%, 65% 0%, 45% 20%, 50% 50%, 80% 45%, 100% 65%, 0% 100%, 35% 100%, 55% 80%, 50% 50%, 20% 55%, 0% 35%)',
+        },
+        {
+          clipPath:
+            'polygon(100% 0%, 20% 0%, 10% 25%, 35% 65%, 65% 65%, 100% 80%, 0% 100%, 80% 100%, 90% 75%, 65% 35%, 35% 35%, 0% 20%)',
+        },
+        {
+          clipPath:
+            'polygon(100% 0%, 0% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 100%, 0% 100%, 100% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 0%)',
+        },
+      ],
+      {
+        duration: 750,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        pseudoElement: '::view-transition-new(root)',
+      },
+    );
+  }, [resolvedTheme, setTheme]);
+
   // Lock body scroll and pause Lenis when mobile menu is open
   useEffect(() => {
     const lenis = (window as unknown as { lenis?: { stop: () => void; start: () => void } }).lenis;
@@ -248,7 +300,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+                    void toggleTheme();
                   }}
                   className="bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground border-border/30 absolute top-1/2 right-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border transition-all active:scale-95"
                   aria-label={
