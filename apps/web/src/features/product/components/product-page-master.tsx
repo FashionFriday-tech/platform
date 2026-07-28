@@ -291,20 +291,23 @@ export default function ProductPageMaster({
                 )}
               </div>
 
-              <div className="flex h-14 -skew-x-[12deg] items-center gap-1.5 overflow-hidden rounded-xl border border-zinc-800 bg-black p-1 shadow-lg lg:flex-1 dark:border-zinc-300 dark:bg-white">
+              <div className="flex h-14 w-full items-center gap-2.5 lg:flex-1">
                 <button
                   type="button"
                   onClick={handleWishlistToggle}
                   aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-                  className={`flex h-full w-12 shrink-0 items-center justify-center rounded-lg transition-all duration-200 active:scale-90 sm:w-14 ${
+                  className={`flex h-14 w-14 shrink-0 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-xl border shadow-lg transition-all duration-200 active:scale-90 ${
                     isWishlisted
-                      ? 'border border-white/20 bg-black text-white dark:border-transparent'
-                      : 'text-white hover:bg-white/15 dark:text-black dark:hover:bg-black/10'
+                      ? 'border-zinc-900 bg-black text-white dark:border-zinc-100 dark:bg-white dark:text-black'
+                      : 'border-zinc-300 bg-transparent text-zinc-800 hover:border-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:bg-zinc-800'
                   }`}
                 >
                   <span className="skew-x-[12deg]">
                     {isWishlisted ? (
-                      <HeartFilledIcon size={20} className="fill-white text-white" />
+                      <HeartFilledIcon
+                        size={20}
+                        className="fill-white text-white dark:fill-black dark:text-black"
+                      />
                     ) : (
                       <HeartIcon size={20} />
                     )}
@@ -314,9 +317,9 @@ export default function ProductPageMaster({
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="flex h-full flex-1 cursor-pointer items-center justify-center rounded-lg bg-white font-black text-black uppercase transition-all hover:bg-zinc-200 active:scale-95 dark:bg-black dark:text-white dark:hover:bg-zinc-900"
+                  className="group flex h-14 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-white font-black text-black shadow-lg transition-all hover:bg-zinc-100 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-black dark:text-white dark:hover:bg-zinc-900"
                 >
-                  <span className="skew-x-[12deg] text-xs font-black tracking-widest uppercase sm:text-sm">
+                  <span className="skew-x-[12deg] text-base font-black tracking-widest uppercase sm:text-lg">
                     Add to Cart
                   </span>
                 </button>
