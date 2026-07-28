@@ -247,16 +247,19 @@ export default function ProductPageMaster({
                   {displaySizes.map((size) => (
                     <button
                       key={size}
+                      type="button"
                       onClick={() => {
                         setSelectedSize(size);
                       }}
-                      className={`rounded-full border py-1 font-semibold transition-all duration-300 lg:flex-1 lg:px-2 ${
+                      className={`-skew-x-[12deg] overflow-hidden rounded-lg border py-2 text-center transition-all duration-200 lg:flex-1 lg:px-2 active:scale-95 ${
                         selectedSize === size
-                          ? 'border-brand bg-brand text-brand-foreground scale-95'
-                          : 'border-border hover:border-foreground'
+                          ? 'border-zinc-900 bg-black text-white shadow-md dark:border-zinc-100 dark:bg-white dark:text-black scale-[0.98]'
+                          : 'border-zinc-300/80 bg-transparent text-foreground hover:border-zinc-500 hover:bg-foreground/5 dark:border-zinc-800 dark:hover:border-zinc-600'
                       }`}
                     >
-                      {size}
+                      <span className="skew-x-[12deg] inline-block text-xs sm:text-sm font-black tracking-wider uppercase">
+                        {size}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -269,44 +272,53 @@ export default function ProductPageMaster({
                   <button
                     type="button"
                     onClick={handleBuyNow}
-                    className="bg-foreground text-background flex w-full cursor-pointer items-center justify-center rounded-full py-3.5 text-2xl font-black uppercase transition-transform active:scale-95"
+                    className="group flex h-14 w-full cursor-pointer items-center justify-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black text-white shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black dark:hover:border-zinc-100"
                   >
-                    <span className="light:bg-[linear-gradient(90deg,#ffffff,#9ca3af,#ffffff,#656565,#ffffff)] animate-[glaze_5s_linear_infinite] bg-size-[400%_100%] bg-clip-text text-transparent dark:bg-[linear-gradient(90deg,#000000,#9ca3af,#000000,#9ca3af,#000000)]">
+                    <span className="skew-x-[12deg] text-base sm:text-lg font-black tracking-widest uppercase">
                       Buy Now
                     </span>
                   </button>
                 ) : (
-                  <button className="border-destructive text-destructive flex h-16 w-full items-center justify-center gap-3 rounded-full border-2 font-black tracking-[0.2em] uppercase">
-                    <BellIcon size={20} />
-                    Notify Me
+                  <button
+                    type="button"
+                    className="flex h-14 w-full cursor-not-allowed items-center justify-center gap-3 -skew-x-[12deg] overflow-hidden rounded-xl border-2 border-destructive text-destructive font-black tracking-[0.2em] uppercase"
+                  >
+                    <span className="skew-x-[12deg] flex items-center gap-2">
+                      <BellIcon size={20} />
+                      Notify Me
+                    </span>
                   </button>
                 )}
               </div>
 
-              <div className="bg-foreground text-background flex items-center gap-1 rounded-full p-1 shadow-2xl lg:flex-1">
+              <div className="flex h-14 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black p-1 shadow-lg dark:border-zinc-300 dark:bg-white lg:flex-1">
                 <button
                   type="button"
                   onClick={handleWishlistToggle}
                   aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full transition-all duration-300 active:scale-90 ${
+                  className={`flex h-full w-12 sm:w-14 shrink-0 items-center justify-center rounded-lg transition-all duration-200 active:scale-90 ${
                     isWishlisted
-                      ? 'scale-105 bg-red-500/20 text-red-500'
-                      : 'text-background hover:bg-background/10'
+                      ? 'bg-black text-white border border-white/20 dark:border-transparent'
+                      : 'text-white hover:bg-white/15 dark:text-black dark:hover:bg-black/10'
                   }`}
                 >
-                  {isWishlisted ? (
-                    <HeartFilledIcon size={22} className="text-red-500" />
-                  ) : (
-                    <HeartIcon size={22} />
-                  )}
+                  <span className="skew-x-[12deg]">
+                    {isWishlisted ? (
+                      <HeartFilledIcon size={20} className="text-white fill-white" />
+                    ) : (
+                      <HeartIcon size={20} />
+                    )}
+                  </span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="bg-background text-foreground border-background flex h-14 flex-1 cursor-pointer items-center justify-center gap-3 rounded-full border-2 py-4 font-bold uppercase transition-all hover:scale-[1.02] active:scale-95"
+                  className="flex h-full flex-1 cursor-pointer items-center justify-center rounded-lg bg-white text-black font-black uppercase transition-all hover:bg-zinc-200 active:scale-95 dark:bg-black dark:text-white dark:hover:bg-zinc-900"
                 >
-                  Add to Cart
+                  <span className="skew-x-[12deg] text-xs sm:text-sm font-black tracking-widest uppercase">
+                    Add to Cart
+                  </span>
                 </button>
               </div>
             </section>
