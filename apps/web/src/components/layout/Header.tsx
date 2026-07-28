@@ -214,7 +214,7 @@ export function Header() {
 
         {/* SINGLE ALTERNATING MARQUEE: RED SECTION THEN ELECTRIC BLUE SECTION (Desktop) */}
         {pathname === '/' && (
-          <div className="relative z-40 hidden w-full overflow-hidden bg-black lg:block">
+          <div className="bg-background relative z-40 hidden w-full overflow-hidden lg:block">
             <div className="animate-marquee flex w-max whitespace-nowrap">
               {[0, 1].map((set) => (
                 <div key={set} className="flex items-center">
@@ -248,7 +248,11 @@ export function Header() {
       </header>
 
       {/* MOBILE UI */}
-      <div className="bg-background text-foreground border-border/20 sticky top-0 z-50 flex w-full flex-col border-b lg:hidden">
+      <div
+        className={`bg-background text-foreground sticky top-0 z-50 flex w-full flex-col lg:hidden ${
+          pathname === '/' ? '' : 'border-border/20 border-b'
+        }`}
+      >
         <div className="relative flex h-14 w-full items-center justify-between px-4">
           <button
             type="button"
@@ -297,17 +301,17 @@ export function Header() {
 
         {/* MOBILE ALTERNATING MARQUEE: RED SECTION THEN ELECTRIC BLUE SECTION */}
         {pathname === '/' && (
-          <div className="relative z-40 flex h-[26px] w-full items-center overflow-hidden bg-black text-white">
-            <div className="animate-marquee flex w-max whitespace-nowrap">
+          <div className="bg-background relative z-40 flex h-7 w-full items-center overflow-hidden">
+            <div className="animate-marquee flex h-full w-max whitespace-nowrap">
               {[0, 1].map((set) => (
-                <div key={set} className="flex items-center">
+                <div key={set} className="flex h-full items-center">
                   {marqueeSegments.map((item, i) => (
                     <div
                       key={i}
                       style={{
                         clipPath: 'polygon(18px 0%, 100% 0%, calc(100% - 18px) 100%, 0% 100%)',
                       }}
-                      className={`mx-1 flex h-[26px] items-center gap-2 px-8 text-white ${
+                      className={`mx-1 flex h-full items-center gap-2 px-8 text-white ${
                         item.isRed ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
                       }`}
                     >
