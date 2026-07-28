@@ -274,10 +274,10 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground absolute top-1/2 left-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full transition-all active:scale-95"
+                className="text-foreground/80 hover:text-foreground absolute top-1/2 left-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center transition-all active:scale-90"
                 aria-label="Back / Close Menu"
               >
-                <ChevronLeftIcon className="h-5 w-5 -translate-x-0.5" />
+                <ChevronLeftIcon className="h-6 w-6 -translate-x-0.5" />
               </button>
 
               <Link href="/" onClick={onClose} className="flex items-center justify-center">
@@ -291,7 +291,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   onClick={() => {
                     void toggleTheme();
                   }}
-                  className="bg-foreground/5 text-foreground/80 hover:bg-foreground/10 hover:text-foreground border-border/30 absolute top-1/2 right-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border transition-all active:scale-95"
+                  className="text-foreground/80 hover:text-foreground absolute top-1/2 right-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center transition-all active:scale-90"
                   aria-label={
                     resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'
                   }

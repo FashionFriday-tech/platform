@@ -291,7 +291,7 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
             >
               <h2 className="section-header text-center lg:!text-left">
                 Defined by <br />
-                Trust
+                The Trust
               </h2>
             </motion.div>
 
