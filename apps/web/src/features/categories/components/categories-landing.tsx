@@ -87,25 +87,25 @@ export function CategoriesLanding({
   return (
     <div className="bg-background h-screen pb-14 select-none">
       {/* --- HEADER: Fixed width constraints --- */}
-      <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
+      <header className="bg-background/95 border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-md items-center justify-around gap-2.5 px-4">
           {GENDERS.map((gender, idx) => (
             <button
               key={gender}
               onClick={() => {
                 setGenderIndex(idx);
               }}
-              className={`relative h-full flex-1 text-[10px] font-black tracking-[0.25em] uppercase transition-colors outline-none ${
-                activeGender === gender ? 'text-foreground' : 'text-foreground-subtle/40'
+              className={`relative flex h-9 flex-1 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-lg border text-[10px] font-black tracking-[0.25em] uppercase transition-all duration-200 outline-none active:scale-95 ${
+                activeGender === gender
+                  ? 'border-zinc-900 bg-black text-white shadow-sm dark:border-zinc-100 dark:bg-white dark:text-black'
+                  : 'text-foreground/70 hover:text-foreground border-zinc-300/80 bg-zinc-100/50 hover:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/40'
               }`}
             >
-              {gender}
+              <span className="skew-x-[12deg]">{gender}</span>
               {activeGender === gender && (
-                <motion.div
-                  layoutId="navUnderline"
-                  className="bg-brand absolute right-4 bottom-0 left-4 h-0.5"
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                />
+                <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+                  <div className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+                </div>
               )}
             </button>
           ))}
@@ -129,7 +129,7 @@ export function CategoriesLanding({
             className="mx-auto max-w-2xl px-4 pt-6"
           >
             {/* 1. HERO SECTION */}
-            <div className="bg-background-muted border-border/50 relative mb-8 aspect-square w-full overflow-hidden rounded-4xl border shadow-sm">
+            <div className="border-border/50 bg-background-muted relative mb-8 aspect-square w-full -skew-x-[6deg] overflow-hidden rounded-3xl border shadow-2xl">
               <motion.div
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
@@ -139,12 +139,18 @@ export function CategoriesLanding({
                   backgroundImage: `url(${categoriesByGender[activeGender].hero})`,
                 }}
               />
-              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/10 to-transparent" />
-              <div className="absolute bottom-8 left-8">
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent" />
+
+              {/* Luxury shining sweep animation across hero image card */}
+              <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+                <div className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+              </div>
+
+              <div className="absolute bottom-8 left-8 z-20 skew-x-[6deg]">
                 <p className="mb-1 text-[8px] font-black tracking-[0.3em] text-white/50 uppercase">
                   New Season
                 </p>
-                <h1 className="text-3xl leading-none font-black tracking-tighter text-white uppercase italic">
+                <h1 className="text-3xl leading-none font-black tracking-tighter text-white uppercase italic sm:text-4xl">
                   {activeGender}&apos;s <br /> Essentials
                 </h1>
               </div>
@@ -152,32 +158,44 @@ export function CategoriesLanding({
 
             {/* 2. CATEGORY ROWS */}
             <div className="space-y-3">
-              {categoriesByGender[activeGender].list.map((cat) => (
+              {categoriesByGender[activeGender].list.map((cat, idx) => (
                 <Link
                   key={cat.slug}
                   href={`/categories/${cat.slug}?gender=${activeGender.toLowerCase()}`}
                   className="group block"
                 >
-                  <div className="bg-background-muted/40 group-hover:border-border/40 group-active:bg-background-muted flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98]">
-                    <div className="border-border/50 bg-background relative h-25 w-25 shrink-0 overflow-hidden rounded-4xl border">
-                      <Image
-                        src={cat.image || '/images/placeholder.jpg'}
-                        alt={cat.name}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        sizes="100px"
+                  <div className="border-border/50 hover:border-border/80 group-hover:bg-background-muted/60 bg-background-muted/30 relative -skew-x-[12deg] overflow-hidden rounded-2xl border p-2 shadow-xs transition-all duration-300 group-active:scale-[0.98] lg:p-3">
+                    {/* Luminous Shining Light Sweep across crossed box */}
+                    <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+                      <div
+                        className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]"
+                        style={{ animationDelay: `${(idx % 4) * 1.2}s` }}
                       />
                     </div>
 
-                    <div className="flex-1">
-                      <h3 className="text-foreground text-[20px] font-bold tracking-tighter uppercase italic">
-                        {cat.name}
-                      </h3>
-                    </div>
+                    <div className="flex skew-x-[12deg] items-center gap-4">
+                      <div className="border-border/60 bg-background relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border shadow-sm lg:h-24 lg:w-24">
+                        <Image
+                          src={cat.image || '/images/placeholder.jpg'}
+                          alt={cat.name}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          sizes="100px"
+                        />
+                      </div>
 
-                    <div className="pr-3">
-                      <div className="border-border/60 group-hover:bg-foreground group-hover:text-background flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300">
-                        <ChevronRightIcon size={14} />
+                      <div className="flex-1">
+                        <h3 className="text-foreground group-hover:text-brand text-lg font-black tracking-tighter uppercase italic transition-colors lg:text-2xl">
+                          {cat.name}
+                        </h3>
+                      </div>
+
+                      <div className="pr-2 lg:pr-3">
+                        <div className="border-border/60 group-hover:border-foreground group-hover:bg-foreground group-hover:text-background flex h-8 w-8 -skew-x-[12deg] items-center justify-center rounded-lg border transition-all duration-300 lg:h-10 lg:w-10">
+                          <span className="skew-x-[12deg]">
+                            <ChevronRightIcon size={14} />
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -187,6 +205,38 @@ export function CategoriesLanding({
           </motion.div>
         </AnimatePresence>
       </motion.div>
+
+      <style jsx global>{`
+        @keyframes category-card-shine {
+          0% {
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+          }
+          45% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 1;
+          }
+          46%,
+          100% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 0;
+          }
+        }
+        .category-card-shine {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.04) 20%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0.04) 75%,
+            transparent 100%
+          );
+          animation: category-card-shine 4.5s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

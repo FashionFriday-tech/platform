@@ -127,25 +127,25 @@ export function GenderLanding({
   return (
     <div className="bg-background min-h-screen overflow-x-hidden select-none lg:mt-20 lg:h-[calc(100vh-5rem)] lg:min-h-0 lg:overflow-hidden">
       {/* --- MOBILE HEADER --- */}
-      <header className="bg-background border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md lg:hidden">
-        <div className="mx-auto flex h-14 max-w-md items-center justify-around px-4">
+      <header className="bg-background/95 border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md lg:hidden">
+        <div className="mx-auto flex h-14 max-w-md items-center justify-around gap-2.5 px-4">
           {GENDERS.map((gender, idx) => (
             <button
               key={gender}
               onClick={() => {
                 handleGenderChange(idx);
               }}
-              className={`relative h-full flex-1 text-[10px] font-black tracking-[0.25em] uppercase transition-colors outline-none ${
-                activeGender === gender ? 'text-foreground' : 'text-foreground-subtle/40'
+              className={`relative flex h-9 flex-1 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-lg border text-[10px] font-black tracking-[0.25em] uppercase transition-all duration-200 outline-none active:scale-95 ${
+                activeGender === gender
+                  ? 'border-zinc-900 bg-black text-white shadow-sm dark:border-zinc-100 dark:bg-white dark:text-black'
+                  : 'text-foreground/70 hover:text-foreground border-zinc-300/80 bg-zinc-100/50 hover:border-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/40'
               }`}
             >
-              {gender}
+              <span className="skew-x-[12deg]">{gender}</span>
               {activeGender === gender && (
-                <motion.div
-                  layoutId="navUnderline"
-                  className="bg-brand absolute right-4 bottom-0 left-4 h-0.5"
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                />
+                <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+                  <div className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+                </div>
               )}
             </button>
           ))}
@@ -173,7 +173,7 @@ export function GenderLanding({
               onWheel={handleLeftWheel}
               className="flex w-full items-center justify-center lg:h-full lg:w-1/2 lg:shrink-0 lg:overflow-hidden"
             >
-              <div className="border-border/50 group relative aspect-square w-full overflow-hidden rounded-4xl border shadow-2xl lg:h-auto lg:w-full lg:max-w-[min(480px,calc(100vh-8.5rem))] lg:rounded-[3rem] xl:max-w-[min(540px,calc(100vh-8.5rem))]">
+              <div className="border-border/50 group relative aspect-square w-full -skew-x-[6deg] overflow-hidden rounded-3xl border shadow-2xl lg:h-auto lg:w-full lg:max-w-[min(480px,calc(100vh-8.5rem))] lg:rounded-[2.5rem] xl:max-w-[min(540px,calc(100vh-8.5rem))]">
                 <motion.div
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
@@ -181,8 +181,14 @@ export function GenderLanding({
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
                   style={{ backgroundImage: `url(${currentData.hero})` }}
                 />
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
-                <div className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 xl:bottom-14 xl:left-14">
+                <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/20 to-transparent" />
+
+                {/* Luxury shining sweep animation across hero image card */}
+                <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+                  <div className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+                </div>
+
+                <div className="absolute bottom-8 left-8 z-20 skew-x-[6deg] lg:bottom-12 lg:left-12 xl:bottom-14 xl:left-14">
                   <p className="mb-2 text-[8px] font-black tracking-[0.4em] text-white/50 uppercase lg:text-[10px]">
                     Exclusive Collection
                   </p>
@@ -201,32 +207,44 @@ export function GenderLanding({
               className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:overflow-y-auto lg:overscroll-contain lg:pt-8 lg:pr-2 lg:pb-12"
             >
               <div className="mx-auto w-full max-w-xl space-y-3 lg:space-y-4">
-                {currentData.list.map((cat) => (
+                {currentData.list.map((cat, idx) => (
                   <Link
                     key={`${activeGender}-${cat.slug}`}
                     href={`/category/${activeGender}/${cat.slug}`}
                     className="group block"
                   >
-                    <div className="bg-background-muted/40 hover:bg-background-muted/70 group-hover:border-border/40 flex items-center gap-4 rounded-3xl border border-transparent p-2 transition-all duration-300 group-active:scale-[0.98] lg:gap-5 lg:rounded-[2rem] lg:p-3.5">
-                      <div className="border-border/50 bg-background relative h-24 w-24 shrink-0 overflow-hidden rounded-3xl border shadow-md lg:h-28 lg:w-28 lg:rounded-3xl">
-                        <Image
-                          src={cat.img}
-                          alt={cat.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-110"
-                          sizes="(min-width: 1024px) 112px, 96px"
+                    <div className="border-border/50 hover:border-border/80 group-hover:bg-background-muted/60 bg-background-muted/30 relative -skew-x-[12deg] overflow-hidden rounded-2xl border p-2 shadow-xs transition-all duration-300 group-active:scale-[0.98] lg:p-3">
+                      {/* Luminous Shining Light Sweep across crossed box */}
+                      <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+                        <div
+                          className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]"
+                          style={{ animationDelay: `${(idx % 4) * 1.2}s` }}
                         />
                       </div>
 
-                      <div className="flex-1">
-                        <h3 className="text-foreground group-hover:text-brand text-[20px] font-bold tracking-tighter uppercase italic transition-colors lg:text-2xl">
-                          {cat.name}
-                        </h3>
-                      </div>
+                      <div className="flex skew-x-[12deg] items-center gap-4 lg:gap-5">
+                        <div className="border-border/60 bg-background relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border shadow-sm lg:h-24 lg:w-24">
+                          <Image
+                            src={cat.img}
+                            alt={cat.name}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            sizes="(min-width: 1024px) 112px, 96px"
+                          />
+                        </div>
 
-                      <div className="pr-3">
-                        <div className="border-border/60 group-hover:bg-foreground group-hover:text-background flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 lg:h-10 lg:w-10">
-                          <ChevronRightIcon size={14} />
+                        <div className="flex-1">
+                          <h3 className="text-foreground group-hover:text-brand text-lg font-black tracking-tighter uppercase italic transition-colors lg:text-2xl">
+                            {cat.name}
+                          </h3>
+                        </div>
+
+                        <div className="pr-2 lg:pr-3">
+                          <div className="border-border/60 group-hover:border-foreground group-hover:bg-foreground group-hover:text-background flex h-8 w-8 -skew-x-[12deg] items-center justify-center rounded-lg border transition-all duration-300 lg:h-10 lg:w-10">
+                            <span className="skew-x-[12deg]">
+                              <ChevronRightIcon size={14} />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -239,6 +257,35 @@ export function GenderLanding({
       </motion.div>
 
       <style jsx global>{`
+        @keyframes category-card-shine {
+          0% {
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+          }
+          45% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 1;
+          }
+          46%,
+          100% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 0;
+          }
+        }
+        .category-card-shine {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.04) 20%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0.04) 75%,
+            transparent 100%
+          );
+          animation: category-card-shine 4.5s ease-in-out infinite;
+        }
         .no-scrollbar::-webkit-scrollbar {
           display: none;
         }
