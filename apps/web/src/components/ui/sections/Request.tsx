@@ -184,7 +184,7 @@ export default function SourcingSection() {
                   Product Name
                 </label>
                 <div
-                  className={`bg-foreground/2 -skew-x-[12deg] overflow-hidden flex items-center rounded-xl border-2 px-6 py-4 transition-all ${
+                  className={`bg-foreground/2 flex -skew-x-[12deg] items-center overflow-hidden rounded-xl border-2 px-6 py-4 transition-all ${
                     errors.productName
                       ? 'border-red-500'
                       : 'border-foreground-subtle focus-within:border-foreground'
@@ -222,7 +222,7 @@ export default function SourcingSection() {
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className={`bg-foreground/2 -skew-x-[12deg] overflow-hidden flex cursor-pointer items-center rounded-xl border-2 px-6 py-4 transition-all ${
+                  className={`bg-foreground/2 flex -skew-x-[12deg] cursor-pointer items-center overflow-hidden rounded-xl border-2 px-6 py-4 transition-all ${
                     errors.image
                       ? 'border-red-500'
                       : 'border-foreground-subtle hover:border-foreground'
@@ -264,7 +264,7 @@ export default function SourcingSection() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-foreground text-background hover:bg-foreground/90 group mt-6 -skew-x-[12deg] flex w-full items-center justify-center rounded-xl px-10 py-4 font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-50"
+              className="bg-foreground text-background hover:bg-foreground/90 group mt-6 flex w-full -skew-x-[12deg] items-center justify-center rounded-xl px-10 py-4 font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-50"
             >
               <div className="skew-x-[12deg]">
                 {!user

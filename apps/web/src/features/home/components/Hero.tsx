@@ -120,7 +120,7 @@ export default function Hero({
   return (
     <section
       ref={containerRef}
-      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col justify-between items-center px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
+      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center justify-between px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
       {/* 1. Mobile Search input: Generous vertical space between marquee and hero card */}
       <div className="flex w-full shrink-0 items-center justify-center px-4 pt-2.5 pb-2 sm:pt-3 sm:pb-3 lg:hidden">
@@ -129,7 +129,7 @@ export default function Hero({
 
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
       {cards.length === 1 && (
-        <div className="relative flex w-full flex-1 shrink-0 items-center justify-center py-2.5 sm:py-3.5 select-none lg:hidden">
+        <div className="relative flex w-full flex-1 shrink-0 items-center justify-center py-2.5 select-none sm:py-3.5 lg:hidden">
           <div
             style={mobileCardStyle}
             className="relative overflow-hidden rounded-[32px] sm:rounded-[38px]"
@@ -156,7 +156,7 @@ export default function Hero({
       )}
 
       {cards.length >= 2 && (
-        <div className="relative flex w-full flex-1 shrink-0 touch-pan-y items-center justify-center overflow-hidden py-2.5 sm:py-3.5 select-none lg:hidden">
+        <div className="relative flex w-full flex-1 shrink-0 touch-pan-y items-center justify-center overflow-hidden py-2.5 select-none sm:py-3.5 lg:hidden">
           <div
             onTouchStart={(e) => {
               onDragStart(e.touches[0].clientX, e.touches[0].clientY);
@@ -280,25 +280,25 @@ export default function Hero({
             style={{ animationPlayState: isInView ? 'running' : 'paused' }}
           >
             {repeatedCards.map((card, idx) => (
-            <Link
-              key={`${card.id}-${idx}`}
-              href={card.linkUrl || '/products'}
-              className="group relative aspect-[3/5] h-full shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
-            >
-              <Image
-                src={card.src}
-                alt={card.title || 'Hero image'}
-                fill
-                sizes="(max-width: 1024px) 60vw, 40vw"
-                className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                priority={idx < 2}
-              />
-              {/* Desktop hover shine */}
-              <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-4xl opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                <div className="hero-card-shine-hover absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
-              </div>
-            </Link>
-          ))}
+              <Link
+                key={`${card.id}-${idx}`}
+                href={card.linkUrl || '/products'}
+                className="group relative aspect-[3/5] h-full shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
+              >
+                <Image
+                  src={card.src}
+                  alt={card.title || 'Hero image'}
+                  fill
+                  sizes="(max-width: 1024px) 60vw, 40vw"
+                  className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                  priority={idx < 2}
+                />
+                {/* Desktop hover shine */}
+                <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-4xl opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <div className="hero-card-shine-hover absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       )}
