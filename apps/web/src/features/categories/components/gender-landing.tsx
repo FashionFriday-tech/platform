@@ -166,7 +166,7 @@ export function GenderLanding({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:h-full lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-8 lg:pt-0 lg:pb-0 xl:gap-14 xl:px-14"
+            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-14 pb-20 lg:h-full lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-8 lg:pt-0 lg:pb-0 xl:gap-14 xl:px-14"
           >
             {/* 1. HERO SECTION (STATIONARY / FIXED IN PLACE ON DESKTOP, 1:1 ASPECT RATIO) */}
             <div
@@ -220,12 +220,12 @@ export function GenderLanding({
                       </div>
 
                       <div className="flex skew-x-[12deg] items-center gap-4 lg:gap-5">
-                        <div className="border-border/60 bg-background relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border shadow-sm lg:h-24 lg:w-24">
+                        <div className="border-border/60 bg-background relative h-20 w-20 shrink-0 -skew-x-[12deg] overflow-hidden rounded-xl border shadow-sm lg:h-24 lg:w-24">
                           <Image
                             src={cat.img}
                             alt={cat.name}
                             fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            className="object-cover skew-x-[12deg] scale-[1.25] transition-transform duration-500 group-hover:scale-[1.35]"
                             sizes="(min-width: 1024px) 112px, 96px"
                           />
                         </div>

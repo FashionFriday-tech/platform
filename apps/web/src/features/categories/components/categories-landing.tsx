@@ -117,7 +117,7 @@ export function CategoriesLanding({
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         onDragEnd={handleDragEnd}
-        className="relative z-10 touch-pan-y pt-10 pb-20"
+        className="relative z-10 touch-pan-y pt-4 pb-20"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -171,12 +171,12 @@ export function CategoriesLanding({
                     </div>
 
                     <div className="flex skew-x-[12deg] items-center gap-4">
-                      <div className="border-border/60 bg-background relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border shadow-sm lg:h-24 lg:w-24">
+                      <div className="border-border/60 bg-background relative h-20 w-20 shrink-0 -skew-x-[12deg] overflow-hidden rounded-xl border shadow-sm lg:h-24 lg:w-24">
                         <Image
                           src={cat.image || '/images/placeholder.jpg'}
                           alt={cat.name}
                           fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          className="object-cover skew-x-[12deg] scale-[1.25] transition-transform duration-500 group-hover:scale-[1.35]"
                           sizes="100px"
                         />
                       </div>
