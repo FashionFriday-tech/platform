@@ -342,7 +342,7 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
-                  className="group relative flex -skew-x-[6deg] cursor-default overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all hover:border-zinc-700 sm:-skew-x-[8deg]"
+                  className="group relative flex -skew-x-[12deg] cursor-default overflow-hidden rounded-xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all hover:border-zinc-700 sm:rounded-2xl"
                 >
                   {/* Luminous Shining Light Sweep */}
                   <div
@@ -350,15 +350,16 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                     style={{ animationDelay: `${idx * 1.2}s` }}
                   />
 
-                  <div className="relative z-10 flex w-full skew-x-[6deg] items-center gap-6 sm:skew-x-[8deg]">
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-zinc-700 bg-black transition-colors duration-300">
-                      <item.icon className="z-10 h-6 w-6 text-white transition-colors duration-300" />
+                  <div className="relative z-10 flex w-full items-center gap-6 sm:gap-8">
+                    {/* The icon box inherits the -12deg skew from the card, making it a slanted parallelogram. We counter-skew the icon inside so it stands straight. */}
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-700 bg-black transition-colors duration-300 sm:h-16 sm:w-16">
+                      <item.icon className="z-10 h-6 w-6 skew-x-[12deg] text-white transition-colors duration-300" />
                     </div>
-                    <div>
-                      <h3 className="mb-2 flex items-center gap-2 text-xl font-bold tracking-wide text-white uppercase">
+                    <div className="skew-x-[12deg]">
+                      <h3 className="mb-1.5 flex items-center gap-2 text-lg font-bold tracking-wide text-white uppercase sm:mb-2 sm:text-xl">
                         {item.title}
                       </h3>
-                      <p className="max-w-sm text-sm leading-relaxed text-zinc-400 transition-colors duration-300">
+                      <p className="max-w-sm text-xs leading-relaxed text-zinc-400 transition-colors duration-300 sm:text-sm">
                         {item.desc}
                       </p>
                     </div>
