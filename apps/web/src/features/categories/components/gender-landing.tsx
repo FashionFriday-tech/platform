@@ -207,7 +207,7 @@ export function GenderLanding({
               className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:overflow-y-auto lg:overscroll-contain lg:pt-8 lg:pr-2 lg:pb-12"
             >
               <div className="mx-auto w-full max-w-xl space-y-3 lg:space-y-4">
-                {currentData.list.map((cat, idx) => (
+                {currentData.list.map((cat) => (
                   <Link
                     key={`${activeGender}-${cat.slug}`}
                     href={`/category/${activeGender}/${cat.slug}`}

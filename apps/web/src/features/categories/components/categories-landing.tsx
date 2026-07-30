@@ -158,7 +158,7 @@ export function CategoriesLanding({
 
             {/* 2. CATEGORY ROWS */}
             <div className="space-y-3">
-              {categoriesByGender[activeGender].list.map((cat, idx) => (
+              {categoriesByGender[activeGender].list.map((cat) => (
                 <Link
                   key={cat.slug}
                   href={`/categories/${cat.slug}?gender=${activeGender.toLowerCase()}`}
