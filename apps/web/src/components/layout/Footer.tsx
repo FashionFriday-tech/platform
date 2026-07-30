@@ -649,17 +649,17 @@ export default function Footer() {
               <Image
                 src="/images/unity-logos/unity11-logo.gif"
                 alt="Unity11 logo icon"
-                width={44}
-                height={44}
-                className="h-11 w-11"
+                width={24}
+                height={24}
+                className="h-6 w-6"
                 unoptimized
               />
               <Image
                 src="/images/unity-logos/unity11-text-logo.png"
                 alt="Unity11 text logo"
-                width={120}
-                height={32}
-                className="h-6 w-auto"
+                width={80}
+                height={20}
+                className="h-4 w-auto"
                 priority
               />
             </Link>
