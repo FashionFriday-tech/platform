@@ -133,7 +133,7 @@ export default function HomeFeedbackSection() {
                     onClick={() => {
                       setType(t);
                     }}
-                    className={`-skew-x-[6deg] rounded-lg border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all ${
+                    className={`-skew-x-[12deg] rounded-xl border px-5 py-2 text-xs font-bold tracking-wider uppercase transition-all ${
                       type === t
                         ? 'border-white bg-white text-black'
                         : 'border-white/20 bg-transparent text-white hover:border-white/50'
@@ -157,7 +157,7 @@ export default function HomeFeedbackSection() {
                 onChange={(e) => {
                   setEmail(e.target.value);
                 }}
-                className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition-colors outline-none placeholder:text-zinc-600 focus:border-white"
+                className="-skew-x-[12deg] rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition-colors outline-none placeholder:text-zinc-600 focus:border-white"
               />
             </div>
 
@@ -173,14 +173,14 @@ export default function HomeFeedbackSection() {
                 onChange={(e) => {
                   setDescription(e.target.value);
                 }}
-                className="resize-none rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition-colors outline-none placeholder:text-zinc-600 focus:border-white"
+                className="-skew-x-[12deg] resize-none rounded-xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white transition-colors outline-none placeholder:text-zinc-600 focus:border-white"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="group mt-4 flex w-full -skew-x-[6deg] items-center justify-center rounded-xl bg-white px-10 py-4.5 font-black tracking-widest text-black uppercase transition-all hover:bg-white/90 active:scale-95 disabled:opacity-50"
+              className="group mt-4 flex w-full -skew-x-[12deg] items-center justify-center rounded-xl bg-white px-10 py-3.5 font-black tracking-widest text-black uppercase transition-all hover:bg-white/90 active:scale-95 disabled:opacity-50"
             >
               {loading ? 'Submitting...' : 'Send Feedback'}
             </button>
