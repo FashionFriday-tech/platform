@@ -110,9 +110,11 @@ export default function Hero({
 
   // Dynamic mobile card sizing keeping strict 3:5 aspect ratio:
   const mobileCardStyle = {
-    width: 'min(calc((100dvh - 220px) * 0.6), 84vw, 355px)',
+    height: '100%',
+    maxHeight: '550px',
+    width: 'auto',
+    maxWidth: '84vw',
     aspectRatio: '3 / 5',
-    maxHeight: '100%',
   };
 
   return (
@@ -172,7 +174,7 @@ export default function Hero({
             }}
             onMouseUp={onDragEnd}
             onMouseLeave={onDragEnd}
-            className="relative flex w-full items-center justify-center py-1 sm:py-1.5"
+            className="relative flex h-full w-full items-center justify-center py-1 sm:py-1.5"
           >
             {/* Dynamic sizing spacer ensuring strict 3:5 aspect ratio without vertical overflow */}
             <div style={mobileCardStyle} className="pointer-events-none mx-auto opacity-0" />
