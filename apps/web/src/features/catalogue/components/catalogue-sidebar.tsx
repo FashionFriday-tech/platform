@@ -7,7 +7,7 @@ import { type Product } from '@ff/schemas';
 import { ArrowUpDownIcon, ChevronDownIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
-import { COLOR_SWATCH_MAP, extractFacets, filterProducts } from '@/data/filter-engine';
+import { COLOR_SWATCH_MAP, extractFacets } from '@/data/filter-engine';
 import { useBrands } from '@/features/brand';
 
 interface SidebarProps {
@@ -76,14 +76,7 @@ export const CatalogueSidebar = ({
   // Extract dynamic facets & counts from available products
   const facets = useMemo(() => {
     return extractFacets(products);
-  }, [products]);
-
-  // Real-time preview count of matching products for the draft filters
-  const previewMatchingProducts = useMemo(() => {
-    return filterProducts(products, draftFilters);
-  }, [products, draftFilters]);
-
-  const toggleSection = (id: string) => {
+  }, [products]);const toggleSection = (id: string) => {
     setOpenSections((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -658,3 +651,5 @@ export const CatalogueSidebar = ({
     </aside>
   );
 };
+
+

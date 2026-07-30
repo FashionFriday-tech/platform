@@ -165,7 +165,7 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
               drag="y"
               dragConstraints={{ top: 0 }}
               dragElastic={0.2}
-              onDragEnd={(e, info) => {
+              onDragEnd={(_e, info) => {
                 if (info.offset.y > 150 || info.velocity.y > 500) {
                   setActiveDrawer(null);
                 }
@@ -288,3 +288,4 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
     </div>
   );
 }
+
