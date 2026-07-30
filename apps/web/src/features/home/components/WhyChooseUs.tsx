@@ -67,6 +67,44 @@ const InfiniteColumn = ({
   return (
     <>
       <style jsx global>{`
+        @keyframes why-card-shine {
+          0% {
+            background-image: linear-gradient(
+              110deg,
+              transparent 0%,
+              transparent 40%,
+              rgba(255, 255, 255, 0.05) 50%,
+              transparent 60%,
+              transparent 100%
+            );
+            transform: translateX(-100%);
+          }
+          100% {
+            background-image: linear-gradient(
+              110deg,
+              transparent 0%,
+              transparent 40%,
+              rgba(255, 255, 255, 0.05) 50%,
+              transparent 60%,
+              transparent 100%
+            );
+            transform: translateX(100%);
+          }
+        }
+
+        .why-shine-sweep {
+          background-image: linear-gradient(
+            110deg,
+            transparent 0%,
+            transparent 40%,
+            rgba(255, 255, 255, 0.05) 50%,
+            transparent 60%,
+            transparent 100%
+          );
+          background-size: 200% 100%;
+          animation: why-card-shine 4.8s ease-in-out infinite;
+        }
+
         @keyframes scrollUp {
           0% {
             transform: translate3d(0, 0, 0);
@@ -304,42 +342,25 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
-                  className="group flex cursor-default gap-6"
+                  className="group relative flex cursor-default gap-6 overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all hover:border-zinc-700"
                 >
-                  <div className="border-foreground/20 group-hover:border-foreground/50 relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border transition-colors duration-300">
-                    <item.icon className="text-foreground z-10 h-6 w-6 transition-colors duration-300" />
-                    <div className="absolute inset-0 bg-white opacity-0 blur-xl transition-opacity duration-300" />
+                  {/* Luminous Shining Light Sweep */}
+                  <div className="why-shine-sweep pointer-events-none absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+
+                  <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-zinc-700 bg-black transition-colors duration-300">
+                    <item.icon className="z-10 h-6 w-6 text-white transition-colors duration-300" />
                   </div>
-                  <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xl font-bold tracking-wide uppercase">
+                  <div className="relative z-10">
+                    <h3 className="mb-2 flex items-center gap-2 text-xl font-bold tracking-wide text-white uppercase">
                       {item.title}
                     </h3>
-                    <p className="text-foreground-muted max-w-sm text-sm leading-relaxed transition-colors duration-300">
+                    <p className="max-w-sm text-sm leading-relaxed text-zinc-400 transition-colors duration-300">
                       {item.desc}
                     </p>
                   </div>
                 </motion.div>
               ))}
             </div>
-
-            {/* See More Reviews Button */}
-            {isMounted && (
-              <div className="mt-12 flex justify-center lg:justify-start">
-                <Link
-                  href="/whatsapp-reviews"
-                  className="group inline-flex -skew-x-[12deg] items-stretch overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 sm:rounded-2xl dark:border-zinc-300 dark:bg-white dark:hover:border-zinc-100"
-                >
-                  <span className="flex skew-x-[12deg] items-center px-6 py-3 text-xs font-black tracking-widest text-white uppercase transition-colors sm:px-7 sm:py-3.5 sm:text-sm dark:text-black">
-                    See More Reviews
-                  </span>
-                  <span className="flex shrink-0 items-center justify-center self-stretch rounded-r-xl bg-white px-4 text-black transition-all group-hover:bg-zinc-200 sm:rounded-r-2xl sm:px-5 dark:bg-black dark:text-white dark:group-hover:bg-zinc-800">
-                    <span className="skew-x-[12deg]">
-                      <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </span>
-                  </span>
-                </Link>
-              </div>
-            )}
           </div>
 
           {/* RIGHT SIDE */}
@@ -406,6 +427,25 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                     <div className="aspect-[9/19] animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* See More Reviews Button (Moved to Bottom) */}
+            {isMounted && (
+              <div className="mt-8 flex w-full justify-center pb-8 lg:pb-12">
+                <Link
+                  href="/whatsapp-reviews"
+                  className="group inline-flex -skew-x-[12deg] items-stretch overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 sm:rounded-2xl dark:border-zinc-300 dark:bg-white dark:hover:border-zinc-100"
+                >
+                  <span className="flex skew-x-[12deg] items-center px-6 py-3 text-xs font-black tracking-widest text-white uppercase transition-colors sm:px-7 sm:py-3.5 sm:text-sm dark:text-black">
+                    See More Reviews
+                  </span>
+                  <span className="flex shrink-0 items-center justify-center self-stretch rounded-r-xl bg-white px-4 text-black transition-all group-hover:bg-zinc-200 sm:rounded-r-2xl sm:px-5 dark:bg-black dark:text-white dark:group-hover:bg-zinc-800">
+                    <span className="skew-x-[12deg]">
+                      <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </span>
+                  </span>
+                </Link>
               </div>
             )}
           </div>
