@@ -133,7 +133,7 @@ export default function HomeFeedbackSection() {
                     onClick={() => {
                       setType(t);
                     }}
-                    className={`rounded-full border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all ${
+                    className={`-skew-x-[6deg] rounded-lg border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all ${
                       type === t
                         ? 'border-white bg-white text-black'
                         : 'border-white/20 bg-transparent text-white hover:border-white/50'
@@ -180,7 +180,7 @@ export default function HomeFeedbackSection() {
             <button
               type="submit"
               disabled={loading}
-              className="group mt-4 flex w-full items-center justify-center rounded-full bg-white px-10 py-4.5 font-black tracking-widest text-black uppercase transition-all hover:bg-white/90 active:scale-95 disabled:opacity-50"
+              className="group mt-4 flex w-full -skew-x-[6deg] items-center justify-center rounded-xl bg-white px-10 py-4.5 font-black tracking-widest text-black uppercase transition-all hover:bg-white/90 active:scale-95 disabled:opacity-50"
             >
               {loading ? 'Submitting...' : 'Send Feedback'}
             </button>
