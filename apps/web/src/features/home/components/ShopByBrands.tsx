@@ -51,8 +51,8 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   const MOBILE_SPEED_PX_PER_SEC = 25;
   const DESKTOP_SPEED_PX_PER_SEC = 15; // Slower on large screens
 
-  const MOBILE_CARD_PX = 240 + 16; // 240px width + 16px gap (1rem)
-  const DESKTOP_CARD_PX = 310 + 24; // 310px width + 24px gap (1.5rem)
+  const MOBILE_CARD_PX = 340 + 16; // 340px width + 16px gap (1rem)
+  const DESKTOP_CARD_PX = 480 + 24; // 480px width + 24px gap (1.5rem)
 
   // Distance of 50% track (one full cycle of the repeated items)
   const row1Distance = (row1Items.length / 2) * MOBILE_CARD_PX;
@@ -126,7 +126,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {desktopItems.map((brand, idx) => (
                 <div
                   key={`desktop-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
+                  className="group relative aspect-square h-[400px] w-[400px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[480px] md:rounded-4xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -147,7 +147,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row1Items.map((brand, idx) => (
                 <div
                   key={`r1-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[320px] w-[240px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-square h-[340px] w-[340px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -165,7 +165,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row2Items.map((brand, idx) => (
                 <div
                   key={`r2-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[320px] w-[240px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-square h-[340px] w-[340px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
