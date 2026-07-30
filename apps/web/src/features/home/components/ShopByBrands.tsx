@@ -126,7 +126,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {desktopItems.map((brand, idx) => (
                 <div
                   key={`desktop-${brand.slug}-${idx}`}
-                  className="group relative aspect-square h-[calc(100vw-32px)] w-[calc(100vw-32px)] sm:h-[608px] sm:w-[608px] md:h-[356px] md:w-[356px] lg:h-[472px] lg:w-[472px] xl:h-[600px] xl:w-[600px] 2xl:h-[728px] 2xl:w-[728px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:rounded-4xl"
+                  className="group relative aspect-square h-[calc(100vw-32px)] w-[calc(100vw-32px)] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:h-[608px] sm:w-[608px] sm:rounded-3xl md:h-[356px] md:w-[356px] md:rounded-4xl lg:h-[472px] lg:w-[472px] xl:h-[600px] xl:w-[600px] 2xl:h-[728px] 2xl:w-[728px]"
                 >
                   <BrandCard brand={brand} />
                 </div>

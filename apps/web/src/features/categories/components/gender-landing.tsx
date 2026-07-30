@@ -225,7 +225,7 @@ export function GenderLanding({
                             src={cat.img}
                             alt={cat.name}
                             fill
-                            className="object-cover skew-x-[12deg] scale-[1.25] transition-transform duration-500 group-hover:scale-[1.35]"
+                            className="scale-[1.25] skew-x-[12deg] object-cover transition-transform duration-500 group-hover:scale-[1.35]"
                             sizes="(min-width: 1024px) 112px, 96px"
                           />
                         </div>

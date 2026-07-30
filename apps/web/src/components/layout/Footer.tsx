@@ -630,20 +630,20 @@ export default function Footer() {
 
       {/* 4. BOTTOM SUB-FOOTER BAR (With mobile clearance) */}
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center justify-between gap-8 pt-6 pb-28 text-[11px] font-medium text-zinc-500 lg:flex-row lg:gap-4 sm:pb-8">
+        <div className="flex flex-col items-center justify-between gap-8 pt-6 pb-28 text-[11px] font-medium text-zinc-500 sm:pb-8 lg:flex-row lg:gap-4">
           <div className="order-1 flex flex-1 justify-center text-center lg:order-1 lg:justify-start lg:text-left">
             &copy; {new Date().getFullYear()} FASHION FRIDAY. ALL RIGHTS RESERVED. // MADE FOR THE
             CULTURE.
           </div>
-          
+
           <div className="order-3 flex flex-1 flex-col items-center justify-center gap-3 lg:order-2">
             <span className="text-[9px] font-bold tracking-[0.2em] text-zinc-600 uppercase">
               Developed By
             </span>
-            <Link 
-              href="https://unity11solutions.com" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <Link
+              href="https://unity11solutions.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 transition-transform duration-300 hover:scale-105 active:scale-95"
             >
               <Image
