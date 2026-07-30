@@ -77,6 +77,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
         // If we are replacing an existing Cloudflare logo, delete it
         if (
           initialData?.image &&
+          initialData.image !== finalLogoUrl &&
           initialData.image.startsWith('http') &&
           !initialData.image.includes('localhost')
         ) {
