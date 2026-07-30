@@ -630,22 +630,43 @@ export default function Footer() {
 
       {/* 4. BOTTOM SUB-FOOTER BAR (With mobile clearance) */}
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center justify-between gap-4 pt-4 pb-28 text-[11px] font-medium text-zinc-500 sm:flex-row sm:pb-8">
-          <div>
+        <div className="flex flex-col items-center justify-between gap-8 pt-6 pb-28 text-[11px] font-medium text-zinc-500 lg:flex-row lg:gap-4 sm:pb-8">
+          <div className="order-1 flex flex-1 justify-center text-center lg:order-1 lg:justify-start lg:text-left">
             &copy; {new Date().getFullYear()} FASHION FRIDAY. ALL RIGHTS RESERVED. // MADE FOR THE
             CULTURE.
           </div>
-          <div className="flex items-center gap-6">
-            <span>CURATED IN INDIA</span>
-            <span className="h-1 w-1 rounded-full bg-zinc-700" />
-            <Link
-              href="https://unity11solutions.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-400 transition-colors hover:text-white"
+          
+          <div className="order-3 flex flex-1 flex-col items-center justify-center gap-3 lg:order-2">
+            <span className="text-[9px] font-bold tracking-[0.2em] text-zinc-600 uppercase">
+              Developed By
+            </span>
+            <Link 
+              href="https://unity11solutions.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center gap-2 transition-transform duration-300 hover:scale-105 active:scale-95"
             >
-              ENGINEERED BY <span className="font-bold underline">UNITY11</span>
+              <Image
+                src="/images/unity-logos/unity11-logo.gif"
+                alt="Unity11 logo icon"
+                width={44}
+                height={44}
+                className="h-11 w-11"
+                unoptimized
+              />
+              <Image
+                src="/images/unity-logos/unity11-text-logo.png"
+                alt="Unity11 text logo"
+                width={120}
+                height={32}
+                className="h-6 w-auto"
+                priority
+              />
             </Link>
+          </div>
+
+          <div className="order-2 flex flex-1 items-center justify-center lg:order-3 lg:justify-end">
+            <span>CURATED IN INDIA</span>
           </div>
         </div>
       </div>
