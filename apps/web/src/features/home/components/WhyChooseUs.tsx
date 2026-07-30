@@ -342,21 +342,26 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
-                  className="group relative flex cursor-default gap-6 overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all hover:border-zinc-700"
+                  className="group relative flex -skew-x-[6deg] cursor-default overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all hover:border-zinc-700 sm:-skew-x-[8deg]"
                 >
                   {/* Luminous Shining Light Sweep */}
-                  <div className="why-shine-sweep pointer-events-none absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
+                  <div
+                    className="why-shine-sweep pointer-events-none absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]"
+                    style={{ animationDelay: `${idx * 1.2}s` }}
+                  />
 
-                  <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-zinc-700 bg-black transition-colors duration-300">
-                    <item.icon className="z-10 h-6 w-6 text-white transition-colors duration-300" />
-                  </div>
-                  <div className="relative z-10">
-                    <h3 className="mb-2 flex items-center gap-2 text-xl font-bold tracking-wide text-white uppercase">
-                      {item.title}
-                    </h3>
-                    <p className="max-w-sm text-sm leading-relaxed text-zinc-400 transition-colors duration-300">
-                      {item.desc}
-                    </p>
+                  <div className="relative z-10 flex w-full skew-x-[6deg] items-center gap-6 sm:skew-x-[8deg]">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-zinc-700 bg-black transition-colors duration-300">
+                      <item.icon className="z-10 h-6 w-6 text-white transition-colors duration-300" />
+                    </div>
+                    <div>
+                      <h3 className="mb-2 flex items-center gap-2 text-xl font-bold tracking-wide text-white uppercase">
+                        {item.title}
+                      </h3>
+                      <p className="max-w-sm text-sm leading-relaxed text-zinc-400 transition-colors duration-300">
+                        {item.desc}
+                      </p>
+                    </div>
                   </div>
                 </motion.div>
               ))}

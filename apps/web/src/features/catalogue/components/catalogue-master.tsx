@@ -162,6 +162,14 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
+              drag="y"
+              dragConstraints={{ top: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, info) => {
+                if (info.offset.y > 150 || info.velocity.y > 500) {
+                  setActiveDrawer(null);
+                }
+              }}
               className="bg-background border-border fixed right-0 bottom-0 left-0 z-70 flex max-h-[90vh] flex-col rounded-t-[2.5rem] border-t shadow-2xl"
             >
               {/* Drag Handle */}
@@ -249,7 +257,7 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
 
               {/* --- STICKY BOTTOM CONFIRMATION BAR (Mobile) --- */}
               {activeDrawer === 'filter' && (
-                <div className="bg-background/95 border-border shrink-0 border-t p-4 backdrop-blur-md">
+                <div className="bg-background/95 border-border shrink-0 border-t p-4 pb-24 backdrop-blur-md lg:pb-4">
                   <div className="flex items-center gap-3">
                     {activeFilterCount > 0 && (
                       <button

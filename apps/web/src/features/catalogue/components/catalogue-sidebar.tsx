@@ -334,13 +334,13 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('priceRange', preset.range, true);
                         }}
-                        className={`-skew-x-[6deg] rounded-lg border px-2.5 py-1 text-[9px] font-black tracking-wider uppercase transition-all ${
+                        className={`-skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[9px] font-black tracking-wider uppercase transition-all ${
                           isActive
                             ? 'bg-foreground text-background border-foreground'
                             : 'border-border bg-background hover:border-foreground/40'
                         }`}
                       >
-                        {preset.label}
+                        <span className="block skew-x-[12deg]">{preset.label}</span>
                       </button>
                     );
                   })}
@@ -408,32 +408,33 @@ export const CatalogueSidebar = ({
                           onClick={() => {
                             handleDraftToggle('brand', b.value);
                           }}
-                          className={`group/brand flex -skew-x-[6deg] items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase transition-all duration-200 active:scale-95 ${
+                          className={`group/brand flex -skew-x-[12deg] items-center gap-1.5 rounded-sm border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase transition-all duration-200 active:scale-95 ${
                             isActive
                               ? 'bg-foreground text-background border-foreground shadow-md'
                               : 'bg-background border-border hover:border-foreground/40'
                           }`}
                         >
-                          {logoUrl && (
-                            <span className="relative flex h-3.5 w-3.5 shrink-0 items-center justify-center">
-                              <Image
-                                src={logoUrl}
-                                alt={b.label}
-                                width={14}
-                                height={14}
-                                className={`h-full w-full object-contain ${
-                                  isActive
-                                    ? 'brightness-0 invert dark:brightness-100 dark:invert-0'
-                                    : 'invert-0 dark:invert'
-                                }`}
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none';
-                                }}
-                              />
-                            </span>
-                          )}
-                          <span>{b.label}</span>
-                          <span className="text-[9px] font-semibold opacity-60">({b.count})</span>
+                          <div className="flex skew-x-[12deg] items-center gap-1.5">
+                            {logoUrl && (
+                              <span className="relative flex h-3.5 w-3.5 shrink-0 items-center justify-center">
+                                <Image
+                                  src={logoUrl}
+                                  alt={b.label}
+                                  width={14}
+                                  height={14}
+                                  className={`h-full w-full object-contain ${
+                                    isActive
+                                      ? 'brightness-0 invert dark:brightness-100 dark:invert-0'
+                                      : 'invert-0 dark:invert'
+                                  }`}
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              </span>
+                            )}
+                            <span>{b.label}</span>
+                          </div>
                         </button>
                       );
                     })}
@@ -487,14 +488,13 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('quality', q.value);
                         }}
-                        className={`flex -skew-x-[6deg] items-center gap-1.5 rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
+                        className={`flex -skew-x-[12deg] items-center gap-1.5 rounded-sm border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
                           isActive
                             ? 'bg-foreground text-background border-foreground shadow-md'
                             : 'bg-background border-border hover:border-foreground/40'
                         }`}
                       >
-                        {q.label}
-                        <span className="text-[9px] opacity-60">({q.count})</span>
+                        <span className="block skew-x-[12deg]">{q.label}</span>
                       </button>
                     );
                   })}
@@ -548,25 +548,26 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('colors', c.value);
                         }}
-                        className={`flex -skew-x-[6deg] items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
+                        className={`flex -skew-x-[12deg] items-center gap-2 rounded-sm border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
                           isActive
                             ? 'bg-foreground text-background border-foreground shadow-md'
                             : 'bg-background border-border hover:border-foreground/40'
                         }`}
                       >
-                        {swatch ? (
-                          <span
-                            className="h-2.5 w-2.5 shrink-0 -skew-x-[6deg] rounded-lg border border-black/20"
-                            style={{
-                              background: swatch.bg,
-                              borderColor: swatch.border || 'rgba(0,0,0,0.15)',
-                            }}
-                          />
-                        ) : (
-                          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-zinc-400" />
-                        )}
-                        <span>{c.label}</span>
-                        <span className="text-[9px] opacity-60">({c.count})</span>
+                        <div className="flex skew-x-[12deg] items-center gap-2">
+                          {swatch ? (
+                            <span
+                              className="h-2.5 w-2.5 shrink-0 -skew-x-[12deg] rounded-sm border border-black/20"
+                              style={{
+                                background: swatch.bg,
+                                borderColor: swatch.border || 'rgba(0,0,0,0.15)',
+                              }}
+                            />
+                          ) : (
+                            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-zinc-400" />
+                          )}
+                          <span>{c.label}</span>
+                        </div>
                       </button>
                     );
                   })}
@@ -619,14 +620,13 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('sizes', s.value);
                         }}
-                        className={`flex -skew-x-[6deg] flex-col items-center justify-center rounded-xl border py-1.5 text-[10px] font-black uppercase transition-all duration-200 active:scale-95 ${
+                        className={`flex -skew-x-[12deg] flex-col items-center justify-center rounded-sm border py-1.5 text-[10px] font-black uppercase transition-all duration-200 active:scale-95 ${
                           isActive
                             ? 'bg-foreground text-background border-foreground shadow-md'
                             : 'bg-background border-border hover:border-foreground/40'
                         }`}
                       >
-                        <span>{s.label}</span>
-                        <span className="text-[8px] opacity-60">({s.count})</span>
+                        <span className="block skew-x-[12deg]">{s.label}</span>
                       </button>
                     );
                   })}
@@ -643,15 +643,15 @@ export const CatalogueSidebar = ({
           <button
             onClick={handleApply}
             disabled={!hasChanges}
-            className={`w-full -skew-x-[6deg] rounded-xl py-3.5 text-center text-xs font-black tracking-widest uppercase transition-all duration-300 ${
+            className={`w-full -skew-x-[12deg] rounded-md py-3.5 text-center text-xs font-black tracking-widest uppercase transition-all duration-300 ${
               hasChanges
                 ? 'bg-foreground text-background hover:bg-foreground/90 cursor-pointer shadow-xl active:scale-95'
                 : 'bg-foreground/10 text-foreground/30 border-border/40 cursor-not-allowed border shadow-none'
             }`}
           >
-            {hasChanges
-              ? `Apply Filters • (${previewMatchingProducts.length} Items)`
-              : 'Filters Applied'}
+            <span className="block skew-x-[12deg]">
+              {hasChanges ? `"Apply Filters"` : 'Filters Applied'}
+            </span>
           </button>
         </div>
       )}
