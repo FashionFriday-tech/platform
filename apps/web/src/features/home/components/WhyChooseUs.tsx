@@ -327,12 +327,12 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
               <div className="mt-12 flex justify-center lg:justify-start">
                 <Link
                   href="/whatsapp-reviews"
-                  className="group inline-flex -skew-x-[12deg] items-center overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-white dark:hover:border-zinc-100"
+                  className="group inline-flex -skew-x-[12deg] items-stretch overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 sm:rounded-2xl dark:border-zinc-300 dark:bg-white dark:hover:border-zinc-100"
                 >
-                  <span className="skew-x-[12deg] px-6 py-3 text-xs font-black tracking-widest text-white uppercase transition-colors sm:text-sm dark:text-black">
+                  <span className="flex items-center skew-x-[12deg] px-6 py-3 text-xs font-black tracking-widest text-white uppercase transition-colors sm:px-7 sm:py-3.5 sm:text-sm dark:text-black">
                     See More Reviews
                   </span>
-                  <span className="flex shrink-0 items-center justify-center bg-white px-4 py-3 text-black transition-all group-hover:bg-zinc-200 sm:px-5 sm:py-3 dark:bg-black dark:text-white dark:group-hover:bg-zinc-800">
+                  <span className="flex shrink-0 self-stretch items-center justify-center rounded-r-xl bg-white px-4 text-black transition-all group-hover:bg-zinc-200 sm:rounded-r-2xl sm:px-5 dark:bg-black dark:text-white dark:group-hover:bg-zinc-800">
                     <span className="skew-x-[12deg]">
                       <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </span>
