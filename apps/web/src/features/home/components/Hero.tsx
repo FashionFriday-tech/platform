@@ -112,7 +112,7 @@ export default function Hero({
   // With compact BrandScroll and comfortable search spacing, cards are enlarged
   // while capping maximum height relative to viewport to prevent Y clipping on any phone.
   const mobileCardStyle = {
-    width: 'min(calc((100dvh - 250px) * 0.6), 77vw, 320px)',
+    width: 'min(calc((100dvh - 220px) * 0.6), 84vw, 355px)',
     aspectRatio: '3 / 5',
     height: 'auto',
   };
@@ -120,16 +120,16 @@ export default function Hero({
   return (
     <section
       ref={containerRef}
-      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center px-0 pb-14 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
+      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col justify-between items-center px-0 pb-16 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
       {/* 1. Mobile Search input: Generous vertical space between marquee and hero card */}
-      <div className="flex w-full shrink-0 items-center justify-center px-4 pt-2.5 pb-4 sm:pt-3 sm:pb-5 lg:hidden">
+      <div className="flex w-full shrink-0 items-center justify-center px-4 pt-2.5 pb-2 sm:pt-3 sm:pb-3 lg:hidden">
         <SearchBox onClick={handleOpenSearch} />
       </div>
 
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
       {cards.length === 1 && (
-        <div className="relative flex w-full shrink-0 items-center justify-center select-none lg:hidden">
+        <div className="relative flex w-full flex-1 shrink-0 items-center justify-center py-2.5 sm:py-3.5 select-none lg:hidden">
           <div
             style={mobileCardStyle}
             className="relative overflow-hidden rounded-[32px] sm:rounded-[38px]"
@@ -143,7 +143,7 @@ export default function Hero({
                 alt={cards[0].title || 'Hero banner'}
                 fill
                 priority
-                sizes="(max-width: 1024px) 75vw, 400px"
+                sizes="(max-width: 1024px) 85vw, 450px"
                 className="object-cover"
               />
               {/* Luxury luminous shine sweep */}
@@ -156,7 +156,7 @@ export default function Hero({
       )}
 
       {cards.length >= 2 && (
-        <div className="relative flex w-full shrink-0 touch-pan-y items-center justify-center overflow-hidden select-none lg:hidden">
+        <div className="relative flex w-full flex-1 shrink-0 touch-pan-y items-center justify-center overflow-hidden py-2.5 sm:py-3.5 select-none lg:hidden">
           <div
             onTouchStart={(e) => {
               onDragStart(e.touches[0].clientX, e.touches[0].clientY);
@@ -174,7 +174,7 @@ export default function Hero({
             }}
             onMouseUp={onDragEnd}
             onMouseLeave={onDragEnd}
-            className="relative flex w-full items-center justify-center"
+            className="relative flex w-full items-center justify-center py-1 sm:py-1.5"
           >
             {/* Dynamic sizing spacer ensuring strict 3:5 aspect ratio without vertical overflow */}
             <div style={mobileCardStyle} className="pointer-events-none mx-auto opacity-0" />
@@ -251,7 +251,7 @@ export default function Hero({
                         alt={card.title || 'Hero banner'}
                         fill
                         priority={isActive}
-                        sizes="(max-width: 1024px) 80vw, 400px"
+                        sizes="(max-width: 1024px) 85vw, 450px"
                         className="object-cover"
                       />
                       {/* Active card luxury shine animation */}
@@ -307,7 +307,7 @@ export default function Hero({
       {children ? (
         <div className="w-full shrink-0 lg:block lg:flex-none">{children}</div>
       ) : (
-        <div className="flex w-full shrink-0 items-center justify-center pt-2 pb-1 lg:mt-6 lg:block lg:flex-none lg:p-0">
+        <div className="flex w-full shrink-0 items-center justify-center pt-1 pb-1 lg:mt-6 lg:block lg:flex-none lg:p-0">
           <BrandScroll initialBrands={initialBrands} />
         </div>
       )}
