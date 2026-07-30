@@ -138,27 +138,29 @@ export class UploadService {
     // Create a unique, clean name based on slug, review counter, or original file name
     let baseName = '';
     const isCampaign = folder?.startsWith('campaigns');
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const timestamp = Date.now();
 
     if (slug) {
-      baseName = slug
+      const cleanSlug = slug
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '');
+      baseName = `${cleanSlug || 'image'}-${timestamp}`;
     } else if (folder === 'whatsapp-reviews') {
-      baseName = `review-${Date.now().toString(36)}`;
+      baseName = `review-${timestamp}`;
     } else {
       // Fallback to original file name without extension
       const originalWithoutExt =
         file.originalname.substring(0, file.originalname.lastIndexOf('.')) || file.originalname;
-      baseName = `${originalWithoutExt
+      const cleanOriginal = originalWithoutExt
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)+/g, '')}-${randomSuffix}`;
+        .replace(/(^-|-$)+/g, '');
+      baseName = `${cleanOriginal || 'image'}-${timestamp}`;
     }
 
     if (!baseName) {
-      baseName = `image-${randomSuffix}`;
+      baseName = `image-${timestamp}`;
     }
 
     if (isCampaign) {
