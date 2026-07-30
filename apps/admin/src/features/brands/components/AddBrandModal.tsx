@@ -86,6 +86,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
         // If we are replacing an existing Cloudflare logo, delete it
         if (
           initialData?.logo &&
+          initialData.logo !== finalLogoUrl &&
           initialData.logo.startsWith('http') &&
           !initialData.logo.includes('localhost')
         ) {
