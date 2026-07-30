@@ -334,7 +334,7 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('priceRange', preset.range, true);
                         }}
-                        className={`rounded-full border px-2.5 py-1 text-[9px] font-black tracking-wider uppercase transition-all ${
+                        className={`-skew-x-[6deg] rounded-lg border px-2.5 py-1 text-[9px] font-black tracking-wider uppercase transition-all ${
                           isActive
                             ? 'bg-foreground text-background border-foreground'
                             : 'border-border bg-background hover:border-foreground/40'
@@ -408,7 +408,7 @@ export const CatalogueSidebar = ({
                           onClick={() => {
                             handleDraftToggle('brand', b.value);
                           }}
-                          className={`group/brand flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase transition-all duration-200 active:scale-95 ${
+                          className={`group/brand flex -skew-x-[6deg] items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-wider uppercase transition-all duration-200 active:scale-95 ${
                             isActive
                               ? 'bg-foreground text-background border-foreground shadow-md'
                               : 'bg-background border-border hover:border-foreground/40'
@@ -487,7 +487,7 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('quality', q.value);
                         }}
-                        className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
+                        className={`flex -skew-x-[6deg] items-center gap-1.5 rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
                           isActive
                             ? 'bg-foreground text-background border-foreground shadow-md'
                             : 'bg-background border-border hover:border-foreground/40'
@@ -548,7 +548,7 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('colors', c.value);
                         }}
-                        className={`flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
+                        className={`flex -skew-x-[6deg] items-center gap-2 rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
                           isActive
                             ? 'bg-foreground text-background border-foreground shadow-md'
                             : 'bg-background border-border hover:border-foreground/40'
@@ -556,7 +556,7 @@ export const CatalogueSidebar = ({
                       >
                         {swatch ? (
                           <span
-                            className="h-2.5 w-2.5 shrink-0 rounded-full border border-black/20"
+                            className="h-2.5 w-2.5 shrink-0 -skew-x-[6deg] rounded-lg border border-black/20"
                             style={{
                               background: swatch.bg,
                               borderColor: swatch.border || 'rgba(0,0,0,0.15)',
@@ -619,7 +619,7 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('sizes', s.value);
                         }}
-                        className={`flex flex-col items-center justify-center rounded-2xl border py-1.5 text-[10px] font-black uppercase transition-all duration-200 active:scale-95 ${
+                        className={`flex -skew-x-[6deg] flex-col items-center justify-center rounded-xl border py-1.5 text-[10px] font-black uppercase transition-all duration-200 active:scale-95 ${
                           isActive
                             ? 'bg-foreground text-background border-foreground shadow-md'
                             : 'bg-background border-border hover:border-foreground/40'
@@ -643,7 +643,7 @@ export const CatalogueSidebar = ({
           <button
             onClick={handleApply}
             disabled={!hasChanges}
-            className={`w-full rounded-2xl py-3.5 text-center text-xs font-black tracking-widest uppercase transition-all duration-300 ${
+            className={`w-full -skew-x-[6deg] rounded-xl py-3.5 text-center text-xs font-black tracking-widest uppercase transition-all duration-300 ${
               hasChanges
                 ? 'bg-foreground text-background hover:bg-foreground/90 cursor-pointer shadow-xl active:scale-95'
                 : 'bg-foreground/10 text-foreground/30 border-border/40 cursor-not-allowed border shadow-none'

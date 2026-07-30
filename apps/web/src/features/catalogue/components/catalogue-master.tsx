@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { type Product } from '@ff/schemas';
 import { ArrowUpDownIcon, PlayIcon, SlidersIcon, StopIcon } from '@ff/ui';
@@ -41,6 +41,17 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
   } = useCatalogue({ initialProducts });
 
   const [activeDrawer, setActiveDrawer] = useState<'filter' | 'sort' | null>(null);
+
+  useEffect(() => {
+    if (activeDrawer) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [activeDrawer]);
 
   const maxPrice = useMemo(() => {
     const prices = initialProducts.map((p: Product) => p.price?.sellingPrice ?? 0);
