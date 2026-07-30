@@ -109,18 +109,16 @@ export default function Hero({
   const visibleOffsets = [-2, -1, 0, 1, 2];
 
   // Dynamic mobile card sizing keeping strict 3:5 aspect ratio:
-  // With compact BrandScroll and comfortable search spacing, cards are enlarged
-  // while capping maximum height relative to viewport to prevent Y clipping on any phone.
   const mobileCardStyle = {
     width: 'min(calc((100dvh - 220px) * 0.6), 84vw, 355px)',
     aspectRatio: '3 / 5',
-    height: 'auto',
+    maxHeight: '100%',
   };
 
   return (
     <section
       ref={containerRef}
-      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col justify-between items-center px-0 pb-16 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
+      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col justify-between items-center px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
       {/* 1. Mobile Search input: Generous vertical space between marquee and hero card */}
       <div className="flex w-full shrink-0 items-center justify-center px-4 pt-2.5 pb-2 sm:pt-3 sm:pb-3 lg:hidden">
