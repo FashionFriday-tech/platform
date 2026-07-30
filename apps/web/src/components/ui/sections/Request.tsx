@@ -184,25 +184,27 @@ export default function SourcingSection() {
                   Product Name
                 </label>
                 <div
-                  className={`bg-foreground/2 flex items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
+                  className={`bg-foreground/2 -skew-x-[12deg] overflow-hidden flex items-center rounded-xl border-2 px-6 py-4 transition-all ${
                     errors.productName
                       ? 'border-red-500'
                       : 'border-foreground-subtle focus-within:border-foreground'
                   }`}
                 >
-                  <PackageIcon size={18} className="text-foreground-muted" />
-                  <input
-                    type="text"
-                    placeholder="e.g. Jordan 1 High"
-                    className="text-foreground placeholder:text-foreground-muted/40 w-full bg-transparent text-sm outline-none"
-                    value={productName}
-                    onChange={(e) => {
-                      setProductName(e.target.value);
-                      if (errors.productName) {
-                        setErrors((prev) => ({ ...prev, productName: '' }));
-                      }
-                    }}
-                  />
+                  <div className="flex w-full skew-x-[12deg] items-center gap-4">
+                    <PackageIcon size={18} className="text-foreground-muted shrink-0" />
+                    <input
+                      type="text"
+                      placeholder="e.g. Jordan 1 High"
+                      className="text-foreground placeholder:text-foreground-muted/40 w-full bg-transparent text-sm outline-none"
+                      value={productName}
+                      onChange={(e) => {
+                        setProductName(e.target.value);
+                        if (errors.productName) {
+                          setErrors((prev) => ({ ...prev, productName: '' }));
+                        }
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="mt-2 h-4 px-6">
                   {errors.productName && (
@@ -220,23 +222,25 @@ export default function SourcingSection() {
                 </label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className={`bg-foreground/2 flex cursor-pointer items-center gap-4 rounded-full border-2 px-6 py-4 transition-all ${
+                  className={`bg-foreground/2 -skew-x-[12deg] overflow-hidden flex cursor-pointer items-center rounded-xl border-2 px-6 py-4 transition-all ${
                     errors.image
                       ? 'border-red-500'
                       : 'border-foreground-subtle hover:border-foreground'
                   }`}
                 >
-                  <ImageIcon size={18} className="text-foreground-muted" />
-                  <span className="text-foreground-muted/60 truncate text-sm">
-                    {selectedFile ? selectedFile.name : 'Upload from Gallery'}
-                  </span>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    className="hidden"
-                  />
+                  <div className="flex w-full skew-x-[12deg] items-center gap-4">
+                    <ImageIcon size={18} className="text-foreground-muted shrink-0" />
+                    <span className="text-foreground-muted/60 truncate text-sm">
+                      {selectedFile ? selectedFile.name : 'Upload from Gallery'}
+                    </span>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                  </div>
                 </div>
                 <div className="mt-2 h-4 px-6">
                   {errors.image && (
@@ -260,13 +264,15 @@ export default function SourcingSection() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-foreground text-background hover:bg-foreground/90 group mt-6 flex w-full items-center justify-center rounded-full px-10 py-4 font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-50"
+              className="bg-foreground text-background hover:bg-foreground/90 group mt-6 -skew-x-[12deg] flex w-full items-center justify-center rounded-xl px-10 py-4 font-black tracking-widest uppercase transition-all active:scale-95 disabled:opacity-50"
             >
-              {!user
-                ? 'Login to File Request'
-                : loading
-                  ? 'Sending the Request...'
-                  : 'I Need This Product'}
+              <div className="skew-x-[12deg]">
+                {!user
+                  ? 'Login to File Request'
+                  : loading
+                    ? 'Sending the Request...'
+                    : 'I Need This Product'}
+              </div>
             </button>
           </form>
         </div>
