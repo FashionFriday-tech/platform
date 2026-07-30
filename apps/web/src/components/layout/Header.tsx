@@ -250,7 +250,7 @@ export function Header() {
       {/* MOBILE UI */}
       <div
         className={`bg-background text-foreground sticky top-0 z-50 flex w-full flex-col lg:hidden ${
-          pathname === '/' ? '' : 'border-border/20 border-b'
+          pathname === '/' || pathname.startsWith('/categor') ? '' : 'border-border/20 border-b'
         }`}
       >
         <div className="relative flex h-14 w-full items-center justify-between px-4">
@@ -335,14 +335,7 @@ export function Header() {
       </div>
 
       <nav
-        className="bg-background/95 border-border/40 fixed inset-x-0 bottom-0 z-50 flex items-center justify-between border-t px-6 pt-3 pb-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))] backdrop-blur-md lg:hidden"
-        style={{
-          transform: 'translate3d(0, 0, 0)',
-          WebkitTransform: 'translate3d(0, 0, 0)',
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
-          willChange: 'transform',
-        }}
+        className="bg-background/95 fixed inset-x-0 bottom-0 z-[100] flex items-center justify-between px-6 pt-3 pb-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))] backdrop-blur-md lg:hidden"
       >
         <Link href="/category/men">
           <CategoryIcon className="text-[25px]" />
