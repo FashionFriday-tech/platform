@@ -75,6 +75,7 @@ export function AddCollectionModal({
         // Cleanup old image if we are replacing it
         if (
           initialData?.image &&
+          initialData.image !== finalImageUrl &&
           initialData.image.startsWith('http') &&
           !initialData.image.includes('localhost')
         ) {
