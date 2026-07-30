@@ -28,7 +28,7 @@ const BrandList = ({
       <div key={`${slug || name}-${idx}`} className="mx-2 sm:mx-3.5 md:mx-6 lg:mx-8">
         <Link
           href={`/brands/${slug || slugify(name)}`}
-          className="relative block h-9 w-9 transition-transform hover:scale-110 active:scale-95 sm:h-11 sm:w-11 md:h-13 md:w-13 lg:h-16 lg:w-24"
+          className="relative block h-12 w-12 transition-transform hover:scale-110 active:scale-95 sm:h-14 sm:w-14 md:h-13 md:w-13 lg:h-16 lg:w-24"
         >
           {logo ? (
             <Image

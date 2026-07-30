@@ -122,14 +122,14 @@ export default function Hero({
       ref={containerRef}
       className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center justify-between px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
-      {/* 1. Mobile Search input: Generous vertical space between marquee and hero card */}
-      <div className="flex w-full shrink-0 items-center justify-center px-4 pt-2.5 pb-2 sm:pt-3 sm:pb-3 lg:hidden">
+      {/* 1. Mobile Search input: Perfectly centered between marquee and hero card */}
+      <div className="flex w-full shrink-0 items-center justify-center px-4 py-3 sm:py-4 lg:hidden">
         <SearchBox onClick={handleOpenSearch} />
       </div>
 
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
       {cards.length === 1 && (
-        <div className="relative flex w-full flex-1 shrink-0 items-center justify-center py-2.5 select-none sm:py-3.5 lg:hidden">
+        <div className="relative flex w-full flex-1 shrink-0 items-center justify-center select-none lg:hidden">
           <div
             style={mobileCardStyle}
             className="relative overflow-hidden rounded-[32px] sm:rounded-[38px]"
@@ -156,7 +156,7 @@ export default function Hero({
       )}
 
       {cards.length >= 2 && (
-        <div className="relative flex w-full flex-1 shrink-0 touch-pan-y items-center justify-center overflow-hidden py-2.5 select-none sm:py-3.5 lg:hidden">
+        <div className="relative flex w-full flex-1 shrink-0 touch-pan-y items-center justify-center overflow-hidden select-none lg:hidden">
           <div
             onTouchStart={(e) => {
               onDragStart(e.touches[0].clientX, e.touches[0].clientY);
@@ -321,7 +321,7 @@ export default function Hero({
           .carousel-track {
             display: flex;
             width: max-content;
-            animation: auto-scroll 45s linear infinite;
+            animation: auto-scroll 65s linear infinite;
           }
           .carousel-track:hover {
             animation-play-state: paused;

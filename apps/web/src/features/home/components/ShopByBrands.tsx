@@ -48,9 +48,10 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
 
   // Constant speed logic: calculate duration from distance (pixels) so speed doesn't increase with more cards
   // Constant speed logic: calculate duration from distance (pixels) so speed doesn't increase with more cards
-  // 25px per second provides a calm, premium, easy-to-read scroll
-  const SPEED_PX_PER_SEC = 25;
-  const MOBILE_CARD_PX = 200 + 24; // 200px width + 24px gap (1.5rem)
+  const MOBILE_SPEED_PX_PER_SEC = 25;
+  const DESKTOP_SPEED_PX_PER_SEC = 15; // Slower on large screens
+
+  const MOBILE_CARD_PX = 240 + 16; // 240px width + 16px gap (1rem)
   const DESKTOP_CARD_PX = 310 + 24; // 310px width + 24px gap (1.5rem)
 
   // Distance of 50% track (one full cycle of the repeated items)
@@ -58,9 +59,9 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   const row2Distance = (row2Items.length / 2) * MOBILE_CARD_PX;
   const desktopDistance = (desktopItems.length / 2) * DESKTOP_CARD_PX;
 
-  const row1Duration = Math.round(row1Distance / SPEED_PX_PER_SEC);
-  const row2Duration = Math.round(row2Distance / SPEED_PX_PER_SEC);
-  const desktopDuration = Math.round(desktopDistance / SPEED_PX_PER_SEC);
+  const row1Duration = Math.round(row1Distance / MOBILE_SPEED_PX_PER_SEC);
+  const row2Duration = Math.round(row2Distance / MOBILE_SPEED_PX_PER_SEC);
+  const desktopDuration = Math.round(desktopDistance / DESKTOP_SPEED_PX_PER_SEC);
 
   if (isLoading && displayList.length === 0) {
     return null;
@@ -146,7 +147,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row1Items.map((brand, idx) => (
                 <div
                   key={`r1-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-[3/4] h-[320px] w-[240px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -164,7 +165,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row2Items.map((brand, idx) => (
                 <div
                   key={`r2-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-[3/4] h-[320px] w-[240px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>

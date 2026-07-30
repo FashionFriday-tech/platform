@@ -202,7 +202,7 @@
 }
 
 @utility animate-marquee {
-  animation: marquee 140s linear infinite;
+  animation: marquee 180s linear infinite;
   will-change: transform;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
@@ -220,7 +220,7 @@
 
 @media (min-width: 1024px) {
   .animate-marquee {
-    animation: marquee 115s linear infinite;
+    animation: marquee 160s linear infinite;
     will-change: transform;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
