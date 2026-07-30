@@ -108,12 +108,11 @@ export default function Hero({
 
   const visibleOffsets = [-2, -1, 0, 1, 2];
 
-  // Dynamic mobile card sizing keeping strict 3:5 aspect ratio and balancing container height:
-  // (100dvh - 138px) is the available space between top header (82px) and bottom nav (56px).
-  // Reserving 160px ensures exact balanced space for Search Box (~70px) and BrandScroll (~90px) on any device.
+  // Dynamic mobile card sizing keeping strict 3:5 aspect ratio:
+  // With compact BrandScroll and comfortable search spacing, cards are enlarged
+  // while capping maximum height relative to viewport to prevent Y clipping on any phone.
   const mobileCardStyle = {
-    width:
-      'min(calc(((100dvh - 138px) - 160px) * 0.6), calc((100dvh - 138px) * 0.44), 82vw, 350px)',
+    width: 'min(calc((100dvh - 250px) * 0.6), 77vw, 320px)',
     aspectRatio: '3 / 5',
     height: 'auto',
   };
@@ -123,8 +122,8 @@ export default function Hero({
       ref={containerRef}
       className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center px-0 pb-14 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
-      {/* 1. Mobile Search input: Exact vertical center between marquee section and hero card */}
-      <div className="flex w-full shrink-0 items-center justify-center px-4 py-2.5 sm:py-3 lg:hidden">
+      {/* 1. Mobile Search input: Generous vertical space between marquee and hero card */}
+      <div className="flex w-full shrink-0 items-center justify-center px-4 pt-2.5 pb-4 sm:pt-3 sm:pb-5 lg:hidden">
         <SearchBox onClick={handleOpenSearch} />
       </div>
 
@@ -133,11 +132,11 @@ export default function Hero({
         <div className="relative flex w-full shrink-0 items-center justify-center select-none lg:hidden">
           <div
             style={mobileCardStyle}
-            className="relative rounded-[38px] shadow-2xl sm:rounded-[44px]"
+            className="relative overflow-hidden rounded-[32px] sm:rounded-[38px]"
           >
             <Link
               href={cards[0].linkUrl || '/products'}
-              className="relative block h-full w-full rounded-[38px] sm:rounded-[44px]"
+              className="relative block h-full w-full rounded-[32px] sm:rounded-[38px]"
             >
               <Image
                 src={cards[0].src}
@@ -148,7 +147,7 @@ export default function Hero({
                 className="object-cover"
               />
               {/* Luxury luminous shine sweep */}
-              <div className="pointer-events-none absolute inset-0 z-10 rounded-[38px] sm:rounded-[44px]">
+              <div className="pointer-events-none absolute inset-0 z-10 rounded-[32px] sm:rounded-[38px]">
                 <div className="hero-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
               </div>
             </Link>
@@ -231,7 +230,7 @@ export default function Hero({
                       zIndex: isActive ? 20 : isPeek ? 10 : 0,
                       transformStyle: 'preserve-3d',
                     }}
-                    className={`pointer-events-auto absolute top-1/2 left-1/2 overflow-hidden rounded-[38px] shadow-2xl transition-shadow sm:rounded-[44px] ${
+                    className={`pointer-events-auto absolute top-1/2 left-1/2 overflow-hidden rounded-[32px] sm:rounded-[38px] ${
                       isPeek ? 'cursor-pointer hover:opacity-100' : ''
                     }`}
                   >
@@ -243,7 +242,7 @@ export default function Hero({
                           e.preventDefault();
                         }
                       }}
-                      className={`relative block h-full w-full overflow-hidden rounded-[38px] sm:rounded-[44px] ${
+                      className={`relative block h-full w-full overflow-hidden rounded-[32px] sm:rounded-[38px] ${
                         !isActive ? 'pointer-events-none' : ''
                       }`}
                     >
@@ -259,7 +258,7 @@ export default function Hero({
                       {isActive && (
                         <div
                           key={`shine-${currentIndex}`}
-                          className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-[38px] sm:rounded-[44px]"
+                          className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-[32px] sm:rounded-[38px]"
                         >
                           <div className="hero-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
                         </div>
@@ -275,11 +274,12 @@ export default function Hero({
 
       {/* 3. Large screen scrolling marquee carousel (hidden on small devices, flex on lg) */}
       {cards.length > 0 && (
-        <div
-          className="carousel-track hidden h-[75vh] items-stretch gap-6 px-2 lg:flex"
-          style={{ animationPlayState: isInView ? 'running' : 'paused' }}
-        >
-          {repeatedCards.map((card, idx) => (
+        <div className="hidden w-full overflow-hidden lg:block">
+          <div
+            className="carousel-track flex h-[75vh] items-stretch gap-6 px-2"
+            style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+          >
+            {repeatedCards.map((card, idx) => (
             <Link
               key={`${card.id}-${idx}`}
               href={card.linkUrl || '/products'}
@@ -299,14 +299,15 @@ export default function Hero({
               </div>
             </Link>
           ))}
+          </div>
         </div>
       )}
 
-      {/* 3. Brand Logo Marquee: balanced bottom zone with extra clearance from hero cards */}
+      {/* 3. Brand Logo Marquee: compact bottom zone with reduced spacing */}
       {children ? (
         <div className="w-full shrink-0 lg:block lg:flex-none">{children}</div>
       ) : (
-        <div className="flex w-full flex-1 items-center justify-center pt-2 sm:pt-3 lg:mt-6 lg:block lg:flex-none lg:pt-0">
+        <div className="flex w-full shrink-0 items-center justify-center pt-2 pb-1 lg:mt-6 lg:block lg:flex-none lg:p-0">
           <BrandScroll initialBrands={initialBrands} />
         </div>
       )}
