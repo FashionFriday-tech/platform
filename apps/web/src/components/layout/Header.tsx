@@ -334,7 +334,16 @@ export function Header() {
         )}
       </div>
 
-      <nav className="bg-background fixed right-0 bottom-0 left-0 z-50 flex items-center justify-between px-6 py-3 lg:hidden">
+      <nav
+        className="bg-background/95 border-border/40 fixed inset-x-0 bottom-0 z-50 flex items-center justify-between border-t px-6 pt-3 pb-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))] backdrop-blur-md lg:hidden"
+        style={{
+          transform: 'translate3d(0, 0, 0)',
+          WebkitTransform: 'translate3d(0, 0, 0)',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          willChange: 'transform',
+        }}
+      >
         <Link href="/category/men">
           <CategoryIcon className="text-[25px]" />
         </Link>
