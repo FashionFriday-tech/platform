@@ -76,7 +76,8 @@ export const CatalogueSidebar = ({
   // Extract dynamic facets & counts from available products
   const facets = useMemo(() => {
     return extractFacets(products);
-  }, [products]);const toggleSection = (id: string) => {
+  }, [products]);
+  const toggleSection = (id: string) => {
     setOpenSections((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -651,5 +652,3 @@ export const CatalogueSidebar = ({
     </aside>
   );
 };
-
-

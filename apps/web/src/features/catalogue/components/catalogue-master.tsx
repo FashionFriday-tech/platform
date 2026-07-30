@@ -288,4 +288,3 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
     </div>
   );
 }
-
