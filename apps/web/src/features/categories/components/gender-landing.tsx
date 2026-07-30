@@ -127,8 +127,8 @@ export function GenderLanding({
   return (
     <div className="bg-background min-h-screen overflow-x-hidden select-none lg:mt-20 lg:h-[calc(100vh-5rem)] lg:min-h-0 lg:overflow-hidden">
       {/* --- MOBILE HEADER --- */}
-      <header className="bg-background/95 border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md lg:hidden">
-        <div className="mx-auto flex h-14 max-w-md items-center justify-around gap-2.5 px-4">
+      <header className="bg-background/95 fixed top-14 right-0 left-0 z-50 w-full backdrop-blur-md lg:hidden">
+        <div className="mx-auto flex max-w-md items-center justify-around gap-2.5 px-4 pt-0 pb-3">
           {GENDERS.map((gender, idx) => (
             <button
               key={gender}
@@ -173,7 +173,7 @@ export function GenderLanding({
               onWheel={handleLeftWheel}
               className="flex w-full items-center justify-center lg:h-full lg:w-1/2 lg:shrink-0 lg:overflow-hidden"
             >
-              <div className="border-border/50 group relative aspect-square w-full -skew-x-[6deg] overflow-hidden rounded-3xl border shadow-2xl lg:h-auto lg:w-full lg:max-w-[min(480px,calc(100vh-8.5rem))] lg:rounded-[2.5rem] xl:max-w-[min(540px,calc(100vh-8.5rem))]">
+              <div className="border-border/50 group relative aspect-square w-full overflow-hidden rounded-3xl border shadow-2xl lg:h-auto lg:w-full lg:max-w-[min(480px,calc(100vh-8.5rem))] lg:rounded-[2.5rem] xl:max-w-[min(540px,calc(100vh-8.5rem))]">
                 <motion.div
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
@@ -188,7 +188,7 @@ export function GenderLanding({
                   <div className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
                 </div>
 
-                <div className="absolute bottom-8 left-8 z-20 skew-x-[6deg] lg:bottom-12 lg:left-12 xl:bottom-14 xl:left-14">
+                <div className="absolute bottom-8 left-8 z-20 lg:bottom-12 lg:left-12 xl:bottom-14 xl:left-14">
                   <p className="mb-2 text-[8px] font-black tracking-[0.4em] text-white/50 uppercase lg:text-[10px]">
                     Exclusive Collection
                   </p>
@@ -216,10 +216,7 @@ export function GenderLanding({
                     <div className="border-border/50 hover:border-border/80 group-hover:bg-background-muted/60 bg-background-muted/30 relative -skew-x-[12deg] overflow-hidden rounded-2xl border p-2 shadow-xs transition-all duration-300 group-active:scale-[0.98] lg:p-3">
                       {/* Luminous Shining Light Sweep across crossed box */}
                       <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
-                        <div
-                          className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]"
-                          style={{ animationDelay: `${(idx % 4) * 1.2}s` }}
-                        />
+                        <div className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
                       </div>
 
                       <div className="flex skew-x-[12deg] items-center gap-4 lg:gap-5">

@@ -87,8 +87,8 @@ export function CategoriesLanding({
   return (
     <div className="bg-background h-screen pb-14 select-none">
       {/* --- HEADER: Fixed width constraints --- */}
-      <header className="bg-background/95 border-border fixed top-14 right-0 left-0 z-50 w-full border-b backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-md items-center justify-around gap-2.5 px-4">
+      <header className="bg-background/95 fixed top-14 right-0 left-0 z-50 w-full backdrop-blur-md">
+        <div className="mx-auto flex max-w-md items-center justify-around gap-2.5 px-4 pt-0 pb-3">
           {GENDERS.map((gender, idx) => (
             <button
               key={gender}
@@ -129,7 +129,7 @@ export function CategoriesLanding({
             className="mx-auto max-w-2xl px-4 pt-6"
           >
             {/* 1. HERO SECTION */}
-            <div className="border-border/50 bg-background-muted relative mb-8 aspect-square w-full -skew-x-[6deg] overflow-hidden rounded-3xl border shadow-2xl">
+            <div className="border-border/50 bg-background-muted relative mb-8 aspect-square w-full overflow-hidden rounded-3xl border shadow-2xl">
               <motion.div
                 initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
@@ -146,7 +146,7 @@ export function CategoriesLanding({
                 <div className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
               </div>
 
-              <div className="absolute bottom-8 left-8 z-20 skew-x-[6deg]">
+              <div className="absolute bottom-8 left-8 z-20">
                 <p className="mb-1 text-[8px] font-black tracking-[0.3em] text-white/50 uppercase">
                   New Season
                 </p>
@@ -167,10 +167,7 @@ export function CategoriesLanding({
                   <div className="border-border/50 hover:border-border/80 group-hover:bg-background-muted/60 bg-background-muted/30 relative -skew-x-[12deg] overflow-hidden rounded-2xl border p-2 shadow-xs transition-all duration-300 group-active:scale-[0.98] lg:p-3">
                     {/* Luminous Shining Light Sweep across crossed box */}
                     <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
-                      <div
-                        className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]"
-                        style={{ animationDelay: `${(idx % 4) * 1.2}s` }}
-                      />
+                      <div className="category-card-shine absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
                     </div>
 
                     <div className="flex skew-x-[12deg] items-center gap-4">
