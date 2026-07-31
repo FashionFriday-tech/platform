@@ -30,10 +30,10 @@ export function OrderReviewStep() {
   } = useCheckoutReview();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-28 pb-20 transition-colors duration-300 lg:pt-36 lg:pb-8">
+    <div className="bg-background text-foreground min-h-screen pt-20 pb-20 transition-colors duration-300 lg:pt-24 lg:pb-8">
       <CheckoutProgress currentStage={2} />
 
-      <main className="mx-auto max-w-7xl px-4 pt-4 md:px-8 md:pt-6">
+      <main className="mx-auto max-w-7xl px-4 pt-1 md:px-8 md:pt-2">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
           <div className="flex-1 space-y-8">
             <section>
