@@ -94,23 +94,23 @@ export function CartItemsCard({ item }: BagItemCardProps) {
               <button
                 type="button"
                 onClick={handleMoveToWishlist}
-                className="bg-foreground text-background w-full cursor-pointer rounded-full py-3 text-xs font-bold uppercase transition-transform active:scale-95"
+                className="bg-foreground text-background w-full -skew-x-[12deg] cursor-pointer rounded-xl py-2.5 text-xs font-black uppercase transition-transform active:scale-95"
               >
-                Move to Wishlist
+                <span className="skew-x-[12deg] block">Move to Wishlist</span>
               </button>
               <button
                 type="button"
                 onClick={handleRemove}
-                className="hover:bg-destructive hover:text-destructive-foreground w-full cursor-pointer rounded-full bg-red-600 py-3 text-xs font-bold text-white uppercase transition-all"
+                className="hover:bg-destructive hover:text-destructive-foreground w-full -skew-x-[12deg] cursor-pointer rounded-xl bg-red-600 py-2.5 text-xs font-black text-white uppercase transition-all active:scale-95"
               >
-                Remove
+                <span className="skew-x-[12deg] block">Remove</span>
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setIsConfirming(false);
                 }}
-                className="text-foreground-muted hover:text-foreground text-[10px] font-bold uppercase transition-colors"
+                className="text-foreground-muted hover:text-foreground text-[10px] font-black uppercase transition-colors"
               >
                 Cancel
               </button>
@@ -153,31 +153,37 @@ export function CartItemsCard({ item }: BagItemCardProps) {
         {/* Bottom Actions */}
         <div className="mt-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            {/* Remove Trigger */}
+            {/* Remove Trigger - Crossed Style */}
             <button
               type="button"
               onClick={() => {
                 setIsConfirming((prev) => !prev);
               }}
-              className="border-border text-foreground-subtle hover:text-destructive hover:border-destructive group/del flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border transition-all duration-300"
+              className="border-border text-foreground-subtle hover:text-destructive hover:border-destructive group/del flex h-10 w-10 shrink-0 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border transition-all duration-300 active:scale-90"
               aria-label="Remove item"
             >
-              <CloseIcon size={18} className="transition-transform group-hover/del:scale-110" />
+              <span className="skew-x-[12deg]">
+                <CloseIcon size={16} className="transition-transform group-hover/del:scale-110" />
+              </span>
             </button>
 
-            {/* Quantity Toggle */}
-            <div className="border-border bg-background-muted/30 flex h-11 items-center rounded-full border px-2">
+            {/* Quantity Toggle - Crossed Style */}
+            <div className="border-border bg-background-muted/30 flex h-10 -skew-x-[12deg] items-center overflow-hidden rounded-xl border px-1">
               <button
                 type="button"
                 onClick={handleDecrement}
                 disabled={!inStock || item.quantity <= 1}
-                className="text-foreground-muted hover:text-foreground cursor-pointer p-2 transition-all disabled:opacity-20"
+                className="text-foreground-muted hover:text-foreground cursor-pointer p-2 transition-all active:scale-90 disabled:opacity-20"
                 aria-label="Decrease quantity"
               >
-                <MinusIcon size={14} />
+                <span className="skew-x-[12deg] block">
+                  <MinusIcon size={12} />
+                </span>
               </button>
-              <span className="min-w-16 px-4 text-center text-sm font-bold tabular-nums">
-                {item.quantity}
+              <span className="min-w-12 px-2 text-center text-xs font-black tabular-nums">
+                <span className="skew-x-[12deg] block">
+                  {item.quantity}
+                </span>
               </span>
               <button
                 type="button"
@@ -185,10 +191,12 @@ export function CartItemsCard({ item }: BagItemCardProps) {
                 disabled={
                   !inStock || Boolean(product?.totalStock && item.quantity >= product.totalStock)
                 }
-                className="text-foreground-muted hover:text-foreground cursor-pointer p-2 transition-all disabled:opacity-20"
+                className="text-foreground-muted hover:text-foreground cursor-pointer p-2 transition-all active:scale-90 disabled:opacity-20"
                 aria-label="Increase quantity"
               >
-                <PlusIcon size={14} />
+                <span className="skew-x-[12deg] block">
+                  <PlusIcon size={12} />
+                </span>
               </button>
             </div>
           </div>
