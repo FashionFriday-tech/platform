@@ -48,7 +48,7 @@ export function usePushNotifications() {
 
   const subscribe = async () => {
     if (!isSupported) {
-      toast.error('Push notifications are not supported on this browser/device.');
+      toast.error('Notifications are not supported on this browser/device.');
       return null;
     }
 
@@ -87,11 +87,11 @@ export function usePushNotifications() {
         console.warn('[Push] API registration sync note:', err);
       });
 
-      toast.success('PWA push alerts enabled! You will receive live drop & order dispatches.');
+      toast.success('Notifications enabled! You will receive live updates on drops and orders.');
       return sub;
     } catch (err: unknown) {
       console.error('[Push] Failed to subscribe:', err);
-      toast.error('Unable to enable push notifications on this device.');
+      toast.error('Unable to enable notifications on this device.');
       return null;
     } finally {
       setIsLoading(false);
@@ -118,7 +118,7 @@ export function usePushNotifications() {
         console.warn('[Push] API unregistration note:', err);
       });
 
-      toast.success('Push notifications paused.');
+      toast.success('Notifications paused.');
     } catch (err: unknown) {
       console.error('[Push] Failed to unsubscribe:', err);
       toast.error('Failed to unsubscribe.');

@@ -135,7 +135,7 @@ export function SettingsPage() {
           <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-4xl border shadow-sm">
             <SettingToggle
               icon={<BellIcon size={20} />}
-              label="PWA Push Alerts"
+              label="Notifications"
               active={isSubscribed}
               onToggle={() => {
                 if (isPushLoading) {

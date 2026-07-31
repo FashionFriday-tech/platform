@@ -124,10 +124,10 @@ export function NotificationsPage() {
               </div>
               <div className="min-w-0">
                 <h4 className="text-foreground truncate text-[11px] font-bold">
-                  Enable PWA Push Alerts
+                  Turn On Notifications
                 </h4>
                 <p className="text-foreground/50 truncate text-[10px]">
-                  Live order tracking & exclusive drop links
+                  Live order tracking & exclusive drops
                 </p>
               </div>
             </div>
