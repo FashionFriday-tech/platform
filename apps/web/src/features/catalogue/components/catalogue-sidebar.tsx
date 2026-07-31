@@ -199,7 +199,7 @@ export const CatalogueSidebar = ({
           </div>
           <button
             onClick={handleReset}
-            className="border-border hover:border-foreground/40 text-foreground-subtle hover:text-red-500 -skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[9px] font-black tracking-widest uppercase transition-colors"
+            className="border-border hover:border-foreground/40 text-foreground-subtle -skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[9px] font-black tracking-widest uppercase transition-colors hover:text-red-500"
           >
             <span className="block skew-x-[12deg]">Reset All</span>
           </button>
@@ -381,7 +381,7 @@ export const CatalogueSidebar = ({
                   className="overflow-hidden pt-2.5 pb-2"
                 >
                   {facets.brands.length > 5 && (
-                    <div className="-skew-x-[12deg] mb-2.5 overflow-hidden rounded-sm border border-border bg-background-muted focus-within:border-foreground">
+                    <div className="border-border bg-background-muted focus-within:border-foreground mb-2.5 -skew-x-[12deg] overflow-hidden rounded-sm border">
                       <input
                         type="text"
                         placeholder="SEARCH BRANDS..."
@@ -389,7 +389,7 @@ export const CatalogueSidebar = ({
                         onChange={(e) => {
                           setBrandSearch(e.target.value);
                         }}
-                        className="w-full skew-x-[12deg] bg-transparent px-3 py-1.5 text-xs outline-none placeholder:text-foreground-subtle/50 placeholder:uppercase"
+                        className="placeholder:text-foreground-subtle/50 w-full skew-x-[12deg] bg-transparent px-3 py-1.5 text-xs outline-none placeholder:uppercase"
                       />
                     </div>
                   )}

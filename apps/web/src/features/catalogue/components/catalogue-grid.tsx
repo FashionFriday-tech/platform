@@ -73,7 +73,7 @@ export const CatalogueGrid = ({
               {onClearFilters && (
                 <button
                   onClick={onClearFilters}
-                  className="border-border hover:border-foreground/40 text-foreground-subtle hover:text-red-500 -skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[10px] font-black uppercase transition-colors"
+                  className="border-border hover:border-foreground/40 text-foreground-subtle -skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[10px] font-black uppercase transition-colors hover:text-red-500"
                 >
                   <span className="block skew-x-[12deg]">Clear All</span>
                 </button>

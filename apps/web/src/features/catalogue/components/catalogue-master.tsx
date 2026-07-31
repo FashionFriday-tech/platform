@@ -195,7 +195,7 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                 className="flex w-full shrink-0 cursor-pointer justify-center py-3.5 transition-opacity hover:opacity-70 active:opacity-50"
                 aria-label="Close filter drawer"
               >
-                <div className="bg-border -skew-x-[12deg] h-1.5 w-12 rounded-xs opacity-60" />
+                <div className="bg-border h-1.5 w-12 -skew-x-[12deg] rounded-xs opacity-60" />
               </div>
 
               {/* Drawer Header */}
@@ -253,7 +253,9 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                           <div className="flex w-full skew-x-[12deg] items-center justify-between">
                             <span
                               className={`text-[11px] tracking-wider uppercase ${
-                                isSelected ? 'text-background font-black' : 'text-foreground-subtle font-semibold'
+                                isSelected
+                                  ? 'text-background font-black'
+                                  : 'text-foreground-subtle font-semibold'
                               }`}
                             >
                               {opt.label}
