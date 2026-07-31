@@ -147,7 +147,7 @@ export function OrderSummary() {
       </div>
 
       {/* Promo Code Input - Smooth Curved Style */}
-      <div className="border-border bg-foreground/5 relative mt-8 mb-8 -skew-x-[8deg] overflow-hidden rounded-xl border shadow-xs">
+      <div className="border-border bg-transparent relative mt-8 mb-8 -skew-x-[8deg] overflow-hidden rounded-xl border shadow-xs">
         <div className="text-foreground-subtle pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 skew-x-[8deg]">
           <TagIcon size={16} />
         </div>
@@ -226,23 +226,23 @@ export function OrderSummary() {
               onClick={() => {
                 setIsExpanded((prev) => !prev);
               }}
-              className="relative -mb-px flex h-10 w-64 cursor-pointer items-center justify-center transition-all active:scale-98 sm:w-72"
+              className="relative -mb-px flex h-[34px] w-64 cursor-pointer items-center justify-center transition-all active:scale-98 sm:w-72"
               aria-label="Toggle Summary"
             >
-              {/* Background SVG Tab: Reduced subtle smooth curve */}
+              {/* Background SVG Tab: Smooth curved edges with compact height */}
               <svg
-                viewBox="0 0 320 40"
+                viewBox="0 0 320 34"
                 preserveAspectRatio="none"
                 className="pointer-events-none absolute inset-0 h-full w-full"
               >
                 {/* Theme-dependent Solid Fill */}
                 <path
-                  d="M 0 40 C 14 40 20 0 32 0 L 288 0 C 300 0 306 40 320 40 Z"
+                  d="M 0 34 C 18 34 28 0 46 0 L 274 0 C 292 0 302 34 320 34 Z"
                   className="fill-background"
                 />
                 {/* Smooth Border Stroke (Top and curved sides) */}
                 <path
-                  d="M 0 40 C 14 40 20 0 32 0 L 288 0 C 300 0 306 40 320 40"
+                  d="M 0 34 C 18 34 28 0 46 0 L 274 0 C 292 0 302 34 320 34"
                   fill="none"
                   className="stroke-border"
                   strokeWidth="1.5"
@@ -369,7 +369,7 @@ export function OrderSummary() {
                       </div>
 
                       {/* Promo Code Input - Smooth Curved Style */}
-                      <div className="border-border bg-foreground/5 relative mt-6 mb-6 -skew-x-[8deg] overflow-hidden rounded-xl border shadow-xs">
+                      <div className="border-border bg-transparent relative mt-6 mb-6 -skew-x-[8deg] overflow-hidden rounded-xl border shadow-xs">
                         <div className="text-foreground-subtle pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 skew-x-[8deg]">
                           <TagIcon size={16} />
                         </div>
@@ -422,10 +422,10 @@ export function OrderSummary() {
                 </span>
               </div>
 
-              {/* Checkout Button: Taller (h-[52px]), reduced width, theme-dependent colors, no shadow */}
+              {/* Checkout Button: Reduced height (h-[46px]), balanced width, theme-dependent colors, no shadow */}
               <Link
                 href="/checkout/review"
-                className="flex h-[52px] -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-foreground bg-foreground px-6 text-background transition-transform outline-none active:scale-95 sm:px-8"
+                className="flex h-[46px] -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-foreground bg-foreground px-6 text-background transition-transform outline-none active:scale-95 sm:px-8"
               >
                 <span className="flex skew-x-[12deg] items-center gap-2 text-xs font-black tracking-widest whitespace-nowrap uppercase">
                   <ShieldCheckIcon size={15} className="text-emerald-500 dark:text-emerald-400" />
