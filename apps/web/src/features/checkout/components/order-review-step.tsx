@@ -45,7 +45,7 @@ export function OrderReviewStep() {
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
           <div className="flex-1 space-y-8">
             <section>
-              <div className="mb-4 flex items-center justify-between">
+              <div className="my-4 flex items-center justify-between">
                 <h2 className="text-foreground-subtle text-[10px] font-black tracking-[0.2em] uppercase">
                   Shipping Destination
                 </h2>
