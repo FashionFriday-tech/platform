@@ -24,14 +24,14 @@ export const FormInput = ({
   badge,
 }: FormInputProps) => (
   <div className="w-full space-y-1">
-    <label className="text-foreground-subtle ml-1 flex justify-between text-[9px] font-black tracking-widest uppercase">
-      <span>{label}</span>
+    <div className="text-foreground-subtle ml-1 flex h-4 items-center justify-between text-[9px] font-black tracking-widest uppercase">
+      <span className="truncate">{label}</span>
       {badge ? (
         badge
       ) : required ? (
         <span className="text-brand text-[8px] opacity-60">Required</span>
       ) : null}
-    </label>
+    </div>
     <div className="relative">
       {prefix && (
         <span className="text-foreground-subtle absolute top-1/2 left-3 -translate-y-1/2 text-xs font-bold">
@@ -42,8 +42,8 @@ export const FormInput = ({
         ref={inputRef}
         readOnly={readOnly}
         tabIndex={readOnly ? -1 : undefined}
-        className={`bg-background border-border focus:border-brand placeholder:text-foreground-subtle/50 w-full rounded-xl border py-2.5 text-xs font-bold transition-all outline-none ${
-          prefix ? 'pl-10' : 'px-3'
+        className={`bg-background border-border focus:border-brand placeholder:text-foreground-subtle/50 h-10 w-full rounded-xl border text-xs font-bold transition-all outline-none ${
+          prefix ? 'pr-3 pl-10' : 'px-3'
         } ${required && !value ? 'border-dashed' : ''} ${
           readOnly ? 'focus:border-border cursor-default select-none' : ''
         }`}

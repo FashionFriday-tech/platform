@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { CloseIcon, ShieldCheckIcon } from '@ff/ui';
+import { CloseIcon, LoaderIcon, ShieldCheckIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { cleanPhoneDigits, formatPhone334 } from '@/features/addresses';
@@ -45,6 +45,47 @@ export function AddressFormDrawer({
       altPhone: '',
     };
   });
+
+  const [detectedRegion, setDetectedRegion] = useState('');
+  const [isLoadingRegion, setIsLoadingRegion] = useState(false);
+
+  useEffect(() => {
+    if (formData.pincode.length === 6) {
+      setIsLoadingRegion(true);
+      fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
+        .then((res) => res.json())
+        .then((data: unknown) => {
+          interface PincodeItem {
+            Status?: string;
+            PostOffice?: {
+              District?: string;
+              State?: string;
+              Block?: string;
+            }[];
+          }
+          const items = data as PincodeItem[];
+          if (items?.[0]?.Status === 'Success' && items[0].PostOffice?.[0]) {
+            const po = items[0].PostOffice[0];
+            const region = `${po.District ?? ''}, ${po.State ?? ''}`.toUpperCase();
+            setDetectedRegion(region);
+            setFormData((prev) => ({
+              ...prev,
+              city: prev.city || po.District || po.Block || '',
+            }));
+          } else {
+            setDetectedRegion('UNKNOWN PINCODE');
+          }
+        })
+        .catch(() => {
+          setDetectedRegion('KERALA, MALAPPURAM');
+        })
+        .finally(() => {
+          setIsLoadingRegion(false);
+        });
+    } else {
+      setDetectedRegion('');
+    }
+  }, [formData.pincode]);
 
   const validate = () => {
     if (formData.pincode.length !== 6) {
@@ -102,19 +143,28 @@ export function AddressFormDrawer({
                   label="Pincode"
                   value={formData.pincode}
                   onChange={(v: string) => {
-                    setFormData({ ...formData, pincode: v.replace(/\D/g, '').slice(0, 6) });
+                    const digits = v.replace(/\D/g, '').slice(0, 6);
+                    setFormData({ ...formData, pincode: digits });
                   }}
                   placeholder="6 Digits"
                   type="text"
+                  required
                 />
-                <div className="space-y-2">
-                  <label className="text-foreground-muted px-4 text-[9px] font-black tracking-[0.2em] uppercase">
-                    Detected Region
-                  </label>
-                  <div className="bg-background-muted/20 border-border text-foreground-muted flex h-14.5 w-full items-center rounded-2xl border-2 border-dotted p-4 text-[10px] font-black tracking-widest uppercase">
-                    {formData.pincode.length === 6 ? 'KERALA, MALAPPURAM' : 'Waiting...'}
-                  </div>
-                </div>
+                <InputBox
+                  label="Detected Region"
+                  value={detectedRegion}
+                  readOnly
+                  placeholder={isLoadingRegion ? 'Detecting...' : 'Waiting for 6 digits...'}
+                  badge={
+                    isLoadingRegion ? (
+                      <LoaderIcon size={11} className="text-brand animate-spin" />
+                    ) : detectedRegion && detectedRegion !== 'UNKNOWN PINCODE' ? (
+                      <span className="text-[8px] font-bold tracking-wider text-emerald-500 uppercase">
+                        Auto-Detected
+                      </span>
+                    ) : null
+                  }
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
@@ -125,6 +175,7 @@ export function AddressFormDrawer({
                     setFormData({ ...formData, city: v });
                   }}
                   placeholder="e.g. Puthanathani"
+                  required
                 />
                 <InputBox
                   label="Area / Locality"
@@ -133,12 +184,13 @@ export function AddressFormDrawer({
                     setFormData({ ...formData, area: v });
                   }}
                   placeholder="Street/Colony"
+                  required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <InputBox
-                  label="Building / House No (Optional)"
+                  label="Building / House No"
                   value={formData.building}
                   onChange={(v: string) => {
                     setFormData({ ...formData, building: v });
@@ -146,12 +198,13 @@ export function AddressFormDrawer({
                   placeholder="No. / Name"
                 />
                 <InputBox
-                  label="Landmark (Optional)"
+                  label="Landmark"
                   value={formData.landmark}
                   onChange={(v: string) => {
                     setFormData({ ...formData, landmark: v });
                   }}
                   placeholder="Famous place nearby"
+                  optional
                 />
               </div>
 
@@ -162,24 +215,31 @@ export function AddressFormDrawer({
                   setFormData({ ...formData, recipientName: v });
                 }}
                 placeholder="Full name"
+                required
               />
 
               <div className="grid grid-cols-2 gap-2 pb-10">
                 <InputBox
                   label="Primary Phone"
+                  prefix="+91"
                   value={formData.primaryPhone}
                   onChange={(v: string) => {
-                    setFormData({ ...formData, primaryPhone: formatPhone334(v) });
+                    const digits = v.replace(/\D/g, '').slice(0, 10);
+                    setFormData({ ...formData, primaryPhone: formatPhone334(digits) });
                   }}
                   placeholder="000 000 0000"
+                  required
                 />
                 <InputBox
                   label="Alt Phone"
+                  prefix="+91"
                   value={formData.altPhone}
                   onChange={(v: string) => {
-                    setFormData({ ...formData, altPhone: formatPhone334(v) });
+                    const digits = v.replace(/\D/g, '').slice(0, 10);
+                    setFormData({ ...formData, altPhone: formatPhone334(digits) });
                   }}
-                  placeholder="Optional"
+                  placeholder="000 000 0000"
+                  optional
                 />
               </div>
             </div>
@@ -210,27 +270,59 @@ function InputBox({
   onChange,
   placeholder,
   type = 'text',
+  optional = false,
+  required = false,
+  readOnly = false,
+  badge,
+  prefix,
 }: {
   label: string;
   value: string;
-  onChange: (v: string) => void;
-  placeholder: string;
+  onChange?: (v: string) => void;
+  placeholder?: string;
   type?: string;
+  optional?: boolean;
+  required?: boolean;
+  readOnly?: boolean;
+  badge?: React.ReactNode;
+  prefix?: string;
 }) {
   return (
-    <div className="space-y-2">
-      <label className="text-foreground-muted px-4 text-[8px] font-black tracking-[0.2em] uppercase">
-        {label}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => {
-          onChange(e.target.value);
-        }}
-        placeholder={placeholder}
-        className="border-border focus:border-foreground w-full rounded-2xl border-2 border-dotted bg-transparent p-4 text-sm font-bold transition-all outline-none placeholder:opacity-20"
-      />
+    <div className="flex flex-col gap-1.5">
+      <div className="flex h-4 items-center justify-between px-3">
+        <label className="text-foreground-muted truncate text-[8.5px] font-black tracking-[0.18em] uppercase">
+          {label}
+        </label>
+        {badge ? (
+          badge
+        ) : optional ? (
+          <span className="text-foreground-muted/60 text-[8px] font-bold tracking-widest uppercase">
+            Optional
+          </span>
+        ) : required ? (
+          <span className="text-brand/80 text-[8px] font-bold tracking-widest uppercase">
+            Required
+          </span>
+        ) : null}
+      </div>
+      <div className="relative w-full">
+        {prefix && (
+          <span className="text-foreground-muted absolute top-1/2 left-4 -translate-y-1/2 text-xs font-bold">
+            {prefix}
+          </span>
+        )}
+        <input
+          type={type}
+          value={value}
+          readOnly={readOnly}
+          tabIndex={readOnly ? -1 : undefined}
+          onChange={(e) => onChange?.(e.target.value)}
+          placeholder={placeholder}
+          className={`border-border focus:border-foreground h-14 w-full rounded-2xl border-2 border-dotted bg-transparent text-sm font-bold transition-all outline-none placeholder:opacity-20 ${
+            prefix ? 'pr-4 pl-13' : 'px-4'
+          } ${readOnly ? 'focus:border-border cursor-default select-none' : ''}`}
+        />
+      </div>
     </div>
   );
 }

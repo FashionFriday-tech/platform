@@ -107,21 +107,24 @@ export const AddressFormModal = ({
                 }}
               />
             </div>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <FormInput
-                label="Landmark (Optional)"
-                placeholder="Famous place nearby"
-                value={formData.landmark ?? ''}
-                onChange={(v: string) => {
-                  setFormData({ ...formData, landmark: v });
-                }}
-              />
-              <FormInput
-                label="Building / House No (Optional)"
+                label="Building / House No"
                 placeholder="No. / Name"
                 value={formData.addressLine1 ?? ''}
                 onChange={(v: string) => {
                   setFormData({ ...formData, addressLine1: v });
+                }}
+              />
+              <FormInput
+                label="Landmark"
+                placeholder="Famous place nearby"
+                badge={
+                  <span className="text-foreground-subtle text-[8px] opacity-40">Optional</span>
+                }
+                value={formData.landmark ?? ''}
+                onChange={(v: string) => {
+                  setFormData({ ...formData, landmark: v });
                 }}
               />
             </div>
@@ -155,7 +158,10 @@ export const AddressFormModal = ({
               />
               <FormInput
                 inputRef={altPhoneRef}
-                label="Alt Phone (Optional)"
+                label="Alt Phone"
+                badge={
+                  <span className="text-foreground-subtle text-[8px] opacity-40">Optional</span>
+                }
                 prefix="+91"
                 placeholder="000 000 0000"
                 value={formData.altPhone ?? ''}
