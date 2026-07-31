@@ -555,17 +555,13 @@ export const CatalogueSidebar = ({
                         }`}
                       >
                         <div className="flex skew-x-[12deg] items-center gap-2">
-                          {swatch ? (
-                            <span
-                              className="h-2.5 w-2.5 shrink-0 -skew-x-[12deg] rounded-sm border border-black/20"
-                              style={{
-                                background: swatch.bg,
-                                borderColor: swatch.border || 'rgba(0,0,0,0.15)',
-                              }}
-                            />
-                          ) : (
-                            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-zinc-400" />
-                          )}
+                          <span
+                            className="h-3 w-4 shrink-0 -skew-x-[12deg] rounded-xs border border-black/25 shadow-2xs dark:border-white/25"
+                            style={{
+                              background: swatch?.bg || colorKey,
+                              borderColor: swatch?.border || undefined,
+                            }}
+                          />
                           <span>{c.label}</span>
                         </div>
                       </button>
