@@ -343,10 +343,10 @@ export function OrderReviewStep() {
               </span>
             </div>
 
-            {/* Action Button: Reduced height (h-[46px]), balanced width, theme-dependent, with plus icon for add address */}
+            {/* Action Button: Reduced height (h-[46px]), fixed matching width (w-[200px] sm:w-[220px]), theme-dependent, with plus icon for add address */}
             <button
               onClick={handleContinue}
-              className="flex h-[46px] -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-foreground bg-foreground px-6 text-background transition-transform outline-none active:scale-95 sm:px-8"
+              className="flex h-[46px] w-[200px] -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-foreground bg-foreground text-background transition-transform outline-none active:scale-95 sm:w-[220px]"
             >
               <span className="flex skew-x-[12deg] items-center gap-2 text-xs font-black tracking-widest whitespace-nowrap uppercase">
                 {address ? (
