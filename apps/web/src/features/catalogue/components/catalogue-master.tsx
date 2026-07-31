@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { type Product } from '@ff/schemas';
 import { ArrowUpDownIcon, PlayIcon, SlidersIcon, StopIcon } from '@ff/ui';
@@ -62,6 +62,26 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
     return Object.values(activeFilters).reduce((acc, curr) => acc + (curr?.length || 0), 0);
   }, [activeFilters]);
 
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTopTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTopTouchMove = (e: React.TouchEvent) => {
+    if (touchStartY.current !== null) {
+      const diffY = e.touches[0].clientY - touchStartY.current;
+      if (diffY > 20) {
+        setActiveDrawer(null);
+        touchStartY.current = null;
+      }
+    }
+  };
+
+  const handleTopTouchEnd = () => {
+    touchStartY.current = null;
+  };
+
   return (
     <div className="bg-background text-foreground min-h-screen transition-colors duration-500">
       {/* --- MOBILE TOOLBAR --- */}
@@ -76,8 +96,8 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
             <SlidersIcon size={13} />
             Filter
             {activeFilterCount > 0 && (
-              <span className="bg-foreground text-background flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-black">
-                {activeFilterCount}
+              <span className="bg-foreground text-background flex h-4 w-4 -skew-x-[12deg] items-center justify-center rounded-xs text-[9px] font-black">
+                <span className="skew-x-[12deg]">{activeFilterCount}</span>
               </span>
             )}
           </button>
@@ -156,36 +176,42 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
               className="bg-background/80 fixed inset-0 z-60 backdrop-blur-md"
             />
 
-            {/* Bottom Slide-Up Sheet */}
+            {/* Bottom Slide-Up Sheet - Docked cleanly on top of the bottom navigation bar */}
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              drag="y"
-              dragConstraints={{ top: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(_e, info) => {
-                if (info.offset.y > 150 || info.velocity.y > 500) {
-                  setActiveDrawer(null);
-                }
-              }}
-              className="bg-background border-border fixed right-0 bottom-0 left-0 z-70 flex max-h-[90vh] flex-col rounded-t-[2.5rem] border-t shadow-2xl"
+              className="bg-background border-border fixed right-0 bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] left-0 z-70 flex max-h-[82vh] flex-col rounded-t-[2rem] border-t shadow-2xl lg:bottom-0"
             >
-              {/* Drag Handle */}
-              <div className="flex w-full shrink-0 justify-center py-4">
-                <div className="bg-border h-1.5 w-12 rounded-full opacity-50" />
+              {/* Drag Handle - Click or swipe down to close immediately without step-by-step dragging */}
+              <div
+                onClick={() => {
+                  setActiveDrawer(null);
+                }}
+                onTouchStart={handleTopTouchStart}
+                onTouchMove={handleTopTouchMove}
+                onTouchEnd={handleTopTouchEnd}
+                className="flex w-full shrink-0 cursor-pointer justify-center py-3.5 transition-opacity hover:opacity-70 active:opacity-50"
+                aria-label="Close filter drawer"
+              >
+                <div className="bg-border -skew-x-[12deg] h-1.5 w-12 rounded-xs opacity-60" />
               </div>
 
               {/* Drawer Header */}
-              <div className="border-border flex items-center justify-between border-b px-6 pb-4">
+              <div
+                onTouchStart={handleTopTouchStart}
+                onTouchMove={handleTopTouchMove}
+                onTouchEnd={handleTopTouchEnd}
+                className="border-border flex items-center justify-between border-b px-6 pb-4"
+              >
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-black tracking-widest uppercase">
                     {activeDrawer === 'filter' ? 'Refine Results' : 'Sort Products'}
                   </h3>
                   {activeDrawer === 'filter' && activeFilterCount > 0 && (
-                    <span className="bg-foreground text-background flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black">
-                      {activeFilterCount}
+                    <span className="bg-foreground text-background flex h-5 w-5 -skew-x-[12deg] items-center justify-center rounded-xs text-[10px] font-black">
+                      <span className="skew-x-[12deg]">{activeFilterCount}</span>
                     </span>
                   )}
                 </div>
@@ -194,9 +220,9 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                   onClick={() => {
                     setActiveDrawer(null);
                   }}
-                  className="border-border hover:bg-background-muted flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold transition-all"
+                  className="border-border hover:bg-background-muted flex h-8 w-8 -skew-x-[12deg] items-center justify-center rounded-sm border text-xs font-bold transition-all active:scale-95"
                 >
-                  ✕
+                  <span className="skew-x-[12deg]">✕</span>
                 </button>
               </div>
 
@@ -208,30 +234,37 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                 className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-6 py-4"
               >
                 {activeDrawer === 'sort' ? (
-                  <div className="space-y-1 pb-10">
-                    {SORT_OPTIONS.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => {
-                          setSortBy(opt.value);
-                          setActiveDrawer(null);
-                        }}
-                        className="border-border flex w-full items-center justify-between border-b py-4.5 last:border-none"
-                      >
-                        <span
-                          className={`text-xs tracking-wider uppercase ${
-                            sortBy === opt.value
-                              ? 'text-foreground font-black'
-                              : 'text-foreground-subtle font-medium'
+                  <div className="space-y-2 py-1 pb-6">
+                    {SORT_OPTIONS.map((opt) => {
+                      const isSelected = sortBy === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          onClick={() => {
+                            setSortBy(opt.value);
+                            setActiveDrawer(null);
+                          }}
+                          className={`flex w-full -skew-x-[12deg] items-center justify-between rounded-sm border px-4 py-3 text-left transition-all active:scale-98 ${
+                            isSelected
+                              ? 'bg-foreground text-background border-foreground font-black shadow-md'
+                              : 'border-border bg-background hover:border-foreground/40 text-foreground-subtle font-bold'
                           }`}
                         >
-                          {opt.label}
-                        </span>
-                        {sortBy === opt.value && (
-                          <div className="bg-foreground h-2.5 w-2.5 rounded-full" />
-                        )}
-                      </button>
-                    ))}
+                          <div className="flex w-full skew-x-[12deg] items-center justify-between">
+                            <span
+                              className={`text-[11px] tracking-wider uppercase ${
+                                isSelected ? 'text-background font-black' : 'text-foreground-subtle font-semibold'
+                              }`}
+                            >
+                              {opt.label}
+                            </span>
+                            {isSelected && (
+                              <div className="bg-background h-2 w-2 -skew-x-[12deg] rounded-xs" />
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -255,28 +288,30 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                 )}
               </div>
 
-              {/* --- STICKY BOTTOM CONFIRMATION BAR (Mobile) --- */}
+              {/* --- STICKY BOTTOM CONFIRMATION BAR (Mobile) - Fixed right on top of bottom menu box --- */}
               {activeDrawer === 'filter' && (
-                <div className="bg-background/95 border-border shrink-0 border-t p-4 pb-24 backdrop-blur-md lg:pb-4">
+                <div className="bg-background/95 border-border shrink-0 border-t p-3.5 backdrop-blur-md">
                   <div className="flex items-center gap-3">
                     {activeFilterCount > 0 && (
                       <button
                         onClick={() => {
                           clearFilters();
                         }}
-                        className="border-border text-foreground-subtle hover:text-foreground flex-1 rounded-full border py-3.5 text-center text-[10px] font-black tracking-widest uppercase transition-colors"
+                        className="border-border text-foreground-subtle hover:text-foreground hover:border-foreground/40 flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all active:scale-95"
                       >
-                        Reset All
+                        <span className="block skew-x-[12deg]">Reset All</span>
                       </button>
                     )}
                     <button
                       onClick={() => {
                         setActiveDrawer(null);
                       }}
-                      className="bg-foreground text-background flex-[2] rounded-full py-3.5 text-center text-[10px] font-black tracking-widest uppercase shadow-lg transition-transform active:scale-95"
+                      className="bg-foreground text-background hover:bg-foreground/90 flex-[2] -skew-x-[12deg] rounded-sm py-3 text-center text-[10px] font-black tracking-widest uppercase shadow-lg transition-all active:scale-95"
                     >
-                      Apply Filters • View {products.length}{' '}
-                      {products.length === 1 ? 'Item' : 'Items'}
+                      <span className="block skew-x-[12deg]">
+                        Apply Filters • View {products.length}{' '}
+                        {products.length === 1 ? 'Item' : 'Items'}
+                      </span>
                     </button>
                   </div>
                 </div>
