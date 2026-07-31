@@ -55,7 +55,7 @@ export function OrderSummary() {
 
   const renderSummaryCard = (isModal = false) => (
     <div
-      className={`bg-card text-card-foreground border-border rounded-[2.5rem] border p-6 shadow-xl md:p-8 lg:p-8`}
+      className={`bg-white text-foreground border-border rounded-[2.5rem] border p-6 shadow-xl md:p-8 lg:p-8 dark:bg-zinc-900`}
     >
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-foreground text-2xl font-medium tracking-tight">Summary</h2>
@@ -219,17 +219,39 @@ export function OrderSummary() {
       {/* Mobile Sticky Quick-Action Bar & Attached Summary Card Drawer */}
       {hasItems && (
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex w-full flex-col items-center transform-gpu will-change-transform lg:hidden">
-          {/* Top Summary Button Tab - Fixed on Top, Rounded Crossed Style & Seamless */}
+          {/* Top Summary Button Tab - Fixed on Top, Cone / Corn Crossed Two Sides with Rounded Shape */}
           <div className="pointer-events-auto z-20 flex w-full justify-center">
             <button
               type="button"
               onClick={() => {
                 setIsExpanded((prev) => !prev);
               }}
-              className="bg-card text-card-foreground border-border/80 hover:bg-foreground/5 -mb-px flex h-9 w-72 -skew-x-[12deg] cursor-pointer items-center justify-center rounded-t-xl border-t border-x px-8 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] transition-all active:scale-98 sm:w-80 sm:rounded-t-2xl"
+              className="relative -mb-px flex h-10 w-72 cursor-pointer items-center justify-center transition-all active:scale-98 sm:w-80"
               aria-label="Toggle Summary"
             >
-              <span className="flex skew-x-[12deg] items-center justify-center gap-2">
+              {/* Background SVG Tab: Cone shape crossed on both sides with rounded top corners */}
+              <svg
+                viewBox="0 0 300 40"
+                preserveAspectRatio="none"
+                className="pointer-events-none absolute inset-0 h-full w-full drop-shadow-[0_-4px_12px_rgba(0,0,0,0.06)]"
+              >
+                {/* 100% Solid Opaque Fill */}
+                <path
+                  d="M 0 40 L 26 8 Q 32 0 44 0 L 256 0 Q 268 0 274 8 L 300 40 Z"
+                  className="fill-white dark:fill-zinc-900"
+                />
+                {/* Border Stroke for Top & Slanted Sides */}
+                <path
+                  d="M 0 40 L 26 8 Q 32 0 44 0 L 256 0 Q 268 0 274 8 L 300 40"
+                  fill="none"
+                  className="stroke-border/80 dark:stroke-zinc-700"
+                  strokeWidth="1.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+
+              {/* Text & Icon Content */}
+              <span className="relative z-10 flex items-center justify-center gap-2 text-foreground">
                 <span className="text-[10px] font-black tracking-[0.25em] uppercase">
                   Summary
                 </span>
@@ -243,7 +265,7 @@ export function OrderSummary() {
             </button>
           </div>
 
-          {/* Attached Summary Drawer - Flat Bottom to Feel Attached to Bottom Bar, No BG Blur */}
+          {/* Attached Summary Drawer - Flat Bottom to Feel Attached to Bottom Bar, Solid White */}
           <AnimatePresence>
             {isExpanded && (
               <motion.div
@@ -254,7 +276,7 @@ export function OrderSummary() {
                 className="pointer-events-auto w-full overflow-hidden"
               >
                 <div className="mx-auto max-w-lg px-2 sm:px-4">
-                  <div className="bg-card text-card-foreground border-border/80 max-h-[70vh] space-y-5 overflow-y-auto rounded-t-3xl rounded-b-none border-t border-x p-6 shadow-2xl">
+                  <div className="bg-white text-foreground border-border/80 max-h-[70vh] space-y-5 overflow-y-auto rounded-t-3xl rounded-b-none border-t border-x p-6 shadow-2xl dark:bg-zinc-900">
                     {/* Header */}
                     <div className="flex items-center justify-between">
                       <h2 className="text-foreground text-2xl font-medium tracking-tight">Summary</h2>
@@ -387,7 +409,7 @@ export function OrderSummary() {
           </AnimatePresence>
 
           {/* Bottom Bar Sitting Flush with Flat Bottom of Summary Drawer */}
-          <div className="pointer-events-auto border-border/40 bg-background/95 w-full border-t px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.15)]">
+          <div className="pointer-events-auto border-border/40 bg-white dark:bg-zinc-900 w-full border-t px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.15)]">
             <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-4">
               <div className="flex flex-col pl-1 shrink-0">
                 <span className="text-foreground-muted text-[10px] font-black tracking-widest uppercase">
