@@ -59,10 +59,8 @@ export function OrderReviewStep() {
                     className="border-foreground bg-background shadow-foreground/5 flex items-start justify-between rounded-4xl border-2 p-8 shadow-xl"
                   >
                     <div className="flex gap-6">
-                      <div className="bg-foreground text-background flex h-12 w-12 shrink-0 -skew-x-[12deg] items-center justify-center rounded-xl">
-                        <span className="skew-x-[12deg]">
-                          <MapPinIcon size={20} />
-                        </span>
+                      <div className="bg-foreground text-background flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
+                        <MapPinIcon size={20} />
                       </div>
                       <div>
                         <p className="text-sm font-black tracking-tight uppercase">
@@ -85,11 +83,9 @@ export function OrderReviewStep() {
                       onClick={() => {
                         setShowAddressForm(true);
                       }}
-                      className="border-zinc-800 text-foreground hover:border-foreground -skew-x-[12deg] cursor-pointer rounded-lg border px-4 py-1.5 transition-all active:scale-95 dark:border-zinc-300"
+                      className="border-border text-foreground hover:border-foreground cursor-pointer rounded-lg border px-4 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all active:scale-95"
                     >
-                      <span className="skew-x-[12deg] block text-[10px] font-black tracking-widest uppercase">
-                        Change
-                      </span>
+                      Change
                     </button>
                   </motion.div>
                 ) : (
@@ -99,12 +95,12 @@ export function OrderReviewStep() {
                     onClick={() => {
                       setShowAddressForm(true);
                     }}
-                    className="border-border hover:border-foreground/50 flex w-full -skew-x-[12deg] cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed py-8 transition-colors active:scale-98"
+                    className="border-border hover:border-foreground/50 flex w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed py-8 transition-colors active:scale-98"
                   >
-                    <div className="bg-foreground/5 flex h-8 w-8 skew-x-[12deg] items-center justify-center rounded-lg border border-border">
+                    <div className="bg-foreground/5 flex h-8 w-8 items-center justify-center rounded-lg border border-border">
                       <PlusIcon size={16} />
                     </div>
-                    <span className="skew-x-[12deg] text-xs font-black tracking-widest uppercase">
+                    <span className="text-xs font-black tracking-widest uppercase">
                       Add Shipping Address
                     </span>
                   </motion.button>

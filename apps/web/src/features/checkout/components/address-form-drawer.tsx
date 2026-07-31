@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { CloseIcon, LoaderIcon, ShieldCheckIcon } from '@ff/ui';
+import { Asterisk } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { cleanPhoneDigits, formatPhone334 } from '@/features/addresses';
@@ -128,7 +129,7 @@ export function AddressFormDrawer({
                 <CloseIcon size={20} />
               </button>
 
-              <h2 className="text-center text-2xl font-black tracking-tighter uppercase italic">
+              <h2 className="text-center text-2xl font-black tracking-tighter uppercase">
                 Address Details
               </h2>
               <p className="text-foreground-muted mt-1.5 flex items-center justify-center gap-1.5 text-center text-xs tracking-widest uppercase">
@@ -244,19 +245,17 @@ export function AddressFormDrawer({
               </div>
             </div>
 
-            <div className="border-border bg-background/80 border-t p-8 backdrop-blur-xl md:px-12">
+            <div className="border-border bg-background/80 border-t p-4 backdrop-blur-xl md:px-12">
               <button
                 onClick={() => {
                   if (validate()) {
                     onSave(formData);
                   }
                 }}
-                className="bg-foreground text-background flex w-full -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 rounded-xl border border-foreground py-5 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95"
+                className="bg-foreground text-background flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-foreground py-4 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95"
               >
-                <span className="flex skew-x-[12deg] items-center gap-2">
-                  <ShieldCheckIcon size={16} />
-                  <span>Save Shipping Address</span>
-                </span>
+                <ShieldCheckIcon size={14} className="shrink-0 text-emerald-500" />
+                <span>Save Shipping Address</span>
               </button>
             </div>
           </motion.div>
@@ -291,25 +290,24 @@ function InputBox({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex h-4 items-center justify-between px-3">
-        <label className="text-foreground-muted truncate text-[8.5px] font-black tracking-[0.18em] uppercase">
-          {label}
+      <div className="flex h-4 items-center justify-between px-1">
+        <label className="text-foreground flex items-center gap-1 text-[11px] font-bold tracking-wide uppercase">
+          <span>{label}</span>
+          {required && (
+            <Asterisk size={11} className="text-brand shrink-0 stroke-[2.5]" aria-label="Required" />
+          )}
         </label>
         {badge ? (
           badge
         ) : optional ? (
-          <span className="text-foreground-muted/60 text-[8px] font-bold tracking-widest uppercase">
+          <span className="text-foreground-muted/70 text-[9px] font-bold tracking-widest uppercase">
             Optional
-          </span>
-        ) : required ? (
-          <span className="text-brand/80 text-[8px] font-bold tracking-widest uppercase">
-            Required
           </span>
         ) : null}
       </div>
       <div className="relative w-full">
         {prefix && (
-          <span className="text-foreground-muted absolute top-1/2 left-4 -translate-y-1/2 text-xs font-bold">
+          <span className="text-foreground absolute top-1/2 left-4 -translate-y-1/2 text-sm font-bold">
             {prefix}
           </span>
         )}
@@ -320,9 +318,9 @@ function InputBox({
           tabIndex={readOnly ? -1 : undefined}
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
-          className={`border-border focus:border-foreground h-14 w-full rounded-2xl border-2 border-dotted bg-transparent text-sm font-bold transition-all outline-none placeholder:opacity-20 ${
-            prefix ? 'pr-4 pl-13' : 'px-4'
-          } ${readOnly ? 'focus:border-border cursor-default select-none' : ''}`}
+          className={`border-border/80 bg-foreground/[0.03] text-foreground focus:border-foreground h-12 w-full rounded-xl border text-sm font-semibold transition-all outline-none placeholder:text-foreground-muted/60 ${
+            prefix ? 'pr-4 pl-14' : 'px-4'
+          } ${readOnly ? 'focus:border-border cursor-default select-none opacity-80' : ''}`}
         />
       </div>
     </div>
