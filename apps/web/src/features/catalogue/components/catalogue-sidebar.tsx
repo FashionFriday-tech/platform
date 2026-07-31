@@ -177,6 +177,10 @@ export const CatalogueSidebar = ({
     return false;
   }, [draftFilters, activeFilters, draftSort, sortBy]);
 
+  const isResetActive = useMemo(() => {
+    return totalDraftFilterCount > 0 || hasChanges;
+  }, [totalDraftFilterCount, hasChanges]);
+
   // Filtered brands if user types in search
   const filteredBrands = useMemo(() => {
     if (!brandSearch.trim()) {
@@ -202,24 +206,6 @@ export const CatalogueSidebar = ({
           : 'flex h-full w-full flex-col justify-between overflow-hidden'
       }
     >
-      {/* 1. Dynamic Header (Only shows when filters are active) */}
-      {totalDraftFilterCount > 0 && (
-        <div className="border-border mb-3 flex shrink-0 items-center justify-between border-b pb-3">
-          <div className="flex items-center gap-2 text-[11px] font-black tracking-widest uppercase">
-            <span className="text-foreground">Active</span>
-            <span className="bg-foreground text-background flex h-5 w-5 -skew-x-[12deg] items-center justify-center rounded-xs text-[10px] font-black">
-              <span className="skew-x-[12deg]">{totalDraftFilterCount}</span>
-            </span>
-          </div>
-          <button
-            onClick={handleReset}
-            className="border-border hover:border-foreground/40 text-foreground-subtle -skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[9px] font-black tracking-widest uppercase transition-colors hover:text-red-500"
-          >
-            <span className="block skew-x-[12deg]">Reset All</span>
-          </button>
-        </div>
-      )}
-
       {/* 2. Middle Scrollable Content (Isolated scroll with min-h-0 and Lenis prevention) */}
       <div
         data-lenis-prevent="true"
@@ -678,22 +664,33 @@ export const CatalogueSidebar = ({
         )}
       </div>
 
-      {/* 3. Fixed Bottom Apply Button (outside the scrolling container) */}
+      {/* 3. Fixed Bottom Action Buttons (outside the scrolling container) */}
       {!isMobileDrawer && (
         <div className="border-border bg-background shrink-0 border-t pt-3">
-          <button
-            onClick={handleApply}
-            disabled={!hasChanges}
-            className={`w-full -skew-x-[12deg] rounded-md py-3.5 text-center text-xs font-black tracking-widest uppercase transition-all duration-300 ${
-              hasChanges
-                ? 'bg-foreground text-background hover:bg-foreground/90 cursor-pointer shadow-xl active:scale-95'
-                : 'bg-foreground/10 text-foreground/30 border-border/40 cursor-not-allowed border shadow-none'
-            }`}
-          >
-            <span className="block skew-x-[12deg]">
-              {hasChanges ? `"Apply Filters"` : 'Filters Applied'}
-            </span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleReset}
+              disabled={!isResetActive}
+              className={`flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all ${
+                isResetActive
+                  ? 'border-foreground text-foreground hover:bg-foreground/5 cursor-pointer active:scale-95 dark:border-white dark:text-white dark:hover:bg-white/10'
+                  : 'border-border/40 text-foreground-subtle/40 pointer-events-none cursor-not-allowed opacity-30'
+              }`}
+            >
+              <span className="block skew-x-[12deg]">Reset All</span>
+            </button>
+            <button
+              onClick={handleApply}
+              disabled={!hasChanges}
+              className={`flex-[2] -skew-x-[12deg] rounded-sm py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all duration-300 ${
+                hasChanges
+                  ? 'bg-foreground text-background hover:bg-foreground/90 cursor-pointer shadow-xl active:scale-95'
+                  : 'bg-foreground/10 text-foreground/30 border-border/40 cursor-not-allowed border shadow-none'
+              }`}
+            >
+              <span className="block skew-x-[12deg]">Apply Filters</span>
+            </button>
+          </div>
         </div>
       )}
     </aside>

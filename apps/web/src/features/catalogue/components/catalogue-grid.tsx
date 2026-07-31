@@ -20,69 +20,11 @@ interface GridProps {
   sortOptions?: { label: string; value: string }[];
 }
 
-export const CatalogueGrid = ({
-  products,
-  activeFilters = {},
-  onRemoveFilter,
-  onClearFilters,
-}: GridProps) => {
+export const CatalogueGrid = ({ products, onClearFilters }: GridProps) => {
   const ITEMS_PER_PROMO = 6;
-
-  // Flatten active filters into chips
-  const activeChips = Object.entries(activeFilters).flatMap(([key, values]) => {
-    if (!values) {
-      return [];
-    }
-    return values.map((val) => {
-      let label = val;
-      if (key === 'priceRange') {
-        const [min, max] = val.split('-');
-        label = `Price: ₹${Number(min).toLocaleString()} - ₹${Number(max).toLocaleString()}`;
-      } else if (key === 'inStock') {
-        label = 'In Stock Only';
-      } else {
-        label = `${key.toUpperCase()}: ${val}`;
-      }
-      return { key, value: val, label };
-    });
-  });
 
   return (
     <div className="w-full">
-      {/* --- REFINEMENT & SORTING BAR --- */}
-      {activeChips.length > 0 && (
-        <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
-          {/* Results Count & Active Filter Chips */}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="border-border flex flex-wrap items-center gap-1.5 pl-2 sm:border-l">
-              {activeChips.map((chip) => (
-                <button
-                  key={`${chip.key}-${chip.value}`}
-                  onClick={() => {
-                    onRemoveFilter?.(chip.key, chip.value);
-                  }}
-                  className="bg-background-muted hover:border-foreground/40 border-border group flex -skew-x-[12deg] items-center gap-1.5 rounded-sm border px-2.5 py-1 text-[10px] font-bold uppercase transition-all active:scale-95"
-                >
-                  <span className="flex skew-x-[12deg] items-center gap-1.5">
-                    <span>{chip.label}</span>
-                    <span className="text-foreground-subtle group-hover:text-foreground">✕</span>
-                  </span>
-                </button>
-              ))}
-
-              {onClearFilters && (
-                <button
-                  onClick={onClearFilters}
-                  className="border-border hover:border-foreground/40 text-foreground-subtle -skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[10px] font-black uppercase transition-colors hover:text-red-500"
-                >
-                  <span className="block skew-x-[12deg]">Clear All</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* --- PRODUCT GRID --- */}
       {products.length > 0 && (
         <div className="4xl:grid-cols-5 grid grid-cols-2 gap-4 gap-y-8 pt-2 sm:pt-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">

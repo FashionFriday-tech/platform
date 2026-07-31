@@ -66,13 +66,16 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
     return Math.max(...prices, 15000);
   }, [initialProducts]);
 
-  const activeFilterCount = useMemo(() => {
-    return Object.values(activeFilters).reduce((acc, curr) => acc + (curr?.length || 0), 0);
-  }, [activeFilters]);
-
   const drawerDraftFilterCount = useMemo(() => {
     return Object.values(drawerDraftFilters).reduce((acc, curr) => acc + (curr?.length || 0), 0);
   }, [drawerDraftFilters]);
+
+  const isMobileResetActive = useMemo(() => {
+    return (
+      drawerDraftFilterCount > 0 ||
+      JSON.stringify(drawerDraftFilters) !== JSON.stringify(activeFilters)
+    );
+  }, [drawerDraftFilterCount, drawerDraftFilters, activeFilters]);
 
   const touchStartY = useRef<number | null>(null);
 
@@ -107,11 +110,6 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
           >
             <SlidersIcon size={13} />
             Filter
-            {activeFilterCount > 0 && (
-              <span className="bg-foreground text-background flex h-4 w-4 -skew-x-[12deg] items-center justify-center rounded-xs text-[9px] font-black">
-                <span className="skew-x-[12deg]">{activeFilterCount}</span>
-              </span>
-            )}
           </button>
 
           <button
@@ -221,11 +219,6 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                   <h3 className="text-sm font-black tracking-widest uppercase">
                     {activeDrawer === 'filter' ? 'Refine Results' : 'Sort Products'}
                   </h3>
-                  {activeDrawer === 'filter' && drawerDraftFilterCount > 0 && (
-                    <span className="bg-foreground text-background flex h-5 w-5 -skew-x-[12deg] items-center justify-center rounded-xs text-[10px] font-black">
-                      <span className="skew-x-[12deg]">{drawerDraftFilterCount}</span>
-                    </span>
-                  )}
                 </div>
 
                 <button
@@ -307,25 +300,27 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
               {activeDrawer === 'filter' && (
                 <div className="bg-background/95 border-border shrink-0 border-t px-3 py-3 backdrop-blur-md">
                   <div className="flex items-center gap-2.5">
-                    {drawerDraftFilterCount > 0 && (
-                      <button
-                        onClick={() => {
-                          clearFilters();
-                          setDrawerDraftFilters({});
-                        }}
-                        className="border-border text-foreground-subtle hover:text-foreground hover:border-foreground/40 flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all active:scale-95"
-                      >
-                        <span className="block skew-x-[12deg]">Reset All</span>
-                      </button>
-                    )}
+                    <button
+                      onClick={() => {
+                        if (!isMobileResetActive) return;
+                        clearFilters();
+                        setDrawerDraftFilters({});
+                      }}
+                      disabled={!isMobileResetActive}
+                      className={`flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all ${
+                        isMobileResetActive
+                          ? 'border-foreground text-foreground hover:bg-foreground/5 cursor-pointer active:scale-95 dark:border-white dark:text-white dark:hover:bg-white/10'
+                          : 'border-border/40 text-foreground-subtle/40 pointer-events-none cursor-not-allowed opacity-30'
+                      }`}
+                    >
+                      <span className="block skew-x-[12deg]">Reset All</span>
+                    </button>
                     <button
                       onClick={() => {
                         setActiveFilters(drawerDraftFilters);
                         setActiveDrawer(null);
                       }}
-                      className={`bg-foreground text-background hover:bg-foreground/90 ${
-                        drawerDraftFilterCount > 0 ? 'flex-[2]' : 'w-full'
-                      } -skew-x-[12deg] rounded-sm py-3 text-center text-[10px] font-black tracking-widest uppercase shadow-lg transition-all active:scale-95`}
+                      className="bg-foreground text-background hover:bg-foreground/90 flex-[2] -skew-x-[12deg] rounded-sm py-3 text-center text-[10px] font-black tracking-widest uppercase shadow-lg transition-all active:scale-95"
                     >
                       <span className="block skew-x-[12deg]">Apply Filters</span>
                     </button>
