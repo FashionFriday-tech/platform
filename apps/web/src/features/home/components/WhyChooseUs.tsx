@@ -65,116 +65,38 @@ const InfiniteColumn = ({
   const loopImages = [...images, ...images];
 
   return (
-    <>
-      <style jsx global>{`
-        @keyframes why-card-shine {
-          0% {
-            background-image: linear-gradient(
-              110deg,
-              transparent 0%,
-              transparent 40%,
-              rgba(255, 255, 255, 0.05) 50%,
-              transparent 60%,
-              transparent 100%
-            );
-            transform: translateX(-100%);
-          }
-          100% {
-            background-image: linear-gradient(
-              110deg,
-              transparent 0%,
-              transparent 40%,
-              rgba(255, 255, 255, 0.05) 50%,
-              transparent 60%,
-              transparent 100%
-            );
-            transform: translateX(100%);
-          }
-        }
-
-        .why-shine-sweep {
-          background-image: linear-gradient(
-            110deg,
-            transparent 0%,
-            transparent 40%,
-            rgba(255, 255, 255, 0.05) 50%,
-            transparent 60%,
-            transparent 100%
-          );
-          background-size: 200% 100%;
-          animation: why-card-shine 4.8s ease-in-out infinite;
-        }
-
-        @keyframes scrollUp {
-          0% {
-            transform: translate3d(0, 0, 0);
-          }
-          100% {
-            transform: translate3d(0, -50%, 0);
-          }
-        }
-        @keyframes scrollDown {
-          0% {
-            transform: translate3d(0, -50%, 0);
-          }
-          100% {
-            transform: translate3d(0, 0, 0);
-          }
-        }
-
-        .animate-scroll-up {
-          animation: scrollUp var(--duration) linear infinite;
-          will-change: transform;
-          transform: translate3d(0, 0, 0);
-          backface-visibility: hidden;
-        }
-
-        .animate-scroll-down {
-          animation: scrollDown var(--duration) linear infinite;
-          will-change: transform;
-          transform: translate3d(0, 0, 0);
-          backface-visibility: hidden;
-        }
-
-        /* Force pause on hover */
-        .pause-on-hover:hover {
-          animation-play-state: paused !important;
-        }
-      `}</style>
-
-      <div
-        className={`pause-on-hover flex cursor-pointer flex-col gap-4 ${
-          reverse ? 'animate-scroll-down' : 'animate-scroll-up'
-        }`}
-        style={
-          {
-            '--duration': `${duration}s`,
-            animationPlayState: active ? 'running' : 'paused',
-          } as CSSProperties
-        }
-      >
-        {loopImages.map((src, i) => (
-          <div
-            key={i}
-            onClick={() => onSelectImage?.(src)}
-            className="group relative aspect-[9/19] w-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:border-white/30 hover:opacity-100 hover:shadow-2xl"
-          >
-            <img
-              src={src}
-              alt={`Customer Review ${i}`}
-              className="h-full w-full object-cover object-top"
-              loading="lazy"
-            />
-            {/* Hover overlay with action indicator */}
-            <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/70 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold tracking-wider text-black uppercase shadow-md backdrop-blur-xs dark:bg-black/95 dark:text-white">
-                View Chat
-              </span>
-            </div>
+    <div
+      className={`pause-on-hover flex cursor-pointer flex-col gap-4 ${
+        reverse ? 'animate-scroll-down' : 'animate-scroll-up'
+      }`}
+      style={
+        {
+          '--duration': `${duration}s`,
+          animationPlayState: active ? 'running' : 'paused',
+        } as CSSProperties
+      }
+    >
+      {loopImages.map((src, i) => (
+        <div
+          key={i}
+          onClick={() => onSelectImage?.(src)}
+          className="group relative aspect-[9/19] w-full cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-white/5 opacity-80 transition-all duration-300 hover:border-white/30 hover:opacity-100 hover:shadow-2xl"
+        >
+          <img
+            src={src}
+            alt={`Customer Review ${i}`}
+            className="h-full w-full object-cover object-top"
+            loading="lazy"
+          />
+          {/* Hover overlay with action indicator */}
+          <div className="pointer-events-none absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black/70 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <span className="rounded-full bg-white/95 px-3 py-1 text-[11px] font-bold tracking-wider text-black uppercase shadow-md backdrop-blur-xs dark:bg-black/95 dark:text-white">
+              View Chat
+            </span>
           </div>
-        ))}
-      </div>
-    </>
+        </div>
+      ))}
+    </div>
   );
 };
 
@@ -317,6 +239,72 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
 
   return (
     <section className="relative overflow-hidden font-sans">
+      <style>{`
+        @keyframes why-card-shine {
+          0% {
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+          }
+          45% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 1;
+          }
+          46%, 100% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 0;
+          }
+        }
+
+        .why-shine-sweep {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.03) 20%,
+            rgba(255, 255, 255, 0.25) 50%,
+            rgba(255, 255, 255, 0.03) 75%,
+            transparent 100%
+          );
+          animation: why-card-shine 4.8s ease-in-out infinite;
+        }
+
+        @keyframes scrollUp {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(0, -50%, 0);
+          }
+        }
+        @keyframes scrollDown {
+          0% {
+            transform: translate3d(0, -50%, 0);
+          }
+          100% {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+
+        .animate-scroll-up {
+          animation: scrollUp var(--duration) linear infinite;
+          will-change: transform;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
+        }
+
+        .animate-scroll-down {
+          animation: scrollDown var(--duration) linear infinite;
+          will-change: transform;
+          transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
+        }
+
+        .pause-on-hover:hover {
+          animation-play-state: paused !important;
+        }
+      `}</style>
       <div className="container mx-auto px-4 py-10 md:px-6 lg:px-8">
         <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
           {/* LEFT SIDE */}
@@ -342,20 +330,22 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
-                  className="group relative flex -skew-x-[12deg] cursor-default overflow-hidden rounded-xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all hover:border-zinc-700 sm:rounded-2xl"
+                  className="group relative -skew-x-[6deg] cursor-default overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all duration-300 hover:border-zinc-700 sm:-skew-x-[8deg] sm:rounded-3xl sm:p-7"
                 >
                   {/* Luminous Shining Light Sweep */}
                   <div
                     className="why-shine-sweep pointer-events-none absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]"
-                    style={{ animationDelay: `${idx * 1.2}s` }}
+                    style={{ animationDelay: `${idx * 1.4}s` }}
                   />
 
-                  <div className="relative z-10 flex w-full items-center gap-6 sm:gap-8">
-                    {/* The icon box inherits the -12deg skew from the card, making it a slanted parallelogram. We counter-skew the icon inside so it stands straight. */}
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-700 bg-black transition-colors duration-300 sm:h-16 sm:w-16">
-                      <item.icon className="z-10 h-6 w-6 skew-x-[12deg] text-white transition-colors duration-300" />
+                  {/* Inner Content - Counter-skewed so text and layout are straight */}
+                  <div className="relative z-10 flex w-full skew-x-[6deg] items-center gap-6 sm:skew-x-[8deg] sm:gap-8">
+                    {/* The icon box: straight clean box */}
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-black text-white transition-colors duration-300 group-hover:border-zinc-500 sm:h-16 sm:w-16">
+                      <item.icon className="h-6 w-6 text-white transition-transform duration-300 group-hover:scale-110 sm:h-7 sm:w-7" />
                     </div>
-                    <div className="skew-x-[12deg]">
+                    {/* Clean un-crossed straight text */}
+                    <div>
                       <h3 className="mb-1.5 flex items-center gap-2 text-lg font-bold tracking-wide text-white uppercase sm:mb-2 sm:text-xl">
                         {item.title}
                       </h3>
