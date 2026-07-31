@@ -13,13 +13,13 @@ export function CartStep() {
   const { cartItems, hasItems, isMounted } = useCart();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-20 pb-16 transition-colors duration-300 lg:pt-24 lg:pb-6">
+    <div className="bg-background text-foreground min-h-screen pt-14 pb-16 transition-colors duration-300 sm:pt-16 lg:pt-20 lg:pb-6">
       <CheckoutProgress currentStage={1} />
-      <main className="max-w-8xl mx-auto px-4 pt-1 md:px-8 md:pt-2">
+      <main className="max-w-8xl mx-auto px-4 pt-0 md:px-8">
         <div className="w-full">
-          <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
             {/* Left Column: Items & Shipping */}
-            <div className="flex-1 space-y-10">
+            <div className="flex-1 space-y-4">
               {/* Cart Items List */}
               <div>
                 {!isMounted ? (
