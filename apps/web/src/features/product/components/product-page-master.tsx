@@ -130,7 +130,7 @@ export default function ProductPageMaster({
   const liveMetric = useLiveProductMetric(product.liveMatrix.liveWatching);
 
   return (
-    <div className="bg-background text-foreground min-h-screen pb-28 transition-colors md:pb-12">
+    <div className="bg-background text-foreground min-h-screen pb-16 transition-colors md:pb-6">
       {/* --- MAIN PRODUCT GRID --- */}
       <section className="px-4 pt-2 md:px-8 lg:pt-26">
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-12">
