@@ -193,15 +193,15 @@ export const CatalogueSidebar = ({
         <div className="border-border mb-3 flex shrink-0 items-center justify-between border-b pb-3">
           <div className="flex items-center gap-2 text-[11px] font-black tracking-widest uppercase">
             <span className="text-foreground">Active</span>
-            <span className="bg-foreground text-background flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black">
-              {totalDraftFilterCount}
+            <span className="bg-foreground text-background flex h-5 w-5 -skew-x-[12deg] items-center justify-center rounded-xs text-[10px] font-black">
+              <span className="skew-x-[12deg]">{totalDraftFilterCount}</span>
             </span>
           </div>
           <button
             onClick={handleReset}
-            className="text-foreground-subtle text-[10px] font-black tracking-widest uppercase transition-colors hover:text-red-500"
+            className="border-border hover:border-foreground/40 text-foreground-subtle hover:text-red-500 -skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[9px] font-black tracking-widest uppercase transition-colors"
           >
-            Reset All
+            <span className="block skew-x-[12deg]">Reset All</span>
           </button>
         </div>
       )}
@@ -253,14 +253,18 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           setDraftSort(opt.value);
                         }}
-                        className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-[11px] uppercase transition-all ${
+                        className={`flex w-full -skew-x-[12deg] items-center justify-between rounded-sm border px-3 py-2 text-left text-[11px] uppercase transition-all active:scale-98 ${
                           isSelected
-                            ? 'bg-foreground text-background font-black shadow-xs'
-                            : 'text-foreground-subtle hover:bg-background-muted font-bold'
+                            ? 'bg-foreground text-background border-foreground font-black shadow-xs'
+                            : 'border-border/60 text-foreground-subtle hover:bg-background-muted hover:border-foreground/30 font-bold'
                         }`}
                       >
-                        <span>{opt.label}</span>
-                        {isSelected && <div className="bg-background h-1.5 w-1.5 rounded-full" />}
+                        <div className="flex w-full skew-x-[12deg] items-center justify-between">
+                          <span>{opt.label}</span>
+                          {isSelected && (
+                            <div className="bg-background h-1.5 w-1.5 -skew-x-[12deg] rounded-xs" />
+                          )}
+                        </div>
                       </button>
                     );
                   })}
@@ -377,15 +381,17 @@ export const CatalogueSidebar = ({
                   className="overflow-hidden pt-2.5 pb-2"
                 >
                   {facets.brands.length > 5 && (
-                    <input
-                      type="text"
-                      placeholder="SEARCH BRANDS..."
-                      value={brandSearch}
-                      onChange={(e) => {
-                        setBrandSearch(e.target.value);
-                      }}
-                      className="border-border bg-background-muted placeholder:text-foreground-subtle/50 focus:border-foreground mb-2.5 w-full rounded-xl border px-3 py-1.5 text-xs outline-none placeholder:uppercase"
-                    />
+                    <div className="-skew-x-[12deg] mb-2.5 overflow-hidden rounded-sm border border-border bg-background-muted focus-within:border-foreground">
+                      <input
+                        type="text"
+                        placeholder="SEARCH BRANDS..."
+                        value={brandSearch}
+                        onChange={(e) => {
+                          setBrandSearch(e.target.value);
+                        }}
+                        className="w-full skew-x-[12deg] bg-transparent px-3 py-1.5 text-xs outline-none placeholder:text-foreground-subtle/50 placeholder:uppercase"
+                      />
+                    </div>
                   )}
 
                   <div className="flex flex-wrap gap-1.5">
