@@ -99,9 +99,7 @@
   }
 
   /* Base app styling */
-  html,
   body {
-    font-family: var(--font-sans);
     @apply bg-background text-foreground antialiased;
     -webkit-user-select: none;
     user-select: none;

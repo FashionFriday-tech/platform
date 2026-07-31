@@ -591,7 +591,7 @@ export default function Footer() {
 
       {/* 4. BOTTOM SUB-FOOTER BAR (With mobile clearance) */}
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center justify-between gap-8 pt-6 pb-20 text-[11px] font-medium text-zinc-500 sm:pb-8 lg:flex-row lg:gap-4">
+        <div className="flex flex-col items-center justify-between gap-8 pt-6 pb-24 text-[11px] font-medium text-zinc-500 sm:pb-8 lg:flex-row lg:gap-4">
           <div className="order-1 flex flex-1 justify-center text-center lg:order-1 lg:justify-start lg:text-left">
             &copy; {new Date().getFullYear()} FASHION FRIDAY. ALL RIGHTS RESERVED. MADE FOR INDIAN
             CULTURE.
