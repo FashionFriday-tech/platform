@@ -146,19 +146,6 @@ export function NotificationsPage() {
         </div>
       )}
 
-      {/* If Push Alerts are enabled */}
-      {isSupported && isSubscribed && (
-        <div className="border-foreground/5 border-b bg-emerald-500/5 px-4 py-1.5">
-          <div className="mx-auto flex max-w-md items-center justify-between text-[10px] text-emerald-400">
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-              PWA Push Alerts Active
-            </span>
-            <span className="text-foreground/40 font-mono text-[9px]">LIVE UPDATES</span>
-          </div>
-        </div>
-      )}
-
       {/* 3. MAIN SWIPEABLE NOTIFICATION LISTS */}
       <main className="relative w-full flex-1 overflow-hidden" ref={containerRef}>
         <motion.div

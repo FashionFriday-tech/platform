@@ -11,12 +11,14 @@ import {
   MapPinIcon,
   MoonIcon,
   MousePointerIcon,
-  Settings2Icon,
   ShieldCheckIcon,
+  ShoppingBagIcon,
+  TagIcon,
   TrashIcon,
 } from '@ff/ui';
 
 import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
+import { usePushNotifications } from '@/features/notifications';
 
 import { useSettingsFlow } from '../hooks/use-settings-flow';
 import { DeleteAccountModal } from './delete-account-modal';
@@ -25,6 +27,12 @@ import { SettingLink } from './setting-link';
 import { SettingToggle } from './setting-toggle';
 
 export function SettingsPage() {
+  const {
+    isSubscribed,
+    isLoading: isPushLoading,
+    subscribe: subscribePush,
+    unsubscribe: unsubscribePush,
+  } = usePushNotifications();
   const {
     router,
     user,
@@ -122,11 +130,26 @@ export function SettingsPage() {
         {/* Notification Settings */}
         <div className="space-y-3">
           <p className="text-foreground-subtle px-6 text-[10px] font-black tracking-[0.3em] uppercase opacity-60">
-            Notification
+            Notifications
           </p>
           <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-4xl border shadow-sm">
             <SettingToggle
               icon={<BellIcon size={20} />}
+              label="PWA Push Alerts"
+              active={isSubscribed}
+              onToggle={() => {
+                if (isPushLoading) {
+                  return;
+                }
+                if (isSubscribed) {
+                  void unsubscribePush();
+                } else {
+                  void subscribePush();
+                }
+              }}
+            />
+            <SettingToggle
+              icon={<ShoppingBagIcon size={20} />}
               label="Order Logistics"
               active={notifications.orders}
               onToggle={() => {
@@ -134,7 +157,7 @@ export function SettingsPage() {
               }}
             />
             <SettingToggle
-              icon={<Settings2Icon size={20} />}
+              icon={<TagIcon size={20} />}
               label="Exclusive Drops"
               active={notifications.promos}
               onToggle={() => {
