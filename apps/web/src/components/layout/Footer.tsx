@@ -313,6 +313,24 @@ function CodLogo() {
   );
 }
 
+const PAYMENT_METHODS = [
+  { id: 'upi', name: 'UPI', component: UpiLogo },
+  { id: 'gpay', name: 'Google Pay', component: GPayLogo },
+  { id: 'phonepe', name: 'PhonePe', component: PhonePeLogo },
+  { id: 'paytm', name: 'Paytm', component: PaytmLogo },
+  { id: 'visa', name: 'Visa', component: VisaLogo },
+  { id: 'mastercard', name: 'Mastercard', component: MastercardLogo },
+  { id: 'rupay', name: 'RuPay', component: RuPayLogo },
+  { id: 'cod', name: 'Cash on Delivery', component: CodLogo },
+];
+
+const DUPLICATED_PAYMENT_METHODS = [
+  ...PAYMENT_METHODS,
+  ...PAYMENT_METHODS,
+  ...PAYMENT_METHODS,
+  ...PAYMENT_METHODS,
+];
+
 export default function Footer() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState('');
@@ -364,6 +382,29 @@ export default function Footer() {
             transparent 100%
           );
           animation: footer-card-shine 4.8s ease-in-out infinite;
+        }
+
+        @keyframes payment-marquee-scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .animate-payment-scroll {
+          display: flex;
+          width: max-content;
+          animation: payment-marquee-scroll 24s linear infinite;
+          will-change: transform;
+        }
+        .animate-payment-scroll:hover,
+        .animate-payment-scroll:active {
+          animation-play-state: paused;
+        }
+        .payment-marquee-mask {
+          mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
         }
       `}</style>
       {/* 2. MOBILE OPEN / CLOSE TOGGLE BUTTON */}
@@ -540,51 +581,41 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* D. ACCEPTED PAYMENT METHODS AS ACCURATE SVG LOGOS */}
-          <div className="mb-10 flex flex-wrap items-center justify-between gap-4 border-y border-zinc-800/80 py-5">
-            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-              <span className="mr-1 text-[10px] font-black tracking-[0.2em] text-zinc-500 uppercase">
+          {/* D. ACCEPTED PAYMENT METHODS AS ACCURATE SVG LOGOS IN SINGLE ROW AUTO-SCROLL */}
+          <div className="mb-10 flex flex-col gap-4 border-y border-zinc-800/80 py-4.5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <span className="shrink-0 text-[10px] font-black tracking-[0.2em] text-zinc-500 uppercase">
                 SECURE PAYMENTS:
               </span>
-              <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
-                <UpiLogo />
-              </div>
-              <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
-                <GPayLogo />
-              </div>
-              <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
-                <PhonePeLogo />
-              </div>
-              <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
-                <PaytmLogo />
-              </div>
-              <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
-                <VisaLogo />
-              </div>
-              <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
-                <MastercardLogo />
-              </div>
-              <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
-                <RuPayLogo />
-              </div>
-              <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
-                <CodLogo />
+              <div className="payment-marquee-mask relative w-full min-w-0 overflow-hidden">
+                <div className="animate-payment-scroll flex items-center gap-2.5 py-0.5 sm:gap-3">
+                  {DUPLICATED_PAYMENT_METHODS.map((item, idx) => (
+                    <div
+                      key={`${item.id}-${idx}`}
+                      className="flex h-7 shrink-0 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1 transition-colors hover:border-zinc-700 hover:bg-zinc-900"
+                    >
+                      <item.component />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* BACK TO TOP BUTTON */}
-            <button
-              type="button"
-              onClick={scrollToTop}
-              className="group flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-1.5 text-[10px] font-black tracking-widest text-zinc-300 uppercase transition-all hover:border-zinc-500 hover:bg-white hover:text-black active:scale-95"
-              aria-label="Back to top of page"
-            >
-              <span>BACK TO TOP</span>
-              <ArrowUpIcon
-                size={12}
-                className="transition-transform group-hover:-translate-y-0.5"
-              />
-            </button>
+            <div className="flex shrink-0 items-center justify-start sm:justify-end">
+              <button
+                type="button"
+                onClick={scrollToTop}
+                className="group flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-1.5 text-[10px] font-black tracking-widest text-zinc-300 uppercase transition-all hover:border-zinc-500 hover:bg-white hover:text-black active:scale-95"
+                aria-label="Back to top of page"
+              >
+                <span>BACK TO TOP</span>
+                <ArrowUpIcon
+                  size={12}
+                  className="transition-transform group-hover:-translate-y-0.5"
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>
