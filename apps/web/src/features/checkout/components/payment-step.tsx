@@ -111,7 +111,7 @@ export function PaymentStep() {
   };
 
   return (
-    <div className="bg-background text-foreground min-h-screen px-4 pb-52 md:px-6 lg:py-20 lg:pb-20">
+    <div className="bg-background text-foreground min-h-screen px-4 pb-36 md:px-6 lg:py-20 lg:pb-20">
       <CheckoutProgress currentStage={3} />
 
       <main className="mx-auto max-w-4xl pt-12">
@@ -258,12 +258,12 @@ export function PaymentStep() {
       </main>
 
       {/* STICKY FOOTER */}
-      <div className="fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-50 flex flex-col items-center lg:bottom-0">
+      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center">
         <motion.div
           animate={{ height: isExpanded ? 'auto' : 'auto' }}
-          className="bg-background border-border w-full overflow-hidden rounded-t-[3rem] border-t shadow-2xl backdrop-blur-2xl"
+          className="border-border/40 bg-background/95 w-full overflow-hidden rounded-t-[3rem] border-t pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-2xl"
         >
-          <div className="mx-auto max-w-4xl px-4 pb-5">
+          <div className="mx-auto max-w-4xl px-4">
             <AnimatePresence>
               {isExpanded && (
                 <motion.div
@@ -286,29 +286,33 @@ export function PaymentStep() {
               )}
             </AnimatePresence>
 
-            <div className="bg-foreground shadow-foreground/20 flex w-full items-center justify-between rounded-full p-2 shadow-2xl">
+            <div className="flex w-full items-center justify-between gap-3 pt-2">
               <div
-                className="flex cursor-pointer flex-col px-6"
+                className="flex cursor-pointer flex-col px-2"
                 onClick={() => {
                   setIsExpanded(!isExpanded);
                 }}
               >
-                <p className="text-background/40 mb-0.5 flex items-center gap-2 text-[8px] font-black tracking-widest text-nowrap uppercase">
+                <p className="text-foreground-muted mb-0.5 flex items-center gap-1.5 text-[8.5px] font-black tracking-widest text-nowrap uppercase">
                   Final Payable{' '}
                   <motion.span animate={{ rotate: isExpanded ? 180 : 0 }}>
                     <ChevronUpIcon size={10} />
                   </motion.span>
                 </p>
-                <p className="text-background text-2xl font-black italic">₹{totalAmount}</p>
+                <p className="text-foreground text-2xl leading-tight font-black italic">
+                  ₹{totalAmount}
+                </p>
               </div>
               <button
                 type="button"
                 disabled={isPlacing}
                 onClick={handlePlaceOrder}
-                className="bg-background text-foreground flex w-full items-center justify-center gap-3 rounded-full px-8 py-4 text-sm font-black tracking-wide uppercase transition-all active:scale-95 disabled:opacity-50"
+                className="flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-zinc-800 bg-black px-6 text-white shadow-lg transition-transform outline-none active:scale-95 disabled:opacity-50 dark:border-zinc-300 dark:bg-white dark:text-black"
               >
-                {isPlacing ? 'Placing Order...' : 'Place Order'}
-                {!isPlacing && <ChevronRightIcon size={18} />}
+                <span className="flex skew-x-[12deg] items-center gap-2 text-xs font-black tracking-[0.2em] whitespace-nowrap uppercase">
+                  {isPlacing ? 'Placing Order...' : 'Place Order'}
+                  {!isPlacing && <ChevronRightIcon size={16} />}
+                </span>
               </button>
             </div>
           </div>

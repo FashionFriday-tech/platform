@@ -30,7 +30,7 @@ export function OrderReviewStep() {
   } = useCheckoutReview();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-36 pb-60 transition-colors duration-300 sm:pt-40 lg:pb-24">
+    <div className="bg-background text-foreground min-h-screen pt-36 pb-44 transition-colors duration-300 sm:pt-40 lg:pb-24">
       <CheckoutProgress currentStage={2} />
 
       <main className="mx-auto max-w-7xl px-4 pt-8 md:px-8">
@@ -201,7 +201,7 @@ export function OrderReviewStep() {
         </div>
       </main>
 
-      <div className="fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-50 flex flex-col items-center lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center lg:hidden">
         {pricing.discount > 0 && (
           <motion.div
             onClick={() => {
@@ -215,9 +215,9 @@ export function OrderReviewStep() {
 
         <motion.div
           animate={{ height: isExpanded ? 'auto' : 'auto' }}
-          className="bg-background/90 border-border w-full overflow-hidden rounded-t-[3rem] border-t shadow-2xl backdrop-blur-2xl"
+          className="border-border/40 bg-background/95 w-full overflow-hidden rounded-t-[3rem] border-t pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-2xl"
         >
-          <div className="mx-auto max-w-4xl px-4 pb-5">
+          <div className="mx-auto max-w-4xl px-4">
             <AnimatePresence>
               {isExpanded && (
                 <motion.div
@@ -265,9 +265,11 @@ export function OrderReviewStep() {
 
               <button
                 onClick={handleContinue}
-                className="bg-foreground text-background rounded-full px-8 py-4 text-xs font-black tracking-widest uppercase shadow-2xl active:scale-95"
+                className="flex h-12 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-black px-8 text-white shadow-lg transition-transform outline-none active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black"
               >
-                {address ? (isLoggedIn ? 'Pay Now' : 'Continue') : 'Add Address'}
+                <span className="skew-x-[12deg] text-xs font-black tracking-widest whitespace-nowrap uppercase">
+                  {address ? (isLoggedIn ? 'Pay Now' : 'Continue') : 'Add Address'}
+                </span>
               </button>
             </div>
           </div>

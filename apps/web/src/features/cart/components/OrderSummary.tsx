@@ -185,19 +185,23 @@ export function OrderSummary() {
 
       {/* Mobile Sticky Quick-Action Bar */}
       {hasItems && (
-        <div className="bg-background/95 border-border/40 fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-50 border-t p-4 shadow-[0_-4px_16px_rgba(0,0,0,0.15)] backdrop-blur-md lg:hidden">
-          <div className="bg-foreground text-background flex items-center justify-between rounded-full p-2 shadow-2xl">
-            <div className="flex flex-col pl-6">
-              <span className="text-[10px] font-black tracking-widest uppercase opacity-70">
+        <div className="border-border/40 bg-background/95 fixed inset-x-0 bottom-0 z-50 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-md lg:hidden">
+          <div className="flex w-full items-center justify-between gap-3">
+            <div className="flex flex-col pl-2">
+              <span className="text-foreground-muted text-[10px] font-black tracking-widest uppercase">
                 Total
               </span>
-              <span className="text-xl leading-none font-bold">₹{total.toLocaleString()}</span>
+              <span className="text-foreground text-xl leading-tight font-black">
+                ₹{total.toLocaleString()}
+              </span>
             </div>
             <Link
               href="/checkout/review"
-              className="bg-background text-foreground flex h-12 items-center gap-2 rounded-full px-6 font-black tracking-widest uppercase transition-all hover:scale-[1.02] active:scale-95"
+              className="flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-zinc-800 bg-black text-white shadow-lg transition-transform outline-none active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black"
             >
-              Checkout Now <ArrowRightIcon size={16} />
+              <span className="flex skew-x-[12deg] items-center gap-2 text-sm font-black tracking-widest whitespace-nowrap uppercase">
+                Checkout Now <ArrowRightIcon size={16} />
+              </span>
             </Link>
           </div>
         </div>
