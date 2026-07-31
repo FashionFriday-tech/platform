@@ -86,14 +86,24 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
   const handleTopTouchMove = (e: React.TouchEvent) => {
     if (touchStartY.current !== null) {
       const diffY = e.touches[0].clientY - touchStartY.current;
-      if (diffY > 20) {
+      // Require intentional downward drag (touch, hold and swipe down >= 60px)
+      if (diffY > 60) {
         setActiveDrawer(null);
         touchStartY.current = null;
       }
     }
   };
 
-  const handleTopTouchEnd = () => {
+  const handleTopTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY.current !== null) {
+      const touch = e.changedTouches?.[0];
+      if (touch) {
+        const diffY = touch.clientY - touchStartY.current;
+        if (diffY > 50) {
+          setActiveDrawer(null);
+        }
+      }
+    }
     touchStartY.current = null;
   };
 
@@ -194,16 +204,13 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
               className="bg-background border-border fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-70 flex max-h-[82vh] flex-col rounded-t-[2rem] border-t shadow-2xl lg:bottom-0"
             >
-              {/* Drag Handle - Click or swipe down to close immediately without step-by-step dragging */}
+              {/* Drag Handle - Only swipe down to close; do not close on click/tap */}
               <div
-                onClick={() => {
-                  setActiveDrawer(null);
-                }}
                 onTouchStart={handleTopTouchStart}
                 onTouchMove={handleTopTouchMove}
                 onTouchEnd={handleTopTouchEnd}
-                className="flex w-full shrink-0 cursor-pointer justify-center py-3.5 transition-opacity hover:opacity-70 active:opacity-50"
-                aria-label="Close filter drawer"
+                className="flex w-full shrink-0 justify-center py-3.5 transition-opacity select-none"
+                aria-label="Filter drawer handle"
               >
                 <div className="bg-border h-1.5 w-12 -skew-x-[12deg] rounded-xs opacity-60" />
               </div>
@@ -213,12 +220,17 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                 onTouchStart={handleTopTouchStart}
                 onTouchMove={handleTopTouchMove}
                 onTouchEnd={handleTopTouchEnd}
-                className="border-border flex items-center justify-between border-b px-4 pb-3"
+                className="border-border flex items-center justify-between border-b px-4 pb-3 select-none"
               >
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-black tracking-widest uppercase">
                     {activeDrawer === 'filter' ? 'Refine Results' : 'Sort Products'}
                   </h3>
+                  {activeDrawer === 'filter' && drawerDraftFilterCount > 0 && (
+                    <span className="flex h-5 min-w-[20px] -skew-x-[12deg] items-center justify-center rounded-xs bg-white px-1.5 text-[10px] font-black text-black shadow-xs">
+                      <span className="skew-x-[12deg]">{drawerDraftFilterCount}</span>
+                    </span>
+                  )}
                 </div>
 
                 <button
@@ -307,10 +319,10 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                         setDrawerDraftFilters({});
                       }}
                       disabled={!isMobileResetActive}
-                      className={`flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all ${
+                      className={`flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all duration-200 ${
                         isMobileResetActive
-                          ? 'border-foreground text-foreground hover:bg-foreground/5 cursor-pointer active:scale-95 dark:border-white dark:text-white dark:hover:bg-white/10'
-                          : 'border-border/40 text-foreground-subtle/40 pointer-events-none cursor-not-allowed opacity-30'
+                          ? 'cursor-pointer border-white bg-white/10 text-white shadow-md hover:bg-white/20 active:scale-95'
+                          : 'cursor-not-allowed border-zinc-800 bg-transparent text-zinc-500 opacity-60 dark:border-zinc-800 dark:text-zinc-500'
                       }`}
                     >
                       <span className="block skew-x-[12deg]">Reset All</span>

@@ -206,6 +206,20 @@ export const CatalogueSidebar = ({
           : 'flex h-full w-full flex-col justify-between overflow-hidden'
       }
     >
+      {/* 1. Top Header with Active Filter Count (Desktop) */}
+      {!isMobileDrawer && (
+        <div className="border-border mb-3 flex shrink-0 items-center justify-between border-b pb-3">
+          <div className="flex items-center gap-2 text-[11px] font-black tracking-widest uppercase">
+            <span className="text-foreground">Filters</span>
+            {totalDraftFilterCount > 0 && (
+              <span className="flex h-5 min-w-[20px] -skew-x-[12deg] items-center justify-center rounded-xs bg-white px-1.5 text-[10px] font-black text-black shadow-xs">
+                <span className="skew-x-[12deg]">{totalDraftFilterCount}</span>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* 2. Middle Scrollable Content (Isolated scroll with min-h-0 and Lenis prevention) */}
       <div
         data-lenis-prevent="true"
@@ -671,10 +685,10 @@ export const CatalogueSidebar = ({
             <button
               onClick={handleReset}
               disabled={!isResetActive}
-              className={`flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all ${
+              className={`flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all duration-200 ${
                 isResetActive
-                  ? 'border-foreground text-foreground hover:bg-foreground/5 cursor-pointer active:scale-95 dark:border-white dark:text-white dark:hover:bg-white/10'
-                  : 'border-border/40 text-foreground-subtle/40 pointer-events-none cursor-not-allowed opacity-30'
+                  ? 'cursor-pointer border-white bg-white/10 text-white shadow-md hover:bg-white/20 active:scale-95'
+                  : 'cursor-not-allowed border-zinc-800 bg-transparent text-zinc-500 opacity-60 dark:border-zinc-800 dark:text-zinc-500'
               }`}
             >
               <span className="block skew-x-[12deg]">Reset All</span>
