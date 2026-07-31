@@ -211,7 +211,7 @@ export function OrderReviewStep() {
       </main>
 
       {/* Mobile Sticky Quick-Action Bar & Attached Summary Card Drawer (Bag Page Design) */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex w-full flex-col items-center transform-gpu will-change-transform lg:hidden">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex w-full flex-col items-center lg:hidden">
         {/* Top Summary Button Tab */}
         <div className="pointer-events-auto z-20 flex w-full justify-center">
           <button

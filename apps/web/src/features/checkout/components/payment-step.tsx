@@ -258,7 +258,7 @@ export function PaymentStep() {
       </main>
 
       {/* STICKY FOOTER */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center transform-gpu will-change-transform">
+      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center">
         <div className="border-border/40 bg-background/95 w-full overflow-hidden rounded-t-[3rem] border-t pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-2xl">
           <div className="mx-auto max-w-lg px-6">
             <AnimatePresence>

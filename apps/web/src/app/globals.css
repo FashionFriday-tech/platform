@@ -99,6 +99,11 @@
   }
 
   /* Base app styling */
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     -webkit-user-select: none;
