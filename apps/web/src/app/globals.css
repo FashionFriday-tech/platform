@@ -99,9 +99,39 @@
   }
 
   /* Base app styling */
+  html,
   body {
     font-family: var(--font-sans);
     @apply bg-background text-foreground antialiased;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Native App feel: Disallow text selection and touch callouts globally */
+  *,
+  *::before,
+  *::after {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Prevent accidental ghost image dragging */
+  img,
+  picture,
+  video,
+  canvas {
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+
+  /* Retain full text typing and selection for form inputs */
+  input,
+  textarea,
+  [contenteditable='true'] {
+    -webkit-user-select: text;
+    user-select: text;
   }
 }
 
