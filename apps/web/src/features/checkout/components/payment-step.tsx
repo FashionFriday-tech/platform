@@ -111,7 +111,7 @@ export function PaymentStep() {
   };
 
   return (
-    <div className="bg-background text-foreground min-h-screen px-4 pt-14 pb-20 transition-colors duration-300 sm:pt-16 md:px-6 lg:pt-20 lg:pb-8">
+    <div className="bg-background text-foreground min-h-screen px-4 pt-32 pb-20 transition-colors duration-300 sm:pt-36 md:px-6 lg:pt-44 lg:pb-8">
       <CheckoutProgress currentStage={3} />
 
       <main className="mx-auto max-w-4xl pt-0 sm:pt-1">

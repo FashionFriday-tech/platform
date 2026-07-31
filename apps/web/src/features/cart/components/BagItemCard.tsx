@@ -72,7 +72,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
   };
 
   return (
-    <div className="border-border group relative flex w-full flex-row gap-6 border-b py-6 first:pt-1 transition-all last:border-0 md:gap-10 md:py-8">
+    <div className="border-border group relative flex w-full flex-row gap-6 border-b py-6 transition-all last:border-0 md:gap-10 md:py-8">
       {/* 1. Optimized Image */}
       <div className="bg-background-muted relative aspect-square w-40 shrink-0 overflow-hidden rounded-3xl md:w-60">
         <Link href={slug ? `/products/${slug}` : '#'}>

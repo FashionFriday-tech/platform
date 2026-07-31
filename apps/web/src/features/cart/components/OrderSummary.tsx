@@ -55,12 +55,12 @@ export function OrderSummary() {
 
   const renderSummaryCard = (isModal = false) => (
     <div
-      className={`bg-foreground border-border/30 rounded-[2.5rem] border p-6 text-background shadow-2xl md:p-8 lg:p-8`}
+      className={`bg-card text-card-foreground border-border rounded-[2.5rem] border p-6 shadow-xl md:p-8 lg:p-8`}
     >
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-background text-2xl font-medium tracking-tight">Summary</h2>
+        <h2 className="text-foreground text-2xl font-medium tracking-tight">Summary</h2>
         <div className="flex items-center gap-3">
-          <span className="border-background text-background -skew-x-[12deg] rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase">
+          <span className="border-border text-foreground -skew-x-[12deg] rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase">
             <span className="skew-x-[12deg] block">
               {itemCount} {itemCount === 1 ? 'Item' : 'Items'}
             </span>
@@ -69,7 +69,7 @@ export function OrderSummary() {
             <button
               type="button"
               onClick={() => setIsExpanded(false)}
-              className="text-background/60 hover:text-background -skew-x-[12deg] flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-background/20 transition-colors"
+              className="text-foreground-muted hover:text-foreground -skew-x-[12deg] flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-border transition-colors"
               aria-label="Close summary"
             >
               <span className="skew-x-[12deg]">
@@ -82,27 +82,27 @@ export function OrderSummary() {
 
       {/* Breakdown */}
       <div className="space-y-5 text-[15px]">
-        <div className="text-background-muted flex justify-between">
+        <div className="text-foreground-muted flex justify-between">
           <span className="font-medium">Subtotal</span>
-          <span className="text-background font-semibold">₹{subtotal.toLocaleString()}</span>
+          <span className="text-foreground font-semibold">₹{subtotal.toLocaleString()}</span>
         </div>
 
         {standardDiscount > 0 && (
-          <div className="text-background flex items-center justify-between font-medium">
+          <div className="text-foreground flex items-center justify-between font-medium">
             <div className="flex flex-col">
               <span>Catalogue Savings</span>
               <span className="text-[10px] tracking-tighter uppercase opacity-70">
                 Instant Discount
               </span>
             </div>
-            <span className="font-semibold text-emerald-400">
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
               - ₹{standardDiscount.toLocaleString()}
             </span>
           </div>
         )}
 
         {appliedPromo && promoDiscount > 0 && (
-          <div className="text-background flex items-center justify-between font-medium">
+          <div className="text-foreground flex items-center justify-between font-medium">
             <div className="flex flex-col">
               <span className="flex items-center gap-2">Promo Discount</span>
               <span className="text-[10px] tracking-tighter uppercase opacity-70">
@@ -110,13 +110,13 @@ export function OrderSummary() {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-emerald-400">
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                 - ₹{promoDiscount.toLocaleString()}
               </span>
               <button
                 type="button"
                 onClick={handleRemovePromo}
-                className="text-background/60 hover:text-background cursor-pointer text-xs underline"
+                className="text-foreground-muted hover:text-foreground cursor-pointer text-xs underline"
               >
                 Remove
               </button>
@@ -124,22 +124,22 @@ export function OrderSummary() {
           </div>
         )}
 
-        <div className="text-background-muted flex justify-between">
+        <div className="text-foreground-muted flex justify-between">
           <span>Shipping</span>
-          <span className="text-[11px] font-semibold tracking-widest text-emerald-400 uppercase">
+          <span className="text-[11px] font-semibold tracking-widest text-emerald-600 dark:text-emerald-400 uppercase">
             Free Delivery
           </span>
         </div>
 
-        <div className="border-border/30 mt-2 border-t pt-5">
+        <div className="border-border mt-2 border-t pt-5">
           <div className="flex items-end justify-between">
             <div className="flex flex-col">
-              <span className="text-background-muted text-[10px] font-bold tracking-[0.2em] uppercase">
+              <span className="text-foreground-muted text-[10px] font-bold tracking-[0.2em] uppercase">
                 Total
               </span>
-              <p className="text-background text-[10px] tracking-wide">Inclusive of all taxes</p>
+              <p className="text-foreground-subtle text-[10px] tracking-wide">Inclusive of all taxes</p>
             </div>
-            <span className="text-background text-3xl font-bold tracking-tighter">
+            <span className="text-foreground text-3xl font-bold tracking-tighter">
               ₹{total.toLocaleString()}
             </span>
           </div>
@@ -147,7 +147,7 @@ export function OrderSummary() {
       </div>
 
       {/* Promo Code Input - Crossed Style */}
-      <div className="relative mt-8 mb-8 -skew-x-[12deg] overflow-hidden rounded-xl border border-background/20 bg-background shadow-md">
+      <div className="border-border bg-foreground/5 relative mt-8 mb-8 -skew-x-[12deg] overflow-hidden rounded-xl border shadow-xs">
         <div className="text-foreground-subtle pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 skew-x-[12deg]">
           <TagIcon size={16} />
         </div>
@@ -182,10 +182,10 @@ export function OrderSummary() {
           {hasItems ? (
             <Link
               href="/checkout/review"
-              className="bg-background text-foreground shadow-brand/10 group hidden w-full -skew-x-[12deg] cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-background/20 py-4 font-black tracking-widest uppercase shadow-xl transition-all hover:opacity-95 active:scale-[0.98] lg:flex"
+              className="bg-foreground text-background shadow-brand/10 group hidden w-full -skew-x-[12deg] cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-zinc-800 py-4 font-black tracking-widest uppercase shadow-xl transition-all hover:opacity-95 active:scale-[0.98] lg:flex dark:border-zinc-300"
             >
               <span className="flex skew-x-[12deg] items-center gap-2 text-xs font-black tracking-widest uppercase">
-                <ShieldCheckIcon size={16} className="text-emerald-500" />
+                <ShieldCheckIcon size={16} className="text-emerald-400" />
                 Checkout Now
                 <ArrowRightIcon size={16} className="transition-transform group-hover:translate-x-1" />
               </span>
@@ -193,7 +193,7 @@ export function OrderSummary() {
           ) : (
             <button
               disabled
-              className="bg-background/40 text-foreground/40 hidden w-full -skew-x-[12deg] cursor-not-allowed items-center justify-center gap-2.5 rounded-xl py-4 font-black tracking-widest uppercase lg:flex"
+              className="bg-foreground/20 text-foreground/40 hidden w-full -skew-x-[12deg] cursor-not-allowed items-center justify-center gap-2.5 rounded-xl py-4 font-black tracking-widest uppercase lg:flex"
             >
               <span className="skew-x-[12deg]">Your Bag is Empty</span>
             </button>
@@ -202,8 +202,8 @@ export function OrderSummary() {
       )}
 
       {/* Trust Badge */}
-      <div className="border-border/20 text-background mt-8 flex items-center justify-center gap-3 border-t pt-6 text-[10px] font-bold tracking-[0.2em] uppercase">
-        <ShieldCheckIcon size={16} className="text-emerald-400" />
+      <div className="border-border text-foreground-muted mt-8 flex items-center justify-center gap-3 border-t pt-6 text-[10px] font-bold tracking-[0.2em] uppercase">
+        <ShieldCheckIcon size={16} className="text-emerald-600 dark:text-emerald-400" />
         <span>Secure Checkout</span>
       </div>
     </div>
@@ -219,25 +219,27 @@ export function OrderSummary() {
       {/* Mobile Sticky Quick-Action Bar & Attached Summary Card Drawer */}
       {hasItems && (
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex w-full flex-col items-center transform-gpu will-change-transform lg:hidden">
-          {/* Top Summary Button Tab - Fixed on Top, Curved & Longer */}
+          {/* Top Summary Button Tab - Fixed on Top, Rounded Crossed Style & Seamless */}
           <div className="pointer-events-auto z-20 flex w-full justify-center">
             <button
               type="button"
               onClick={() => {
                 setIsExpanded((prev) => !prev);
               }}
-              className="bg-background text-foreground border-border/40 hover:bg-foreground/5 -mb-px flex h-9 w-72 cursor-pointer items-center justify-center gap-2 rounded-t-2xl border-t border-x px-8 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] transition-all active:scale-98 sm:w-80"
+              className="bg-card text-card-foreground border-border/80 hover:bg-foreground/5 -mb-px flex h-9 w-72 -skew-x-[12deg] cursor-pointer items-center justify-center rounded-t-xl border-t border-x px-8 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] transition-all active:scale-98 sm:w-80 sm:rounded-t-2xl"
               aria-label="Toggle Summary"
             >
-              <span className="text-[10px] font-black tracking-[0.25em] uppercase">
-                Summary
+              <span className="flex skew-x-[12deg] items-center justify-center gap-2">
+                <span className="text-[10px] font-black tracking-[0.25em] uppercase">
+                  Summary
+                </span>
+                <motion.span
+                  animate={{ rotate: isExpanded ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronUpIcon size={12} />
+                </motion.span>
               </span>
-              <motion.span
-                animate={{ rotate: isExpanded ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChevronUpIcon size={12} />
-              </motion.span>
             </button>
           </div>
 
@@ -252,12 +254,12 @@ export function OrderSummary() {
                 className="pointer-events-auto w-full overflow-hidden"
               >
                 <div className="mx-auto max-w-lg px-2 sm:px-4">
-                  <div className="bg-foreground text-background border-border/30 max-h-[70vh] space-y-5 overflow-y-auto rounded-t-3xl rounded-b-none border-t border-x p-6 shadow-2xl">
+                  <div className="bg-card text-card-foreground border-border/80 max-h-[70vh] space-y-5 overflow-y-auto rounded-t-3xl rounded-b-none border-t border-x p-6 shadow-2xl">
                     {/* Header */}
                     <div className="flex items-center justify-between">
-                      <h2 className="text-background text-2xl font-medium tracking-tight">Summary</h2>
+                      <h2 className="text-foreground text-2xl font-medium tracking-tight">Summary</h2>
                       <div className="flex items-center gap-3">
-                        <span className="border-background text-background -skew-x-[12deg] rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase">
+                        <span className="border-border text-foreground -skew-x-[12deg] rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase">
                           <span className="skew-x-[12deg] block">
                             {itemCount} {itemCount === 1 ? 'Item' : 'Items'}
                           </span>
@@ -267,7 +269,7 @@ export function OrderSummary() {
                           onClick={() => {
                             setIsExpanded(false);
                           }}
-                          className="text-background/60 hover:text-background -skew-x-[12deg] flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-background/20 transition-colors"
+                          className="text-foreground-muted hover:text-foreground -skew-x-[12deg] flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-border transition-colors"
                           aria-label="Close summary"
                         >
                           <span className="skew-x-[12deg]">
@@ -279,27 +281,27 @@ export function OrderSummary() {
 
                     {/* Breakdown */}
                     <div className="space-y-4 text-[14px]">
-                      <div className="text-background-muted flex justify-between">
+                      <div className="text-foreground-muted flex justify-between">
                         <span className="font-medium">Subtotal</span>
-                        <span className="text-background font-semibold">₹{subtotal.toLocaleString()}</span>
+                        <span className="text-foreground font-semibold">₹{subtotal.toLocaleString()}</span>
                       </div>
 
                       {standardDiscount > 0 && (
-                        <div className="text-background flex items-center justify-between font-medium">
+                        <div className="text-foreground flex items-center justify-between font-medium">
                           <div className="flex flex-col">
                             <span>Catalogue Savings</span>
                             <span className="text-[10px] tracking-tighter uppercase opacity-70">
                               Instant Discount
                             </span>
                           </div>
-                          <span className="font-semibold text-emerald-400">
+                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                             - ₹{standardDiscount.toLocaleString()}
                           </span>
                         </div>
                       )}
 
                       {appliedPromo && promoDiscount > 0 && (
-                        <div className="text-background flex items-center justify-between font-medium">
+                        <div className="text-foreground flex items-center justify-between font-medium">
                           <div className="flex flex-col">
                             <span className="flex items-center gap-2">Promo Discount</span>
                             <span className="text-[10px] tracking-tighter uppercase opacity-70">
@@ -307,13 +309,13 @@ export function OrderSummary() {
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-emerald-400">
+                            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                               - ₹{promoDiscount.toLocaleString()}
                             </span>
                             <button
                               type="button"
                               onClick={handleRemovePromo}
-                              className="text-background/60 hover:text-background cursor-pointer text-xs underline"
+                              className="text-foreground-muted hover:text-foreground cursor-pointer text-xs underline"
                             >
                               Remove
                             </button>
@@ -321,22 +323,22 @@ export function OrderSummary() {
                         </div>
                       )}
 
-                      <div className="text-background-muted flex justify-between">
+                      <div className="text-foreground-muted flex justify-between">
                         <span>Shipping</span>
-                        <span className="text-[11px] font-semibold tracking-widest text-emerald-400 uppercase">
+                        <span className="text-[11px] font-semibold tracking-widest text-emerald-600 dark:text-emerald-400 uppercase">
                           Free Delivery
                         </span>
                       </div>
 
-                      <div className="border-border/30 mt-2 border-t pt-4">
+                      <div className="border-border/80 mt-2 border-t pt-4">
                         <div className="flex items-end justify-between">
                           <div className="flex flex-col">
-                            <span className="text-background-muted text-[10px] font-bold tracking-[0.2em] uppercase">
+                            <span className="text-foreground-muted text-[10px] font-bold tracking-[0.2em] uppercase">
                               Total
                             </span>
-                            <p className="text-background text-[10px] tracking-wide">Inclusive of all taxes</p>
+                            <p className="text-foreground-subtle text-[10px] tracking-wide">Inclusive of all taxes</p>
                           </div>
-                          <span className="text-background text-3xl font-bold tracking-tighter">
+                          <span className="text-foreground text-3xl font-bold tracking-tighter">
                             ₹{total.toLocaleString()}
                           </span>
                         </div>
@@ -344,7 +346,7 @@ export function OrderSummary() {
                     </div>
 
                     {/* Promo Code Input - Crossed Style */}
-                    <div className="relative mt-6 mb-6 -skew-x-[12deg] overflow-hidden rounded-xl border border-background/20 bg-background shadow-md">
+                    <div className="border-border/80 bg-foreground/5 relative mt-6 mb-6 -skew-x-[12deg] overflow-hidden rounded-xl border shadow-xs">
                       <div className="text-foreground-subtle pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 skew-x-[12deg]">
                         <TagIcon size={16} />
                       </div>
@@ -374,8 +376,8 @@ export function OrderSummary() {
                     </div>
 
                     {/* Trust Badge */}
-                    <div className="border-border/20 text-background mt-6 flex items-center justify-center gap-3 border-t pt-4 text-[10px] font-bold tracking-[0.2em] uppercase">
-                      <ShieldCheckIcon size={16} className="text-emerald-400" />
+                    <div className="border-border/60 text-foreground-muted mt-6 flex items-center justify-center gap-3 border-t pt-4 text-[10px] font-bold tracking-[0.2em] uppercase">
+                      <ShieldCheckIcon size={16} className="text-emerald-600 dark:text-emerald-400" />
                       <span>Secure Checkout</span>
                     </div>
                   </div>

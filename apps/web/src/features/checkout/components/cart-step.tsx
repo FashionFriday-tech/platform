@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 
-import { ChevronDownIcon, ShoppingBagIcon } from '@ff/ui';
+import { ShoppingBagIcon } from '@ff/ui';
 
 import { CartItemsCard, OrderSummary, useCart } from '@/features/cart';
 
@@ -13,7 +13,7 @@ export function CartStep() {
   const { cartItems, hasItems, isMounted } = useCart();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-14 pb-16 transition-colors duration-300 sm:pt-16 lg:pt-20 lg:pb-6">
+    <div className="bg-background text-foreground min-h-screen pt-32 pb-16 transition-colors duration-300 sm:pt-36 lg:pt-44 lg:pb-6">
       <CheckoutProgress currentStage={1} />
       <main className="max-w-8xl mx-auto px-4 pt-0 md:px-8">
         <div className="w-full">
@@ -51,25 +51,6 @@ export function CartStep() {
                       Explore Collection
                     </Link>
                   </div>
-                )}
-                {hasItems && (
-                  <Link
-                    href="#summary"
-                    className="bg-background/80 border-border animate-bounce-subtle group right-6 bottom-28 z-40 mt-10 flex items-center justify-between gap-3 rounded-full border px-6 py-3 backdrop-blur-xl transition-all active:scale-95 lg:hidden"
-                  >
-                    <div className="flex flex-col items-start">
-                      <span className="text-foreground-subtle text-[10px] leading-none font-black tracking-[0.2em] uppercase">
-                        View
-                      </span>
-                      <span className="text-foreground font-bold tracking-widest uppercase">
-                        Summary
-                      </span>
-                    </div>
-
-                    <div className="bg-foreground text-background flex h-8 w-8 items-center justify-center rounded-full transition-transform group-hover:translate-y-0.5">
-                      <ChevronDownIcon size={16} />
-                    </div>
-                  </Link>
                 )}
               </div>
             </div>
