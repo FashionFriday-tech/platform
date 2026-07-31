@@ -46,9 +46,11 @@ export function CartStep() {
                     </p>
                     <Link
                       href="/catalogue"
-                      className="bg-foreground text-background inline-block rounded-full px-10 py-4 text-xs font-black tracking-widest uppercase transition-transform active:scale-95"
+                      className="border-border bg-foreground text-background hover:bg-foreground/90 inline-flex h-12 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border px-8 shadow-lg transition-all active:scale-95 dark:border-white/10"
                     >
-                      Explore Collection
+                      <span className="skew-x-[12deg] text-xs font-black tracking-widest uppercase">
+                        Explore Collections
+                      </span>
                     </Link>
                   </div>
                 )}

@@ -56,6 +56,11 @@ const nextConfig: NextConfig = {
         destination: '/product/:slug',
         permanent: true,
       },
+      {
+        source: '/catalog',
+        destination: '/catalogue',
+        permanent: true,
+      },
     ];
   },
 
