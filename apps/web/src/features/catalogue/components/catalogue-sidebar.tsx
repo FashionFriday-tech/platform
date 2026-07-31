@@ -578,22 +578,33 @@ export const CatalogueSidebar = ({
                         onClick={() => {
                           handleDraftToggle('colors', c.value);
                         }}
-                        className={`flex -skew-x-[12deg] items-center gap-2 rounded-sm border px-3 py-1 text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
+                        className={`group/color inline-flex -skew-x-[12deg] items-stretch overflow-hidden rounded-sm border text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
                           isActive
                             ? 'bg-foreground text-background border-foreground shadow-md'
-                            : 'bg-background border-border hover:border-foreground/40'
+                            : 'bg-background border-border hover:border-foreground/40 text-foreground'
                         }`}
                       >
-                        <div className="flex skew-x-[12deg] items-center gap-2">
-                          <span
-                            className="h-3 w-4 shrink-0 -skew-x-[12deg] rounded-xs border border-black/25 shadow-2xs dark:border-white/25"
-                            style={{
-                              background: swatch?.bg || colorKey,
-                              borderColor: swatch?.border || undefined,
-                            }}
-                          />
-                          <span>{c.label}</span>
-                        </div>
+                        {/* Color box touching the main box edges with zero gap */}
+                        <span
+                          className="flex w-5 shrink-0 items-center justify-center self-stretch border-r border-black/15 dark:border-white/20"
+                          style={{
+                            background: swatch?.bg || colorKey,
+                          }}
+                        >
+                          {isActive && (
+                            <span
+                              className={`skew-x-[12deg] text-[9px] leading-none font-black ${
+                                swatch?.isLight ? 'text-black' : 'text-white'
+                              }`}
+                            >
+                              ✓
+                            </span>
+                          )}
+                        </span>
+                        {/* Color label */}
+                        <span className="flex items-center px-2.5 py-1">
+                          <span className="skew-x-[12deg]">{c.label}</span>
+                        </span>
                       </button>
                     );
                   })}
