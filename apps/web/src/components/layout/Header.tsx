@@ -62,6 +62,8 @@ export function Header() {
   const user = useAuthStore((state) => state.user);
   const { itemCount, isMounted } = useCart();
   const pathname = usePathname();
+  const isBottomNavHidden =
+    pathname?.startsWith('/product/') || pathname?.startsWith('/checkout') || pathname === '/cart';
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -334,34 +336,36 @@ export function Header() {
         )}
       </div>
 
-      <nav className="bg-background/95 border-border/40 fixed inset-x-0 bottom-0 z-[100] flex h-[calc(3.5rem+env(safe-area-inset-bottom,0px))] items-center justify-between border-t px-6 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md lg:hidden">
-        <Link href="/category/men">
-          <CategoryIcon className="text-[25px]" />
-        </Link>
-        <Link href="/search" aria-label="Search">
-          <SearchListIcon className="text-[25px]" />
-        </Link>
-        <Link href="/" className="flex scale-110 items-center justify-center">
-          <Image
-            src="/images/logos/ff-logo.png"
-            width={32}
-            height={32}
-            alt="logo"
-            className="object-contain dark:invert"
-          />
-        </Link>
-        <Link href="/checkout/cart" className="relative">
-          <ShoppingBagIcon className="text-[25px]" />
-          {isMounted && itemCount > 0 && (
-            <span className="bg-brand text-brand-foreground absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
-              {itemCount}
-            </span>
-          )}
-        </Link>
-        <Link href="/account">
-          <UserIcon className="text-[25px]" />
-        </Link>
-      </nav>
+      {!isBottomNavHidden && (
+        <nav className="bg-background/95 border-border/40 fixed inset-x-0 bottom-0 z-[100] flex h-[calc(3.5rem+env(safe-area-inset-bottom,0px))] items-center justify-between border-t px-6 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md lg:hidden">
+          <Link href="/category/men">
+            <CategoryIcon className="text-[25px]" />
+          </Link>
+          <Link href="/search" aria-label="Search">
+            <SearchListIcon className="text-[25px]" />
+          </Link>
+          <Link href="/" className="flex scale-110 items-center justify-center">
+            <Image
+              src="/images/logos/ff-logo.png"
+              width={32}
+              height={32}
+              alt="logo"
+              className="object-contain dark:invert"
+            />
+          </Link>
+          <Link href="/checkout/cart" className="relative">
+            <ShoppingBagIcon className="text-[25px]" />
+            {isMounted && itemCount > 0 && (
+              <span className="bg-brand text-brand-foreground absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
+                {itemCount}
+              </span>
+            )}
+          </Link>
+          <Link href="/account">
+            <UserIcon className="text-[25px]" />
+          </Link>
+        </nav>
+      )}
 
       <MobileMenu
         isOpen={isMobileMenuOpen}
