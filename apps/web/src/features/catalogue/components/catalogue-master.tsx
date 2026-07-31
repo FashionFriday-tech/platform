@@ -182,7 +182,7 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-              className="bg-background border-border fixed right-0 bottom-[calc(3.75rem+env(safe-area-inset-bottom,0px))] left-0 z-70 flex max-h-[82vh] flex-col rounded-t-[2rem] border-t shadow-2xl lg:bottom-0"
+              className="bg-background border-border fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-70 flex max-h-[82vh] flex-col rounded-t-[2rem] border-t shadow-2xl lg:bottom-0"
             >
               {/* Drag Handle - Click or swipe down to close immediately without step-by-step dragging */}
               <div
@@ -234,37 +234,38 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                 className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-6 py-4"
               >
                 {activeDrawer === 'sort' ? (
-                  <div className="space-y-2 py-1 pb-6">
+                  <div className="space-y-2.5 px-1 py-1 pb-6">
                     {SORT_OPTIONS.map((opt) => {
                       const isSelected = sortBy === opt.value;
                       return (
-                        <button
-                          key={opt.value}
-                          onClick={() => {
-                            setSortBy(opt.value);
-                            setActiveDrawer(null);
-                          }}
-                          className={`flex w-full -skew-x-[12deg] items-center justify-between rounded-sm border px-4 py-3 text-left transition-all active:scale-98 ${
-                            isSelected
-                              ? 'bg-foreground text-background border-foreground font-black shadow-md'
-                              : 'border-border bg-background hover:border-foreground/40 text-foreground-subtle font-bold'
-                          }`}
-                        >
-                          <div className="flex w-full skew-x-[12deg] items-center justify-between">
-                            <span
-                              className={`text-[11px] tracking-wider uppercase ${
-                                isSelected
-                                  ? 'text-background font-black'
-                                  : 'text-foreground-subtle font-semibold'
-                              }`}
-                            >
-                              {opt.label}
-                            </span>
-                            {isSelected && (
-                              <div className="bg-background h-2 w-2 -skew-x-[12deg] rounded-xs" />
-                            )}
-                          </div>
-                        </button>
+                        <div key={opt.value} className="px-1.5">
+                          <button
+                            onClick={() => {
+                              setSortBy(opt.value);
+                              setActiveDrawer(null);
+                            }}
+                            className={`flex w-full -skew-x-[12deg] items-center justify-between rounded-sm border px-4 py-3 text-left transition-all active:scale-98 ${
+                              isSelected
+                                ? 'bg-foreground text-background border-foreground font-black shadow-md'
+                                : 'border-border bg-background hover:border-foreground/40 text-foreground-subtle font-bold'
+                            }`}
+                          >
+                            <div className="flex w-full skew-x-[12deg] items-center justify-between">
+                              <span
+                                className={`text-[11px] tracking-wider uppercase ${
+                                  isSelected
+                                    ? 'text-background font-black'
+                                    : 'text-foreground-subtle font-semibold'
+                                }`}
+                              >
+                                {opt.label}
+                              </span>
+                              {isSelected && (
+                                <div className="bg-background h-2 w-2 -skew-x-[12deg] rounded-xs" />
+                              )}
+                            </div>
+                          </button>
+                        </div>
                       );
                     })}
                   </div>
@@ -292,8 +293,8 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
 
               {/* --- STICKY BOTTOM CONFIRMATION BAR (Mobile) - Fixed right on top of bottom menu box --- */}
               {activeDrawer === 'filter' && (
-                <div className="bg-background/95 border-border shrink-0 border-t p-3.5 backdrop-blur-md">
-                  <div className="flex items-center gap-3">
+                <div className="bg-background/95 border-border shrink-0 border-t px-5 py-3.5 backdrop-blur-md">
+                  <div className="flex items-center gap-3 px-1">
                     {activeFilterCount > 0 && (
                       <button
                         onClick={() => {

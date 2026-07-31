@@ -213,12 +213,12 @@ export const CatalogueSidebar = ({
         data-lenis-prevent-touch="true"
         className={
           isMobileDrawer
-            ? 'min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1'
+            ? 'min-h-0 flex-1 px-1'
             : 'min-h-0 flex-1 overflow-y-auto overscroll-contain pr-2 [scrollbar-width:thin]'
         }
       >
-        {/* --- SORT BY SECTION --- */}
-        {sortOptions.length > 0 && (
+        {/* --- SORT BY SECTION (Desktop only; mobile already has dedicated Sort button) --- */}
+        {!isMobileDrawer && sortOptions.length > 0 && (
           <div className="border-border border-b py-3">
             <button
               onClick={() => {
@@ -303,7 +303,7 @@ export const CatalogueSidebar = ({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden pt-3 pb-2"
+                className="overflow-hidden px-2 pt-3 pb-2"
               >
                 {/* Range Slider */}
                 <input
@@ -378,7 +378,7 @@ export const CatalogueSidebar = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden pt-2.5 pb-2"
+                  className="overflow-hidden px-2 pt-2.5 pb-2"
                 >
                   {facets.brands.length > 5 && (
                     <div className="border-border bg-background-muted focus-within:border-foreground mb-2.5 -skew-x-[12deg] overflow-hidden rounded-sm border">
@@ -475,7 +475,7 @@ export const CatalogueSidebar = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="flex flex-wrap gap-1.5 overflow-hidden pt-2.5 pb-2"
+                  className="flex flex-wrap gap-1.5 overflow-hidden px-2 pt-2.5 pb-2"
                 >
                   {facets.qualities.map((q) => {
                     const isActive =
@@ -534,7 +534,7 @@ export const CatalogueSidebar = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="flex flex-wrap gap-1.5 overflow-hidden pt-2.5 pb-2"
+                  className="flex flex-wrap gap-1.5 overflow-hidden px-2 pt-2.5 pb-2"
                 >
                   {facets.colors.map((c) => {
                     const colorKey = c.value.toLowerCase().trim();
@@ -607,7 +607,7 @@ export const CatalogueSidebar = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="grid grid-cols-4 gap-1.5 overflow-hidden pt-2.5 pb-2 sm:grid-cols-5"
+                  className="grid grid-cols-4 gap-1.5 overflow-hidden px-2 pt-2.5 pb-2 sm:grid-cols-5"
                 >
                   {facets.sizes.map((s) => {
                     const isActive =

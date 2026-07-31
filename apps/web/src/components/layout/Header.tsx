@@ -334,7 +334,7 @@ export function Header() {
         )}
       </div>
 
-      <nav className="bg-background/95 fixed inset-x-0 bottom-0 z-[100] flex items-center justify-between px-6 pt-3 pb-[max(0.75rem,calc(env(safe-area-inset-bottom,0px)+0.5rem))] backdrop-blur-md lg:hidden">
+      <nav className="bg-background/95 border-border/40 fixed inset-x-0 bottom-0 z-[100] flex h-[calc(3.5rem+env(safe-area-inset-bottom,0px))] items-center justify-between border-t px-6 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md lg:hidden">
         <Link href="/category/men">
           <CategoryIcon className="text-[25px]" />
         </Link>
