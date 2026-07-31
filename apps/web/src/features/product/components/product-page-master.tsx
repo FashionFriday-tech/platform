@@ -146,14 +146,14 @@ export default function ProductPageMaster({
           <div className="space-y-6 lg:sticky lg:top-24 lg:col-span-6">
             <div>
               <div className="flex flex-col items-start justify-between">
-                <div className="flex w-full items-center justify-between">
-                  <div className="text-foreground-muted mb-2 flex items-center justify-center gap-4 text-[10px] font-black uppercase">
+                <div className="mb-3 flex w-full items-center justify-between">
+                  <div className="text-foreground-muted flex flex-wrap items-center gap-3 text-[10px] font-black uppercase sm:gap-4">
                     <Link href={`/brands/${String(product.brand).toLowerCase()}`}>
                       <Image
                         src="/images/brand-logos/nike.png"
                         alt={product.brand[0] ?? 'Brand Logo'}
-                        width={40}
-                        height={40}
+                        width={36}
+                        height={36}
                         className="invert"
                       />
                     </Link>
@@ -182,18 +182,20 @@ export default function ProductPageMaster({
                       {liveMetric}+
                     </span>
                   </div>
-                </div>
-                <div className="flex w-full items-start justify-between gap-4">
-                  <h1 className="text-foreground text-3xl leading-snug font-black tracking-tight uppercase md:text-4xl lg:text-5xl lg:leading-[1.2]">
-                    {product.name}
-                  </h1>
+
                   <button
+                    type="button"
                     onClick={handleShare}
-                    className="border-border hover:bg-background-muted shrink-0 rounded-full border p-2.5 transition-all"
+                    aria-label="Share product"
+                    className="border-border hover:bg-background-muted flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all active:scale-90"
                   >
-                    <ShareIcon size={18} />
+                    <ShareIcon size={16} />
                   </button>
                 </div>
+
+                <h1 className="text-foreground text-3xl leading-tight font-black tracking-tight uppercase md:text-4xl md:leading-[1.1] lg:text-5xl lg:leading-[1.05]">
+                  {product.name}
+                </h1>
               </div>
 
               <p className="text-foreground-muted mt-3 text-xs leading-relaxed tracking-normal md:text-sm">
