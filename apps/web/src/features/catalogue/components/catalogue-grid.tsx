@@ -61,19 +61,21 @@ export const CatalogueGrid = ({
                   onClick={() => {
                     onRemoveFilter?.(chip.key, chip.value);
                   }}
-                  className="bg-background-muted hover:border-foreground/40 border-border group flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold uppercase transition-all active:scale-95"
+                  className="bg-background-muted hover:border-foreground/40 border-border group flex -skew-x-[12deg] items-center gap-1.5 rounded-sm border px-2.5 py-1 text-[10px] font-bold uppercase transition-all active:scale-95"
                 >
-                  <span>{chip.label}</span>
-                  <span className="text-foreground-subtle group-hover:text-foreground">✕</span>
+                  <span className="flex skew-x-[12deg] items-center gap-1.5">
+                    <span>{chip.label}</span>
+                    <span className="text-foreground-subtle group-hover:text-foreground">✕</span>
+                  </span>
                 </button>
               ))}
 
               {onClearFilters && (
                 <button
                   onClick={onClearFilters}
-                  className="text-foreground-subtle pl-1 text-[10px] font-black uppercase transition-colors hover:text-red-500"
+                  className="border-border hover:border-foreground/40 text-foreground-subtle hover:text-red-500 -skew-x-[12deg] rounded-sm border px-2.5 py-1 text-[10px] font-black uppercase transition-colors"
                 >
-                  Clear All
+                  <span className="block skew-x-[12deg]">Clear All</span>
                 </button>
               )}
             </div>
