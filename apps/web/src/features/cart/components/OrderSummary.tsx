@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-import { ArrowRightIcon, ShieldCheckIcon, TagIcon } from '@ff/ui';
+import { ArrowRightIcon, ChevronUpIcon, ShieldCheckIcon, TagIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
 import { useCart } from '../hooks/use-cart';
@@ -13,6 +14,7 @@ export function OrderSummary() {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
   const [promoDiscount, setPromoDiscount] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const subtotal = totals.subtotal;
   const standardDiscount = totals.discount;
@@ -57,8 +59,10 @@ export function OrderSummary() {
       <div className="bg-foreground border-border rounded-[2.5rem] border p-6 shadow-sm md:p-8 lg:p-8">
         <div className="mb-8 flex items-center justify-between">
           <h2 className="text-background text-2xl font-medium tracking-tight">Summary</h2>
-          <span className="border-background text-background rounded-full border px-4 py-1 text-[10px] font-bold tracking-wider uppercase">
-            {itemCount} {itemCount === 1 ? 'Item' : 'Items'}
+          <span className="border-background text-background -skew-x-[12deg] rounded-lg border px-3 py-1 text-[10px] font-black tracking-widest uppercase">
+            <span className="skew-x-[12deg] block">
+              {itemCount} {itemCount === 1 ? 'Item' : 'Items'}
+            </span>
           </span>
         </div>
 
@@ -128,9 +132,9 @@ export function OrderSummary() {
           </div>
         </div>
 
-        {/* Promo Code Input */}
-        <div className="relative mt-8 mb-8">
-          <div className="text-background-subtle absolute top-1/2 left-4 -translate-y-1/2">
+        {/* Promo Code Input - Crossed Style */}
+        <div className="relative mt-8 mb-8 -skew-x-[12deg] overflow-hidden rounded-xl border border-background/20 bg-background shadow-md">
+          <div className="text-foreground-subtle pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 skew-x-[12deg]">
             <TagIcon size={16} />
           </div>
           <input
@@ -144,17 +148,17 @@ export function OrderSummary() {
                 handleApplyPromo();
               }
             }}
-            placeholder="Enter Promo Code (e.g. WELCOME10)"
-            className="bg-background text-foreground border-border focus:ring-foreground placeholder:text-foreground-subtle/50 w-full rounded-2xl border py-4 pr-24 pl-12 text-sm uppercase transition-all focus:ring-1 focus:outline-none"
+            placeholder="ENTER PROMO CODE"
+            className="bg-transparent text-foreground placeholder:text-foreground-subtle/50 w-full py-3.5 pr-24 pl-12 text-xs font-black tracking-widest uppercase skew-x-[12deg] focus:outline-none"
           />
           <button
             type="button"
             onClick={() => {
               handleApplyPromo();
             }}
-            className="bg-foreground text-background absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer rounded-xl px-4 py-2.5 text-[10px] font-black tracking-widest uppercase transition-opacity hover:opacity-90 active:scale-95"
+            className="bg-foreground text-background absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer rounded-lg px-4 py-2 text-[10px] font-black tracking-widest uppercase transition-opacity hover:opacity-90 active:scale-95"
           >
-            Apply
+            <span className="skew-x-[12deg] block">Apply</span>
           </button>
         </div>
 
@@ -162,17 +166,20 @@ export function OrderSummary() {
         {hasItems ? (
           <Link
             href="/checkout/review"
-            className="bg-background text-foreground shadow-brand/10 group hidden w-full cursor-pointer items-center justify-center gap-3 rounded-full py-4 font-bold shadow-xl transition-all hover:opacity-95 active:scale-[0.98] lg:flex"
+            className="bg-background text-foreground shadow-brand/10 group hidden w-full -skew-x-[12deg] cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-background/20 py-4 font-black tracking-widest uppercase shadow-xl transition-all hover:opacity-95 active:scale-[0.98] lg:flex"
           >
-            Checkout Now
-            <ArrowRightIcon size={20} className="transition-transform group-hover:translate-x-1" />
+            <span className="flex skew-x-[12deg] items-center gap-2 text-xs font-black tracking-widest uppercase">
+              <ShieldCheckIcon size={16} className="text-emerald-500" />
+              Checkout Now
+              <ArrowRightIcon size={16} className="transition-transform group-hover:translate-x-1" />
+            </span>
           </Link>
         ) : (
           <button
             disabled
-            className="bg-background/40 text-foreground/40 hidden w-full cursor-not-allowed items-center justify-center gap-3 rounded-full py-4 font-bold lg:flex"
+            className="bg-background/40 text-foreground/40 hidden w-full -skew-x-[12deg] cursor-not-allowed items-center justify-center gap-2.5 rounded-xl py-4 font-black tracking-widest uppercase lg:flex"
           >
-            Your Bag is Empty
+            <span className="skew-x-[12deg]">Your Bag is Empty</span>
           </button>
         )}
 
@@ -183,26 +190,87 @@ export function OrderSummary() {
         </div>
       </div>
 
-      {/* Mobile Sticky Quick-Action Bar */}
+      {/* Mobile Sticky Quick-Action Bar with Attached Breakdown Drawer */}
       {hasItems && (
-        <div className="border-border/40 bg-background/95 fixed inset-x-0 bottom-0 z-50 border-t px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-md transform-gpu will-change-transform lg:hidden">
-          <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-3">
-            <div className="flex flex-col pl-1">
-              <span className="text-foreground-muted text-[10px] font-black tracking-widest uppercase">
-                Total
-              </span>
-              <span className="text-foreground text-xl leading-tight font-black">
-                ₹{total.toLocaleString()}
-              </span>
-            </div>
-            <Link
-              href="/checkout/review"
-              className="flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-zinc-800 bg-black text-white shadow-lg transition-transform outline-none active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black"
+        <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center transform-gpu will-change-transform lg:hidden">
+          {standardDiscount + promoDiscount > 0 && (
+            <motion.div
+              onClick={() => {
+                setIsExpanded(!isExpanded);
+              }}
+              className="bg-background border-border z-10 cursor-pointer rounded-t-full border-x border-t px-16 py-2 text-[10px] font-bold tracking-[0.3em]"
             >
-              <span className="flex skew-x-[12deg] items-center gap-2 text-sm font-black tracking-widest whitespace-nowrap uppercase">
-                Checkout Now <ArrowRightIcon size={16} />
-              </span>
-            </Link>
+              YOU SAVED ₹{(standardDiscount + promoDiscount).toLocaleString()} 🎉
+            </motion.div>
+          )}
+
+          <div className="border-border/40 bg-background/95 w-full overflow-hidden rounded-t-[3rem] border-t pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-2xl">
+            <div className="mx-auto max-w-lg px-6">
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="text-foreground-subtle space-y-4 p-4 text-xs font-bold tracking-widest uppercase"
+                  >
+                    <div className="flex justify-between">
+                      <span>Subtotal</span>
+                      <span className="text-foreground">₹{subtotal.toLocaleString()}</span>
+                    </div>
+                    {standardDiscount > 0 && (
+                      <div className="flex justify-between text-emerald-500">
+                        <span>Catalogue Savings</span>
+                        <span>-₹{standardDiscount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {appliedPromo && promoDiscount > 0 && (
+                      <div className="flex justify-between text-emerald-500">
+                        <span>Promo Discount ({appliedPromo})</span>
+                        <span>-₹{promoDiscount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span>Shipping</span>
+                      <span className="text-emerald-500">FREE</span>
+                    </div>
+                    <div className="bg-border h-px" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="flex items-center justify-between pt-2">
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsExpanded(!isExpanded);
+                    }}
+                    className="text-foreground-subtle flex items-center gap-1 text-[10px] font-black tracking-widest uppercase"
+                  >
+                    {isExpanded ? 'Hide Breakdown' : 'View Breakdown'}
+                    <ChevronUpIcon
+                      size={12}
+                      className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                  <p className="text-2xl font-black tracking-tighter">
+                    ₹{total.toLocaleString()}
+                  </p>
+                </div>
+
+                <Link
+                  href="/checkout/review"
+                  className="flex h-10 -skew-x-[12deg] cursor-pointer items-center justify-center gap-1.5 overflow-hidden rounded-xl border border-zinc-800 bg-black px-5 text-white shadow-lg transition-transform outline-none active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black"
+                >
+                  <span className="flex skew-x-[12deg] items-center gap-1.5 text-xs font-black tracking-widest whitespace-nowrap uppercase">
+                    <ShieldCheckIcon size={14} className="text-emerald-400" />
+                    Checkout Now
+                    <ArrowRightIcon size={14} />
+                  </span>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       )}
