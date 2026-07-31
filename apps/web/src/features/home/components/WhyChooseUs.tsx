@@ -330,7 +330,7 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
-                  className="group relative -skew-x-[6deg] cursor-default overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all duration-300 hover:border-zinc-700 sm:-skew-x-[8deg] sm:rounded-3xl sm:p-7"
+                  className="group relative -skew-x-[12deg] cursor-default overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all duration-300 hover:border-zinc-700 sm:rounded-3xl sm:p-7"
                 >
                   {/* Luminous Shining Light Sweep */}
                   <div
@@ -338,14 +338,14 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                     style={{ animationDelay: `${idx * 1.4}s` }}
                   />
 
-                  {/* Inner Content - Counter-skewed so text and layout are straight */}
-                  <div className="relative z-10 flex w-full skew-x-[6deg] items-center gap-6 sm:skew-x-[8deg] sm:gap-8">
-                    {/* The icon box: straight clean box */}
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-zinc-700 bg-black text-white transition-colors duration-300 group-hover:border-zinc-500 sm:h-16 sm:w-16">
-                      <item.icon className="h-6 w-6 text-white transition-transform duration-300 group-hover:scale-110 sm:h-7 sm:w-7" />
+                  {/* Inner Content */}
+                  <div className="relative z-10 flex w-full items-center gap-6 sm:gap-8">
+                    {/* The crossed icon box - matching the crossed button style */}
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-700 bg-black text-white transition-colors duration-300 group-hover:border-zinc-500 sm:h-16 sm:w-16">
+                      <item.icon className="h-6 w-6 skew-x-[12deg] text-white transition-transform duration-300 group-hover:scale-110 sm:h-7 sm:w-7" />
                     </div>
                     {/* Clean un-crossed straight text */}
-                    <div>
+                    <div className="skew-x-[12deg]">
                       <h3 className="mb-1.5 flex items-center gap-2 text-lg font-bold tracking-wide text-white uppercase sm:mb-2 sm:text-xl">
                         {item.title}
                       </h3>
