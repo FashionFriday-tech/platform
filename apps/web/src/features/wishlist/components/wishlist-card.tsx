@@ -68,7 +68,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
   if (layoutMode === 'grid') {
     return (
       <article className="group bg-background-muted relative aspect-square w-full overflow-hidden rounded-2xl transition-all">
-        <Link href={`/products/${product.slug}`} className="relative block h-full w-full">
+        <Link href={`/product/${product.slug}`} className="relative block h-full w-full">
           <Image
             src={product.image || '/images/placeholder.png'}
             alt={product.name}
@@ -149,7 +149,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
     <article className="border-border bg-background-muted/40 hover:border-foreground/30 group relative flex w-full items-center justify-center gap-4 rounded-3xl border p-4 transition-all">
       {/* 1. Left Side: Image Container */}
       <div className="bg-background-muted relative aspect-square w-36 shrink-0 overflow-hidden rounded-2xl sm:w-32 md:w-36">
-        <Link href={`/products/${product.slug}`} className="relative block h-full w-full">
+        <Link href={`/product/${product.slug}`} className="relative block h-full w-full">
           <Image
             src={product.image || '/images/placeholder.png'}
             alt={product.name}
@@ -187,7 +187,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
           </div>
 
           {/* Title */}
-          <Link href={`/products/${product.slug}`}>
+          <Link href={`/product/${product.slug}`}>
             <h3 className="text-foreground hover:text-brand line-clamp-1 text-sm font-bold tracking-tight uppercase transition-colors sm:text-base">
               {product.name}
             </h3>

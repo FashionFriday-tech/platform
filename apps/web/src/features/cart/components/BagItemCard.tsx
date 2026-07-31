@@ -75,7 +75,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
     <div className="border-border group relative flex w-full flex-row gap-6 border-b py-6 transition-all last:border-0 md:gap-10 md:py-8">
       {/* 1. Optimized Image */}
       <div className="bg-background-muted relative aspect-square w-40 shrink-0 overflow-hidden rounded-3xl md:w-60">
-        <Link href={slug ? `/products/${slug}` : '#'}>
+        <Link href={slug ? `/product/${slug}` : '#'}>
           <Image
             src={mainImage}
             alt={name}
@@ -124,7 +124,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
         <div className="flex flex-col items-start justify-between gap-2">
           {/* Info */}
           <div className="space-y-1">
-            <Link href={slug ? `/products/${slug}` : '#'}>
+            <Link href={slug ? `/product/${slug}` : '#'}>
               <h3 className="text-foreground hover:text-brand line-clamp-2 text-lg leading-tight font-medium tracking-tight transition-colors md:text-3xl">
                 {name}
               </h3>
