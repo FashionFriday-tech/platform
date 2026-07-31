@@ -2,6 +2,8 @@
 
 import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import {
   AlertTriangleIcon,
@@ -11,13 +13,16 @@ import {
   CloseIcon,
   FilledStarIcon,
   InfoCircleIcon,
+  LoaderIcon,
   ShieldCheckIcon,
   ShoppingBagIcon,
   StarIcon,
-  TrashIcon,
   VerifiedIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion, useAnimationFrame, useMotionValue, wrap } from 'motion/react';
+
+import { fetchUserOrdersAction } from '@/features/orders/services/orders.actions';
+import { useAuthStore } from '@/store/auth-store';
 
 interface Review {
   name: string;
@@ -28,16 +33,32 @@ interface Review {
   membership: 'silver' | 'gold' | 'platinum';
 }
 
-export default function ReviewSection() {
+interface ReviewSectionProps {
+  productId?: string;
+  productName?: string;
+}
+
+export default function ReviewSection({ productId, productName }: ReviewSectionProps = {}) {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
+  // Purchase Verification State
+  const [hasPurchased, setHasPurchased] = useState<boolean | null>(null);
+  const [isCheckingPurchase, setIsCheckingPurchase] = useState(false);
+  const [purchaseCheckReason, setPurchaseCheckReason] = useState<
+    'not_logged_in' | 'not_purchased' | 'general'
+  >('general');
+
   // Form States
   const [newComment, setNewComment] = useState('');
-  const [newRating, setNewRating] = useState(0);
+  const [newRating, setNewRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const CHARACTER_LIMIT = 100;
@@ -53,7 +74,7 @@ export default function ReviewSection() {
     }
   };
 
-  const reviews: Review[] = [
+  const initialReviews: Review[] = [
     {
       name: 'Damon W.',
       initials: 'DW',
@@ -82,6 +103,7 @@ export default function ReviewSection() {
     },
   ];
 
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const duplicatedReviews = [...reviews, ...reviews, ...reviews, ...reviews];
   const [cardWidth, setCardWidth] = useState(600);
   const x = useMotionValue(0);
@@ -117,6 +139,102 @@ export default function ReviewSection() {
     setSelectedReview((prev) => (prev - 1 + reviews.length) % reviews.length);
   };
 
+  /**
+   * Only activates the review submit box if user has confirmed a purchase.
+   * Otherwise, displays the info pop up box.
+   */
+  const handleInitiateReview = async (rating = 5) => {
+    // 1. If not logged in -> not a confirmed purchaser
+    if (!user) {
+      setPurchaseCheckReason('not_logged_in');
+      setIsInfoOpen(true);
+      return;
+    }
+
+    // 2. If purchase is already verified in this session
+    if (hasPurchased === true) {
+      setNewRating(rating);
+      setIsFormOpen(true);
+      return;
+    }
+
+    // 3. Otherwise verify against user's orders
+    setIsCheckingPurchase(true);
+    try {
+      const orders = await fetchUserOrdersAction();
+      const confirmedOrder =
+        Array.isArray(orders) &&
+        orders.some((order: any) => {
+          if (order.status === 'cancelled' || order.status === 'returned') {
+            return false;
+          }
+          if (productId || productName) {
+            if (Array.isArray(order.items)) {
+              return order.items.some(
+                (item: any) =>
+                  (productId && item.id === productId) ||
+                  (productName && item.name?.toLowerCase() === productName.toLowerCase()),
+              );
+            }
+          }
+          return true;
+        });
+
+      if (confirmedOrder) {
+        setHasPurchased(true);
+        setNewRating(rating);
+        setIsFormOpen(true);
+      } else {
+        setHasPurchased(false);
+        setPurchaseCheckReason('not_purchased');
+        setIsInfoOpen(true);
+      }
+    } catch (err) {
+      console.error('Failed to verify customer purchase:', err);
+      setHasPurchased(false);
+      setPurchaseCheckReason('not_purchased');
+      setIsInfoOpen(true);
+    } finally {
+      setIsCheckingPurchase(false);
+    }
+  };
+
+  const handleSubmitReview = () => {
+    if (!newComment.trim() || newRating === 0) {
+      toast.error('Please select a star rating and enter your review.');
+      return;
+    }
+
+    const userName = user?.name?.trim() || 'Verified Buyer';
+    const nameParts = userName.split(' ');
+    const formattedName =
+      nameParts.length > 1
+        ? `${nameParts[0]} ${nameParts[1][0].toUpperCase()}.`
+        : nameParts[0];
+
+    const initials =
+      nameParts.length > 1
+        ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+        : userName.slice(0, 2).toUpperCase();
+
+    const newReviewItem: Review = {
+      name: formattedName,
+      initials,
+      comment: newComment.trim(),
+      image:
+        selectedImage || 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
+      rating: newRating,
+      membership: 'gold',
+    };
+
+    setReviews((prev) => [newReviewItem, ...prev]);
+    setNewComment('');
+    setNewRating(5);
+    setSelectedImage(null);
+    setIsFormOpen(false);
+    toast.success('Thank you! Your verified review has been published.');
+  };
+
   return (
     <div
       id="review-section"
@@ -138,13 +256,16 @@ export default function ReviewSection() {
           </div>
           <button
             onClick={() => {
+              setPurchaseCheckReason('general');
               setIsInfoOpen(true);
             }}
-            className="text-foreground flex items-center justify-center rounded-full shadow-xl transition-transform active:scale-95"
+            className="text-foreground hover:text-foreground/80 flex items-center justify-center rounded-full p-2 transition-transform active:scale-95"
+            aria-label="Review Integrity Guidelines"
           >
             <InfoCircleIcon size={20} />
           </button>
         </div>
+
         <div
           className="relative w-full overflow-visible"
           onMouseEnter={() => {
@@ -225,12 +346,12 @@ export default function ReviewSection() {
                         </span>
 
                         <div className="mt-1.5 flex gap-0.5">
-                          {[null, null, null, null, null].map((_, starIndex) => (
+                          {Array.from({ length: 5 }).map((_, starIndex) => (
                             <FilledStarIcon
                               key={starIndex}
                               size={10}
                               className={
-                                starIndex < rev.rating ? 'text-yellow-400' : 'text-muted-foreground'
+                                starIndex < rev.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground'
                               }
                             />
                           ))}
@@ -242,7 +363,7 @@ export default function ReviewSection() {
                       "{rev.comment}"
                     </p>
 
-                    <span className="text-muted-foreground/30 group-hover:text-muted-foreground/60 text-[9px] font-bold tracking-[0.2em] uppercase transition-colors">
+                    <span className="text-muted-foreground/40 group-hover:text-muted-foreground text-[9px] font-bold tracking-[0.2em] uppercase transition-colors">
                       Tap to expand
                     </span>
                   </div>
@@ -253,92 +374,171 @@ export default function ReviewSection() {
         </div>
       </div>
 
+      {/* Review Trigger Button with Interactive Stars */}
       <div className="flex flex-col items-center justify-center gap-2">
         <div className="mt-10 flex w-full items-end justify-center gap-2">
           {Array.from({ length: 5 }).map((_, starIndex) => (
-            <StarIcon
+            <motion.button
               key={starIndex}
-              size={42}
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.9 }}
               onClick={() => {
-                setNewRating(starIndex + 1);
-                setIsFormOpen(true);
+                void handleInitiateReview(starIndex + 1);
               }}
-              className={`cursor-pointer text-white transition-colors`}
-            />
+              type="button"
+              className="cursor-pointer p-1"
+              aria-label={`Rate ${starIndex + 1} Stars`}
+            >
+              <StarIcon
+                size={40}
+                className="text-foreground/30 hover:text-amber-400 hover:fill-amber-400 transition-colors"
+              />
+            </motion.button>
           ))}
         </div>
-        <p className="flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)))] bg-size-[400%_100%] bg-clip-text text-[8px] font-black tracking-[0.5em] text-transparent uppercase">
-          Drop Your Review
-        </p>
+
+        <button
+          type="button"
+          onClick={() => {
+            void handleInitiateReview(5);
+          }}
+          disabled={isCheckingPurchase}
+          className="cursor-pointer flex items-center justify-center gap-2 py-1 text-center transition-opacity hover:opacity-80 active:scale-95"
+        >
+          {isCheckingPurchase ? (
+            <span className="flex items-center gap-2 text-[10px] font-black tracking-widest text-foreground-muted uppercase">
+              <LoaderIcon size={12} className="animate-spin text-foreground" />
+              <span>Checking Purchase Status...</span>
+            </span>
+          ) : (
+            <span className="flex animate-[glaze_5s_linear_infinite] items-center justify-center bg-[linear-gradient(90deg,hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)),hsl(var(--muted-foreground)),hsl(var(--foreground)))] bg-size-[400%_100%] bg-clip-text text-[8px] font-black tracking-[0.5em] text-transparent uppercase">
+              Drop Your Review
+            </span>
+          )}
+        </button>
       </div>
 
-      {/* --- INFO BOX MODAL --- */}
+      {/* --- INFO BOX MODAL (Shown for unverified users or info request) --- */}
       <AnimatePresence>
         {isInfoOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-60 flex items-center justify-center bg-black/80 p-6 backdrop-blur-md"
+            className="bg-background/80 fixed inset-0 z-60 flex items-center justify-center p-6 backdrop-blur-md"
           >
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
+              initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="bg-card border-border relative w-full max-w-md rounded-[2.5rem] border p-8 shadow-2xl"
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-background border-border relative w-full max-w-md rounded-3xl border p-8 shadow-2xl"
             >
               <button
                 onClick={() => {
                   setIsInfoOpen(false);
                 }}
-                className="text-muted-foreground hover:text-foreground absolute top-6 right-6 transition-colors"
+                className="text-foreground-muted hover:text-foreground absolute top-6 right-6 cursor-pointer transition-colors"
+                aria-label="Close"
               >
-                <CloseIcon size={24} />
+                <CloseIcon size={20} />
               </button>
+
               <div className="space-y-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-black">
-                  <ShieldCheckIcon size={28} />
+                <div className="bg-foreground text-background flex h-12 w-12 items-center justify-center rounded-2xl shadow-md">
+                  <ShieldCheckIcon size={26} className="text-emerald-400" />
                 </div>
-                <h3 className="text-2xl font-black tracking-tighter uppercase italic">
-                  Review Integrity
-                </h3>
-                <div className="space-y-4 text-sm leading-relaxed text-white/70">
+
+                <div>
+                  <h3 className="text-foreground text-2xl font-black tracking-tight uppercase">
+                    Review Integrity
+                  </h3>
+                  <p className="text-foreground-muted mt-1 text-xs font-semibold uppercase tracking-wider">
+                    Authentic Community Feedback Policy
+                  </p>
+                </div>
+
+                {/* Contextual Notice */}
+                {purchaseCheckReason === 'not_logged_in' && (
+                  <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-xs font-medium text-amber-600 dark:text-amber-400">
+                    <p className="font-bold uppercase tracking-wider">Sign In Required</p>
+                    <p className="mt-1">
+                      You must be signed in with the account used to purchase this piece to submit a review.
+                    </p>
+                  </div>
+                )}
+
+                {purchaseCheckReason === 'not_purchased' && (
+                  <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-xs font-medium text-rose-600 dark:text-rose-400">
+                    <p className="font-bold uppercase tracking-wider">Confirmed Purchase Required</p>
+                    <p className="mt-1">
+                      Reviews are strictly reserved for customers with a verified, completed order for this piece.
+                    </p>
+                  </div>
+                )}
+
+                <div className="text-foreground/80 space-y-3.5 text-xs leading-relaxed">
                   <div className="flex gap-3 text-left">
-                    <ShoppingBagIcon className="shrink-0 text-white" size={18} />
+                    <ShoppingBagIcon className="shrink-0 text-foreground" size={18} />
                     <p>
-                      <span className="font-bold text-white">Verified Buyers Only:</span> Only
+                      <span className="text-foreground font-bold">Verified Buyers Only:</span> Only
                       customers with a confirmed purchase can submit reviews.
                     </p>
                   </div>
                   <div className="flex gap-3 text-left">
-                    <ShieldCheckIcon className="shrink-0 text-white" size={18} />
+                    <ShieldCheckIcon className="shrink-0 text-emerald-500" size={18} />
                     <p>
-                      <span className="font-bold text-white">Zero Fake Reviews:</span> Every
-                      submission is cross-referenced with order IDs.
+                      <span className="text-foreground font-bold">Zero Fake Reviews:</span> Every
+                      submission is cross-referenced with genuine order records.
                     </p>
                   </div>
                   <div className="flex gap-3 text-left">
                     <AlertTriangleIcon className="shrink-0 text-rose-500" size={18} />
                     <p>
-                      <span className="font-bold text-white">Community Conduct:</span> No abusive
-                      language. Harassment results in permanent removal.
+                      <span className="text-foreground font-bold">Community Conduct:</span> No abusive
+                      language or spam. Constructive critiques only.
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    setIsInfoOpen(false);
-                  }}
-                  className="mt-4 w-full rounded-full bg-white py-4 text-xs font-black tracking-widest text-black uppercase"
-                >
-                  Understood
-                </button>
+
+                <div className="flex gap-3 pt-2">
+                  {purchaseCheckReason === 'not_logged_in' ? (
+                    <>
+                      <button
+                        onClick={() => {
+                          setIsInfoOpen(false);
+                          router.push('/auth/login');
+                        }}
+                        className="bg-foreground text-background flex-1 cursor-pointer rounded-xl py-3.5 text-xs font-black tracking-widest uppercase transition-all hover:opacity-90 active:scale-95"
+                      >
+                        Sign In Now
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsInfoOpen(false);
+                        }}
+                        className="border-border text-foreground hover:bg-foreground/5 cursor-pointer rounded-xl border px-5 py-3.5 text-xs font-bold uppercase transition-colors"
+                      >
+                        Close
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsInfoOpen(false);
+                      }}
+                      className="bg-foreground text-background w-full cursor-pointer rounded-xl py-3.5 text-xs font-black tracking-widest uppercase transition-all hover:opacity-90 active:scale-95"
+                    >
+                      Understood
+                    </button>
+                  )}
+                </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* --- REVIEW DETAIL EXPAND MODAL --- */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -352,6 +552,7 @@ export default function ReviewSection() {
                 setIsModalOpen(false);
               }}
               className="absolute top-8 right-8 text-white opacity-50 transition-opacity hover:opacity-100"
+              aria-label="Close"
             >
               <CloseIcon size={32} />
             </button>
@@ -373,21 +574,21 @@ export default function ReviewSection() {
                   key={selectedReview}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  src={reviews[selectedReview].image}
+                  src={reviews[selectedReview]?.image}
                   className="h-full w-full object-cover"
                 />
               </div>
               <div className="space-y-6 md:w-1/2">
                 <div className="flex items-center gap-4">
                   <span className="bg-foreground text-background flex h-14 w-14 items-center justify-center rounded-full text-xl font-black">
-                    {reviews[selectedReview].initials}
+                    {reviews[selectedReview]?.initials}
                   </span>
                   <h2 className="text-foreground text-4xl leading-none font-black tracking-tighter uppercase italic">
-                    {reviews[selectedReview].name}
+                    {reviews[selectedReview]?.name}
                   </h2>
                 </div>
                 <p className="text-xl leading-tight font-medium text-white/90 italic md:text-3xl">
-                  "{reviews[selectedReview].comment}"
+                  "{reviews[selectedReview]?.comment}"
                 </p>
                 <div className="flex gap-4 pt-8">
                   <button
@@ -409,6 +610,7 @@ export default function ReviewSection() {
         )}
       </AnimatePresence>
 
+      {/* --- REDESIGNED REVIEW SUBMIT BOX (VERIFIED PURCHASERS ONLY) --- */}
       <AnimatePresence>
         {isFormOpen && (
           <>
@@ -419,112 +621,146 @@ export default function ReviewSection() {
               onClick={() => {
                 setIsFormOpen(false);
               }}
-              className="bg-background/80 fixed inset-0 z-40 backdrop-blur-sm"
+              className="bg-background/80 fixed inset-0 z-50 backdrop-blur-md"
             />
             <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              className="bg-card border-border fixed right-0 bottom-0 left-0 z-50 rounded-t-[3rem] border-t p-10 shadow-2xl"
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+              className="border-border bg-background/95 fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-[2.5rem] border-t p-6 shadow-2xl backdrop-blur-2xl sm:bottom-6 sm:rounded-3xl sm:border sm:p-8"
             >
-              <div className="mx-auto max-w-md space-y-8">
-                <div className="text-foreground flex items-center justify-between">
-                  <h3 className="text-[10px] font-black tracking-[0.3em] uppercase">
-                    Drop your Review
-                  </h3>
+              <div className="mx-auto space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between border-b border-border pb-4">
+                  <div>
+                    <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                      <ShieldCheckIcon size={14} />
+                      <span className="text-[10px] font-black tracking-widest uppercase">
+                        Verified Purchaser Submission
+                      </span>
+                    </div>
+                    <h3 className="text-foreground text-xl font-bold tracking-tight uppercase">
+                      Drop Your Review
+                    </h3>
+                  </div>
                   <button
                     onClick={() => {
                       setIsFormOpen(false);
                     }}
-                    className="transition-colors hover:text-white"
+                    className="text-foreground-muted hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-border transition-colors active:scale-95"
+                    aria-label="Close"
                   >
-                    <CloseIcon size={20} />
+                    <CloseIcon size={18} />
                   </button>
                 </div>
 
-                <div className="relative space-y-3">
-                  <div className="flex items-end justify-between">
-                    <label className="text-[10px] font-black tracking-widest text-white/20 uppercase">
-                      Experience & Media
+                {/* Rating Picker with Descriptive Feedback */}
+                <div className="border-border bg-foreground/[0.02] flex flex-col items-center justify-center gap-2 rounded-2xl border py-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-foreground-muted text-[10px] font-bold tracking-widest uppercase">
+                      Your Rating:
+                    </span>
+                    <span className="text-amber-500 text-xs font-black uppercase">
+                      {(hoverRating || newRating) === 5
+                        ? 'Exceptional (5/5)'
+                        : (hoverRating || newRating) === 4
+                          ? 'Very Good (4/5)'
+                          : (hoverRating || newRating) === 3
+                            ? 'Good (3/5)'
+                            : (hoverRating || newRating) === 2
+                              ? 'Fair (2/5)'
+                              : 'Poor (1/5)'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: 5 }).map((_, starIndex) => {
+                      const starValue = starIndex + 1;
+                      const isFilled = starValue <= (hoverRating || newRating);
+                      return (
+                        <motion.button
+                          key={starIndex}
+                          whileHover={{ scale: 1.15 }}
+                          whileTap={{ scale: 0.9 }}
+                          onMouseEnter={() => setHoverRating(starValue)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          onClick={() => setNewRating(starValue)}
+                          type="button"
+                          className="cursor-pointer p-1"
+                          aria-label={`${starValue} Stars`}
+                        >
+                          <FilledStarIcon
+                            size={32}
+                            className={`transition-colors ${
+                              isFilled
+                                ? 'fill-amber-400 text-amber-400 drop-shadow-[0_2px_8px_rgba(251,191,36,0.4)]'
+                                : 'text-border fill-transparent'
+                            }`}
+                          />
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Experience & Feedback */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between px-1">
+                    <label className="text-foreground text-[11px] font-bold tracking-wider uppercase">
+                      Experience & Feedback
                     </label>
                     <span
-                      className={`text-[10px] font-black tracking-widest ${
-                        CHARACTER_LIMIT - newComment.length < 0 ? 'text-red-500' : 'text-white/20'
+                      className={`text-[10px] font-bold tracking-wider ${
+                        CHARACTER_LIMIT - newComment.length < 0
+                          ? 'text-rose-500'
+                          : 'text-foreground-muted'
                       }`}
                     >
-                      {CHARACTER_LIMIT - newComment.length}
+                      {CHARACTER_LIMIT - newComment.length} chars left
                     </span>
                   </div>
 
-                  <div className="flex gap-4">
-                    {selectedImage && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="relative h-32 w-32 shrink-0 overflow-hidden rounded-2xl border border-white/20 bg-white/5"
-                      >
-                        <Image
-                          src={selectedImage}
-                          alt="Preview"
-                          fill
-                          sizes="128px"
-                          className="object-cover"
-                        />
-                        <button
-                          onClick={() => {
-                            setSelectedImage(null);
-                          }}
-                          className="absolute top-2 right-2 rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black"
-                        >
-                          <TrashIcon size={14} />
-                        </button>
-                      </motion.div>
-                    )}
+                  <div className="border-border/80 bg-foreground/[0.03] focus-within:border-foreground relative rounded-2xl border p-4 transition-all">
                     <textarea
                       value={newComment}
+                      maxLength={CHARACTER_LIMIT}
                       onChange={(e) => {
                         setNewComment(e.target.value);
                       }}
                       placeholder="The cut, the feel, the vibe..."
-                      className={`h-32 flex-1 rounded-2xl border bg-white/5 p-5 text-sm text-white transition-colors outline-none ${
-                        CHARACTER_LIMIT - newComment.length < 0
-                          ? 'border-red-500/50'
-                          : 'border-white/10 focus:border-white/40'
-                      }`}
+                      rows={3}
+                      className="text-foreground placeholder:text-foreground-muted/50 w-full resize-none bg-transparent text-sm font-medium outline-none"
                     />
+
+                    {selectedImage && (
+                      <div className="border-border/60 mt-3 flex items-center gap-3 border-t pt-3">
+                        <div className="border-border relative h-16 w-16 overflow-hidden rounded-xl border">
+                          <Image
+                            src={selectedImage}
+                            alt="Preview"
+                            fill
+                            sizes="64px"
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedImage(null);
+                            }}
+                            className="bg-black/70 hover:bg-black absolute top-1 right-1 cursor-pointer rounded-full p-1 text-white transition-colors"
+                            aria-label="Remove image"
+                          >
+                            <CloseIcon size={12} />
+                          </button>
+                        </div>
+                        <span className="text-foreground-muted text-xs font-medium">Photo attached</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="flex w-full items-center justify-center gap-4">
-                  {Array.from({ length: 5 }).map((_, starIndex) => (
-                    <motion.button
-                      key={starIndex}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => {
-                        setNewRating(starIndex + 1);
-                      }}
-                      type="button"
-                    >
-                      <StarIcon
-                        size={28}
-                        className={
-                          starIndex < newRating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-yellow-400'
-                        }
-                      />
-                    </motion.button>
-                  ))}
-                </div>
-
-                <div className="flex gap-4">
-                  <button
-                    className="flex-1 rounded-full bg-white py-4 text-xs font-black tracking-widest text-black uppercase transition-all active:scale-95 disabled:opacity-50"
-                    disabled={newComment.length === 0 || newRating === 0}
-                  >
-                    Publish Review
-                  </button>
+                {/* Action Bar */}
+                <div className="flex items-center gap-3 pt-1">
                   <input
                     type="file"
                     accept="image/*"
@@ -533,15 +769,38 @@ export default function ReviewSection() {
                     onChange={handleImageChange}
                   />
                   <button
+                    type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className={`flex h-14 w-14 items-center justify-center rounded-full border transition-all ${
+                    className={`border-border hover:border-foreground flex h-12 items-center justify-center gap-2 rounded-xl border px-4 transition-all cursor-pointer active:scale-95 ${
                       selectedImage
-                        ? 'border-yellow-400 bg-yellow-400 text-black'
-                        : 'border-white/10 bg-white/5 text-white/40 hover:text-white'
+                        ? 'border-amber-400 bg-amber-400/10 text-amber-500'
+                        : 'text-foreground'
                     }`}
+                    title="Attach Photo"
                   >
-                    <CameraIcon size={20} />
+                    <CameraIcon size={18} />
+                    <span className="text-xs font-bold whitespace-nowrap">
+                      {selectedImage ? 'Change Photo' : 'Add Photo'}
+                    </span>
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSubmitReview}
+                    disabled={!newComment.trim() || newRating === 0}
+                    className="bg-foreground text-background -skew-x-[12deg] flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-foreground font-black tracking-widest text-xs uppercase shadow-xl transition-all hover:opacity-95 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <span className="skew-x-[12deg] flex items-center justify-center gap-2">
+                      <span>Publish Review</span>
+                      <ArrowRightIcon size={15} />
+                    </span>
+                  </button>
+                </div>
+
+                {/* Footnote */}
+                <div className="text-foreground-muted flex items-center justify-center gap-1.5 pt-1 text-[10px] font-semibold">
+                  <ShieldCheckIcon size={13} className="text-emerald-500" />
+                  <span>Verified Buyer Review • Cross-referenced with confirmed order</span>
                 </div>
               </div>
             </motion.div>

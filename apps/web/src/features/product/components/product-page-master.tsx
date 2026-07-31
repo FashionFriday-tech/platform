@@ -432,7 +432,7 @@ export default function ProductPageMaster({
         </div>
       )}
 
-      <ReviewSection />
+      <ReviewSection productId={product.id} productName={product.name} />
       <RelatedProducts products={similarProducts} />
       <CTAStickyButtons
         isWishlisted={isWishlisted}
