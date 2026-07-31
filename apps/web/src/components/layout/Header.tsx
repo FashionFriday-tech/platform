@@ -337,7 +337,7 @@ export function Header() {
       </div>
 
       {!isBottomNavHidden && (
-        <nav className="bg-background/95 border-border/40 fixed inset-x-0 bottom-0 z-[100] flex h-[calc(3.5rem+env(safe-area-inset-bottom,0px))] items-center justify-between border-t px-6 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md lg:hidden">
+        <nav className="bg-background/95 border-border/40 fixed inset-x-0 bottom-0 z-[100] flex h-[calc(3.25rem+var(--bottom-nav-safe-pb))] items-center justify-between border-t px-6 pb-[var(--bottom-nav-safe-pb)] backdrop-blur-md lg:hidden">
           <Link href="/category/men">
             <CategoryIcon className="text-[25px]" />
           </Link>

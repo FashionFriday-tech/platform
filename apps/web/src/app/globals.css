@@ -98,6 +98,17 @@
     color-scheme: dark;
   }
 
+  /* Mobile Bottom Navigation Safe Area Tuning (prevents bloated bottom padding in iPhone PWA) */
+  :root {
+    --bottom-nav-safe-pb: max(0px, calc(env(safe-area-inset-bottom, 0px) - 16px));
+  }
+
+  @media (display-mode: standalone) {
+    :root {
+      --bottom-nav-safe-pb: max(0px, calc(env(safe-area-inset-bottom, 0px) - 20px));
+    }
+  }
+
   /* Base app styling */
   html,
   body {
