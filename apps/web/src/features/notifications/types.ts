@@ -6,4 +6,10 @@ export interface Notification {
   title: string;
   message: string;
   timestamp: string;
+  createdAt: string;
+  link?: string;
+  isRead?: boolean;
+  orderNumber?: string;
+  orderStatus?: string;
+  badge?: string;
 }

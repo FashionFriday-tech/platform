@@ -88,3 +88,62 @@ self.addEventListener('fetch', (event) => {
       }),
   );
 });
+
+// --- PWA WEB PUSH NOTIFICATIONS ---
+self.addEventListener('push', (event) => {
+  let data = {
+    title: 'Fashion Friday Alert',
+    body: 'New exclusive drop & order updates are now live.',
+    icon: '/icons/icon-192.png',
+    badge: '/favicon-48x48.png',
+    url: '/account/notifications',
+  };
+
+  if (event.data) {
+    try {
+      data = { ...data, ...event.data.json() };
+    } catch {
+      data.body = event.data.text() || data.body;
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon || '/icons/icon-192.png',
+    badge: data.badge || '/favicon-48x48.png',
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || '/account/notifications',
+      notificationId: data.id || String(Date.now()),
+    },
+    actions: [
+      { action: 'open', title: 'View Update' },
+      { action: 'close', title: 'Dismiss' },
+    ],
+  };
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'close') {
+    return;
+  }
+
+  const targetUrl = event.notification.data?.url || '/account/notifications';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if (client.url.includes(targetUrl) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    }),
+  );
+});
