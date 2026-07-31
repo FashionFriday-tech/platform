@@ -22,6 +22,7 @@ interface SidebarProps {
   sortOptions?: { label: string; value: string }[];
   maxPrice: number;
   isMobileDrawer?: boolean;
+  onDraftFiltersChange?: (filters: Record<string, string[]>) => void;
 }
 
 export const CatalogueSidebar = ({
@@ -35,10 +36,16 @@ export const CatalogueSidebar = ({
   sortOptions = [],
   maxPrice,
   isMobileDrawer = false,
+  onDraftFiltersChange,
 }: SidebarProps) => {
   // Staged Draft State for user selection
   const [draftFilters, setDraftFilters] = useState<Record<string, string[]>>(activeFilters);
   const [draftSort, setDraftSort] = useState<string>(sortBy);
+  const onDraftFiltersChangeRef = React.useRef(onDraftFiltersChange);
+
+  useEffect(() => {
+    onDraftFiltersChangeRef.current = onDraftFiltersChange;
+  }, [onDraftFiltersChange]);
 
   // Synchronize when activeFilters / sortBy change from outside (e.g. top chips)
   useEffect(() => {
@@ -88,22 +95,28 @@ export const CatalogueSidebar = ({
   const handleDraftToggle = (key: string, value: string, isSingle = false) => {
     setDraftFilters((prev) => {
       const currentValues = prev[key] || [];
+      let updated: Record<string, string[]>;
       if (isSingle) {
         if (currentValues[0] === value) {
           const { [key]: _, ...rest } = prev;
-          return rest;
+          updated = rest;
+        } else {
+          updated = { ...prev, [key]: [value] };
         }
-        return { ...prev, [key]: [value] };
-      }
-      const newValues = currentValues.includes(value)
-        ? currentValues.filter((v) => v !== value)
-        : [...currentValues, value];
+      } else {
+        const newValues = currentValues.includes(value)
+          ? currentValues.filter((v) => v !== value)
+          : [...currentValues, value];
 
-      if (newValues.length === 0) {
-        const { [key]: _, ...rest } = prev;
-        return rest;
+        if (newValues.length === 0) {
+          const { [key]: _, ...rest } = prev;
+          updated = rest;
+        } else {
+          updated = { ...prev, [key]: newValues };
+        }
       }
-      return { ...prev, [key]: newValues };
+      onDraftFiltersChangeRef.current?.(updated);
+      return updated;
     });
   };
 
@@ -116,6 +129,7 @@ export const CatalogueSidebar = ({
 
   const handleReset = () => {
     setDraftFilters({});
+    onDraftFiltersChangeRef.current?.({});
     onClearFilters?.();
   };
 
@@ -213,7 +227,7 @@ export const CatalogueSidebar = ({
         data-lenis-prevent-touch="true"
         className={
           isMobileDrawer
-            ? 'min-h-0 flex-1 px-1'
+            ? 'min-h-0 flex-1 px-0'
             : 'min-h-0 flex-1 overflow-y-auto overscroll-contain pr-2 [scrollbar-width:thin]'
         }
       >
@@ -303,7 +317,11 @@ export const CatalogueSidebar = ({
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden px-2 pt-3 pb-2"
+                className={
+                  isMobileDrawer
+                    ? 'overflow-hidden px-1 pt-2.5 pb-2'
+                    : 'overflow-hidden px-2 pt-3 pb-2'
+                }
               >
                 {/* Range Slider */}
                 <input
@@ -378,7 +396,11 @@ export const CatalogueSidebar = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden px-2 pt-2.5 pb-2"
+                  className={
+                    isMobileDrawer
+                      ? 'overflow-hidden px-1 pt-2 pb-2'
+                      : 'overflow-hidden px-2 pt-2.5 pb-2'
+                  }
                 >
                   {facets.brands.length > 5 && (
                     <div className="border-border bg-background-muted focus-within:border-foreground mb-2.5 -skew-x-[12deg] overflow-hidden rounded-sm border">
@@ -475,7 +497,11 @@ export const CatalogueSidebar = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="flex flex-wrap gap-1.5 overflow-hidden px-2 pt-2.5 pb-2"
+                  className={
+                    isMobileDrawer
+                      ? 'flex flex-wrap gap-1.5 overflow-hidden px-1 pt-2 pb-1.5'
+                      : 'flex flex-wrap gap-1.5 overflow-hidden px-2 pt-2.5 pb-2'
+                  }
                 >
                   {facets.qualities.map((q) => {
                     const isActive =
@@ -534,7 +560,11 @@ export const CatalogueSidebar = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="flex flex-wrap gap-1.5 overflow-hidden px-2 pt-2.5 pb-2"
+                  className={
+                    isMobileDrawer
+                      ? 'flex flex-wrap gap-1.5 overflow-hidden px-1 pt-2 pb-2'
+                      : 'flex flex-wrap gap-1.5 overflow-hidden px-2 pt-2.5 pb-2'
+                  }
                 >
                   {facets.colors.map((c) => {
                     const colorKey = c.value.toLowerCase().trim();
@@ -603,7 +633,11 @@ export const CatalogueSidebar = ({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="grid grid-cols-4 gap-1.5 overflow-hidden px-2 pt-2.5 pb-2 sm:grid-cols-5"
+                  className={
+                    isMobileDrawer
+                      ? 'grid grid-cols-4 gap-1.5 overflow-hidden px-1 pt-2 pb-2 sm:grid-cols-5'
+                      : 'grid grid-cols-4 gap-1.5 overflow-hidden px-2 pt-2.5 pb-2 sm:grid-cols-5'
+                  }
                 >
                   {facets.sizes.map((s) => {
                     const isActive =

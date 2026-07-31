@@ -41,6 +41,14 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
   } = useCatalogue({ initialProducts });
 
   const [activeDrawer, setActiveDrawer] = useState<'filter' | 'sort' | null>(null);
+  const [drawerDraftFilters, setDrawerDraftFilters] =
+    useState<Record<string, string[]>>(activeFilters);
+
+  useEffect(() => {
+    if (activeDrawer === 'filter') {
+      setDrawerDraftFilters(activeFilters);
+    }
+  }, [activeDrawer, activeFilters]);
 
   useEffect(() => {
     if (activeDrawer) {
@@ -61,6 +69,10 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
   const activeFilterCount = useMemo(() => {
     return Object.values(activeFilters).reduce((acc, curr) => acc + (curr?.length || 0), 0);
   }, [activeFilters]);
+
+  const drawerDraftFilterCount = useMemo(() => {
+    return Object.values(drawerDraftFilters).reduce((acc, curr) => acc + (curr?.length || 0), 0);
+  }, [drawerDraftFilters]);
 
   const touchStartY = useRef<number | null>(null);
 
@@ -203,15 +215,15 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                 onTouchStart={handleTopTouchStart}
                 onTouchMove={handleTopTouchMove}
                 onTouchEnd={handleTopTouchEnd}
-                className="border-border flex items-center justify-between border-b px-6 pb-4"
+                className="border-border flex items-center justify-between border-b px-4 pb-3"
               >
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-black tracking-widest uppercase">
                     {activeDrawer === 'filter' ? 'Refine Results' : 'Sort Products'}
                   </h3>
-                  {activeDrawer === 'filter' && activeFilterCount > 0 && (
+                  {activeDrawer === 'filter' && drawerDraftFilterCount > 0 && (
                     <span className="bg-foreground text-background flex h-5 w-5 -skew-x-[12deg] items-center justify-center rounded-xs text-[10px] font-black">
-                      <span className="skew-x-[12deg]">{activeFilterCount}</span>
+                      <span className="skew-x-[12deg]">{drawerDraftFilterCount}</span>
                     </span>
                   )}
                 </div>
@@ -231,46 +243,45 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                 data-lenis-prevent="true"
                 data-lenis-prevent-wheel="true"
                 data-lenis-prevent-touch="true"
-                className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-6 py-4"
+                className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-3 py-3"
               >
                 {activeDrawer === 'sort' ? (
-                  <div className="space-y-2.5 px-1 py-1 pb-6">
+                  <div className="space-y-2 pb-6">
                     {SORT_OPTIONS.map((opt) => {
                       const isSelected = sortBy === opt.value;
                       return (
-                        <div key={opt.value} className="px-1.5">
-                          <button
-                            onClick={() => {
-                              setSortBy(opt.value);
-                              setActiveDrawer(null);
-                            }}
-                            className={`flex w-full -skew-x-[12deg] items-center justify-between rounded-sm border px-4 py-3 text-left transition-all active:scale-98 ${
-                              isSelected
-                                ? 'bg-foreground text-background border-foreground font-black shadow-md'
-                                : 'border-border bg-background hover:border-foreground/40 text-foreground-subtle font-bold'
-                            }`}
-                          >
-                            <div className="flex w-full skew-x-[12deg] items-center justify-between">
-                              <span
-                                className={`text-[11px] tracking-wider uppercase ${
-                                  isSelected
-                                    ? 'text-background font-black'
-                                    : 'text-foreground-subtle font-semibold'
-                                }`}
-                              >
-                                {opt.label}
-                              </span>
-                              {isSelected && (
-                                <div className="bg-background h-2 w-2 -skew-x-[12deg] rounded-xs" />
-                              )}
-                            </div>
-                          </button>
-                        </div>
+                        <button
+                          key={opt.value}
+                          onClick={() => {
+                            setSortBy(opt.value);
+                            setActiveDrawer(null);
+                          }}
+                          className={`flex w-full -skew-x-[12deg] items-center justify-between rounded-sm border px-3.5 py-3 text-left transition-all active:scale-98 ${
+                            isSelected
+                              ? 'bg-foreground text-background border-foreground font-black shadow-md'
+                              : 'border-border bg-background hover:border-foreground/40 text-foreground-subtle font-bold'
+                          }`}
+                        >
+                          <div className="flex w-full skew-x-[12deg] items-center justify-between">
+                            <span
+                              className={`text-[11px] tracking-wider uppercase ${
+                                isSelected
+                                  ? 'text-background font-black'
+                                  : 'text-foreground-subtle font-semibold'
+                              }`}
+                            >
+                              {opt.label}
+                            </span>
+                            {isSelected && (
+                              <div className="bg-background h-2 w-2 -skew-x-[12deg] rounded-xs" />
+                            )}
+                          </div>
+                        </button>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     <CatalogueSidebar
                       category={categorySlug}
                       products={initialProducts}
@@ -280,6 +291,7 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                         setActiveFilters(newFilters);
                         setActiveDrawer(null);
                       }}
+                      onDraftFiltersChange={setDrawerDraftFilters}
                       onClearFilters={clearFilters}
                       sortBy={sortBy}
                       onSortChange={setSortBy}
@@ -293,12 +305,13 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
 
               {/* --- STICKY BOTTOM CONFIRMATION BAR (Mobile) - Fixed right on top of bottom menu box --- */}
               {activeDrawer === 'filter' && (
-                <div className="bg-background/95 border-border shrink-0 border-t px-5 py-3.5 backdrop-blur-md">
-                  <div className="flex items-center gap-3 px-1">
-                    {activeFilterCount > 0 && (
+                <div className="bg-background/95 border-border shrink-0 border-t px-3 py-3 backdrop-blur-md">
+                  <div className="flex items-center gap-2.5">
+                    {drawerDraftFilterCount > 0 && (
                       <button
                         onClick={() => {
                           clearFilters();
+                          setDrawerDraftFilters({});
                         }}
                         className="border-border text-foreground-subtle hover:text-foreground hover:border-foreground/40 flex-1 -skew-x-[12deg] rounded-sm border py-3 text-center text-[10px] font-black tracking-widest uppercase transition-all active:scale-95"
                       >
@@ -307,14 +320,14 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                     )}
                     <button
                       onClick={() => {
+                        setActiveFilters(drawerDraftFilters);
                         setActiveDrawer(null);
                       }}
-                      className="bg-foreground text-background hover:bg-foreground/90 flex-[2] -skew-x-[12deg] rounded-sm py-3 text-center text-[10px] font-black tracking-widest uppercase shadow-lg transition-all active:scale-95"
+                      className={`bg-foreground text-background hover:bg-foreground/90 ${
+                        drawerDraftFilterCount > 0 ? 'flex-[2]' : 'w-full'
+                      } -skew-x-[12deg] rounded-sm py-3 text-center text-[10px] font-black tracking-widest uppercase shadow-lg transition-all active:scale-95`}
                     >
-                      <span className="block skew-x-[12deg]">
-                        Apply Filters • View {products.length}{' '}
-                        {products.length === 1 ? 'Item' : 'Items'}
-                      </span>
+                      <span className="block skew-x-[12deg]">Apply Filters</span>
                     </button>
                   </div>
                 </div>
