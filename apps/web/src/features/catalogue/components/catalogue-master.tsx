@@ -314,7 +314,9 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
                   <div className="flex items-center gap-2.5">
                     <button
                       onClick={() => {
-                        if (!isMobileResetActive) return;
+                        if (!isMobileResetActive) {
+                          return;
+                        }
                         clearFilters();
                         setDrawerDraftFilters({});
                       }}
