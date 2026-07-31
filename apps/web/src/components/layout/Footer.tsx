@@ -21,16 +21,6 @@ import {
 } from '@ff/ui';
 import { toast } from 'sonner';
 
-const TICKER_ITEMS = [
-  'EXPRESS PAN-INDIA DISPATCH',
-  '100% VERIFIED AUTHENTIC APPAREL',
-  'EXCLUSIVE VAULT DROPS EVERY FRIDAY',
-  'VERIFIED SUPPLIERS & SELLERS',
-  '7-DAY HASSLE-FREE RETURNS',
-  'ZERO FAKES TOLERANCE',
-  '256-BIT ENCRYPTED CHECKOUT',
-];
-
 const TRUST_PILLARS = [
   {
     icon: ShieldCheckIcon,
@@ -345,66 +335,37 @@ export default function Footer() {
 
   return (
     <footer className="relative w-full overflow-hidden border-t border-zinc-800/80 bg-zinc-950 font-sans text-zinc-100 select-none dark:bg-black">
-      {/* 1. STREETWEAR MARQUEE TICKER */}
-      <div className="relative border-b border-zinc-800/60 bg-zinc-900/60 py-2.5 backdrop-blur-md">
-        <style>{`
-          @keyframes footer-ticker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+      {/* Luxury luminous shining light animation sweep across crossed boxes */}
+      <style>{`
+        @keyframes footer-card-shine {
+          0% {
+            transform: translateX(-150%) skewX(-20deg);
+            opacity: 0;
           }
-          .animate-footer-ticker {
-            display: flex;
-            width: max-content;
-            animation: footer-ticker 30s linear infinite;
+          15% {
+            opacity: 1;
           }
-          .animate-footer-ticker:hover {
-            animation-play-state: paused;
+          45% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 1;
           }
-
-          /* Luxury luminous shining light animation sweep across crossed boxes */
-          @keyframes footer-card-shine {
-            0% {
-              transform: translateX(-150%) skewX(-20deg);
-              opacity: 0;
-            }
-            15% {
-              opacity: 1;
-            }
-            45% {
-              transform: translateX(150%) skewX(-20deg);
-              opacity: 1;
-            }
-            46%, 100% {
-              transform: translateX(150%) skewX(-20deg);
-              opacity: 0;
-            }
+          46%, 100% {
+            transform: translateX(150%) skewX(-20deg);
+            opacity: 0;
           }
-          .footer-shine-sweep {
-            background: linear-gradient(
-              90deg,
-              transparent 0%,
-              rgba(255, 255, 255, 0.03) 20%,
-              rgba(255, 255, 255, 0.22) 50%,
-              rgba(255, 255, 255, 0.03) 75%,
-              transparent 100%
-            );
-            animation: footer-card-shine 4.8s ease-in-out infinite;
-          }
-        `}</style>
-        <div className="animate-footer-ticker flex items-center text-[10px] font-black tracking-[0.25em] whitespace-nowrap text-zinc-400 uppercase">
-          {[0, 1].map((set) => (
-            <div key={set} className="flex items-center gap-6 pr-6">
-              {TICKER_ITEMS.map((item, idx) => (
-                <span key={idx} className="flex items-center gap-6">
-                  <span className="text-zinc-200 transition-colors hover:text-white">{item}</span>
-                  <span className="h-1 w-1 rounded-full bg-zinc-600" />
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
+        }
+        .footer-shine-sweep {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.03) 20%,
+            rgba(255, 255, 255, 0.22) 50%,
+            rgba(255, 255, 255, 0.03) 75%,
+            transparent 100%
+          );
+          animation: footer-card-shine 4.8s ease-in-out infinite;
+        }
+      `}</style>
       {/* 2. MOBILE OPEN / CLOSE TOGGLE BUTTON */}
       <div className="border-b border-zinc-800 bg-zinc-900/80 px-4 py-3.5 sm:hidden">
         <button
@@ -630,7 +591,7 @@ export default function Footer() {
 
       {/* 4. BOTTOM SUB-FOOTER BAR (With mobile clearance) */}
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center justify-between gap-8 pt-6 pb-28 text-[11px] font-medium text-zinc-500 sm:pb-8 lg:flex-row lg:gap-4">
+        <div className="flex flex-col items-center justify-between gap-8 pt-6 pb-20 text-[11px] font-medium text-zinc-500 sm:pb-8 lg:flex-row lg:gap-4">
           <div className="order-1 flex flex-1 justify-center text-center lg:order-1 lg:justify-start lg:text-left">
             &copy; {new Date().getFullYear()} FASHION FRIDAY. ALL RIGHTS RESERVED. MADE FOR INDIAN
             CULTURE.
