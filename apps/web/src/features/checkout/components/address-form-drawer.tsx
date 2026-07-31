@@ -251,7 +251,7 @@ export function AddressFormDrawer({
                     onSave(formData);
                   }
                 }}
-                className="bg-foreground text-background flex w-full -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 rounded-xl border border-zinc-800 py-5 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95 dark:border-zinc-300"
+                className="bg-foreground text-background flex w-full -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 rounded-xl border border-foreground py-5 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95"
               >
                 <span className="flex skew-x-[12deg] items-center gap-2">
                   <ShieldCheckIcon size={16} />

@@ -226,10 +226,10 @@ export function OrderSummary() {
               onClick={() => {
                 setIsExpanded((prev) => !prev);
               }}
-              className="relative -mb-px flex h-10 w-72 cursor-pointer items-center justify-center transition-all active:scale-98 sm:w-80"
+              className="relative -mb-px flex h-10 w-64 cursor-pointer items-center justify-center transition-all active:scale-98 sm:w-72"
               aria-label="Toggle Summary"
             >
-              {/* Background SVG Tab: Continuous Smooth Curved Bezier Spline */}
+              {/* Background SVG Tab: Reduced subtle smooth curve */}
               <svg
                 viewBox="0 0 320 40"
                 preserveAspectRatio="none"
@@ -237,12 +237,12 @@ export function OrderSummary() {
               >
                 {/* Theme-dependent Solid Fill */}
                 <path
-                  d="M 0 40 C 18 40 28 34 36 22 L 48 10 C 56 2 68 0 82 0 L 238 0 C 252 0 264 2 272 10 L 284 22 C 292 34 302 40 320 40 Z"
+                  d="M 0 40 C 14 40 20 0 32 0 L 288 0 C 300 0 306 40 320 40 Z"
                   className="fill-background"
                 />
                 {/* Smooth Border Stroke (Top and curved sides) */}
                 <path
-                  d="M 0 40 C 18 40 28 34 36 22 L 48 10 C 56 2 68 0 82 0 L 238 0 C 252 0 264 2 272 10 L 284 22 C 292 34 302 40 320 40"
+                  d="M 0 40 C 14 40 20 0 32 0 L 288 0 C 300 0 306 40 320 40"
                   fill="none"
                   className="stroke-border"
                   strokeWidth="1.5"
@@ -276,7 +276,7 @@ export function OrderSummary() {
                 className="pointer-events-auto w-full overflow-hidden"
               >
                 <div className="w-full">
-                  <div className="bg-background text-foreground border-border max-h-[70vh] overflow-y-auto rounded-t-3xl rounded-b-none border-t border-b p-6 shadow-xl w-full">
+                  <div className="bg-background text-foreground border-border max-h-[70vh] overflow-y-auto rounded-t-2xl rounded-b-none border-t border-b p-6 shadow-xl w-full">
                     <div className="mx-auto max-w-lg space-y-5">
                       {/* Header */}
                       <div className="flex items-center justify-between">
