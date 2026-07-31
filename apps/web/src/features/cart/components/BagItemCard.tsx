@@ -125,7 +125,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
           {/* Info */}
           <div className="space-y-1">
             <Link href={slug ? `/products/${slug}` : '#'}>
-              <h3 className="text-foreground hover:text-brand text-lg leading-tight font-medium tracking-tight transition-colors md:text-3xl">
+              <h3 className="text-foreground hover:text-brand line-clamp-2 text-lg leading-tight font-medium tracking-tight transition-colors md:text-3xl">
                 {name}
               </h3>
             </Link>

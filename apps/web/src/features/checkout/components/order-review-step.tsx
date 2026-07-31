@@ -30,7 +30,7 @@ export function OrderReviewStep() {
   } = useCheckoutReview();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-[86px] pb-20 transition-colors duration-300 sm:pt-[92px] lg:pt-[170px] lg:pb-8">
+    <div className="bg-background text-foreground min-h-screen pt-[60px] pb-20 transition-colors duration-300 sm:pt-[92px] lg:pt-[170px] lg:pb-8">
       <CheckoutProgress currentStage={2} />
 
       <main className="mx-auto max-w-7xl px-4 pt-0 md:px-8">
@@ -141,7 +141,7 @@ export function OrderReviewStep() {
                         </div>
 
                         <div className="flex-1">
-                          <h3 className="text-xs font-bold tracking-tight uppercase">{name}</h3>
+                          <h3 className="line-clamp-2 text-xs font-bold tracking-tight uppercase">{name}</h3>
                           <p className="text-foreground-muted mt-1 text-[10px] font-bold uppercase">
                             Size: {item.size} • Qty: {item.quantity}
                           </p>

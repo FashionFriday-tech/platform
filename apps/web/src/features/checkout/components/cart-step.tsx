@@ -13,7 +13,7 @@ export function CartStep() {
   const { cartItems, hasItems, isMounted } = useCart();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-[86px] pb-16 transition-colors duration-300 sm:pt-[92px] lg:pt-[170px] lg:pb-6">
+    <div className="bg-background text-foreground min-h-screen pt-[60px] pb-16 transition-colors duration-300 sm:pt-[92px] lg:pt-[170px] lg:pb-6">
       <CheckoutProgress currentStage={1} />
       <main className="max-w-8xl mx-auto px-4 pt-0 md:px-8">
         <div className="w-full">
