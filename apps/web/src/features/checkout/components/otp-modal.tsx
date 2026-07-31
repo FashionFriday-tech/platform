@@ -14,7 +14,7 @@ export function OTPModal({ isOpen, phoneNumber, onVerify }: OTPModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="bg-background/90 fixed inset-0 z-100 flex items-center justify-center p-6 backdrop-blur-xl">
+        <div className="bg-background/90 fixed inset-0 z-[120] flex items-center justify-center p-6 backdrop-blur-xl">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}

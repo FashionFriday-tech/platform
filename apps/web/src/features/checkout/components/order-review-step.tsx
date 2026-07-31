@@ -201,7 +201,7 @@ export function OrderReviewStep() {
         </div>
       </main>
 
-      <div className="fixed right-0 bottom-0 left-0 z-50 flex flex-col items-center lg:hidden">
+      <div className="fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-50 flex flex-col items-center lg:hidden">
         {pricing.discount > 0 && (
           <motion.div
             onClick={() => {

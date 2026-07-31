@@ -110,14 +110,14 @@ export function AddressFormDrawer({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="bg-background/50 fixed inset-0 z-60 backdrop-blur-xl"
+            className="bg-background/50 fixed inset-0 z-[110] backdrop-blur-xl"
           />
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 20 }}
-            className="bg-background border-border fixed right-0 bottom-0 left-0 z-70 mx-auto flex max-h-[92vh] max-w-3xl flex-col rounded-t-[3rem] border-t shadow-2xl"
+            className="bg-background border-border fixed right-0 bottom-0 left-0 z-[120] mx-auto flex max-h-[92vh] max-w-3xl flex-col rounded-t-[3rem] border-t shadow-2xl"
           >
             <div className="relative flex flex-col items-center justify-center p-8 pb-6 md:p-10 md:pb-8">
               <button

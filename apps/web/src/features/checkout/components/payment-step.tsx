@@ -111,7 +111,7 @@ export function PaymentStep() {
   };
 
   return (
-    <div className="bg-background text-foreground min-h-screen px-4 pb-40 md:px-6 lg:py-20">
+    <div className="bg-background text-foreground min-h-screen px-4 pb-52 md:px-6 lg:py-20 lg:pb-20">
       <CheckoutProgress currentStage={3} />
 
       <main className="mx-auto max-w-4xl pt-12">
@@ -258,7 +258,7 @@ export function PaymentStep() {
       </main>
 
       {/* STICKY FOOTER */}
-      <div className="fixed right-0 bottom-0 left-0 z-50 flex flex-col items-center">
+      <div className="fixed right-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 z-50 flex flex-col items-center lg:bottom-0">
         <motion.div
           animate={{ height: isExpanded ? 'auto' : 'auto' }}
           className="bg-background border-border w-full overflow-hidden rounded-t-[3rem] border-t shadow-2xl backdrop-blur-2xl"
