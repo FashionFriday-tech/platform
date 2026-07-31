@@ -13,9 +13,9 @@ export function CartStep() {
   const { cartItems, hasItems, isMounted } = useCart();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-36 pb-32 transition-colors duration-300 sm:pt-40 lg:pb-12">
+    <div className="bg-background text-foreground min-h-screen pt-28 pb-16 transition-colors duration-300 lg:pt-36 lg:pb-6">
       <CheckoutProgress currentStage={1} />
-      <main className="max-w-8xl mx-auto px-4 pt-8 md:px-8">
+      <main className="max-w-8xl mx-auto px-4 pt-4 md:px-8 md:pt-6">
         <div className="w-full">
           <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
             {/* Left Column: Items & Shipping */}

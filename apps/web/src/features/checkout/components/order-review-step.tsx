@@ -30,10 +30,10 @@ export function OrderReviewStep() {
   } = useCheckoutReview();
 
   return (
-    <div className="bg-background text-foreground min-h-screen pt-36 pb-44 transition-colors duration-300 sm:pt-40 lg:pb-24">
+    <div className="bg-background text-foreground min-h-screen pt-28 pb-20 transition-colors duration-300 lg:pt-36 lg:pb-8">
       <CheckoutProgress currentStage={2} />
 
-      <main className="mx-auto max-w-7xl px-4 pt-8 md:px-8">
+      <main className="mx-auto max-w-7xl px-4 pt-4 md:px-8 md:pt-6">
         <div className="flex flex-col gap-12 lg:flex-row lg:items-start">
           <div className="flex-1 space-y-8">
             <section>
@@ -201,7 +201,7 @@ export function OrderReviewStep() {
         </div>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center transform-gpu will-change-transform lg:hidden">
         {pricing.discount > 0 && (
           <motion.div
             onClick={() => {
@@ -213,16 +213,14 @@ export function OrderReviewStep() {
           </motion.div>
         )}
 
-        <motion.div
-          animate={{ height: isExpanded ? 'auto' : 'auto' }}
-          className="border-border/40 bg-background/95 w-full overflow-hidden rounded-t-[3rem] border-t pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-2xl"
-        >
-          <div className="mx-auto max-w-4xl px-4">
+        <div className="border-border/40 bg-background/95 w-full overflow-hidden rounded-t-[3rem] border-t pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-2xl">
+          <div className="mx-auto max-w-lg px-6">
             <AnimatePresence>
               {isExpanded && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
                   className="text-foreground-subtle space-y-4 p-4 text-xs font-bold tracking-widest uppercase"
                 >
                   <div className="flex justify-between">
@@ -273,7 +271,7 @@ export function OrderReviewStep() {
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <AddressFormDrawer

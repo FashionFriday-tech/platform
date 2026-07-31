@@ -111,10 +111,10 @@ export function PaymentStep() {
   };
 
   return (
-    <div className="bg-background text-foreground min-h-screen px-4 pb-36 md:px-6 lg:py-20 lg:pb-20">
+    <div className="bg-background text-foreground min-h-screen px-4 pt-28 pb-20 transition-colors duration-300 md:px-6 lg:pt-36 lg:pb-8">
       <CheckoutProgress currentStage={3} />
 
-      <main className="mx-auto max-w-4xl pt-12">
+      <main className="mx-auto max-w-4xl pt-4 sm:pt-6">
         <div className="space-y-10">
           {/* Header Section */}
           <div className="flex items-center justify-between px-2">
@@ -258,17 +258,15 @@ export function PaymentStep() {
       </main>
 
       {/* STICKY FOOTER */}
-      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center">
-        <motion.div
-          animate={{ height: isExpanded ? 'auto' : 'auto' }}
-          className="border-border/40 bg-background/95 w-full overflow-hidden rounded-t-[3rem] border-t pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-2xl"
-        >
-          <div className="mx-auto max-w-4xl px-4">
+      <div className="fixed inset-x-0 bottom-0 z-50 flex flex-col items-center transform-gpu will-change-transform">
+        <div className="border-border/40 bg-background/95 w-full overflow-hidden rounded-t-[3rem] border-t pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-2xl">
+          <div className="mx-auto max-w-lg px-6">
             <AnimatePresence>
               {isExpanded && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
                   className="text-foreground-subtle space-y-3 p-4 text-[10px] font-bold tracking-widest uppercase"
                 >
                   <div className="flex justify-between">
@@ -295,9 +293,9 @@ export function PaymentStep() {
               >
                 <p className="text-foreground-muted mb-0.5 flex items-center gap-1.5 text-[8.5px] font-black tracking-widest text-nowrap uppercase">
                   Final Payable{' '}
-                  <motion.span animate={{ rotate: isExpanded ? 180 : 0 }}>
+                  <span className={`inline-block transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
                     <ChevronUpIcon size={10} />
-                  </motion.span>
+                  </span>
                 </p>
                 <p className="text-foreground text-2xl leading-tight font-black italic">
                   ₹{totalAmount}
@@ -316,7 +314,7 @@ export function PaymentStep() {
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Policy Modal Overlay */}

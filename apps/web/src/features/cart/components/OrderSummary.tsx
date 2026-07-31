@@ -185,9 +185,9 @@ export function OrderSummary() {
 
       {/* Mobile Sticky Quick-Action Bar */}
       {hasItems && (
-        <div className="border-border/40 bg-background/95 fixed inset-x-0 bottom-0 z-50 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-md lg:hidden">
-          <div className="flex w-full items-center justify-between gap-3">
-            <div className="flex flex-col pl-2">
+        <div className="border-border/40 bg-background/95 fixed inset-x-0 bottom-0 z-50 border-t px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-md transform-gpu will-change-transform lg:hidden">
+          <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-3">
+            <div className="flex flex-col pl-1">
               <span className="text-foreground-muted text-[10px] font-black tracking-widest uppercase">
                 Total
               </span>
