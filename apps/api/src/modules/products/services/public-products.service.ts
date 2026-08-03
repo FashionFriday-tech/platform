@@ -32,6 +32,25 @@ function levenshteinDistance(s1: string, s2: string): number {
   return matrix[b.length][a.length];
 }
 
+const SYNONYM_MAP: Record<string, string[]> = {
+  shoe: ['Sneakers', 'Nike', 'Crocs'],
+  shoes: ['Sneakers', 'Nike', 'Crocs'],
+  sneaker: ['Sneakers', 'Nike'],
+  sneakers: ['Sneakers', 'Nike'],
+  kicks: ['Sneakers', 'Nike'],
+  runner: ['Pegasus', 'Running', 'Sneakers'],
+  running: ['Pegasus', 'Running Pro', 'Sneakers'],
+  watch: ['Rolex', 'Watches'],
+  watches: ['Rolex', 'Watches'],
+  timepiece: ['Rolex', 'Watches'],
+  clog: ['Crocs'],
+  clogs: ['Crocs'],
+  basketball: ['KD18', 'LeBron', 'Basketball Pro'],
+  jordan: ['Air Force', 'Retro', 'Sneakers', 'Nike'],
+  streetwear: ['Lifestyle', 'Y2K Style', 'Sneakers'],
+  retro: ['Classic Retro', 'Air Force', 'Nike'],
+};
+
 @Injectable()
 export class PublicProductsService {
   constructor(private readonly productsRepository: ProductsRepository) {}
@@ -146,9 +165,13 @@ export class PublicProductsService {
       return { total: 0, products: [] };
     }
 
+    const lowerTerm = term.toLowerCase();
+
+
+
     // Find brands that contain this term
     const matchedBrandNames = brands
-      .filter((b) => b.name.toLowerCase().includes(term.toLowerCase()))
+      .filter((b) => b.name.toLowerCase().includes(lowerTerm))
       .map((b) => b.name);
 
     // Split multi-word query into distinct tokens
@@ -164,19 +187,26 @@ export class PublicProductsService {
       orConditions.push({ brand: { hasSome: matchedBrandNames } });
     }
 
-    // If multi-word, also allow match on all words in name
-    if (tokens.length > 1) {
-      orConditions.push({
-        AND: tokens.map((token) => ({
-          OR: [
-            { name: { contains: token, mode: 'insensitive' } },
-            { description: { contains: token, mode: 'insensitive' } },
-          ],
-        })),
+    // Check synonym map
+    const synonyms = SYNONYM_MAP[lowerTerm] || [];
+    for (const token of tokens) {
+      const tokenSynonyms = SYNONYM_MAP[token.toLowerCase()];
+      if (tokenSynonyms) {
+        synonyms.push(...tokenSynonyms);
+      }
+    }
+
+    if (synonyms.length > 0) {
+      const uniqueSynonyms = Array.from(new Set(synonyms));
+      uniqueSynonyms.forEach((syn) => {
+        orConditions.push({ name: { contains: syn, mode: 'insensitive' } });
+        orConditions.push({ description: { contains: syn, mode: 'insensitive' } });
+        orConditions.push({ category: { name: { contains: syn, mode: 'insensitive' } } });
       });
     }
 
-    const [total, products] = await this.productsRepository.findPublicProducts({
+    // Try primary search with exact/synonym conditions
+    let [total, products] = await this.productsRepository.findPublicProducts({
       skip,
       take,
       where: {
@@ -185,6 +215,28 @@ export class PublicProductsService {
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    // If multi-word search yielded 0 results, fall back to matching ANY token
+    if (total === 0 && tokens.length > 1) {
+      const tokenOrConditions: any[] = [];
+      tokens.forEach((t) => {
+        tokenOrConditions.push({ name: { contains: t, mode: 'insensitive' } });
+        tokenOrConditions.push({ description: { contains: t, mode: 'insensitive' } });
+      });
+
+      const fallbackResult = await this.productsRepository.findPublicProducts({
+        skip,
+        take,
+        where: {
+          status: ProductStatus.PUBLISHED,
+          OR: tokenOrConditions,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      total = fallbackResult[0];
+      products = fallbackResult[1];
+    }
 
     return { total, products };
   }
@@ -199,6 +251,7 @@ export class PublicProductsService {
 
     let { total, products } = await this.executeSearch(rawQuery, brands, skip, take);
     let didYouMean: string | undefined;
+    let isFallback = false;
 
     // Typo fallback if 0 matches (e.g. "nuke" -> "Nike")
     if (total === 0) {
@@ -213,6 +266,19 @@ export class PublicProductsService {
       }
     }
 
+    // If still 0 matches, return top published products as recommendations rather than an empty screen
+    if (total === 0) {
+      const recommendedResult = await this.productsRepository.findPublicProducts({
+        skip: 0,
+        take: 12,
+        where: { status: ProductStatus.PUBLISHED },
+        orderBy: { createdAt: 'desc' },
+      });
+      total = recommendedResult[0];
+      products = recommendedResult[1];
+      isFallback = true;
+    }
+
     const paginated = this.paginate([total, products], skip, take);
     return {
       ...paginated,
@@ -220,6 +286,7 @@ export class PublicProductsService {
         ...paginated.meta,
         query: rawQuery,
         didYouMean,
+        isFallback,
       },
     };
   }
@@ -251,7 +318,24 @@ export class PublicProductsService {
       .slice(0, 5);
 
     const matchedBrandNames = matchingBrands.map((b) => b.name);
-    let products = await this.productsRepository.findQuickSuggestions(rawQuery, matchedBrandNames);
+    const extraKeywords: string[] = [];
+    const lowerQuery = rawQuery.toLowerCase();
+    if (SYNONYM_MAP[lowerQuery]) {
+      extraKeywords.push(...SYNONYM_MAP[lowerQuery]);
+    }
+    const queryTokens = rawQuery.split(/\s+/).filter((t) => t.length > 1);
+    for (const t of queryTokens) {
+      if (SYNONYM_MAP[t.toLowerCase()]) {
+        extraKeywords.push(...SYNONYM_MAP[t.toLowerCase()]);
+      }
+    }
+    const uniqueKeywords = Array.from(new Set(extraKeywords));
+
+    let products = await this.productsRepository.findQuickSuggestions(
+      rawQuery,
+      matchedBrandNames,
+      uniqueKeywords,
+    );
 
     let didYouMean: string | undefined;
     if (products.length === 0 && matchingBrands.length === 0 && matchingCategories.length === 0) {
