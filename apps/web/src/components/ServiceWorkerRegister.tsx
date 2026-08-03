@@ -8,23 +8,7 @@ export default function ServiceWorkerRegister() {
       return;
     }
 
-    // In development mode, completely unregister service workers and clear caches
-    // so Next.js HMR, Hot Reloading, and latest updates render immediately without stale cache
-    if (process.env.NODE_ENV === 'development') {
-      void navigator.serviceWorker.getRegistrations().then(async (registrations) => {
-        for (const reg of registrations) {
-          await reg.unregister().catch(() => null);
-        }
-      });
-      if ('caches' in window) {
-        void caches.keys().then((names) => {
-          names.forEach((name) => {
-            void caches.delete(name);
-          });
-        });
-      }
-      return;
-    }
+
 
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
