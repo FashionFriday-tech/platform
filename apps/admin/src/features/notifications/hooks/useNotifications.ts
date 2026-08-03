@@ -1,6 +1,6 @@
-'use client';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 import { type AdminNotification } from '../types';
 
@@ -146,10 +146,27 @@ export function useNotifications() {
     [saveNotifications],
   );
 
-  const unreadCount = mounted ? notifications.filter((n) => !n.read).length : 2;
+  const { user } = useAuth();
+  const userRole = user?.role || 'SUPER_ADMIN';
+
+  // Role-based notification filtering:
+  // PRODUCT_MANAGER gets ONLY product & inventory notifications
+  // SALES_MANAGER gets ONLY sales, order & customer notifications
+  // SUPER_ADMIN gets ALL notifications
+  const roleFilteredNotifications = useMemo(() => {
+    if (userRole === 'PRODUCT_MANAGER') {
+      return notifications.filter((n) => n.category === 'inventory');
+    }
+    if (userRole === 'SALES_MANAGER') {
+      return notifications.filter((n) => n.category === 'orders' || n.category === 'customers');
+    }
+    return notifications;
+  }, [notifications, userRole]);
+
+  const unreadCount = mounted ? roleFilteredNotifications.filter((n) => !n.read).length : 0;
 
   return {
-    notifications,
+    notifications: roleFilteredNotifications,
     unreadCount,
     markAsRead,
     markAllAsRead,
