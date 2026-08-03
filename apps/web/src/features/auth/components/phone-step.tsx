@@ -11,7 +11,7 @@ export function PhoneStep({ phoneNumber, setPhoneNumber, errors, clearError }: P
   const hasError = Boolean(errors.phone);
 
   return (
-    <div>
+    <div className="px-1">
       <div className="flex gap-2.5 sm:gap-3">
         {/* Country Code Crossed Box */}
         <div className="group relative -skew-x-[12deg] rounded-md border border-zinc-800 bg-black px-4 py-3.5 transition-all duration-200 sm:-skew-x-[14deg] sm:rounded-lg sm:px-5 sm:py-4">
