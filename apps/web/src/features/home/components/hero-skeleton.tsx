@@ -19,7 +19,7 @@ export function HeroSkeleton(): JSX.Element {
         <div className="relative flex w-full -skew-x-[12deg] items-center overflow-hidden rounded-md border border-zinc-300/80 bg-white px-5 py-2.5 sm:-skew-x-[14deg] sm:rounded-lg dark:border-zinc-800 dark:bg-black">
           <div className="flex w-full skew-x-[12deg] items-center gap-3 sm:skew-x-[14deg]">
             <SearchIcon className="h-4.5 w-4.5 shrink-0 text-zinc-400 dark:text-zinc-500" />
-            <div className="h-3.5 w-44 rounded-sm bg-zinc-200/90 dark:bg-zinc-800 animate-pulse" />
+            <div className="h-3.5 w-44 animate-pulse rounded-sm bg-zinc-200/90 dark:bg-zinc-800" />
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@ export function HeroSkeleton(): JSX.Element {
                 ...mobileCardStyle,
                 transform: 'translate(calc(-50% - 103%), -50%) scale(0.92)',
               }}
-              className="absolute top-1/2 left-1/2 overflow-hidden rounded-[32px] sm:rounded-[38px] border border-zinc-200/60 bg-zinc-100/70 opacity-80 sm:opacity-90 dark:border-white/5 dark:bg-zinc-900/60"
+              className="absolute top-1/2 left-1/2 overflow-hidden rounded-[32px] border border-zinc-200/60 bg-zinc-100/70 opacity-80 sm:rounded-[38px] sm:opacity-90 dark:border-white/5 dark:bg-zinc-900/60"
             >
               <div className="hero-skeleton-shine absolute inset-0" />
             </div>
@@ -50,7 +50,7 @@ export function HeroSkeleton(): JSX.Element {
                 transform: 'translate(-50%, -50%) scale(1)',
                 zIndex: 20,
               }}
-              className="absolute top-1/2 left-1/2 overflow-hidden rounded-[32px] sm:rounded-[38px] border border-zinc-300/80 bg-zinc-200/90 shadow-2xl dark:border-white/10 dark:bg-zinc-900/95"
+              className="absolute top-1/2 left-1/2 overflow-hidden rounded-[32px] border border-zinc-300/80 bg-zinc-200/90 shadow-2xl sm:rounded-[38px] dark:border-white/10 dark:bg-zinc-900/95"
             >
               {/* Luxury Shimmer Sweep */}
               <div className="hero-skeleton-shine absolute inset-0 z-10" />
@@ -59,19 +59,19 @@ export function HeroSkeleton(): JSX.Element {
               <div className="relative flex h-full w-full flex-col justify-between p-6 sm:p-8">
                 {/* Top Poster Header Mock */}
                 <div className="flex items-center justify-between opacity-40">
-                  <div className="h-4 w-20 rounded bg-zinc-400/50 dark:bg-zinc-700/50 animate-pulse" />
-                  <div className="h-3 w-12 rounded bg-zinc-400/40 dark:bg-zinc-700/40 animate-pulse" />
+                  <div className="h-4 w-20 animate-pulse rounded bg-zinc-400/50 dark:bg-zinc-700/50" />
+                  <div className="h-3 w-12 animate-pulse rounded bg-zinc-400/40 dark:bg-zinc-700/40" />
                 </div>
 
                 {/* Center Graphic Silhouette */}
                 <div className="flex flex-1 items-center justify-center opacity-25">
-                  <div className="h-32 w-32 rounded-full border border-zinc-400/30 dark:border-zinc-700/40 animate-pulse" />
+                  <div className="h-32 w-32 animate-pulse rounded-full border border-zinc-400/30 dark:border-zinc-700/40" />
                 </div>
 
                 {/* Bottom Typography Silhouette */}
                 <div className="space-y-2 opacity-50">
-                  <div className="h-6 w-3/4 rounded-sm bg-zinc-400/60 dark:bg-zinc-700/60 animate-pulse" />
-                  <div className="h-3 w-1/2 rounded-sm bg-zinc-400/40 dark:bg-zinc-700/40 animate-pulse" />
+                  <div className="h-6 w-3/4 animate-pulse rounded-sm bg-zinc-400/60 dark:bg-zinc-700/60" />
+                  <div className="h-3 w-1/2 animate-pulse rounded-sm bg-zinc-400/40 dark:bg-zinc-700/40" />
                 </div>
               </div>
             </div>
@@ -82,7 +82,7 @@ export function HeroSkeleton(): JSX.Element {
                 ...mobileCardStyle,
                 transform: 'translate(calc(-50% + 103%), -50%) scale(0.92)',
               }}
-              className="absolute top-1/2 left-1/2 overflow-hidden rounded-[32px] sm:rounded-[38px] border border-zinc-200/60 bg-zinc-100/70 opacity-80 sm:opacity-90 dark:border-white/5 dark:bg-zinc-900/60"
+              className="absolute top-1/2 left-1/2 overflow-hidden rounded-[32px] border border-zinc-200/60 bg-zinc-100/70 opacity-80 sm:rounded-[38px] sm:opacity-90 dark:border-white/5 dark:bg-zinc-900/60"
             >
               <div className="hero-skeleton-shine absolute inset-0" />
             </div>
@@ -93,20 +93,20 @@ export function HeroSkeleton(): JSX.Element {
       {/* 3. Mobile Brand Logo Rows Skeleton (BrandScroll representation) */}
       <div className="flex w-full shrink-0 flex-col items-center justify-center gap-2 pt-1 pb-1 lg:hidden">
         {/* Row 1 Logos */}
-        <div className="flex w-full items-center justify-center gap-4 px-4 opacity-50 overflow-hidden">
+        <div className="flex w-full items-center justify-center gap-4 overflow-hidden px-4 opacity-50">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={`b1-${i}`}
-              className="h-8 w-14 shrink-0 rounded-md border border-zinc-300/40 bg-zinc-200/60 sm:h-9 sm:w-16 dark:border-white/5 dark:bg-zinc-900/70 animate-pulse"
+              className="h-8 w-14 shrink-0 animate-pulse rounded-md border border-zinc-300/40 bg-zinc-200/60 sm:h-9 sm:w-16 dark:border-white/5 dark:bg-zinc-900/70"
             />
           ))}
         </div>
         {/* Row 2 Logos */}
-        <div className="flex w-full items-center justify-center gap-4 px-4 opacity-35 overflow-hidden">
+        <div className="flex w-full items-center justify-center gap-4 overflow-hidden px-4 opacity-35">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={`b2-${i}`}
-              className="h-8 w-14 shrink-0 rounded-md border border-zinc-300/30 bg-zinc-200/40 sm:h-9 sm:w-16 dark:border-white/5 dark:bg-zinc-900/50 animate-pulse"
+              className="h-8 w-14 shrink-0 animate-pulse rounded-md border border-zinc-300/30 bg-zinc-200/40 sm:h-9 sm:w-16 dark:border-white/5 dark:bg-zinc-900/50"
             />
           ))}
         </div>
@@ -122,19 +122,19 @@ export function HeroSkeleton(): JSX.Element {
             >
               <div className="hero-skeleton-shine absolute inset-0" />
               <div className="flex h-full w-full flex-col justify-end p-8 opacity-40">
-                <div className="mb-2 h-7 w-2/3 rounded bg-zinc-400/60 dark:bg-zinc-700/60 animate-pulse" />
-                <div className="h-4 w-1/3 rounded bg-zinc-400/40 dark:bg-zinc-700/40 animate-pulse" />
+                <div className="mb-2 h-7 w-2/3 animate-pulse rounded bg-zinc-400/60 dark:bg-zinc-700/60" />
+                <div className="h-4 w-1/3 animate-pulse rounded bg-zinc-400/40 dark:bg-zinc-700/40" />
               </div>
             </div>
           ))}
         </div>
 
         {/* Desktop Brand Marquee Skeleton */}
-        <div className="mt-6 flex h-14 w-full items-center justify-between gap-6 px-6 opacity-40 overflow-hidden">
+        <div className="mt-6 flex h-14 w-full items-center justify-between gap-6 overflow-hidden px-6 opacity-40">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={`desk-brand-${i}`}
-              className="h-9 w-24 shrink-0 rounded-lg border border-zinc-300/40 bg-zinc-200/60 dark:border-white/5 dark:bg-zinc-900/70 animate-pulse"
+              className="h-9 w-24 shrink-0 animate-pulse rounded-lg border border-zinc-300/40 bg-zinc-200/60 dark:border-white/5 dark:bg-zinc-900/70"
             />
           ))}
         </div>
@@ -162,9 +162,9 @@ export function HeroSkeleton(): JSX.Element {
           background: linear-gradient(
             90deg,
             transparent 0%,
-            rgba(255, 255, 255, 0.04) 20%,
-            rgba(255, 255, 255, 0.22) 50%,
-            rgba(255, 255, 255, 0.04) 80%,
+            rgba(0, 0, 0, 0.03) 20%,
+            rgba(0, 0, 0, 0.08) 50%,
+            rgba(0, 0, 0, 0.03) 80%,
             transparent 100%
           );
           animation: hero-skeleton-shine 2.6s ease-in-out infinite;
