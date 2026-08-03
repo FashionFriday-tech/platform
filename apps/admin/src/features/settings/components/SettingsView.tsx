@@ -505,9 +505,9 @@ export function SettingsView() {
       {isInviteModalOpen && (
         <InviteMemberModal
           onClose={() => setIsInviteModalOpen(false)}
-          onInvite={(phone, role, name) => {
-            handleInvite(phone, role, name);
-            toast.success(`+91 ${phone} invited as ${ROLE_LABELS[role]}!`);
+          onInvite={(data) => {
+            handleInvite(data);
+            toast.success(`${data.name} (+91 ${data.phone}) invited as ${ROLE_LABELS[data.role]}!`);
           }}
         />
       )}
