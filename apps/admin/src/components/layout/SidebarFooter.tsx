@@ -160,46 +160,48 @@ export function SidebarFooter() {
             )}
           </button>
 
-          {/* Full Screen Toggle Icon */}
-          <button
-            type="button"
-            onClick={toggleFullscreen}
-            className="group relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-white/80 transition-all hover:bg-white/20 hover:text-white active:scale-95 dark:bg-black/5 dark:text-black/80 dark:hover:bg-black/20 dark:hover:text-black"
-            title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
-            aria-label="Toggle full screen"
-          >
-            {isFullscreen ? (
-              // Compress / exit fullscreen
-              <svg
-                className="h-4 w-4 transition-transform group-hover:scale-90"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M15 9h4.5M15 9V4.5M15 9l5.25-5.25M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25"
-                />
-              </svg>
-            ) : (
-              // Expand / enter fullscreen
-              <svg
-                className="h-4 w-4 transition-transform group-hover:scale-110"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
-                />
-              </svg>
-            )}
-          </button>
+          {/* Full Screen Toggle Icon (hidden when installed as PWA) */}
+          {!isInstalled && (
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              className="group relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-white/80 transition-all hover:bg-white/20 hover:text-white active:scale-95 dark:bg-black/5 dark:text-black/80 dark:hover:bg-black/20 dark:hover:text-black"
+              title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
+              aria-label="Toggle full screen"
+            >
+              {isFullscreen ? (
+                // Compress / exit fullscreen
+                <svg
+                  className="h-4 w-4 transition-transform group-hover:scale-90"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M15 9h4.5M15 9V4.5M15 9l5.25-5.25M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25"
+                  />
+                </svg>
+              ) : (
+                // Expand / enter fullscreen
+                <svg
+                  className="h-4 w-4 transition-transform group-hover:scale-110"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                  />
+                </svg>
+              )}
+            </button>
+          )}
 
           {/* Notifications Page Link Button */}
           <Link
