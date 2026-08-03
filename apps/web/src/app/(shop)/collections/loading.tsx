@@ -1,18 +1,22 @@
-export default function CategoriesLoading() {
-  return (
-    <div className="container mx-auto mt-14 animate-pulse px-4 py-8 lg:px-8 xl:px-12">
-      {/* Header */}
-      <div className="mx-auto mb-10 h-12 w-64 rounded-xl bg-zinc-900/50 dark:bg-zinc-900/80" />
+import { Skeleton } from '@/components/ui/skeleton';
 
-      {/* Grid of Skewed Cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:gap-6">
-        {[...Array(10)].map((_, i) => (
-          <div
-            key={i}
-            className="aspect-[3/4] w-full shrink-0 -skew-x-[6deg] rounded-2xl bg-zinc-900/50 sm:rounded-3xl dark:bg-zinc-900/80"
-          />
+export default function CollectionsLoading() {
+  return (
+    <main className="bg-background text-foreground min-h-screen px-4 pt-10 pb-24 md:px-10 md:pt-26">
+      {/* Editorial Header Skeleton */}
+      <header className="mb-10 text-center">
+        <Skeleton className="mx-auto mb-2 h-14 w-40 rounded-xl sm:h-20 sm:w-60" />
+        <Skeleton className="mx-auto h-12 w-64 rounded-xl sm:h-16 sm:w-96" />
+      </header>
+
+      {/* Grid of Collection Cards Skeleton */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="relative aspect-[4/5] w-full overflow-hidden rounded-4xl">
+            <Skeleton className="h-full w-full rounded-4xl" />
+          </div>
         ))}
       </div>
-    </div>
+    </main>
   );
 }
