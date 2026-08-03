@@ -33,6 +33,7 @@ const STORAGE_KEY = 'search_history';
 
 export const useSearchHistory = (storageLimit = 10) => {
   const [history, setHistory] = useState<string[]>([]);
+  const lastLoggedQueryRef = useRef<string | null>(null);
 
   useEffect(() => {
     try {
@@ -43,6 +44,9 @@ export const useSearchHistory = (storageLimit = 10) => {
       const parsed = JSON.parse(saved) as string[];
       if (Array.isArray(parsed) && parsed.length > 0) {
         setHistory(parsed);
+        if (parsed[0]) {
+          lastLoggedQueryRef.current = parsed[0];
+        }
       }
     } catch {
       // Silent catch
@@ -56,7 +60,17 @@ export const useSearchHistory = (storageLimit = 10) => {
         return;
       }
 
+      // Do not store duplicate search input if searched multiple times
+      if (lastLoggedQueryRef.current?.toLowerCase() === trimmed.toLowerCase()) {
+        return;
+      }
+      lastLoggedQueryRef.current = trimmed;
+
       setHistory((prev) => {
+        if (prev.length > 0 && prev[0].toLowerCase() === trimmed.toLowerCase()) {
+          return prev;
+        }
+
         const newHistory = [
           trimmed,
           ...prev.filter((item) => item.toLowerCase() !== trimmed.toLowerCase()),
