@@ -54,7 +54,7 @@ export const quickLinks: QuickLinkItem[] = [
     description: 'View and redeem your gift cards',
     icon: GiftIcon,
     href: '/gift-cards',
-    requiresAuth: false,
+    requiresAuth: true,
   },
   {
     label: 'Wallet',
