@@ -1,13 +1,44 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { type Role } from '@/contexts/AuthContext';
 
 import { MOCK_TEAM, type SortField, type TeamMember } from '../types';
 
+const STORAGE_TEAM_KEY = 'ff_admin_team_members';
+const STORAGE_INVITED_KEY = 'ff_admin_invited_team';
+
 export function useTeam() {
-  const [team, setTeam] = useState<TeamMember[]>(MOCK_TEAM);
+  const [team, setTeam] = useState<TeamMember[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(STORAGE_TEAM_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored) as TeamMember[];
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return MOCK_TEAM;
+  });
+
+  // Sync team updates to local storage and sync invited phone list
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(STORAGE_TEAM_KEY, JSON.stringify(team));
+      const invitedList = team
+        .filter((m) => m.phone)
+        .map((m) => ({ phone: m.phone, name: m.name, role: m.role }));
+      localStorage.setItem(STORAGE_INVITED_KEY, JSON.stringify(invitedList));
+    } catch {
+      // ignore
+    }
+  }, [team]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<'ALL' | Role>('ALL');
   const [statusFilter, setStatusFilter] = useState<'ALL' | TeamMember['status']>('ALL');
@@ -39,17 +70,27 @@ export function useTeam() {
     }
   };
 
-  const handleInvite = (email: string, role: Role) => {
+  const handleInvite = (phoneOrEmail: string, role: Role, customName?: string) => {
+    const isPhone = /^\+?[0-9]{10,12}$/.test(phoneOrEmail.replace(/\s+/g, ''));
+    const cleanPhone = isPhone ? phoneOrEmail.replace(/\D/g, '') : undefined;
+    const email = !isPhone ? phoneOrEmail : `${cleanPhone}@staff.fashionfriday.com`;
+    const name =
+      customName ||
+      (isPhone
+        ? `Team Member (+91 ${cleanPhone})`
+        : phoneOrEmail
+            .split('@')[0]
+            .split(/[._-]/)
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' '));
+
     const newMember: TeamMember = {
       id: String(Date.now()),
-      name: email
-        .split('@')[0]
-        .split(/[._-]/)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' '),
+      name,
       email,
+      phone: cleanPhone || '9876543210',
       role,
-      status: 'PENDING',
+      status: 'ACTIVE',
       joinedAt: new Date().toISOString(),
     };
     setTeam((prev) => [...prev, newMember]);
@@ -109,6 +150,10 @@ export function useTeam() {
     return result;
   }, [team, searchQuery, roleFilter, statusFilter, sortField, sortDirection]);
 
+  const handleDeleteMember = (id: string) => {
+    setTeam((prev) => prev.filter((m) => m.id !== id));
+  };
+
   return {
     team,
     searchQuery,
@@ -128,6 +173,7 @@ export function useTeam() {
     filteredAndSortedTeam,
     handleInvite,
     handleEditSave,
+    handleDeleteMember,
     getRoleBadgeColor,
     editingMember,
   };
