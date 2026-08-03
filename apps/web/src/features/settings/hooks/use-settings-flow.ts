@@ -1,5 +1,6 @@
 'use client';
-import { useCallback, useMemo, useState } from 'react';
+
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
@@ -14,15 +15,21 @@ export function useSettingsFlow() {
   const deleteAccount = useAuthStore((state) => state.deleteAccount);
   const settings = useSettingsStore((state) => state.settings);
   const updateSettings = useSettingsStore((state) => state.updateSettings);
+  const syncSettings = useSettingsStore((state) => state.syncSettings);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [notifications, setNotifications] = useState({
+
+  useEffect(() => {
+    syncSettings();
+  }, [syncSettings]);
+
+  const notifications = settings.notifications ?? {
     orders: true,
     promos: true,
-  });
+  };
 
-  const scrollLevel = settings.autoScrollLevel;
+  const scrollLevel = settings.autoScrollLevel ?? 3;
   const speedLabels = ['Lvl 1', 'Lvl 2', 'Lvl 3', 'Lvl 4', 'Lvl 5'];
 
   const handleLogout = useCallback(async () => {
@@ -49,12 +56,24 @@ export function useSettingsFlow() {
     }
   }, [deleteAccount, router]);
 
-  const handleToggleNotification = useCallback((key: 'orders' | 'promos') => {
-    setNotifications((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  }, []);
+  const handleToggleNotification = useCallback(
+    (key: 'orders' | 'promos') => {
+      const current = settings.notifications ?? { orders: true, promos: true };
+      const updated = {
+        ...current,
+        [key]: !current[key],
+      };
+      updateSettings({
+        notifications: updated,
+      });
+      toast.success(
+        updated[key]
+          ? `${key === 'orders' ? 'Order Logistics' : 'Exclusive Drops'} alerts enabled`
+          : `${key === 'orders' ? 'Order Logistics' : 'Exclusive Drops'} alerts muted`,
+      );
+    },
+    [settings.notifications, updateSettings],
+  );
 
   const handleUpdateScrollLevel = useCallback(
     (level: number) => {
