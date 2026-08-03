@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { ExternalLinkIcon, UserIcon as UIIcon } from '@ff/ui';
+import { ExternalLinkIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
 import { useAuthStore } from '@/store/auth-store';
@@ -27,15 +27,19 @@ export function QuickLinksGrid() {
     }
   };
 
+  // Only render logout when authenticated; never show login link under settings for guests
+  const linksToDisplay = quickLinks.filter((link) => {
+    if ('action' in link && link.action === 'logout' && !user) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 sm:gap-6 lg:grid-cols-5">
-      {quickLinks.map((link, _index) => {
+      {linksToDisplay.map((link) => {
         const isLogoutLink = 'action' in link && link.action === 'logout';
-        const displayLabel = isLogoutLink && !user ? 'Login' : link.label;
-        const displayDescription =
-          isLogoutLink && !user ? 'Sign in to your account' : link.description;
-        const Icon = isLogoutLink && !user ? UIIcon : link.icon;
-        const targetHref = isLogoutLink && !user ? '/login' : link.href;
+        const Icon = link.icon;
 
         const content = (
           <>
@@ -47,10 +51,10 @@ export function QuickLinksGrid() {
             {/* Content Area */}
             <div className="flex-1 sm:flex-none">
               <h3 className="text-foreground text-lg tracking-tighter uppercase sm:text-xl sm:font-bold">
-                {displayLabel}
+                {link.label}
               </h3>
               <p className="text-foreground mt-2 hidden text-xs leading-relaxed font-medium tracking-widest uppercase opacity-0 transition-opacity duration-500 group-hover:opacity-100 sm:block">
-                {displayDescription}
+                {link.description}
               </p>
             </div>
 
@@ -64,7 +68,7 @@ export function QuickLinksGrid() {
         const className =
           'bg-background border-border sm:bg-background-muted/30 hover:bg-background sm:hover:shadow-foreground/5 sm:hover:border-foreground/20 group relative flex items-center gap-6 border-b p-4 transition-all duration-500 sm:flex-col sm:items-center sm:rounded-4xl sm:border sm:p-6 sm:text-center sm:hover:-translate-y-2 sm:hover:shadow-2xl';
 
-        if (isLogoutLink && user) {
+        if (isLogoutLink) {
           return (
             <button key={link.label} onClick={handleLogout} className={className}>
               {content}
@@ -73,7 +77,7 @@ export function QuickLinksGrid() {
         }
 
         return (
-          <Link key={link.label} href={targetHref || '#'} className={className}>
+          <Link key={link.label} href={link.href || '#'} className={className}>
             {content}
           </Link>
         );
