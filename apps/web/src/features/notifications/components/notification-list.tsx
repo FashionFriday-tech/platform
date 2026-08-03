@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { BellOffIcon, ShoppingBagIcon, TagIcon } from '@ff/ui';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/store/auth-store';
 
 import { type Notification, type TabType } from '../types';
@@ -25,19 +26,19 @@ export function NotificationList({
 }: NotificationListProps) {
   const user = useAuthStore((state) => state.user);
 
-  // 1. Loading Skeleton
+  // 1. Loading Skeleton with Shining Animation
   if (isLoading) {
     return (
-      <div className="divide-foreground/5 divide-y">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="flex animate-pulse gap-4 p-5">
-            <div className="bg-foreground/10 h-11 w-11 shrink-0 rounded-full" />
+      <div className="divide-border/20 divide-y">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex gap-4 p-5">
+            <Skeleton className="h-11 w-11 shrink-0 rounded-full" />
             <div className="flex-1 space-y-2 py-1">
               <div className="flex justify-between">
-                <div className="bg-foreground/15 h-4 w-32 rounded" />
-                <div className="bg-foreground/10 h-3 w-16 rounded" />
+                <Skeleton className="h-4 w-32 rounded-sm" />
+                <Skeleton className="h-3 w-16 rounded-sm" />
               </div>
-              <div className="bg-foreground/10 h-3 w-3/4 rounded" />
+              <Skeleton className="h-3.5 w-3/4 rounded-sm" />
             </div>
           </div>
         ))}
