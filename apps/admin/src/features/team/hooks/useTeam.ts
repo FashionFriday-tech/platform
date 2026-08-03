@@ -16,7 +16,19 @@ export function useTeam() {
         const stored = localStorage.getItem(STORAGE_TEAM_KEY);
         if (stored) {
           const parsed = JSON.parse(stored) as TeamMember[];
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            // Strip any legacy mock team members
+            const cleaned = parsed.filter(
+              (m) =>
+                m.id !== '2' &&
+                m.id !== '3' &&
+                m.id !== '4' &&
+                !['9876543210', '9876543211', '9876543212', '8888888888', '7777777777'].includes(
+                  m.phone?.replace(/\D/g, '') || '',
+                ),
+            );
+            if (cleaned.length > 0) return cleaned;
+          }
         }
       } catch {
         // ignore
