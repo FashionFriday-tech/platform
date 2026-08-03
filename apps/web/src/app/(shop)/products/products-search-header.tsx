@@ -9,9 +9,14 @@ interface ProductsSearchHeaderProps {
   initialQuery?: string;
   total?: number;
   didYouMean?: string;
+  isFallback?: boolean;
 }
 
-export function ProductsSearchHeader({ initialQuery = '', didYouMean }: ProductsSearchHeaderProps) {
+export function ProductsSearchHeader({
+  initialQuery = '',
+  didYouMean,
+  isFallback = false,
+}: ProductsSearchHeaderProps) {
   const router = useRouter();
 
   const handleSearch = (searchTerm: string) => {
@@ -37,7 +42,14 @@ export function ProductsSearchHeader({ initialQuery = '', didYouMean }: Products
             />
           </div>
 
-          {/* Typo notification only (no product count) */}
+          {/* Fallback recommendation notice */}
+          {isFallback && initialQuery && (
+            <div className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex w-fit items-center gap-1.5 rounded-full border px-3.5 py-1 text-[11px] font-mono tracking-wider uppercase">
+              <span>No exact matches for &quot;{initialQuery}&quot;. Showing top recommended drops:</span>
+            </div>
+          )}
+
+          {/* Typo notification */}
           {didYouMean && (
             <div className="border-brand/40 bg-brand/10 flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-[11px]">
               <span className="text-foreground/60">Did you mean:</span>
