@@ -4,6 +4,7 @@ import { type JSX, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { useRouter } from 'next/navigation';
 import type { Brand } from '@ff/schemas';
 import { motion } from 'motion/react';
 
@@ -21,6 +22,7 @@ export default function Hero({
   initialBrands?: Brand[];
   children?: React.ReactNode;
 }): JSX.Element {
+  const router = useRouter();
   const {
     cards,
     currentIndex,
@@ -34,8 +36,13 @@ export default function Hero({
 
   const repeatedCards = [...cards, ...cards, ...cards];
 
-  const handleOpenSearch = () => {
-    window.dispatchEvent(new CustomEvent('open-search'));
+  const handleSearchSubmit = (term: string) => {
+    const clean = term.trim();
+    if (clean) {
+      router.push(`/products?q=${encodeURIComponent(clean)}`);
+    } else {
+      router.push('/products');
+    }
   };
 
   // Touch & Pointer Gesture Tracking
@@ -122,9 +129,9 @@ export default function Hero({
       ref={containerRef}
       className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center justify-between px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
-      {/* 1. Mobile Search input: Perfectly centered between marquee and hero card */}
-      <div className="flex w-full shrink-0 items-center justify-center px-4 py-3 sm:py-4 lg:hidden">
-        <SearchBox onClick={handleOpenSearch} />
+      {/* 1. Search Input: Responsive across mobile and desktop */}
+      <div className="flex w-full shrink-0 items-center justify-center px-4 py-3 sm:py-4 lg:mb-6 lg:max-w-xl lg:mx-auto lg:px-0">
+        <SearchBox interactive onSubmit={handleSearchSubmit} />
       </div>
 
       {/* 2. Mobile/Tablet View (Single Card or Circular Carousel with Strict 3:5 Aspect Ratio) */}
