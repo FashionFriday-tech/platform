@@ -12,6 +12,21 @@ export class SearchLogsService {
       return null;
     }
 
+    // Do not store duplicate search logs if the same input was already searched by this user/guest
+    const existingLog = await this.prisma.db.searchLog.findFirst({
+      where: {
+        query: {
+          equals: trimmed,
+          mode: 'insensitive',
+        },
+        ...(userId ? { userId } : { userId: null }),
+      },
+    });
+
+    if (existingLog) {
+      return existingLog;
+    }
+
     return this.prisma.db.searchLog.create({
       data: {
         query: trimmed,
