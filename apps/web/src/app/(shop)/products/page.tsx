@@ -12,12 +12,15 @@ export const revalidate = 30;
 interface ProductsPageProps {
   searchParams: Promise<{
     q?: string;
+    search?: string;
+    query?: string;
   }>;
 }
 
 export async function generateMetadata({ searchParams }: ProductsPageProps): Promise<Metadata> {
-  const { q } = await searchParams;
-  const query = (q || '').trim();
+  const params = await searchParams;
+  const raw = params.q || params.search || params.query || '';
+  const query = raw.trim();
 
   if (!query) {
     return {
@@ -41,18 +44,26 @@ export async function generateMetadata({ searchParams }: ProductsPageProps): Pro
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const { q } = await searchParams;
-  const rawQuery = (q || '').trim();
+  const params = await searchParams;
+  const rawQuery = (params.q || params.search || params.query || '').trim();
 
   let products = [];
   let total = 0;
   let didYouMean: string | undefined;
+  let isFallback = false;
 
   if (rawQuery) {
     const searchData = await getSearchResults(rawQuery, 100);
     products = searchData.products;
     total = searchData.total;
     didYouMean = searchData.didYouMean;
+    isFallback = Boolean(searchData.isFallback);
+
+    if (products.length === 0) {
+      products = await getNewArrivalsProducts(24);
+      total = products.length;
+      isFallback = true;
+    }
   } else {
     products = await getNewArrivalsProducts(100);
     total = products.length;
@@ -63,7 +74,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <div className="flex w-full flex-col">
       {/* Top sticky search input bar next to header */}
-      <ProductsSearchHeader initialQuery={rawQuery} total={total} didYouMean={didYouMean} />
+      <ProductsSearchHeader
+        initialQuery={rawQuery}
+        total={total}
+        didYouMean={didYouMean}
+        isFallback={isFallback}
+      />
 
       {/* Catalogue Grid or Zero State */}
       {products.length > 0 ? (
