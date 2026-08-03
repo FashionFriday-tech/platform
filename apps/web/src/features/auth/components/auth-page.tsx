@@ -57,15 +57,6 @@ export function AuthPage() {
 
       {/* 2. Header Slot with Hype Streetwear Copy */}
       <div className="mb-6 space-y-1.5">
-        <div className="inline-flex items-center gap-2">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-          <span className="font-mono text-[9px] font-black tracking-[0.3em] text-zinc-500 uppercase">
-            {step === 'PHONE' && 'Step 01 // VIP Drop Access'}
-            {step === 'OTP' && 'Step 02 // Pass Verification'}
-            {step === 'PROFILE' && 'Step 03 // VIP Setup'}
-          </span>
-        </div>
-
         <h1 className="text-2xl font-black tracking-tight text-white uppercase sm:text-3xl">
           {step === 'PHONE' && 'Get on the Guestlist'}
           {step === 'OTP' && 'Confirm Your Pass'}
