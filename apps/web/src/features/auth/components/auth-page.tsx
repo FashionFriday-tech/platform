@@ -32,14 +32,14 @@ export function AuthPage() {
   } = useAuthFlow();
 
   return (
-    <div className="animate-in fade-in w-full py-6 duration-700">
+    <div className="animate-in fade-in w-full py-2 duration-500">
       {step !== 'PHONE' && (
         <button
           onClick={() => {
             setStep(step === 'OTP' ? 'PHONE' : 'OTP');
             setErrors({});
           }}
-          className="group mb-8 flex items-center text-[10px] font-black tracking-widest text-zinc-500 uppercase transition-colors hover:text-white"
+          className="group mb-4 flex items-center text-[10px] font-black tracking-widest text-zinc-500 uppercase transition-colors hover:text-white"
         >
           <ArrowLeftIcon
             size={14}
@@ -49,7 +49,7 @@ export function AuthPage() {
         </button>
       )}
 
-      <div className="mb-8 space-y-2">
+      <div className="mb-6 space-y-1.5">
         <div className="inline-flex items-center gap-2">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
           <span className="font-mono text-[9px] font-black tracking-[0.3em] text-zinc-500 uppercase">
@@ -59,12 +59,12 @@ export function AuthPage() {
           </span>
         </div>
 
-        <h1 className="text-3xl font-black tracking-tight text-white uppercase sm:text-4xl">
+        <h1 className="text-2xl font-black tracking-tight text-white uppercase sm:text-3xl">
           {step === 'PHONE' && 'Join the Club'}
           {step === 'OTP' && 'Confirm OTP'}
           {step === 'PROFILE' && 'Welcome'}
         </h1>
-        <p className="text-xs leading-relaxed text-zinc-400 sm:text-sm">
+        <p className="text-xs leading-relaxed text-zinc-400">
           {step === 'PHONE' &&
             'Enter your WhatsApp number to receive an instant authentication code.'}
           {step === 'OTP' &&
@@ -74,7 +74,7 @@ export function AuthPage() {
       </div>
 
       <form
-        className="space-y-4"
+        className="space-y-3.5"
         onSubmit={(e) => {
           e.preventDefault();
         }}
@@ -110,28 +110,14 @@ export function AuthPage() {
           />
         )}
 
-        {/* Crossed Box Action Button */}
+        {/* Crossed Box Action Button matching Homepage */}
         <button
           type="button"
           onClick={handleNext}
           disabled={loading}
-          className="group relative mt-4 flex w-full -skew-x-[8deg] items-center justify-center rounded-lg border border-white bg-white py-4.5 text-xs font-black tracking-[0.25em] text-black uppercase transition-all hover:bg-zinc-200 active:scale-[0.99] disabled:opacity-50 sm:text-sm"
+          className="group relative mt-3 flex w-full -skew-x-[12deg] items-center justify-center rounded-md border border-white bg-white py-3.5 text-xs font-black tracking-[0.25em] text-black uppercase transition-all duration-200 hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 sm:-skew-x-[14deg] sm:rounded-lg sm:py-4 sm:text-sm"
         >
-          {/* Corner Crosshairs */}
-          <span className="pointer-events-none absolute -top-1 -left-1 font-mono text-[9px] leading-none text-zinc-400 select-none">
-            +
-          </span>
-          <span className="pointer-events-none absolute -top-1 -right-1 font-mono text-[9px] leading-none text-zinc-400 select-none">
-            +
-          </span>
-          <span className="pointer-events-none absolute -bottom-1 -left-1 font-mono text-[9px] leading-none text-zinc-400 select-none">
-            +
-          </span>
-          <span className="pointer-events-none absolute -right-1 -bottom-1 font-mono text-[9px] leading-none text-zinc-400 select-none">
-            +
-          </span>
-
-          <span className="flex skew-x-[8deg] items-center justify-center gap-1.5">
+          <span className="flex skew-x-[12deg] items-center justify-center gap-1.5 sm:skew-x-[14deg]">
             <span>
               {loading ? 'Processing...' : step === 'PROFILE' ? 'Start Shopping!' : 'Continue'}
             </span>
@@ -142,8 +128,8 @@ export function AuthPage() {
         </button>
 
         {step !== 'OTP' && (
-          <div className="mt-8 space-y-2 text-center">
-            <p className="text-[10px] leading-loose tracking-widest text-zinc-600 uppercase">
+          <div className="mt-5 space-y-1 text-center">
+            <p className="text-[10px] leading-relaxed tracking-widest text-zinc-600 uppercase">
               By continuing, you agree to our <br />
               <Link
                 href="/terms"
