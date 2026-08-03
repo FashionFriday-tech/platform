@@ -26,6 +26,10 @@ export function SettingsView() {
     permission,
     isEnabled,
     preferences,
+    isInstallable,
+    isInstalled,
+    isIOS,
+    installPwaApp,
     activatePushNotifications,
     deactivatePushNotifications,
     togglePreference,
@@ -357,12 +361,105 @@ export function SettingsView() {
         </motion.div>
 
         {/* =========================================================
-            ADMIN PROFILE & SYSTEM CARD
+            MOBILE STATUS BAR & PWA APP INSTALLATION CARD
            ========================================================= */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
+          className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm sm:p-8 dark:border-white/10 dark:bg-[#111115]"
+        >
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white shadow-sm dark:bg-white dark:text-black">
+                <ZapIcon className="h-6 w-6" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-black uppercase dark:text-white">
+                  Mobile Status Bar &amp; PWA Installation
+                </h2>
+                <p className="text-xs text-black/60 dark:text-white/60">
+                  Receive background order alerts directly in your phone&apos;s status bar and lock
+                  screen
+                </p>
+              </div>
+            </div>
+
+            {/* Install / Standalone Badge */}
+            {isInstalled ? (
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 font-mono text-[11px] font-bold tracking-wider text-emerald-700 uppercase dark:text-emerald-400">
+                <CheckCircleIcon className="h-4 w-4" />
+                <span>Installed as Standalone App</span>
+              </div>
+            ) : isInstallable ? (
+              <button
+                type="button"
+                onClick={installPwaApp}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/90"
+              >
+                <ZapIcon className="h-4 w-4" />
+                <span>Install Mobile App (PWA)</span>
+              </button>
+            ) : null}
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Status Bar / Lock Screen Explainer */}
+            <div className="flex flex-col justify-between rounded-2xl border border-black/5 bg-slate-50 p-5 dark:border-white/5 dark:bg-white/[0.02]">
+              <div>
+                <div className="flex items-center gap-2 text-sm font-bold text-black dark:text-white">
+                  <span>📱 Mobile Status Bar &amp; Lock Screen Alerts</span>
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                  When notifications are activated, push alerts automatically appear in your mobile
+                  phone&apos;s <strong>top status bar</strong>, <strong>notification drawer</strong>
+                  , and <strong>lock screen</strong> with custom sound and vibration.
+                </p>
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                <CheckIcon className="h-3.5 w-3.5" />
+                <span>Supports Android Chrome, Edge &amp; Desktop OS Notification Centers</span>
+              </div>
+            </div>
+
+            {/* PWA Requirement & Installation Details */}
+            <div className="flex flex-col justify-between rounded-2xl border border-black/5 bg-slate-50 p-5 dark:border-white/5 dark:bg-white/[0.02]">
+              <div>
+                <div className="flex items-center gap-2 text-sm font-bold text-black dark:text-white">
+                  <span>⚙️ Do You Need to Install the PWA?</span>
+                </div>
+                <div className="mt-2 space-y-2 text-xs leading-relaxed text-black/70 dark:text-white/70">
+                  <p>
+                    <strong>On Android:</strong> Not strictly required (browser notifications show
+                    in the status bar), but installing the PWA prevents the phone OS from putting
+                    the background tab to sleep and gives you the dedicated Admin app icon.
+                  </p>
+                  <p>
+                    <strong>On iPhone / iOS:</strong> Apple <em>strictly requires</em> adding the
+                    app to your Home Screen before enabling push notifications.
+                  </p>
+                </div>
+              </div>
+
+              {isIOS && !isInstalled && (
+                <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-300">
+                  <span className="font-bold">iOS Setup:</span> In Safari, tap the{' '}
+                  <strong>Share button (⎋)</strong> &rarr; tap{' '}
+                  <strong>&ldquo;Add to Home Screen&rdquo;</strong> &rarr; open the FF Admin icon
+                  from your home screen to activate push notifications.
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* =========================================================
+            ADMIN PROFILE & SYSTEM CARD
+           ========================================================= */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.15 }}
           className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm sm:p-8 dark:border-white/10 dark:bg-[#111115]"
         >
           <div className="mb-6 flex items-center gap-3">
