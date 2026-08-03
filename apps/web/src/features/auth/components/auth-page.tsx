@@ -33,23 +33,30 @@ export function AuthPage() {
 
   return (
     <div className="animate-in fade-in w-full py-2 duration-500">
-      {step !== 'PHONE' && (
-        <button
-          onClick={() => {
-            setStep(step === 'OTP' ? 'PHONE' : 'OTP');
-            setErrors({});
-          }}
-          className="group mb-4 flex items-center text-[10px] font-black tracking-widest text-zinc-500 uppercase transition-colors hover:text-white"
-        >
-          <ArrowLeftIcon
-            size={14}
-            className="mr-2 transition-transform group-hover:-translate-x-1"
-          />
-          {step === 'OTP' ? 'Change Number' : 'Back to OTP'}
-        </button>
-      )}
+      {/* 1. Fixed-height Back Navigation Bar (prevents layout jumping) */}
+      <div className="mb-3 flex h-6 items-center">
+        {step !== 'PHONE' ? (
+          <button
+            type="button"
+            onClick={() => {
+              setStep(step === 'OTP' ? 'PHONE' : 'OTP');
+              setErrors({});
+            }}
+            className="group flex items-center text-[10px] font-black tracking-widest text-zinc-500 uppercase transition-colors hover:text-white"
+          >
+            <ArrowLeftIcon
+              size={14}
+              className="mr-2 transition-transform group-hover:-translate-x-1"
+            />
+            {step === 'OTP' ? 'Change Number' : 'Back to OTP'}
+          </button>
+        ) : (
+          <div className="h-6" aria-hidden="true" />
+        )}
+      </div>
 
-      <div className="mb-6 space-y-1.5">
+      {/* 2. Fixed-height Header Slot */}
+      <div className="mb-5 min-h-[92px] space-y-1.5">
         <div className="inline-flex items-center gap-2">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
           <span className="font-mono text-[9px] font-black tracking-[0.3em] text-zinc-500 uppercase">
@@ -79,43 +86,46 @@ export function AuthPage() {
           e.preventDefault();
         }}
       >
-        {step === 'PHONE' && (
-          <PhoneStep
-            phoneNumber={phoneNumber}
-            setPhoneNumber={setPhoneNumber}
-            errors={errors}
-            clearError={clearError}
-          />
-        )}
+        {/* 3. Fixed Step Container (same height across all steps) */}
+        <div className="min-h-[116px]">
+          {step === 'PHONE' && (
+            <PhoneStep
+              phoneNumber={phoneNumber}
+              setPhoneNumber={setPhoneNumber}
+              errors={errors}
+              clearError={clearError}
+            />
+          )}
 
-        {step === 'OTP' && (
-          <OtpStep
-            otp={otp}
-            errors={errors}
-            timer={timer}
-            inputRefs={inputRefs}
-            handlePaste={handlePaste}
-            handleOtpChange={handleOtpChange}
-            handleResendOTP={handleResendOTP}
-          />
-        )}
+          {step === 'OTP' && (
+            <OtpStep
+              otp={otp}
+              errors={errors}
+              timer={timer}
+              inputRefs={inputRefs}
+              handlePaste={handlePaste}
+              handleOtpChange={handleOtpChange}
+              handleResendOTP={handleResendOTP}
+            />
+          )}
 
-        {step === 'PROFILE' && (
-          <ProfileSetupStep
-            profile={profile}
-            setProfile={setProfile}
-            errors={errors}
-            clearError={clearError}
-            phoneNumber={phoneNumber}
-          />
-        )}
+          {step === 'PROFILE' && (
+            <ProfileSetupStep
+              profile={profile}
+              setProfile={setProfile}
+              errors={errors}
+              clearError={clearError}
+              phoneNumber={phoneNumber}
+            />
+          )}
+        </div>
 
-        {/* Crossed Box Action Button matching Homepage */}
+        {/* 4. Crossed Box Action Button matching Homepage */}
         <button
           type="button"
           onClick={handleNext}
           disabled={loading}
-          className="group relative mt-3 flex w-full -skew-x-[12deg] items-center justify-center rounded-md border border-white bg-white py-3.5 text-xs font-black tracking-[0.25em] text-black uppercase transition-all duration-200 hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 sm:-skew-x-[14deg] sm:rounded-lg sm:py-4 sm:text-sm"
+          className="group relative mt-2 flex w-full -skew-x-[12deg] items-center justify-center rounded-md border border-white bg-white py-3.5 text-xs font-black tracking-[0.25em] text-black uppercase transition-all duration-200 hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 sm:-skew-x-[14deg] sm:rounded-lg sm:py-4 sm:text-sm"
         >
           <span className="flex skew-x-[12deg] items-center justify-center gap-1.5 sm:skew-x-[14deg]">
             <span>
@@ -127,26 +137,29 @@ export function AuthPage() {
           </span>
         </button>
 
-        {step !== 'OTP' && (
-          <div className="mt-5 space-y-1 text-center">
-            <p className="text-[10px] leading-relaxed tracking-widest text-zinc-600 uppercase">
-              By continuing, you agree to our <br />
-              <Link
-                href="/terms"
-                className="text-zinc-400 underline underline-offset-4 transition-colors hover:text-white"
-              >
-                Terms of Service
-              </Link>
-              <span className="mx-2">&</span>
-              <Link
-                href="/privacy"
-                className="text-zinc-400 underline underline-offset-4 transition-colors hover:text-white"
-              >
-                Privacy Policy
-              </Link>
-            </p>
-          </div>
-        )}
+        {/* 5. Fixed Legal Terms Footer across all steps */}
+        <div className="mt-5 min-h-[36px] text-center">
+          <p className="text-[10px] leading-relaxed tracking-widest text-zinc-600 uppercase">
+            By continuing, you agree to our <br />
+            <Link
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-400 underline underline-offset-4 transition-colors hover:text-white"
+            >
+              Terms of Service
+            </Link>
+            <span className="mx-2">&</span>
+            <Link
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-400 underline underline-offset-4 transition-colors hover:text-white"
+            >
+              Privacy Policy
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   );
