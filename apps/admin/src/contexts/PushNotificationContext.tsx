@@ -208,6 +208,23 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
     ) => {
       if (typeof window === 'undefined') return;
 
+      // Role-based notification routing:
+      // Product Manager: ONLY receives product & inventory related alerts
+      // Sales Manager: ONLY receives sales & orders related alerts
+      // Super Admin: receives EVERY message and alert across all departments
+      const userRole = user?.role || 'SUPER_ADMIN';
+      const category = options.category || 'orders';
+
+      if (userRole === 'PRODUCT_MANAGER') {
+        if (category !== 'inventory') {
+          return;
+        }
+      } else if (userRole === 'SALES_MANAGER') {
+        if (category !== 'orders' && category !== 'customers') {
+          return;
+        }
+      }
+
       // Play audio chime if enabled
       if (preferences.soundEnabled) {
         playNotificationChime();
@@ -374,17 +391,37 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       return;
     }
     toast.info('Sending test notification...');
-    await sendPushAlert('🔥 Test Order Alert #ORD-9999', {
-      body: 'Rohan Sharma placed an order for ₹6,499 (2 items). Payment verified via UPI.',
-      url: '/orders',
-      category: 'orders',
-      priority: 'high',
-    });
-  }, [permission, sendPushAlert]);
+
+    const userRole = user?.role || 'SUPER_ADMIN';
+    if (userRole === 'PRODUCT_MANAGER') {
+      await sendPushAlert('🔥 Low Stock Alert: Silk Oversized Shirt', {
+        body: 'SKU: FFS-091 inventory reached 2 units. Re-order threshold reached.',
+        url: '/products',
+        category: 'inventory',
+        priority: 'high',
+      });
+    } else if (userRole === 'SALES_MANAGER') {
+      await sendPushAlert('🔥 Sales Alert: New Order #ORD-9999', {
+        body: 'Rohan Sharma placed an order for ₹6,499 (2 items). Payment verified via UPI.',
+        url: '/orders',
+        category: 'orders',
+        priority: 'high',
+      });
+    } else {
+      await sendPushAlert('👑 Super Admin Alert: New Order #ORD-9999', {
+        body: 'Rohan Sharma placed an order for ₹6,499. Super Admin executive stream active.',
+        url: '/orders',
+        category: 'orders',
+        priority: 'high',
+      });
+    }
+  }, [permission, sendPushAlert, user?.role]);
 
   // Live Background Order Watcher (polls every 20 seconds when enabled & logged in)
   useEffect(() => {
     if (!user || !isEnabled || permission !== 'granted') return;
+    // Product Managers do not receive sales/order alerts
+    if (user.role === 'PRODUCT_MANAGER') return;
 
     let isCancelled = false;
 
