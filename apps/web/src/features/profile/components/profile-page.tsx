@@ -8,11 +8,13 @@ import {
   ChevronRightIcon,
   CloseIcon,
   GiftIcon,
+  HeartIcon,
   LoaderIcon,
   MapPinIcon,
   SaveIcon,
   ShieldCheckIcon,
   SparklesIcon,
+  StarIcon,
   UserIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
@@ -26,6 +28,7 @@ import {
 } from '@/features/auth/services/auth.actions';
 import { useAuthStore } from '@/store/auth-store';
 
+import { ActivityItem } from './activity-item';
 import { ModernInput } from './modern-input';
 import { ProfileSection } from './profile-section';
 
@@ -332,185 +335,226 @@ export function ProfilePage() {
             </div>
           </aside>
 
-          {/* MAIN FORM */}
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              setIsSaving(true);
-              try {
-                await updateProfile(formData);
-                toast.success('Profile updated successfully');
-              } catch (error) {
-                console.error('Update error:', error);
-                toast.error('Failed to update profile');
-              } finally {
-                setIsSaving(false);
-              }
-            }}
-            className="space-y-6 md:col-span-8"
-          >
-            <ProfileSection
-              title="Identity Details"
-              icon={UserIcon}
-              badge={
-                <>
-                  <ShieldCheckIcon size={14} /> Secure
-                </>
-              }
+          {/* RIGHT COLUMN: MAIN FORM & RECENT ACTIVITY */}
+          <div className="space-y-6 md:col-span-8">
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setIsSaving(true);
+                try {
+                  await updateProfile(formData);
+                  toast.success('Profile updated successfully');
+                } catch (error) {
+                  console.error('Update error:', error);
+                  toast.error('Failed to update profile');
+                } finally {
+                  setIsSaving(false);
+                }
+              }}
+              className="space-y-6"
             >
-              <div className="grid grid-cols-1 gap-6">
-                <ModernInput
-                  label="Full Name"
-                  value={formData.name}
-                  onChange={(v) => {
-                    setFormData({ ...formData, name: v });
-                  }}
-                />
-                <ModernInput
-                  label="Phone Number"
-                  value={formData.phone}
-                  onChange={(v) => {
-                    setFormData({ ...formData, phone: v });
-                  }}
-                  actionLabel="Verify"
-                  onAction={async () => {
-                    await handleVerifyField('phone');
-                  }}
-                  isLoading={verifyingField === 'phone'}
-                  isVerified={verifiedStatus.phone}
-                />
-                <ModernInput
-                  label="Email Address"
-                  value={formData.email}
-                  onChange={(v) => {
-                    setFormData({ ...formData, email: v });
-                  }}
-                  actionLabel="Verify"
-                  onAction={async () => {
-                    await handleVerifyField('email');
-                  }}
-                  isLoading={verifyingField === 'email'}
-                  isVerified={verifiedStatus.email}
-                />
-              </div>
-            </ProfileSection>
-
-            <ProfileSection
-              title="Personalize Your Feed"
-              icon={SparklesIcon}
-              badge="Recommendations"
-            >
-              <div className="space-y-6">
-                <div>
-                  <label className="text-foreground-subtle mb-3 block text-xs font-bold tracking-wider uppercase">
-                    I shop for
-                  </label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {['Male', 'Female', 'Other'].map((g) => (
-                      <button
-                        key={g}
-                        type="button"
-                        onClick={() => {
-                          setFormData({ ...formData, gender: g });
-                        }}
-                        className={`rounded-4xl border py-3 text-sm font-medium transition-all ${
-                          formData.gender === g
-                            ? 'bg-brand text-brand-foreground border-brand scale-[1.02]'
-                            : 'bg-background border-border text-foreground-muted hover:border-foreground-subtle'
-                        }`}
-                      >
-                        {g}
-                      </button>
-                    ))}
-                  </div>
+              <ProfileSection
+                title="Identity Details"
+                icon={UserIcon}
+                badge={
+                  <>
+                    <ShieldCheckIcon size={14} /> Secure
+                  </>
+                }
+              >
+                <div className="grid grid-cols-1 gap-6">
+                  <ModernInput
+                    label="Full Name"
+                    value={formData.name}
+                    onChange={(v) => {
+                      setFormData({ ...formData, name: v });
+                    }}
+                  />
+                  <ModernInput
+                    label="Phone Number"
+                    value={formData.phone}
+                    onChange={(v) => {
+                      setFormData({ ...formData, phone: v });
+                    }}
+                    actionLabel="Verify"
+                    onAction={async () => {
+                      await handleVerifyField('phone');
+                    }}
+                    isLoading={verifyingField === 'phone'}
+                    isVerified={verifiedStatus.phone}
+                  />
+                  <ModernInput
+                    label="Email Address"
+                    value={formData.email}
+                    onChange={(v) => {
+                      setFormData({ ...formData, email: v });
+                    }}
+                    actionLabel="Verify"
+                    onAction={async () => {
+                      await handleVerifyField('email');
+                    }}
+                    isLoading={verifyingField === 'email'}
+                    isVerified={verifiedStatus.email}
+                  />
                 </div>
+              </ProfileSection>
 
-                <div>
-                  <label className="text-foreground-subtle mb-3 block text-xs font-bold tracking-wider uppercase">
-                    My Style Vibe
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {['Casual', 'Formal', 'Streetwear', 'Minimalist', 'Vintage'].map((style) => {
-                      const isSelected = formData.stylePreference.includes(style);
-                      return (
+              <ProfileSection
+                title="Personalize Your Feed"
+                icon={SparklesIcon}
+                badge="Recommendations"
+              >
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-foreground-subtle mb-3 block text-xs font-bold tracking-wider uppercase">
+                      I shop for
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {['Male', 'Female', 'Other'].map((g) => (
                         <button
-                          key={style}
+                          key={g}
                           type="button"
                           onClick={() => {
-                            const newStyles = isSelected
-                              ? formData.stylePreference.filter((s) => s !== style)
-                              : [...formData.stylePreference, style];
-                            setFormData({ ...formData, stylePreference: newStyles });
+                            setFormData({ ...formData, gender: g });
                           }}
-                          className={`rounded-full border-2 px-4 py-2 text-sm font-medium transition-all ${
-                            isSelected
-                              ? 'bg-brand text-brand-foreground border-brand'
-                              : 'text-foreground-muted border-border hover:border-brand'
+                          className={`rounded-4xl border py-3 text-sm font-medium transition-all ${
+                            formData.gender === g
+                              ? 'bg-brand text-brand-foreground border-brand scale-[1.02]'
+                              : 'bg-background border-border text-foreground-muted hover:border-foreground-subtle'
                           }`}
                         >
-                          {style}
+                          {g}
                         </button>
-                      );
-                    })}
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-foreground-subtle mb-3 block text-xs font-bold tracking-wider uppercase">
+                      My Style Vibe
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {['Casual', 'Formal', 'Streetwear', 'Minimalist', 'Vintage'].map((style) => {
+                        const isSelected = formData.stylePreference.includes(style);
+                        return (
+                          <button
+                            key={style}
+                            type="button"
+                            onClick={() => {
+                              const newStyles = isSelected
+                                ? formData.stylePreference.filter((s) => s !== style)
+                                : [...formData.stylePreference, style];
+                              setFormData({ ...formData, stylePreference: newStyles });
+                            }}
+                            className={`rounded-full border-2 px-4 py-2 text-sm font-medium transition-all ${
+                              isSelected
+                                ? 'bg-brand text-brand-foreground border-brand'
+                                : 'text-foreground-muted border-border hover:border-brand'
+                            }`}
+                          >
+                            {style}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <ModernInput
+                      label="Date of Birth"
+                      type="date"
+                      value={formData.dob}
+                      onChange={(v) => {
+                        setFormData({ ...formData, dob: v });
+                      }}
+                      icon={<GiftIcon size={16} />}
+                    />
+                    <ModernInput
+                      label="Anniversary"
+                      type="date"
+                      value={formData.anniversary}
+                      onChange={(v) => {
+                        setFormData({ ...formData, anniversary: v });
+                      }}
+                    />
                   </div>
                 </div>
+              </ProfileSection>
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <ModernInput
-                    label="Date of Birth"
-                    type="date"
-                    value={formData.dob}
-                    onChange={(v) => {
-                      setFormData({ ...formData, dob: v });
-                    }}
-                    icon={<GiftIcon size={16} />}
-                  />
-                  <ModernInput
-                    label="Anniversary"
-                    type="date"
-                    value={formData.anniversary}
-                    onChange={(v) => {
-                      setFormData({ ...formData, anniversary: v });
-                    }}
-                  />
+              <AnimatePresence>
+                {hasChanges && (
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 20, opacity: 0 }}
+                    className="sticky bottom-16 z-20 flex w-full items-center justify-center pt-4 md:bottom-4"
+                  >
+                    <div className="bg-foreground flex gap-3 rounded-4xl p-2 shadow-xl backdrop-blur-xl">
+                      <button
+                        type="button"
+                        onClick={handleDiscard}
+                        className="text-background hover:bg-background rounded-4xl px-6 py-3 font-medium transition-colors"
+                      >
+                        Discard
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSaving}
+                        className="bg-background text-foreground flex items-center gap-2 rounded-4xl px-8 py-3 font-semibold transition-all hover:opacity-90"
+                      >
+                        {isSaving ? (
+                          <LoaderIcon className="animate-spin" size={18} />
+                        ) : (
+                          <>
+                            <SaveIcon size={18} /> Save All
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </form>
+
+            {/* Recent Activity Timeline under Profile Details */}
+            <div className="bg-background-elevated border-border rounded-4xl border p-6 shadow-sm md:p-8">
+              <header className="mb-6 flex items-center justify-between">
+                <div>
+                  <h3 className="text-foreground-subtle mb-1 text-[10px] font-bold tracking-[0.3em] uppercase">
+                    Timeline
+                  </h3>
+                  <p className="text-xl font-black tracking-tight uppercase">Recent Activity</p>
                 </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                  <span className="font-mono text-[10px] font-bold tracking-widest text-zinc-500 uppercase">
+                    Live Log
+                  </span>
+                </div>
+              </header>
+
+              <div className="flex flex-col">
+                <ActivityItem
+                  icon={<StarIcon size={16} className="text-brand" />}
+                  title="Earned 500 Loyalty Points"
+                  desc="Bonus points for completing your style profile."
+                  time="2 hours ago"
+                />
+                <ActivityItem
+                  icon={<HeartIcon size={16} />}
+                  title="Added to Favorites"
+                  desc="Oversized Wool Blazer added to your wishlist."
+                  time="Yesterday"
+                />
+                <ActivityItem
+                  icon={<ShieldCheckIcon size={16} />}
+                  title="Security Update"
+                  desc="Two-factor authentication successfully enabled."
+                  time="Jan 08, 2026"
+                />
               </div>
-            </ProfileSection>
-
-            <AnimatePresence>
-              {hasChanges && (
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 20, opacity: 0 }}
-                  className="sticky bottom-16 z-20 flex w-full items-center justify-center pt-4 md:bottom-4"
-                >
-                  <div className="bg-foreground flex gap-3 rounded-4xl p-2 shadow-xl backdrop-blur-xl">
-                    <button
-                      type="button"
-                      onClick={handleDiscard}
-                      className="text-background hover:bg-background rounded-4xl px-6 py-3 font-medium transition-colors"
-                    >
-                      Discard
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSaving}
-                      className="bg-background text-foreground flex items-center gap-2 rounded-4xl px-8 py-3 font-semibold transition-all hover:opacity-90"
-                    >
-                      {isSaving ? (
-                        <LoaderIcon className="animate-spin" size={18} />
-                      ) : (
-                        <>
-                          <SaveIcon size={18} /> Save All
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </form>
+            </div>
+          </div>
         </div>
       </main>
 
