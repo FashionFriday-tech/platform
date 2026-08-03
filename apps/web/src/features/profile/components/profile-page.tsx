@@ -28,6 +28,7 @@ import {
 } from '@/features/auth/services/auth.actions';
 import { useAuthStore } from '@/store/auth-store';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { ActivityItem } from './activity-item';
 import { ModernInput } from './modern-input';
 import { ProfileSection } from './profile-section';
@@ -161,21 +162,22 @@ export function ProfilePage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
             {/* LEFT SIDEBAR SKELETON */}
             <aside className="space-y-6 md:col-span-4">
-              <div className="bg-background-elevated border-border animate-pulse rounded-4xl border p-6 text-center shadow-sm">
-                <div className="bg-border mx-auto h-28 w-28 rounded-full" />
-                <div className="bg-border mx-auto mt-4 h-6 w-32 rounded-md" />
-                <div className="bg-border mx-auto mt-2 h-4 w-24 rounded-md" />
-                <div className="bg-border mt-6 h-12 w-full rounded-3xl" />
+              <div className="border-border/40 bg-background-elevated/40 rounded-4xl border p-6 text-center shadow-xs">
+                <Skeleton className="mx-auto h-28 w-28 rounded-full" />
+                <Skeleton className="mx-auto mt-4 h-6 w-32 rounded-md" />
+                <Skeleton className="mx-auto mt-2 h-4 w-24 rounded-md" />
+                <Skeleton className="mt-6 h-12 w-full rounded-3xl" />
               </div>
             </aside>
             {/* MAIN FORM SKELETON */}
             <div className="space-y-6 md:col-span-8">
-              <div className="bg-background-elevated border-border animate-pulse rounded-4xl border p-6 shadow-sm">
-                <div className="bg-border mb-6 h-6 w-48 rounded-md" />
+              <div className="border-border/40 bg-background-elevated/40 rounded-4xl border p-6 shadow-xs">
+                <Skeleton className="mb-6 h-6 w-48 rounded-md" />
                 <div className="space-y-4">
-                  <div className="bg-border h-10 w-full rounded-2xl" />
-                  <div className="bg-border h-10 w-full rounded-2xl" />
-                  <div className="bg-border h-10 w-full rounded-2xl" />
+                  <Skeleton className="h-12 w-full rounded-2xl" />
+                  <Skeleton className="h-12 w-full rounded-2xl" />
+                  <Skeleton className="h-12 w-full rounded-2xl" />
+                  <Skeleton className="h-12 w-full rounded-2xl" />
                 </div>
               </div>
             </div>
