@@ -6,16 +6,26 @@ export function PwaUpdateManager() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // 1. One-time clean of legacy mock team cache from old PWA installs
-    const CLEAN_KEY = 'ff_admin_pwa_cleaned_v4';
-    if (!localStorage.getItem(CLEAN_KEY)) {
-      try {
-        localStorage.removeItem('ff_admin_team_members');
-        localStorage.removeItem('ff_admin_invited_team');
-        localStorage.setItem(CLEAN_KEY, 'true');
-      } catch {
-        // ignore
+    // 1. One-time clean and filter of legacy mock team cache from old PWA installs
+    try {
+      const stored = localStorage.getItem('ff_admin_team_members');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          const cleaned = parsed.filter(
+            (m) =>
+              m.id !== '2' &&
+              m.id !== '3' &&
+              m.id !== '4' &&
+              !['9876543210', '9876543211', '9876543212', '8888888888', '7777777777'].includes(
+                m.phone?.replace(/\D/g, '') || '',
+              ),
+          );
+          localStorage.setItem('ff_admin_team_members', JSON.stringify(cleaned));
+        }
       }
+    } catch {
+      // ignore
     }
 
     // 2. Service Worker lifecycle & update detection
