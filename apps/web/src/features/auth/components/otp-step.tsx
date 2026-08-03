@@ -22,8 +22,8 @@ export function OtpStep({
   const hasError = Boolean(errors.otp);
 
   return (
-    <div className="mb-8 space-y-6">
-      {/* Significantly increased OTP box size with Crossed Box design */}
+    <div className="mb-6 space-y-5">
+      {/* Increased OTP box size with Homepage Crossed Box design */}
       <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
         {otp.map((digit, index) => {
           const isFilled = Boolean(digit);
@@ -31,52 +31,14 @@ export function OtpStep({
           return (
             <div
               key={index}
-              className={`group relative -skew-x-[8deg] rounded-lg border transition-all ${
+              className={`group relative -skew-x-[12deg] rounded-md border transition-all duration-200 sm:-skew-x-[14deg] sm:rounded-lg ${
                 hasError
                   ? 'animate-shake border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
                   : isFilled
                     ? 'border-zinc-500 bg-zinc-900/90'
-                    : 'border-zinc-800 bg-zinc-950/80 focus-within:border-white focus-within:bg-zinc-900 focus-within:shadow-[0_0_25px_rgba(255,255,255,0.2)] hover:border-zinc-700'
+                    : 'border-zinc-800 bg-black focus-within:border-zinc-400 focus-within:ring-1 focus-within:ring-zinc-500 hover:border-zinc-700'
               }`}
             >
-              {/* Corner Crosshairs */}
-              <span
-                className={`pointer-events-none absolute -top-1 -left-1 font-mono text-[8px] leading-none transition-colors select-none sm:text-[9px] ${
-                  hasError
-                    ? 'text-red-500'
-                    : 'text-zinc-600 group-focus-within:text-white group-hover:text-zinc-400'
-                }`}
-              >
-                +
-              </span>
-              <span
-                className={`pointer-events-none absolute -top-1 -right-1 font-mono text-[8px] leading-none transition-colors select-none sm:text-[9px] ${
-                  hasError
-                    ? 'text-red-500'
-                    : 'text-zinc-600 group-focus-within:text-white group-hover:text-zinc-400'
-                }`}
-              >
-                +
-              </span>
-              <span
-                className={`pointer-events-none absolute -bottom-1 -left-1 font-mono text-[8px] leading-none transition-colors select-none sm:text-[9px] ${
-                  hasError
-                    ? 'text-red-500'
-                    : 'text-zinc-600 group-focus-within:text-white group-hover:text-zinc-400'
-                }`}
-              >
-                +
-              </span>
-              <span
-                className={`pointer-events-none absolute -right-1 -bottom-1 font-mono text-[8px] leading-none transition-colors select-none sm:text-[9px] ${
-                  hasError
-                    ? 'text-red-500'
-                    : 'text-zinc-600 group-focus-within:text-white group-hover:text-zinc-400'
-                }`}
-              >
-                +
-              </span>
-
               <input
                 type="text"
                 inputMode="numeric"
@@ -94,7 +56,7 @@ export function OtpStep({
                     inputRefs.current[index - 1]?.focus();
                   }
                 }}
-                className="h-14 w-11 skew-x-[8deg] bg-transparent text-center font-mono text-2xl font-black text-white outline-none sm:h-18 sm:w-14 sm:text-3xl md:h-20 md:w-16"
+                className="h-16 w-12 skew-x-[12deg] bg-transparent text-center font-mono text-2xl font-black text-white outline-none sm:h-20 sm:w-16 sm:skew-x-[14deg] sm:text-3xl md:h-22 md:w-18 md:text-4xl"
               />
             </div>
           );
