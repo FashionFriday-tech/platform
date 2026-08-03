@@ -49,7 +49,7 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
     setIsUpdatingPin(true);
     setPinMessage(null);
     try {
-      const adminPhone = currentUser?.phone || '9999999999';
+      const adminPhone = currentUser?.phone || '7558969093';
       const targetPhone = member.phone || member.email;
       const res = await PinStorage.updateBackendPin(adminPhone, targetPhone, pinInput);
       setPinMessage({
