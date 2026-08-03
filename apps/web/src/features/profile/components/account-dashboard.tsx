@@ -45,22 +45,6 @@ export function AccountDashboard() {
                   aria-hidden="true"
                 />
 
-                {/* Corner Crosshair Accents */}
-                <span className="pointer-events-none absolute top-4 left-4 font-mono text-[9px] text-zinc-700 select-none">
-                  + VIP_DROP // 01
-                </span>
-                <span className="pointer-events-none absolute top-4 right-4 font-mono text-[9px] text-zinc-700 select-none">
-                  FF_MEMBER_CLUB +
-                </span>
-
-                {/* Eyebrow Badge */}
-                <div className="relative z-10 mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-md">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                  <span className="text-[10px] font-black tracking-[0.25em] text-zinc-300 uppercase">
-                    VIP ACCESS // FASHION FRIDAY CLUB
-                  </span>
-                </div>
-
                 {/* Main Heading */}
                 <h1 className="relative z-10 mb-3 text-2xl font-black tracking-tight text-white uppercase sm:text-4xl md:text-5xl">
                   Unlock Exclusive Member Perks
