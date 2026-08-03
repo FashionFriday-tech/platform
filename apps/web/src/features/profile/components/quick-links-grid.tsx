@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { ExternalLinkIcon } from '@ff/ui';
+import { ExternalLinkIcon, LockIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
 import { useAuthStore } from '@/store/auth-store';
@@ -40,6 +40,10 @@ export function QuickLinksGrid() {
       {linksToDisplay.map((link) => {
         const isLogoutLink = 'action' in link && link.action === 'logout';
         const Icon = link.icon;
+        const needsLogin = Boolean(link.requiresAuth && !user);
+        const destinationHref = needsLogin
+          ? `/login?redirect=${encodeURIComponent(link.href || '/account')}`
+          : link.href || '#';
 
         const content = (
           <>
@@ -58,9 +62,19 @@ export function QuickLinksGrid() {
               </p>
             </div>
 
-            {/* Visual indicator for mobile links */}
-            <div className="text-foreground-subtle group-hover:text-foreground transition-colors sm:hidden">
-              <ExternalLinkIcon className="opacity-40" />
+            {/* Visual indicator: Lock icon if login required for guests, else arrow box icon */}
+            <div className="text-foreground-subtle group-hover:text-foreground transition-colors sm:absolute sm:top-5 sm:right-5">
+              {needsLogin ? (
+                <div className="flex items-center gap-1 rounded-full border border-zinc-800 bg-zinc-900/80 px-2 py-0.5 font-mono text-[9px] font-bold tracking-wider text-zinc-400 group-hover:border-zinc-700 group-hover:text-white">
+                  <LockIcon size={12} />
+                  <span className="hidden sm:inline">LOGIN</span>
+                </div>
+              ) : (
+                <ExternalLinkIcon
+                  className="opacity-40 transition-opacity group-hover:opacity-100"
+                  size={14}
+                />
+              )}
             </div>
           </>
         );
@@ -77,7 +91,7 @@ export function QuickLinksGrid() {
         }
 
         return (
-          <Link key={link.label} href={link.href || '#'} className={className}>
+          <Link key={link.label} href={destinationHref} className={className}>
             {content}
           </Link>
         );
