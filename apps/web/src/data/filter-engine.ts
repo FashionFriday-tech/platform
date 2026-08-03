@@ -392,6 +392,7 @@ export interface SearchResultsPayload {
   total: number;
   didYouMean?: string;
   query: string;
+  isFallback?: boolean;
 }
 
 export const getSearchResults = async (query: string, take = 60): Promise<SearchResultsPayload> => {
@@ -418,6 +419,7 @@ export const getSearchResults = async (query: string, take = 60): Promise<Search
       total: json.meta?.total ?? mapped.length,
       didYouMean: json.meta?.didYouMean,
       query: clean,
+      isFallback: Boolean(json.meta?.isFallback),
     };
   } catch (err) {
     console.error('getSearchResults error:', err);
