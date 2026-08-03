@@ -1,0 +1,444 @@
+'use client';
+
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import { toast } from 'sonner';
+
+import { api } from '@/lib/api-client';
+import { useNotifications } from '@/features/notifications';
+import { useAuth } from './AuthContext';
+
+export type PushPermission = 'default' | 'granted' | 'denied' | 'unsupported';
+
+export interface PushNotificationPreferences {
+  notifyNewOrders: boolean;
+  notifyStatusChanges: boolean;
+  notifyStockAlerts: boolean;
+  soundEnabled: boolean;
+}
+
+interface PushNotificationContextType {
+  isSupported: boolean;
+  permission: PushPermission;
+  isEnabled: boolean;
+  preferences: PushNotificationPreferences;
+  activatePushNotifications: () => Promise<boolean>;
+  deactivatePushNotifications: () => void;
+  togglePreference: (key: keyof PushNotificationPreferences) => void;
+  sendTestNotification: () => Promise<void>;
+  sendPushAlert: (
+    title: string,
+    options: {
+      body: string;
+      url?: string;
+      category?: 'orders' | 'inventory' | 'customers' | 'system';
+      priority?: 'low' | 'medium' | 'high';
+    },
+  ) => Promise<void>;
+}
+
+const PushNotificationContext = createContext<PushNotificationContextType | undefined>(undefined);
+
+const PREFS_STORAGE_KEY = 'ff_admin_push_prefs';
+const ENABLED_STORAGE_KEY = 'ff_admin_push_enabled';
+const KNOWN_ORDERS_KEY = 'ff_admin_known_orders';
+
+const DEFAULT_PREFERENCES: PushNotificationPreferences = {
+  notifyNewOrders: true,
+  notifyStatusChanges: true,
+  notifyStockAlerts: true,
+  soundEnabled: true,
+};
+
+// Web Audio API chime synthesizer: Crisp high-fidelity payment/order chime
+function playNotificationChime() {
+  try {
+    const AudioCtx =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(1318.51, now); // E6
+    osc1.frequency.exponentialRampToValueAtTime(1975.53, now + 0.08); // B6
+
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(659.25, now); // E5
+
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.25, now + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 0.55);
+    osc2.stop(now + 0.55);
+  } catch {
+    // Audio context may be restricted by browser gesture policies
+  }
+}
+
+export function PushNotificationProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const { addNotification } = useNotifications();
+
+  const [isSupported, setIsSupported] = useState(false);
+  const [permission, setPermission] = useState<PushPermission>('default');
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [preferences, setPreferences] = useState<PushNotificationPreferences>(DEFAULT_PREFERENCES);
+
+  const knownOrderIdsRef = useRef<Set<string>>(new Set());
+  const orderStatusesRef = useRef<Map<string, string>>(new Map());
+  const isInitialFetchRef = useRef(true);
+
+  // Initialize permission and preferences
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const supported = 'Notification' in window;
+    setIsSupported(supported);
+
+    if (supported) {
+      setPermission(Notification.permission as PushPermission);
+    } else {
+      setPermission('unsupported');
+    }
+
+    try {
+      const storedPrefs = localStorage.getItem(PREFS_STORAGE_KEY);
+      if (storedPrefs) {
+        setPreferences({ ...DEFAULT_PREFERENCES, ...JSON.parse(storedPrefs) });
+      }
+
+      const storedEnabled = localStorage.getItem(ENABLED_STORAGE_KEY);
+      if (storedEnabled !== null) {
+        setIsEnabled(storedEnabled === 'true' && Notification.permission === 'granted');
+      }
+
+      const storedKnown = localStorage.getItem(KNOWN_ORDERS_KEY);
+      if (storedKnown) {
+        const arr = JSON.parse(storedKnown) as string[];
+        if (Array.isArray(arr)) {
+          knownOrderIdsRef.current = new Set(arr);
+        }
+      }
+    } catch {
+      // Storage read error
+    }
+  }, []);
+
+  // Ensure service worker is registered
+  const registerServiceWorker = useCallback(async () => {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return null;
+    try {
+      return await navigator.serviceWorker.register('/sw.js');
+    } catch (err) {
+      console.warn('[Push] ServiceWorker registration warning:', err);
+      return null;
+    }
+  }, []);
+
+  // Send native / service worker push notification
+  const sendPushAlert = useCallback(
+    async (
+      title: string,
+      options: {
+        body: string;
+        url?: string;
+        category?: 'orders' | 'inventory' | 'customers' | 'system';
+        priority?: 'low' | 'medium' | 'high';
+      },
+    ) => {
+      if (typeof window === 'undefined') return;
+
+      // Play audio chime if enabled
+      if (preferences.soundEnabled) {
+        playNotificationChime();
+      }
+
+      // Add to in-app notification center
+      addNotification({
+        id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        title,
+        description: options.body,
+        category: options.category || 'orders',
+        priority: options.priority || 'high',
+        timestamp: 'Just now',
+        read: false,
+        actionUrl: options.url || '/orders',
+        actionLabel: 'View Details',
+      });
+
+      if (!('Notification' in window) || Notification.permission !== 'granted') {
+        return;
+      }
+
+      const notificationOptions: NotificationOptions = {
+        body: options.body,
+        icon: '/icons/ff_admin_app_icon.png',
+        badge: '/icons/icon-192.png',
+        tag: `ff-admin-${Date.now()}`,
+        data: { url: options.url || '/orders' },
+      };
+
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.ready;
+          if (reg && 'showNotification' in reg) {
+            await reg.showNotification(title, notificationOptions);
+            return;
+          }
+        }
+      } catch {
+        // Fall back to new Notification
+      }
+
+      try {
+        const notif = new Notification(title, notificationOptions);
+        notif.onclick = () => {
+          window.focus();
+          if (options.url) {
+            window.location.href = options.url;
+          }
+        };
+      } catch (err) {
+        console.warn('[Push] Direct notification fallback error:', err);
+      }
+    },
+    [addNotification, preferences.soundEnabled],
+  );
+
+  // Activate push notifications
+  const activatePushNotifications = useCallback(async (): Promise<boolean> => {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      toast.error('Browser push notifications are not supported on this device.');
+      return false;
+    }
+
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result as PushPermission);
+
+      if (result === 'granted') {
+        await registerServiceWorker();
+        setIsEnabled(true);
+        localStorage.setItem(ENABLED_STORAGE_KEY, 'true');
+
+        playNotificationChime();
+        toast.success('Push notifications activated successfully!');
+
+        // Dispatch initial welcome push alert
+        await sendPushAlert('🔔 Push Notifications Activated', {
+          body: 'You will now receive real-time push alerts whenever new orders and updates occur.',
+          url: '/orders',
+          category: 'system',
+          priority: 'medium',
+        });
+        return true;
+      } else if (result === 'denied') {
+        setIsEnabled(false);
+        localStorage.setItem(ENABLED_STORAGE_KEY, 'false');
+        toast.error('Notification permission was blocked in your browser settings.');
+        return false;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.error('[Push] Failed to request notification permission:', err);
+      toast.error('Failed to request notification permission.');
+      return false;
+    }
+  }, [registerServiceWorker, sendPushAlert]);
+
+  // Deactivate push notifications
+  const deactivatePushNotifications = useCallback(() => {
+    setIsEnabled(false);
+    try {
+      localStorage.setItem(ENABLED_STORAGE_KEY, 'false');
+    } catch {
+      // ignore
+    }
+    toast.info('Push notifications have been paused.');
+  }, []);
+
+  // Toggle preferences
+  const togglePreference = useCallback((key: keyof PushNotificationPreferences) => {
+    setPreferences((prev) => {
+      const updated = { ...prev, [key]: !prev[key] };
+      try {
+        localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+  }, []);
+
+  // Send manual test notification
+  const sendTestNotification = useCallback(async () => {
+    if (permission !== 'granted') {
+      toast.error('Please activate push notifications first.');
+      return;
+    }
+    toast.info('Sending test notification...');
+    await sendPushAlert('🔥 Test Order Alert #ORD-9999', {
+      body: 'Rohan Sharma placed an order for ₹6,499 (2 items). Payment verified via UPI.',
+      url: '/orders',
+      category: 'orders',
+      priority: 'high',
+    });
+  }, [permission, sendPushAlert]);
+
+  // Live Background Order Watcher (polls every 20 seconds when enabled & logged in)
+  useEffect(() => {
+    if (!user || !isEnabled || permission !== 'granted') return;
+
+    let isCancelled = false;
+
+    const checkOrders = async () => {
+      try {
+        const data = await api.get<any[]>('/orders/admin', { cache: 'no-store' });
+        if (isCancelled || !Array.isArray(data)) return;
+
+        // Initial fetch: seed existing orders without notifying
+        if (isInitialFetchRef.current) {
+          isInitialFetchRef.current = false;
+          data.forEach((o) => {
+            if (o.id) {
+              knownOrderIdsRef.current.add(o.id);
+              orderStatusesRef.current.set(o.id, (o.status || 'pending').toLowerCase());
+            }
+          });
+          try {
+            localStorage.setItem(
+              KNOWN_ORDERS_KEY,
+              JSON.stringify(Array.from(knownOrderIdsRef.current)),
+            );
+          } catch {
+            // ignore
+          }
+          return;
+        }
+
+        // Subsequent polls: check for brand new orders
+        for (const order of data) {
+          if (!order.id) continue;
+
+          // 1. New Order Detected
+          if (!knownOrderIdsRef.current.has(order.id)) {
+            knownOrderIdsRef.current.add(order.id);
+            orderStatusesRef.current.set(order.id, (order.status || 'pending').toLowerCase());
+
+            try {
+              localStorage.setItem(
+                KNOWN_ORDERS_KEY,
+                JSON.stringify(Array.from(knownOrderIdsRef.current)),
+              );
+            } catch {
+              // ignore
+            }
+
+            if (preferences.notifyNewOrders) {
+              const orderNum = order.orderNumber || order.id.slice(0, 8);
+              const customerName = order.user?.name || order.customer?.name || 'Customer';
+              const amount = Number(order.finalAmount || order.totalAmount || 0).toLocaleString(
+                'en-IN',
+              );
+              const itemCount = order.items?.length || 1;
+
+              void sendPushAlert(`🔥 New Order #${orderNum}!`, {
+                body: `${customerName} placed an order for ₹${amount} (${itemCount} item${itemCount > 1 ? 's' : ''}).`,
+                url: '/orders',
+                category: 'orders',
+                priority: 'high',
+              });
+            }
+          } else {
+            // 2. Status Change Detected on existing order
+            const previousStatus = orderStatusesRef.current.get(order.id);
+            const currentStatus = (order.status || 'pending').toLowerCase();
+
+            if (previousStatus && previousStatus !== currentStatus) {
+              orderStatusesRef.current.set(order.id, currentStatus);
+
+              if (preferences.notifyStatusChanges) {
+                const orderNum = order.orderNumber || order.id.slice(0, 8);
+                void sendPushAlert(`📦 Order #${orderNum} Updated`, {
+                  body: `Status changed from ${previousStatus.toUpperCase()} to ${currentStatus.toUpperCase()}.`,
+                  url: '/orders',
+                  category: 'orders',
+                  priority: 'medium',
+                });
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[Push] Order watcher polling error:', err);
+      }
+    };
+
+    // Run initial check
+    void checkOrders();
+
+    // Poll every 20 seconds
+    const interval = setInterval(() => {
+      void checkOrders();
+    }, 20000);
+
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+    };
+  }, [
+    user,
+    isEnabled,
+    permission,
+    preferences.notifyNewOrders,
+    preferences.notifyStatusChanges,
+    sendPushAlert,
+  ]);
+
+  return (
+    <PushNotificationContext.Provider
+      value={{
+        isSupported,
+        permission,
+        isEnabled,
+        preferences,
+        activatePushNotifications,
+        deactivatePushNotifications,
+        togglePreference,
+        sendTestNotification,
+        sendPushAlert,
+      }}
+    >
+      {children}
+    </PushNotificationContext.Provider>
+  );
+}
+
+export function usePushNotifications() {
+  const context = useContext(PushNotificationContext);
+  if (!context) {
+    throw new Error('usePushNotifications must be used within a PushNotificationProvider');
+  }
+  return context;
+}
