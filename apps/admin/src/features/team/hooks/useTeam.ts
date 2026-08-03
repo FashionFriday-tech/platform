@@ -8,16 +8,31 @@ import { MOCK_TEAM, type SortField, type TeamMember } from '../types';
 
 const STORAGE_TEAM_KEY = 'ff_admin_team_members';
 const STORAGE_INVITED_KEY = 'ff_admin_invited_team';
+const STORAGE_CLEAN_KEY = 'ff_admin_team_v4_clean';
+
+export type InvitePayload = {
+  name: string;
+  phone: string;
+  email: string;
+  role: Role;
+};
 
 export function useTeam() {
   const [team, setTeam] = useState<TeamMember[]>(() => {
     if (typeof window !== 'undefined') {
       try {
+        // Enforce cleanup of legacy mock team members in old PWA installs
+        if (!localStorage.getItem(STORAGE_CLEAN_KEY)) {
+          localStorage.removeItem(STORAGE_TEAM_KEY);
+          localStorage.removeItem(STORAGE_INVITED_KEY);
+          localStorage.setItem(STORAGE_CLEAN_KEY, 'true');
+          return MOCK_TEAM;
+        }
+
         const stored = localStorage.getItem(STORAGE_TEAM_KEY);
         if (stored) {
           const parsed = JSON.parse(stored) as TeamMember[];
           if (Array.isArray(parsed) && parsed.length > 0) {
-            // Strip any legacy mock team members
             const cleaned = parsed.filter(
               (m) =>
                 m.id !== '2' &&
@@ -36,6 +51,20 @@ export function useTeam() {
     }
     return MOCK_TEAM;
   });
+
+  // Fetch live team members from database API on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+    fetch(`${apiUrl}/admin/team`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setTeam(data as TeamMember[]);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Sync team updates to local storage and sync invited phone list
   useEffect(() => {
@@ -82,31 +111,70 @@ export function useTeam() {
     }
   };
 
-  const handleInvite = (phoneOrEmail: string, role: Role, customName?: string) => {
-    const isPhone = /^\+?[0-9]{10,12}$/.test(phoneOrEmail.replace(/\s+/g, ''));
-    const cleanPhone = isPhone ? phoneOrEmail.replace(/\D/g, '') : undefined;
-    const email = !isPhone ? phoneOrEmail : `${cleanPhone}@staff.fashionfriday.com`;
-    const name =
-      customName ||
-      (isPhone
-        ? `Team Member (+91 ${cleanPhone})`
-        : phoneOrEmail
-            .split('@')[0]
-            .split(/[._-]/)
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' '));
+  const handleInvite = (param: string | InvitePayload, legacyRole?: Role, legacyName?: string) => {
+    let name: string;
+    let phone: string;
+    let email: string;
+    let role: Role;
+
+    if (typeof param === 'object') {
+      name = param.name;
+      phone = param.phone.replace(/\D/g, '');
+      email = param.email.trim().toLowerCase();
+      role = param.role;
+    } else {
+      const isPhone = /^\+?[0-9]{10,12}$/.test(param.replace(/\s+/g, ''));
+      phone = isPhone ? param.replace(/\D/g, '') : '';
+      email = !isPhone ? param : `${phone}@fashionfriday.com`;
+      name = legacyName || (phone ? `Team Member (+91 ${phone})` : email.split('@')[0]);
+      role = legacyRole || 'SALES_MANAGER';
+    }
 
     const newMember: TeamMember = {
       id: String(Date.now()),
       name,
       email,
-      phone: cleanPhone || '9876543210',
+      phone,
       role,
       status: 'ACTIVE',
       joinedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
+
     setTeam((prev) => [...prev, newMember]);
     setIsInviteModalOpen(false);
+
+    // Sync to backend database API in background
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+    fetch(`${apiUrl}/admin/team`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, email, role }),
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((created) => {
+        if (created?.id) {
+          setTeam((prev) =>
+            prev.map((m) => (m.id === newMember.id ? { ...m, id: created.id } : m)),
+          );
+        }
+      })
+      .catch(() => {});
+  };
+
+  const handleDeleteMember = (id: string) => {
+    const member = team.find((m) => m.id === id);
+    if (member?.phone?.replace(/\D/g, '') === '7558969093' && member?.role === 'SUPER_ADMIN') {
+      return;
+    }
+
+    setTeam((prev) => prev.filter((m) => m.id !== id));
+
+    // Sync deletion to backend database API
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+    fetch(`${apiUrl}/admin/team/${id}`, {
+      method: 'DELETE',
+    }).catch(() => {});
   };
 
   const handleEditSave = (id: string, role: Role, status: 'ACTIVE' | 'PENDING' | 'SUSPENDED') => {
@@ -116,6 +184,14 @@ export function useTeam() {
       ),
     );
     setEditingMemberId(null);
+
+    // Sync edit to backend database API
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+    fetch(`${apiUrl}/admin/team/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role, status }),
+    }).catch(() => {});
   };
 
   const getRoleBadgeColor = (role: Role) => {
@@ -138,10 +214,13 @@ export function useTeam() {
   const filteredAndSortedTeam = useMemo(() => {
     let result = [...team];
 
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
       result = result.filter(
-        (m) => m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q),
+        (m) =>
+          m.name.toLowerCase().includes(q) ||
+          m.email.toLowerCase().includes(q) ||
+          (m.phone && m.phone.includes(q)),
       );
     }
 
@@ -154,39 +233,42 @@ export function useTeam() {
     }
 
     result.sort((a, b) => {
-      const aVal = a[sortField] ?? '';
-      const bVal = b[sortField] ?? '';
-      return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      let aVal = a[sortField] || '';
+      let bVal = b[sortField] || '';
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
 
     return result;
   }, [team, searchQuery, roleFilter, statusFilter, sortField, sortDirection]);
 
-  const handleDeleteMember = (id: string) => {
-    setTeam((prev) => prev.filter((m) => m.id !== id));
-  };
-
   return {
     team,
+    setTeam,
     searchQuery,
     setSearchQuery,
-    isInviteModalOpen,
-    setIsInviteModalOpen,
-    setEditingMemberId,
-    sortField,
-    sortDirection,
     roleFilter,
     setRoleFilter,
     statusFilter,
     setStatusFilter,
+    isInviteModalOpen,
+    setIsInviteModalOpen,
+    editingMemberId,
+    setEditingMemberId,
+    sortField,
+    sortDirection,
     roleOptions,
     statusOptions,
     handleSort,
-    filteredAndSortedTeam,
     handleInvite,
-    handleEditSave,
     handleDeleteMember,
+    handleEditSave,
     getRoleBadgeColor,
     editingMember,
+    filteredAndSortedTeam,
   };
 }
