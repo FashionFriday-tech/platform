@@ -20,6 +20,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { SearchLogsModule } from './modules/search-logs/search-logs.module';
 import { SellersModule } from './modules/sellers/sellers.module';
+import { TeamModule } from './modules/team/team.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
@@ -47,6 +48,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     OrdersModule,
     SellersModule,
     SearchLogsModule,
+    TeamModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
