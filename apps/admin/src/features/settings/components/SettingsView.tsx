@@ -1,9 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { BellIcon, ChevronRightIcon, PackageIcon, ShoppingBagIcon, ZapIcon } from '@ff/ui';
+import {
+  BellIcon,
+  ChevronRightIcon,
+  PackageIcon,
+  ShieldCheckIcon,
+  ShoppingBagIcon,
+  ZapIcon,
+} from '@ff/ui';
+import { toast } from 'sonner';
 
+import { useAuth } from '@/contexts/AuthContext';
 import { usePushNotifications } from '@/contexts/PushNotificationContext';
 
 function MobileToggle({
@@ -36,6 +45,9 @@ function MobileToggle({
 }
 
 export function SettingsView() {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+
   const {
     permission,
     isEnabled,
@@ -50,8 +62,58 @@ export function SettingsView() {
 
   const [isActivating, setIsActivating] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
+  const [isUnderMaintenance, setIsUnderMaintenance] = useState(false);
+  const [isUpdatingMaintenance, setIsUpdatingMaintenance] = useState(false);
 
   const isGrantedAndEnabled = permission === 'granted' && isEnabled;
+
+  useEffect(() => {
+    const fetchMaintenance = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3002';
+        const res = await fetch(`${apiUrl}/maintenance`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          setIsUnderMaintenance(Boolean(data.isUnderMaintenance));
+        }
+      } catch {
+        // ignore
+      }
+    };
+    void fetchMaintenance();
+  }, []);
+
+  const handleMaintenanceToggle = async () => {
+    if (!isSuperAdmin) {
+      toast.error('Permission denied: Only Super Admins can manage Maintenance Mode.');
+      return;
+    }
+
+    const nextState = !isUnderMaintenance;
+    setIsUpdatingMaintenance(true);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3002';
+      const res = await fetch(`${apiUrl}/admin/maintenance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isUnderMaintenance: nextState }),
+      });
+      if (res.ok) {
+        setIsUnderMaintenance(nextState);
+        if (nextState) {
+          toast.warning('Maintenance mode activated: Storefront is now closed to customers.');
+        } else {
+          toast.success('Maintenance mode deactivated: Storefront is now open to customers.');
+        }
+      } else {
+        toast.error('Failed to update maintenance mode status.');
+      }
+    } catch {
+      toast.error('Network error updating maintenance mode.');
+    } finally {
+      setIsUpdatingMaintenance(false);
+    }
+  };
 
   const handleMasterToggle = async () => {
     if (isGrantedAndEnabled) {
@@ -81,15 +143,66 @@ export function SettingsView() {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
-            Notifications
+            Settings
           </h1>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Manage push notification alerts and sound preferences
+            Manage storefront maintenance mode and push notifications
           </p>
         </div>
 
-        {/* Master Toggle Group */}
+        {/* Maintenance Mode Section */}
         <div className="space-y-1.5">
+          <div className="flex items-center justify-between px-3">
+            <span className="text-[11px] font-semibold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+              Storefront Status
+            </span>
+            {!isSuperAdmin && (
+              <span className="text-[10px] font-bold text-amber-600 uppercase dark:text-amber-400">
+                Super Admin Only
+              </span>
+            )}
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg text-white transition-colors ${
+                    isUnderMaintenance ? 'bg-amber-500' : 'bg-emerald-500'
+                  }`}
+                >
+                  <ShieldCheckIcon className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                    Under Maintenance Mode
+                  </span>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    {isUnderMaintenance
+                      ? 'Storefront is closed with maintenance screen'
+                      : 'Storefront is live and open for customer orders'}
+                  </p>
+                </div>
+              </div>
+              <MobileToggle
+                checked={isUnderMaintenance}
+                onChange={handleMaintenanceToggle}
+                disabled={!isSuperAdmin || isUpdatingMaintenance}
+              />
+            </div>
+          </div>
+          {isUnderMaintenance && (
+            <p className="px-3 text-xs font-medium text-amber-600 dark:text-amber-400">
+              ⚠️ Maintenance mode is active. Customers visiting the website will see the maintenance
+              screen.
+            </p>
+          )}
+        </div>
+
+        {/* Master Notifications Toggle Group */}
+        <div className="space-y-1.5">
+          <span className="px-3 text-[11px] font-semibold tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
+            Push Notifications
+          </span>
           <div className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900">
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
