@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from 'sonner';
 
 import { Header } from '@/components/layout/Header';
+import { MaintenanceGuard } from '@/components/layout/MaintenanceGuard';
 import { StoreInitializer } from '@/components/layout/StoreInitializer';
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
@@ -183,8 +184,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SmoothScrollProvider>
             <StoreInitializer />
             <ServiceWorkerRegister />
-            <Header />
-            {children}
+            <MaintenanceGuard>
+              <Header />
+              {children}
+            </MaintenanceGuard>
             <Toaster position="top-center" richColors closeButton />
           </SmoothScrollProvider>
         </ThemeProvider>
