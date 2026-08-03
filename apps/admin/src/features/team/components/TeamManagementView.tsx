@@ -35,6 +35,7 @@ export function TeamManagementView() {
     handleSort,
     filteredAndSortedTeam,
     handleInvite,
+    handleDeleteMember,
     handleEditSave,
     getRoleBadgeColor,
     editingMember,
@@ -403,6 +404,11 @@ export function TeamManagementView() {
                           <div className="truncate text-xs text-black/60 dark:text-white/60">
                             {member.email}
                           </div>
+                          {member.phone && (
+                            <div className="font-mono text-[11px] font-semibold text-black/40 dark:text-white/40">
+                              +91 {member.phone}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -443,15 +449,34 @@ export function TeamManagementView() {
                       </div>
 
                       {/* Actions */}
-                      <div className="text-right">
+                      <div className="flex items-center justify-end gap-1.5 text-right">
                         <button
+                          type="button"
                           onClick={() => {
                             setEditingMemberId(member.id);
                           }}
-                          className="rounded-lg p-2 text-sm font-semibold text-black/60 hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+                          className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-black/60 hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
                         >
                           Edit
                         </button>
+                        {member.phone?.replace(/\D/g, '') !== '7558969093' ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm(`Remove ${member.name} from the team?`)) {
+                                handleDeleteMember(member.id);
+                              }
+                            }}
+                            className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10"
+                            title="Remove member"
+                          >
+                            Delete
+                          </button>
+                        ) : (
+                          <span className="px-2 py-1 text-[10px] font-bold tracking-wider text-black/30 uppercase dark:text-white/30">
+                            Primary
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))
