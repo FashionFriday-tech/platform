@@ -3,23 +3,31 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { CloseIcon, MailIcon, ShieldCheckIcon } from '@ff/ui';
+import { CloseIcon, ShieldCheckIcon } from '@ff/ui';
 
 import { type Role } from '@/contexts/AuthContext';
 
-import { ROLE_DESCRIPTIONS, ROLE_LABELS } from '../types';
+import { ROLE_LABELS } from '../types';
 
 interface InviteMemberModalProps {
   onClose: () => void;
-  onInvite: (email: string, role: Role) => void;
+  onInvite: (phoneOrEmail: string, role: Role, name?: string) => void;
 }
 
+const ROLE_NOTIFICATION_INFO: Record<Role, string> = {
+  SUPER_ADMIN: 'Receives all notifications (orders, inventory, customer alerts & system).',
+  PRODUCT_MANAGER: 'Receives only product & inventory notifications (low stock & catalogue).',
+  SALES_MANAGER: 'Receives only sales & order notifications (new orders & status updates).',
+};
+
 export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps) {
-  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [name, setName] = useState('');
   const [selectedRole, setSelectedRole] = useState<Role>('SALES_MANAGER');
   const [mounted, setMounted] = useState(false);
+  const [error, setError] = useState('');
 
-  const roles: Role[] = ['SUPER_ADMIN', 'PRODUCT_MANAGER', 'SALES_MANAGER'];
+  const roles: Role[] = ['PRODUCT_MANAGER', 'SALES_MANAGER', 'SUPER_ADMIN'];
 
   useEffect(() => {
     setMounted(true);
@@ -27,9 +35,13 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if (email) {
-      onInvite(email, selectedRole);
+    const cleanPhone = phoneNumber.replace(/\D/g, '');
+    if (cleanPhone.length < 10) {
+      setError('Please enter a valid 10-digit mobile phone number.');
+      return;
     }
+    setError('');
+    onInvite(cleanPhone, selectedRole, name.trim() || undefined);
   };
 
   if (!mounted) {
@@ -37,13 +49,13 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="flex w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[#111111]">
         <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
           <div>
             <h2 className="text-xl font-bold text-black dark:text-white">Invite Team Member</h2>
-            <p className="mt-1 text-sm text-black/60 dark:text-white/60">
-              Send an invitation to join the admin workspace.
+            <p className="mt-1 text-xs text-black/60 dark:text-white/60">
+              Invite a staff member via phone number with role-based access.
             </p>
           </div>
           <button
@@ -55,64 +67,85 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6">
+          {/* Phone Number Input */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-black dark:text-white">
-              Email Address
+            <label className="text-xs font-bold tracking-wider text-black uppercase dark:text-white">
+              Mobile Phone Number
             </label>
             <div className="relative flex items-center">
-              <MailIcon className="absolute left-4 h-5 w-5 text-black/40 dark:text-white/40" />
+              <span className="absolute left-4 font-mono text-xs font-bold text-black/60 dark:text-white/60">
+                +91
+              </span>
               <input
                 required
-                type="email"
-                value={email}
+                type="tel"
+                maxLength={10}
+                value={phoneNumber}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  setPhoneNumber(e.target.value.replace(/\D/g, ''));
+                  setError('');
                 }}
-                placeholder="colleague@fashionfriday.com"
-                className="w-full rounded-xl border border-black/10 bg-transparent py-3 pr-4 pl-12 text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
+                placeholder="7558969093"
+                className="w-full rounded-xl border border-black/10 bg-transparent py-3 pr-4 pl-14 font-mono text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
               />
             </div>
+            {error && <span className="text-xs text-red-500">{error}</span>}
           </div>
 
+          {/* Member Name */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold tracking-wider text-black uppercase dark:text-white">
+              Full Name (Optional)
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Rahul Sharma"
+              className="w-full rounded-xl border border-black/10 bg-transparent px-4 py-3 text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
+            />
+          </div>
+
+          {/* Role Selection */}
           <div className="flex flex-col gap-3">
-            <label className="text-sm font-semibold text-black dark:text-white">Select Role</label>
-            <div className="flex flex-col gap-3">
+            <label className="text-xs font-bold tracking-wider text-black uppercase dark:text-white">
+              Select Role &amp; Notification Scope
+            </label>
+            <div className="flex flex-col gap-2.5">
               {roles.map((role) => (
                 <button
                   key={role}
                   type="button"
-                  onClick={() => {
-                    setSelectedRole(role);
-                  }}
-                  className={`flex cursor-pointer items-start gap-4 rounded-xl border p-4 text-left transition-all ${
+                  onClick={() => setSelectedRole(role)}
+                  className={`flex cursor-pointer items-start gap-3.5 rounded-xl border p-3.5 text-left transition-all ${
                     selectedRole === role
                       ? 'border-black bg-black/5 dark:border-white dark:bg-white/5'
                       : 'border-black/10 hover:border-black/30 dark:border-white/10 dark:hover:border-white/30'
                   }`}
                 >
                   <div
-                    className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                    className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
                       selectedRole === role
                         ? 'border-black dark:border-white'
                         : 'border-black/20 dark:border-white/20'
                     }`}
                   >
                     {selectedRole === role && (
-                      <div className="h-2.5 w-2.5 rounded-full bg-black dark:bg-white" />
+                      <div className="h-2 w-2 rounded-full bg-black dark:bg-white" />
                     )}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-black dark:text-white">
+                      <span className="text-sm font-semibold text-black dark:text-white">
                         {ROLE_LABELS[role]}
                       </span>
                       {role === 'SUPER_ADMIN' && (
-                        <ShieldCheckIcon className="h-4 w-4 text-orange-500" />
+                        <ShieldCheckIcon className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-black/60 dark:text-white/60">
-                      {ROLE_DESCRIPTIONS[role]}
+                    <p className="mt-0.5 text-xs text-black/60 dark:text-white/60">
+                      {ROLE_NOTIFICATION_INFO[role]}
                     </p>
                   </div>
                 </button>
@@ -120,19 +153,20 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
             </div>
           </div>
 
+          {/* Action Buttons */}
           <div className="mt-2 flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl px-4 py-3 text-sm font-semibold text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5"
+              className="flex-1 rounded-xl px-4 py-3 text-xs font-bold text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80"
+              className="flex-1 rounded-xl bg-black px-4 py-3 text-xs font-bold text-white transition-colors hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80"
             >
-              Send Invitation
+              Add Team Member
             </button>
           </div>
         </form>
