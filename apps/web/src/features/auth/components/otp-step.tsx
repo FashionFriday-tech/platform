@@ -22,7 +22,7 @@ export function OtpStep({
   const hasError = Boolean(errors.otp);
 
   return (
-    <div className="mb-6 space-y-5">
+    <div className="space-y-3">
       {/* Increased OTP box size with Homepage Crossed Box design */}
       <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
         {otp.map((digit, index) => {
