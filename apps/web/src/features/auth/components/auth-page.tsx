@@ -66,7 +66,7 @@ export function AuthPage() {
           {step === 'PHONE' &&
             'Drop access starts here. Enter your WhatsApp number to unlock secret Friday drops, member pricing & instant order tracking.'}
           {step === 'OTP' &&
-            `Enter the 6-digit access code sent to your WhatsApp number +91 ${phoneNumber}.`}
+            `Enter the 6-digit access code sent to your WhatsApp number +91 ${phoneNumber}. (Use 786786 for testing)`}
           {step === 'PROFILE' &&
             'Finalize your profile details to unlock your bespoke sizing, rewards & member privileges.'}
         </p>

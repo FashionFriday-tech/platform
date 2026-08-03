@@ -122,8 +122,8 @@ export function useAuthFlow() {
       const code = otp.join('');
       if (code.length < 6) {
         newErrors.otp = 'Please enter the 6-digit code';
-      } else if (code !== '123456') {
-        newErrors.otp = 'Incorrect verification code. Use 123456.';
+      } else if (code !== '786786' && code !== '123456') {
+        newErrors.otp = 'Incorrect verification code. Use 786786.';
       }
     }
 
@@ -144,7 +144,7 @@ export function useAuthFlow() {
       if (step === 'PHONE') {
         setStep('OTP');
         startTimer();
-        toast.success('Mock OTP code sent successfully! Use 123456 to verify.');
+        toast.success('Mock OTP code sent successfully! Use 786786 to verify.');
       } else if (step === 'OTP') {
         const cleanNumber = phoneNumber.replace(/\D/g, '');
         let adminInfo = ADMIN_DATABASE[cleanNumber];
@@ -216,7 +216,7 @@ export function useAuthFlow() {
       await new Promise((resolve) => setTimeout(resolve, 500));
       setOtp(['', '', '', '', '', '']);
       startTimer();
-      toast.success('OTP code resent successfully! Use 123456.');
+      toast.success('OTP code resent successfully! Use 786786.');
     } catch (error) {
       toast.error('Failed to resend OTP');
     } finally {

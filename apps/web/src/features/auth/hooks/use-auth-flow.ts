@@ -103,8 +103,11 @@ export function useAuthFlow() {
         newErrors.phone = 'Enter a valid 10-digit WhatsApp number';
       }
     } else if (step === 'OTP') {
-      if (otp.join('').length < 6) {
+      const code = otp.join('');
+      if (code.length < 6) {
         newErrors.otp = 'Please enter the 6-digit code';
+      } else if (code !== '786786') {
+        newErrors.otp = 'Incorrect verification code. Use 786786.';
       }
     } else {
       if (!profile.name.trim()) {
@@ -140,7 +143,7 @@ export function useAuthFlow() {
         await sendOtpAction(phoneNumber);
         setStep('OTP');
         startTimer();
-        toast.success('OTP sent successfully!');
+        toast.success('Mock OTP code sent successfully! Use 786786 to verify.');
       } else if (step === 'OTP') {
         const response = await verifyOtpAction(phoneNumber, otp.join(''));
         setOtpToken(response.otpToken);
@@ -208,7 +211,7 @@ export function useAuthFlow() {
       await sendOtpAction(phoneNumber);
       setOtp(['', '', '', '', '', '']);
       startTimer();
-      toast.success('OTP resent successfully!');
+      toast.success('Mock OTP code resent successfully! Use 786786 to verify.');
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
       const message = err.response?.data?.message || 'Failed to resend OTP';
