@@ -22,7 +22,17 @@ export const metadata: Metadata = {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative h-[100dvh] h-screen w-full overflow-hidden bg-black text-white selection:bg-white selection:text-black">
+    <div className="fixed inset-0 z-50 flex h-[100dvh] h-screen w-screen overflow-hidden bg-black text-white selection:bg-white selection:text-black">
+      <style>{`
+        html, body {
+          overflow: hidden !important;
+          height: 100dvh !important;
+          max-height: 100dvh !important;
+          overscroll-behavior: none !important;
+          touch-action: pan-x none !important;
+        }
+      `}</style>
+
       {/* Floating Exit Button */}
       <div className="fixed top-5 right-5 z-50 sm:top-6 sm:right-6">
         <Link
@@ -44,14 +54,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       <div className="flex h-full w-full overflow-hidden">
         {/* SHARED VISUAL SIDE (Pinned viewport on desktop) */}
-        <div className="hidden overflow-hidden lg:flex lg:h-full lg:w-1/2 lg:p-4">
+        <div className="hidden h-full overflow-hidden lg:flex lg:w-1/2 lg:p-4">
           <ImageCarousel />
         </div>
 
-        {/* DYNAMIC FORM SIDE (Strict 100vh, non-scrolling) */}
-        <div className="flex h-full w-full flex-col justify-center overflow-hidden px-4 py-6 sm:px-8 lg:w-1/2 lg:px-12">
-          <div className="mx-auto flex w-full max-w-md flex-col items-center justify-center">
-            <div className="w-full">{children}</div>
+        {/* DYNAMIC FORM SIDE (Strict 100vh, fixed center position, zero overflow) */}
+        <div className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-2 sm:px-8 lg:w-1/2 lg:px-12">
+          <div className="flex h-[380px] w-full max-w-sm items-center justify-center overflow-hidden sm:max-w-md">
+            {children}
           </div>
         </div>
       </div>
