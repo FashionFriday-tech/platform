@@ -17,21 +17,6 @@ const ADMIN_DATABASE: Record<string, Omit<User, 'phone'>> = {
     role: 'SUPER_ADMIN',
     initials: 'SA',
   },
-  '9999999999': {
-    name: 'Super Admin',
-    role: 'SUPER_ADMIN',
-    initials: 'SA',
-  },
-  '8888888888': {
-    name: 'Sarah Chen',
-    role: 'PRODUCT_MANAGER',
-    initials: 'SC',
-  },
-  '7777777777': {
-    name: 'Alex Mercer',
-    role: 'SALES_MANAGER',
-    initials: 'AM',
-  },
 };
 
 export function useAuthFlow() {
