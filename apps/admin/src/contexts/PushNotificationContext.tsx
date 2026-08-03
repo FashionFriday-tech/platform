@@ -29,6 +29,10 @@ interface PushNotificationContextType {
   permission: PushPermission;
   isEnabled: boolean;
   preferences: PushNotificationPreferences;
+  isInstallable: boolean;
+  isInstalled: boolean;
+  isIOS: boolean;
+  installPwaApp: () => Promise<void>;
   activatePushNotifications: () => Promise<boolean>;
   deactivatePushNotifications: () => void;
   togglePreference: (key: keyof PushNotificationPreferences) => void;
@@ -103,12 +107,16 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
   const [permission, setPermission] = useState<PushPermission>('default');
   const [isEnabled, setIsEnabled] = useState(false);
   const [preferences, setPreferences] = useState<PushNotificationPreferences>(DEFAULT_PREFERENCES);
+  const [isInstallable, setIsInstallable] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const deferredPromptRef = useRef<any>(null);
 
   const knownOrderIdsRef = useRef<Set<string>>(new Set());
   const orderStatusesRef = useRef<Map<string, string>>(new Map());
   const isInitialFetchRef = useRef(true);
 
-  // Initialize permission and preferences
+  // Initialize permission, preferences, and PWA install detection
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -120,6 +128,33 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
     } else {
       setPermission('unsupported');
     }
+
+    // Check if running as standalone installed PWA
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as any).standalone === true;
+    setIsInstalled(isStandalone);
+
+    // Check if on iOS device
+    const ua = window.navigator.userAgent.toLowerCase();
+    const isAppleMobile = /iphone|ipad|ipod/.test(ua);
+    setIsIOS(isAppleMobile);
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      deferredPromptRef.current = e;
+      setIsInstallable(true);
+    };
+
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setIsInstallable(false);
+      deferredPromptRef.current = null;
+      toast.success('Fashion Friday Admin App installed successfully!');
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     try {
       const storedPrefs = localStorage.getItem(PREFS_STORAGE_KEY);
@@ -142,6 +177,11 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
     } catch {
       // Storage read error
     }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
 
   // Ensure service worker is registered
@@ -198,6 +238,14 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         data: { url: options.url || '/orders' },
       };
 
+      // Mobile status bar, vibration pattern, and persistence enhancements
+      (notificationOptions as any).vibrate = [200, 100, 200];
+      (notificationOptions as any).requireInteraction = true;
+      (notificationOptions as any).actions = [
+        { action: 'open', title: 'View Details' },
+        { action: 'dismiss', title: 'Dismiss' },
+      ];
+
       try {
         if ('serviceWorker' in navigator) {
           const reg = await navigator.serviceWorker.ready;
@@ -224,6 +272,34 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
     },
     [addNotification, preferences.soundEnabled],
   );
+
+  // Trigger PWA install dialog
+  const installPwaApp = useCallback(async () => {
+    if (!deferredPromptRef.current) {
+      if (isIOS) {
+        toast.info(
+          'On iPhone/iPad: Tap the Safari Share button ⎋, then select "Add to Home Screen".',
+          { duration: 5000 },
+        );
+      } else {
+        toast.info('App installation prompt is not available or already installed on this device.');
+      }
+      return;
+    }
+
+    try {
+      deferredPromptRef.current.prompt();
+      const choiceResult = await deferredPromptRef.current.userChoice;
+      if (choiceResult && choiceResult.outcome === 'accepted') {
+        setIsInstalled(true);
+        setIsInstallable(false);
+        deferredPromptRef.current = null;
+        toast.success('Fashion Friday Admin App added to your device!');
+      }
+    } catch (err) {
+      console.warn('[PWA] Install prompt error:', err);
+    }
+  }, [isIOS]);
 
   // Activate push notifications
   const activatePushNotifications = useCallback(async (): Promise<boolean> => {
@@ -423,6 +499,10 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         permission,
         isEnabled,
         preferences,
+        isInstallable,
+        isInstalled,
+        isIOS,
+        installPwaApp,
         activatePushNotifications,
         deactivatePushNotifications,
         togglePreference,
