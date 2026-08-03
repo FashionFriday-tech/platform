@@ -135,8 +135,16 @@ export function SettingsPage() {
           <div className="bg-background border-border/40 divide-border/20 divide-y overflow-hidden rounded-4xl border shadow-sm">
             <SettingToggle
               icon={<BellIcon size={20} />}
-              label="Notifications"
+              label="Push Notifications"
+              description={
+                isPushLoading
+                  ? 'Connecting device...'
+                  : isSubscribed
+                    ? 'Active on this device'
+                    : 'Enable live device alerts'
+              }
               active={isSubscribed}
+              loading={isPushLoading}
               onToggle={() => {
                 if (isPushLoading) {
                   return;
@@ -151,6 +159,7 @@ export function SettingsPage() {
             <SettingToggle
               icon={<ShoppingBagIcon size={20} />}
               label="Order Logistics"
+              description="Live dispatch & tracking updates"
               active={notifications.orders}
               onToggle={() => {
                 handleToggleNotification('orders');
@@ -159,6 +168,7 @@ export function SettingsPage() {
             <SettingToggle
               icon={<TagIcon size={20} />}
               label="Exclusive Drops"
+              description="Flash drops & limited archive releases"
               active={notifications.promos}
               onToggle={() => {
                 handleToggleNotification('promos');
