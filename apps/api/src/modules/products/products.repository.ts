@@ -68,16 +68,31 @@ export class ProductsRepository {
     return { brands, categories };
   }
 
-  async findQuickSuggestions(query: string, matchedBrandNames: string[] = []) {
+  async findQuickSuggestions(
+    query: string,
+    matchedBrandNames: string[] = [],
+    extraKeywords: string[] = [],
+  ) {
     const clean = query.trim();
+    const orConditions: any[] = [
+      { name: { contains: clean, mode: 'insensitive' } },
+      { description: { contains: clean, mode: 'insensitive' } },
+    ];
+
+    if (matchedBrandNames.length > 0) {
+      orConditions.push({ brand: { hasSome: matchedBrandNames } });
+    }
+
+    for (const kw of extraKeywords) {
+      orConditions.push({ name: { contains: kw, mode: 'insensitive' } });
+      orConditions.push({ description: { contains: kw, mode: 'insensitive' } });
+    }
+
     return this.prisma.db.product.findMany({
-      take: 4,
+      take: 6,
       where: {
         status: 'PUBLISHED',
-        OR: [
-          { name: { contains: clean, mode: 'insensitive' } },
-          ...(matchedBrandNames.length > 0 ? [{ brand: { hasSome: matchedBrandNames } }] : []),
-        ],
+        OR: orConditions,
       },
       select: {
         id: true,
