@@ -8,12 +8,12 @@ import { AnimatePresence, motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 export const DEFAULT_SEARCH_PLACEHOLDERS = [
-  'SEARCH FOR LINEN SHIRTS',
-  'SEARCH BY CATEGORY',
+  'SEARCH NIKE SNEAKERS',
+  'SEARCH AIR FORCE 1 & PEGASUS',
+  'SEARCH ROLEX WATCHES',
+  'SEARCH CROCS CLOGS',
+  'SEARCH STREETWEAR & FOOTWEAR',
   'SEARCH BY BRANDS',
-  'SEARCH FOR STREET WEAR',
-  'SEARCH FOR ACCESSORIES',
-  'SEARCH SNEAKERS & APPAREL',
 ];
 
 export interface SearchBoxProps {
