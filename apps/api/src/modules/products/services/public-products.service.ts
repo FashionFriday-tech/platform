@@ -167,8 +167,6 @@ export class PublicProductsService {
 
     const lowerTerm = term.toLowerCase();
 
-
-
     // Find brands that contain this term
     const matchedBrandNames = brands
       .filter((b) => b.name.toLowerCase().includes(lowerTerm))
