@@ -58,9 +58,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <ImageCarousel />
         </div>
 
-        {/* DYNAMIC FORM SIDE (Strict 100vh, fixed center position, zero overflow) */}
-        <div className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-2 sm:px-8 lg:w-1/2 lg:px-12">
-          <div className="flex h-[380px] w-full max-w-sm items-center justify-center overflow-hidden sm:max-w-md">
+        {/* DYNAMIC FORM SIDE (Strict 100vh, fixed center position, unclipped crossed design) */}
+        <div className="flex h-full w-full items-center justify-center overflow-hidden px-4 py-4 sm:px-8 lg:w-1/2 lg:px-12">
+          <div className="flex w-full max-w-sm items-center justify-center overflow-visible sm:max-w-md">
             {children}
           </div>
         </div>
