@@ -46,14 +46,19 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // 1. Only handle GET requests - NEVER intercept POST (prevents Next.js Server Action fetch errors)
+  // 1. In local development, bypass service worker fetch completely so HMR and live reload are direct and never cached
+  if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+    return;
+  }
+
+  // 2. Only handle GET requests - NEVER intercept POST (prevents Next.js Server Action fetch errors)
   if (event.request.method !== 'GET') {
     return;
   }
 
   const url = new URL(event.request.url);
 
-  // 2. Bypass service worker for Next.js internal requests, API routes, Server Actions, RSC, and HMR
+  // 3. Bypass service worker for Next.js internal requests, API routes, Server Actions, RSC, and HMR
   if (
     url.pathname.startsWith('/_next/') ||
     url.pathname.startsWith('/api/') ||
