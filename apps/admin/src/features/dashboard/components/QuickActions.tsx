@@ -1,77 +1,100 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 
-import { PackageIcon, PlusIcon, ShoppingBagIcon, TagIcon } from '@ff/ui';
+import { ArrowUpRightIcon, PackageIcon, PlusIcon, ShoppingBagIcon, TagIcon } from '@ff/ui';
 
 interface QuickActionProps {
   title: string;
   description: string;
   icon: React.ElementType;
   href: string;
+  badge: string;
   colorClass: string;
 }
 
 const ACTIONS: QuickActionProps[] = [
   {
     title: 'Add Product',
-    description: 'Create a new inventory item',
+    description: 'Create new catalog item',
     icon: PackageIcon,
     href: '/products/add',
-    colorClass: 'bg-blue-500 text-white shadow-blue-500/30',
+    badge: 'Catalog',
+    colorClass: 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400',
   },
   {
     title: 'Process Orders',
-    description: 'Fulfill pending shipments',
+    description: 'Review pending orders',
     icon: ShoppingBagIcon,
     href: '/orders?status=PENDING',
-    colorClass: 'bg-orange-500 text-white shadow-orange-500/30',
+    badge: 'Fulfillment',
+    colorClass: 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400',
   },
   {
-    title: 'New Campaign',
-    description: 'Launch a promotional banner',
+    title: 'Campaigns',
+    description: 'Launch promotional banner',
     icon: TagIcon,
-    href: '/campaigns?action=new',
-    colorClass: 'bg-purple-500 text-white shadow-purple-500/30',
+    href: '/campaigns',
+    badge: 'Marketing',
+    colorClass: 'bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400',
   },
   {
     title: 'Invite Team',
-    description: 'Add a new staff member',
+    description: 'Add staff or admin',
     icon: PlusIcon,
     href: '/team?action=invite',
-    colorClass: 'bg-green-500 text-white shadow-green-500/30',
+    badge: 'Access',
+    colorClass: 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400',
   },
 ];
 
 export function QuickActions() {
   return (
-    <div className="flex h-full flex-col gap-6 rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
+    <div className="flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-black/5 bg-white p-6 shadow-xs dark:border-white/10 dark:bg-[#141417]">
       <div>
-        <h2 className="text-xl font-bold text-black dark:text-white">Quick Actions</h2>
-        <p className="mt-1 text-sm font-medium text-black/70 dark:text-white/70">
-          Common operational tasks
-        </p>
+        <div className="flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
+          <div>
+            <h2 className="text-lg font-bold text-black dark:text-white">Quick Actions</h2>
+            <p className="mt-0.5 text-xs text-black/60 dark:text-white/60">
+              One-click operational workflows
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+          {ACTIONS.map((action, idx) => (
+            <Link
+              key={idx}
+              href={action.href}
+              className="group relative flex flex-col justify-between gap-3 rounded-2xl border border-black/5 bg-black/[0.015] p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-black/15 hover:bg-black/[0.04] hover:shadow-md dark:border-white/5 dark:bg-white/[0.02] dark:hover:border-white/20 dark:hover:bg-white/[0.05]"
+            >
+              <div className="flex items-center justify-between">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition-transform group-hover:scale-105 ${action.colorClass}`}
+                >
+                  <action.icon className="h-5 w-5" />
+                </div>
+                <ArrowUpRightIcon className="h-4 w-4 text-black/30 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-black dark:text-white/30 dark:group-hover:text-white" />
+              </div>
+
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h3 className="text-sm font-bold text-black dark:text-white">{action.title}</h3>
+                </div>
+                <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
+                  {action.description}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {ACTIONS.map((action, idx) => (
-          <Link
-            key={idx}
-            href={action.href}
-            className="group flex flex-col gap-4 rounded-2xl border border-black/5 bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-white/5 dark:bg-[#1a1a1a]"
-          >
-            <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-lg transition-transform group-hover:scale-110 ${action.colorClass}`}
-            >
-              <action.icon className="h-6 w-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-black dark:text-white">{action.title}</h3>
-              <p className="mt-1 text-xs font-medium text-black/60 dark:text-white/60">
-                {action.description}
-              </p>
-            </div>
-          </Link>
-        ))}
+      <div className="mt-6 border-t border-black/5 pt-4 dark:border-white/5">
+        <p className="text-center text-[11px] font-medium text-black/40 dark:text-white/40">
+          Admin shortcuts for quick management
+        </p>
       </div>
     </div>
   );

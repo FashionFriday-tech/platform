@@ -17,6 +17,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ProductRequestsModule } from './modules/product-requests/product-requests.module';
 import { ProductsModule } from './modules/products/products.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { SearchLogsModule } from './modules/search-logs/search-logs.module';
 import { SellersModule } from './modules/sellers/sellers.module';
@@ -49,6 +50,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     SellersModule,
     SearchLogsModule,
     TeamModule,
+    DashboardModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

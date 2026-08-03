@@ -1,92 +1,117 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
-import { PackageIcon, ShoppingBagIcon, TagIcon } from '@ff/ui';
+import { ChevronRightIcon, PackageIcon, ShoppingBagIcon, UsersIcon } from '@ff/ui';
 
-interface Activity {
-  id: string;
-  type: 'order' | 'campaign' | 'product';
-  title: string;
-  time: string;
-  user: {
-    name: string;
-    avatar: string;
-  };
+import { type DashboardActivity } from '../hooks/useDashboardData';
+
+interface ActivityFeedProps {
+  activities: DashboardActivity[];
+  isLoading?: boolean;
 }
 
-const MOCK_ACTIVITY: Activity[] = [
-  {
-    id: '1',
-    type: 'order',
-    title: 'Order #4829 was fulfilled and shipped',
-    time: '2 minutes ago',
-    user: { name: 'Super Admin', avatar: 'https://i.pravatar.cc/150?u=superadmin' },
-  },
-  {
-    id: '2',
-    type: 'campaign',
-    title: 'Summer Sale banner was activated',
-    time: '1 hour ago',
-    user: { name: 'Super Admin', avatar: 'https://i.pravatar.cc/150?u=superadmin' },
-  },
-  {
-    id: '3',
-    type: 'product',
-    title: 'Restocked "Classic White Sneaker" (Qty: 200)',
-    time: '3 hours ago',
-    user: { name: 'Super Admin', avatar: 'https://i.pravatar.cc/150?u=superadmin' },
-  },
-  {
-    id: '4',
-    type: 'order',
-    title: 'Order #4828 was placed (₹4,500)',
-    time: '5 hours ago',
-    user: { name: 'System', avatar: 'https://i.pravatar.cc/150?u=sys' },
-  },
-];
-
-export function ActivityFeed() {
+export function ActivityFeed({ activities, isLoading }: ActivityFeedProps) {
   return (
-    <div className="flex h-full flex-col gap-6 rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
-      <div className="flex items-center justify-between">
+    <div className="flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-black/5 bg-white p-6 shadow-xs dark:border-white/10 dark:bg-[#141417]">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
         <div>
-          <h2 className="text-xl font-bold text-black dark:text-white">Activity Feed</h2>
-          <p className="mt-1 text-sm font-medium text-black/70 dark:text-white/70">
-            Live operational updates
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-black dark:text-white">Live Activity Feed</h2>
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs text-black/60 dark:text-white/60">
+            Real-time orders, catalog updates, and customer actions
           </p>
         </div>
         <Link
           href="/activity"
-          className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+          className="group inline-flex items-center gap-1 rounded-xl bg-black/5 px-3 py-1.5 text-xs font-semibold text-black transition-all hover:bg-black hover:text-white dark:bg-white/10 dark:text-white dark:hover:bg-white dark:hover:text-black"
         >
-          View All
+          <span>View All</span>
+          <ChevronRightIcon className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
 
-      <div className="relative mt-4 flex flex-col gap-8 before:absolute before:top-4 before:left-[19px] before:h-[calc(100%-32px)] before:w-[2px] before:bg-black/10 dark:before:bg-white/10">
-        {MOCK_ACTIVITY.map((activity) => (
-          <div key={activity.id} className="relative z-10 flex gap-6">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-md ring-4 ring-white dark:bg-[#1a1a1a] dark:ring-[#111]">
-              {activity.type === 'order' && <ShoppingBagIcon className="h-4 w-4 text-orange-500" />}
-              {activity.type === 'campaign' && <TagIcon className="h-4 w-4 text-purple-500" />}
-              {activity.type === 'product' && <PackageIcon className="h-4 w-4 text-blue-500" />}
-            </div>
-
-            <div className="flex flex-1 flex-col gap-2 rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-all hover:shadow-md dark:border-white/5 dark:bg-[#1a1a1a]">
-              <p className="text-sm font-semibold text-black dark:text-white">{activity.title}</p>
-              <div className="flex items-center gap-2">
-                <img
-                  src={activity.user.avatar}
-                  alt={activity.user.name}
-                  className="h-5 w-5 rounded-full object-cover"
-                />
-                <p className="text-xs font-medium text-black/60 dark:text-white/60">
-                  {activity.user.name} • {activity.time}
-                </p>
+      {/* Activity Timeline List */}
+      <div className="mt-4 flex flex-1 flex-col divide-y divide-black/5 dark:divide-y dark:divide-white/5">
+        {isLoading && activities.length === 0 ? (
+          <div className="flex flex-col gap-3 py-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-3 animate-pulse">
+                <div className="h-10 w-10 rounded-2xl bg-black/10 dark:bg-white/10" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-3.5 w-3/4 rounded bg-black/10 dark:bg-white/10" />
+                  <div className="h-2.5 w-1/2 rounded bg-black/5 dark:bg-white/5" />
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
+        ) : activities.length === 0 ? (
+          <div className="flex h-48 flex-col items-center justify-center text-center p-6">
+            <ShoppingBagIcon className="h-8 w-8 text-black/20 dark:text-white/20 mb-2" />
+            <p className="text-sm font-semibold text-black/60 dark:text-white/60">
+              No recent store activities recorded yet
+            </p>
+            <p className="text-xs text-black/40 dark:text-white/40 mt-1">
+              New orders and inventory updates will appear here live
+            </p>
+          </div>
+        ) : (
+          activities.slice(0, 6).map((activity) => {
+            const isOrder = activity.type === 'order';
+            const isProduct = activity.type === 'product';
+            const targetHref = isOrder ? '/orders' : isProduct ? '/products' : '/customers';
+
+            return (
+              <Link
+                key={activity.id}
+                href={targetHref}
+                className="group -mx-2 flex items-center justify-between gap-3 rounded-2xl p-3 transition-all hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  {/* Category Icon Badge */}
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl shadow-xs ${
+                      isOrder
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                        : isProduct
+                          ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'
+                          : 'bg-purple-500/10 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400'
+                    }`}
+                  >
+                    {isOrder && <ShoppingBagIcon className="h-5 w-5" />}
+                    {isProduct && <PackageIcon className="h-5 w-5" />}
+                    {!isOrder && !isProduct && <UsersIcon className="h-5 w-5" />}
+                  </div>
+
+                  {/* Title & Description */}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold text-black transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                      {activity.title}
+                    </p>
+                    <p className="truncate text-xs text-black/50 dark:text-white/50">
+                      {activity.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right: Time badge */}
+                <div className="shrink-0 text-right">
+                  <span className="font-mono text-[11px] font-semibold text-black/40 dark:text-white/40">
+                    {activity.timeAgo}
+                  </span>
+                </div>
+              </Link>
+            );
+          })
+        )}
       </div>
     </div>
   );
