@@ -134,6 +134,18 @@ export function useNotifications() {
     saveNotifications(() => []);
   }, [saveNotifications]);
 
+  const addNotification = useCallback(
+    (notif: AdminNotification) => {
+      saveNotifications((prev) => {
+        if (prev.some((n) => n.id === notif.id)) {
+          return prev;
+        }
+        return [notif, ...prev];
+      });
+    },
+    [saveNotifications],
+  );
+
   const unreadCount = mounted ? notifications.filter((n) => !n.read).length : 2;
 
   return {
@@ -143,5 +155,6 @@ export function useNotifications() {
     markAllAsRead,
     deleteNotification,
     clearAll,
+    addNotification,
   };
 }
