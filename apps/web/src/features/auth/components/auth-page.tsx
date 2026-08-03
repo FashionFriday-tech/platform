@@ -32,52 +32,54 @@ export function AuthPage() {
   } = useAuthFlow();
 
   return (
-    <div className="animate-in fade-in w-full py-2 duration-500">
-      {/* 1. Fixed-height Back Navigation Bar (prevents layout jumping) */}
-      <div className="mb-3 flex h-6 items-center">
-        {step !== 'PHONE' ? (
-          <button
-            type="button"
-            onClick={() => {
-              setStep(step === 'OTP' ? 'PHONE' : 'OTP');
-              setErrors({});
-            }}
-            className="group flex items-center text-[10px] font-black tracking-widest text-zinc-500 uppercase transition-colors hover:text-white"
-          >
-            <ArrowLeftIcon
-              size={14}
-              className="mr-2 transition-transform group-hover:-translate-x-1"
-            />
-            {step === 'OTP' ? 'Change Number' : 'Back to OTP'}
-          </button>
-        ) : (
-          <div className="h-6" aria-hidden="true" />
-        )}
-      </div>
-
-      {/* 2. Fixed-height Header Slot */}
-      <div className="mb-5 min-h-[92px] space-y-1.5">
-        <div className="inline-flex items-center gap-2">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-          <span className="font-mono text-[9px] font-black tracking-[0.3em] text-zinc-500 uppercase">
-            {step === 'PHONE' && 'Step 01 / Phone Authorization'}
-            {step === 'OTP' && 'Step 02 / OTP Verification'}
-            {step === 'PROFILE' && 'Step 03 / Profile Finalization'}
-          </span>
+    <div className="animate-in fade-in flex h-full w-full flex-col justify-between py-1 duration-500 select-none">
+      {/* 1. Fixed-height Top Section (Back Navigation Bar + Header Slot) */}
+      <div className="space-y-1.5">
+        <div className="flex h-6 items-center">
+          {step !== 'PHONE' ? (
+            <button
+              type="button"
+              onClick={() => {
+                setStep(step === 'OTP' ? 'PHONE' : 'OTP');
+                setErrors({});
+              }}
+              className="group flex items-center text-[10px] font-black tracking-widest text-zinc-500 uppercase transition-colors hover:text-white"
+            >
+              <ArrowLeftIcon
+                size={14}
+                className="mr-2 transition-transform group-hover:-translate-x-1"
+              />
+              {step === 'OTP' ? 'Change Number' : 'Back to OTP'}
+            </button>
+          ) : (
+            <div className="h-6" aria-hidden="true" />
+          )}
         </div>
 
-        <h1 className="text-2xl font-black tracking-tight text-white uppercase sm:text-3xl">
-          {step === 'PHONE' && 'Join the Club'}
-          {step === 'OTP' && 'Confirm OTP'}
-          {step === 'PROFILE' && 'Welcome'}
-        </h1>
-        <p className="text-xs leading-relaxed text-zinc-400">
-          {step === 'PHONE' &&
-            'Enter your WhatsApp number to receive an instant authentication code.'}
-          {step === 'OTP' &&
-            `Enter the 6-digit code sent to your WhatsApp number +91 ${phoneNumber}.`}
-          {step === 'PROFILE' && 'Provide your profile details to finalize your membership.'}
-        </p>
+        {/* 2. Fixed-height Header Slot (Never shifts between steps) */}
+        <div className="h-[82px] space-y-1 overflow-hidden">
+          <div className="inline-flex items-center gap-2">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+            <span className="font-mono text-[9px] font-black tracking-[0.3em] text-zinc-500 uppercase">
+              {step === 'PHONE' && 'Step 01 / Phone Authorization'}
+              {step === 'OTP' && 'Step 02 / OTP Verification'}
+              {step === 'PROFILE' && 'Step 03 / Profile Finalization'}
+            </span>
+          </div>
+
+          <h1 className="text-2xl font-black tracking-tight text-white uppercase sm:text-3xl">
+            {step === 'PHONE' && 'Join the Club'}
+            {step === 'OTP' && 'Confirm OTP'}
+            {step === 'PROFILE' && 'Welcome'}
+          </h1>
+          <p className="line-clamp-2 text-xs leading-relaxed text-zinc-400">
+            {step === 'PHONE' &&
+              'Enter your WhatsApp number to receive an instant authentication code.'}
+            {step === 'OTP' &&
+              `Enter the 6-digit code sent to your WhatsApp number +91 ${phoneNumber}.`}
+            {step === 'PROFILE' && 'Provide your profile details to finalize your membership.'}
+          </p>
+        </div>
       </div>
 
       <form
@@ -86,8 +88,8 @@ export function AuthPage() {
           e.preventDefault();
         }}
       >
-        {/* 3. Fixed Step Container (same height across all steps) */}
-        <div className="min-h-[116px]">
+        {/* 3. Fixed Step Container (Exact height across all steps, centered, zero vertical jumping) */}
+        <div className="flex h-[148px] flex-col justify-center overflow-hidden">
           {step === 'PHONE' && (
             <PhoneStep
               phoneNumber={phoneNumber}
@@ -125,7 +127,7 @@ export function AuthPage() {
           type="button"
           onClick={handleNext}
           disabled={loading}
-          className="group relative mt-2 flex w-full -skew-x-[12deg] items-center justify-center rounded-md border border-white bg-white py-3.5 text-xs font-black tracking-[0.25em] text-black uppercase transition-all duration-200 hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 sm:-skew-x-[14deg] sm:rounded-lg sm:py-4 sm:text-sm"
+          className="group relative flex w-full -skew-x-[12deg] items-center justify-center rounded-md border border-white bg-white py-3.5 text-xs font-black tracking-[0.25em] text-black uppercase transition-all duration-200 hover:bg-zinc-200 active:scale-[0.98] disabled:opacity-50 sm:-skew-x-[14deg] sm:rounded-lg sm:py-4 sm:text-sm"
         >
           <span className="flex skew-x-[12deg] items-center justify-center gap-1.5 sm:skew-x-[14deg]">
             <span>
@@ -138,7 +140,7 @@ export function AuthPage() {
         </button>
 
         {/* 5. Fixed Legal Terms Footer across all steps */}
-        <div className="mt-5 min-h-[36px] text-center">
+        <div className="h-9 text-center">
           <p className="text-[10px] leading-relaxed tracking-widest text-zinc-600 uppercase">
             By continuing, you agree to our <br />
             <Link
