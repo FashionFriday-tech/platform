@@ -1,36 +1,40 @@
 import { NextResponse } from 'next/server';
 
-interface PushSubscriptionBody {
-  endpoint: string;
-  expirationTime?: number | null;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
-  userId?: string | null;
-}
-
-// In-memory subscription storage as scalable cache; in production can sync with Postgres Device/Subscription table
-const memorySubscriptions = new Map<string, PushSubscriptionBody>();
+import {
+  type PushSubscriptionRecord,
+  pushSubscriptionsStore,
+} from '@/features/notifications/services/push-sender';
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as PushSubscriptionBody;
+    const body = (await req.json()) as {
+      endpoint: string;
+      expirationTime?: number | null;
+      keys: {
+        p256dh: string;
+        auth: string;
+      };
+      userId?: string | null;
+    };
 
     if (!body?.endpoint || !body?.keys?.p256dh || !body?.keys?.auth) {
       return NextResponse.json({ error: 'Invalid push subscription payload' }, { status: 400 });
     }
 
-    // Store subscription safely indexed by endpoint
-    memorySubscriptions.set(body.endpoint, {
-      ...body,
+    const record: PushSubscriptionRecord = {
+      endpoint: body.endpoint,
+      expirationTime: body.expirationTime ?? null,
+      keys: body.keys,
       userId: body.userId || null,
-    });
+      createdAt: new Date().toISOString(),
+    };
+
+    pushSubscriptionsStore.add(record);
 
     return NextResponse.json({
       success: true,
       message: 'Push subscription registered successfully',
-      count: memorySubscriptions.size,
+      count: pushSubscriptionsStore.count(),
     });
   } catch (error) {
     console.error('[Push Subscription API] Error:', error);
@@ -43,12 +47,13 @@ export async function DELETE(req: Request) {
     const { endpoint } = (await req.json()) as { endpoint?: string };
 
     if (endpoint) {
-      memorySubscriptions.delete(endpoint);
+      pushSubscriptionsStore.remove(endpoint);
     }
 
     return NextResponse.json({
       success: true,
       message: 'Push subscription removed successfully',
+      count: pushSubscriptionsStore.count(),
     });
   } catch (error) {
     console.error('[Push Unsubscribe API] Error:', error);
@@ -58,7 +63,7 @@ export async function DELETE(req: Request) {
 
 export function GET() {
   return NextResponse.json({
-    activeSubscriptions: memorySubscriptions.size,
+    activeSubscriptions: pushSubscriptionsStore.count(),
     status: 'online',
   });
 }
