@@ -8,12 +8,19 @@ import { useAuth, type User } from '@/contexts/AuthContext';
 
 export type AuthStep = 'PHONE' | 'OTP';
 
+export const SUPER_ADMIN_PHONE = '7558969093';
+
 // Predefined registered administrator database
 const ADMIN_DATABASE: Record<string, Omit<User, 'phone'>> = {
-  '9999999999': {
-    name: 'Jimmy Sullivan',
+  '7558969093': {
+    name: 'Super Admin',
     role: 'SUPER_ADMIN',
-    initials: 'JS',
+    initials: 'SA',
+  },
+  '9999999999': {
+    name: 'Super Admin',
+    role: 'SUPER_ADMIN',
+    initials: 'SA',
   },
   '8888888888': {
     name: 'Sarah Chen',
@@ -127,15 +134,55 @@ export function useAuthFlow() {
         startTimer();
         toast.success('Mock OTP code sent successfully! Use 123456 to verify.');
       } else if (step === 'OTP') {
-        const adminInfo = ADMIN_DATABASE[phoneNumber];
+        const cleanNumber = phoneNumber.replace(/\D/g, '');
+        let adminInfo = ADMIN_DATABASE[cleanNumber];
+
+        if (!adminInfo) {
+          // Check dynamic invited team members stored via admin panel
+          try {
+            const storedInvited = localStorage.getItem('ff_admin_invited_team');
+            if (storedInvited) {
+              const list = JSON.parse(storedInvited) as any[];
+              const found = list.find(
+                (m) => m.phone && m.phone.replace(/\D/g, '').endsWith(cleanNumber),
+              );
+              if (found) {
+                adminInfo = {
+                  name: found.name || 'Team Member',
+                  role: found.role || 'SALES_MANAGER',
+                  initials: found.name
+                    ? found.name
+                        .split(' ')
+                        .map((w: string) => w[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase()
+                    : 'TM',
+                };
+              }
+            }
+          } catch {
+            // ignore
+          }
+        }
+
+        // If phone number matches current super admin phone, always assign SUPER_ADMIN
+        if (!adminInfo && cleanNumber === SUPER_ADMIN_PHONE) {
+          adminInfo = {
+            name: 'Super Admin',
+            role: 'SUPER_ADMIN',
+            initials: 'SA',
+          };
+        }
+
         if (adminInfo) {
           authLogin({
             ...adminInfo,
-            phone: `+91 ${phoneNumber}`,
+            phone: `+91 ${cleanNumber}`,
           });
           toast.success(`Welcome back, ${adminInfo.name}!`);
         } else {
-          toast.error('Registered administrator not found.');
+          toast.error('Registered administrator or invited team phone number not found.');
         }
       }
     } catch (error: unknown) {
