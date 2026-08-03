@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 const VAPID_PUBLIC_KEY =
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
-  'BG8TIOEES1QD8VRyeZj7QNSS7XETzail2Dn-ul7zLJSG7BFIK1nPgGbjt1icLvHT2TdtFCbItVeCkv1WFnaBv_M';
+  'BB5oiIrq0hFGGMW6lA8Vam2ZacfQMP40nWibMle_pxhGU5UMZDhJDo4yaVQIekosLuVP7qmlO0RPHknD5JafvTg';
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
