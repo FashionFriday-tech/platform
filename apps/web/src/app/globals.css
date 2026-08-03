@@ -137,7 +137,6 @@
   video,
   canvas {
     -webkit-user-drag: none;
-    user-drag: none;
   }
 
   /* Retain full text typing and selection for form inputs */
