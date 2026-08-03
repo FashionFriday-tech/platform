@@ -7,6 +7,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { PushNotificationProvider } from '@/contexts/PushNotificationContext';
 import { PinLockProvider } from '@/features/pin-lock/components/PinLockProvider';
 
+import { PwaUpdateManager } from '@/components/pwa/PwaUpdateManager';
+
 import './globals.css';
 
 const mulish = Mulish({
@@ -61,6 +63,7 @@ export default function RootLayout({
                 </div>
 
                 <AdminLayoutContent>{children}</AdminLayoutContent>
+                <PwaUpdateManager />
               </ThemeProvider>
             </PinLockProvider>
           </PushNotificationProvider>

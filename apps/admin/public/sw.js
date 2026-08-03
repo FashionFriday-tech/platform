@@ -1,14 +1,13 @@
 // Fashion Friday Admin Service Worker
-const CACHE_NAME = 'ff-admin-v1';
+const CACHE_NAME = 'ff-admin-v4-clean';
 const STATIC_ASSETS = [
-  '/',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/apple-touch-icon.png',
 ];
 
-// Install: Cache essential shell assets
+// Install: Cache essential static icon assets & activate immediately
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -22,9 +21,12 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
+  }
 });
 
-// Activate: Clean up old caches
+// Activate: Delete all previous caches to force-update installed PWAs
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
@@ -41,19 +43,46 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Network-first for dynamic navigation & API, cache-fallback for assets
+// Fetch: Strict network-first for pages and APIs to prevent stale caches
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // If requesting static assets (fonts, icons, images)
+  // NEVER cache API requests
+  if (
+    url.pathname.includes('/api/') ||
+    url.pathname.includes('/admin/team') ||
+    url.pathname.includes('/orders') ||
+    url.pathname.includes('/maintenance')
+  ) {
+    return;
+  }
+
+  // Navigation requests (HTML pages): Strictly network-first with no-cache revalidation
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' })
+        .then((response) => {
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cached) => {
+            if (cached) return cached;
+            return caches.match('/');
+          });
+        }),
+    );
+    return;
+  }
+
+  // Static assets (fonts, icons, images)
   if (
     url.pathname.startsWith('/icons/') ||
-    url.pathname.includes('/_next/static/') ||
     url.pathname.endsWith('.png') ||
-    url.pathname.endsWith('.ico')
+    url.pathname.endsWith('.ico') ||
+    url.pathname.endsWith('.svg')
   ) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
@@ -70,13 +99,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first for HTML pages and APIs
+  // Network-first for everything else
   event.respondWith(
     fetch(event.request).catch(() => {
-      return caches.match(event.request).then((cached) => {
-        if (cached) return cached;
-        return caches.match('/');
-      });
+      return caches.match(event.request);
     }),
   );
 });
