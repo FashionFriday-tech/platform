@@ -22,14 +22,15 @@ export const metadata: Metadata = {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-black p-4 text-white selection:bg-black selection:text-white">
-      <div className="absolute top-6 right-6 z-50">
+    <div className="relative min-h-[100dvh] min-h-screen w-full bg-black text-white selection:bg-white selection:text-black">
+      {/* Floating Exit Button */}
+      <div className="fixed top-6 right-6 z-50">
         <Link
           href="/"
           className="group flex items-center gap-2 text-zinc-500 transition-all duration-300 hover:text-white"
         >
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Exit to Store</span>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800 transition-all group-hover:border-white group-hover:bg-white group-hover:text-black">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800 bg-black/60 backdrop-blur-md transition-all group-hover:border-white group-hover:bg-white group-hover:text-black">
             <Image
               src="/images/logos/ff-logo.png"
               alt="Fashion Friday Logo"
@@ -40,15 +41,18 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </div>
         </Link>
       </div>
-      <div className="flex h-full w-full overflow-hidden">
-        {/* SHARED VISUAL SIDE */}
-        <div className="hidden w-1/2 p-4 lg:flex">
+
+      <div className="flex min-h-[100dvh] min-h-screen w-full">
+        {/* SHARED VISUAL SIDE (Pinned viewport on desktop) */}
+        <div className="hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-1/2 lg:p-4">
           <ImageCarousel />
         </div>
 
-        {/* DYNAMIC FORM SIDE */}
-        <div className="flex w-full flex-col items-center justify-center p-4 lg:w-1/2">
-          <div className="w-full max-w-md">{children}</div>
+        {/* DYNAMIC FORM SIDE (Scrollable 100vh / min-h-screen) */}
+        <div className="flex min-h-[100dvh] min-h-screen w-full flex-col justify-between overflow-y-auto px-4 py-16 sm:px-8 lg:w-1/2 lg:px-12 lg:py-12">
+          <div className="my-auto flex w-full flex-col items-center justify-center">
+            <div className="w-full max-w-md">{children}</div>
+          </div>
         </div>
       </div>
     </div>
