@@ -71,10 +71,8 @@ export function SettingsView() {
   const { team, handleInvite, handleDeleteMember } = useTeam();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
-  const [isActivating, setIsActivating] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isUnderMaintenance, setIsUnderMaintenance] = useState(false);
-  const [isUpdatingMaintenance, setIsUpdatingMaintenance] = useState(false);
 
   const isGrantedAndEnabled = permission === 'granted' && isEnabled;
 
@@ -94,58 +92,57 @@ export function SettingsView() {
     void fetchMaintenance();
   }, []);
 
-  const handleMaintenanceToggle = async () => {
+  const handleMaintenanceToggle = () => {
     if (!isSuperAdmin) {
       toast.error('Permission denied: Only Super Admins can manage Maintenance Mode.');
       return;
     }
 
     const nextState = !isUnderMaintenance;
-    setIsUpdatingMaintenance(true);
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3002';
-      const res = await fetch(`${apiUrl}/admin/maintenance`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isUnderMaintenance: nextState }),
-      });
-      if (res.ok) {
-        setIsUnderMaintenance(nextState);
-        if (nextState) {
-          toast.warning('Maintenance mode activated: Storefront is now closed to customers.');
+    // 1. Instant optimistic update
+    setIsUnderMaintenance(nextState);
+
+    // 2. Sync to API in background without blocking UI
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3002';
+    fetch(`${apiUrl}/admin/maintenance`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isUnderMaintenance: nextState }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          if (nextState) {
+            toast.warning('Maintenance mode activated: Storefront is now closed to customers.');
+          } else {
+            toast.success('Maintenance mode deactivated: Storefront is now open to customers.');
+          }
         } else {
-          toast.success('Maintenance mode deactivated: Storefront is now open to customers.');
+          // Revert optimistic update on error
+          setIsUnderMaintenance(!nextState);
+          toast.error('Failed to update maintenance mode status.');
         }
-      } else {
-        toast.error('Failed to update maintenance mode status.');
-      }
-    } catch {
-      toast.error('Network error updating maintenance mode.');
-    } finally {
-      setIsUpdatingMaintenance(false);
-    }
+      })
+      .catch(() => {
+        // Revert optimistic update on failure
+        setIsUnderMaintenance(!nextState);
+        toast.error('Network error updating maintenance mode.');
+      });
   };
 
-  const handleMasterToggle = async () => {
+  const handleMasterToggle = () => {
     if (isGrantedAndEnabled) {
       deactivatePushNotifications();
     } else {
-      setIsActivating(true);
-      try {
-        await activatePushNotifications();
-      } finally {
-        setIsActivating(false);
-      }
+      void activatePushNotifications();
     }
   };
 
-  const handleTest = async () => {
+  const handleTest = () => {
     setIsTesting(true);
-    try {
-      await sendTestNotification();
-    } finally {
+    void sendTestNotification();
+    setTimeout(() => {
       setIsTesting(false);
-    }
+    }, 250);
   };
 
   return (
@@ -213,7 +210,7 @@ export function SettingsView() {
               <MobileToggle
                 checked={isUnderMaintenance}
                 onChange={handleMaintenanceToggle}
-                disabled={!isSuperAdmin || isUpdatingMaintenance}
+                disabled={!isSuperAdmin}
               />
             </div>
           </div>
@@ -245,7 +242,6 @@ export function SettingsView() {
               <MobileToggle
                 checked={isGrantedAndEnabled}
                 onChange={handleMasterToggle}
-                disabled={isActivating}
               />
             </div>
           </div>

@@ -61,16 +61,25 @@ const DEFAULT_PREFERENCES: PushNotificationPreferences = {
   soundEnabled: true,
 };
 
-// Web Audio API chime synthesizer: Crisp high-fidelity payment/order chime
+// Web Audio API chime synthesizer: Crisp instant payment/order chime with reused context
+let cachedAudioCtx: AudioContext | null = null;
+
 function playNotificationChime() {
   try {
     const AudioCtx =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const now = ctx.currentTime;
 
+    if (!cachedAudioCtx || cachedAudioCtx.state === 'closed') {
+      cachedAudioCtx = new AudioCtx();
+    }
+    const ctx = cachedAudioCtx;
+    if (ctx.state === 'suspended') {
+      void ctx.resume();
+    }
+
+    const now = ctx.currentTime;
     const osc1 = ctx.createOscillator();
     const osc2 = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -83,8 +92,8 @@ function playNotificationChime() {
     osc2.frequency.setValueAtTime(659.25, now); // E5
 
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.25, now + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+    gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
 
     osc1.connect(gain);
     osc2.connect(gain);
@@ -92,8 +101,8 @@ function playNotificationChime() {
 
     osc1.start(now);
     osc2.start(now);
-    osc1.stop(now + 0.55);
-    osc2.stop(now + 0.55);
+    osc1.stop(now + 0.45);
+    osc2.stop(now + 0.45);
   } catch {
     // Audio context may be restricted by browser gesture policies
   }
@@ -263,31 +272,38 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         { action: 'dismiss', title: 'Dismiss' },
       ];
 
-      try {
-        if ('serviceWorker' in navigator) {
-          const reg = await navigator.serviceWorker.ready;
-          if (reg && 'showNotification' in reg) {
-            await reg.showNotification(title, notificationOptions);
-            return;
+      // Dispatch to Service Worker or browser Notification asynchronously without blocking UI
+      void (async () => {
+        try {
+          if ('serviceWorker' in navigator) {
+            const swReady = Promise.race([
+              navigator.serviceWorker.ready,
+              new Promise<null>((r) => setTimeout(() => r(null), 800)),
+            ]);
+            const reg = await swReady;
+            if (reg && 'showNotification' in reg) {
+              await reg.showNotification(title, notificationOptions);
+              return;
+            }
           }
+        } catch {
+          // Fall back to direct Notification
         }
-      } catch {
-        // Fall back to new Notification
-      }
 
-      try {
-        const notif = new Notification(title, notificationOptions);
-        notif.onclick = () => {
-          window.focus();
-          if (options.url) {
-            window.location.href = options.url;
-          }
-        };
-      } catch (err) {
-        console.warn('[Push] Direct notification fallback error:', err);
-      }
+        try {
+          const notif = new Notification(title, notificationOptions);
+          notif.onclick = () => {
+            window.focus();
+            if (options.url) {
+              window.location.href = options.url;
+            }
+          };
+        } catch (err) {
+          console.warn('[Push] Direct notification fallback error:', err);
+        }
+      })();
     },
-    [addNotification, preferences.soundEnabled],
+    [addNotification, preferences.soundEnabled, user?.role],
   );
 
   // Trigger PWA install dialog
@@ -318,7 +334,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
     }
   }, [isIOS]);
 
-  // Activate push notifications
+  // Activate push notifications (optimistic & non-blocking)
   const activatePushNotifications = useCallback(async (): Promise<boolean> => {
     if (typeof window === 'undefined' || !('Notification' in window)) {
       toast.error('Browser push notifications are not supported on this device.');
@@ -330,15 +346,16 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       setPermission(result as PushPermission);
 
       if (result === 'granted') {
-        await registerServiceWorker();
         setIsEnabled(true);
         localStorage.setItem(ENABLED_STORAGE_KEY, 'true');
-
-        playNotificationChime();
         toast.success('Push notifications activated successfully!');
 
-        // Dispatch initial welcome push alert
-        await sendPushAlert('🔔 Push Notifications Activated', {
+        // Run background tasks without blocking UI
+        void registerServiceWorker();
+        if (preferences.soundEnabled) {
+          playNotificationChime();
+        }
+        void sendPushAlert('🔔 Push Notifications Activated', {
           body: 'You will now receive real-time push alerts whenever new orders and updates occur.',
           url: '/orders',
           category: 'system',
@@ -358,7 +375,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       toast.error('Failed to request notification permission.');
       return false;
     }
-  }, [registerServiceWorker, sendPushAlert]);
+  }, [registerServiceWorker, sendPushAlert, preferences.soundEnabled]);
 
   // Deactivate push notifications
   const deactivatePushNotifications = useCallback(() => {
@@ -371,7 +388,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
     toast.info('Push notifications have been paused.');
   }, []);
 
-  // Toggle preferences
+  // Toggle preferences (instant & synchronous)
   const togglePreference = useCallback((key: keyof PushNotificationPreferences) => {
     setPreferences((prev) => {
       const updated = { ...prev, [key]: !prev[key] };
@@ -384,37 +401,39 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
     });
   }, []);
 
-  // Send manual test notification
+  // Send manual test notification (instant non-blocking feedback)
   const sendTestNotification = useCallback(async () => {
     if (permission !== 'granted') {
       toast.error('Please activate push notifications first.');
       return;
     }
-    toast.info('Sending test notification...');
+
+    toast.success('Test alert dispatched!');
 
     const userRole = user?.role || 'SUPER_ADMIN';
+    let alertTitle = '👑 Super Admin Alert: New Order #ORD-9999';
+    let alertBody = 'Rohan placed an order for ₹6,499. Super Admin executive stream active.';
+    let alertUrl = '/orders';
+    let alertCategory: 'orders' | 'inventory' | 'customers' | 'system' = 'orders';
+
     if (userRole === 'PRODUCT_MANAGER') {
-      await sendPushAlert('🔥 Low Stock Alert: Silk Oversized Shirt', {
-        body: 'SKU: FFS-091 inventory reached 2 units. Re-order threshold reached.',
-        url: '/products',
-        category: 'inventory',
-        priority: 'high',
-      });
+      alertTitle = '🔥 Low Stock Alert: Silk Oversized Shirt';
+      alertBody = 'SKU: FFS-091 inventory reached 2 units. Re-order threshold reached.';
+      alertUrl = '/products';
+      alertCategory = 'inventory';
     } else if (userRole === 'SALES_MANAGER') {
-      await sendPushAlert('🔥 Sales Alert: New Order #ORD-9999', {
-        body: 'Rohan Sharma placed an order for ₹6,499 (2 items). Payment verified via UPI.',
-        url: '/orders',
-        category: 'orders',
-        priority: 'high',
-      });
-    } else {
-      await sendPushAlert('👑 Super Admin Alert: New Order #ORD-9999', {
-        body: 'Rohan Sharma placed an order for ₹6,499. Super Admin executive stream active.',
-        url: '/orders',
-        category: 'orders',
-        priority: 'high',
-      });
+      alertTitle = '🔥 Sales Alert: New Order #ORD-9999';
+      alertBody = 'Rohan placed an order for ₹6,499 (2 items). Payment verified via UPI.';
+      alertUrl = '/orders';
+      alertCategory = 'orders';
     }
+
+    void sendPushAlert(alertTitle, {
+      body: alertBody,
+      url: alertUrl,
+      category: alertCategory,
+      priority: 'high',
+    });
   }, [permission, sendPushAlert, user?.role]);
 
   // Live Background Order Watcher (polls every 20 seconds when enabled & logged in)
