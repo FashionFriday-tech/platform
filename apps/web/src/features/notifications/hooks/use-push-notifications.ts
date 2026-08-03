@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
 
 const VAPID_PUBLIC_KEY =
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
-  'BG8TIOEES1QD8VRyeZj7QNSS7XETzail2Dn-ul7zLJSG7BFIK1nPgGbjt1icLvHT2TdtFCbItVeCkv1WFnaBv_M';
+  'BB5oiIrq0hFGGMW6lA8Vam2ZacfQMP40nWibMle_pxhGU5UMZDhJDo4yaVQIekosLuVP7qmlO0RPHknD5JafvTg';
+
+const PUSH_STORAGE_KEY = 'ff_push_subscribed';
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -19,36 +21,104 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
+/**
+ * Safely retrieves or registers the Service Worker with a timeout fallback
+ * so code execution NEVER hangs indefinitely if the worker takes time to activate.
+ */
+async function getOrRegisterServiceWorker(): Promise<ServiceWorkerRegistration | null> {
+  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    return null;
+  }
+
+  try {
+    let reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) {
+      reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
+    }
+
+    // Ensure worker is ready with a 4-second timeout to prevent indefinite hanging
+    const readyTimeout = new Promise<ServiceWorkerRegistration | null>((resolve) => {
+      setTimeout(() => {
+        resolve(reg || null);
+      }, 4000);
+    });
+
+    const readyReg = await Promise.race([navigator.serviceWorker.ready, readyTimeout]);
+    return readyReg || reg;
+  } catch (err) {
+    console.warn('[Push] Error getting service worker registration:', err);
+    return null;
+  }
+}
+
 export function usePushNotifications() {
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Check initial support and current subscription status
   useEffect(() => {
-    if (
-      typeof window !== 'undefined' &&
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const supported =
       'serviceWorker' in navigator &&
       'PushManager' in window &&
-      'Notification' in window
-    ) {
-      setIsSupported(true);
+      'Notification' in window &&
+      (window.isSecureContext ||
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1');
+
+    setIsSupported(supported);
+
+    if (supported) {
       setPermission(Notification.permission);
 
-      void navigator.serviceWorker.ready
-        .then((reg) => reg.pushManager.getSubscription())
-        .then((sub) => {
-          setSubscription(sub);
-        })
-        .catch((err: unknown) => {
+      // Check existing subscription
+      void getOrRegisterServiceWorker().then(async (reg) => {
+        if (!reg) {
+          return;
+        }
+        try {
+          const sub = await reg.pushManager.getSubscription();
+          if (sub) {
+            setSubscription(sub);
+            localStorage.setItem(PUSH_STORAGE_KEY, 'true');
+          } else {
+            // Check if user previously had it disabled
+            localStorage.removeItem(PUSH_STORAGE_KEY);
+          }
+        } catch (err: unknown) {
           console.warn('[Push] Error checking existing subscription:', err);
-        });
+        }
+      });
+
+      // Listen for permission changes in supporting browsers
+      if ('permissions' in navigator && navigator.permissions?.query) {
+        navigator.permissions
+          .query({ name: 'notifications' })
+          .then((permStatus) => {
+            permStatus.onchange = () => {
+              setPermission(Notification.permission);
+            };
+          })
+          .catch(() => null);
+      }
     }
   }, []);
 
-  const subscribe = async () => {
+  const subscribe = useCallback(async (): Promise<PushSubscription | null> => {
     if (!isSupported) {
-      toast.error('Notifications are not supported on this browser/device.');
+      toast.error('Push notifications are not supported on this browser or connection.');
+      return null;
+    }
+
+    if (permission === 'denied') {
+      toast.error(
+        'Notifications are blocked in your browser settings. Please click the site icon in your address bar and allow notifications.',
+      );
       return null;
     }
 
@@ -61,24 +131,39 @@ export function usePushNotifications() {
 
       if (result !== 'granted') {
         if (result === 'denied') {
-          toast.error('Notification permission was blocked in browser settings.');
+          toast.error(
+            'Notification permission was blocked in browser settings. Please allow notifications in your browser address bar.',
+          );
+        } else {
+          toast.info('Notification permission was dismissed.');
         }
         return null;
       }
 
-      // 2. Ensure Service Worker is ready
-      const reg = await navigator.serviceWorker.ready;
-      const convertedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+      // 2. Ensure Service Worker registration is active
+      const reg = await getOrRegisterServiceWorker();
+      if (!reg) {
+        throw new Error('Service worker registration could not be established.');
+      }
 
-      // 3. Subscribe to push manager
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: convertedKey,
-      });
+      // 3. Obtain push subscription
+      let sub = await reg.pushManager.getSubscription();
+      if (!sub) {
+        const convertedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: convertedKey,
+        });
+      }
 
       setSubscription(sub);
+      try {
+        localStorage.setItem(PUSH_STORAGE_KEY, 'true');
+      } catch {
+        // Silent catch
+      }
 
-      // 4. Send subscription to our Next.js API route
+      // 4. Sync subscription payload to server API
       await fetch('/api/notifications/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -87,36 +172,58 @@ export function usePushNotifications() {
         console.warn('[Push] API registration sync note:', err);
       });
 
+      // 5. Trigger a native test/confirmation notification so the user gets instant feedback
+      try {
+        await reg.showNotification('Fashion Friday Alerts Enabled', {
+          body: 'You will now receive live updates on exclusive drops, order tracking, and restocks.',
+          icon: '/icons/icon-192.png',
+          badge: '/favicon-48x48.png',
+          tag: 'ff-subscription-welcome',
+        });
+      } catch {
+        // If native notification display is restricted, the UI toast still notifies
+      }
+
       toast.success('Notifications enabled! You will receive live updates on drops and orders.');
       return sub;
     } catch (err: unknown) {
       console.error('[Push] Failed to subscribe:', err);
-      toast.error('Unable to enable notifications on this device.');
+      const message =
+        err instanceof Error ? err.message : 'Unable to enable notifications on this device.';
+      toast.error(message);
       return null;
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isSupported, permission]);
 
-  const unsubscribe = async () => {
-    if (!subscription) {
-      return;
-    }
-
+  const unsubscribe = useCallback(async (): Promise<void> => {
     setIsLoading(true);
 
     try {
-      const endpoint = subscription.endpoint;
-      await subscription.unsubscribe();
-      setSubscription(null);
+      const reg = await getOrRegisterServiceWorker();
+      const currentSub = subscription || (await reg?.pushManager.getSubscription());
 
-      await fetch('/api/notifications/subscribe', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ endpoint }),
-      }).catch((err: unknown) => {
-        console.warn('[Push] API unregistration note:', err);
-      });
+      if (currentSub) {
+        const endpoint = currentSub.endpoint;
+        await currentSub.unsubscribe().catch(() => null);
+
+        // Notify backend unregistration
+        await fetch('/api/notifications/subscribe', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint }),
+        }).catch((err: unknown) => {
+          console.warn('[Push] API unregistration note:', err);
+        });
+      }
+
+      setSubscription(null);
+      try {
+        localStorage.removeItem(PUSH_STORAGE_KEY);
+      } catch {
+        // Silent catch
+      }
 
       toast.success('Notifications paused.');
     } catch (err: unknown) {
@@ -125,7 +232,7 @@ export function usePushNotifications() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [subscription]);
 
   return {
     isSupported,
