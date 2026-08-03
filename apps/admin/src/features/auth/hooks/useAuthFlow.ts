@@ -86,9 +86,36 @@ export function useAuthFlow() {
     const newErrors: Record<string, string> = {};
 
     if (step === 'PHONE') {
-      if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
+      const cleanNumber = phoneNumber.replace(/\D/g, '');
+      let hasAccess = cleanNumber === SUPER_ADMIN_PHONE || Boolean(ADMIN_DATABASE[cleanNumber]);
+      if (!hasAccess && typeof window !== 'undefined') {
+        try {
+          const storedInvited = localStorage.getItem('ff_admin_invited_team');
+          if (storedInvited) {
+            const list = JSON.parse(storedInvited) as Array<{ phone?: string }>;
+            if (list.some((m) => m.phone && m.phone.replace(/\D/g, '').endsWith(cleanNumber))) {
+              hasAccess = true;
+            }
+          }
+          if (!hasAccess) {
+            const teamStored = localStorage.getItem('ff_admin_team_members');
+            if (teamStored) {
+              const teamList = JSON.parse(teamStored) as Array<{ phone?: string }>;
+              if (
+                teamList.some((m) => m.phone && m.phone.replace(/\D/g, '').endsWith(cleanNumber))
+              ) {
+                hasAccess = true;
+              }
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
         newErrors.phone = 'Enter a valid 10-digit phone number';
-      } else if (!ADMIN_DATABASE[phoneNumber]) {
+      } else if (!hasAccess) {
         newErrors.phone = 'This phone number is not registered as an administrator.';
       }
     } else if (step === 'OTP') {

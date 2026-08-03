@@ -558,7 +558,7 @@ export class AuthService {
     });
 
     if (superAdmin?.role !== 'SUPER_ADMIN') {
-      if (cleanAdminPhone !== '7558969093' && cleanAdminPhone !== '9999999999') {
+      if (cleanAdminPhone !== '7558969093') {
         throw new UnauthorizedException('Only Super Admin is authorized to change security PINs');
       }
     }

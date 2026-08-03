@@ -1,5 +1,5 @@
 // Fashion Friday Admin Service Worker
-const CACHE_NAME = 'ff-admin-v4-clean';
+const CACHE_NAME = 'ff-admin-v5-clean';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/icons/icon-192.png',

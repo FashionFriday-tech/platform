@@ -8,7 +8,7 @@ import { MOCK_TEAM, type SortField, type TeamMember } from '../types';
 
 const STORAGE_TEAM_KEY = 'ff_admin_team_members';
 const STORAGE_INVITED_KEY = 'ff_admin_invited_team';
-const STORAGE_CLEAN_KEY = 'ff_admin_team_v4_clean';
+const STORAGE_CLEAN_KEY = 'ff_admin_team_v5_single_admin';
 
 export type InvitePayload = {
   name: string;
