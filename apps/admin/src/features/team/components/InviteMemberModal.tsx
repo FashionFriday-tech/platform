@@ -11,18 +11,20 @@ import { ROLE_LABELS } from '../types';
 
 interface InviteMemberModalProps {
   onClose: () => void;
-  onInvite: (phoneOrEmail: string, role: Role, name?: string) => void;
+  onInvite: (data: { name: string; phone: string; email: string; role: Role }) => void;
 }
 
 const ROLE_NOTIFICATION_INFO: Record<Role, string> = {
-  SUPER_ADMIN: 'Receives all notifications (orders, inventory, customer alerts & system).',
-  PRODUCT_MANAGER: 'Receives only product & inventory notifications (low stock & catalogue).',
-  SALES_MANAGER: 'Receives only sales & order notifications (new orders & status updates).',
+  SUPER_ADMIN: 'Full system control. Receives ALL notifications (orders, stock, updates).',
+  PRODUCT_MANAGER:
+    'Receives ONLY product & inventory notifications (low stock & catalogue updates).',
+  SALES_MANAGER: 'Receives ONLY sales & order notifications (new orders & order updates).',
 };
 
 export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps) {
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [name, setName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [selectedRole, setSelectedRole] = useState<Role>('SALES_MANAGER');
   const [mounted, setMounted] = useState(false);
   const [error, setError] = useState('');
@@ -35,13 +37,31 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
+    setError('');
+
+    if (!name.trim()) {
+      setError('Please enter the full name.');
+      return;
+    }
+
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     if (cleanPhone.length < 10) {
       setError('Please enter a valid 10-digit mobile phone number.');
       return;
     }
-    setError('');
-    onInvite(cleanPhone, selectedRole, name.trim() || undefined);
+
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    onInvite({
+      name: name.trim(),
+      phone: cleanPhone,
+      email: trimmedEmail,
+      role: selectedRole,
+    });
   };
 
   if (!mounted) {
@@ -53,9 +73,11 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
       <div className="flex w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[#111111]">
         <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
           <div>
-            <h2 className="text-xl font-bold text-black dark:text-white">Invite Team Member</h2>
+            <h2 className="text-xl font-bold text-black dark:text-white">
+              Invite Admin / Team Member
+            </h2>
             <p className="mt-1 text-xs text-black/60 dark:text-white/60">
-              Invite a staff member via phone number with role-based access.
+              Add a new staff member with name, phone number, email, and designated role.
             </p>
           </div>
           <button
@@ -67,11 +89,35 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6">
-          {/* Phone Number Input */}
-          <div className="flex flex-col gap-2">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-6">
+          {error && (
+            <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-xs font-semibold text-red-600 dark:text-red-400">
+              {error}
+            </div>
+          )}
+
+          {/* Full Name */}
+          <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold tracking-wider text-black uppercase dark:text-white">
-              Mobile Phone Number
+              Full Name *
+            </label>
+            <input
+              required
+              type="text"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setError('');
+              }}
+              placeholder="e.g. Rahul Sharma"
+              className="w-full rounded-xl border border-black/10 bg-transparent px-4 py-2.5 text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
+            />
+          </div>
+
+          {/* Mobile Phone Number */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold tracking-wider text-black uppercase dark:text-white">
+              Mobile Phone Number *
             </label>
             <div className="relative flex items-center">
               <span className="absolute left-4 font-mono text-xs font-bold text-black/60 dark:text-white/60">
@@ -87,38 +133,41 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
                   setError('');
                 }}
                 placeholder="7558969093"
-                className="w-full rounded-xl border border-black/10 bg-transparent py-3 pr-4 pl-14 font-mono text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
+                className="w-full rounded-xl border border-black/10 bg-transparent py-2.5 pr-4 pl-14 font-mono text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
               />
             </div>
-            {error && <span className="text-xs text-red-500">{error}</span>}
           </div>
 
-          {/* Member Name */}
-          <div className="flex flex-col gap-2">
+          {/* Email Address */}
+          <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold tracking-wider text-black uppercase dark:text-white">
-              Full Name (Optional)
+              Work Email ID *
             </label>
             <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Rahul Sharma"
-              className="w-full rounded-xl border border-black/10 bg-transparent px-4 py-3 text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
+              required
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError('');
+              }}
+              placeholder="rahul@fashionfriday.com"
+              className="w-full rounded-xl border border-black/10 bg-transparent px-4 py-2.5 text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
             />
           </div>
 
-          {/* Role Selection */}
-          <div className="flex flex-col gap-3">
+          {/* Role / Position Selection */}
+          <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-wider text-black uppercase dark:text-white">
-              Select Role &amp; Notification Scope
+              Position / Role &amp; Notification Scope *
             </label>
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2">
               {roles.map((role) => (
                 <button
                   key={role}
                   type="button"
                   onClick={() => setSelectedRole(role)}
-                  className={`flex cursor-pointer items-start gap-3.5 rounded-xl border p-3.5 text-left transition-all ${
+                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-left transition-all ${
                     selectedRole === role
                       ? 'border-black bg-black/5 dark:border-white dark:bg-white/5'
                       : 'border-black/10 hover:border-black/30 dark:border-white/10 dark:hover:border-white/30'
