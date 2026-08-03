@@ -21,7 +21,7 @@ export function ProfileSetupStep({
   const hasEmailError = Boolean(errors.email);
 
   return (
-    <div className="space-y-3.5">
+    <div className="space-y-2.5">
       {/* Full Name Crossed Box Input */}
       <div>
         <div
@@ -39,17 +39,17 @@ export function ProfileSetupStep({
               setProfile({ ...profile, name: e.target.value });
               clearError('name');
             }}
-            className="w-full skew-x-[12deg] bg-transparent px-5 py-3.5 font-mono text-sm font-bold tracking-widest text-white placeholder-zinc-500 transition-all outline-none sm:skew-x-[14deg] sm:py-4 sm:text-base"
+            className="w-full skew-x-[12deg] bg-transparent px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-white placeholder-zinc-500 transition-all outline-none sm:skew-x-[14deg] sm:px-5 sm:py-3 sm:text-sm"
           />
         </div>
-        <div className="mt-1 min-h-4 px-2">
-          {errors.name && (
-            <p className="animate-in fade-in flex items-center gap-1.5 text-[10px] font-black tracking-widest text-red-500 uppercase">
+        {hasNameError && (
+          <div className="mt-1 px-2">
+            <p className="animate-in fade-in flex items-center gap-1.5 text-[9px] font-black tracking-widest text-red-500 uppercase">
               <span>[!]</span>
               <span>{errors.name}</span>
             </p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Email Address Crossed Box Input */}
@@ -69,36 +69,25 @@ export function ProfileSetupStep({
               setProfile({ ...profile, email: e.target.value });
               clearError('email');
             }}
-            className="w-full skew-x-[12deg] bg-transparent px-5 py-3.5 font-mono text-sm font-bold tracking-widest text-white placeholder-zinc-500 transition-all outline-none sm:skew-x-[14deg] sm:py-4 sm:text-base"
+            className="w-full skew-x-[12deg] bg-transparent px-4 py-2.5 font-mono text-xs font-bold tracking-widest text-white placeholder-zinc-500 transition-all outline-none sm:skew-x-[14deg] sm:px-5 sm:py-3 sm:text-sm"
           />
         </div>
-        <div className="mt-1 min-h-4 px-2">
-          {errors.email && (
-            <p className="animate-in fade-in flex items-center gap-1.5 text-[10px] font-black tracking-widest text-red-500 uppercase">
+        {hasEmailError && (
+          <div className="mt-1 px-2">
+            <p className="animate-in fade-in flex items-center gap-1.5 text-[9px] font-black tracking-widest text-red-500 uppercase">
               <span>[!]</span>
               <span>{errors.email}</span>
             </p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Verified Phone Crossed Box Display */}
-      <div className="pointer-events-none flex gap-2.5 opacity-70 select-none sm:gap-3">
-        <div className="relative -skew-x-[12deg] rounded-md border border-zinc-800 bg-black px-4 py-3 sm:-skew-x-[14deg] sm:rounded-lg sm:px-5 sm:py-3.5">
-          <span className="skew-x-[12deg] text-xs font-black tracking-wider text-zinc-400 uppercase sm:skew-x-[14deg] sm:text-sm">
-            +91
-          </span>
-        </div>
-
-        <div className="relative flex flex-1 -skew-x-[12deg] items-center justify-between rounded-md border border-zinc-800 bg-black px-5 py-3 sm:-skew-x-[14deg] sm:rounded-lg sm:py-3.5">
-          <span className="skew-x-[12deg] font-mono text-sm font-bold tracking-widest text-zinc-300 sm:skew-x-[14deg]">
-            {phoneNumber}
-          </span>
-          <div className="flex skew-x-[12deg] items-center gap-1 text-[10px] font-black tracking-widest text-emerald-400 uppercase sm:skew-x-[14deg]">
-            <VerifiedUserIcon className="text-base" />
-            <span>VERIFIED</span>
-          </div>
-        </div>
+      {/* Verified Phone Indicator */}
+      <div className="flex items-center justify-between px-1 text-[9px] font-black tracking-widest text-zinc-500 uppercase sm:text-[10px]">
+        <span>WHATSAPP: +91 {phoneNumber}</span>
+        <span className="flex items-center gap-1 text-emerald-400">
+          <VerifiedUserIcon className="text-xs" /> VERIFIED
+        </span>
       </div>
     </div>
   );
