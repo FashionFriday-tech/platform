@@ -38,7 +38,7 @@ export function useReferral() {
 
   const rawUsers: ReferralUser[] = useMemo(
     () => [
-      { id: 1, name: 'Rahul S.', date: '22/01/26', status: 'Inactive', timestamp: 1737504000000 },
+      { id: 1, name: 'fredy S.', date: '22/01/26', status: 'Inactive', timestamp: 1737504000000 },
       { id: 2, name: 'Sana K.', date: '24/01/26', status: 'Active', timestamp: 1737676800000 },
       { id: 3, name: 'Kevin V.', date: '15/01/26', status: 'Active', timestamp: 1736899200000 },
       { id: 4, name: 'Aditi R.', date: '25/01/26', status: 'Inactive', timestamp: 1737763200000 },
