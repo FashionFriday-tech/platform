@@ -22,6 +22,11 @@ export class AdminBrandsController {
     return this.brandsService.update(id, dto);
   }
 
+  @Patch(':id/toggle')
+  toggleActive(@Param('id') id: string) {
+    return this.brandsService.toggleActive(id);
+  }
+
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.brandsService.delete(id);
@@ -34,11 +39,11 @@ export class PublicBrandsController {
 
   @Get()
   findAll() {
-    return this.brandsService.findAll();
+    return this.brandsService.findActive();
   }
 
   @Get(':slug')
   findOne(@Param('slug') slug: string) {
-    return this.brandsService.findBySlug(slug);
+    return this.brandsService.findActiveBySlug(slug);
   }
 }

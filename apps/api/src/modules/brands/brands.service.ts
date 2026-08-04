@@ -12,8 +12,20 @@ export class BrandsService {
     return this.repository.findAll();
   }
 
+  async findActive() {
+    return this.repository.findActive();
+  }
+
   async findBySlug(slug: string) {
     const brand = await this.repository.findBySlug(slug);
+    if (!brand) {
+      throw new NotFoundException('Brand not found');
+    }
+    return brand;
+  }
+
+  async findActiveBySlug(slug: string) {
+    const brand = await this.repository.findActiveBySlug(slug);
     if (!brand) {
       throw new NotFoundException('Brand not found');
     }
@@ -27,6 +39,7 @@ export class BrandsService {
       logo: dto.logo ?? '',
       color: dto.color,
       categories: dto.categories,
+      isActive: dto.isActive ?? true,
     });
     this.triggerBrandsRevalidation();
     return result;
@@ -34,6 +47,18 @@ export class BrandsService {
 
   async update(id: string, dto: UpdateBrandDto) {
     const result = await this.repository.update(id, dto);
+    this.triggerBrandsRevalidation();
+    return result;
+  }
+
+  async toggleActive(id: string) {
+    const brand = await this.repository.findById(id);
+    if (!brand) {
+      throw new NotFoundException('Brand not found');
+    }
+    const result = await this.repository.update(id, {
+      isActive: !brand.isActive,
+    });
     this.triggerBrandsRevalidation();
     return result;
   }

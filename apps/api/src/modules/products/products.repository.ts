@@ -59,6 +59,7 @@ export class ProductsRepository {
   async findDistinctBrandsAndCategories() {
     const [brands, categories] = await Promise.all([
       this.prisma.db.brand.findMany({
+        where: { isActive: true },
         select: { name: true, slug: true },
       }),
       this.prisma.db.category.findMany({

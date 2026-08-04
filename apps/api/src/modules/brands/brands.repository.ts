@@ -13,9 +13,28 @@ export class BrandsRepository {
     });
   }
 
+  async findActive() {
+    return this.prisma.db.brand.findMany({
+      where: { isActive: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async findById(id: string) {
+    return this.prisma.db.brand.findUnique({
+      where: { id },
+    });
+  }
+
   async findBySlug(slug: string) {
     return this.prisma.db.brand.findUnique({
       where: { slug },
+    });
+  }
+
+  async findActiveBySlug(slug: string) {
+    return this.prisma.db.brand.findFirst({
+      where: { slug, isActive: true },
     });
   }
 

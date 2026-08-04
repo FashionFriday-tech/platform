@@ -4,4 +4,5 @@ export class UpdateBrandDto {
   logo?: string;
   color?: string;
   categories?: string[];
+  isActive?: boolean;
 }

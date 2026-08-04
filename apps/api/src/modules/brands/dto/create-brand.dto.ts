@@ -4,4 +4,5 @@ export class CreateBrandDto {
   logo?: string;
   color = '';
   categories: string[] = [];
+  isActive?: boolean = true;
 }
