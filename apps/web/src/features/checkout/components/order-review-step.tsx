@@ -97,7 +97,7 @@ export function OrderReviewStep() {
                     }}
                     className="border-border hover:border-foreground/50 flex w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed py-8 transition-colors active:scale-98"
                   >
-                    <div className="bg-foreground/5 flex h-8 w-8 items-center justify-center rounded-lg border border-border">
+                    <div className="bg-foreground/5 border-border flex h-8 w-8 items-center justify-center rounded-lg border">
                       <PlusIcon size={16} />
                     </div>
                     <span className="text-xs font-black tracking-widest uppercase">
@@ -145,7 +145,9 @@ export function OrderReviewStep() {
                         </div>
 
                         <div className="flex-1">
-                          <h3 className="line-clamp-2 text-xs font-bold tracking-tight uppercase">{name}</h3>
+                          <h3 className="line-clamp-2 text-xs font-bold tracking-tight uppercase">
+                            {name}
+                          </h3>
                           <p className="text-foreground-muted mt-1 text-[10px] font-bold uppercase">
                             Size: {item.size} • Qty: {item.quantity}
                           </p>
@@ -241,10 +243,8 @@ export function OrderReviewStep() {
               />
             </svg>
 
-            <span className="relative z-10 flex items-center justify-center gap-2 text-foreground">
-              <span className="text-[10px] font-black tracking-[0.25em] uppercase">
-                Summary
-              </span>
+            <span className="text-foreground relative z-10 flex items-center justify-center gap-2">
+              <span className="text-[10px] font-black tracking-[0.25em] uppercase">Summary</span>
               <motion.span
                 animate={{ rotate: isExpanded ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
@@ -266,7 +266,7 @@ export function OrderReviewStep() {
               className="pointer-events-auto w-full overflow-hidden"
             >
               <div className="w-full">
-                <div className="bg-background text-foreground border-border max-h-[70vh] overflow-y-auto rounded-t-2xl rounded-b-none border-t border-b p-6 shadow-xl w-full">
+                <div className="bg-background text-foreground border-border max-h-[70vh] w-full overflow-y-auto rounded-t-2xl rounded-b-none border-t border-b p-6 shadow-xl">
                   <div className="mx-auto max-w-lg space-y-4">
                     <div className="flex items-center justify-between">
                       <h2 className="text-foreground text-xl font-bold tracking-tight">Summary</h2>
@@ -275,7 +275,7 @@ export function OrderReviewStep() {
                         onClick={() => {
                           setIsExpanded(false);
                         }}
-                        className="text-foreground-muted hover:text-foreground -skew-x-[8deg] flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-border transition-colors"
+                        className="text-foreground-muted hover:text-foreground border-border flex h-8 w-8 -skew-x-[8deg] cursor-pointer items-center justify-center rounded-lg border transition-colors"
                         aria-label="Close summary"
                       >
                         <span className="skew-x-[8deg]">
@@ -287,7 +287,9 @@ export function OrderReviewStep() {
                     <div className="space-y-3 text-[14px]">
                       <div className="text-foreground-muted flex justify-between">
                         <span className="font-medium">Subtotal</span>
-                        <span className="text-foreground font-semibold">₹{pricing.subtotal.toLocaleString()}</span>
+                        <span className="text-foreground font-semibold">
+                          ₹{pricing.subtotal.toLocaleString()}
+                        </span>
                       </div>
 
                       {pricing.discount > 0 && (
@@ -301,7 +303,7 @@ export function OrderReviewStep() {
 
                       <div className="text-foreground-muted flex justify-between">
                         <span>Shipping</span>
-                        <span className="text-[11px] font-semibold tracking-widest text-emerald-600 dark:text-emerald-400 uppercase">
+                        <span className="text-[11px] font-semibold tracking-widest text-emerald-600 uppercase dark:text-emerald-400">
                           Free Delivery
                         </span>
                       </div>
@@ -312,7 +314,9 @@ export function OrderReviewStep() {
                             <span className="text-foreground-muted text-[10px] font-bold tracking-[0.2em] uppercase">
                               Total
                             </span>
-                            <p className="text-foreground-subtle text-[10px] tracking-wide">Inclusive of all taxes</p>
+                            <p className="text-foreground-subtle text-[10px] tracking-wide">
+                              Inclusive of all taxes
+                            </p>
                           </div>
                           <span className="text-foreground text-3xl font-bold tracking-tighter">
                             ₹{pricing.total.toLocaleString()}
@@ -328,9 +332,9 @@ export function OrderReviewStep() {
         </AnimatePresence>
 
         {/* Bottom Bar: Same width (w-full), no shadow, theme-dependent */}
-        <div className="pointer-events-auto border-border bg-background w-full border-t px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
+        <div className="border-border bg-background pointer-events-auto w-full border-t px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
           <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-4">
-            <div className="flex flex-col pl-1 shrink-0">
+            <div className="flex shrink-0 flex-col pl-1">
               <span className="text-foreground-muted text-[10px] font-black tracking-widest uppercase">
                 Total
               </span>
@@ -342,7 +346,7 @@ export function OrderReviewStep() {
             {/* Action Button: Reduced height (h-[46px]), fixed matching width (w-[200px] sm:w-[220px]), theme-dependent, with plus icon for add address */}
             <button
               onClick={handleContinue}
-              className="flex h-[46px] w-[200px] -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-foreground bg-foreground text-background transition-transform outline-none active:scale-95 sm:w-[220px]"
+              className="border-foreground bg-foreground text-background flex h-[46px] w-[200px] -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border transition-transform outline-none active:scale-95 sm:w-[220px]"
             >
               <span className="flex skew-x-[12deg] items-center gap-2 text-xs font-black tracking-widest whitespace-nowrap uppercase">
                 {address ? (

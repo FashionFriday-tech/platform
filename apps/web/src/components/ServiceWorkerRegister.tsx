@@ -8,8 +8,6 @@ export default function ServiceWorkerRegister() {
       return;
     }
 
-
-
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (!refreshing) {

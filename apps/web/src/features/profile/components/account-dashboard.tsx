@@ -3,13 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 
-import {
-  ArrowRightIcon,
-  CrownIcon,
-  PackageIcon,
-  ShieldCheckIcon,
-  ZapIcon,
-} from '@ff/ui';
+import { ArrowRightIcon, CrownIcon, PackageIcon, ShieldCheckIcon, ZapIcon } from '@ff/ui';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/store/auth-store';

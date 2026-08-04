@@ -44,8 +44,10 @@ export function ProductsSearchHeader({
 
           {/* Fallback recommendation notice */}
           {isFallback && initialQuery && (
-            <div className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex w-fit items-center gap-1.5 rounded-full border px-3.5 py-1 text-[11px] font-mono tracking-wider uppercase">
-              <span>No exact matches for &quot;{initialQuery}&quot;. Showing top recommended drops:</span>
+            <div className="flex w-fit items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 font-mono text-[11px] tracking-wider text-amber-600 uppercase dark:text-amber-400">
+              <span>
+                No exact matches for &quot;{initialQuery}&quot;. Showing top recommended drops:
+              </span>
             </div>
           )}
 

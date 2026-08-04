@@ -293,7 +293,9 @@ export function PaymentStep() {
               >
                 <p className="text-foreground-muted mb-0.5 flex items-center gap-1.5 text-[8.5px] font-black tracking-widest text-nowrap uppercase">
                   Final Payable{' '}
-                  <span className={`inline-block transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
+                  <span
+                    className={`inline-block transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                  >
                     <ChevronUpIcon size={10} />
                   </span>
                 </p>

@@ -20,6 +20,7 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   sendEmailOtpAction,
   sendPhoneOtpAction,
@@ -28,7 +29,6 @@ import {
 } from '@/features/auth/services/auth.actions';
 import { useAuthStore } from '@/store/auth-store';
 
-import { Skeleton } from '@/components/ui/skeleton';
 import { ActivityItem } from './activity-item';
 import { ModernInput } from './modern-input';
 import { ProfileSection } from './profile-section';

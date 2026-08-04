@@ -146,7 +146,9 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
 
     // Check bypass parameter or session token
     const urlParams = new URLSearchParams(window.location.search);
@@ -168,7 +170,9 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
       void checkMaintenance();
     }, 20000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   // Lock body scrolling when maintenance is active so page cannot scroll up and down
@@ -218,7 +222,9 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
               {/* Close Button in Top Right */}
               <button
                 type="button"
-                onClick={() => setIsPopupClosed(true)}
+                onClick={() => {
+                  setIsPopupClosed(true);
+                }}
                 className="absolute top-4 right-4 z-40 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/5 text-zinc-400 transition hover:bg-white/15 hover:text-white active:scale-95"
                 aria-label="Close"
               >
@@ -282,7 +288,9 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
           {isPopupClosed && (
             <button
               type="button"
-              onClick={() => setIsPopupClosed(false)}
+              onClick={() => {
+                setIsPopupClosed(false);
+              }}
               className="fixed bottom-6 z-40 flex cursor-pointer items-center gap-2 rounded-full border border-white/20 bg-zinc-950/90 px-4 py-2 font-mono text-xs font-bold text-amber-400 shadow-2xl backdrop-blur-xl transition hover:border-amber-400/50 hover:bg-zinc-900 active:scale-95"
             >
               <span className="h-2 w-2 animate-pulse rounded-full bg-amber-400" />

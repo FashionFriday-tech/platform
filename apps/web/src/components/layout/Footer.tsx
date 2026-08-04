@@ -435,10 +435,6 @@ export default function Footer() {
 
             <div className="relative z-10 grid skew-x-[6deg] grid-cols-1 items-center gap-8 sm:skew-x-[8deg] lg:grid-cols-12 lg:gap-12">
               <div className="text-center lg:col-span-7 lg:text-left">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1 text-[9px] font-black tracking-[0.25em] text-zinc-300 uppercase">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                  VIP Access
-                </div>
                 <h3 className="text-3xl font-black tracking-tighter text-white uppercase italic sm:text-4xl md:text-5xl">
                   NEVER MISS A DROP.
                 </h3>

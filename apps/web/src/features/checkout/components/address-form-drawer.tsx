@@ -252,7 +252,7 @@ export function AddressFormDrawer({
                     onSave(formData);
                   }
                 }}
-                className="bg-foreground text-background flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-foreground py-4 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95"
+                className="bg-foreground text-background border-foreground flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border py-4 text-xs font-black tracking-[0.2em] uppercase shadow-2xl transition-transform active:scale-95"
               >
                 <ShieldCheckIcon size={14} className="shrink-0 text-emerald-500" />
                 <span>Save Shipping Address</span>
@@ -294,7 +294,11 @@ function InputBox({
         <label className="text-foreground flex items-center gap-1 text-[11px] font-bold tracking-wide uppercase">
           <span>{label}</span>
           {required && (
-            <Asterisk size={11} className="text-brand shrink-0 stroke-[2.5]" aria-label="Required" />
+            <Asterisk
+              size={11}
+              className="text-brand shrink-0 stroke-[2.5]"
+              aria-label="Required"
+            />
           )}
         </label>
         {badge ? (
@@ -318,9 +322,9 @@ function InputBox({
           tabIndex={readOnly ? -1 : undefined}
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
-          className={`border-border/80 bg-foreground/[0.03] text-foreground focus:border-foreground h-12 w-full rounded-xl border text-sm font-semibold transition-all outline-none placeholder:text-foreground-muted/60 ${
+          className={`border-border/80 bg-foreground/[0.03] text-foreground focus:border-foreground placeholder:text-foreground-muted/60 h-12 w-full rounded-xl border text-sm font-semibold transition-all outline-none ${
             prefix ? 'pr-4 pl-14' : 'px-4'
-          } ${readOnly ? 'focus:border-border cursor-default select-none opacity-80' : ''}`}
+          } ${readOnly ? 'focus:border-border cursor-default opacity-80 select-none' : ''}`}
         />
       </div>
     </div>

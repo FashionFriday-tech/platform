@@ -96,14 +96,14 @@ export function CartItemsCard({ item }: BagItemCardProps) {
                 onClick={handleMoveToWishlist}
                 className="bg-foreground text-background w-full -skew-x-[12deg] cursor-pointer rounded-xl py-2.5 text-xs font-black uppercase transition-transform active:scale-95"
               >
-                <span className="skew-x-[12deg] block">Move to Wishlist</span>
+                <span className="block skew-x-[12deg]">Move to Wishlist</span>
               </button>
               <button
                 type="button"
                 onClick={handleRemove}
                 className="hover:bg-destructive hover:text-destructive-foreground w-full -skew-x-[12deg] cursor-pointer rounded-xl bg-red-600 py-2.5 text-xs font-black text-white uppercase transition-all active:scale-95"
               >
-                <span className="skew-x-[12deg] block">Remove</span>
+                <span className="block skew-x-[12deg]">Remove</span>
               </button>
               <button
                 type="button"
@@ -176,14 +176,12 @@ export function CartItemsCard({ item }: BagItemCardProps) {
                 className="text-foreground-muted hover:text-foreground cursor-pointer p-2 transition-all active:scale-90 disabled:opacity-20"
                 aria-label="Decrease quantity"
               >
-                <span className="skew-x-[12deg] block">
+                <span className="block skew-x-[12deg]">
                   <MinusIcon size={12} />
                 </span>
               </button>
               <span className="min-w-12 px-2 text-center text-xs font-black tabular-nums">
-                <span className="skew-x-[12deg] block">
-                  {item.quantity}
-                </span>
+                <span className="block skew-x-[12deg]">{item.quantity}</span>
               </span>
               <button
                 type="button"
@@ -194,7 +192,7 @@ export function CartItemsCard({ item }: BagItemCardProps) {
                 className="text-foreground-muted hover:text-foreground cursor-pointer p-2 transition-all active:scale-90 disabled:opacity-20"
                 aria-label="Increase quantity"
               >
-                <span className="skew-x-[12deg] block">
+                <span className="block skew-x-[12deg]">
                   <PlusIcon size={12} />
                 </span>
               </button>

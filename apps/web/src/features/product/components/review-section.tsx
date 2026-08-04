@@ -3,7 +3,6 @@
 import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 
 import {
   AlertTriangleIcon,
@@ -20,6 +19,7 @@ import {
   VerifiedIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion, useAnimationFrame, useMotionValue, wrap } from 'motion/react';
+import { toast } from 'sonner';
 
 import { fetchUserOrdersAction } from '@/features/orders/services/orders.actions';
 import { useAuthStore } from '@/store/auth-store';
@@ -208,9 +208,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
     const userName = user?.name?.trim() || 'Verified Buyer';
     const nameParts = userName.split(' ');
     const formattedName =
-      nameParts.length > 1
-        ? `${nameParts[0]} ${nameParts[1][0].toUpperCase()}.`
-        : nameParts[0];
+      nameParts.length > 1 ? `${nameParts[0]} ${nameParts[1][0].toUpperCase()}.` : nameParts[0];
 
     const initials =
       nameParts.length > 1
@@ -221,8 +219,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
       name: formattedName,
       initials,
       comment: newComment.trim(),
-      image:
-        selectedImage || 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
+      image: selectedImage || 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
       rating: newRating,
       membership: 'gold',
     };
@@ -351,7 +348,9 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                               key={starIndex}
                               size={10}
                               className={
-                                starIndex < rev.rating ? 'text-yellow-400 fill-yellow-400' : 'text-muted-foreground'
+                                starIndex < rev.rating
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-muted-foreground'
                               }
                             />
                           ))}
@@ -391,7 +390,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
             >
               <StarIcon
                 size={40}
-                className="text-foreground/30 hover:text-amber-400 hover:fill-amber-400 transition-colors"
+                className="text-foreground/30 transition-colors hover:fill-amber-400 hover:text-amber-400"
               />
             </motion.button>
           ))}
@@ -403,11 +402,11 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
             void handleInitiateReview(5);
           }}
           disabled={isCheckingPurchase}
-          className="cursor-pointer flex items-center justify-center gap-2 py-1 text-center transition-opacity hover:opacity-80 active:scale-95"
+          className="flex cursor-pointer items-center justify-center gap-2 py-1 text-center transition-opacity hover:opacity-80 active:scale-95"
         >
           {isCheckingPurchase ? (
-            <span className="flex items-center gap-2 text-[10px] font-black tracking-widest text-foreground-muted uppercase">
-              <LoaderIcon size={12} className="animate-spin text-foreground" />
+            <span className="text-foreground-muted flex items-center gap-2 text-[10px] font-black tracking-widest uppercase">
+              <LoaderIcon size={12} className="text-foreground animate-spin" />
               <span>Checking Purchase Status...</span>
             </span>
           ) : (
@@ -452,7 +451,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                   <h3 className="text-foreground text-2xl font-black tracking-tight uppercase">
                     Review Integrity
                   </h3>
-                  <p className="text-foreground-muted mt-1 text-xs font-semibold uppercase tracking-wider">
+                  <p className="text-foreground-muted mt-1 text-xs font-semibold tracking-wider uppercase">
                     Authentic Community Feedback Policy
                   </p>
                 </div>
@@ -460,25 +459,29 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                 {/* Contextual Notice */}
                 {purchaseCheckReason === 'not_logged_in' && (
                   <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-xs font-medium text-amber-600 dark:text-amber-400">
-                    <p className="font-bold uppercase tracking-wider">Sign In Required</p>
+                    <p className="font-bold tracking-wider uppercase">Sign In Required</p>
                     <p className="mt-1">
-                      You must be signed in with the account used to purchase this piece to submit a review.
+                      You must be signed in with the account used to purchase this piece to submit a
+                      review.
                     </p>
                   </div>
                 )}
 
                 {purchaseCheckReason === 'not_purchased' && (
                   <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-xs font-medium text-rose-600 dark:text-rose-400">
-                    <p className="font-bold uppercase tracking-wider">Confirmed Purchase Required</p>
+                    <p className="font-bold tracking-wider uppercase">
+                      Confirmed Purchase Required
+                    </p>
                     <p className="mt-1">
-                      Reviews are strictly reserved for customers with a verified, completed order for this piece.
+                      Reviews are strictly reserved for customers with a verified, completed order
+                      for this piece.
                     </p>
                   </div>
                 )}
 
                 <div className="text-foreground/80 space-y-3.5 text-xs leading-relaxed">
                   <div className="flex gap-3 text-left">
-                    <ShoppingBagIcon className="shrink-0 text-foreground" size={18} />
+                    <ShoppingBagIcon className="text-foreground shrink-0" size={18} />
                     <p>
                       <span className="text-foreground font-bold">Verified Buyers Only:</span> Only
                       customers with a confirmed purchase can submit reviews.
@@ -494,8 +497,8 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                   <div className="flex gap-3 text-left">
                     <AlertTriangleIcon className="shrink-0 text-rose-500" size={18} />
                     <p>
-                      <span className="text-foreground font-bold">Community Conduct:</span> No abusive
-                      language or spam. Constructive critiques only.
+                      <span className="text-foreground font-bold">Community Conduct:</span> No
+                      abusive language or spam. Constructive critiques only.
                     </p>
                   </div>
                 </div>
@@ -632,7 +635,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
             >
               <div className="mx-auto space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-border pb-4">
+                <div className="border-border flex items-center justify-between border-b pb-4">
                   <div>
                     <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                       <ShieldCheckIcon size={14} />
@@ -648,7 +651,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                     onClick={() => {
                       setIsFormOpen(false);
                     }}
-                    className="text-foreground-muted hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-border transition-colors active:scale-95"
+                    className="text-foreground-muted hover:text-foreground border-border flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border transition-colors active:scale-95"
                     aria-label="Close"
                   >
                     <CloseIcon size={18} />
@@ -661,7 +664,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                     <span className="text-foreground-muted text-[10px] font-bold tracking-widest uppercase">
                       Your Rating:
                     </span>
-                    <span className="text-amber-500 text-xs font-black uppercase">
+                    <span className="text-xs font-black text-amber-500 uppercase">
                       {(hoverRating || newRating) === 5
                         ? 'Exceptional (5/5)'
                         : (hoverRating || newRating) === 4
@@ -682,9 +685,15 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                           key={starIndex}
                           whileHover={{ scale: 1.15 }}
                           whileTap={{ scale: 0.9 }}
-                          onMouseEnter={() => setHoverRating(starValue)}
-                          onMouseLeave={() => setHoverRating(0)}
-                          onClick={() => setNewRating(starValue)}
+                          onMouseEnter={() => {
+                            setHoverRating(starValue);
+                          }}
+                          onMouseLeave={() => {
+                            setHoverRating(0);
+                          }}
+                          onClick={() => {
+                            setNewRating(starValue);
+                          }}
                           type="button"
                           className="cursor-pointer p-1"
                           aria-label={`${starValue} Stars`}
@@ -747,13 +756,15 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                             onClick={() => {
                               setSelectedImage(null);
                             }}
-                            className="bg-black/70 hover:bg-black absolute top-1 right-1 cursor-pointer rounded-full p-1 text-white transition-colors"
+                            className="absolute top-1 right-1 cursor-pointer rounded-full bg-black/70 p-1 text-white transition-colors hover:bg-black"
                             aria-label="Remove image"
                           >
                             <CloseIcon size={12} />
                           </button>
                         </div>
-                        <span className="text-foreground-muted text-xs font-medium">Photo attached</span>
+                        <span className="text-foreground-muted text-xs font-medium">
+                          Photo attached
+                        </span>
                       </div>
                     )}
                   </div>
@@ -771,7 +782,7 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className={`border-border hover:border-foreground flex h-12 items-center justify-center gap-2 rounded-xl border px-4 transition-all cursor-pointer active:scale-95 ${
+                    className={`border-border hover:border-foreground flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border px-4 transition-all active:scale-95 ${
                       selectedImage
                         ? 'border-amber-400 bg-amber-400/10 text-amber-500'
                         : 'text-foreground'
@@ -788,9 +799,9 @@ export default function ReviewSection({ productId, productName }: ReviewSectionP
                     type="button"
                     onClick={handleSubmitReview}
                     disabled={!newComment.trim() || newRating === 0}
-                    className="bg-foreground text-background -skew-x-[12deg] flex h-12 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-foreground font-black tracking-widest text-xs uppercase shadow-xl transition-all hover:opacity-95 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="bg-foreground text-background border-foreground flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 rounded-xl border text-xs font-black tracking-widest uppercase shadow-xl transition-all hover:opacity-95 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    <span className="skew-x-[12deg] flex items-center justify-center gap-2">
+                    <span className="flex skew-x-[12deg] items-center justify-center gap-2">
                       <span>Publish Review</span>
                       <ArrowRightIcon size={15} />
                     </span>
