@@ -78,3 +78,12 @@ body {
     background: rgba(255, 255, 255, 0.1);
   }
 }
+
+/* Prevent auto-zoom on mobile devices when input is focused */
+@media screen and (max-width: 768px) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
