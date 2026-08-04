@@ -23,7 +23,7 @@ export const SignupSchema = z.object({
     .min(10)
     .max(15)
     .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number format'),
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Invalid email address').optional(),
   name: z.string().min(2, 'Name must be at least 2 characters'),
   otpToken: z.string(), // This is a temporary token returned from verify-otp when user is new
 });

@@ -157,13 +157,15 @@ export async function verifyOtpAction(phone: string, otp: string): Promise<Verif
 export async function signupAction(
   phone: string,
   name: string,
-  email: string,
-  otpToken: string,
+  email?: string,
+  otpToken?: string,
 ): Promise<SignupResponse> {
+  const cleanDigits = phone.replace(/\D/g, '');
+  const userEmail = email?.trim() || `${cleanDigits}@fashionfriday.in`;
   const res = await fetch(`${API_URL}/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone, name, email, otpToken }),
+    body: JSON.stringify({ phone, name, email: userEmail, otpToken }),
   });
 
   if (!res.ok) {

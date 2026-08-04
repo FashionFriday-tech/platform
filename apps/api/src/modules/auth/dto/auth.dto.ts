@@ -12,7 +12,7 @@ export class VerifyOtpDto extends createZodDto(VerifyOtpSchema) {
 
 export class SignupDto extends createZodDto(SignupSchema) {
   phone!: string;
-  email!: string;
+  email?: string;
   name!: string;
   otpToken!: string;
 }

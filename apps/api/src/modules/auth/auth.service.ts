@@ -127,8 +127,8 @@ export class AuthService {
         where: { phone },
       });
     } catch {
-      this.logger.error(`Database error during user lookup for ${phone}. Proceeding as new user.`);
-      user = null;
+      this.logger.error(`Database error during user lookup for ${phone}. Checking memory.`);
+      user = Array.from(this.userMap.values()).find((u) => u.phone === phone) || null;
     }
 
     if (user) {
@@ -149,6 +149,8 @@ export class AuthService {
 
   async signup(dto: SignupDto) {
     const { phone, email, name, otpToken } = dto;
+    const cleanDigits = phone.replace(/\D/g, '');
+    const userEmail = email?.trim() || `${cleanDigits}@fashionfriday.in`;
 
     // 1. Verify otpToken
     try {
@@ -165,18 +167,27 @@ export class AuthService {
     try {
       existingUser = await this.prisma.db.user.findFirst({
         where: {
-          OR: [{ phone }, { email }],
+          OR: [{ phone }, { email: userEmail }],
         },
       });
     } catch {
       this.logger.warn(`Database unreachable during signup check, checking memory fallback`);
       existingUser = Array.from(this.userMap.values()).find(
-        (u) => u.phone === phone || u.email === email,
+        (u) => u.phone === phone || u.email === userEmail,
       );
     }
 
     if (existingUser) {
-      throw new BadRequestException('User with this phone or email already exists');
+      if (existingUser.phone === phone) {
+        const tokens = await this.getTokens(existingUser.id, existingUser.role);
+        await this.updateRefreshToken(existingUser.id, tokens.refreshToken);
+        return {
+          isNewUser: false,
+          ...tokens,
+          user: existingUser,
+        };
+      }
+      throw new BadRequestException('User with this email already exists');
     }
 
     // 3. Create user
@@ -185,7 +196,7 @@ export class AuthService {
         data: {
           id: generateBrandId('CUST'),
           phone,
-          email,
+          email: userEmail,
           name,
           role: 'CUSTOMER',
           isPhoneVerified: true,
@@ -209,7 +220,7 @@ export class AuthService {
       const mockUser = {
         id: generateBrandId('CUST'),
         phone,
-        email,
+        email: userEmail,
         name,
         role: 'CUSTOMER',
         isPhoneVerified: true,
