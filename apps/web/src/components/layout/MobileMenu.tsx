@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal, flushSync } from 'react-dom';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -27,17 +26,6 @@ interface MobileMenuProps {
   onClose: () => void;
   onOpenSearch?: () => void;
 }
-
-const getInitials = (name: string) => {
-  if (!name) {
-    return '';
-  }
-  const parts = name.trim().split(' ');
-  if (parts.length >= 2) {
-    return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
-  }
-  return parts[0].substring(0, 2).toUpperCase();
-};
 
 const MAIN_NAV_ITEMS = [
   { label: 'New Arrivals', href: '/new-arrivals', badge: 'NEW' },
@@ -368,49 +356,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   text-shadow: 0 0 2px rgba(255, 255, 255, 0.7);
                 }
               `}</style>
-
-              {/* User Profile Banner - shown when logged in */}
-              {user && (
-                <div className="bg-foreground/5 border-border/40 mb-4 overflow-hidden rounded-2xl border p-3.5">
-                  <Link
-                    href="/account"
-                    onClick={onClose}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      {user.avatarUrl ? (
-                        <div className="border-border relative h-10 w-10 overflow-hidden rounded-full border">
-                          <Image
-                            src={user.avatarUrl}
-                            alt={user.name}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="bg-foreground text-background flex h-10 w-10 items-center justify-center rounded-full text-xs font-black uppercase">
-                          {getInitials(user.name)}
-                        </div>
-                      )}
-                      <div>
-                        <p className="text-foreground line-clamp-1 text-xs font-bold tracking-tight">
-                          {user.name}
-                        </p>
-                        <p className="text-foreground/60 text-[10px]">View Profile</p>
-                      </div>
-                    </div>
-                    <svg
-                      className="text-foreground/40 h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              )}
 
               {/* Navigation Links: Categories & Account seamlessly unified with arrows and zero extra gap */}
               <div className="mb-4 flex flex-col gap-1">
