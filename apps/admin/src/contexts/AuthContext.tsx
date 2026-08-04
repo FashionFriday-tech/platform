@@ -81,16 +81,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
         const res = await fetch(`${apiUrl}/admin/team`);
         if (res.ok) {
-          const team = (await res.json()) as Array<{
+          const team = (await res.json()) as {
             phone?: string;
             role?: Role;
             status?: string;
             name?: string;
-          }>;
+          }[];
           if (Array.isArray(team)) {
             const matched = team.find(
-              (m) =>
-                m.phone?.replace(/\D/g, '').slice(-10) === cleanPhone && m.status === 'ACTIVE',
+              (m) => m.phone?.replace(/\D/g, '').slice(-10) === cleanPhone && m.status === 'ACTIVE',
             );
             if (!matched) {
               // User was deleted/removed from database! Force logout immediately.
@@ -105,10 +104,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           const storedInvited = localStorage.getItem('ff_admin_invited_team');
           if (storedInvited) {
-            const list = JSON.parse(storedInvited) as Array<{ phone?: string }>;
-            const exists = list.some((m) =>
-              m.phone?.replace(/\D/g, '').endsWith(cleanPhone || ''),
-            );
+            const list = JSON.parse(storedInvited) as { phone?: string }[];
+            const exists = list.some((m) => m.phone?.replace(/\D/g, '').endsWith(cleanPhone || ''));
             if (!exists) {
               logout();
               return false;
@@ -141,14 +138,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     };
 
-    initAuth();
+    void initAuth();
   }, [verifySessionWithServer, logout]);
 
   // Periodic heartbeat & window focus check: verify active user hasn't been deleted from database
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
     const cleanPhone = user.phone?.replace(/\D/g, '').slice(-10);
-    if (cleanPhone === '7558969093') return;
+    if (cleanPhone === '7558969093') {
+      return;
+    }
 
     const interval = setInterval(async () => {
       const isValid = await verifySessionWithServer(user);

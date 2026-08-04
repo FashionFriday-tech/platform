@@ -4,7 +4,9 @@ import { useEffect } from 'react';
 
 export function PwaUpdateManager() {
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
 
     // 1. One-time clean and purge of legacy mock team & admin session cache from old PWA installs
     try {
@@ -43,7 +45,7 @@ export function PwaUpdateManager() {
         .register('/sw.js')
         .then((registration) => {
           // Force check for fresh sw.js on every load
-          registration.update().catch(() => {});
+          registration.update().catch(() => null);
 
           registration.addEventListener('updatefound', () => {
             const installingWorker = registration.installing;
@@ -57,7 +59,7 @@ export function PwaUpdateManager() {
             }
           });
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           console.warn('[PWA] SW registration failed:', err);
         });
 

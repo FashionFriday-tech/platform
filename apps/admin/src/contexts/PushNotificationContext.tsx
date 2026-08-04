@@ -2,17 +2,19 @@
 
 import React, {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
-  type ReactNode,
 } from 'react';
+
 import { toast } from 'sonner';
 
-import { api } from '@/lib/api-client';
 import { useNotifications } from '@/features/notifications';
+import { api } from '@/lib/api-client';
+
 import { useAuth } from './AuthContext';
 
 export type PushPermission = 'default' | 'granted' | 'denied' | 'unsupported';
@@ -36,7 +38,7 @@ interface PushNotificationContextType {
   activatePushNotifications: () => Promise<boolean>;
   deactivatePushNotifications: () => void;
   togglePreference: (key: keyof PushNotificationPreferences) => void;
-  sendTestNotification: () => Promise<void>;
+  sendTestNotification: () => void;
   sendPushAlert: (
     title: string,
     options: {
@@ -45,7 +47,7 @@ interface PushNotificationContextType {
       category?: 'orders' | 'inventory' | 'customers' | 'system';
       priority?: 'low' | 'medium' | 'high';
     },
-  ) => Promise<void>;
+  ) => void;
 }
 
 const PushNotificationContext = createContext<PushNotificationContextType | undefined>(undefined);
@@ -69,7 +71,9 @@ function playNotificationChime() {
     const AudioCtx =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!AudioCtx) return;
+    if (!AudioCtx) {
+      return;
+    }
 
     if (!cachedAudioCtx || cachedAudioCtx.state === 'closed') {
       cachedAudioCtx = new AudioCtx();
@@ -127,13 +131,15 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
   // Initialize permission, preferences, and PWA install detection
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
 
     const supported = 'Notification' in window;
     setIsSupported(supported);
 
     if (supported) {
-      setPermission(Notification.permission as PushPermission);
+      setPermission(Notification.permission);
     } else {
       setPermission('unsupported');
     }
@@ -195,7 +201,9 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
   // Ensure service worker is registered
   const registerServiceWorker = useCallback(async () => {
-    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return null;
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+      return null;
+    }
     try {
       return await navigator.serviceWorker.register('/sw.js');
     } catch (err) {
@@ -206,7 +214,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
   // Send native / service worker push notification
   const sendPushAlert = useCallback(
-    async (
+    (
       title: string,
       options: {
         body: string;
@@ -215,7 +223,9 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         priority?: 'low' | 'medium' | 'high';
       },
     ) => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        return;
+      }
 
       // Role-based notification routing:
       // Product Manager: ONLY receives product & inventory related alerts
@@ -278,7 +288,11 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
           if ('serviceWorker' in navigator) {
             const swReady = Promise.race([
               navigator.serviceWorker.ready,
-              new Promise<null>((r) => setTimeout(() => r(null), 800)),
+              new Promise<null>((r) =>
+                setTimeout(() => {
+                  r(null);
+                }, 800),
+              ),
             ]);
             const reg = await swReady;
             if (reg && 'showNotification' in reg) {
@@ -323,7 +337,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
     try {
       deferredPromptRef.current.prompt();
       const choiceResult = await deferredPromptRef.current.userChoice;
-      if (choiceResult && choiceResult.outcome === 'accepted') {
+      if (choiceResult?.outcome === 'accepted') {
         setIsInstalled(true);
         setIsInstallable(false);
         deferredPromptRef.current = null;
@@ -343,7 +357,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
     try {
       const result = await Notification.requestPermission();
-      setPermission(result as PushPermission);
+      setPermission(result);
 
       if (result === 'granted') {
         setIsEnabled(true);
@@ -355,7 +369,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         if (preferences.soundEnabled) {
           playNotificationChime();
         }
-        void sendPushAlert('🔔 Push Notifications Activated', {
+        sendPushAlert('🔔 Push Notifications Activated', {
           body: 'You will now receive real-time push alerts whenever new orders and updates occur.',
           url: '/orders',
           category: 'system',
@@ -402,7 +416,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
   }, []);
 
   // Send manual test notification (instant non-blocking feedback)
-  const sendTestNotification = useCallback(async () => {
+  const sendTestNotification = useCallback(() => {
     if (permission !== 'granted') {
       toast.error('Please activate push notifications first.');
       return;
@@ -428,7 +442,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       alertCategory = 'orders';
     }
 
-    void sendPushAlert(alertTitle, {
+    sendPushAlert(alertTitle, {
       body: alertBody,
       url: alertUrl,
       category: alertCategory,
@@ -438,16 +452,22 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
   // Live Background Order Watcher (polls every 20 seconds when enabled & logged in)
   useEffect(() => {
-    if (!user || !isEnabled || permission !== 'granted') return;
+    if (!user || !isEnabled || permission !== 'granted') {
+      return;
+    }
     // Product Managers do not receive sales/order alerts
-    if (user.role === 'PRODUCT_MANAGER') return;
+    if (user.role === 'PRODUCT_MANAGER') {
+      return;
+    }
 
     let isCancelled = false;
 
     const checkOrders = async () => {
       try {
         const data = await api.get<any[]>('/orders/admin', { cache: 'no-store' });
-        if (isCancelled || !Array.isArray(data)) return;
+        if (isCancelled || !Array.isArray(data)) {
+          return;
+        }
 
         // Initial fetch: seed existing orders without notifying
         if (isInitialFetchRef.current) {
@@ -471,7 +491,9 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
         // Subsequent polls: check for brand new orders
         for (const order of data) {
-          if (!order.id) continue;
+          if (!order.id) {
+            continue;
+          }
 
           // 1. New Order Detected
           if (!knownOrderIdsRef.current.has(order.id)) {
@@ -495,7 +517,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
               );
               const itemCount = order.items?.length || 1;
 
-              void sendPushAlert(`🔥 New Order #${orderNum}!`, {
+              sendPushAlert(`🔥 New Order #${orderNum}!`, {
                 body: `${customerName} placed an order for ₹${amount} (${itemCount} item${itemCount > 1 ? 's' : ''}).`,
                 url: '/orders',
                 category: 'orders',
@@ -512,7 +534,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
               if (preferences.notifyStatusChanges) {
                 const orderNum = order.orderNumber || order.id.slice(0, 8);
-                void sendPushAlert(`📦 Order #${orderNum} Updated`, {
+                sendPushAlert(`📦 Order #${orderNum} Updated`, {
                   body: `Status changed from ${previousStatus.toUpperCase()} to ${currentStatus.toUpperCase()}.`,
                   url: '/orders',
                   category: 'orders',
