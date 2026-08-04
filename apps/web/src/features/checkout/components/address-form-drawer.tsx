@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { CloseIcon, LoaderIcon, ShieldCheckIcon } from '@ff/ui';
 import { Asterisk } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
+import { toast } from 'sonner';
 
 import { cleanPhoneDigits, formatPhone334 } from '@/features/addresses';
 import { useAuthStore } from '@/store/auth-store';
@@ -46,6 +47,23 @@ export function AddressFormDrawer({
       altPhone: '',
     };
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        ...initialData,
+        primaryPhone: formatPhone334(initialData.primaryPhone),
+        altPhone: initialData.altPhone ? formatPhone334(initialData.altPhone) : '',
+      });
+    } else if (user) {
+      const cleanPhone = user.phone ? user.phone.replace(/\D/g, '').slice(-10) : '';
+      setFormData((prev) => ({
+        ...prev,
+        recipientName: prev.recipientName || user.name || '',
+        primaryPhone: prev.primaryPhone || (cleanPhone ? formatPhone334(cleanPhone) : ''),
+      }));
+    }
+  }, [initialData, user]);
 
   const [detectedRegion, setDetectedRegion] = useState('');
   const [isLoadingRegion, setIsLoadingRegion] = useState(false);
@@ -90,14 +108,23 @@ export function AddressFormDrawer({
 
   const validate = () => {
     if (formData.pincode.length !== 6) {
+      toast.error('Please enter a valid 6-digit Pincode');
       return false;
     }
-    if (
-      !formData.city ||
-      !formData.area ||
-      !formData.recipientName ||
-      cleanPhoneDigits(formData.primaryPhone).length !== 10
-    ) {
+    if (!formData.city.trim()) {
+      toast.error('City / Town is required');
+      return false;
+    }
+    if (!formData.area.trim()) {
+      toast.error('Area / Locality is required');
+      return false;
+    }
+    if (!formData.recipientName.trim()) {
+      toast.error('Recipient Full Name is required');
+      return false;
+    }
+    if (cleanPhoneDigits(formData.primaryPhone).length !== 10) {
+      toast.error('Please enter a valid 10-digit Primary Phone number');
       return false;
     }
     return true;

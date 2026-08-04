@@ -22,19 +22,22 @@ import { OTPModal } from './otp-modal';
 export function OrderReviewStep() {
   const {
     address,
+    pendingAddress,
     handleSaveAddress,
     showAddressForm,
     setShowAddressForm,
     isExpanded,
     setIsExpanded,
     isLoggedIn,
-    setIsLoggedIn,
     showOTPModal,
     setShowOTPModal,
     pricing,
     cartItems,
     isMounted,
     handleContinue,
+    handleVerifyCheckoutOtp,
+    handleResendOtp,
+    isVerifyingOtp,
   } = useCheckoutReview();
 
   return (
@@ -354,7 +357,7 @@ export function OrderReviewStep() {
                 ) : (
                   <PlusIcon size={15} />
                 )}
-                {address ? (isLoggedIn ? 'Pay Now' : 'Continue') : 'Add Address'}
+                {address ? (isLoggedIn ? 'Pay Now' : 'Verify & Pay') : 'Add Address'}
                 <ArrowRightIcon size={15} />
               </span>
             </button>
@@ -373,11 +376,14 @@ export function OrderReviewStep() {
 
       <OTPModal
         isOpen={showOTPModal}
-        phoneNumber={address?.primaryPhone ?? ''}
-        onVerify={() => {
-          setIsLoggedIn(true);
+        phoneNumber={pendingAddress?.primaryPhone || address?.primaryPhone || ''}
+        onClose={() => {
           setShowOTPModal(false);
+          setShowAddressForm(true);
         }}
+        onVerifyOtp={handleVerifyCheckoutOtp}
+        onResendOtp={handleResendOtp}
+        isVerifying={isVerifyingOtp}
       />
     </div>
   );
