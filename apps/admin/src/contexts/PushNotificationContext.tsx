@@ -63,6 +63,21 @@ const DEFAULT_PREFERENCES: PushNotificationPreferences = {
   soundEnabled: true,
 };
 
+const VAPID_PUBLIC_KEY =
+  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
+  'BB5oiIrq0hFGGMW6lA8Vam2ZacfQMP40nWibMle_pxhGU5UMZDhJDo4yaVQIekosLuVP7qmlO0RPHknD5JafvTg';
+
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 // Web Audio API chime synthesizer: Crisp instant payment/order chime with reused context
 let cachedAudioCtx: AudioContext | null = null;
 
@@ -198,6 +213,58 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
+
+  // Sync push subscription with backend API
+  const syncPushSubscriptionWithBackend = useCallback(
+    async (sub: PushSubscription) => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+        await fetch(`${apiUrl}/admin/notifications/subscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...sub.toJSON(),
+            userId: (user as any)?.id || user?.phone || user?.name,
+            userRole: user?.role || 'SUPER_ADMIN',
+          }),
+        });
+        console.log('[Push] Admin push subscription registered with backend API');
+      } catch (err: unknown) {
+        console.warn('[Push] Backend sync error:', err);
+      }
+    },
+    [user?.name, user?.phone, user?.role],
+  );
+
+  // Auto-sync active push subscription on mount if permission is granted
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      Notification.permission === 'granted'
+    ) {
+      void (async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('/sw.js');
+          if (reg && 'pushManager' in reg) {
+            let sub = await reg.pushManager.getSubscription();
+            if (!sub) {
+              const convertedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+              sub = await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: convertedKey,
+              });
+            }
+            if (sub) {
+              void syncPushSubscriptionWithBackend(sub);
+            }
+          }
+        } catch (err) {
+          console.warn('[Push] Auto-subscribe error:', err);
+        }
+      })();
+    }
+  }, [syncPushSubscriptionWithBackend]);
 
   // Ensure service worker is registered
   const registerServiceWorker = useCallback(async () => {
@@ -364,8 +431,28 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         localStorage.setItem(ENABLED_STORAGE_KEY, 'true');
         toast.success('Push notifications activated successfully!');
 
-        // Run background tasks without blocking UI
-        void registerServiceWorker();
+        // Run background tasks without blocking UI: Register SW, subscribe PushManager, and sync with backend
+        void (async () => {
+          try {
+            const reg = await registerServiceWorker();
+            if (reg && 'pushManager' in reg) {
+              let sub = await reg.pushManager.getSubscription();
+              if (!sub) {
+                const convertedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+                sub = await reg.pushManager.subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: convertedKey,
+                });
+              }
+              if (sub) {
+                await syncPushSubscriptionWithBackend(sub);
+              }
+            }
+          } catch (err) {
+            console.warn('[Push] Registration/subscription error:', err);
+          }
+        })();
+
         if (preferences.soundEnabled) {
           playNotificationChime();
         }
@@ -389,7 +476,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       toast.error('Failed to request notification permission.');
       return false;
     }
-  }, [registerServiceWorker, sendPushAlert, preferences.soundEnabled]);
+  }, [registerServiceWorker, sendPushAlert, preferences.soundEnabled, syncPushSubscriptionWithBackend]);
 
   // Deactivate push notifications
   const deactivatePushNotifications = useCallback(() => {
@@ -448,6 +535,24 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       category: alertCategory,
       priority: 'high',
     });
+
+    // Trigger real backend web push test so OS background notification arrives even if app is closed/minimized
+    void (async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+        await fetch(`${apiUrl}/admin/notifications/test`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: alertTitle,
+            body: alertBody,
+            url: alertUrl,
+          }),
+        });
+      } catch (err) {
+        console.warn('[Push] Backend test trigger error:', err);
+      }
+    })();
   }, [permission, sendPushAlert, user?.role]);
 
   // Live Background Order Watcher (polls every 20 seconds when enabled & logged in)
