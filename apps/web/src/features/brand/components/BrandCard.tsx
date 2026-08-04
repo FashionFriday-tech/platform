@@ -10,14 +10,33 @@ interface BrandCardProps {
   brand: Brand;
 }
 
+function isDarkColor(hexColor?: string): boolean {
+  if (!hexColor) return true;
+  const hex = hexColor.replace('#', '');
+  if (hex.length === 3) {
+    const r = parseInt(hex[0] + hex[0], 16);
+    const g = parseInt(hex[1] + hex[1], 16);
+    const b = parseInt(hex[2] + hex[2], 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  }
+  if (hex.length === 6) {
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  }
+  return true;
+}
+
 export const BrandCard = ({ brand }: BrandCardProps) => {
   const [hasError, setHasError] = React.useState(false);
   const isBlackBackground = brand.color === '#000000';
+  const isDark = isDarkColor(brand.color);
 
   return (
     <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
       <div
-        className="group relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-8 md:rounded-4xl"
+        className="group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-8 md:rounded-4xl"
         style={{
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
@@ -33,13 +52,13 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
                 setHasError(true);
               }}
               className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
-                isBlackBackground ? 'invert dark:invert-0' : 'invert'
+                isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
               }`}
             />
           ) : (
             <span
               className={`px-3 text-center text-sm font-black tracking-widest uppercase sm:text-lg md:text-xl ${
-                isBlackBackground ? 'text-background' : 'text-white'
+                isBlackBackground ? 'text-background' : isDark ? 'text-white' : 'text-black'
               }`}
             >
               {brand.name}
@@ -50,3 +69,4 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
     </Link>
   );
 };
+

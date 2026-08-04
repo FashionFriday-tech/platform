@@ -10,9 +10,28 @@ interface BrandCardProps {
   onToggleStatus?: (e: React.MouseEvent) => void;
 }
 
+function isDarkColor(hexColor?: string): boolean {
+  if (!hexColor) return true;
+  const hex = hexColor.replace('#', '');
+  if (hex.length === 3) {
+    const r = parseInt(hex[0] + hex[0], 16);
+    const g = parseInt(hex[1] + hex[1], 16);
+    const b = parseInt(hex[2] + hex[2], 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  }
+  if (hex.length === 6) {
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  }
+  return true;
+}
+
 export function BrandCard({ brand, onClick, onToggleStatus }: BrandCardProps) {
   const [hasError, setHasError] = React.useState(false);
   const isActive = brand.isActive !== false;
+  const isDark = isDarkColor(brand.color);
 
   return (
     <motion.div
@@ -72,10 +91,10 @@ export function BrandCard({ brand, onClick, onToggleStatus }: BrandCardProps) {
             onError={() => {
               setHasError(true);
             }}
-            className="object-contain p-4 drop-shadow-md invert"
+            className={`object-contain p-4 drop-shadow-md ${isDark ? 'invert' : 'invert-0'}`}
           />
         ) : (
-          <span className="z-20 w-full text-center text-lg font-bold break-words text-white">
+          <span className={`z-20 w-full text-center text-lg font-bold break-words ${isDark ? 'text-white' : 'text-black'}`}>
             {brand.name}
           </span>
         )}

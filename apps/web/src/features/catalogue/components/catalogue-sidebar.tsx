@@ -181,15 +181,24 @@ export const CatalogueSidebar = ({
     return totalDraftFilterCount > 0 || hasChanges;
   }, [totalDraftFilterCount, hasChanges]);
 
-  // Filtered brands if user types in search
+  // Filtered brands if user types in search & hide disabled brands
   const filteredBrands = useMemo(() => {
-    if (!brandSearch.trim()) {
-      return facets.brands;
+    let brandList = facets.brands;
+    if (brands.length > 0) {
+      brandList = brandList.filter((b) => {
+        const matched = brands.find(
+          (dbBrand) => dbBrand.name.toLowerCase() === b.label.toLowerCase(),
+        );
+        return !matched || matched.isActive !== false;
+      });
     }
-    return facets.brands.filter((b) =>
+    if (!brandSearch.trim()) {
+      return brandList;
+    }
+    return brandList.filter((b) =>
       b.label.toLowerCase().includes(brandSearch.toLowerCase().trim()),
     );
-  }, [facets.brands, brandSearch]);
+  }, [facets.brands, brands, brandSearch]);
 
   const pricePresets = [
     { label: 'All', range: `0-${maxPrice}` },

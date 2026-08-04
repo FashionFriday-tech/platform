@@ -13,6 +13,24 @@ interface BrandDetailsModalProps {
   onToggleStatus?: (brand: Brand) => void;
 }
 
+function isDarkColor(hexColor?: string): boolean {
+  if (!hexColor) return true;
+  const hex = hexColor.replace('#', '');
+  if (hex.length === 3) {
+    const r = parseInt(hex[0] + hex[0], 16);
+    const g = parseInt(hex[1] + hex[1], 16);
+    const b = parseInt(hex[2] + hex[2], 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  }
+  if (hex.length === 6) {
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  }
+  return true;
+}
+
 export function BrandDetailsModal({
   isOpen,
   onClose,
@@ -26,6 +44,7 @@ export function BrandDetailsModal({
   }
 
   const isActive = brand.isActive !== false;
+  const isDark = isDarkColor(brand.color);
 
   return (
     <AnimatePresence>
@@ -72,7 +91,7 @@ export function BrandDetailsModal({
               height={500}
               src={brand.logo}
               alt={brand.name}
-              className="max-h-full max-w-full object-contain drop-shadow-md invert"
+              className={`max-h-full max-w-full object-contain drop-shadow-md ${isDark ? 'invert' : 'invert-0'}`}
             />
           </div>
 

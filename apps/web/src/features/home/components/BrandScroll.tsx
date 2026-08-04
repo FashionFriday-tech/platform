@@ -59,14 +59,15 @@ export default function BrandScroll({
 }) {
   const { brands, isLoading } = useBrands(initialBrands);
 
-  if (isLoading || brands.length === 0) {
+  const activeBrands = brands.filter((b) => b.isActive !== false);
+  if (isLoading || activeBrands.length === 0) {
     return null;
   }
 
   // Logic to split the array into two rows for the marquee
-  const midIndex = Math.ceil(brands.length / 2);
-  const BRAND_ROW_A = brands.slice(0, midIndex);
-  const BRAND_ROW_B = brands.slice(midIndex);
+  const midIndex = Math.ceil(activeBrands.length / 2);
+  const BRAND_ROW_A = activeBrands.slice(0, midIndex);
+  const BRAND_ROW_B = activeBrands.slice(midIndex);
 
   return (
     <div className={cn('w-full overflow-hidden py-0 lg:py-4', className)}>

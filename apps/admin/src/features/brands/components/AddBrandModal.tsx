@@ -14,6 +14,24 @@ interface AddBrandModalProps {
 
 const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
+function isDarkColor(hexColor?: string): boolean {
+  if (!hexColor) return true;
+  const hex = hexColor.replace('#', '');
+  if (hex.length === 3) {
+    const r = parseInt(hex[0] + hex[0], 16);
+    const g = parseInt(hex[1] + hex[1], 16);
+    const b = parseInt(hex[2] + hex[2], 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  }
+  if (hex.length === 6) {
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+  }
+  return true;
+}
+
 export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrandModalProps) {
   const [name, setName] = useState('');
   const [color, setColor] = useState('#000000');
@@ -268,7 +286,8 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                   />
                   <label
                     htmlFor="brand-logo-upload"
-                    className="group flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-[#f8f9fa] transition-all hover:bg-black/5 dark:border-white/20 dark:bg-[#1a1a1a] dark:hover:bg-white/5"
+                    style={{ backgroundColor: color || undefined }}
+                    className="group flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-[#f8f9fa] transition-all hover:opacity-95 dark:border-white/20 dark:bg-[#1a1a1a]"
                   >
                     {logoUrl ? (
                       <div className="relative h-full w-full">
@@ -276,7 +295,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                           fill
                           src={logoUrl}
                           alt="Logo preview"
-                          className="object-contain p-4 invert"
+                          className={`object-contain p-4 ${color ? (isDarkColor(color) ? 'invert' : 'invert-0') : 'dark:invert'}`}
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
                           <span className="text-sm font-bold text-white">Change Image</span>

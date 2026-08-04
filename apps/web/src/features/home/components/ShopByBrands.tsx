@@ -28,11 +28,12 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
     }
   }, []);
 
-  const featuredBrands = brands.filter((brand) =>
+  const activeBrands = brands.filter((brand) => brand.isActive !== false);
+  const featuredBrands = activeBrands.filter((brand) =>
     FEATURED_BRAND_NAMES.includes(brand.name.toLowerCase()),
   );
   // Limit to 6-8 brands so the section stays curated and high-impact
-  const displayList = (featuredBrands.length > 0 ? featuredBrands : brands).slice(0, 6);
+  const displayList = (featuredBrands.length > 0 ? featuredBrands : activeBrands).slice(0, 6);
 
   // Split into two mobile rows (3 items each if 6 brands)
   const midpoint = Math.ceil(displayList.length / 2);

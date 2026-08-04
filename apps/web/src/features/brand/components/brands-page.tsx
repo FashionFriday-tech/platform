@@ -32,6 +32,7 @@ export function BrandsPage({ initialBrands }: BrandsPageProps) {
   const { brands: brandsData, isLoading } = useBrands(initialBrands);
 
   const displayedBrands = brandsData
+    .filter((b: Brand) => b.isActive !== false)
     .filter((b: Brand) => selectedCategory === 'All' || b.categories.includes(selectedCategory))
     .sort((a: Brand, b: Brand) =>
       sortOption === 'a-z' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name),
