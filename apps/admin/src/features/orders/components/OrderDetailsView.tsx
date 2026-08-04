@@ -405,9 +405,9 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
   const courierOptions = COURIER_SERVICES.map((c) => ({ label: c, value: c }));
 
   return (
-    <div className="scrollbar-hide mx-auto flex h-full w-full max-w-6xl flex-col gap-6 overflow-y-auto p-4 md:p-8">
+    <div className="scrollbar-hide mx-auto flex h-full w-full max-w-6xl flex-col gap-6 overflow-y-auto p-3 sm:p-6 md:p-8">
       {/* Top Section: Unified Order Command Card */}
-      <div className="flex flex-col gap-6 rounded-3xl bg-white p-6 shadow-sm sm:p-8 dark:bg-[#141414]">
+      <div className="flex flex-col gap-6 rounded-3xl bg-white p-4 shadow-sm sm:p-8 dark:bg-[#141414]">
         {/* Header row: Order ID, Status Badge & Actions */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">

@@ -22,7 +22,7 @@ async function getCollectionBySlug(slug: string): Promise<ProductCollection | nu
       return null;
     }
     return await res.json();
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -44,7 +44,7 @@ export default async function CollectionDetailsPage({ params }: CollectionDetail
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-3 sm:p-4 md:p-6">
       <CollectionDetailsView initialCollection={collection} />
     </div>
   );

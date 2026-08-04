@@ -40,7 +40,7 @@ export function AnalyticsView() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="flex w-full flex-col gap-6 px-6 pt-2 pb-12"
+        className="flex w-full flex-col gap-6 px-3 pt-2 pb-12 sm:px-6"
       >
         {/* ──── KPI Cards ──── */}
         <motion.div variants={item}>

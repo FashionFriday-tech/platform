@@ -139,14 +139,14 @@ export function SettingsView() {
 
   const handleTest = () => {
     setIsTesting(true);
-    void sendTestNotification();
+    sendTestNotification();
     setTimeout(() => {
       setIsTesting(false);
     }, 250);
   };
 
   return (
-    <div className="flex h-full flex-col overflow-y-auto px-4 py-6 sm:px-8">
+    <div className="flex h-full flex-col overflow-y-auto px-3 py-4 sm:px-6 sm:py-6">
       <div className="mx-auto w-full max-w-xl space-y-6">
         {/* Header with Role Badge */}
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
@@ -239,10 +239,7 @@ export function SettingsView() {
                   </span>
                 </div>
               </div>
-              <MobileToggle
-                checked={isGrantedAndEnabled}
-                onChange={handleMasterToggle}
-              />
+              <MobileToggle checked={isGrantedAndEnabled} onChange={handleMasterToggle} />
             </div>
           </div>
           {permission === 'denied' && (
@@ -284,7 +281,9 @@ export function SettingsView() {
                     </div>
                     <MobileToggle
                       checked={preferences.notifyNewOrders}
-                      onChange={() => togglePreference('notifyNewOrders')}
+                      onChange={() => {
+                        togglePreference('notifyNewOrders');
+                      }}
                     />
                   </div>
 
@@ -302,7 +301,9 @@ export function SettingsView() {
                     </div>
                     <MobileToggle
                       checked={preferences.notifyStatusChanges}
-                      onChange={() => togglePreference('notifyStatusChanges')}
+                      onChange={() => {
+                        togglePreference('notifyStatusChanges');
+                      }}
                     />
                   </div>
                 </div>
@@ -337,7 +338,9 @@ export function SettingsView() {
                     </div>
                     <MobileToggle
                       checked={preferences.notifyStockAlerts}
-                      onChange={() => togglePreference('notifyStockAlerts')}
+                      onChange={() => {
+                        togglePreference('notifyStockAlerts');
+                      }}
                     />
                   </div>
                 </div>
@@ -363,7 +366,9 @@ export function SettingsView() {
                   </div>
                   <MobileToggle
                     checked={preferences.soundEnabled}
-                    onChange={() => togglePreference('soundEnabled')}
+                    onChange={() => {
+                      togglePreference('soundEnabled');
+                    }}
                   />
                 </div>
               </div>
@@ -402,7 +407,9 @@ export function SettingsView() {
               </span>
               <button
                 type="button"
-                onClick={() => setIsInviteModalOpen(true)}
+                onClick={() => {
+                  setIsInviteModalOpen(true);
+                }}
                 className="inline-flex cursor-pointer items-center gap-1 text-[11px] font-bold text-blue-600 hover:underline dark:text-blue-400"
               >
                 <PlusIcon className="h-3.5 w-3.5" />
@@ -455,7 +462,9 @@ export function SettingsView() {
                     {!isMemberSuperAdmin && !isCurrentSuperNumber && (
                       <button
                         type="button"
-                        onClick={() => handleDeleteMember(member.id)}
+                        onClick={() => {
+                          handleDeleteMember(member.id);
+                        }}
                         className="cursor-pointer rounded-lg p-2 text-zinc-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 dark:hover:text-red-400"
                         title="Remove member access"
                       >
@@ -500,7 +509,9 @@ export function SettingsView() {
       {/* Invite Member Modal */}
       {isInviteModalOpen && (
         <InviteMemberModal
-          onClose={() => setIsInviteModalOpen(false)}
+          onClose={() => {
+            setIsInviteModalOpen(false);
+          }}
           onInvite={(data) => {
             handleInvite(data);
             toast.success(`${data.name} (+91 ${data.phone}) invited as ${ROLE_LABELS[data.role]}!`);

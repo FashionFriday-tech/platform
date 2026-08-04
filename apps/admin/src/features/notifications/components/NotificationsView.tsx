@@ -90,7 +90,7 @@ export function NotificationsView() {
   };
 
   return (
-    <div className="scrollbar-hide flex h-full w-full flex-col overflow-x-hidden overflow-y-auto px-6 pt-6 pb-16">
+    <div className="scrollbar-hide flex h-full w-full flex-col overflow-x-hidden overflow-y-auto px-3 pt-4 pb-16 sm:px-6 sm:pt-6">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         {/* Page Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

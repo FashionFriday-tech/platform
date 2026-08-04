@@ -29,7 +29,7 @@ export function DashboardView() {
     : 'Syncing...';
 
   return (
-    <div className="scrollbar-hide flex h-full w-full flex-col overflow-x-hidden overflow-y-auto px-6 pt-6 pb-12">
+    <div className="scrollbar-hide flex h-full w-full flex-col overflow-x-hidden overflow-y-auto px-3 pt-4 pb-12 sm:px-6 sm:pt-6">
       <motion.div
         variants={container}
         initial="hidden"
@@ -60,8 +60,8 @@ export function DashboardView() {
               <span className="text-xs font-semibold text-black/80 dark:text-white/80">
                 Live DB Sync
               </span>
-              <span className="hidden text-xs text-black/40 dark:text-white/40 md:inline">•</span>
-              <span className="hidden font-mono text-xs text-black/50 dark:text-white/50 md:inline">
+              <span className="hidden text-xs text-black/40 md:inline dark:text-white/40">•</span>
+              <span className="hidden font-mono text-xs text-black/50 md:inline dark:text-white/50">
                 {formattedTime}
               </span>
             </div>
@@ -123,9 +123,7 @@ export function DashboardView() {
               title="Stock Alerts"
               value={String(stats.lowStockCount || 0)}
               subtitle={
-                stats.lowStockCount > 0
-                  ? 'Items require restock'
-                  : 'All inventory in stock'
+                stats.lowStockCount > 0 ? 'Items require restock' : 'All inventory in stock'
               }
               icon={PackageIcon}
               iconBgClass={
@@ -205,7 +203,9 @@ export function DashboardView() {
               <BoxIcon className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-black/50 dark:text-white/50">Active Products</p>
+              <p className="text-xs font-semibold text-black/50 dark:text-white/50">
+                Active Products
+              </p>
               <p className="font-mono text-base font-bold text-black dark:text-white">
                 {stats.totalProducts}
               </p>

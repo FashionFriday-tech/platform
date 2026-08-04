@@ -2,12 +2,11 @@ import type { Metadata } from 'next';
 import { Mulish } from 'next/font/google';
 
 import { AdminLayoutContent } from '@/components/layout/AdminLayoutContent';
+import { PwaUpdateManager } from '@/components/pwa/PwaUpdateManager';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { PushNotificationProvider } from '@/contexts/PushNotificationContext';
 import { PinLockProvider } from '@/features/pin-lock/components/PinLockProvider';
-
-import { PwaUpdateManager } from '@/components/pwa/PwaUpdateManager';
 
 import './globals.css';
 

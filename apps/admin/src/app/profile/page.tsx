@@ -40,12 +40,12 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden p-6">
+    <div className="relative flex h-full w-full flex-col overflow-hidden p-3 sm:p-4 md:p-6">
       {/* Background ambient glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-100/40 via-white to-white dark:from-indigo-900/20 dark:via-[#0a0a0a] dark:to-[#0a0a0a]" />
 
       <div className="flex flex-1 flex-col overflow-hidden rounded-[2.5rem] border border-white/40 bg-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl dark:border-white/10 dark:bg-black/40">
-        <div className="flex flex-1 flex-col overflow-hidden p-10">
+        <div className="flex flex-1 flex-col overflow-hidden p-4 sm:p-6 md:p-10">
           <div className="relative mb-8 flex shrink-0 items-end justify-between">
             <div className="flex flex-col gap-8 sm:flex-row sm:items-center">
               {/* Avatar Section */}

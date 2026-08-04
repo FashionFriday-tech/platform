@@ -26,7 +26,7 @@ const getIconForType = (type: ActivityType) => {
 
 export function ActivityTimeline({ activities }: ActivityTimelineProps) {
   return (
-    <div className="scrollbar-hide flex-1 overflow-y-auto rounded-3xl border border-white/50 bg-white/90 p-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/90">
+    <div className="scrollbar-hide flex-1 overflow-y-auto rounded-3xl border border-white/50 bg-white/90 p-4 shadow-xl backdrop-blur-2xl sm:p-8 dark:border-white/10 dark:bg-[#111111]/90">
       <div className="relative flex flex-col gap-8 before:absolute before:top-4 before:left-[19px] before:h-[calc(100%-32px)] before:w-[2px] before:bg-black/10 dark:before:bg-white/10">
         <AnimatePresence mode="popLayout">
           {activities.map((activity) => (

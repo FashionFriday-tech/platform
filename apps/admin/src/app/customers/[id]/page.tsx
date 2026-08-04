@@ -12,7 +12,7 @@ export default async function CustomerDetailsPage({ params }: { params: Promise<
   const { id } = await params;
 
   return (
-    <div className="scrollbar-hide flex h-full flex-col overflow-y-auto p-6">
+    <div className="scrollbar-hide flex h-full flex-col overflow-y-auto p-3 sm:p-4 md:p-6">
       <CustomerDetailsFeature customerId={id} />
     </div>
   );
