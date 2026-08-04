@@ -3,7 +3,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 
-import type { Brand } from '@ff/schemas';
+import { type Brand, BRAND_LOGOS } from '@ff/schemas';
 import { ArrowUpRightIcon } from '@ff/ui';
 
 import { BrandCard, useBrands } from '@/features/brand';
@@ -11,7 +11,7 @@ import { BrandCard, useBrands } from '@/features/brand';
 const FEATURED_BRAND_NAMES = ['nike', 'adidas', 'zara', 'crocs', 'new balance', 'asics'];
 
 export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[] }) {
-  const { brands, isLoading } = useBrands(initialBrands);
+  const { brands } = useBrands(initialBrands);
   const [isInView, setIsInView] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -29,11 +29,12 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   }, []);
 
   const activeBrands = brands.filter((brand) => brand.isActive !== false);
-  const featuredBrands = activeBrands.filter((brand) =>
+  const sourceBrands = activeBrands.length > 0 ? activeBrands : BRAND_LOGOS;
+  const featuredBrands = sourceBrands.filter((brand) =>
     FEATURED_BRAND_NAMES.includes(brand.name.toLowerCase()),
   );
   // Limit to 6-8 brands so the section stays curated and high-impact
-  const displayList = (featuredBrands.length > 0 ? featuredBrands : activeBrands).slice(0, 6);
+  const displayList = (featuredBrands.length > 0 ? featuredBrands : sourceBrands).slice(0, 6);
 
   // Split into two mobile rows (3 items each if 6 brands)
   const midpoint = Math.ceil(displayList.length / 2);
@@ -48,12 +49,11 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   const desktopItems = [...displayList, ...displayList];
 
   // Constant speed logic: calculate duration from distance (pixels) so speed doesn't increase with more cards
-  // Constant speed logic: calculate duration from distance (pixels) so speed doesn't increase with more cards
   const MOBILE_SPEED_PX_PER_SEC = 25;
   const DESKTOP_SPEED_PX_PER_SEC = 15; // Slower on large screens
 
-  const MOBILE_CARD_PX = 200 + 16; // 200px width + 16px gap (1rem)
-  const DESKTOP_CARD_PX = 310 + 24; // 310px width + 24px gap (1.5rem)
+  const MOBILE_CARD_PX = 195 + 16; // 195px width + 16px gap (1rem) (aspect 3/4 with 260px height)
+  const DESKTOP_CARD_PX = 300 + 24; // 300px width + 24px gap (1.5rem) (aspect 3/4 with 400px height)
 
   // Distance of 50% track (one full cycle of the repeated items)
   const row1Distance = (row1Items.length / 2) * MOBILE_CARD_PX;
@@ -64,7 +64,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   const row2Duration = Math.round(row2Distance / MOBILE_SPEED_PX_PER_SEC);
   const desktopDuration = Math.round(desktopDistance / DESKTOP_SPEED_PX_PER_SEC);
 
-  if (isLoading && displayList.length === 0) {
+  if (displayList.length === 0) {
     return null;
   }
 
@@ -127,7 +127,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {desktopItems.map((brand, idx) => (
                 <div
                   key={`desktop-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
+                  className="group relative aspect-[3/4] h-[400px] w-[300px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -148,7 +148,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row1Items.map((brand, idx) => (
                 <div
                   key={`r1-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -166,7 +166,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row2Items.map((brand, idx) => (
                 <div
                   key={`r2-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>

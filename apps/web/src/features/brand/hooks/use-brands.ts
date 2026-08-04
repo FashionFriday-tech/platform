@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { type Brand } from '@ff/schemas';
+import { type Brand, BRAND_LOGOS } from '@ff/schemas';
 
 import { getBrands } from '../services/queries';
 
@@ -15,22 +15,29 @@ let brandsPromise: Promise<Brand[]> | null = null;
  * Fetches data ONCE and reuses it across BrandScroll, ShopByBrands, and BrandsPage with 0ms re-fetch delay.
  */
 export function useBrands(initialBrands?: Brand[]) {
-  const [brands, setBrands] = useState<Brand[]>(initialBrands || cachedBrands || []);
-  const [isLoading, setIsLoading] = useState(!initialBrands && !cachedBrands);
+  const hasInitial = Array.isArray(initialBrands) && initialBrands.length > 0;
+  const hasCached = Array.isArray(cachedBrands) && cachedBrands.length > 0;
+
+  const [brands, setBrands] = useState<Brand[]>(() => {
+    if (hasInitial) return initialBrands as Brand[];
+    if (hasCached) return cachedBrands as Brand[];
+    return [];
+  });
+  const [isLoading, setIsLoading] = useState(!hasInitial && !hasCached);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    if (initialBrands) {
+    if (hasInitial) {
       if (typeof window !== 'undefined') {
         cachedBrands = initialBrands;
       }
       return;
     }
 
-    if (cachedBrands) {
-      setBrands(cachedBrands);
+    if (hasCached) {
+      setBrands(cachedBrands as Brand[]);
       setIsLoading(false);
       return;
     }
@@ -41,18 +48,18 @@ export function useBrands(initialBrands?: Brand[]) {
 
     brandsPromise
       .then((data) => {
-        const finalData = data || [];
+        const finalData = Array.isArray(data) && data.length > 0 ? data : BRAND_LOGOS;
         cachedBrands = finalData;
         if (isMounted) {
           setBrands(finalData);
           setIsLoading(false);
         }
       })
-
       .catch((err: unknown) => {
         // Reset promise on error so retry is possible if needed
         brandsPromise = null;
         if (isMounted) {
+          setBrands(BRAND_LOGOS);
           setError(err instanceof Error ? err : new Error('Failed to load brands'));
           setIsLoading(false);
         }
@@ -61,7 +68,7 @@ export function useBrands(initialBrands?: Brand[]) {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [hasInitial, hasCached]);
 
   return { brands, isLoading, error };
 }

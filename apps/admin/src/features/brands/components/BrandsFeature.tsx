@@ -16,6 +16,7 @@ import { BrandStats } from './BrandStats';
 export default function BrandsFeature() {
   const {
     brands,
+    isLoading,
     searchQuery,
     setSearchQuery,
     categoryFilter,
@@ -294,7 +295,18 @@ export default function BrandsFeature() {
             transition={{ duration: 0.2 }}
             className="scrollbar-hide min-h-0 flex-1 overflow-auto pb-6"
           >
-            {filteredBrands.length === 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div
+                    key={`skeleton-${i}`}
+                    className="flex aspect-square animate-pulse flex-col overflow-hidden rounded-2xl border border-black/5 bg-black/5 p-4 dark:border-white/5 dark:bg-white/5"
+                  >
+                    <div className="h-full w-full rounded-xl bg-black/10 dark:bg-white/10" />
+                  </div>
+                ))}
+              </div>
+            ) : filteredBrands.length === 0 ? (
               <div className="flex h-full items-center justify-center text-black/40 dark:text-white/40">
                 <p>No brands found matching your search.</p>
               </div>

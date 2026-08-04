@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { type Brand, type BrandCategory } from '@ff/schemas';
+import { type Brand, type BrandCategory, BRAND_LOGOS } from '@ff/schemas';
+
+import { api } from '../../../lib/api-client';
 
 const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
@@ -16,19 +18,27 @@ export function useBrands() {
   const [brandToEdit, setBrandToEdit] = useState<Brand | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    void fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands`)
-      .then((res) => res.json())
-      .then((data: Brand[]) => {
-        setBrands(Array.isArray(data) ? data : []);
-        setIsLoading(false);
-      })
-      .catch((err: unknown) => {
-        console.error('Failed to fetch brands:', err);
-        setBrands([]);
-        setIsLoading(false);
-      });
+  const fetchBrands = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await api.get<Brand[]>('/admin/brands');
+      if (Array.isArray(data) && data.length > 0) {
+        setBrands(data);
+      } else {
+        setBrands(BRAND_LOGOS);
+      }
+    } catch (err) {
+      console.error('Failed to fetch brands from /admin/brands:', err);
+      // Fallback so admin panel always renders brand catalog
+      setBrands(BRAND_LOGOS);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void fetchBrands();
+  }, [fetchBrands]);
 
   const categoryOptions = [
     { label: 'All Categories', value: 'all' },
@@ -72,30 +82,17 @@ export function useBrands() {
         // Find existing brand to get ID
         const existingBrand = brands.find((b) => b.slug === originalSlug);
         if (existingBrand?.id) {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands/${existingBrand.id}`,
-            {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(savedBrand),
-            },
+          const updated = await api.patch<Brand>(
+            `/admin/brands/${existingBrand.id}`,
+            savedBrand,
           );
-          const updated = (await res.json()) as Brand;
           setBrands((prev) => prev.map((b) => (b.slug === originalSlug ? updated : b)));
           if (selectedBrand?.slug === originalSlug) {
             setSelectedBrand(updated);
           }
         }
       } else {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(savedBrand),
-          },
-        );
-        const created = (await res.json()) as Brand;
+        const created = await api.post<Brand>('/admin/brands', savedBrand);
         setBrands((prev) => [created, ...prev]);
       }
       setBrandToEdit(null);
@@ -113,12 +110,7 @@ export function useBrands() {
 
     try {
       if (brandWithId.id) {
-        await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands/${brandWithId.id}`,
-          {
-            method: 'DELETE',
-          },
-        );
+        await api.delete(`/admin/brands/${brandWithId.id}`);
       }
 
       if (
@@ -127,14 +119,9 @@ export function useBrands() {
         !selectedBrand.logo.includes('localhost')
       ) {
         try {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-            {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ urls: [selectedBrand.logo] }),
-            },
-          );
+          await api.delete('/admin/upload/batch', {
+            body: JSON.stringify({ urls: [selectedBrand.logo] }),
+          });
         } catch (err) {
           console.error('Failed to cleanup brand logo on delete:', err);
         }
@@ -164,18 +151,10 @@ export function useBrands() {
     }
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands/${brandWithId.id}/toggle`,
-        {
-          method: 'PATCH',
-        },
-      );
-      if (res.ok) {
-        const updated = (await res.json()) as Brand;
-        setBrands((prev) => prev.map((b) => (b.id === brandWithId.id ? updated : b)));
-        if (selectedBrand?.id === brandWithId.id) {
-          setSelectedBrand(updated);
-        }
+      const updated = await api.patch<Brand>(`/admin/brands/${brandWithId.id}/toggle`);
+      setBrands((prev) => prev.map((b) => (b.id === brandWithId.id ? updated : b)));
+      if (selectedBrand?.id === brandWithId.id) {
+        setSelectedBrand(updated);
       }
     } catch (err) {
       console.error('Failed to toggle brand status:', err);

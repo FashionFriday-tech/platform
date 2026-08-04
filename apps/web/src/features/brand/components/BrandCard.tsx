@@ -6,8 +6,11 @@ import Link from 'next/link';
 
 import type { Brand } from '@ff/schemas';
 
+import { cn } from '@/lib/utils';
+
 interface BrandCardProps {
   brand: Brand;
+  className?: string;
 }
 
 function isDarkColor(hexColor?: string): boolean {
@@ -28,7 +31,7 @@ function isDarkColor(hexColor?: string): boolean {
   return true;
 }
 
-export const BrandCard = ({ brand }: BrandCardProps) => {
+export const BrandCard = ({ brand, className }: BrandCardProps) => {
   const [hasError, setHasError] = React.useState(false);
   const isBlackBackground = brand.color === '#000000';
   const isDark = isDarkColor(brand.color);
@@ -36,7 +39,10 @@ export const BrandCard = ({ brand }: BrandCardProps) => {
   return (
     <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
       <div
-        className="group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-8 md:rounded-4xl"
+        className={cn(
+          'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-8 md:rounded-4xl',
+          className,
+        )}
         style={{
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
