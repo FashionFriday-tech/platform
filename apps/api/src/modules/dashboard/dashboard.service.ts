@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+
 import { PrismaService } from '../../database/prisma.service';
 
 interface CachedEntry<T> {
@@ -140,7 +141,9 @@ export class DashboardService {
 
       let salesGrowthPercentage = 0;
       if (prevWeekSales > 0) {
-        salesGrowthPercentage = Math.round(((recentWeekSales - prevWeekSales) / prevWeekSales) * 100);
+        salesGrowthPercentage = Math.round(
+          ((recentWeekSales - prevWeekSales) / prevWeekSales) * 100,
+        );
       } else if (recentWeekSales > 0) {
         salesGrowthPercentage = 100;
       }
@@ -223,7 +226,7 @@ export class DashboardService {
         }),
       ]);
 
-      const activities: Array<{
+      const activities: {
         id: string;
         type: 'order' | 'product' | 'customer';
         title: string;
@@ -233,7 +236,7 @@ export class DashboardService {
         user: { name: string; avatar: string };
         status?: string;
         amount?: number;
-      }> = [];
+      }[] = [];
 
       // Format Orders
       for (const order of recentOrders) {
@@ -298,9 +301,7 @@ export class DashboardService {
       }
 
       // Sort all activities chronologically descending
-      activities.sort(
-        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-      );
+      activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       const finalActivities = activities.slice(0, limit);
 
@@ -318,13 +319,21 @@ export class DashboardService {
 
   private formatTimeAgo(date: Date): string {
     const elapsedSeconds = Math.max(1, Math.floor((Date.now() - date.getTime()) / 1000));
-    if (elapsedSeconds < 60) return `${elapsedSeconds}s ago`;
+    if (elapsedSeconds < 60) {
+      return `${elapsedSeconds}s ago`;
+    }
     const elapsedMinutes = Math.floor(elapsedSeconds / 60);
-    if (elapsedMinutes < 60) return `${elapsedMinutes}m ago`;
+    if (elapsedMinutes < 60) {
+      return `${elapsedMinutes}m ago`;
+    }
     const elapsedHours = Math.floor(elapsedMinutes / 60);
-    if (elapsedHours < 24) return `${elapsedHours}h ago`;
+    if (elapsedHours < 24) {
+      return `${elapsedHours}h ago`;
+    }
     const elapsedDays = Math.floor(elapsedHours / 24);
-    if (elapsedDays < 30) return `${elapsedDays}d ago`;
+    if (elapsedDays < 30) {
+      return `${elapsedDays}d ago`;
+    }
     return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
   }
 }

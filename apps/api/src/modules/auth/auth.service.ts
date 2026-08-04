@@ -71,7 +71,7 @@ export class AuthService {
         update: { otpHash, expiresAt },
         create: { phone, otpHash, expiresAt },
       });
-    } catch (error) {
+    } catch {
       // Fallback to memory for development
       this.otpMap.set(phone, { otpHash, expiresAt });
     }

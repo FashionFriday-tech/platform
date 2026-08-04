@@ -78,7 +78,7 @@ export class AppController {
   updateAdminMaintenance(@Body() body: { isUnderMaintenance: boolean; message?: string }) {
     const current = readMaintenanceState();
     const updated: MaintenanceState = {
-      isUnderMaintenance: Boolean(body.isUnderMaintenance),
+      isUnderMaintenance: body.isUnderMaintenance,
       message: body.message || current.message,
       updatedAt: new Date().toISOString(),
     };
