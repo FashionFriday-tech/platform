@@ -56,9 +56,9 @@ export function SidebarFooter() {
     pathname === '/notifications' || pathname.startsWith('/notifications/');
 
   return (
-    <div className="relative shrink-0 border-t border-black/5 p-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] dark:border-white/5">
+    <div className="sticky bottom-0 z-20 mt-auto shrink-0 border-t border-black/5 bg-white/95 p-2 backdrop-blur-md dark:border-white/5 dark:bg-[#0e0e0e]/95">
       {/* Main Bottom Box Card */}
-      <div className="flex flex-col gap-2 rounded-2xl bg-black p-2.5 text-white shadow-xl dark:bg-white dark:text-black dark:shadow-md">
+      <div className="flex flex-col gap-1.5 rounded-2xl bg-black p-2 text-white shadow-xl dark:bg-white dark:text-black dark:shadow-md">
         {/* Profile Info Item */}
         <Link
           href="/profile"

@@ -97,7 +97,7 @@ export function Sidebar({
           <h1 className="text-lg font-black uppercase">FashionFriday</h1>
         </div>
 
-        <nav className="scrollbar-hide flex-1 space-y-6 overflow-y-auto px-4 py-6">
+        <nav className="scrollbar-hide min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4">
           {/* Overview Section */}
           {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'PRODUCT_MANAGER']) && (
             <div>
