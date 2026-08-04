@@ -47,7 +47,7 @@ const DEFAULT_NOTIFICATIONS: AdminNotification[] = [
   {
     id: 'notif-4',
     title: 'New Customer Registered',
-    description: 'A new user Rahul Verma registered with phone number +91 98765 43210.',
+    description: 'A new user fredy Verma registered with phone number +91 98765 43210.',
     category: 'customers',
     priority: 'low',
     timestamp: '5 hours ago',
@@ -59,7 +59,7 @@ const DEFAULT_NOTIFICATIONS: AdminNotification[] = [
     id: 'notif-5',
     title: 'New 5-Star Review Submitted',
     description:
-      'Priya Sharma left a 5-star review on Oversized Denim Jacket: "Outstanding fabric quality!".',
+      'Priya  left a 5-star review on Oversized Denim Jacket: "Outstanding fabric quality!".',
     category: 'customers',
     priority: 'medium',
     timestamp: 'Yesterday at 3:45 PM',
