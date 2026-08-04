@@ -10,6 +10,7 @@ export function useBrands() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'all' | BrandCategory>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'disabled'>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [brandToEdit, setBrandToEdit] = useState<Brand | null>(null);
@@ -37,6 +38,12 @@ export function useBrands() {
     })),
   ];
 
+  const statusOptions = [
+    { label: 'All Status', value: 'all' as const },
+    { label: 'Active', value: 'active' as const },
+    { label: 'Disabled', value: 'disabled' as const },
+  ];
+
   const filteredBrands = useMemo(() => {
     let result = [...brands];
 
@@ -49,9 +56,15 @@ export function useBrands() {
       result = result.filter((b) => b.categories.includes(categoryFilter));
     }
 
+    if (statusFilter === 'active') {
+      result = result.filter((b) => b.isActive !== false);
+    } else if (statusFilter === 'disabled') {
+      result = result.filter((b) => b.isActive === false);
+    }
+
     // Sort alphabetically by default
     return result.sort((a, b) => a.name.localeCompare(b.name));
-  }, [brands, searchQuery, categoryFilter]);
+  }, [brands, searchQuery, categoryFilter, statusFilter]);
 
   const handleSaveBrand = async (savedBrand: Brand, isEdit: boolean, originalSlug?: string) => {
     try {
@@ -134,6 +147,48 @@ export function useBrands() {
     }
   };
 
+  const handleToggleBrandStatus = async (brand: Brand) => {
+    const brandWithId = brand as Brand & { id?: string };
+    if (!brandWithId.id) {
+      return;
+    }
+    const currentActive = brand.isActive !== false;
+    const nextActive = !currentActive;
+
+    // Optimistic state update
+    setBrands((prev) =>
+      prev.map((b) => (b.id === brandWithId.id ? { ...b, isActive: nextActive } : b)),
+    );
+    if (selectedBrand?.id === brandWithId.id) {
+      setSelectedBrand((prev) => (prev ? { ...prev, isActive: nextActive } : null));
+    }
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/brands/${brandWithId.id}/toggle`,
+        {
+          method: 'PATCH',
+        },
+      );
+      if (res.ok) {
+        const updated = (await res.json()) as Brand;
+        setBrands((prev) => prev.map((b) => (b.id === brandWithId.id ? updated : b)));
+        if (selectedBrand?.id === brandWithId.id) {
+          setSelectedBrand(updated);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to toggle brand status:', err);
+      // Rollback
+      setBrands((prev) =>
+        prev.map((b) => (b.id === brandWithId.id ? { ...b, isActive: currentActive } : b)),
+      );
+      if (selectedBrand?.id === brandWithId.id) {
+        setSelectedBrand(brand);
+      }
+    }
+  };
+
   return {
     brands,
     isLoading,
@@ -141,6 +196,9 @@ export function useBrands() {
     setSearchQuery,
     categoryFilter,
     setCategoryFilter,
+    statusFilter,
+    setStatusFilter,
+    statusOptions,
     isAddModalOpen,
     setIsAddModalOpen,
     selectedBrand,
@@ -151,5 +209,6 @@ export function useBrands() {
     filteredBrands,
     handleSaveBrand,
     handleDeleteBrand,
+    handleToggleBrandStatus,
   };
 }

@@ -10,6 +10,7 @@ interface BrandDetailsModalProps {
   brand: Brand | null;
   onEdit: () => void;
   onDelete: () => void;
+  onToggleStatus?: (brand: Brand) => void;
 }
 
 export function BrandDetailsModal({
@@ -18,10 +19,13 @@ export function BrandDetailsModal({
   brand,
   onEdit,
   onDelete,
+  onToggleStatus,
 }: BrandDetailsModalProps) {
   if (!isOpen || !brand) {
     return null;
   }
+
+  const isActive = brand.isActive !== false;
 
   return (
     <AnimatePresence>
@@ -75,7 +79,23 @@ export function BrandDetailsModal({
           {/* Body */}
           <div className="space-y-4 p-6">
             <div>
-              <h2 className="text-2xl font-bold text-black dark:text-white">{brand.name}</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-black dark:text-white">{brand.name}</h2>
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase ${
+                    isActive
+                      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
+                      : 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'
+                  }`}
+                >
+                  <span
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      isActive ? 'bg-emerald-500' : 'bg-red-500'
+                    }`}
+                  />
+                  {isActive ? 'Active' : 'Disabled'}
+                </span>
+              </div>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {brand.categories.map((cat) => (
                   <span
@@ -86,6 +106,43 @@ export function BrandDetailsModal({
                   </span>
                 ))}
               </div>
+            </div>
+
+            {/* Status Control Card */}
+            <div className="flex items-center justify-between rounded-2xl border border-black/5 bg-[#f8f9fa] p-3.5 dark:border-white/5 dark:bg-[#1a1a1a]">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    isActive ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500'
+                  }`}
+                />
+                <div>
+                  <p className="text-xs font-bold text-black dark:text-white">Store Visibility</p>
+                  <p className="text-[11px] text-black/50 dark:text-white/50">
+                    {isActive ? 'Visible in store & search' : 'Hidden from public store'}
+                  </p>
+                </div>
+              </div>
+              {onToggleStatus && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onToggleStatus(brand);
+                  }}
+                  className={`flex h-6 w-11 items-center rounded-full p-0.5 shadow-sm transition-colors focus:outline-none ${
+                    isActive
+                      ? 'bg-emerald-500 hover:bg-emerald-600'
+                      : 'bg-zinc-600 hover:bg-zinc-500'
+                  }`}
+                  aria-label={isActive ? 'Disable brand' : 'Enable brand'}
+                >
+                  <div
+                    className={`h-5 w-5 rounded-full bg-white shadow-md transition-transform ${
+                      isActive ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              )}
             </div>
 
             <div className="border-t border-black/5 pt-2 dark:border-white/5">
@@ -103,22 +160,37 @@ export function BrandDetailsModal({
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center gap-3 border-t border-black/5 bg-[#f8f9fa] p-6 dark:border-white/5 dark:bg-[#1a1a1a]">
+          <div className="flex items-center gap-2 border-t border-black/5 bg-[#f8f9fa] p-4 sm:p-6 dark:border-white/5 dark:bg-[#1a1a1a]">
             <button
               onClick={() => {
                 onDelete();
                 onClose();
               }}
-              className="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+              className="rounded-xl px-3 py-2 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
             >
               Delete
             </button>
+            {onToggleStatus && (
+              <button
+                type="button"
+                onClick={() => {
+                  onToggleStatus(brand);
+                }}
+                className={`flex-1 rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
+                  isActive
+                    ? 'border border-amber-500/20 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 dark:text-amber-400'
+                    : 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400'
+                }`}
+              >
+                {isActive ? 'Disable' : 'Enable'}
+              </button>
+            )}
             <button
               onClick={() => {
                 onEdit();
                 onClose();
               }}
-              className="flex-1 rounded-xl bg-black px-6 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95 dark:bg-white dark:text-black"
+              className="flex-1 rounded-xl bg-black px-4 py-2 text-xs font-semibold text-white transition-transform hover:scale-102 active:scale-95 dark:bg-white dark:text-black"
             >
               Edit Brand
             </button>

@@ -27,9 +27,13 @@ export default function BrandsFeature() {
     brandToEdit,
     setBrandToEdit,
     categoryOptions,
+    statusFilter,
+    setStatusFilter,
+    statusOptions,
     filteredBrands,
     handleSaveBrand,
     handleDeleteBrand,
+    handleToggleBrandStatus,
   } = useBrands();
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -49,7 +53,7 @@ export default function BrandsFeature() {
     };
   }, [isFilterOpen]);
 
-  const hasActiveFilters = categoryFilter !== 'all';
+  const hasActiveFilters = categoryFilter !== 'all' || statusFilter !== 'all';
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
@@ -105,7 +109,15 @@ export default function BrandsFeature() {
               onChange={(val) => {
                 setCategoryFilter(val as 'all' | BrandCategory);
               }}
-              className="z-50 w-48"
+              className="z-50 w-44"
+            />
+            <CustomSelect
+              options={statusOptions}
+              value={statusFilter}
+              onChange={(val) => {
+                setStatusFilter(val as 'all' | 'active' | 'disabled');
+              }}
+              className="z-50 w-36"
             />
           </div>
 
@@ -204,6 +216,30 @@ export default function BrandsFeature() {
                           ))}
                         </div>
                       </div>
+
+                      <div className="border-t border-black/5 pt-3 dark:border-white/5">
+                        <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
+                          Store Status
+                        </label>
+                        <div className="flex flex-wrap gap-1.5">
+                          {statusOptions.map((opt) => (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => {
+                                setStatusFilter(opt.value);
+                              }}
+                              className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                                statusFilter === opt.value
+                                  ? 'border-transparent bg-black text-white dark:bg-white dark:text-black'
+                                  : 'border-black/10 bg-black/5 text-black/60 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/60'
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
 
                     {/* Footer Buttons */}
@@ -212,6 +248,7 @@ export default function BrandsFeature() {
                         type="button"
                         onClick={() => {
                           setCategoryFilter('all');
+                          setStatusFilter('all');
                         }}
                         className="flex-1 rounded-xl px-4 py-2 text-xs font-medium text-black/60 transition-colors hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
                       >
@@ -275,6 +312,9 @@ export default function BrandsFeature() {
                       onClick={() => {
                         setSelectedBrand(brand);
                       }}
+                      onToggleStatus={() => {
+                        void handleToggleBrandStatus(brand);
+                      }}
                     />
                   </motion.div>
                 ))}
@@ -301,6 +341,7 @@ export default function BrandsFeature() {
         }}
         brand={selectedBrand}
         onDelete={handleDeleteBrand}
+        onToggleStatus={handleToggleBrandStatus}
         onEdit={() => {
           setBrandToEdit(selectedBrand);
           setIsAddModalOpen(true);

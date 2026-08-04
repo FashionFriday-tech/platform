@@ -19,6 +19,9 @@ export function BrandStats({ brands }: BrandStatsProps) {
   const getCategoryCount = (category: string) =>
     brands.filter((b) => (b.categories as string[]).includes(category)).length;
 
+  const activeCount = brands.filter((b) => b.isActive !== false).length;
+  const disabledCount = brands.filter((b) => b.isActive === false).length;
+
   const stats = [
     {
       name: 'Total Brands',
@@ -26,6 +29,20 @@ export function BrandStats({ brands }: BrandStatsProps) {
       icon: StarBadgeIcon,
       subLabel: 'ALL PARTNERS',
       dotColor: 'bg-blue-400',
+    },
+    {
+      name: 'Active Brands',
+      value: activeCount,
+      icon: EyeIcon,
+      subLabel: 'LIVE IN STORE',
+      dotColor: 'bg-emerald-400',
+    },
+    {
+      name: 'Disabled Brands',
+      value: disabledCount,
+      icon: ShoppingBagIcon,
+      subLabel: 'STORE HIDDEN',
+      dotColor: disabledCount > 0 ? 'bg-red-400' : 'bg-zinc-400',
     },
     {
       name: 'Clothing',
@@ -47,20 +64,6 @@ export function BrandStats({ brands }: BrandStatsProps) {
       icon: WatchIcon,
       subLabel: 'TIMEPIECES',
       dotColor: 'bg-cyan-400',
-    },
-    {
-      name: 'Accessories',
-      value: getCategoryCount('accessories'),
-      icon: ShoppingBagIcon,
-      subLabel: 'GEAR',
-      dotColor: 'bg-rose-400',
-    },
-    {
-      name: 'Eyewear',
-      value: getCategoryCount('eyewear'),
-      icon: EyeIcon,
-      subLabel: 'OPTICAL',
-      dotColor: 'bg-emerald-400',
     },
   ];
 

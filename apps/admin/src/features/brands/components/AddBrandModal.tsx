@@ -21,6 +21,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [categories, setCategories] = useState<BrandCategory[]>([]);
+  const [isActive, setIsActive] = useState(true);
 
   React.useEffect(() => {
     if (initialData && isOpen) {
@@ -39,6 +40,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
       };
       const mapped = initialData.categories.map((c) => categoryMap[c] ?? c);
       setCategories([...new Set(mapped)] as BrandCategory[]);
+      setIsActive(initialData.isActive !== false);
       setFileToUpload(null);
     } else if (isOpen) {
       setName('');
@@ -46,6 +48,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
       setLogoUrl('');
       setFileToUpload(null);
       setCategories([]);
+      setIsActive(true);
     }
   }, [initialData, isOpen]);
 
@@ -117,6 +120,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
           color,
           logo: finalLogoUrl,
           categories: categories.length > 0 ? categories : ['clothing'],
+          isActive,
         },
         !!initialData,
         initialData?.slug,
@@ -310,6 +314,34 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Brand Status Switch */}
+            <div className="flex items-center justify-between rounded-2xl border border-black/5 bg-[#f8f9fa] p-4 dark:border-white/5 dark:bg-[#1a1a1a]">
+              <div>
+                <p className="text-sm font-semibold text-black dark:text-white">Enable Brand</p>
+                <p className="text-xs text-black/50 dark:text-white/50">
+                  {isActive
+                    ? 'Brand will be active and visible in the store'
+                    : 'Brand will be disabled and hidden from the store'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsActive(!isActive);
+                }}
+                className={`flex h-6 w-11 items-center rounded-full p-0.5 transition-colors focus:outline-none ${
+                  isActive ? 'bg-emerald-500' : 'bg-zinc-600'
+                }`}
+                aria-label="Toggle brand active state"
+              >
+                <div
+                  className={`h-5 w-5 rounded-full bg-white shadow-md transition-transform ${
+                    isActive ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
             </div>
           </div>
 
