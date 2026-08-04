@@ -4,6 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { toast } from 'sonner';
 
+import { useAuthStore } from '@/store/auth-store';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 const VAPID_PUBLIC_KEY =
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
   'BB5oiIrq0hFGGMW6lA8Vam2ZacfQMP40nWibMle_pxhGU5UMZDhJDo4yaVQIekosLuVP7qmlO0RPHknD5JafvTg';
@@ -19,6 +22,22 @@ function urlBase64ToUint8Array(base64String: string) {
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
+}
+
+async function syncSubscriptionWithServer(sub: PushSubscription, userId?: string) {
+  try {
+    await fetch(`${API_URL}/notifications/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...sub.toJSON(),
+        userId,
+        userRole: 'CUSTOMER',
+      }),
+    });
+  } catch (err) {
+    console.warn('[Push] Error syncing subscription with server:', err);
+  }
 }
 
 /**
@@ -52,6 +71,7 @@ async function getOrRegisterServiceWorker(): Promise<ServiceWorkerRegistration |
 }
 
 export function usePushNotifications() {
+  const user = useAuthStore((state) => state.user);
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -76,16 +96,24 @@ export function usePushNotifications() {
     if (supported) {
       setPermission(Notification.permission);
 
-      // Check existing subscription
+      // Check existing subscription and ensure server sync
       void getOrRegisterServiceWorker().then(async (reg) => {
         if (!reg) {
           return;
         }
         try {
-          const sub = await reg.pushManager.getSubscription();
+          let sub = await reg.pushManager.getSubscription();
+          if (!sub && Notification.permission === 'granted') {
+            const convertedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+            sub = await reg.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: convertedKey,
+            });
+          }
           if (sub) {
             setSubscription(sub);
             localStorage.setItem(PUSH_STORAGE_KEY, 'true');
+            await syncSubscriptionWithServer(sub, user?.id);
           } else {
             // Check if user previously had it disabled
             localStorage.removeItem(PUSH_STORAGE_KEY);
@@ -107,7 +135,7 @@ export function usePushNotifications() {
           .catch(() => null);
       }
     }
-  }, []);
+  }, [user]);
 
   const subscribe = useCallback(async (): Promise<PushSubscription | null> => {
     if (!isSupported) {
@@ -164,13 +192,7 @@ export function usePushNotifications() {
       }
 
       // 4. Sync subscription payload to server API
-      await fetch('/api/notifications/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sub.toJSON()),
-      }).catch((err: unknown) => {
-        console.warn('[Push] API registration sync note:', err);
-      });
+      await syncSubscriptionWithServer(sub, user?.id);
 
       // 5. Trigger a native test/confirmation notification so the user gets instant feedback
       try {
@@ -195,7 +217,7 @@ export function usePushNotifications() {
     } finally {
       setIsLoading(false);
     }
-  }, [isSupported, permission]);
+  }, [isSupported, permission, user]);
 
   const unsubscribe = useCallback(async (): Promise<void> => {
     setIsLoading(true);
@@ -209,7 +231,7 @@ export function usePushNotifications() {
         await currentSub.unsubscribe().catch(() => null);
 
         // Notify backend unregistration
-        await fetch('/api/notifications/subscribe', {
+        await fetch(`${API_URL}/notifications/subscribe`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ endpoint }),

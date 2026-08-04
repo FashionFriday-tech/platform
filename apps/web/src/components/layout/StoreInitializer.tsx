@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 
+import { autoSyncCustomerPushSubscription } from '@/features/notifications/services/push-sync';
 import { useAuthStore } from '@/store/auth-store';
 import { useCartStore } from '@/store/cart-store';
 import { useSettingsStore } from '@/store/settings-store';
@@ -17,12 +18,14 @@ export function StoreInitializer() {
   useEffect(() => {
     void refreshUser();
     syncSettings();
-  }, [refreshUser, syncSettings]);
+    void autoSyncCustomerPushSubscription(user?.id);
+  }, [refreshUser, syncSettings, user?.id]);
 
   useEffect(() => {
     if (user?.id) {
       void syncWishlist(true);
       void syncCart(true);
+      void autoSyncCustomerPushSubscription(user.id);
     }
   }, [user?.id, syncWishlist, syncCart]);
 

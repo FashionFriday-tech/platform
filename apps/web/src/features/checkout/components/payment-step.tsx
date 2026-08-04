@@ -99,6 +99,28 @@ export function PaymentStep() {
       await clearCart(true);
 
       toast.success(`Order ${order.orderNumber || ''} placed successfully!`);
+
+      // Display immediate native confirmation push notification for instant feedback
+      try {
+        if (typeof window !== 'undefined' && 'Notification' in window) {
+          if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
+            void navigator.serviceWorker.ready.then(async (reg) => {
+              if (reg && 'showNotification' in reg) {
+                await reg.showNotification(`Order Confirmed: #${order?.orderNumber || ''}`, {
+                  body: `Your order for ₹${(order?.totalAmount ?? totalAmount).toLocaleString('en-IN')} has been placed successfully!`,
+                  icon: '/icons/icon-192.png',
+                  badge: '/favicon-48x48.png',
+                  tag: `order-${order?.id || Date.now()}`,
+                  data: { url: '/account/orders' },
+                });
+              }
+            });
+          }
+        }
+      } catch {
+        // Non-blocking notification trigger
+      }
+
       console.log('[PaymentStep] Step 5: Redirecting customer to /account/orders...');
       router.push('/account/orders');
     } catch (err: any) {
