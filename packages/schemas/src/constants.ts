@@ -13,6 +13,7 @@ export interface Brand {
   logo: string;
   poster?: string;
   categories: BrandCategory[];
+  isActive?: boolean;
 }
 
 export const BRAND_LOGOS: Brand[] = [
