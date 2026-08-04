@@ -109,7 +109,7 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
                 setName(e.target.value);
                 setError('');
               }}
-              placeholder="e.g. Rahul Sharma"
+              placeholder="e.g. fredy "
               className="w-full rounded-xl border border-black/10 bg-transparent px-4 py-2.5 text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
             />
           </div>
@@ -151,7 +151,7 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
                 setEmail(e.target.value);
                 setError('');
               }}
-              placeholder="rahul@fashionfriday.com"
+              placeholder="fredy@fashionfriday.com"
               className="w-full rounded-xl border border-black/10 bg-transparent px-4 py-2.5 text-sm text-black outline-none focus:border-black/30 dark:border-white/10 dark:text-white dark:focus:border-white/30"
             />
           </div>
@@ -167,18 +167,16 @@ export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps)
                   key={role}
                   type="button"
                   onClick={() => setSelectedRole(role)}
-                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-left transition-all ${
-                    selectedRole === role
-                      ? 'border-black bg-black/5 dark:border-white dark:bg-white/5'
-                      : 'border-black/10 hover:border-black/30 dark:border-white/10 dark:hover:border-white/30'
-                  }`}
+                  className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-left transition-all ${selectedRole === role
+                    ? 'border-black bg-black/5 dark:border-white dark:bg-white/5'
+                    : 'border-black/10 hover:border-black/30 dark:border-white/10 dark:hover:border-white/30'
+                    }`}
                 >
                   <div
-                    className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                      selectedRole === role
-                        ? 'border-black dark:border-white'
-                        : 'border-black/20 dark:border-white/20'
-                    }`}
+                    className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${selectedRole === role
+                      ? 'border-black dark:border-white'
+                      : 'border-black/20 dark:border-white/20'
+                      }`}
                   >
                     {selectedRole === role && (
                       <div className="h-2 w-2 rounded-full bg-black dark:bg-white" />
