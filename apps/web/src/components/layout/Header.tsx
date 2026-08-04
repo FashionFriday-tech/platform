@@ -17,6 +17,7 @@ import {
 
 import { AnimatedLogo } from '@/components/ui/animated-logo';
 import { useCart } from '@/features/cart';
+import { useNotifications } from '@/features/notifications/hooks/use-notifications';
 import { useAuthStore } from '@/store/auth-store';
 
 import { MobileMenu } from './MobileMenu';
@@ -61,6 +62,7 @@ const navStructure = [
 export function Header() {
   const user = useAuthStore((state) => state.user);
   const { itemCount, isMounted } = useCart();
+  const { unreadCount } = useNotifications();
   const pathname = usePathname();
   const isBottomNavHidden =
     pathname?.startsWith('/product/') || pathname?.startsWith('/checkout') || pathname === '/cart';
@@ -293,7 +295,9 @@ export function Header() {
           <div className="flex items-center gap-4">
             <Link href="/account/notifications" className="relative">
               <BellIcon className="text-xl" />
-              <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
+              {isMounted && unreadCount > 0 && (
+                <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
+              )}
             </Link>
             <Link href="/account/wishlist">
               <WishlistIcon className="text-xl" />

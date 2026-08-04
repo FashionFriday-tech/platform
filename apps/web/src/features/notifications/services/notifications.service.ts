@@ -94,7 +94,7 @@ async function fetchPromoNotifications(): Promise<Notification[]> {
       timestamp: formatRelativeTime(new Date(Date.now() - 3600 * 1000 * 4).toISOString()),
       link: '/collections/new-arrivals',
       badge: 'DROP LIVE',
-      isRead: readIds.has('promo-weekly-drop'),
+      isRead: true,
     },
     {
       id: 'promo-express-cod',
@@ -105,7 +105,7 @@ async function fetchPromoNotifications(): Promise<Notification[]> {
       timestamp: formatRelativeTime(new Date(Date.now() - 3600 * 1000 * 28).toISOString()),
       link: '/help/shipping',
       badge: 'BENEFIT',
-      isRead: readIds.has('promo-express-cod'),
+      isRead: true,
     },
     {
       id: 'promo-authenticity',
@@ -116,7 +116,7 @@ async function fetchPromoNotifications(): Promise<Notification[]> {
       timestamp: formatRelativeTime(new Date(Date.now() - 3600 * 1000 * 72).toISOString()),
       link: '/help/about',
       badge: 'VERIFIED',
-      isRead: readIds.has('promo-authenticity'),
+      isRead: true,
     },
   ];
 
