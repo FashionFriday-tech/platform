@@ -51,7 +51,7 @@ const ACTIONS: QuickActionProps[] = [
 
 export function QuickActions() {
   return (
-    <div className="flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-black/5 bg-white p-6 shadow-xs dark:border-white/10 dark:bg-[#141417]">
+    <div className="flex h-full flex-col justify-between overflow-hidden rounded-3xl border border-black/5 bg-white p-4 shadow-xs sm:p-6 dark:border-white/10 dark:bg-[#141417]">
       <div>
         <div className="flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
           <div>

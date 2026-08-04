@@ -29,7 +29,7 @@ export function StatCard({
   isLoading,
 }: StatCardProps) {
   const cardContent = (
-    <div className="group relative flex h-full min-w-[240px] shrink-0 flex-col justify-between overflow-hidden rounded-3xl border border-black/5 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-black/15 hover:shadow-xl md:min-w-0 md:shrink dark:border-white/10 dark:bg-[#141417] dark:hover:border-white/20 dark:hover:shadow-2xl">
+    <div className="group relative flex h-full min-w-[240px] shrink-0 flex-col justify-between overflow-hidden rounded-3xl border border-black/5 bg-white p-4 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-black/15 hover:shadow-xl sm:p-6 md:min-w-0 md:shrink dark:border-white/10 dark:bg-[#141417] dark:hover:border-white/20 dark:hover:shadow-2xl">
       {/* Ambient background decoration */}
       <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-gradient-to-br from-black/[0.03] to-transparent blur-2xl transition-transform duration-500 group-hover:scale-125 dark:from-white/[0.04]" />
       <Icon className="pointer-events-none absolute -right-2 -bottom-2 h-20 w-20 text-black/[0.03] transition-transform duration-500 group-hover:scale-110 dark:text-white/[0.03]" />
