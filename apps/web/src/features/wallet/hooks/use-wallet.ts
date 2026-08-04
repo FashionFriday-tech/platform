@@ -23,7 +23,7 @@ export function useWallet() {
         amount: 100,
         date: '26 Jan 2026',
         status: 'completed',
-        description: 'Referral Reward: Rahul S.',
+        description: 'Referral Reward: fredy S.',
         timestamp: 1737885600000,
       },
       {
