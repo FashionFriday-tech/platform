@@ -122,7 +122,7 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
           }}
         />
         <Sidebar isMobileOpen={isMobileNavOpen} setIsMobileOpen={setIsMobileNavOpen} />
-        <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden pt-14 md:pt-0">
+        <main className="pt-mobile-header relative flex h-[100dvh] min-w-0 flex-1 flex-col overflow-hidden md:h-screen md:pt-0">
           <div className="z-10 flex min-h-0 flex-1 flex-col items-center justify-center p-6 text-center">
             <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-red-500/20 bg-red-500/10 text-red-500 dark:border-red-500/10 dark:bg-red-950/20 dark:text-red-400">
               <LockIcon className="h-10 w-10 animate-pulse" />
@@ -165,7 +165,7 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
         }}
       />
       <Sidebar isMobileOpen={isMobileNavOpen} setIsMobileOpen={setIsMobileNavOpen} />
-      <main className="relative flex h-screen min-w-0 flex-1 flex-col overflow-hidden pt-14 md:pt-0">
+      <main className="pt-mobile-header relative flex h-[100dvh] min-w-0 flex-1 flex-col overflow-hidden md:h-screen md:pt-0">
         <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </main>
       <Toaster position="top-right" richColors />

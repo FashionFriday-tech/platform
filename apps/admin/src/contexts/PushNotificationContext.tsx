@@ -476,7 +476,12 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       toast.error('Failed to request notification permission.');
       return false;
     }
-  }, [registerServiceWorker, sendPushAlert, preferences.soundEnabled, syncPushSubscriptionWithBackend]);
+  }, [
+    registerServiceWorker,
+    sendPushAlert,
+    preferences.soundEnabled,
+    syncPushSubscriptionWithBackend,
+  ]);
 
   // Deactivate push notifications
   const deactivatePushNotifications = useCallback(() => {

@@ -138,63 +138,73 @@ export function MobileHeader({ isMobileOpen = false, onToggleMobileMenu }: Mobil
   };
 
   return (
-    <header className="fixed top-0 right-0 left-0 z-40 flex h-14 items-center justify-between border-b border-black/5 bg-white/95 px-3 backdrop-blur-md md:hidden dark:border-white/10 dark:bg-[#0e0e0e]/95">
-      {/* Left: iOS Back Button */}
-      <div className="flex h-10 w-10 items-center justify-center">
-        {showBack ? (
+    <header
+      style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}
+      className="mobile-header-bar fixed top-0 right-0 left-0 z-40 border-b border-black/5 bg-white/95 backdrop-blur-md md:hidden dark:border-white/10 dark:bg-[#0e0e0e]/95"
+    >
+      <div className="relative flex h-14 w-full items-center justify-between px-3">
+        {/* Left: iOS Back Button */}
+        <div className="flex h-10 w-10 items-center justify-center">
+          {showBack ? (
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label="Go back"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-black/80 transition-colors hover:bg-black/5 hover:text-black active:scale-95 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
+            >
+              <svg
+                className="-ml-0.5 h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.25}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          ) : null}
+        </div>
+
+        {/* Center: Page Name (Centered iOS style) */}
+        <div className="pointer-events-none absolute inset-x-14 flex items-center justify-center text-center">
+          <h1 className="truncate text-base font-semibold tracking-tight text-black dark:text-white">
+            {pageTitle}
+          </h1>
+        </div>
+
+        {/* Right: Menu icon */}
+        <div className="flex h-10 w-10 items-center justify-center">
           <button
             type="button"
-            onClick={handleBack}
-            aria-label="Go back"
+            onClick={onToggleMobileMenu}
+            aria-label={isMobileOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
             className="flex h-10 w-10 items-center justify-center rounded-full text-black/80 transition-colors hover:bg-black/5 hover:text-black active:scale-95 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
           >
-            <svg className="-ml-0.5 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2.25}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            {isMobileOpen ? (
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.75}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            )}
           </button>
-        ) : null}
-      </div>
-
-      {/* Center: Page Name (Centered iOS style) */}
-      <div className="pointer-events-none absolute inset-x-14 flex items-center justify-center text-center">
-        <h1 className="truncate text-base font-semibold tracking-tight text-black dark:text-white">
-          {pageTitle}
-        </h1>
-      </div>
-
-      {/* Right: Menu icon */}
-      <div className="flex h-10 w-10 items-center justify-center">
-        <button
-          type="button"
-          onClick={onToggleMobileMenu}
-          aria-label={isMobileOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-black/80 transition-colors hover:bg-black/5 hover:text-black active:scale-95 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
-        >
-          {isMobileOpen ? (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          ) : (
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.75}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          )}
-        </button>
+        </div>
       </div>
     </header>
   );

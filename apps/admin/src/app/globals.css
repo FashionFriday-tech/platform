@@ -77,6 +77,21 @@ body {
   .dark .glass-button:hover {
     background: rgba(255, 255, 255, 0.1);
   }
+
+  /* Safe-area aware mobile header for status bar clearance */
+  .mobile-header-bar {
+    padding-top: max(env(safe-area-inset-top, 0px), 0px);
+  }
+
+  .pt-mobile-header {
+    padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+  }
+
+  @media (min-width: 768px) {
+    .pt-mobile-header {
+      padding-top: 0;
+    }
+  }
 }
 
 /* Prevent auto-zoom on mobile devices when input is focused */
