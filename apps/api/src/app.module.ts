@@ -15,6 +15,7 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { FaqModule } from './modules/faq/faq.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ProductRequestsModule } from './modules/product-requests/product-requests.module';
 import { ProductsModule } from './modules/products/products.module';
@@ -46,6 +47,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     FaqModule,
     WishlistModule,
     CartModule,
+    NotificationsModule,
     OrdersModule,
     SellersModule,
     SearchLogsModule,

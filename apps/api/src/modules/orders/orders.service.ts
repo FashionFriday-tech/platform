@@ -2,6 +2,7 @@ import { generateBrandId, OrderStatus, PaymentStatus } from '@ff/database';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
@@ -9,7 +10,10 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async createOrder(userId: string, dto: CreateOrderDto) {
     this.logger.log(`[OrdersService] ---------------- ORDER CREATION STARTED ----------------`);
@@ -129,6 +133,13 @@ export class OrdersService {
       await this.prisma.db.cartItem.deleteMany({
         where: { userId },
       });
+
+      // Dispatch Web Push notifications to Admin & Customer in background
+      try {
+        void this.notificationsService.notifyNewOrder(order);
+      } catch (pushErr: unknown) {
+        this.logger.warn(`[OrdersService] Push notification dispatch warning:`, pushErr);
+      }
 
       this.logger.log(`[OrdersService] ---------------- ORDER CREATION COMPLETE ----------------`);
       return order;
@@ -358,6 +369,15 @@ export class OrdersService {
     this.logger.log(
       `[OrdersService] Order ${existing.id} updated. New status: ${updated.status}, tracking: ${updated.trackingNumber ?? 'none'}`,
     );
+
+    if (dto.status && existing.status !== dto.status) {
+      try {
+        void this.notificationsService.notifyOrderStatus(updated);
+      } catch (pushErr: unknown) {
+        this.logger.warn(`[OrdersService] Push notification status dispatch warning:`, pushErr);
+      }
+    }
+
     return updated;
   }
 
