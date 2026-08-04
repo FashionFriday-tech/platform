@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 import { ChevronRightIcon, PackageIcon, ShoppingBagIcon, UsersIcon } from '@ff/ui';
 
@@ -21,9 +20,9 @@ export function ActivityFeed({ activities, isLoading }: ActivityFeedProps) {
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-black dark:text-white">Live Activity Feed</h2>
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </span>
           </div>
           <p className="mt-0.5 text-xs text-black/60 dark:text-white/60">
@@ -44,7 +43,7 @@ export function ActivityFeed({ activities, isLoading }: ActivityFeedProps) {
         {isLoading && activities.length === 0 ? (
           <div className="flex flex-col gap-3 py-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center gap-3 animate-pulse">
+              <div key={i} className="flex animate-pulse items-center gap-3">
                 <div className="h-10 w-10 rounded-2xl bg-black/10 dark:bg-white/10" />
                 <div className="flex-1 space-y-2">
                   <div className="h-3.5 w-3/4 rounded bg-black/10 dark:bg-white/10" />
@@ -54,12 +53,12 @@ export function ActivityFeed({ activities, isLoading }: ActivityFeedProps) {
             ))}
           </div>
         ) : activities.length === 0 ? (
-          <div className="flex h-48 flex-col items-center justify-center text-center p-6">
-            <ShoppingBagIcon className="h-8 w-8 text-black/20 dark:text-white/20 mb-2" />
+          <div className="flex h-48 flex-col items-center justify-center p-6 text-center">
+            <ShoppingBagIcon className="mb-2 h-8 w-8 text-black/20 dark:text-white/20" />
             <p className="text-sm font-semibold text-black/60 dark:text-white/60">
               No recent store activities recorded yet
             </p>
-            <p className="text-xs text-black/40 dark:text-white/40 mt-1">
+            <p className="mt-1 text-xs text-black/40 dark:text-white/40">
               New orders and inventory updates will appear here live
             </p>
           </div>
@@ -75,7 +74,7 @@ export function ActivityFeed({ activities, isLoading }: ActivityFeedProps) {
                 href={targetHref}
                 className="group -mx-2 flex items-center justify-between gap-3 rounded-2xl p-3 transition-all hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex min-w-0 items-center gap-3">
                   {/* Category Icon Badge */}
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl shadow-xs ${

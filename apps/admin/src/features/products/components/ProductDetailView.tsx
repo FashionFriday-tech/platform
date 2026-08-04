@@ -119,9 +119,7 @@ export function ProductDetailView({ productId }: Props) {
       ? [product.imageUrl]
       : [];
 
-  // Mock Data for specific UI sections
   const liveSold = 142;
-  const averageRating = 4.8;
 
   return (
     <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto pb-20 text-black transition-colors dark:text-white">

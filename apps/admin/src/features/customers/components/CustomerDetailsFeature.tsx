@@ -224,7 +224,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       try {
         const data = await fetcher<CartItem[]>(`/admin/customers/${customerId}/cart`);
         setCartItems(data);
-      } catch (error) {
+      } catch {
         toast.error('Failed to load cart items');
       } finally {
         setIsFetchingTab(false);
@@ -234,7 +234,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       try {
         const data = await fetcher<WishlistItem[]>(`/admin/customers/${customerId}/wishlist`);
         setWishlistItems(data);
-      } catch (error) {
+      } catch {
         toast.error('Failed to load wishlist items');
       } finally {
         setIsFetchingTab(false);
@@ -244,7 +244,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       try {
         const data = await fetcher<Address[]>(`/admin/customers/${customerId}/addresses`);
         setAddresses(data);
-      } catch (error) {
+      } catch {
         toast.error('Failed to load addresses');
       } finally {
         setIsFetchingTab(false);
@@ -280,7 +280,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
           body: JSON.stringify({ quantity: newQuantity }),
         });
         void fetchCustomerDetails(true);
-      } catch (error) {
+      } catch {
         toast.error('Failed to update cart quantity');
       } finally {
         setUpdatingCartItem(null);
@@ -311,7 +311,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       });
       void fetchCustomerDetails(true);
       toast.success('Item removed from cart');
-    } catch (error) {
+    } catch {
       toast.error('Failed to remove item');
     } finally {
       setUpdatingCartItem(null);
@@ -330,7 +330,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       setCartItems(null);
       void fetchCustomerDetails(true);
       void fetchTabContent('orders');
-    } catch (error) {
+    } catch {
       toast.error('Failed to create order from cart');
     } finally {
       setIsCheckingOut(false);

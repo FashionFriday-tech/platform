@@ -61,7 +61,9 @@ export function useDashboardData() {
     if (typeof window !== 'undefined') {
       try {
         const cached = localStorage.getItem(STATS_STORAGE_KEY);
-        if (cached) return JSON.parse(cached) as DashboardStats;
+        if (cached) {
+          return JSON.parse(cached) as DashboardStats;
+        }
       } catch {
         // ignore
       }
@@ -73,7 +75,9 @@ export function useDashboardData() {
     if (typeof window !== 'undefined') {
       try {
         const cached = localStorage.getItem(ACTIVITY_STORAGE_KEY);
-        if (cached) return JSON.parse(cached) as DashboardActivity[];
+        if (cached) {
+          return JSON.parse(cached) as DashboardActivity[];
+        }
       } catch {
         // ignore
       }
@@ -128,14 +132,16 @@ export function useDashboardData() {
   }, []);
 
   useEffect(() => {
-    fetchDashboardData();
+    void fetchDashboardData();
 
     // Poll every 30 seconds for live operational stats
     const interval = setInterval(() => {
-      fetchDashboardData();
+      void fetchDashboardData();
     }, 30000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchDashboardData]);
 
   return {

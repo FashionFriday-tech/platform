@@ -146,7 +146,7 @@ export function ProductReviews({
     return (total / reviews.length).toFixed(1);
   }, [reviews]);
 
-  const uploadImage = async (file: File, reviewerName: string): Promise<string | null> => {
+  const uploadImage = async (file: File, _reviewerName: string): Promise<string | null> => {
     const formData = new FormData();
     formData.append('folder', `reviews/${productCategory}`);
     const uniqueId = Math.random().toString(36).substring(2, 6);

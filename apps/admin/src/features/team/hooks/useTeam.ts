@@ -10,12 +10,12 @@ const STORAGE_TEAM_KEY = 'ff_admin_team_members';
 const STORAGE_INVITED_KEY = 'ff_admin_invited_team';
 const STORAGE_CLEAN_KEY = 'ff_admin_team_v5_single_admin';
 
-export type InvitePayload = {
+export interface InvitePayload {
   name: string;
   phone: string;
   email: string;
   role: Role;
-};
+}
 
 export function useTeam() {
   const [team, setTeam] = useState<TeamMember[]>(() => {
@@ -45,7 +45,9 @@ export function useTeam() {
 
   // Fetch live team members from database API on mount
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
     fetch(`${apiUrl}/admin/team`)
       .then((res) => (res.ok ? res.json() : null))
@@ -54,12 +56,14 @@ export function useTeam() {
           setTeam(data as TeamMember[]);
         }
       })
-      .catch(() => {});
+      .catch(() => null);
   }, []);
 
   // Sync team updates to local storage and sync invited phone list
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     try {
       localStorage.setItem(STORAGE_TEAM_KEY, JSON.stringify(team));
       const invitedList = team
@@ -150,7 +154,7 @@ export function useTeam() {
           );
         }
       })
-      .catch(() => {});
+      .catch(() => null);
   };
 
   const handleDeleteMember = (id: string) => {
@@ -165,7 +169,7 @@ export function useTeam() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
     fetch(`${apiUrl}/admin/team/${id}`, {
       method: 'DELETE',
-    }).catch(() => {});
+    }).catch(() => null);
   };
 
   const handleEditSave = (id: string, role: Role, status: 'ACTIVE' | 'PENDING' | 'SUSPENDED') => {
@@ -182,7 +186,7 @@ export function useTeam() {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ role, status }),
-    }).catch(() => {});
+    }).catch(() => null);
   };
 
   const getRoleBadgeColor = (role: Role) => {
@@ -211,7 +215,7 @@ export function useTeam() {
         (m) =>
           m.name.toLowerCase().includes(q) ||
           m.email.toLowerCase().includes(q) ||
-          (m.phone && m.phone.includes(q)),
+          m.phone?.includes(q),
       );
     }
 
@@ -226,11 +230,19 @@ export function useTeam() {
     result.sort((a, b) => {
       let aVal = a[sortField] || '';
       let bVal = b[sortField] || '';
-      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
-      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+      if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase();
+      }
+      if (typeof bVal === 'string') {
+        bVal = bVal.toLowerCase();
+      }
 
-      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      if (aVal < bVal) {
+        return sortDirection === 'asc' ? -1 : 1;
+      }
+      if (aVal > bVal) {
+        return sortDirection === 'asc' ? 1 : -1;
+      }
       return 0;
     });
 

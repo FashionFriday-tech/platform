@@ -92,18 +92,16 @@ export function useAuthFlow() {
         try {
           const storedInvited = localStorage.getItem('ff_admin_invited_team');
           if (storedInvited) {
-            const list = JSON.parse(storedInvited) as Array<{ phone?: string }>;
-            if (list.some((m) => m.phone && m.phone.replace(/\D/g, '').endsWith(cleanNumber))) {
+            const list = JSON.parse(storedInvited) as { phone?: string }[];
+            if (list.some((m) => m.phone?.replace(/\D/g, '').endsWith(cleanNumber))) {
               hasAccess = true;
             }
           }
           if (!hasAccess) {
             const teamStored = localStorage.getItem('ff_admin_team_members');
             if (teamStored) {
-              const teamList = JSON.parse(teamStored) as Array<{ phone?: string }>;
-              if (
-                teamList.some((m) => m.phone && m.phone.replace(/\D/g, '').endsWith(cleanNumber))
-              ) {
+              const teamList = JSON.parse(teamStored) as { phone?: string }[];
+              if (teamList.some((m) => m.phone?.replace(/\D/g, '').endsWith(cleanNumber))) {
                 hasAccess = true;
               }
             }
@@ -155,9 +153,7 @@ export function useAuthFlow() {
             const storedInvited = localStorage.getItem('ff_admin_invited_team');
             if (storedInvited) {
               const list = JSON.parse(storedInvited) as any[];
-              const found = list.find(
-                (m) => m.phone && m.phone.replace(/\D/g, '').endsWith(cleanNumber),
-              );
+              const found = list.find((m) => m.phone?.replace(/\D/g, '').endsWith(cleanNumber));
               if (found) {
                 adminInfo = {
                   name: found.name || 'Team Member',
@@ -217,7 +213,7 @@ export function useAuthFlow() {
       setOtp(['', '', '', '', '', '']);
       startTimer();
       toast.success('OTP code resent successfully! Use 786786.');
-    } catch (error) {
+    } catch {
       toast.error('Failed to resend OTP');
     } finally {
       setLoading(false);

@@ -136,8 +136,6 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     void loadProducts();
   }, [category.id, category.name]);
 
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-
   const handleRemoveProduct = async (productId: string) => {
     try {
       const res = await fetch(

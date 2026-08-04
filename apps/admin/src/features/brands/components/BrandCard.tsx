@@ -11,8 +11,6 @@ interface BrandCardProps {
 
 export function BrandCard({ brand, onClick }: BrandCardProps) {
   const [hasError, setHasError] = React.useState(false);
-  const isHttpUrl = brand.logo?.startsWith('http');
-  const isBlackBg = brand.color === '#000000';
 
   return (
     <motion.div

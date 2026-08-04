@@ -33,7 +33,7 @@ export function ProductSellerSelector({
   selectedCategory,
   categoryId,
   categoryName,
-  initialSellerId,
+  initialSellerId: _initialSellerId,
   onAddNewSeller,
   status = 'default',
 }: ProductSellerSelectorProps) {

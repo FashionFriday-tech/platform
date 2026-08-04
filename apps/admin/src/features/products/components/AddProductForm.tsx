@@ -46,10 +46,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     quality,
     setQuality,
     tags,
-    tagInput,
-    setTagInput,
-    handleTagKeyDown,
-    removeTag,
     brandInput,
     setBrandInput,
     selectedBrandLogo,
@@ -109,15 +105,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     filteredBrands,
     progress,
     isUploading,
-    imagesToDelete,
-    restoreImage,
     originalFiles,
     handleReCrop,
     apiCategories,
     availableCollections,
     toggleCollection,
-    selectedCategoryId,
-    setSelectedCategoryId,
   } = useAddProductForm(initialData);
 
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
@@ -271,8 +263,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         });
         return;
       }
-
-      const finalCategoryId = selectedApiCategory.id;
 
       // Map frontend quality to backend enum
       let mappedQuality = quality.toUpperCase().replace(/\s+/g, '_');

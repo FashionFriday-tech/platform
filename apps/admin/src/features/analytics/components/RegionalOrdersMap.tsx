@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 
 import { AnimatePresence, motion } from 'motion/react';
@@ -50,7 +50,6 @@ export function RegionalOrdersMap() {
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [isMapHovered, setIsMapHovered] = useState<boolean>(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
-  const top5 = useMemo(() => sortedStates.slice(0, 5), []);
 
   const getStateData = (rawName: string) => {
     if (!rawName) {

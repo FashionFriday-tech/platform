@@ -227,9 +227,9 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   const handleSaveModal = async (
     name: string,
     image: string,
-    slug: string,
-    isEdit: boolean,
-    id?: string,
+    _slug: string,
+    _isEdit: boolean,
+    _id?: string,
   ) => {
     try {
       const res = await fetch(

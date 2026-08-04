@@ -111,10 +111,8 @@ export function CreateCustomerOrderModal({
   const [newAddrStreet, setNewAddrStreet] = useState('');
   const [newAddrBuilding, setNewAddrBuilding] = useState('');
   const [newAddrCity, setNewAddrCity] = useState('');
-  const [newAddrDistrict, setNewAddrDistrict] = useState('');
   const [newAddrState, setNewAddrState] = useState('');
   const [newAddrPincode, setNewAddrPincode] = useState('');
-  const [newAddrLandmark, setNewAddrLandmark] = useState('');
   const [isSavingAddress, setIsSavingAddress] = useState(false);
   const [addressErrors, setAddressErrors] = useState<Record<string, string>>({});
 
@@ -245,10 +243,10 @@ export function CreateCustomerOrderModal({
           building: newAddrBuilding.trim() || null,
           street: newAddrStreet.trim(),
           city: newAddrCity.trim(),
-          district: newAddrDistrict.trim() || newAddrCity.trim(),
+          district: newAddrCity.trim(),
           state: newAddrState.trim(),
           pincode: newAddrPincode.trim(),
-          landmark: newAddrLandmark.trim() || null,
+          landmark: null,
           isDefault: addresses.length === 0,
         }),
       });
@@ -329,16 +327,16 @@ export function CreateCustomerOrderModal({
               ? item.image
               : chosenImage,
         })) || [
-            {
-              id: `item-${Date.now()}`,
-              name: selectedProduct.name,
-              price: selectedProduct.sellingPrice,
-              quantity,
-              size: selectedSize || 'Free Size',
-              color: selectedColor || 'Standard',
-              image: chosenImage,
-            },
-          ],
+          {
+            id: `item-${Date.now()}`,
+            name: selectedProduct.name,
+            price: selectedProduct.sellingPrice,
+            quantity,
+            size: selectedSize || 'Free Size',
+            color: selectedColor || 'Standard',
+            image: chosenImage,
+          },
+        ],
       };
 
       toast.success(`Order #${enrichedOrder.orderNumber || 'created'} successfully!`);
@@ -423,12 +421,13 @@ export function CreateCustomerOrderModal({
               return (
                 <div
                   key={step.id}
-                  className={`flex items-center justify-center rounded-xl px-2 py-2 text-center transition-all ${isCurrent
-                    ? 'bg-black text-white shadow-xs dark:bg-white dark:text-black'
-                    : isPassed
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                      : 'bg-black/5 text-black/40 dark:bg-white/5 dark:text-white/40'
-                    }`}
+                  className={`flex items-center justify-center rounded-xl px-2 py-2 text-center transition-all ${
+                    isCurrent
+                      ? 'bg-black text-white shadow-xs dark:bg-white dark:text-black'
+                      : isPassed
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                        : 'bg-black/5 text-black/40 dark:bg-white/5 dark:text-white/40'
+                  }`}
                 >
                   <span className="truncate">{step.label}</span>
                 </div>
@@ -511,10 +510,11 @@ export function CreateCustomerOrderModal({
                           onClick={() => {
                             handleSelectProduct(product);
                           }}
-                          className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-3 transition-colors ${isSelected
-                            ? 'border-black bg-black/5 dark:border-white dark:bg-white/10'
-                            : 'border-black/10 bg-white hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/30'
-                            }`}
+                          className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-3 transition-colors ${
+                            isSelected
+                              ? 'border-black bg-black/5 dark:border-white dark:bg-white/10'
+                              : 'border-black/10 bg-white hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/30'
+                          }`}
                         >
                           {/* Product Image */}
                           <div className="relative mb-3 h-36 w-full overflow-hidden rounded-xl bg-black/5 dark:bg-white/5">
@@ -660,10 +660,11 @@ export function CreateCustomerOrderModal({
                       onClick={() => {
                         setSelectedSize(s);
                       }}
-                      className={`min-w-[48px] rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${selectedSize === s
-                        ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
-                        : 'border border-black/10 bg-[#f8f9fa] text-black hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:border-white/30'
-                        }`}
+                      className={`min-w-[48px] rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
+                        selectedSize === s
+                          ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
+                          : 'border border-black/10 bg-[#f8f9fa] text-black hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:border-white/30'
+                      }`}
                     >
                       {s}
                     </button>
@@ -977,10 +978,11 @@ export function CreateCustomerOrderModal({
                         onClick={() => {
                           setSelectedAddressId(addr.id);
                         }}
-                        className={`group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all ${isSelected
-                          ? 'border-black bg-black/5 shadow-md dark:border-white dark:bg-white/10'
-                          : 'border-black/10 bg-white hover:border-black/20 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/20'
-                          }`}
+                        className={`group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all ${
+                          isSelected
+                            ? 'border-black bg-black/5 shadow-md dark:border-white dark:bg-white/10'
+                            : 'border-black/10 bg-white hover:border-black/20 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/20'
+                        }`}
                       >
                         <div>
                           <div className="flex items-center justify-between">
@@ -1007,10 +1009,11 @@ export function CreateCustomerOrderModal({
 
                         <div className="mt-4 flex items-center gap-2">
                           <div
-                            className={`flex h-4 w-4 items-center justify-center rounded-full border transition-all ${isSelected
-                              ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                              : 'border-black/30 dark:border-white/30'
-                              }`}
+                            className={`flex h-4 w-4 items-center justify-center rounded-full border transition-all ${
+                              isSelected
+                                ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                                : 'border-black/30 dark:border-white/30'
+                            }`}
                           >
                             {isSelected && <CheckIcon className="h-3 w-3" />}
                           </div>
@@ -1157,10 +1160,11 @@ export function CreateCustomerOrderModal({
                             setPaymentStatus('SUCCESS');
                           }
                         }}
-                        className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${paymentMethod === m.id
-                          ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
-                          : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
-                          }`}
+                        className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${
+                          paymentMethod === m.id
+                            ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
+                            : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
+                        }`}
                       >
                         {m.label}
                       </button>
@@ -1183,10 +1187,11 @@ export function CreateCustomerOrderModal({
                         onClick={() => {
                           setPaymentStatus(s.id as any);
                         }}
-                        className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${paymentStatus === s.id
-                          ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
-                          : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
-                          }`}
+                        className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${
+                          paymentStatus === s.id
+                            ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
+                            : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
+                        }`}
                       >
                         {s.label}
                       </button>

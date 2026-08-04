@@ -38,10 +38,10 @@ export function useActivityLog() {
             user: item.user || {
               name: item.type === 'order' ? 'Customer' : 'System',
               avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                item.title.slice(0, 4)
+                item.title.slice(0, 4),
               )}&background=random`,
             },
-          })
+          }),
         );
         setActivities(mapped);
       }
@@ -53,7 +53,7 @@ export function useActivityLog() {
   }, []);
 
   useEffect(() => {
-    fetchActivities();
+    void fetchActivities();
   }, [fetchActivities]);
 
   const filteredActivities = activities.filter((activity) => {

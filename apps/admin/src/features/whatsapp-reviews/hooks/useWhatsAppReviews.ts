@@ -14,7 +14,7 @@ export function useWhatsAppReviews() {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [offset, setOffset] = useState(0);
+  const [, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const limit = 20;
 
