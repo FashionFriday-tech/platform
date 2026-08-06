@@ -29,7 +29,8 @@ function isDarkColor(hexColor?: string): boolean {
 }
 
 export function BrandCard({ brand, onClick, onToggleStatus }: BrandCardProps) {
-  const [hasError, setHasError] = React.useState(false);
+  const [hasImageError, setHasImageError] = React.useState(false);
+  const [hasFallbackText, setHasFallbackText] = React.useState(false);
   const isActive = brand.isActive !== false;
   const isDark = isDarkColor(brand.color);
 
@@ -43,7 +44,7 @@ export function BrandCard({ brand, onClick, onToggleStatus }: BrandCardProps) {
       }`}
     >
       <div
-        className="relative flex aspect-square w-full items-center justify-center p-4 transition-colors"
+        className="relative flex aspect-square w-full items-center justify-center transition-colors"
         style={{ backgroundColor: brand.color ?? '#000000' }}
       >
         {/* Glow effect on hover */}
@@ -83,21 +84,46 @@ export function BrandCard({ brand, onClick, onToggleStatus }: BrandCardProps) {
           </button>
         )}
 
-        {!hasError && brand.logo ? (
-          <Image
-            fill
-            src={brand.logo}
-            alt={brand.name}
-            onError={() => {
-              setHasError(true);
-            }}
-            className={`object-contain p-4 drop-shadow-md ${isDark ? 'invert' : 'invert-0'}`}
-          />
-        ) : (
-          <span className={`z-20 w-full text-center text-lg font-bold break-words ${isDark ? 'text-white' : 'text-black'}`}>
-            {brand.name}
-          </span>
-        )}
+        {/* Centered logo container fitted inside the card */}
+        <div className="relative z-10 flex h-full w-full items-center justify-center px-6 pt-9 pb-4 sm:px-8 sm:pt-10 sm:pb-5">
+          {brand.logo && !hasFallbackText ? (
+            <div className="relative flex h-full w-full items-center justify-center">
+              {!hasImageError ? (
+                <Image
+                  src={brand.logo}
+                  alt={brand.name}
+                  width={180}
+                  height={180}
+                  onError={() => {
+                    setHasImageError(true);
+                  }}
+                  className={`max-h-full max-w-full object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+                    isDark ? 'invert' : 'invert-0'
+                  }`}
+                />
+              ) : (
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  onError={() => {
+                    setHasFallbackText(true);
+                  }}
+                  className={`max-h-full max-w-full object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+                    isDark ? 'invert' : 'invert-0'
+                  }`}
+                />
+              )}
+            </div>
+          ) : (
+            <span
+              className={`text-center text-sm sm:text-base font-black tracking-wider uppercase break-words ${
+                isDark ? 'text-white' : 'text-black'
+              }`}
+            >
+              {brand.name}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Card Footer with Brand Name & Status */}
