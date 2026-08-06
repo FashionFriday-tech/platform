@@ -129,8 +129,8 @@ export default function Hero({
       ref={containerRef}
       className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center justify-between px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
-      {/* 1. Search Input: Responsive across mobile and desktop */}
-      <div className="flex w-full shrink-0 items-center justify-center px-4 py-3 sm:py-4 lg:mx-auto lg:mb-6 lg:max-w-xl lg:px-0">
+      {/* 1. Mobile Search Input: Only shown on small devices */}
+      <div className="flex w-full shrink-0 items-center justify-center px-4 py-3 sm:py-4 lg:hidden">
         <SearchBox interactive onSubmit={handleSearchSubmit} />
       </div>
 
