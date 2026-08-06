@@ -4,20 +4,29 @@ import React from 'react';
 
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
-export function ConversionGauge() {
-  const conversionRate = 58.19;
+import { type AnalyticsPayload } from '../types';
+
+interface ConversionGaugeProps {
+  conversion?: AnalyticsPayload['conversion'];
+}
+
+export function ConversionGauge({ conversion }: ConversionGaugeProps) {
+  const conversionRate = conversion ? conversion.rate : 58.19;
 
   const data = [
     { name: 'Converted', value: conversionRate },
-    { name: 'Remaining', value: 100 - conversionRate },
+    { name: 'Remaining', value: Math.max(100 - conversionRate, 0) },
   ];
 
-  const funnelSteps = [
+  const funnelSteps = conversion?.funnel ?? [
     { label: 'Visits', value: '14,987', pct: '100%', color: '#6a4fbb' },
     { label: 'Add to Cart', value: '5,620', pct: '37.5%', color: '#8b5cf6' },
     { label: 'Checkout', value: '3,210', pct: '21.4%', color: '#a855f7' },
     { label: 'Purchased', value: '1,870', pct: '12.5%', color: '#22c55e' },
   ];
+
+  const rateDelta = conversion?.rateDelta ?? '+3.5%';
+  const rateDeltaUp = conversion ? conversion.rateDeltaUp : true;
 
   return (
     <div className="flex h-[460px] w-full flex-col rounded-2xl border border-black/[0.06] bg-white shadow-xl shadow-black/[0.04] dark:border-white/[0.08] dark:bg-[#1a1a1a]">
@@ -28,8 +37,18 @@ export function ConversionGauge() {
             Visit → Purchase rate
           </p>
         </div>
-        <div className="mt-1 flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
-          <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
+        <div
+          className={`mt-1 flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
+            rateDeltaUp
+              ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+              : 'bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400'
+          }`}
+        >
+          <svg
+            className={`h-3 w-3 ${rateDeltaUp ? '' : 'rotate-180'}`}
+            viewBox="0 0 12 12"
+            fill="none"
+          >
             <path
               d="M6 2.5V9.5M6 2.5L9 5.5M6 2.5L3 5.5"
               stroke="currentColor"
@@ -38,7 +57,7 @@ export function ConversionGauge() {
               strokeLinejoin="round"
             />
           </svg>
-          +3.5%
+          {rateDelta}
         </div>
       </div>
 
@@ -59,69 +78,52 @@ export function ConversionGauge() {
               startAngle={180}
               endAngle={0}
               innerRadius={70}
-              outerRadius={105}
+              outerRadius={95}
               paddingAngle={0}
               dataKey="value"
+              animationDuration={1200}
               stroke="none"
-              cornerRadius={14}
-              animationDuration={1500}
-              animationBegin={200}
+              cornerRadius={6}
             >
               <Cell fill="url(#gaugeGrad2)" />
-              <Cell fill="rgba(0,0,0,0.03)" className="dark:fill-white/[0.04]" />
+              <Cell fill="rgba(0,0,0,0.04)" className="dark:fill-white/[0.04]" />
             </Pie>
           </PieChart>
         </ResponsiveContainer>
-
-        <div className="pointer-events-none absolute bottom-1 flex flex-col items-center">
-          <span className="text-2xl font-black tracking-tight text-black dark:text-white">
-            {conversionRate}%
+        <div className="pointer-events-none absolute bottom-4 flex flex-col items-center">
+          <span className="text-3xl font-black text-black dark:text-white">
+            {conversionRate.toFixed(1)}%
           </span>
-          <span className="mt-0.5 text-[10px] font-bold tracking-widest text-black/30 uppercase dark:text-white/30">
-            Rate
+          <span className="text-[11px] font-semibold text-black/35 dark:text-white/35">
+            Conversion Rate
           </span>
         </div>
       </div>
 
-      {/* Funnel breakdown */}
-      <div className="flex flex-col justify-center gap-1.5 border-t border-black/[0.04] px-5 py-3 pb-4 dark:border-white/[0.04]">
-        {funnelSteps.map((step, i) => {
-          const barWidth = i === 0 ? 100 : parseFloat(step.pct);
-          return (
-            <div
-              key={step.label}
-              className="group flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
-            >
-              <div
-                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[10px] font-black text-white shadow-sm"
-                style={{ backgroundColor: step.color, boxShadow: `0 3px 8px ${step.color}30` }}
-              >
-                {i + 1}
+      <div className="border-t border-black/[0.04] p-6 pt-4 dark:border-white/[0.04]">
+        <div className="space-y-2.5">
+          {funnelSteps.map((step, idx) => (
+            <div key={step.label} className="group flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <div
+                  className="flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-bold text-white shadow-xs"
+                  style={{ backgroundColor: step.color }}
+                >
+                  {idx + 1}
+                </div>
+                <span className="font-semibold text-black/70 dark:text-white/70">{step.label}</span>
               </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-black/70 dark:text-white/70">
-                    {step.label}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-black dark:text-white">
-                      {step.value}
-                    </span>
-                    <span className="rounded-md bg-black/[0.04] px-1.5 py-0.5 text-[10px] font-bold text-black/40 dark:bg-white/[0.06] dark:text-white/40">
-                      {step.pct}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-black/[0.04] dark:bg-white/[0.04]">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${barWidth}%`, backgroundColor: step.color }}
-                  />
-                </div>
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-xs font-bold text-black dark:text-white">
+                  {step.value}
+                </span>
+                <span className="w-10 text-right font-mono text-[11px] font-bold text-black/30 dark:text-white/30">
+                  {step.pct}
+                </span>
               </div>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );
