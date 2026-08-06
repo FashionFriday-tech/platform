@@ -13,16 +13,23 @@ import {
   YAxis,
 } from 'recharts';
 
-import { MOCK_REVENUE_7D, MOCK_REVENUE_30D } from '../types';
+import { type AnalyticsPayload, MOCK_REVENUE_7D, MOCK_REVENUE_30D } from '../types';
 
-const RANGE_OPTIONS = [
-  { label: '7D', data: MOCK_REVENUE_7D },
-  { label: '30D', data: MOCK_REVENUE_30D },
-];
+interface RevenueChartProps {
+  trendData?: AnalyticsPayload['revenueTrend'];
+}
 
-export function RevenueChart() {
-  const [activeRange, setActiveRange] = useState(0);
-  const data = RANGE_OPTIONS[activeRange].data;
+export function RevenueChart({ trendData }: RevenueChartProps) {
+  const [activeRange, setActiveRange] = useState<'7d' | '30d' | '90d'>('7d');
+
+  const rangeOptions: Array<{ key: '7d' | '30d' | '90d'; label: string; data: Array<{ date: string; revenue: number; orders: number }> }> = [
+    { key: '7d', label: '7D', data: trendData ? trendData['7d'] : MOCK_REVENUE_7D },
+    { key: '30d', label: '30D', data: trendData ? trendData['30d'] : MOCK_REVENUE_30D },
+    { key: '90d', label: '90D', data: trendData ? trendData['90d'] : MOCK_REVENUE_30D },
+  ];
+
+  const activeOption = rangeOptions.find((o) => o.key === activeRange) ?? rangeOptions[0];
+  const data = activeOption.data;
 
   // Calculate summary metrics
   const totalRevenue = data.reduce((sum, d) => sum + d.revenue, 0);
@@ -43,7 +50,9 @@ export function RevenueChart() {
                 Revenue
               </p>
               <p className="text-xl font-black text-black dark:text-white">
-                ₹{(totalRevenue / 100000).toFixed(1)}L
+                {totalRevenue >= 100000
+                  ? `₹${(totalRevenue / 100000).toFixed(1)}L`
+                  : `₹${totalRevenue.toLocaleString('en-IN')}`}
               </p>
             </div>
             <div className="h-8 w-px bg-black/[0.06] dark:bg-white/[0.06]" />
@@ -60,14 +69,14 @@ export function RevenueChart() {
 
         <div className="flex flex-col items-end gap-3">
           <div className="flex items-center gap-1 rounded-xl bg-black/[0.04] p-1 dark:bg-white/[0.06]">
-            {RANGE_OPTIONS.map((opt, i) => (
+            {rangeOptions.map((opt) => (
               <button
-                key={opt.label}
+                key={opt.key}
                 onClick={() => {
-                  setActiveRange(i);
+                  setActiveRange(opt.key);
                 }}
-                className={`rounded-lg px-4 py-1.5 text-xs font-bold transition-all ${
-                  activeRange === i
+                className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                  activeRange === opt.key
                     ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-purple-500/25'
                     : 'text-black/50 hover:text-black/80 dark:text-white/50 dark:hover:text-white/80'
                 }`}
@@ -123,7 +132,7 @@ export function RevenueChart() {
               tickLine={false}
               tick={{ fill: 'currentColor', fontSize: 11 }}
               className="text-black/35 dark:text-white/35"
-              tickFormatter={(v) => `₹${v / 1000}k`}
+              tickFormatter={(v) => (v >= 1000 ? `₹${Math.round(v / 1000)}k` : `₹${v}`)}
             />
             <YAxis yAxisId="orders" orientation="right" axisLine={false} tickLine={false} hide />
             <Tooltip
