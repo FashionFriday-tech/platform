@@ -478,8 +478,10 @@ export function SettingsView() {
 
             <p className="px-3 text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
               Current Super Admin phone:{' '}
-              <strong className="text-zinc-800 dark:text-zinc-200">+91 7558969093</strong>. Invited
-              phone numbers log in via OTP and automatically receive their role-specific alerts.
+              <strong className="text-zinc-800 dark:text-zinc-200">
+                +91 {team.find((m) => m.role === 'SUPER_ADMIN')?.phone?.replace(/\D/g, '').slice(-10) || '7558969093'}
+              </strong>
+              . Invited phone numbers log in via OTP and automatically receive their role-specific alerts.
             </p>
           </div>
         )}
