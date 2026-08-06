@@ -4,6 +4,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import webpush from 'web-push';
 
+import { PrismaService } from '../../database/prisma.service';
+
 export interface PushSubscriptionData {
   endpoint: string;
   expirationTime?: number | null;
@@ -26,13 +28,42 @@ export interface PushPayload {
   data?: Record<string, any>;
 }
 
+export interface CustomNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'promo' | 'order' | 'announcement' | 'system';
+  target: 'ALL' | 'CUSTOMERS' | 'ADMIN' | string;
+  userId?: string | null;
+  targetUserName?: string | null;
+  linkUrl?: string | null;
+  badge?: string | null;
+  createdAt: string;
+}
+
+function timeAgo(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return 'Just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 @Injectable()
 export class NotificationsService implements OnModuleInit {
   private readonly logger = new Logger(NotificationsService.name);
   private subscriptions = new Map<string, PushSubscriptionData>();
+  private customNotifications: CustomNotification[] = [];
   private readonly storageFilePath: string;
+  private readonly customNotifFilePath: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {
     const dataDir = path.join(process.cwd(), '.data');
     if (!fs.existsSync(dataDir)) {
       try {
@@ -42,11 +73,13 @@ export class NotificationsService implements OnModuleInit {
       }
     }
     this.storageFilePath = path.join(dataDir, 'push_subscriptions.json');
+    this.customNotifFilePath = path.join(dataDir, 'custom_notifications.json');
   }
 
   onModuleInit() {
     this.initWebPush();
     this.loadSubscriptions();
+    this.loadCustomNotifications();
   }
 
   private initWebPush() {
@@ -97,6 +130,35 @@ export class NotificationsService implements OnModuleInit {
       fs.writeFileSync(this.storageFilePath, JSON.stringify(list, null, 2), 'utf-8');
     } catch (err: unknown) {
       this.logger.warn('[NotificationsService] Could not persist subscriptions to file:', err);
+    }
+  }
+
+  private loadCustomNotifications() {
+    try {
+      if (fs.existsSync(this.customNotifFilePath)) {
+        const raw = fs.readFileSync(this.customNotifFilePath, 'utf-8');
+        const list: CustomNotification[] = JSON.parse(raw);
+        if (Array.isArray(list)) {
+          this.customNotifications = list;
+          this.logger.log(
+            `[NotificationsService] Loaded ${this.customNotifications.length} custom notifications from storage`,
+          );
+        }
+      }
+    } catch (err: unknown) {
+      this.logger.warn('[NotificationsService] Could not load custom notifications:', err);
+    }
+  }
+
+  private persistCustomNotifications() {
+    try {
+      fs.writeFileSync(
+        this.customNotifFilePath,
+        JSON.stringify(this.customNotifications, null, 2),
+        'utf-8',
+      );
+    } catch (err: unknown) {
+      this.logger.warn('[NotificationsService] Could not persist custom notifications:', err);
     }
   }
 
@@ -248,6 +310,281 @@ export class NotificationsService implements OnModuleInit {
   }
 
   /**
+   * Send custom notification composed by an admin to users
+   */
+  async sendCustomNotification(dto: {
+    title: string;
+    message: string;
+    type?: 'promo' | 'order' | 'announcement' | 'system';
+    target?: 'ALL' | 'CUSTOMERS' | 'ADMIN' | string;
+    userId?: string | null;
+    targetUserName?: string | null;
+    linkUrl?: string | null;
+    badge?: string | null;
+    sendPush?: boolean;
+  }) {
+    const id = `notif-custom-${Date.now()}`;
+    const newNotif: CustomNotification = {
+      id,
+      title: dto.title.trim(),
+      message: dto.message.trim(),
+      type: dto.type || 'promo',
+      target: dto.target || 'CUSTOMERS',
+      userId: dto.userId || null,
+      targetUserName: dto.targetUserName || null,
+      linkUrl: dto.linkUrl?.trim() || null,
+      badge: dto.badge?.trim() || 'ANNOUNCEMENT',
+      createdAt: new Date().toISOString(),
+    };
+
+    // Prepend to array and persist
+    this.customNotifications.unshift(newNotif);
+    this.persistCustomNotifications();
+
+    let pushResult: any = { skipped: true };
+
+    if (dto.sendPush !== false) {
+      const pushPayload: PushPayload = {
+        title: newNotif.title,
+        body: newNotif.message,
+        icon: '/icons/icon-192.png',
+        badge: '/favicon-48x48.png',
+        url: newNotif.linkUrl || '/account/notifications',
+        id,
+      };
+
+      if (newNotif.target === 'ALL' || newNotif.target === 'CUSTOMERS') {
+        pushResult = await this.broadcast(pushPayload, { role: 'CUSTOMER' });
+      } else if (newNotif.target === 'ADMIN') {
+        pushResult = await this.broadcast(pushPayload, { role: 'ADMIN' });
+      } else if (newNotif.userId) {
+        pushResult = await this.broadcast(pushPayload, { userId: newNotif.userId });
+      }
+    }
+
+    this.logger.log(
+      `[NotificationsService] Custom notification created & dispatched: ID=${id}, target=${newNotif.target}`,
+    );
+
+    return {
+      success: true,
+      notification: newNotif,
+      pushResult,
+    };
+  }
+
+  /**
+   * Retrieve active custom notifications for a customer (used by Web Storefront)
+   */
+  getNotificationsForUser(userId?: string): Array<{
+    id: string;
+    type: 'promo' | 'order';
+    title: string;
+    message: string;
+    createdAt: string;
+    timestamp: string;
+    link?: string;
+    badge?: string;
+    isRead: boolean;
+  }> {
+    return this.customNotifications
+      .filter((n) => {
+        if (n.target === 'ALL' || n.target === 'CUSTOMERS') return true;
+        if (userId && n.userId === userId) return true;
+        return false;
+      })
+      .map((n) => ({
+        id: n.id,
+        type: n.type === 'order' ? 'order' : 'promo',
+        title: n.title,
+        message: n.message,
+        createdAt: n.createdAt,
+        timestamp: timeAgo(new Date(n.createdAt)),
+        link: n.linkUrl || undefined,
+        badge: n.badge || (n.type === 'promo' ? 'PROMO' : 'ALERT'),
+        isRead: false,
+      }));
+  }
+
+  /**
+   * Retrieve REAL live notifications for Admin panel (zero dummy data)
+   */
+  async getAdminNotifications() {
+    try {
+      const [recentOrders, recentUsers, recentReviews] = await Promise.all([
+        // 1. Real orders
+        this.prisma.db.order.findMany({
+          take: 15,
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            orderNumber: true,
+            finalAmount: true,
+            status: true,
+            createdAt: true,
+            shippingAddress: true,
+            user: { select: { name: true } },
+          },
+        }),
+        // 2. Real user signups
+        this.prisma.db.user.findMany({
+          take: 8,
+          where: { role: 'CUSTOMER' },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+            createdAt: true,
+          },
+        }),
+        // 3. Real customer reviews
+        this.prisma.db.review
+          .findMany({
+            take: 5,
+            orderBy: { createdAt: 'desc' },
+            select: {
+              id: true,
+              rating: true,
+              comment: true,
+              createdAt: true,
+              user: { select: { name: true } },
+              product: { select: { name: true } },
+            },
+          })
+          .catch(() => []),
+      ]);
+
+      const items: Array<{
+        id: string;
+        title: string;
+        description: string;
+        category: 'orders' | 'inventory' | 'customers' | 'system';
+        priority: 'low' | 'medium' | 'high';
+        timestamp: string;
+        rawDate: string;
+        read: boolean;
+        actionUrl?: string;
+        actionLabel?: string;
+      }> = [];
+
+      // Add real orders
+      recentOrders.forEach((ord) => {
+        const addr = ord.shippingAddress as Record<string, any> | null;
+        const name = ord.user?.name || addr?.fullName || 'Customer';
+        const amt = Number(ord.finalAmount || 0).toLocaleString('en-IN');
+        const st = ord.status.toUpperCase();
+
+        items.push({
+          id: `order-notif-${ord.id}`,
+          title: `Order #${ord.orderNumber} ${st === 'PENDING' ? 'Placed' : st}`,
+          description: `Order received from ${name} for ₹${amt}. Current status: ${st}.`,
+          category: 'orders',
+          priority: st === 'PENDING' ? 'high' : 'medium',
+          timestamp: timeAgo(ord.createdAt),
+          rawDate: ord.createdAt.toISOString(),
+          read: st !== 'PENDING',
+          actionUrl: `/orders`,
+          actionLabel: 'View Order',
+        });
+      });
+
+      // Add real user signups
+      recentUsers.forEach((usr) => {
+        items.push({
+          id: `user-notif-${usr.id}`,
+          title: 'New Customer Registered',
+          description: `${usr.name || 'A customer'} registered with phone ${usr.phone || 'N/A'}.`,
+          category: 'customers',
+          priority: 'low',
+          timestamp: timeAgo(usr.createdAt),
+          rawDate: usr.createdAt.toISOString(),
+          read: true,
+          actionUrl: '/customers',
+          actionLabel: 'View Customers',
+        });
+      });
+
+      // Add real reviews
+      recentReviews.forEach((rev: any) => {
+        items.push({
+          id: `review-notif-${rev.id}`,
+          title: `New ${rev.rating}★ Review Submitted`,
+          description: `${rev.user?.name || 'Customer'} reviewed "${rev.product?.name || 'Product'}": "${rev.comment || 'Verified purchase'}"`,
+          category: 'customers',
+          priority: rev.rating >= 4 ? 'medium' : 'high',
+          timestamp: timeAgo(rev.createdAt),
+          rawDate: rev.createdAt.toISOString(),
+          read: true,
+          actionUrl: '/reviews',
+          actionLabel: 'View Review',
+        });
+      });
+
+      // Add custom notifications sent by team
+      this.customNotifications.forEach((c) => {
+        const targetLabel =
+          c.target === 'CUSTOMERS'
+            ? 'All Customers'
+            : c.target === 'ALL'
+              ? 'All Users'
+              : c.targetUserName || 'Specific User';
+
+        items.push({
+          id: c.id,
+          title: `[Sent] ${c.title}`,
+          description: `${c.message} (Target: ${targetLabel})`,
+          category: c.type === 'order' ? 'orders' : 'system',
+          priority: 'medium',
+          timestamp: timeAgo(new Date(c.createdAt)),
+          rawDate: c.createdAt,
+          read: true,
+          actionUrl: c.linkUrl || undefined,
+          actionLabel: c.linkUrl ? 'View Link' : undefined,
+        });
+      });
+
+      // Sort all notifications by most recent date
+      items.sort((a, b) => new Date(b.rawDate).getTime() - new Date(a.rawDate).getTime());
+
+      return items;
+    } catch (err: any) {
+      this.logger.error(`[NotificationsService] Failed to get admin notifications: ${err.message}`);
+      return [];
+    }
+  }
+
+  /**
+   * Delete custom notification
+   */
+  deleteCustomNotification(id: string) {
+    const idx = this.customNotifications.findIndex((c) => c.id === id);
+    if (idx !== -1) {
+      this.customNotifications.splice(idx, 1);
+      this.persistCustomNotifications();
+      return { success: true };
+    }
+    return { success: false, message: 'Notification not found' };
+  }
+
+  /**
+   * List users for admin to select recipient
+   */
+  async getUsersList() {
+    return this.prisma.db.user.findMany({
+      where: { role: 'CUSTOMER' },
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        email: true,
+      },
+    });
+  }
+
+  /**
    * Dispatch push notification when an order is created:
    * 1. To ALL Admin subscribers (instant order alert with details).
    * 2. To the Customer (order confirmation & tracking link).
@@ -269,7 +606,7 @@ export class NotificationsService implements OnModuleInit {
       body: `${customerName} placed an order for ₹${amount} (${itemCount} item${itemCount > 1 ? 's' : ''}). Tap to view.`,
       icon: '/icons/icon-192.png',
       badge: '/icons/icon-192.png',
-      url: `/orders/${order.id}`,
+      url: `/orders`,
       id: `admin-order-${order.id}-${Date.now()}`,
       data: {
         orderId: order.id,
