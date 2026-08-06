@@ -127,7 +127,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {desktopItems.map((brand, idx) => (
                 <div
                   key={`desktop-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[400px] w-[300px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
+                  className="group relative aspect-[3/4] h-[400px] w-[300px] shrink-0 overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -148,7 +148,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row1Items.map((brand, idx) => (
                 <div
                   key={`r1-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
@@ -166,7 +166,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {row2Items.map((brand, idx) => (
                 <div
                   key={`r2-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 overflow-hidden rounded-2xl"
                 >
                   <BrandCard brand={brand} />
                 </div>
