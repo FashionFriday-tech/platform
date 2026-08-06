@@ -13,18 +13,26 @@ import {
   YAxis,
 } from 'recharts';
 
-import { MOCK_AOV_DATA } from '../types';
+import { type AnalyticsPayload, MOCK_AOV_DATA } from '../types';
 
-export function AovTrendChart() {
-  const latestCurrent = MOCK_AOV_DATA[MOCK_AOV_DATA.length - 1].current;
-  const latestPrevious = MOCK_AOV_DATA[MOCK_AOV_DATA.length - 1].previous;
-  const delta = (((latestCurrent - latestPrevious) / latestPrevious) * 100).toFixed(1);
+interface AovTrendChartProps {
+  aovData?: AnalyticsPayload['aovTrend'];
+}
+
+export function AovTrendChart({ aovData }: AovTrendChartProps) {
+  const chartPoints = aovData?.data ?? MOCK_AOV_DATA;
+  const latestCurrent = aovData ? aovData.current : MOCK_AOV_DATA[MOCK_AOV_DATA.length - 1].current;
+  const latestPrevious = aovData ? aovData.previous : MOCK_AOV_DATA[MOCK_AOV_DATA.length - 1].previous;
+  const delta = aovData
+    ? aovData.delta
+    : (((latestCurrent - latestPrevious) / latestPrevious) * 100).toFixed(1);
+  const isUp = !delta.startsWith('-');
 
   return (
     <div className="flex h-[400px] w-full flex-col rounded-2xl border border-black/[0.06] bg-white shadow-xl shadow-black/[0.04] dark:border-white/[0.08] dark:bg-[#1a1a1a]">
       <div className="flex items-start justify-between border-b border-black/[0.04] p-6 pb-4 dark:border-white/[0.04]">
         <div>
-          <h2 className="text-lg font-bold text-black dark:text-white">Avg. Order Value</h2>
+          <h2 className="text-lg font-bold text-black dark:text-white">Avg. Order Value (AOV)</h2>
           <p className="text-sm font-medium text-black/40 dark:text-white/40">
             Current vs Previous Period
           </p>
@@ -33,8 +41,18 @@ export function AovTrendChart() {
           <span className="text-2xl font-black text-black dark:text-white">
             ₹{latestCurrent.toLocaleString('en-IN')}
           </span>
-          <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
-            <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
+          <span
+            className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${
+              isUp
+                ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+                : 'bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400'
+            }`}
+          >
+            <svg
+              className={`h-3 w-3 ${isUp ? '' : 'rotate-180'}`}
+              viewBox="0 0 12 12"
+              fill="none"
+            >
               <path
                 d="M6 2.5V9.5M6 2.5L9 5.5M6 2.5L3 5.5"
                 stroke="currentColor"
@@ -43,7 +61,7 @@ export function AovTrendChart() {
                 strokeLinejoin="round"
               />
             </svg>
-            +{delta}%
+            {isUp ? `+${delta}%` : `${delta}%`}
           </span>
         </div>
       </div>
@@ -63,13 +81,12 @@ export function AovTrendChart() {
         </div>
       </div>
 
-      <div className="h-full min-h-0 w-full flex-1 p-6 pt-3">
+      <div className="h-full min-h-0 w-full flex-1 p-6 pt-2">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={MOCK_AOV_DATA} margin={{ top: 5, right: 5, left: -15, bottom: 0 }}>
+          <ComposedChart data={chartPoints} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
             <defs>
               <linearGradient id="aovGrad2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#6a4fbb" stopOpacity={0.3} />
-                <stop offset="50%" stopColor="#8b5cf6" stopOpacity={0.1} />
+                <stop offset="0%" stopColor="#6a4fbb" stopOpacity={0.25} />
                 <stop offset="100%" stopColor="#6a4fbb" stopOpacity={0} />
               </linearGradient>
             </defs>
@@ -85,7 +102,7 @@ export function AovTrendChart() {
               tickLine={false}
               tick={{ fill: 'currentColor', fontSize: 11, fontWeight: 600 }}
               className="text-black/35 dark:text-white/35"
-              dy={8}
+              dy={6}
             />
             <YAxis
               axisLine={false}
@@ -93,7 +110,6 @@ export function AovTrendChart() {
               tick={{ fill: 'currentColor', fontSize: 11 }}
               className="text-black/35 dark:text-white/35"
               tickFormatter={(v) => `₹${v}`}
-              domain={['auto', 'auto']}
             />
             <Tooltip
               contentStyle={{
@@ -103,13 +119,11 @@ export function AovTrendChart() {
                 color: 'white',
                 padding: '12px 18px',
                 fontSize: '13px',
-                fontWeight: 600,
                 boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
               }}
-              labelStyle={{ color: 'rgba(255,255,255,0.5)', marginBottom: 4, fontSize: 11 }}
               formatter={(value, name) => [
                 `₹${Number(value).toLocaleString('en-IN')}`,
-                name === 'current' ? 'Current AOV' : 'Previous AOV',
+                name === 'current' ? 'Current Period' : 'Previous Period',
               ]}
             />
             <Area
@@ -117,20 +131,18 @@ export function AovTrendChart() {
               dataKey="current"
               stroke="#6a4fbb"
               strokeWidth={3}
+              fillOpacity={1}
               fill="url(#aovGrad2)"
               dot={false}
               activeDot={{ r: 6, fill: '#6a4fbb', stroke: 'white', strokeWidth: 3 }}
-              animationDuration={1200}
             />
             <Line
               type="monotone"
               dataKey="previous"
               stroke="#94a3b8"
               strokeWidth={2}
-              strokeDasharray="6 4"
+              strokeDasharray="5 5"
               dot={false}
-              activeDot={{ r: 5, fill: '#94a3b8', stroke: 'white', strokeWidth: 3 }}
-              animationDuration={1400}
             />
           </ComposedChart>
         </ResponsiveContainer>
