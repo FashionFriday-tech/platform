@@ -11,6 +11,12 @@ export interface TeamMember {
   updatedAt?: string;
   avatarUrl?: string;
 }
+export interface EditMemberUpdates {
+  name: string;
+  phone: string;
+  role: Role;
+  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
+}
 
 export const ROLE_LABELS: Record<Role, string> = {
   SUPER_ADMIN: 'Super Admin',
