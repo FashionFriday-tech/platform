@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { motion } from 'motion/react';
 
-import { MOCK_RETENTION_DATA } from '../types';
+import { type AnalyticsPayload, MOCK_RETENTION_DATA } from '../types';
 
 const MONTH_LABELS = ['M0', 'M1', 'M2', 'M3', 'M4', 'M5'];
 
@@ -27,8 +27,19 @@ function getCellStyle(value: number) {
   return { bg: 'rgba(239, 68, 68, 0.15)', text: '#dc2626', glow: '#ef4444' };
 }
 
-export function CustomerRetentionHeatmap() {
+interface CustomerRetentionHeatmapProps {
+  retentionData?: AnalyticsPayload['customerRetention'];
+}
+
+export function CustomerRetentionHeatmap({ retentionData }: CustomerRetentionHeatmapProps) {
   const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
+
+  const cohorts = retentionData
+    ? retentionData.map((r) => ({
+        cohort: r.cohort,
+        months: [r.m0, r.m1, r.m2, r.m3, r.m4, r.m5],
+      }))
+    : MOCK_RETENTION_DATA;
 
   return (
     <div className="flex h-full min-h-[440px] w-full flex-col rounded-2xl border border-black/[0.06] bg-white shadow-xl shadow-black/[0.04] dark:border-white/[0.08] dark:bg-[#1a1a1a]">
@@ -57,7 +68,7 @@ export function CustomerRetentionHeatmap() {
             </tr>
           </thead>
           <tbody>
-            {MOCK_RETENTION_DATA.map((cohort, rowIdx) => (
+            {cohorts.map((cohort, rowIdx) => (
               <tr key={cohort.cohort}>
                 <td className="py-1.5 pr-4 text-xs font-semibold whitespace-nowrap text-black/60 dark:text-white/60">
                   {cohort.cohort}
@@ -70,30 +81,24 @@ export function CustomerRetentionHeatmap() {
                   return (
                     <td key={colIdx} className="p-1">
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.7 }}
-                        animate={{
-                          opacity: 1,
-                          scale: isHovered ? 1.12 : 1,
-                        }}
-                        transition={{
-                          delay: 0.025 * (rowIdx * MONTH_LABELS.length + colIdx),
-                          duration: 0.2,
-                        }}
                         onMouseEnter={() => {
                           setHoveredCell({ row: rowIdx, col: colIdx });
                         }}
                         onMouseLeave={() => {
                           setHoveredCell(null);
                         }}
-                        className="flex h-10 items-center justify-center rounded-lg text-[12px] font-bold transition-shadow"
+                        animate={{
+                          scale: isHovered ? 1.08 : 1,
+                          boxShadow: isHovered ? `0 0 16px ${style.glow}` : 'none',
+                        }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                        className="relative flex h-8 min-w-[42px] cursor-pointer items-center justify-center rounded-lg text-xs font-bold transition-colors"
                         style={{
-                          backgroundColor: isEmpty ? 'rgba(0,0,0,0.02)' : style.bg,
-                          color: isEmpty ? 'transparent' : style.text,
-                          boxShadow: isHovered && !isEmpty ? `0 0 16px ${style.glow}30` : 'none',
-                          cursor: isEmpty ? 'default' : 'pointer',
+                          backgroundColor: style.bg,
+                          color: style.text,
                         }}
                       >
-                        {isEmpty ? '' : `${value}%`}
+                        {isEmpty ? '—' : `${value}%`}
                       </motion.div>
                     </td>
                   );
@@ -102,30 +107,6 @@ export function CustomerRetentionHeatmap() {
             ))}
           </tbody>
         </table>
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap items-center gap-3 border-t border-black/[0.04] px-6 py-4 dark:border-white/[0.04]">
-        <span className="text-[10px] font-bold tracking-wider text-black/30 uppercase dark:text-white/30">
-          Retention:
-        </span>
-        {[
-          { label: '70%+', color: '#22c55e', bg: 'rgba(34, 197, 94, 0.18)' },
-          { label: '50-70%', color: '#84cc16', bg: 'rgba(132, 204, 22, 0.18)' },
-          { label: '35-50%', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.18)' },
-          { label: '20-35%', color: '#f97316', bg: 'rgba(249, 115, 22, 0.18)' },
-          { label: '<20%', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
-        ].map((item) => (
-          <div key={item.label} className="flex items-center gap-1.5">
-            <div
-              className="h-3 w-3 rounded"
-              style={{ backgroundColor: item.bg, border: `1px solid ${item.color}30` }}
-            />
-            <span className="text-[10px] font-semibold text-black/40 dark:text-white/40">
-              {item.label}
-            </span>
-          </div>
-        ))}
       </div>
     </div>
   );
