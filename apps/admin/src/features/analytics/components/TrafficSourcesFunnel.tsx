@@ -4,13 +4,18 @@ import React from 'react';
 
 import { motion } from 'motion/react';
 
-import { MOCK_TRAFFIC_SOURCES } from '../types';
-
-const totalVisitors = MOCK_TRAFFIC_SOURCES.reduce((sum, s) => sum + s.visitors, 0);
+import { type AnalyticsPayload, MOCK_TRAFFIC_SOURCES } from '../types';
 
 const EMOJIS = ['🎯', '🔍', '📱', '🔗', '📧'];
 
-export function TrafficSourcesFunnel() {
+interface TrafficSourcesFunnelProps {
+  sources?: AnalyticsPayload['trafficSources'];
+}
+
+export function TrafficSourcesFunnel({ sources }: TrafficSourcesFunnelProps) {
+  const activeSources = sources && sources.length > 0 ? sources : MOCK_TRAFFIC_SOURCES;
+  const totalVisitors = activeSources.reduce((sum, s) => sum + s.visitors, 0) || 1;
+
   return (
     <div className="flex h-full min-h-[400px] w-full flex-col rounded-2xl border border-black/[0.06] bg-white shadow-xl shadow-black/[0.04] dark:border-white/[0.08] dark:bg-[#1a1a1a]">
       <div className="border-b border-black/[0.04] p-6 pb-4 dark:border-white/[0.04]">
@@ -21,9 +26,9 @@ export function TrafficSourcesFunnel() {
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6">
-        {MOCK_TRAFFIC_SOURCES.map((source, i) => {
+        {activeSources.map((source, i) => {
           const widthPct =
-            40 + ((MOCK_TRAFFIC_SOURCES.length - i) / MOCK_TRAFFIC_SOURCES.length) * 55;
+            40 + ((activeSources.length - i) / activeSources.length) * 55;
           const sharePct = ((source.visitors / totalVisitors) * 100).toFixed(1);
 
           return (
@@ -41,7 +46,7 @@ export function TrafficSourcesFunnel() {
             >
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="text-sm">{EMOJIS[i]}</span>
+                  <span className="text-sm">{EMOJIS[i % EMOJIS.length]}</span>
                   <span className="text-xs font-bold text-black dark:text-white">
                     {source.source}
                   </span>
@@ -58,17 +63,6 @@ export function TrafficSourcesFunnel() {
             </motion.div>
           );
         })}
-      </div>
-
-      <div className="border-t border-black/[0.04] p-6 pt-4 dark:border-white/[0.04]">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-black/40 dark:text-white/40">
-            Total Visitors
-          </span>
-          <span className="text-lg font-black text-black dark:text-white">
-            {totalVisitors.toLocaleString('en-IN')}
-          </span>
-        </div>
       </div>
     </div>
   );
