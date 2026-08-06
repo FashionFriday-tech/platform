@@ -28,7 +28,10 @@ export async function BrandCatalog({ brandName }: BrandCatalogProps): Promise<JS
   console.log('BRAND PRODUCTS COUNT for brand', brand.name, ':', brandProducts.length);
 
   // 3. Determine initial sidebar context
-  const contextCategory = brandProducts.length > 0 ? brandProducts[0].categoryId : 'sneakers';
+  const contextCategory =
+    brandProducts.length > 0
+      ? brandProducts[0].categoryId
+      : (brand.categories?.[0] as string) || 'sneakers';
 
   return (
     <div className="flex w-full flex-col">
