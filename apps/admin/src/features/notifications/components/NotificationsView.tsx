@@ -14,16 +14,28 @@ import {
   UsersIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
+import { toast } from 'sonner';
 
 import { useNotifications } from '../hooks/useNotifications';
-import { type AdminNotification, type NotificationCategory } from '../types';
+import { type AdminNotification, type NotificationCategory, type SendNotificationPayload } from '../types';
+import { SendNotificationModal } from './SendNotificationModal';
 
 export function NotificationsView() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, clearAll } =
-    useNotifications();
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    isSending,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    clearAll,
+    sendNotification,
+  } = useNotifications();
 
   const [activeCategory, setActiveCategory] = useState<NotificationCategory>('all');
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false);
 
   const categories: { id: NotificationCategory; label: string; count?: number }[] = [
     { id: 'all', label: 'All Notifications', count: notifications.length },
@@ -44,7 +56,7 @@ export function NotificationsView() {
     },
     {
       id: 'system',
-      label: 'System',
+      label: 'System & Broadcasts',
       count: notifications.filter((n) => n.category === 'system').length,
     },
   ];
@@ -58,6 +70,14 @@ export function NotificationsView() {
     }
     return true;
   });
+
+  const handleSend = async (payload: SendNotificationPayload) => {
+    const res = await sendNotification(payload);
+    if (res.success) {
+      toast.success('Notification delivered successfully to users!');
+    }
+    return res;
+  };
 
   const getCategoryIcon = (category: AdminNotification['category']) => {
     switch (category) {
@@ -106,12 +126,23 @@ export function NotificationsView() {
               )}
             </div>
             <p className="mt-1 text-sm text-black/60 dark:text-white/60">
-              Real-time updates regarding store orders, fulfillment alerts, customer activity, and
-              system syncs.
+              Live updates regarding verified store orders, customer activity, and team broadcasts.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Custom Send Notification Button */}
+            <button
+              type="button"
+              onClick={() => setIsSendModalOpen(true)}
+              className="flex items-center gap-1.5 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-md transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
+            >
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Send Notification</span>
+            </button>
+
             {unreadCount > 0 && (
               <button
                 type="button"
@@ -119,9 +150,10 @@ export function NotificationsView() {
                 className="flex items-center gap-1.5 rounded-xl border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold text-black shadow-xs transition-all hover:bg-black/5 active:scale-95 dark:border-white/10 dark:bg-[#161616] dark:text-white dark:hover:bg-white/5"
               >
                 <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-500" />
-                Mark all as read
+                Mark all read
               </button>
             )}
+
             {notifications.length > 0 && (
               <button
                 type="button"
@@ -129,7 +161,7 @@ export function NotificationsView() {
                 className="flex items-center gap-1.5 rounded-xl border border-black/10 bg-white px-3.5 py-2 text-xs font-semibold text-black/60 shadow-xs transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-600 active:scale-95 dark:border-white/10 dark:bg-[#161616] dark:text-white/60 dark:hover:border-red-500/20 dark:hover:bg-red-500/10 dark:hover:text-red-400"
               >
                 <TrashIcon className="h-3.5 w-3.5" />
-                Clear all
+                Clear
               </button>
             )}
           </div>
@@ -258,7 +290,7 @@ export function NotificationsView() {
                     <button
                       type="button"
                       onClick={() => {
-                        deleteNotification(notif.id);
+                        void deleteNotification(notif.id);
                       }}
                       className="flex h-8 w-8 items-center justify-center rounded-xl bg-black/5 text-black/40 opacity-70 transition-colors group-hover:opacity-100 hover:bg-red-500/10 hover:text-red-500 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-500/20 dark:hover:text-red-400"
                       title="Dismiss notification"
@@ -278,18 +310,37 @@ export function NotificationsView() {
                   <BellIcon className="h-6 w-6" />
                 </div>
                 <h3 className="text-base font-bold text-black dark:text-white">
-                  No notifications to show
+                  {isLoading ? 'Checking notifications...' : 'No notifications to show'}
                 </h3>
                 <p className="mt-1 max-w-sm text-xs text-black/50 dark:text-white/50">
-                  {unreadOnly
-                    ? 'You have caught up on all pending alerts. Toggle "Unread only" to see historical notifications.'
-                    : 'There are currently no notifications matching this category.'}
+                  {isLoading
+                    ? 'Connecting to real-time store feed...'
+                    : unreadOnly
+                      ? 'You have caught up on all pending alerts. Toggle "Unread only" to see historical notifications.'
+                      : 'There are currently no notifications. Real orders, signups, and custom broadcasts will appear here.'}
                 </p>
+                {!isLoading && (
+                  <button
+                    type="button"
+                    onClick={() => setIsSendModalOpen(true)}
+                    className="mt-4 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black"
+                  >
+                    Compose Custom Notification
+                  </button>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Send Notification Modal */}
+      <SendNotificationModal
+        isOpen={isSendModalOpen}
+        onClose={() => setIsSendModalOpen(false)}
+        onSend={handleSend}
+        isSending={isSending}
+      />
     </div>
   );
 }
