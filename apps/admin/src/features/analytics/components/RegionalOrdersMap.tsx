@@ -5,39 +5,7 @@ import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 
 import { AnimatePresence, motion } from 'motion/react';
 
-import { MOCK_STATE_ORDERS } from '../types';
-
-// Sort by orders desc
-const sortedStates = [...MOCK_STATE_ORDERS].sort((a, b) => b.orders - a.orders);
-const maxOrders = sortedStates[0]?.orders ?? 1;
-const totalOrders = MOCK_STATE_ORDERS.reduce((sum, s) => sum + s.orders, 0);
-const totalRevenue = MOCK_STATE_ORDERS.reduce((sum, s) => sum + s.revenue, 0);
-
-function getHeatColor(orders: number): string {
-  if (orders === 0) {
-    return '#f1f0fb';
-  }
-  const ratio = orders / maxOrders;
-  if (ratio > 0.75) {
-    return '#6a4fbb';
-  }
-  if (ratio > 0.55) {
-    return '#7c3aed';
-  }
-  if (ratio > 0.4) {
-    return '#8b5cf6';
-  }
-  if (ratio > 0.25) {
-    return '#a78bfa';
-  }
-  if (ratio > 0.15) {
-    return '#c4b5fd';
-  }
-  if (ratio > 0.05) {
-    return '#ddd6fe';
-  }
-  return '#ede9fe';
-}
+import { type AnalyticsPayload, MOCK_STATE_ORDERS } from '../types';
 
 const NAME_MAPPINGS: Record<string, string> = {
   Orissa: 'Odisha',
@@ -45,18 +13,54 @@ const NAME_MAPPINGS: Record<string, string> = {
   'Andaman and Nicobar': 'Andaman and Nicobar Islands',
 };
 
-export function RegionalOrdersMap() {
+interface RegionalOrdersMapProps {
+  stateOrders?: AnalyticsPayload['stateOrders'];
+}
+
+export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [isMapHovered, setIsMapHovered] = useState<boolean>(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  const activeStateOrders = stateOrders && stateOrders.length > 0 ? stateOrders : MOCK_STATE_ORDERS;
+  const sortedStates = [...activeStateOrders].sort((a, b) => b.orders - a.orders);
+  const maxOrders = sortedStates[0]?.orders ?? 1;
+  const totalOrders = activeStateOrders.reduce((sum, s) => sum + s.orders, 0);
+  const totalRevenue = activeStateOrders.reduce((sum, s) => sum + s.revenue, 0);
+
+  function getHeatColor(orders: number): string {
+    if (orders === 0) {
+      return '#f1f0fb';
+    }
+    const ratio = orders / maxOrders;
+    if (ratio > 0.75) {
+      return '#6a4fbb';
+    }
+    if (ratio > 0.55) {
+      return '#7c3aed';
+    }
+    if (ratio > 0.4) {
+      return '#8b5cf6';
+    }
+    if (ratio > 0.25) {
+      return '#a78bfa';
+    }
+    if (ratio > 0.15) {
+      return '#c4b5fd';
+    }
+    if (ratio > 0.05) {
+      return '#ddd6fe';
+    }
+    return '#ede9fe';
+  }
 
   const getStateData = (rawName: string) => {
     if (!rawName) {
       return null;
     }
     const normalizedName = NAME_MAPPINGS[rawName] ?? rawName;
-    return MOCK_STATE_ORDERS.find(
+    return activeStateOrders.find(
       (s) =>
         s.state.toLowerCase() === normalizedName.toLowerCase() ||
         s.state.toLowerCase().includes(normalizedName.toLowerCase()) ||
