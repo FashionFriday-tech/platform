@@ -121,6 +121,34 @@ export class TeamService {
       throw new NotFoundException('Team member not found');
     }
 
+    let cleanPhone = user.phone;
+    if (dto.phone) {
+      const candidatePhone = dto.phone.replace(/\D/g, '').slice(-10);
+      if (candidatePhone.length === 10) {
+        const existingWithPhone = await this.prisma.db.user.findFirst({
+          where: {
+            id: { not: id },
+            OR: [
+              { phone: candidatePhone },
+              { phone: `+91 ${candidatePhone}` },
+              { phone: `+91${candidatePhone}` },
+            ],
+          },
+        });
+        if (existingWithPhone) {
+          throw new BadRequestException('A user with this phone number already exists');
+        }
+        cleanPhone = candidatePhone;
+      } else {
+        throw new BadRequestException('Phone number must be a valid 10-digit number');
+      }
+    }
+
+    const newName = dto.name !== undefined ? dto.name.trim() : user.name;
+    if (!newName) {
+      throw new BadRequestException('Name cannot be empty');
+    }
+
     const currentMeta = (user.adminMeta as Record<string, unknown>) || {};
     const dbRole = dto.role
       ? dto.role === TeamRole.SUPER_ADMIN
@@ -131,6 +159,8 @@ export class TeamService {
     const updated = await this.prisma.db.user.update({
       where: { id },
       data: {
+        name: newName,
+        phone: cleanPhone,
         role: dbRole,
         accountStatus: dto.status ? (dto.status as any) : user.accountStatus,
         adminMeta: {
@@ -144,13 +174,13 @@ export class TeamService {
     const position =
       (meta.position as TeamRole) ||
       (updated.role === 'SUPER_ADMIN' ? TeamRole.SUPER_ADMIN : TeamRole.SALES_MANAGER);
-    const cleanPhone = updated.phone.replace(/\D/g, '').slice(-10);
+    const updatedCleanPhone = updated.phone.replace(/\D/g, '').slice(-10);
 
     return {
       id: updated.id,
       name: updated.name,
       email: updated.email,
-      phone: cleanPhone,
+      phone: updatedCleanPhone,
       role: position,
       status: updated.accountStatus,
       joinedAt: updated.createdAt.toISOString(),
