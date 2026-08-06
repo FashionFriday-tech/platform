@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 
 import { NotificationsService, PushSubscriptionData } from './notifications.service';
 
@@ -50,6 +50,56 @@ export class NotificationsController {
       return this.notificationsService.unsubscribe(body.endpoint);
     }
     return { success: false, message: 'Endpoint is required' };
+  }
+
+  /**
+   * Send custom notification composed by admin
+   */
+  @Post('admin/notifications/send')
+  async sendCustomNotification(@Body() body: any) {
+    return this.notificationsService.sendCustomNotification({
+      title: body.title,
+      message: body.message,
+      type: body.type,
+      target: body.target,
+      userId: body.userId,
+      targetUserName: body.targetUserName,
+      linkUrl: body.linkUrl,
+      badge: body.badge,
+      sendPush: body.sendPush,
+    });
+  }
+
+  /**
+   * Retrieve real operational notifications for Admin
+   */
+  @Get('admin/notifications')
+  async getAdminNotifications() {
+    return this.notificationsService.getAdminNotifications();
+  }
+
+  /**
+   * Retrieve list of registered customers for target selector in Admin
+   */
+  @Get('admin/notifications/users')
+  async getUsersList() {
+    return this.notificationsService.getUsersList();
+  }
+
+  /**
+   * Delete custom notification by ID
+   */
+  @Delete('admin/notifications/:id')
+  deleteCustomNotification(@Param('id') id: string) {
+    return this.notificationsService.deleteCustomNotification(id);
+  }
+
+  /**
+   * Customer notifications endpoint (for web storefront)
+   */
+  @Get('notifications')
+  getNotificationsForUser(@Query('userId') userId?: string) {
+    return this.notificationsService.getNotificationsForUser(userId);
   }
 
   /**
