@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
-import { type Role } from '@/contexts/AuthContext';
+import { type Role, useAuth } from '@/contexts/AuthContext';
 
-import { MOCK_TEAM, type SortField, type TeamMember } from '../types';
+import { type EditMemberUpdates, MOCK_TEAM, type SortField, type TeamMember } from '../types';
 
 const STORAGE_TEAM_KEY = 'ff_admin_team_members';
 const STORAGE_INVITED_KEY = 'ff_admin_invited_team';
@@ -18,6 +19,7 @@ export interface InvitePayload {
 }
 
 export function useTeam() {
+  const { user: currentUser, updateUser } = useAuth();
   const [team, setTeam] = useState<TeamMember[]>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -172,21 +174,63 @@ export function useTeam() {
     }).catch(() => null);
   };
 
-  const handleEditSave = (id: string, role: Role, status: 'ACTIVE' | 'PENDING' | 'SUSPENDED') => {
+  const handleEditSave = (id: string, updates: EditMemberUpdates) => {
+    const existing = team.find((m) => m.id === id);
     setTeam((prev) =>
       prev.map((m) =>
-        m.id === id ? { ...m, role, status, updatedAt: new Date().toISOString() } : m,
+        m.id === id
+          ? {
+              ...m,
+              name: updates.name,
+              phone: updates.phone,
+              role: updates.role,
+              status: updates.status,
+              updatedAt: new Date().toISOString(),
+            }
+          : m,
       ),
     );
     setEditingMemberId(null);
+
+    // If current logged-in admin edited their own record, update context
+    const currentCleanPhone = currentUser?.phone?.replace(/\D/g, '').slice(-10);
+    const existingCleanPhone = existing?.phone?.replace(/\D/g, '').slice(-10);
+    if (
+      currentUser &&
+      ((currentCleanPhone && currentCleanPhone === existingCleanPhone) ||
+        currentUser.name === existing?.name)
+    ) {
+      updateUser({
+        name: updates.name,
+        phone: updates.phone,
+        role: updates.role,
+      });
+    }
 
     // Sync edit to backend database API
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
     fetch(`${apiUrl}/admin/team/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role, status }),
-    }).catch(() => null);
+      body: JSON.stringify(updates),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          toast.error(err.message || 'Failed to update member in database');
+          return;
+        }
+        const updated = await res.json();
+        if (updated?.id) {
+          setTeam((prev) =>
+            prev.map((m) => (m.id === updated.id ? { ...m, ...updated } : m)),
+          );
+        }
+        toast.success('Admin details updated successfully');
+      })
+      .catch(() => {
+        toast.error('Network error updating member');
+      });
   };
 
   const getRoleBadgeColor = (role: Role) => {
