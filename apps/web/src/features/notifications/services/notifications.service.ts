@@ -78,48 +78,42 @@ export function markAllNotificationsAsRead(ids: string[]): void {
 }
 
 /**
- * Fetch dynamic promotional drop notifications from backend campaigns
+ * Fetch dynamic promotional and custom admin broadcast notifications
  */
 async function fetchPromoNotifications(): Promise<Notification[]> {
   const readIds = getReadNotificationIds();
+  const results: Notification[] = [];
 
-  // Baseline real system drops always present in the platform
-  const staticPromos: Notification[] = [
-    {
-      id: 'promo-weekly-drop',
-      type: 'promo',
-      title: 'Weekly Friday Drop',
-      message: 'New archive collection drops are live. Limited edition sneakers & hype streetwear.',
-      createdAt: new Date(Date.now() - 3600 * 1000 * 4).toISOString(), // 4 hours ago
-      timestamp: formatRelativeTime(new Date(Date.now() - 3600 * 1000 * 4).toISOString()),
-      link: '/collections/new-arrivals',
-      badge: 'DROP LIVE',
-      isRead: true,
-    },
-    {
-      id: 'promo-express-cod',
-      type: 'promo',
-      title: 'Pan-India Express Delivery',
-      message: 'Cash on Delivery and express dispatch active across all major Indian cities.',
-      createdAt: new Date(Date.now() - 3600 * 1000 * 28).toISOString(), // 1 day ago
-      timestamp: formatRelativeTime(new Date(Date.now() - 3600 * 1000 * 28).toISOString()),
-      link: '/help/shipping',
-      badge: 'BENEFIT',
-      isRead: true,
-    },
-    {
-      id: 'promo-authenticity',
-      type: 'promo',
-      title: 'Authenticity Guarantee',
-      message: 'Every pair of kicks and apparel item undergoes verified physical inspection.',
-      createdAt: new Date(Date.now() - 3600 * 1000 * 72).toISOString(), // 3 days ago
-      timestamp: formatRelativeTime(new Date(Date.now() - 3600 * 1000 * 72).toISOString()),
-      link: '/help/about',
-      badge: 'VERIFIED',
-      isRead: true,
-    },
-  ];
+  // 1. Fetch real custom notifications sent by Admin
+  try {
+    const res = await fetch(`${API_URL}/notifications`, {
+      method: 'GET',
+      cache: 'no-store',
+    }).catch(() => null);
 
+    if (res?.ok) {
+      const customs = await res.json();
+      if (Array.isArray(customs)) {
+        customs.forEach((c: any) => {
+          results.push({
+            id: c.id,
+            type: c.type || 'promo',
+            title: c.title,
+            message: c.message,
+            createdAt: c.createdAt,
+            timestamp: formatRelativeTime(c.createdAt),
+            link: c.link || '/',
+            badge: c.badge || 'UPDATE',
+            isRead: readIds.has(c.id),
+          });
+        });
+      }
+    }
+  } catch (err) {
+    console.warn('[Notifications] Custom notifications fetch error:', err);
+  }
+
+  // 2. Fetch real active campaigns
   try {
     const res = await fetch(`${API_URL}/campaigns`, {
       method: 'GET',
@@ -129,28 +123,28 @@ async function fetchPromoNotifications(): Promise<Notification[]> {
     if (res?.ok) {
       const campaigns = await res.json();
       if (Array.isArray(campaigns) && campaigns.length > 0) {
-        const campaignPromos: Notification[] = campaigns
+        campaigns
           .filter((c: any) => c.isActive)
-          .map((c: any) => ({
-            id: `campaign-${c.id}`,
-            type: 'promo' as const,
-            title: c.title || 'Flash Drop Alert',
-            message: 'Exclusive drop alert: explore the latest limited collection.',
-            createdAt: c.createdAt || new Date().toISOString(),
-            timestamp: formatRelativeTime(c.createdAt || new Date().toISOString()),
-            link: c.linkUrl || '/',
-            badge: 'CAMPAIGN',
-            isRead: readIds.has(`campaign-${c.id}`),
-          }));
-
-        return [...campaignPromos, ...staticPromos];
+          .forEach((c: any) => {
+            results.push({
+              id: `campaign-${c.id}`,
+              type: 'promo' as const,
+              title: c.title || 'Flash Drop Alert',
+              message: 'Exclusive drop alert: explore the latest limited collection.',
+              createdAt: c.createdAt || new Date().toISOString(),
+              timestamp: formatRelativeTime(c.createdAt || new Date().toISOString()),
+              link: c.linkUrl || '/',
+              badge: 'CAMPAIGN',
+              isRead: readIds.has(`campaign-${c.id}`),
+            });
+          });
       }
     }
   } catch (err) {
     console.warn('[Notifications] Campaigns fetch fallback:', err);
   }
 
-  return staticPromos;
+  return results;
 }
 
 /**
