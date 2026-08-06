@@ -6,67 +6,73 @@ import { PackageIcon, ShoppingBagIcon, TagIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 
-import { STAT_SPARKLINES } from '../types';
+import { type AnalyticsPayload, STAT_SPARKLINES } from '../types';
 
-const STATS = [
-  {
-    id: 1,
-    title: 'Total Revenue',
-    value: '₹6,12,917',
-    trend: '+12.08%',
-    trendUp: true,
-    description: 'vs last month',
-    icon: TagIcon,
-    gradient: 'from-violet-600 to-purple-700',
-    accentColor: '#6a4fbb',
-    sparkData: STAT_SPARKLINES.revenue,
-    isPrimary: true,
-  },
-  {
-    id: 2,
-    title: 'Total Orders',
-    value: '34,760',
-    trend: '+8.4%',
-    trendUp: true,
-    description: 'vs last month',
-    icon: ShoppingBagIcon,
-    gradient: 'from-blue-500 to-cyan-500',
-    accentColor: '#3b82f6',
-    sparkData: STAT_SPARKLINES.orders,
-    isPrimary: false,
-  },
-  {
-    id: 3,
-    title: 'Site Visits',
-    value: '14,987',
-    trend: '-1.08%',
-    trendUp: false,
-    description: 'vs last month',
-    icon: UsersIcon,
-    gradient: 'from-pink-500 to-rose-500',
-    accentColor: '#ec4899',
-    sparkData: STAT_SPARKLINES.visits,
-    isPrimary: false,
-  },
-  {
-    id: 4,
-    title: 'Units Sold',
-    value: '12,987',
-    trend: '+5.7%',
-    trendUp: true,
-    description: 'vs last month',
-    icon: PackageIcon,
-    gradient: 'from-emerald-500 to-teal-500',
-    accentColor: '#22c55e',
-    sparkData: STAT_SPARKLINES.units,
-    isPrimary: false,
-  },
-];
+interface AnalyticsStatsProps {
+  kpis?: AnalyticsPayload['kpis'];
+}
 
-export function AnalyticsStats() {
+export function AnalyticsStats({ kpis }: AnalyticsStatsProps) {
+  const stats = [
+    {
+      id: 1,
+      title: 'Total Revenue',
+      value: kpis?.totalRevenueFormatted ?? '₹6,12,917',
+      trend: kpis?.revenueTrend ?? '+12.08%',
+      trendUp: kpis ? kpis.revenueTrendUp : true,
+      description: 'vs last month',
+      icon: TagIcon,
+      gradient: 'from-violet-600 to-purple-700',
+      accentColor: '#6a4fbb',
+      sparkData: kpis?.revenueSpark
+        ? kpis.revenueSpark.map((v) => ({ v }))
+        : STAT_SPARKLINES.revenue,
+      isPrimary: true,
+    },
+    {
+      id: 2,
+      title: 'Total Orders',
+      value: kpis?.totalOrdersFormatted ?? '34,760',
+      trend: kpis?.ordersTrend ?? '+8.4%',
+      trendUp: kpis ? kpis.ordersTrendUp : true,
+      description: 'vs last month',
+      icon: ShoppingBagIcon,
+      gradient: 'from-blue-500 to-cyan-500',
+      accentColor: '#3b82f6',
+      sparkData: kpis?.ordersSpark ? kpis.ordersSpark.map((v) => ({ v })) : STAT_SPARKLINES.orders,
+      isPrimary: false,
+    },
+    {
+      id: 3,
+      title: 'Site Visits',
+      value: kpis?.siteVisitsFormatted ?? '14,987',
+      trend: kpis?.visitsTrend ?? '+4.2%',
+      trendUp: kpis ? kpis.visitsTrendUp : true,
+      description: 'vs last month',
+      icon: UsersIcon,
+      gradient: 'from-pink-500 to-rose-500',
+      accentColor: '#ec4899',
+      sparkData: kpis?.visitsSpark ? kpis.visitsSpark.map((v) => ({ v })) : STAT_SPARKLINES.visits,
+      isPrimary: false,
+    },
+    {
+      id: 4,
+      title: 'Units Sold',
+      value: kpis?.unitsSoldFormatted ?? '12,987',
+      trend: kpis?.unitsTrend ?? '+5.7%',
+      trendUp: kpis ? kpis.unitsTrendUp : true,
+      description: 'vs last month',
+      icon: PackageIcon,
+      gradient: 'from-emerald-500 to-teal-500',
+      accentColor: '#22c55e',
+      sparkData: kpis?.unitsSpark ? kpis.unitsSpark.map((v) => ({ v })) : STAT_SPARKLINES.units,
+      isPrimary: false,
+    },
+  ];
+
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-      {STATS.map((stat, i) => (
+      {stats.map((stat, i) => (
         <motion.div
           key={stat.id}
           initial={{ opacity: 0, y: 24 }}
@@ -142,24 +148,31 @@ export function AnalyticsStats() {
               {stat.title}
             </p>
             <p
-              className={`mt-1 text-[28px] leading-tight font-black tracking-tight ${
+              className={`mt-0.5 text-2xl font-black tracking-tight sm:text-3xl ${
                 stat.isPrimary ? 'text-white' : 'text-black dark:text-white'
               }`}
             >
               {stat.value}
             </p>
+            <p
+              className={`mt-1 text-[11px] font-medium ${
+                stat.isPrimary ? 'text-white/50' : 'text-black/35 dark:text-white/35'
+              }`}
+            >
+              {stat.description}
+            </p>
           </div>
 
           {/* Sparkline */}
-          <div className="relative mt-3 h-11 w-full">
+          <div className="relative mt-3 h-10 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={stat.sparkData} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
+              <AreaChart data={stat.sparkData}>
                 <defs>
                   <linearGradient id={`spark-${stat.id}`} x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="0%"
                       stopColor={stat.isPrimary ? '#ffffff' : stat.accentColor}
-                      stopOpacity={0.4}
+                      stopOpacity={stat.isPrimary ? 0.4 : 0.3}
                     />
                     <stop
                       offset="100%"
@@ -174,20 +187,12 @@ export function AnalyticsStats() {
                   stroke={stat.isPrimary ? '#ffffff' : stat.accentColor}
                   strokeWidth={2}
                   fill={`url(#spark-${stat.id})`}
-                  animationDuration={1200}
                   dot={false}
+                  isAnimationActive={false}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
-
-          <p
-            className={`mt-1 text-[11px] font-medium ${
-              stat.isPrimary ? 'text-white/50' : 'text-black/35 dark:text-white/35'
-            }`}
-          >
-            {stat.description}
-          </p>
         </motion.div>
       ))}
     </div>
