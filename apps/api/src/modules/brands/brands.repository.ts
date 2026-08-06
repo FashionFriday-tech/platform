@@ -33,8 +33,17 @@ export class BrandsRepository {
   }
 
   async findActiveBySlug(slug: string) {
+    const cleanSlug = decodeURIComponent(slug).toLowerCase().trim();
+    const withoutHyphens = cleanSlug.replace(/-/g, '');
     return this.prisma.db.brand.findFirst({
-      where: { slug, isActive: true },
+      where: {
+        OR: [
+          { slug: { equals: cleanSlug, mode: 'insensitive' } },
+          { name: { equals: cleanSlug, mode: 'insensitive' } },
+          { slug: { equals: withoutHyphens, mode: 'insensitive' } },
+        ],
+        isActive: true,
+      },
     });
   }
 
