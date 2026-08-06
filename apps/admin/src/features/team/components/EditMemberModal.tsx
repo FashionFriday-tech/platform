@@ -8,18 +8,21 @@ import { CloseIcon, ShieldCheckIcon } from '@ff/ui';
 import { type Role, useAuth } from '@/contexts/AuthContext';
 import { PinStorage } from '@/lib/security/pin-storage';
 
-import { ROLE_DESCRIPTIONS, ROLE_LABELS, type TeamMember } from '../types';
+import { type EditMemberUpdates, ROLE_DESCRIPTIONS, ROLE_LABELS, type TeamMember } from '../types';
 
 interface EditMemberModalProps {
   member: TeamMember | null;
   onClose: () => void;
-  onSave: (id: string, newRole: Role, newStatus: 'ACTIVE' | 'PENDING' | 'SUSPENDED') => void;
+  onSave: (id: string, updates: EditMemberUpdates) => void;
 }
 
 export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProps) {
   const { user: currentUser } = useAuth();
   const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN';
 
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<Role>('SALES_MANAGER');
   const [status, setStatus] = useState<'ACTIVE' | 'PENDING' | 'SUSPENDED'>('ACTIVE');
   const [mounted, setMounted] = useState(false);
@@ -35,10 +38,13 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
   useEffect(() => {
     setMounted(true);
     if (member) {
+      setName(member.name || '');
+      setPhone(member.phone ? member.phone.replace(/\D/g, '').slice(-10) : '');
       setSelectedRole(member.role);
       setStatus(member.status);
       setPinInput('');
       setPinMessage(null);
+      setFormError(null);
     }
   }, [member]);
 
@@ -50,7 +56,7 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
     setPinMessage(null);
     try {
       const adminPhone = currentUser?.phone || '7558969093';
-      const targetPhone = member.phone || member.email;
+      const targetPhone = phone || member.phone || member.email;
       const res = await PinStorage.updateBackendPin(adminPhone, targetPhone, pinInput);
       setPinMessage({
         type: 'success',
@@ -67,9 +73,29 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if (member) {
-      onSave(member.id, selectedRole, status);
+    if (!member) {
+      return;
     }
+
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setFormError('Admin name is required.');
+      return;
+    }
+
+    const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+    if (cleanPhone.length !== 10) {
+      setFormError('Phone number must be a valid 10-digit mobile number.');
+      return;
+    }
+
+    setFormError(null);
+    onSave(member.id, {
+      name: trimmedName,
+      phone: cleanPhone,
+      role: selectedRole,
+      status,
+    });
   };
 
   if (!member || !mounted) {
@@ -78,12 +104,12 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="flex w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[#111111]">
+      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[#111111]">
         <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
           <div>
             <h2 className="text-xl font-bold text-black dark:text-white">Edit Team Member</h2>
             <p className="mt-1 text-sm text-black/60 dark:text-white/60">
-              Manage role and access for {member.name}
+              Manage details, role and access for {member.name}
             </p>
           </div>
           <button
@@ -95,7 +121,62 @@ export function EditMemberModal({ member, onClose, onSave }: EditMemberModalProp
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-6">
+        <form onSubmit={handleSubmit} className="scrollbar-hide flex flex-col gap-6 overflow-y-auto p-6">
+          {/* Admin Identity: Name & Phone Number */}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="flex items-center justify-between text-sm font-semibold text-black dark:text-white">
+                <span>Admin Full Name</span>
+                {!isSuperAdmin && (
+                  <span className="text-[10px] font-normal text-black/40 dark:text-white/40">Super Admin only</span>
+                )}
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setFormError(null);
+                }}
+                disabled={!isSuperAdmin}
+                placeholder="e.g. Aslam"
+                className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] px-3.5 py-2.5 text-sm text-black placeholder-black/30 outline-none transition-all focus:border-black/30 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/30 dark:focus:bg-[#222222]"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="flex items-center justify-between text-sm font-semibold text-black dark:text-white">
+                <span>Admin Phone Number</span>
+                {!isSuperAdmin && (
+                  <span className="text-[10px] font-normal text-black/40 dark:text-white/40">Super Admin only</span>
+                )}
+              </label>
+              <div className="relative flex items-center">
+                <span className="absolute left-3.5 select-none text-xs font-bold text-black/40 dark:text-white/40">
+                  +91
+                </span>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={phone}
+                  onChange={(e) => {
+                    const cleaned = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setPhone(cleaned);
+                    setFormError(null);
+                  }}
+                  disabled={!isSuperAdmin}
+                  placeholder="7558969093"
+                  className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] py-2.5 pr-3.5 pl-12 font-mono text-sm text-black placeholder-black/30 outline-none transition-all focus:border-black/30 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:border-white/30 dark:focus:bg-[#222222]"
+                />
+              </div>
+            </div>
+
+            {formError && (
+              <p className="text-xs font-semibold text-rose-500">
+                {formError}
+              </p>
+            )}
+          </div>
           <div className="flex flex-col gap-3">
             <label className="text-sm font-semibold text-black dark:text-white">
               Account Status
