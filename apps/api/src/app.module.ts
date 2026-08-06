@@ -13,6 +13,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { CollectionsModule } from './modules/collections/collections.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { FaqModule } from './modules/faq/faq.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -53,6 +54,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     SearchLogsModule,
     TeamModule,
     DashboardModule,
+    AnalyticsModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
