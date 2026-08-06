@@ -4,7 +4,7 @@ import React from 'react';
 
 import { motion } from 'motion/react';
 
-import { MOCK_TOP_PRODUCTS } from '../types';
+import { type AnalyticsPayload, MOCK_TOP_PRODUCTS } from '../types';
 
 const GRADIENT_PAIRS = [
   ['#6a4fbb', '#8b5cf6'],
@@ -15,8 +15,13 @@ const GRADIENT_PAIRS = [
 ];
 const MEDALS = ['🥇', '🥈', '🥉'];
 
-export function TopProductsChart() {
-  const maxRevenue = Math.max(...MOCK_TOP_PRODUCTS.map((p) => p.revenue));
+interface TopProductsChartProps {
+  topProducts?: AnalyticsPayload['topProducts'];
+}
+
+export function TopProductsChart({ topProducts }: TopProductsChartProps) {
+  const activeProducts = topProducts && topProducts.length > 0 ? topProducts : MOCK_TOP_PRODUCTS;
+  const maxRevenue = Math.max(...activeProducts.map((p) => p.revenue), 1);
 
   return (
     <div className="flex h-full min-h-[440px] w-full flex-col rounded-2xl border border-black/[0.06] bg-white shadow-xl shadow-black/[0.04] dark:border-white/[0.08] dark:bg-[#1a1a1a]">
@@ -28,8 +33,9 @@ export function TopProductsChart() {
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-6">
-        {MOCK_TOP_PRODUCTS.map((product, i) => {
+        {activeProducts.map((product, i) => {
           const pct = (product.revenue / maxRevenue) * 100;
+          const pair = GRADIENT_PAIRS[i % GRADIENT_PAIRS.length];
           return (
             <motion.div
               key={product.name}
@@ -42,10 +48,10 @@ export function TopProductsChart() {
                 <div className="flex items-center gap-3">
                   <div
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-sm"
-                    style={i >= 3 ? { background: `${GRADIENT_PAIRS[i][0]}15` } : {}}
+                    style={i >= 3 ? { background: `${pair[0]}15` } : {}}
                   >
                     {MEDALS[i] ?? (
-                      <span className="text-xs font-black" style={{ color: GRADIENT_PAIRS[i][0] }}>
+                      <span className="text-xs font-black" style={{ color: pair[0] }}>
                         #{i + 1}
                       </span>
                     )}
@@ -59,18 +65,17 @@ export function TopProductsChart() {
                     </p>
                   </div>
                 </div>
-                <span className="text-base font-black text-black dark:text-white">
-                  ₹{(product.revenue / 1000).toFixed(1)}k
+                <span className="font-mono text-sm font-black text-black dark:text-white">
+                  ₹{product.revenue.toLocaleString('en-IN')}
                 </span>
               </div>
-              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-black/[0.04] dark:bg-white/[0.04]">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${pct}%` }}
-                  transition={{ delay: 0.3 + i * 0.1, duration: 0.8, ease: 'easeOut' }}
-                  className="h-full rounded-full"
+
+              <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-black/[0.04] dark:bg-white/[0.04]">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
                   style={{
-                    background: `linear-gradient(90deg, ${GRADIENT_PAIRS[i][0]}, ${GRADIENT_PAIRS[i][1]})`,
+                    width: `${pct}%`,
+                    background: `linear-gradient(90deg, ${pair[0]}, ${pair[1]})`,
                   }}
                 />
               </div>
