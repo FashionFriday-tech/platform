@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -9,11 +10,44 @@ export default function ProfilePage() {
   const { user, updateUser, logout } = useAuth();
   const [isEditingName, setIsEditingName] = useState(false);
   const [editName, setEditName] = useState(user?.name ?? '');
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [editPhone, setEditPhone] = useState(user?.phone?.replace(/\D/g, '').slice(-10) ?? '');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!user) {
     return null;
   }
+
+  const syncWithBackend = async (updates: { name?: string; phone?: string }) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const cleanPhone = user.phone?.replace(/\D/g, '').slice(-10);
+      const res = await fetch(`${apiUrl}/admin/team`);
+      if (res.ok) {
+        const team = (await res.json()) as { id: string; phone?: string; name?: string }[];
+        const matched = team.find(
+          (m) =>
+            m.phone?.replace(/\D/g, '').slice(-10) === cleanPhone ||
+            m.name?.toLowerCase() === user.name?.toLowerCase(),
+        );
+        if (matched) {
+          const patchRes = await fetch(`${apiUrl}/admin/team/${matched.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updates),
+          });
+          if (!patchRes.ok) {
+            const err = await patchRes.json().catch(() => ({}));
+            toast.error(err.message || 'Failed to sync with server');
+            return;
+          }
+        }
+      }
+      toast.success('Profile details updated successfully');
+    } catch {
+      toast.error('Network error updating profile');
+    }
+  };
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -35,8 +69,20 @@ export default function ProfilePage() {
   const saveName = () => {
     if (editName.trim()) {
       updateUser({ name: editName.trim() });
+      void syncWithBackend({ name: editName.trim() });
     }
     setIsEditingName(false);
+  };
+
+  const savePhone = () => {
+    const clean = editPhone.replace(/\D/g, '').slice(-10);
+    if (clean.length === 10) {
+      updateUser({ phone: clean });
+      void syncWithBackend({ phone: clean });
+      setIsEditingPhone(false);
+    } else {
+      toast.error('Please enter a valid 10-digit mobile number');
+    }
   };
 
   return (
@@ -225,12 +271,82 @@ export default function ProfilePage() {
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/10" />
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold tracking-wider text-black/40 uppercase dark:text-white/40">
-                    Contact Number
-                  </label>
-                  <p className="text-lg font-medium text-black dark:text-white">
-                    {user.phone ?? '+1 (555) 000-0000'}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold tracking-wider text-black/40 uppercase dark:text-white/40">
+                      Contact Number
+                    </label>
+                    {!isEditingPhone && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditPhone(user.phone?.replace(/\D/g, '').slice(-10) ?? '');
+                          setIsEditingPhone(true);
+                        }}
+                        className="rounded-full p-1 text-black/30 transition-all hover:bg-black/5 hover:text-indigo-600 dark:text-white/30 dark:hover:bg-white/10 dark:hover:text-indigo-400"
+                        title="Edit Contact Number"
+                      >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {isEditingPhone ? (
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex flex-1 items-center">
+                        <span className="absolute left-3 text-xs font-bold text-black/40 select-none dark:text-white/40">
+                          +91
+                        </span>
+                        <input
+                          type="tel"
+                          maxLength={10}
+                          value={editPhone}
+                          onChange={(e) => {
+                            setEditPhone(e.target.value.replace(/\D/g, '').slice(0, 10));
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              savePhone();
+                            }
+                          }}
+                          placeholder="10-digit number"
+                          className="w-full rounded-xl border border-black/20 bg-white/50 py-1.5 pr-3 pl-11 font-mono text-sm font-semibold text-black shadow-inner backdrop-blur-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none dark:border-white/20 dark:bg-black/50 dark:text-white"
+                          autoFocus
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={savePhone}
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all hover:scale-105 hover:bg-indigo-700"
+                        title="Save Number"
+                      >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsEditingPhone(false);
+                          setEditPhone(user.phone?.replace(/\D/g, '').slice(-10) ?? '');
+                        }}
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-black transition-all hover:scale-105 hover:bg-black/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+                        title="Cancel"
+                      >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="font-mono text-lg font-medium text-black dark:text-white">
+                      +91 {user.phone ? user.phone.replace(/\D/g, '').slice(-10) : '7558969093'}
+                    </p>
+                  )}
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/10" />
                 <div className="flex flex-col gap-1">
