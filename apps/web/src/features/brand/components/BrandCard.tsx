@@ -33,6 +33,7 @@ function isDarkColor(hexColor?: string): boolean {
 
 export const BrandCard = ({ brand, className }: BrandCardProps) => {
   const [hasError, setHasError] = React.useState(false);
+  const [hasFallbackText, setHasFallbackText] = React.useState(false);
   const isBlackBackground = brand.color === '#000000';
   const isDark = isDarkColor(brand.color);
 
@@ -47,20 +48,33 @@ export const BrandCard = ({ brand, className }: BrandCardProps) => {
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
       >
-        <div className="relative flex h-full w-full skew-x-[6deg] items-center justify-center">
-          {!hasError && brand.logo ? (
-            <Image
-              src={brand.logo}
-              alt={brand.name}
-              width={200}
-              height={200}
-              onError={() => {
-                setHasError(true);
-              }}
-              className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
-                isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
-              }`}
-            />
+        <div className="relative flex h-full w-full items-center justify-center">
+          {brand.logo && !hasFallbackText ? (
+            !hasError ? (
+              <Image
+                src={brand.logo}
+                alt={brand.name}
+                width={200}
+                height={200}
+                onError={() => {
+                  setHasError(true);
+                }}
+                className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
+                  isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
+                }`}
+              />
+            ) : (
+              <img
+                src={brand.logo}
+                alt={brand.name}
+                onError={() => {
+                  setHasFallbackText(true);
+                }}
+                className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
+                  isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
+                }`}
+              />
+            )
           ) : (
             <span
               className={`px-3 text-center text-sm font-black tracking-widest uppercase sm:text-lg md:text-xl ${
