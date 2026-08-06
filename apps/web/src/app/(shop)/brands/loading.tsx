@@ -26,7 +26,7 @@ export default function BrandsLoading() {
         {Array.from({ length: 10 }).map((_, i) => (
           <Skeleton
             key={i}
-            className="aspect-[3/4] w-full shrink-0 -skew-x-[6deg] rounded-2xl sm:rounded-3xl"
+            className="aspect-[3/4] w-full shrink-0 rounded-2xl sm:rounded-3xl"
           />
         ))}
       </div>
