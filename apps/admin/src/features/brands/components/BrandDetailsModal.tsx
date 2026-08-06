@@ -86,13 +86,21 @@ export function BrandDetailsModal({
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
-            <Image
-              width={500}
-              height={500}
-              src={brand.logo}
-              alt={brand.name}
-              className={`max-h-full max-w-full object-contain drop-shadow-md ${isDark ? 'invert' : 'invert-0'}`}
-            />
+            {brand.logo ? (
+              <div className="relative flex h-28 w-full max-w-[80%] items-center justify-center">
+                <Image
+                  src={brand.logo}
+                  alt={brand.name}
+                  width={220}
+                  height={110}
+                  className={`max-h-full max-w-full object-contain drop-shadow-md ${isDark ? 'invert' : 'invert-0'}`}
+                />
+              </div>
+            ) : (
+              <span className={`text-xl font-bold ${isDark ? 'text-white' : 'text-black'}`}>
+                {brand.name}
+              </span>
+            )}
           </div>
 
           {/* Body */}
