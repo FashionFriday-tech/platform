@@ -11,19 +11,13 @@ interface MarqueeTrackProps {
 }
 
 /**
- * Robust, buttery-smooth interactive marquee.
+ * Synchronized, high-precision interactive marquee track.
  *
- * Fixes for mobile:
- * 1. Both top and bottom rows auto-scroll continuously in their respective directions
- *    using sub-pixel floating accumulator so neither direction gets locked or quantized.
- * 2. Instant wrap boundary: With 4 sets, one cycle is scrollWidth / 4. When scrollLeft
- *    exceeds 2 * cycle, it wraps back by 1 cycle. When scrollLeft goes below 0.2 * cycle,
- *    it advances by 1 cycle.
- * 3. Fluid, non-stuck touch and mouse dragging:
- *    - On touch devices, native drag allows effortless swiping.
- *    - Uses pointer capture so gestures don't get stuck or lost when fingers slide fast.
- *    - Momentum gliding with smooth exponential decay.
- *    - Auto-resumes cleanly after release.
+ * Guarantees:
+ * 1. Both top and bottom rows move at the EXACT same pixel speed (e.g. exactly 28px/s).
+ * 2. Direction-aware boundary wrapping keeps the position cleanly inside the middle
+ *    cycles without truncating or fighting against onScroll events.
+ * 3. Fluid manual dragging with direct touch delta translation and inertia gliding.
  */
 export function InteractiveMarqueeTrack({
   children,
@@ -35,9 +29,9 @@ export function InteractiveMarqueeTrack({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
-  // Floating point accumulator for sub-pixel accuracy
+  // Floating point subpixel position
   const posRef = useRef<number>(0);
-  const isPosInitializedRef = useRef<boolean>(false);
+  const isInitializedRef = useRef<boolean>(false);
 
   // Interaction & gesture tracking
   const isPointerDownRef = useRef(false);
@@ -54,41 +48,49 @@ export function InteractiveMarqueeTrack({
     userInteractingRef.current = isInteracting;
   }, [isInteracting]);
 
-  // Seamless boundary wrap helper
-  const checkWrap = () => {
+  // Wrap position when passing cycle boundaries
+  const wrap = () => {
     const el = containerRef.current;
     if (!el) return;
     const cycle = el.scrollWidth / 4;
     if (cycle <= 0) return;
 
-    if (posRef.current >= cycle * 2) {
-      posRef.current -= cycle;
-      el.scrollLeft = posRef.current;
-    } else if (posRef.current <= cycle * 0.2) {
-      posRef.current += cycle;
-      el.scrollLeft = posRef.current;
+    if (direction === 'left') {
+      // Moving left: pos increases
+      if (posRef.current >= cycle * 2.5) {
+        posRef.current -= cycle;
+        el.scrollLeft = Math.round(posRef.current);
+      }
+    } else {
+      // Moving right: pos decreases
+      if (posRef.current <= cycle * 0.5) {
+        posRef.current += cycle;
+        el.scrollLeft = Math.round(posRef.current);
+      }
     }
   };
 
-  // Initialize starting position in the middle cycle
+  // Center the scroll inside the buffer on mount
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const setInitialPos = () => {
+    const setup = () => {
       const cycle = el.scrollWidth / 4;
-      if (cycle > 0 && !isPosInitializedRef.current) {
-        posRef.current = cycle;
-        el.scrollLeft = cycle;
-        isPosInitializedRef.current = true;
+      if (cycle > 0 && !isInitializedRef.current) {
+        // Start precisely at 1.5 * cycle to give symmetrical headroom in both directions
+        const initial = cycle * 1.5;
+        posRef.current = initial;
+        el.scrollLeft = Math.round(initial);
+        isInitializedRef.current = true;
       }
     };
 
-    const timer = setTimeout(setInitialPos, 50);
+    const timer = setTimeout(setup, 60);
     return () => clearTimeout(timer);
   }, []);
 
-  // Continuous auto-run loop via requestAnimationFrame
+  // Frame-by-frame exact velocity tick
   useEffect(() => {
     let animId: number;
     let prevTime: number | null = null;
@@ -97,18 +99,19 @@ export function InteractiveMarqueeTrack({
       if (prevTime === null) {
         prevTime = time;
       }
-      const delta = (time - prevTime) / 1000;
+      // Cap delta at 0.1s to prevent giant jumps if tab switches
+      const delta = Math.min((time - prevTime) / 1000, 0.1);
       prevTime = time;
 
       const el = containerRef.current;
       if (el && !isPaused && !userInteractingRef.current) {
-        // Guarantee initialized
-        if (!isPosInitializedRef.current) {
+        if (!isInitializedRef.current) {
           const cycle = el.scrollWidth / 4;
           if (cycle > 0) {
-            posRef.current = cycle;
-            el.scrollLeft = cycle;
-            isPosInitializedRef.current = true;
+            const initial = cycle * 1.5;
+            posRef.current = initial;
+            el.scrollLeft = Math.round(initial);
+            isInitializedRef.current = true;
           }
         }
 
@@ -119,8 +122,8 @@ export function InteractiveMarqueeTrack({
           posRef.current -= move;
         }
 
-        el.scrollLeft = posRef.current;
-        checkWrap();
+        el.scrollLeft = Math.round(posRef.current);
+        wrap();
       }
 
       animId = requestAnimationFrame(step);
@@ -131,7 +134,7 @@ export function InteractiveMarqueeTrack({
     return () => cancelAnimationFrame(animId);
   }, [direction, speed, isPaused]);
 
-  // Pointer drag handling with pointer capture
+  // Pointer drag handling
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
 
@@ -146,7 +149,7 @@ export function InteractiveMarqueeTrack({
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
     } catch {
-      // Ignore if pointer capture unavailable
+      // Ignore
     }
 
     isPointerDownRef.current = true;
@@ -181,8 +184,21 @@ export function InteractiveMarqueeTrack({
       lastTimeRef.current = now;
 
       posRef.current = startPosRef.current - diff;
-      el.scrollLeft = posRef.current;
-      checkWrap();
+      el.scrollLeft = Math.round(posRef.current);
+
+      // Handle wrapping during drag
+      const cycle = el.scrollWidth / 4;
+      if (cycle > 0) {
+        if (posRef.current >= cycle * 3) {
+          posRef.current -= cycle;
+          startPosRef.current -= cycle;
+          el.scrollLeft = Math.round(posRef.current);
+        } else if (posRef.current <= cycle * 0.2) {
+          posRef.current += cycle;
+          startPosRef.current += cycle;
+          el.scrollLeft = Math.round(posRef.current);
+        }
+      }
     }
   };
 
@@ -207,8 +223,8 @@ export function InteractiveMarqueeTrack({
         if (!el || isPointerDownRef.current) return;
         if (Math.abs(v) > 0.4) {
           posRef.current -= v;
-          el.scrollLeft = posRef.current;
-          checkWrap();
+          el.scrollLeft = Math.round(posRef.current);
+          wrap();
           v *= decay;
           requestAnimationFrame(glide);
         } else {
@@ -228,13 +244,6 @@ export function InteractiveMarqueeTrack({
   return (
     <div
       ref={containerRef}
-      onScroll={() => {
-        // Sync ref on external or native scroll
-        if (containerRef.current) {
-          posRef.current = containerRef.current.scrollLeft;
-          checkWrap();
-        }
-      }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
