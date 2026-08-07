@@ -11,32 +11,37 @@ interface MarqueeTrackProps {
 }
 
 /**
- * Synchronized, high-precision interactive marquee track.
+ * GPU-accelerated, silky-smooth marquee with effortless touch & mouse drag.
  *
- * Guarantees:
- * 1. Both top and bottom rows move at the EXACT same pixel speed (e.g. exactly 28px/s).
- * 2. Direction-aware boundary wrapping keeps the position cleanly inside the middle
- *    cycles without truncating or fighting against onScroll events.
- * 3. Fluid manual dragging with direct touch delta translation and inertia gliding.
+ * Why this feels like continuous liquid flow:
+ * 1. Uses CSS hardware-accelerated 3D transforms (`transform: translate3d(-Xpx, 0, 0)`).
+ *    Browser scrollLeft is quantized to integer pixels which causes visible step-by-step
+ *    micro-stuttering. 3D transform allows sub-pixel sub-60/120Hz interpolation.
+ * 2. Perfect continuous wrapping: When offset exceeds exactly 1 cycle (half of the 2-set width),
+ *    offset wraps cleanly by 1 cycle with zero visual seam or stutter.
+ * 3. Fluid manual dragging: Dragging directly adjusts the transform offset with 1:1 precision,
+ *    and smoothly transitions into inertia momentum glide.
  */
 export function InteractiveMarqueeTrack({
   children,
   direction = 'left',
-  speed = 28,
+  speed = 30,
   className = '',
   isPaused = false,
 }: MarqueeTrackProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+
   const [isInteracting, setIsInteracting] = useState(false);
 
-  // Floating point subpixel position
-  const posRef = useRef<number>(0);
-  const isInitializedRef = useRef<boolean>(false);
+  // Exact sub-pixel transform position
+  const offsetRef = useRef<number>(0);
+  const cycleWidthRef = useRef<number>(0);
 
-  // Interaction & gesture tracking
+  // Drag tracking
   const isPointerDownRef = useRef(false);
   const startXRef = useRef(0);
-  const startPosRef = useRef(0);
+  const startOffsetRef = useRef(0);
   const lastXRef = useRef(0);
   const velocityRef = useRef(0);
   const lastTimeRef = useRef(0);
@@ -48,49 +53,32 @@ export function InteractiveMarqueeTrack({
     userInteractingRef.current = isInteracting;
   }, [isInteracting]);
 
-  // Wrap position when passing cycle boundaries
-  const wrap = () => {
-    const el = containerRef.current;
-    if (!el) return;
-    const cycle = el.scrollWidth / 4;
-    if (cycle <= 0) return;
-
-    if (direction === 'left') {
-      // Moving left: pos increases
-      if (posRef.current >= cycle * 2.5) {
-        posRef.current -= cycle;
-        el.scrollLeft = Math.round(posRef.current);
-      }
-    } else {
-      // Moving right: pos decreases
-      if (posRef.current <= cycle * 0.5) {
-        posRef.current += cycle;
-        el.scrollLeft = Math.round(posRef.current);
-      }
+  // Measure cycle width (one set of children width)
+  const measure = () => {
+    const track = trackRef.current;
+    if (!track) return;
+    // We render 2 identical sets inside the track, so 1 cycle is exactly half the track width
+    const totalWidth = track.scrollWidth;
+    if (totalWidth > 0) {
+      cycleWidthRef.current = totalWidth / 2;
     }
   };
 
-  // Center the scroll inside the buffer on mount
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    measure();
+    const handleResize = () => measure();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [children]);
 
-    const setup = () => {
-      const cycle = el.scrollWidth / 4;
-      if (cycle > 0 && !isInitializedRef.current) {
-        // Start precisely at 1.5 * cycle to give symmetrical headroom in both directions
-        const initial = cycle * 1.5;
-        posRef.current = initial;
-        el.scrollLeft = Math.round(initial);
-        isInitializedRef.current = true;
-      }
-    };
+  // Apply smooth 3D transform
+  const applyTransform = (val: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    track.style.transform = `translate3d(${-val}px, 0, 0)`;
+  };
 
-    const timer = setTimeout(setup, 60);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Frame-by-frame exact velocity tick
+  // Continuous auto-run loop via requestAnimationFrame
   useEffect(() => {
     let animId: number;
     let prevTime: number | null = null;
@@ -99,31 +87,30 @@ export function InteractiveMarqueeTrack({
       if (prevTime === null) {
         prevTime = time;
       }
-      // Cap delta at 0.1s to prevent giant jumps if tab switches
       const delta = Math.min((time - prevTime) / 1000, 0.1);
       prevTime = time;
 
-      const el = containerRef.current;
-      if (el && !isPaused && !userInteractingRef.current) {
-        if (!isInitializedRef.current) {
-          const cycle = el.scrollWidth / 4;
-          if (cycle > 0) {
-            const initial = cycle * 1.5;
-            posRef.current = initial;
-            el.scrollLeft = Math.round(initial);
-            isInitializedRef.current = true;
+      if (!isPaused && !userInteractingRef.current) {
+        if (cycleWidthRef.current <= 0) {
+          measure();
+        }
+
+        const cycle = cycleWidthRef.current;
+        if (cycle > 0) {
+          const move = speed * delta;
+          if (direction === 'left') {
+            offsetRef.current += move;
+            if (offsetRef.current >= cycle) {
+              offsetRef.current -= cycle;
+            }
+          } else {
+            offsetRef.current -= move;
+            if (offsetRef.current <= 0) {
+              offsetRef.current += cycle;
+            }
           }
+          applyTransform(offsetRef.current);
         }
-
-        const move = speed * delta;
-        if (direction === 'left') {
-          posRef.current += move;
-        } else {
-          posRef.current -= move;
-        }
-
-        el.scrollLeft = Math.round(posRef.current);
-        wrap();
       }
 
       animId = requestAnimationFrame(step);
@@ -134,7 +121,7 @@ export function InteractiveMarqueeTrack({
     return () => cancelAnimationFrame(animId);
   }, [direction, speed, isPaused]);
 
-  // Pointer drag handling
+  // Pointer drag handlers
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
 
@@ -142,9 +129,6 @@ export function InteractiveMarqueeTrack({
       clearTimeout(resumeTimerRef.current);
       resumeTimerRef.current = null;
     }
-
-    const el = containerRef.current;
-    if (!el) return;
 
     try {
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -155,8 +139,7 @@ export function InteractiveMarqueeTrack({
     isPointerDownRef.current = true;
     hasDraggedRef.current = false;
     startXRef.current = e.clientX;
-    startPosRef.current = el.scrollLeft;
-    posRef.current = el.scrollLeft;
+    startOffsetRef.current = offsetRef.current;
     lastXRef.current = e.clientX;
     lastTimeRef.current = performance.now();
     velocityRef.current = 0;
@@ -165,8 +148,6 @@ export function InteractiveMarqueeTrack({
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isPointerDownRef.current) return;
-    const el = containerRef.current;
-    if (!el) return;
 
     const diff = e.clientX - startXRef.current;
     if (Math.abs(diff) > 4) {
@@ -183,22 +164,21 @@ export function InteractiveMarqueeTrack({
       lastXRef.current = currentX;
       lastTimeRef.current = now;
 
-      posRef.current = startPosRef.current - diff;
-      el.scrollLeft = Math.round(posRef.current);
-
-      // Handle wrapping during drag
-      const cycle = el.scrollWidth / 4;
+      const cycle = cycleWidthRef.current;
+      let nextOffset = startOffsetRef.current - diff;
       if (cycle > 0) {
-        if (posRef.current >= cycle * 3) {
-          posRef.current -= cycle;
-          startPosRef.current -= cycle;
-          el.scrollLeft = Math.round(posRef.current);
-        } else if (posRef.current <= cycle * 0.2) {
-          posRef.current += cycle;
-          startPosRef.current += cycle;
-          el.scrollLeft = Math.round(posRef.current);
+        while (nextOffset >= cycle) {
+          nextOffset -= cycle;
+          startOffsetRef.current -= cycle;
+        }
+        while (nextOffset < 0) {
+          nextOffset += cycle;
+          startOffsetRef.current += cycle;
         }
       }
+
+      offsetRef.current = nextOffset;
+      applyTransform(nextOffset);
     }
   };
 
@@ -214,17 +194,20 @@ export function InteractiveMarqueeTrack({
       // Ignore
     }
 
-    const el = containerRef.current;
-    if (el && hasDraggedRef.current && Math.abs(velocityRef.current) > 0.15) {
+    if (hasDraggedRef.current && Math.abs(velocityRef.current) > 0.15) {
       let v = velocityRef.current * 14;
       const decay = 0.93;
 
       const glide = () => {
-        if (!el || isPointerDownRef.current) return;
+        if (isPointerDownRef.current) return;
         if (Math.abs(v) > 0.4) {
-          posRef.current -= v;
-          el.scrollLeft = Math.round(posRef.current);
-          wrap();
+          const cycle = cycleWidthRef.current;
+          offsetRef.current -= v;
+          if (cycle > 0) {
+            while (offsetRef.current >= cycle) offsetRef.current -= cycle;
+            while (offsetRef.current < 0) offsetRef.current += cycle;
+          }
+          applyTransform(offsetRef.current);
           v *= decay;
           requestAnimationFrame(glide);
         } else {
@@ -260,7 +243,7 @@ export function InteractiveMarqueeTrack({
           e.stopPropagation();
         }
       }}
-      className={`no-scrollbar relative flex w-full overflow-x-hidden touch-pan-y select-none ${
+      className={`no-scrollbar relative flex w-full overflow-hidden touch-pan-y select-none ${
         isInteracting ? 'cursor-grabbing' : 'cursor-grab'
       } ${className}`}
       style={{
@@ -268,15 +251,21 @@ export function InteractiveMarqueeTrack({
         touchAction: 'pan-y',
       }}
     >
-      <div className="flex w-max shrink-0 items-center gap-4 px-4 sm:gap-6 sm:px-6">
+      <div
+        ref={trackRef}
+        className="flex shrink-0 items-center will-change-transform"
+        style={{
+          transform: 'translate3d(0, 0, 0)',
+        }}
+      >
         {/* Set 1 */}
-        {children}
-        {/* Set 2 */}
-        {children}
-        {/* Set 3 */}
-        {children}
-        {/* Set 4 */}
-        {children}
+        <div className="flex shrink-0 items-center gap-4 px-2 sm:gap-6 sm:px-3">
+          {children}
+        </div>
+        {/* Set 2 (Identical mirror for infinite 3D wrap) */}
+        <div className="flex shrink-0 items-center gap-4 px-2 sm:gap-6 sm:px-3" aria-hidden="true">
+          {children}
+        </div>
       </div>
     </div>
   );
