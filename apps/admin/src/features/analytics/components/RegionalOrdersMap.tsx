@@ -78,7 +78,7 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
             <div>
               <h2 className="text-lg font-bold text-black dark:text-white">🇮🇳 Regional Orders</h2>
               <p className="text-sm font-medium text-black/50 dark:text-white/50">
-                Interactive realistic map — {MOCK_STATE_ORDERS.length} states & UTs
+                Interactive realistic map — {activeStateOrders.length} states & UTs
               </p>
             </div>
             <div className="flex items-center gap-2 rounded-xl bg-[#6a4fbb]/10 px-3 py-1.5">
@@ -171,7 +171,9 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
                 hoveredState &&
                 (() => {
                   const activeState = hoveredState;
-                  const data = MOCK_STATE_ORDERS.find((s) => s.state === activeState);
+                  const data = activeStateOrders.find(
+                    (s) => s.state.toLowerCase() === activeState.toLowerCase(),
+                  );
                   if (!data) {
                     return null;
                   }
