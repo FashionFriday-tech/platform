@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 interface BrandCardProps {
   brand: Brand;
   className?: string;
+  skewed?: boolean;
 }
 
 function isDarkColor(hexColor?: string): boolean {
@@ -31,7 +32,7 @@ function isDarkColor(hexColor?: string): boolean {
   return true;
 }
 
-export const BrandCard = ({ brand, className }: BrandCardProps) => {
+export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) => {
   const [hasError, setHasError] = React.useState(false);
   const [hasFallbackText, setHasFallbackText] = React.useState(false);
   const isBlackBackground = brand.color === '#000000';
@@ -42,13 +43,19 @@ export const BrandCard = ({ brand, className }: BrandCardProps) => {
       <div
         className={cn(
           'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-8 md:rounded-4xl',
+          skewed && '-skew-x-[6deg]',
           className,
         )}
         style={{
           backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
         }}
       >
-        <div className="relative flex h-full w-full items-center justify-center">
+        <div
+          className={cn(
+            'relative flex h-full w-full items-center justify-center',
+            skewed && 'skew-x-[6deg]',
+          )}
+        >
           {brand.logo && !hasFallbackText ? (
             !hasError ? (
               <Image
