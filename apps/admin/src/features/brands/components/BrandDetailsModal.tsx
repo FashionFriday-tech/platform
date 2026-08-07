@@ -190,8 +190,10 @@ export function BrandDetailsModal({
           <div className="flex items-center gap-2 border-t border-black/5 bg-[#f8f9fa] p-4 sm:p-6 dark:border-white/5 dark:bg-[#1a1a1a]">
             <button
               onClick={() => {
-                onDelete();
-                onClose();
+                if (window.confirm(`Are you sure you want to delete ${brand.name}?`)) {
+                  onDelete();
+                  onClose();
+                }
               }}
               className="rounded-xl px-3 py-2 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
             >
@@ -215,7 +217,6 @@ export function BrandDetailsModal({
             <button
               onClick={() => {
                 onEdit();
-                onClose();
               }}
               className="flex-1 rounded-xl bg-black px-4 py-2 text-xs font-semibold text-white transition-transform hover:scale-102 active:scale-95 dark:bg-white dark:text-black"
             >
