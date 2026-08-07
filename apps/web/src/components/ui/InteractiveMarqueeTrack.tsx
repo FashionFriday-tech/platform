@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-interface CircularCarouselProps {
+interface MarqueeTrackProps {
   children: React.ReactNode;
   direction?: 'left' | 'right';
   speed?: number; // pixels per second
@@ -11,22 +11,24 @@ interface CircularCarouselProps {
 }
 
 /**
- * Never-ending Circular Carousel without duplicating the children list.
+ * High-performance, seamless infinite marquee with smooth manual drag/swipe.
  *
- * It operates conceptually like a circular doubly linked list in the DOM:
- * There is only ONE single list of card elements.
- * As items scroll out of view on one edge, they are dynamically moved/recycled
- * to the opposite end (appendChild / prepend) while adjusting scrollLeft by
- * the exact element width, resulting in zero flicker, zero visual jumps,
- * and genuine O(1) circular recycling with no DOM duplication.
+ * How it works:
+ * - Duplicates children 3 times so the viewport is ALWAYS completely filled,
+ *   even on small devices with only 2-3 unique cards.
+ * - Auto-scrolls smoothly via requestAnimationFrame.
+ * - As the container scrolls past 1 full set (1/3 of total scrollWidth),
+ *   it seamlessly wraps the scroll position by exactly one set width.
+ *   Because the 3 sets are identical, the wrap is 100% invisible with zero flicker or jumps.
+ * - Supports touch and mouse dragging with velocity inertia flick and auto-resume.
  */
 export function InteractiveMarqueeTrack({
   children,
   direction = 'left',
-  speed = 30,
+  speed = 28,
   className = '',
   isPaused = false,
-}: CircularCarouselProps) {
+}: MarqueeTrackProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -44,55 +46,41 @@ export function InteractiveMarqueeTrack({
   const isInteractingRef = useRef(false);
   const hasDraggedRef = useRef(false);
 
-  // Keep interaction state ref updated
   useEffect(() => {
     isInteractingRef.current = isDragging || isHovered;
   }, [isDragging, isHovered]);
 
-  /**
-   * Circular recycling check (Doubly Linked List node recycling):
-   * Inspects firstChild and lastChild relative to container viewport.
-   * If the first item has scrolled completely past the left edge,
-   * move it to the end and offset scrollLeft by its width + gap.
-   * Conversely, if the user scrolls right and the first item is fully visible
-   * with extra room on the left, move the last item to the front.
-   */
-  const recycleItems = useCallback(() => {
-    const container = containerRef.current;
-    const track = trackRef.current;
-    if (!container || !track) return;
+  // Handle seamless infinite looping across the 3 repeated sets
+  const wrapScrollPosition = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-    const childrenList = track.children;
-    if (childrenList.length < 2) return;
+    // A single cycle is exactly 1/3 of the scrollWidth (since we have 3 identical sets)
+    const cycleWidth = el.scrollWidth / 3;
+    if (cycleWidth <= 0) return;
 
-    // Check front element moving left (out of view on left)
-    let first = childrenList[0] as HTMLElement;
-    if (first) {
-      const firstRect = first.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-      // If the entire card is past the left boundary of the container
-      if (firstRect.right < containerRect.left) {
-        const itemWidthWithGap =
-          first.offsetWidth +
-          (parseInt(window.getComputedStyle(track).columnGap || '0', 10) || 16);
-        track.appendChild(first);
-        container.scrollLeft -= itemWidthWithGap;
-      }
+    if (el.scrollLeft >= cycleWidth * 2) {
+      el.scrollLeft -= cycleWidth;
+    } else if (el.scrollLeft <= 5) {
+      el.scrollLeft += cycleWidth;
     }
+  }, []);
 
-    // Check back element moving right (out of view on right)
-    let last = childrenList[childrenList.length - 1] as HTMLElement;
-    first = childrenList[0] as HTMLElement;
-    if (last && first) {
-      // If container scrolled near the start (left side room opened up)
-      if (container.scrollLeft <= 5) {
-        const itemWidthWithGap =
-          last.offsetWidth +
-          (parseInt(window.getComputedStyle(track).columnGap || '0', 10) || 16);
-        track.insertBefore(last, first);
-        container.scrollLeft += itemWidthWithGap;
+  // Set initial scroll position to the middle cycle so scrolling in either direction has room
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const initPos = () => {
+      const cycleWidth = el.scrollWidth / 3;
+      if (cycleWidth > 0) {
+        el.scrollLeft = cycleWidth;
       }
-    }
+    };
+
+    // Run after mount/render
+    const timer = setTimeout(initPos, 60);
+    return () => clearTimeout(timer);
   }, []);
 
   // Continuous auto-run loop using requestAnimationFrame
@@ -107,15 +95,15 @@ export function InteractiveMarqueeTrack({
       const delta = (timestamp - prevTimestamp) / 1000;
       prevTimestamp = timestamp;
 
-      const container = containerRef.current;
-      if (container && !isPaused && !isInteractingRef.current) {
+      const el = containerRef.current;
+      if (el && !isPaused && !isInteractingRef.current) {
         const move = speed * delta;
         if (direction === 'left') {
-          container.scrollLeft += move;
+          el.scrollLeft += move;
         } else {
-          container.scrollLeft -= move;
+          el.scrollLeft -= move;
         }
-        recycleItems();
+        wrapScrollPosition();
       }
 
       animationFrameId = requestAnimationFrame(step);
@@ -126,32 +114,7 @@ export function InteractiveMarqueeTrack({
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [direction, speed, isPaused, recycleItems]);
-
-  // Initial buffer placement so scrolling right has immediate preceding items
-  useEffect(() => {
-    const container = containerRef.current;
-    const track = trackRef.current;
-    if (!container || !track) return;
-
-    // Small delay to ensure layout rendered
-    const timer = setTimeout(() => {
-      if (container.scrollLeft === 0 && track.children.length > 2) {
-        // Move the last element to the front and offset scrollLeft so user can drag in either direction immediately
-        const last = track.children[track.children.length - 1] as HTMLElement;
-        const first = track.children[0] as HTMLElement;
-        if (last && first) {
-          const itemWidthWithGap =
-            last.offsetWidth +
-            (parseInt(window.getComputedStyle(track).columnGap || '0', 10) || 16);
-          track.insertBefore(last, first);
-          container.scrollLeft = itemWidthWithGap;
-        }
-      }
-    }, 50);
-
-    return () => clearTimeout(timer);
-  }, []);
+  }, [direction, speed, isPaused, wrapScrollPosition]);
 
   // Pointer drag handlers
   const onPointerDown = (e: React.PointerEvent) => {
@@ -162,13 +125,13 @@ export function InteractiveMarqueeTrack({
       resumeTimerRef.current = null;
     }
 
-    const container = containerRef.current;
-    if (!container) return;
+    const el = containerRef.current;
+    if (!el) return;
 
     isPointerDownRef.current = true;
     hasDraggedRef.current = false;
     startXRef.current = e.clientX;
-    startScrollLeftRef.current = container.scrollLeft;
+    startScrollLeftRef.current = el.scrollLeft;
     lastXRef.current = e.clientX;
     lastTimeRef.current = performance.now();
     velocityRef.current = 0;
@@ -176,8 +139,8 @@ export function InteractiveMarqueeTrack({
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!isPointerDownRef.current) return;
-    const container = containerRef.current;
-    if (!container) return;
+    const el = containerRef.current;
+    if (!el) return;
 
     const diff = e.clientX - startXRef.current;
     if (Math.abs(diff) > 4) {
@@ -199,8 +162,8 @@ export function InteractiveMarqueeTrack({
       lastXRef.current = currentX;
       lastTimeRef.current = now;
 
-      container.scrollLeft = startScrollLeftRef.current - diff;
-      recycleItems();
+      el.scrollLeft = startScrollLeftRef.current - diff;
+      wrapScrollPosition();
     }
   };
 
@@ -208,36 +171,36 @@ export function InteractiveMarqueeTrack({
     if (!isPointerDownRef.current) return;
     isPointerDownRef.current = false;
 
-    const container = containerRef.current;
-    if (container && hasDraggedRef.current && Math.abs(velocityRef.current) > 0.2) {
+    const el = containerRef.current;
+    if (el && hasDraggedRef.current && Math.abs(velocityRef.current) > 0.15) {
       let currentVelocity = velocityRef.current * 14;
       const decay = 0.93;
 
       const glide = () => {
-        if (!container || isPointerDownRef.current) return;
+        if (!el || isPointerDownRef.current) return;
         if (Math.abs(currentVelocity) > 0.4) {
-          container.scrollLeft -= currentVelocity;
-          recycleItems();
+          el.scrollLeft -= currentVelocity;
+          wrapScrollPosition();
           currentVelocity *= decay;
           requestAnimationFrame(glide);
         } else {
           resumeTimerRef.current = setTimeout(() => {
             setIsDragging(false);
-          }, 700);
+          }, 800);
         }
       };
       requestAnimationFrame(glide);
     } else {
       resumeTimerRef.current = setTimeout(() => {
         setIsDragging(false);
-      }, 700);
+      }, 800);
     }
   };
 
   return (
     <div
       ref={containerRef}
-      onScroll={recycleItems}
+      onScroll={wrapScrollPosition}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUpOrCancel}
@@ -265,11 +228,15 @@ export function InteractiveMarqueeTrack({
         touchAction: 'pan-y',
       }}
     >
-      {/* Exactly ONE list of cards: elements are dynamically recycled circularly as they cross boundaries */}
       <div
         ref={trackRef}
         className="flex w-max shrink-0 items-center gap-4 sm:gap-6 px-6"
       >
+        {/* Set 1 */}
+        {children}
+        {/* Set 2 */}
+        {children}
+        {/* Set 3 */}
         {children}
       </div>
     </div>
