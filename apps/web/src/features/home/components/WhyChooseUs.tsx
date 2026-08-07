@@ -330,7 +330,7 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: idx * 0.1 }}
-                  className="group relative -skew-x-[6deg] cursor-default overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 shadow-2xl transition-all duration-300 hover:border-zinc-600 hover:bg-zinc-900/80 sm:-skew-x-[8deg] sm:rounded-3xl sm:p-7"
+                  className="group relative -skew-x-[6deg] cursor-default overflow-hidden rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-xl transition-all duration-300 hover:border-zinc-300 hover:shadow-2xl sm:-skew-x-[8deg] sm:rounded-3xl sm:p-7 dark:border-zinc-800/80 dark:bg-zinc-900/40 dark:hover:border-zinc-600 dark:hover:bg-zinc-900/80"
                 >
                   {/* Luminous Shining Light Sweep */}
                   <div
@@ -341,15 +341,15 @@ export default function SplitFeatureSection({ initialReviews }: { initialReviews
                   {/* Inner Content - Counter-skewed like footer cards */}
                   <div className="relative z-10 flex w-full skew-x-[6deg] items-center gap-6 sm:skew-x-[8deg] sm:gap-8">
                     {/* Icon Box matching footer cards */}
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950 text-white transition-colors group-hover:border-zinc-500 sm:h-16 sm:w-16">
-                      <item.icon className="h-6 w-6 text-white transition-transform duration-300 group-hover:scale-110 sm:h-7 sm:w-7" />
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-zinc-900 transition-colors group-hover:border-zinc-400 sm:h-16 sm:w-16 dark:border-zinc-800 dark:bg-zinc-950 dark:text-white dark:group-hover:border-zinc-500">
+                      <item.icon className="h-6 w-6 text-zinc-900 transition-transform duration-300 group-hover:scale-110 sm:h-7 sm:w-7 dark:text-white" />
                     </div>
                     {/* Clean un-crossed straight text */}
                     <div>
-                      <h3 className="mb-1.5 flex items-center gap-2 text-lg font-bold tracking-wide text-white uppercase sm:mb-2 sm:text-xl">
+                      <h3 className="mb-1.5 flex items-center gap-2 text-lg font-bold tracking-wide text-zinc-900 uppercase sm:mb-2 sm:text-xl dark:text-white">
                         {item.title}
                       </h3>
-                      <p className="max-w-sm text-xs leading-relaxed text-zinc-400 transition-colors duration-300 sm:text-sm">
+                      <p className="max-w-sm text-xs leading-relaxed text-zinc-600 transition-colors duration-300 sm:text-sm dark:text-zinc-400">
                         {item.desc}
                       </p>
                     </div>
