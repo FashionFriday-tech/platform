@@ -79,17 +79,23 @@ export function useBrands() {
   const handleSaveBrand = async (savedBrand: Brand, isEdit: boolean, originalSlug?: string) => {
     try {
       if (isEdit && originalSlug) {
-        // Find existing brand to get ID
-        const existingBrand = brands.find((b) => b.slug === originalSlug);
-        if (existingBrand?.id) {
+        // Find existing brand to get ID or match by slug
+        const existingBrand = brands.find((b) => b.slug === originalSlug || (b.id && b.id === (savedBrand as any).id));
+        const targetId = existingBrand?.id || (savedBrand as any).id;
+        
+        if (targetId) {
           const updated = await api.patch<Brand>(
-            `/admin/brands/${existingBrand.id}`,
+            `/admin/brands/${targetId}`,
             savedBrand,
           );
-          setBrands((prev) => prev.map((b) => (b.slug === originalSlug ? updated : b)));
-          if (selectedBrand?.slug === originalSlug) {
-            setSelectedBrand(updated);
+          setBrands((prev) => prev.map((b) => (b.slug === originalSlug || b.id === targetId ? { ...b, ...updated } : b)));
+          if (selectedBrand?.slug === originalSlug || selectedBrand?.id === targetId) {
+            setSelectedBrand((prev) => (prev ? { ...prev, ...updated } : updated));
           }
+        } else {
+          // If no ID exists locally, create or refresh
+          const created = await api.post<Brand>('/admin/brands', savedBrand);
+          setBrands((prev) => [created, ...prev.filter((b) => b.slug !== originalSlug)]);
         }
       } else {
         const created = await api.post<Brand>('/admin/brands', savedBrand);
@@ -111,6 +117,12 @@ export function useBrands() {
     try {
       if (brandWithId.id) {
         await api.delete(`/admin/brands/${brandWithId.id}`);
+      } else {
+        // Try to find the brand in current state with an id matching the slug
+        const match = brands.find((b) => b.slug === selectedBrand.slug && b.id);
+        if (match?.id) {
+          await api.delete(`/admin/brands/${match.id}`);
+        }
       }
 
       if (
@@ -127,7 +139,7 @@ export function useBrands() {
         }
       }
 
-      setBrands((prev) => prev.filter((b) => b.slug !== selectedBrand.slug));
+      setBrands((prev) => prev.filter((b) => b.slug !== selectedBrand.slug && (!b.id || b.id !== brandWithId.id)));
       setSelectedBrand(null);
     } catch (err) {
       console.error('Failed to delete brand:', err);
@@ -136,34 +148,38 @@ export function useBrands() {
 
   const handleToggleBrandStatus = async (brand: Brand) => {
     const brandWithId = brand as Brand & { id?: string };
-    if (!brandWithId.id) {
+    const targetId = brandWithId.id || brands.find((b) => b.slug === brand.slug)?.id;
+
+    if (!targetId) {
+      console.warn('Brand has no id to toggle:', brand);
       return;
     }
+
     const currentActive = brand.isActive !== false;
     const nextActive = !currentActive;
 
     // Optimistic state update
     setBrands((prev) =>
-      prev.map((b) => (b.id === brandWithId.id ? { ...b, isActive: nextActive } : b)),
+      prev.map((b) => (b.id === targetId || b.slug === brand.slug ? { ...b, isActive: nextActive } : b)),
     );
-    if (selectedBrand?.id === brandWithId.id) {
+    if (selectedBrand && (selectedBrand.id === targetId || selectedBrand.slug === brand.slug)) {
       setSelectedBrand((prev) => (prev ? { ...prev, isActive: nextActive } : null));
     }
 
     try {
-      const updated = await api.patch<Brand>(`/admin/brands/${brandWithId.id}/toggle`);
-      setBrands((prev) => prev.map((b) => (b.id === brandWithId.id ? updated : b)));
-      if (selectedBrand?.id === brandWithId.id) {
-        setSelectedBrand(updated);
+      const updated = await api.patch<Brand>(`/admin/brands/${targetId}/toggle`);
+      setBrands((prev) => prev.map((b) => (b.id === targetId || b.slug === brand.slug ? { ...b, ...updated } : b)));
+      if (selectedBrand && (selectedBrand.id === targetId || selectedBrand.slug === brand.slug)) {
+        setSelectedBrand((prev) => (prev ? { ...prev, ...updated } : updated));
       }
     } catch (err) {
       console.error('Failed to toggle brand status:', err);
       // Rollback
       setBrands((prev) =>
-        prev.map((b) => (b.id === brandWithId.id ? { ...b, isActive: currentActive } : b)),
+        prev.map((b) => (b.id === targetId || b.slug === brand.slug ? { ...b, isActive: currentActive } : b)),
       );
-      if (selectedBrand?.id === brandWithId.id) {
-        setSelectedBrand(brand);
+      if (selectedBrand && (selectedBrand.id === targetId || selectedBrand.slug === brand.slug)) {
+        setSelectedBrand((prev) => (prev ? { ...prev, isActive: currentActive } : null));
       }
     }
   };
