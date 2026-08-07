@@ -23,14 +23,27 @@ export function useBrands() {
       setIsLoading(true);
       const data = await api.get<Brand[]>('/admin/brands');
       if (Array.isArray(data) && data.length > 0) {
-        setBrands(data);
+        // Deduplicate any duplicates that might have same slug
+        const seenSlugs = new Set<string>();
+        const unique = data.filter((b) => {
+          if (!b.slug || seenSlugs.has(b.slug)) return false;
+          seenSlugs.add(b.slug);
+          return true;
+        });
+        setBrands(unique);
       } else {
         setBrands(BRAND_LOGOS);
       }
     } catch (err) {
       console.error('Failed to fetch brands from /admin/brands:', err);
-      // Fallback so admin panel always renders brand catalog
-      setBrands(BRAND_LOGOS);
+      // Fallback deduplicated so admin panel always renders clean brand catalog
+      const seenSlugs = new Set<string>();
+      const unique = BRAND_LOGOS.filter((b) => {
+        if (!b.slug || seenSlugs.has(b.slug)) return false;
+        seenSlugs.add(b.slug);
+        return true;
+      });
+      setBrands(unique);
     } finally {
       setIsLoading(false);
     }
@@ -99,7 +112,7 @@ export function useBrands() {
         }
       } else {
         const created = await api.post<Brand>('/admin/brands', savedBrand);
-        setBrands((prev) => [created, ...prev]);
+        setBrands((prev) => [created, ...prev.filter((b) => b.slug !== created.slug)]);
       }
       setBrandToEdit(null);
     } catch (err) {
@@ -112,37 +125,34 @@ export function useBrands() {
       return;
     }
 
-    const brandWithId = selectedBrand as Brand & { id?: string };
+    const brandToDelete = selectedBrand;
+    const targetId = brandToDelete.id || brands.find((b) => b.slug === brandToDelete.slug && b.id)?.id;
+
+    // Immediately remove from local state
+    setBrands((prev) => prev.filter((b) => b.slug !== brandToDelete.slug && (!targetId || b.id !== targetId)));
+    setSelectedBrand(null);
 
     try {
-      if (brandWithId.id) {
-        await api.delete(`/admin/brands/${brandWithId.id}`);
-      } else {
-        // Try to find the brand in current state with an id matching the slug
-        const match = brands.find((b) => b.slug === selectedBrand.slug && b.id);
-        if (match?.id) {
-          await api.delete(`/admin/brands/${match.id}`);
-        }
+      if (targetId) {
+        await api.delete(`/admin/brands/${targetId}`);
       }
 
+      // Cleanup uploaded brand logo if applicable
       if (
-        selectedBrand.logo &&
-        selectedBrand.logo.startsWith('http') &&
-        !selectedBrand.logo.includes('localhost')
+        brandToDelete.logo &&
+        brandToDelete.logo.startsWith('http') &&
+        !brandToDelete.logo.includes('localhost')
       ) {
         try {
-          await api.delete('/admin/upload/batch', {
-            body: JSON.stringify({ urls: [selectedBrand.logo] }),
-          });
-        } catch (err) {
-          console.error('Failed to cleanup brand logo on delete:', err);
+          await api.post('/admin/upload/batch', { urls: [brandToDelete.logo] });
+        } catch {
+          // Silently ignore asset cleanup failure
         }
       }
-
-      setBrands((prev) => prev.filter((b) => b.slug !== selectedBrand.slug && (!b.id || b.id !== brandWithId.id)));
-      setSelectedBrand(null);
     } catch (err) {
-      console.error('Failed to delete brand:', err);
+      console.error('Failed to delete brand from database:', err);
+      // Re-fetch to synchronize in case of real network failure
+      void fetchBrands();
     }
   };
 
@@ -150,35 +160,37 @@ export function useBrands() {
     const brandWithId = brand as Brand & { id?: string };
     const targetId = brandWithId.id || brands.find((b) => b.slug === brand.slug)?.id;
 
-    if (!targetId) {
-      console.warn('Brand has no id to toggle:', brand);
-      return;
-    }
-
     const currentActive = brand.isActive !== false;
     const nextActive = !currentActive;
 
-    // Optimistic state update
+    // Optimistic state update across all instances
     setBrands((prev) =>
-      prev.map((b) => (b.id === targetId || b.slug === brand.slug ? { ...b, isActive: nextActive } : b)),
+      prev.map((b) => ((targetId && b.id === targetId) || b.slug === brand.slug ? { ...b, isActive: nextActive } : b)),
     );
-    if (selectedBrand && (selectedBrand.id === targetId || selectedBrand.slug === brand.slug)) {
+    if (selectedBrand && ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)) {
       setSelectedBrand((prev) => (prev ? { ...prev, isActive: nextActive } : null));
+    }
+
+    if (!targetId) {
+      console.warn('Brand has no id to toggle on backend:', brand.slug);
+      return;
     }
 
     try {
       const updated = await api.patch<Brand>(`/admin/brands/${targetId}/toggle`);
-      setBrands((prev) => prev.map((b) => (b.id === targetId || b.slug === brand.slug ? { ...b, ...updated } : b)));
-      if (selectedBrand && (selectedBrand.id === targetId || selectedBrand.slug === brand.slug)) {
+      setBrands((prev) =>
+        prev.map((b) => ((targetId && b.id === targetId) || b.slug === brand.slug ? { ...b, ...updated } : b)),
+      );
+      if (selectedBrand && ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)) {
         setSelectedBrand((prev) => (prev ? { ...prev, ...updated } : updated));
       }
     } catch (err) {
       console.error('Failed to toggle brand status:', err);
-      // Rollback
+      // Rollback on failure
       setBrands((prev) =>
-        prev.map((b) => (b.id === targetId || b.slug === brand.slug ? { ...b, isActive: currentActive } : b)),
+        prev.map((b) => ((targetId && b.id === targetId) || b.slug === brand.slug ? { ...b, isActive: currentActive } : b)),
       );
-      if (selectedBrand && (selectedBrand.id === targetId || selectedBrand.slug === brand.slug)) {
+      if (selectedBrand && ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)) {
         setSelectedBrand((prev) => (prev ? { ...prev, isActive: currentActive } : null));
       }
     }

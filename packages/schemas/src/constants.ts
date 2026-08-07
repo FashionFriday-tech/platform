@@ -118,13 +118,6 @@ export const BRAND_LOGOS: Brand[] = [
   },
   {
     name: 'Skechers',
-    slug: 'skechers-logo',
-    color: '#003580',
-    logo: 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/brands/skechers.webp',
-    categories: ['footwear'],
-  },
-  {
-    name: 'Skechers',
     slug: 'skechers',
     color: '#003580',
     logo: 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/brands/skechers.webp',
@@ -447,13 +440,6 @@ export const BRAND_LOGOS: Brand[] = [
     categories: ['footwear'],
   },
   {
-    name: 'Balmain Paris',
-    slug: 'balmain-paris',
-    color: '#000000',
-    logo: 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/brands/balmain.webp',
-    categories: ['clothing'],
-  },
-  {
     name: 'Balmain',
     slug: 'balmain',
     color: '#000000',
@@ -494,13 +480,6 @@ export const BRAND_LOGOS: Brand[] = [
     color: '#555555',
     logo: 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/brands/apple.webp',
     categories: ['accessories'],
-  },
-  {
-    name: 'Amiri Logo',
-    slug: 'amiri-logo',
-    color: '#000000',
-    logo: 'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/brands/amiri.webp',
-    categories: ['clothing'],
   },
   {
     name: 'Amiri',
