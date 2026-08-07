@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface MarqueeTrackProps {
   children: React.ReactNode;
@@ -11,16 +11,18 @@ interface MarqueeTrackProps {
 }
 
 /**
- * High-performance, seamless infinite marquee with smooth manual drag/swipe.
+ * Native-feeling, ultra-smooth interactive marquee with native touch physics.
  *
- * How it works:
- * - Duplicates children 3 times so the viewport is ALWAYS completely filled,
- *   even on small devices with only 2-3 unique cards.
- * - Auto-scrolls smoothly via requestAnimationFrame.
- * - As the container scrolls past 1 full set (1/3 of total scrollWidth),
- *   it seamlessly wraps the scroll position by exactly one set width.
- *   Because the 3 sets are identical, the wrap is 100% invisible with zero flicker or jumps.
- * - Supports touch and mouse dragging with velocity inertia flick and auto-resume.
+ * Architecture:
+ * 1. Uses a 4x repeated track so that even with only 2-3 cards, the scrollable width
+ *    is wide enough to allow continuous, fluid movement in both directions.
+ * 2. When the user is NOT dragging, requestAnimationFrame continuously auto-scrolls
+ *    the container in the specified direction at a consistent speed.
+ * 3. When the user touches / drags, pointer events capture the gesture naturally.
+ *    CSS `touchAction: 'pan-y'` and `-webkit-overflow-scrolling: touch` allow the user
+ *    to flick and swipe with zero tightness or resistance.
+ * 4. Infinite wrapping: Whenever scroll reaches 2 cycles, it subtracts 1 cycle;
+ *    whenever it reaches near 0, it adds 1 cycle. The wrap is completely invisible.
  */
 export function InteractiveMarqueeTrack({
   children,
@@ -30,95 +32,90 @@ export function InteractiveMarqueeTrack({
   isPaused = false,
 }: MarqueeTrackProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const [isInteracting, setIsInteracting] = useState(false);
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Interaction & gesture tracking
+  // Drag & pointer tracking
   const isPointerDownRef = useRef(false);
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);
   const lastXRef = useRef(0);
   const velocityRef = useRef(0);
-  const lastTimeRef = useRef<number | null>(null);
-  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isInteractingRef = useRef(false);
+  const lastTimeRef = useRef(0);
   const hasDraggedRef = useRef(false);
+  const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const userInteractingRef = useRef(false);
 
+  // Keep interaction ref in sync for RAF loop
   useEffect(() => {
-    isInteractingRef.current = isDragging || isHovered;
-  }, [isDragging, isHovered]);
+    userInteractingRef.current = isInteracting;
+  }, [isInteracting]);
 
-  // Handle seamless infinite looping across the 3 repeated sets
-  const wrapScrollPosition = useCallback(() => {
+  // Seamless boundary wrap helper
+  const wrapScroll = () => {
     const el = containerRef.current;
     if (!el) return;
+    // 4 identical sets rendered, so 1 cycle is 1/4 of total scrollWidth
+    const cycle = el.scrollWidth / 4;
+    if (cycle <= 0) return;
 
-    // A single cycle is exactly 1/3 of the scrollWidth (since we have 3 identical sets)
-    const cycleWidth = el.scrollWidth / 3;
-    if (cycleWidth <= 0) return;
-
-    if (el.scrollLeft >= cycleWidth * 2) {
-      el.scrollLeft -= cycleWidth;
-    } else if (el.scrollLeft <= 5) {
-      el.scrollLeft += cycleWidth;
+    if (el.scrollLeft >= cycle * 2.5) {
+      el.scrollLeft -= cycle;
+    } else if (el.scrollLeft <= cycle * 0.5) {
+      el.scrollLeft += cycle;
     }
-  }, []);
+  };
 
-  // Set initial scroll position to the middle cycle so scrolling in either direction has room
+  // Center scroll position on mount so both left & right have plenty of room
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const initPos = () => {
-      const cycleWidth = el.scrollWidth / 3;
-      if (cycleWidth > 0) {
-        el.scrollLeft = cycleWidth;
+    const setInitialPos = () => {
+      const cycle = el.scrollWidth / 4;
+      if (cycle > 0) {
+        el.scrollLeft = cycle;
       }
     };
 
-    // Run after mount/render
-    const timer = setTimeout(initPos, 60);
+    const timer = setTimeout(setInitialPos, 50);
     return () => clearTimeout(timer);
   }, []);
 
-  // Continuous auto-run loop using requestAnimationFrame
+  // Continuous auto-run loop via requestAnimationFrame
   useEffect(() => {
-    let animationFrameId: number;
-    let prevTimestamp: number | null = null;
+    let animId: number;
+    let prevTime: number | null = null;
 
-    const step = (timestamp: number) => {
-      if (prevTimestamp === null) {
-        prevTimestamp = timestamp;
+    const step = (time: number) => {
+      if (prevTime === null) {
+        prevTime = time;
       }
-      const delta = (timestamp - prevTimestamp) / 1000;
-      prevTimestamp = timestamp;
+      const delta = (time - prevTime) / 1000;
+      prevTime = time;
 
       const el = containerRef.current;
-      if (el && !isPaused && !isInteractingRef.current) {
+      if (el && !isPaused && !userInteractingRef.current) {
         const move = speed * delta;
         if (direction === 'left') {
           el.scrollLeft += move;
         } else {
           el.scrollLeft -= move;
         }
-        wrapScrollPosition();
+        wrapScroll();
       }
 
-      animationFrameId = requestAnimationFrame(step);
+      animId = requestAnimationFrame(step);
     };
 
-    animationFrameId = requestAnimationFrame(step);
+    animId = requestAnimationFrame(step);
 
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [direction, speed, isPaused, wrapScrollPosition]);
+    return () => cancelAnimationFrame(animId);
+  }, [direction, speed, isPaused]);
 
-  // Pointer drag handlers
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (e.button !== 0) return;
+  // Native Pointer/Touch handling with fluid momentum
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Only left click or touch
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
 
     if (resumeTimerRef.current) {
       clearTimeout(resumeTimerRef.current);
@@ -135,108 +132,106 @@ export function InteractiveMarqueeTrack({
     lastXRef.current = e.clientX;
     lastTimeRef.current = performance.now();
     velocityRef.current = 0;
+    setIsInteracting(true);
   };
 
-  const onPointerMove = (e: React.PointerEvent) => {
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!isPointerDownRef.current) return;
     const el = containerRef.current;
     if (!el) return;
 
     const diff = e.clientX - startXRef.current;
-    if (Math.abs(diff) > 4) {
+    if (Math.abs(diff) > 3) {
       hasDraggedRef.current = true;
-      if (!isDragging) {
-        setIsDragging(true);
-      }
     }
 
     if (hasDraggedRef.current) {
-      const currentX = e.clientX;
       const now = performance.now();
-      if (lastTimeRef.current) {
-        const timeDiff = now - lastTimeRef.current;
-        if (timeDiff > 0) {
-          velocityRef.current = (currentX - lastXRef.current) / timeDiff;
-        }
+      const currentX = e.clientX;
+      const timeDiff = now - lastTimeRef.current;
+      if (timeDiff > 0) {
+        // Direct responsive 1:1 pixel tracking
+        velocityRef.current = (currentX - lastXRef.current) / timeDiff;
       }
       lastXRef.current = currentX;
       lastTimeRef.current = now;
 
       el.scrollLeft = startScrollLeftRef.current - diff;
-      wrapScrollPosition();
+      wrapScroll();
     }
   };
 
-  const onPointerUpOrCancel = () => {
+  const onPointerUp = () => {
     if (!isPointerDownRef.current) return;
     isPointerDownRef.current = false;
 
     const el = containerRef.current;
-    if (el && hasDraggedRef.current && Math.abs(velocityRef.current) > 0.15) {
-      let currentVelocity = velocityRef.current * 14;
-      const decay = 0.93;
+    if (el && hasDraggedRef.current && Math.abs(velocityRef.current) > 0.1) {
+      // Natural momentum inertia decay
+      let v = velocityRef.current * 16;
+      const decay = 0.94;
 
       const glide = () => {
         if (!el || isPointerDownRef.current) return;
-        if (Math.abs(currentVelocity) > 0.4) {
-          el.scrollLeft -= currentVelocity;
-          wrapScrollPosition();
-          currentVelocity *= decay;
+        if (Math.abs(v) > 0.3) {
+          el.scrollLeft -= v;
+          wrapScroll();
+          v *= decay;
           requestAnimationFrame(glide);
         } else {
+          // Resume auto-scroll after momentum settles
           resumeTimerRef.current = setTimeout(() => {
-            setIsDragging(false);
-          }, 800);
+            setIsInteracting(false);
+          }, 600);
         }
       };
       requestAnimationFrame(glide);
     } else {
       resumeTimerRef.current = setTimeout(() => {
-        setIsDragging(false);
-      }, 800);
+        setIsInteracting(false);
+      }, 600);
     }
   };
 
   return (
     <div
       ref={containerRef}
-      onScroll={wrapScrollPosition}
+      onScroll={wrapScroll}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
-      onPointerUp={onPointerUpOrCancel}
-      onPointerCancel={onPointerUpOrCancel}
-      onMouseEnter={() => setIsHovered(true)}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+      onMouseEnter={() => setIsInteracting(true)}
       onMouseLeave={() => {
-        setIsHovered(false);
-        if (isPointerDownRef.current) {
-          onPointerUpOrCancel();
+        if (!isPointerDownRef.current) {
+          setIsInteracting(false);
         }
       }}
       onClickCapture={(e) => {
+        // Prevent accidental card opening if the user was swiping/dragging
         if (hasDraggedRef.current) {
           e.preventDefault();
           e.stopPropagation();
         }
       }}
-      className={`no-scrollbar flex w-full overflow-x-auto select-none ${
-        isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      className={`no-scrollbar relative flex w-full overflow-x-auto select-none ${
+        isInteracting ? 'cursor-grabbing' : 'cursor-grab'
       } ${className}`}
       style={{
         WebkitOverflowScrolling: 'touch',
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
-        touchAction: 'pan-y',
+        touchAction: 'pan-y', // Free natural vertical scrolling while horizontally draggable
       }}
     >
-      <div
-        ref={trackRef}
-        className="flex w-max shrink-0 items-center gap-4 sm:gap-6 px-6"
-      >
+      <div className="flex w-max shrink-0 items-center gap-4 px-4 sm:gap-6 sm:px-6">
         {/* Set 1 */}
         {children}
         {/* Set 2 */}
         {children}
         {/* Set 3 */}
+        {children}
+        {/* Set 4 */}
         {children}
       </div>
     </div>
