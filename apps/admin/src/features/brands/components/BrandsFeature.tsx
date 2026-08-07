@@ -355,7 +355,9 @@ export default function BrandsFeature() {
         onDelete={handleDeleteBrand}
         onToggleStatus={handleToggleBrandStatus}
         onEdit={() => {
-          setBrandToEdit(selectedBrand);
+          const toEdit = selectedBrand;
+          setSelectedBrand(null);
+          setBrandToEdit(toEdit);
           setIsAddModalOpen(true);
         }}
       />
