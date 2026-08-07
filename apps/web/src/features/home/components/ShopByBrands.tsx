@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { type Brand, BRAND_LOGOS } from '@ff/schemas';
 import { ArrowUpRightIcon } from '@ff/ui';
 
+import { InteractiveMarqueeTrack } from '@/components/ui/InteractiveMarqueeTrack';
 import { BrandCard, useBrands } from '@/features/brand';
 
 const FEATURED_BRAND_NAMES = ['nike', 'adidas', 'zara', 'crocs', 'new balance', 'asics'];
@@ -33,36 +34,12 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   const featuredBrands = sourceBrands.filter((brand) =>
     FEATURED_BRAND_NAMES.includes(brand.name.toLowerCase()),
   );
-  // Limit to 6-8 brands so the section stays curated and high-impact
-  const displayList = (featuredBrands.length > 0 ? featuredBrands : sourceBrands).slice(0, 6);
+  // Limit to 8 brands so the section stays curated and high-impact
+  const displayList = (featuredBrands.length > 0 ? featuredBrands : sourceBrands).slice(0, 8);
 
-  // Split into two mobile rows (3 items each if 6 brands)
-  const midpoint = Math.ceil(displayList.length / 2);
-  const firstHalf = displayList.slice(0, midpoint);
-  const secondHalf = displayList.slice(midpoint);
-
-  // Repeat sufficiently to guarantee continuous seamless scrolling on any mobile screen width
-  const row1Items = [...firstHalf, ...firstHalf, ...firstHalf, ...firstHalf];
-  const row2Items = [...secondHalf, ...secondHalf, ...secondHalf, ...secondHalf];
-
-  // Desktop single-row marquee items
-  const desktopItems = [...displayList, ...displayList];
-
-  // Constant speed logic: calculate duration from distance (pixels) so speed doesn't increase with more cards
-  const MOBILE_SPEED_PX_PER_SEC = 25;
-  const DESKTOP_SPEED_PX_PER_SEC = 15; // Slower on large screens
-
-  const MOBILE_CARD_PX = 195 + 16; // 195px width + 16px gap (1rem) (aspect 3/4 with 260px height)
-  const DESKTOP_CARD_PX = 300 + 24; // 300px width + 24px gap (1.5rem) (aspect 3/4 with 400px height)
-
-  // Distance of 50% track (one full cycle of the repeated items)
-  const row1Distance = (row1Items.length / 2) * MOBILE_CARD_PX;
-  const row2Distance = (row2Items.length / 2) * MOBILE_CARD_PX;
-  const desktopDistance = (desktopItems.length / 2) * DESKTOP_CARD_PX;
-
-  const row1Duration = Math.round(row1Distance / MOBILE_SPEED_PX_PER_SEC);
-  const row2Duration = Math.round(row2Distance / MOBILE_SPEED_PX_PER_SEC);
-  const desktopDuration = Math.round(desktopDistance / DESKTOP_SPEED_PX_PER_SEC);
+  // Split into two mobile rows with alternating brands
+  const firstHalf = displayList.filter((_, i) => i % 2 === 0);
+  const secondHalf = displayList.filter((_, i) => i % 2 !== 0);
 
   if (displayList.length === 0) {
     return null;
@@ -78,100 +55,57 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
 
         {/* Marquee tracks: single row on desktop (sm:block), two rows on mobile (sm:hidden) */}
         <div ref={containerRef} className="relative w-full overflow-hidden py-1 sm:py-3">
-          <style>{`
-            @keyframes brand-marquee-left {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            @keyframes brand-marquee-right {
-              0% { transform: translateX(-50%); }
-              100% { transform: translateX(0); }
-            }
-            .animate-brand-marquee-left {
-              display: flex;
-              width: max-content;
-              animation-name: brand-marquee-left;
-              animation-timing-function: linear;
-              animation-iteration-count: infinite;
-              gap: 1rem;
-            }
-            .animate-brand-marquee-right {
-              display: flex;
-              width: max-content;
-              animation-name: brand-marquee-right;
-              animation-timing-function: linear;
-              animation-iteration-count: infinite;
-              gap: 1rem;
-            }
-            @media (min-width: 640px) {
-              .animate-brand-marquee-left,
-              .animate-brand-marquee-right {
-                gap: 1.5rem;
-              }
-            }
-            .animate-brand-marquee-left:hover,
-            .animate-brand-marquee-right:hover {
-              animation-play-state: paused;
-            }
-          `}</style>
-
           {/* LARGE SCREENS ONLY: Single Row (Hidden on mobile under 640px) */}
           <div className="hidden sm:block">
-            <div
-              className="animate-brand-marquee-left relative z-10 px-6"
-              style={{
-                animationDuration: `${desktopDuration}s`,
-                animationPlayState: isInView ? 'running' : 'paused',
-              }}
+            <InteractiveMarqueeTrack
+              direction="left"
+              speed={30}
+              isPaused={!isInView}
             >
-              {desktopItems.map((brand, idx) => (
+              {displayList.map((brand, idx) => (
                 <div
                   key={`desktop-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[400px] w-[300px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
+                  className="relative aspect-[3/4] h-[400px] w-[300px] shrink-0 md:h-[480px] md:w-[360px]"
                 >
                   <BrandCard brand={brand} skewed />
                 </div>
               ))}
-            </div>
+            </InteractiveMarqueeTrack>
           </div>
 
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
           <div className="flex flex-col gap-4 sm:hidden">
             {/* ROW 1: Moves Left */}
-            <div
-              className="animate-brand-marquee-left relative z-10 px-6"
-              style={{
-                animationDuration: `${row1Duration}s`,
-                animationPlayState: isInView ? 'running' : 'paused',
-              }}
+            <InteractiveMarqueeTrack
+              direction="left"
+              speed={28}
+              isPaused={!isInView}
             >
-              {row1Items.map((brand, idx) => (
+              {firstHalf.map((brand, idx) => (
                 <div
                   key={`r1-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="relative aspect-[3/4] h-[260px] w-[195px] shrink-0"
                 >
                   <BrandCard brand={brand} skewed />
                 </div>
               ))}
-            </div>
+            </InteractiveMarqueeTrack>
 
             {/* ROW 2: Moves Right */}
-            <div
-              className="animate-brand-marquee-right relative z-10 px-6"
-              style={{
-                animationDuration: `${row2Duration}s`,
-                animationPlayState: isInView ? 'running' : 'paused',
-              }}
+            <InteractiveMarqueeTrack
+              direction="right"
+              speed={28}
+              isPaused={!isInView}
             >
-              {row2Items.map((brand, idx) => (
+              {secondHalf.map((brand, idx) => (
                 <div
                   key={`r2-mobile-${brand.slug}-${idx}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="relative aspect-[3/4] h-[260px] w-[195px] shrink-0"
                 >
                   <BrandCard brand={brand} skewed />
                 </div>
               ))}
-            </div>
+            </InteractiveMarqueeTrack>
           </div>
         </div>
 

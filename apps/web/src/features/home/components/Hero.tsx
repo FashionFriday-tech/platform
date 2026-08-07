@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import type { Brand } from '@ff/schemas';
 import { motion } from 'motion/react';
 
+import { InteractiveMarqueeTrack } from '@/components/ui/InteractiveMarqueeTrack';
 import { SearchBox } from '@/components/ui/search-box';
 
 import { useHeroCarousel } from '../hooks/use-hero-carousel';
@@ -33,8 +34,6 @@ export default function Hero({
     pauseTimer,
     resumeTimer,
   } = useHeroCarousel(initialCampaigns);
-
-  const repeatedCards = [...cards, ...cards, ...cards];
 
   const handleSearchSubmit = (term: string) => {
     const clean = term.trim();
@@ -279,18 +278,20 @@ export default function Hero({
         </div>
       )}
 
-      {/* 3. Large screen scrolling marquee carousel (hidden on small devices, flex on lg) */}
+      {/* 3. Large screen scrolling carousel with manual drag and circular auto-run (hidden on small devices, block on lg) */}
       {cards.length > 0 && (
         <div className="hidden w-full overflow-hidden lg:block">
-          <div
-            className="carousel-track flex h-[75vh] items-stretch gap-6 px-2"
-            style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+          <InteractiveMarqueeTrack
+            direction="left"
+            speed={35}
+            isPaused={!isInView}
+            className="h-[75vh]"
           >
-            {repeatedCards.map((card, idx) => (
+            {cards.map((card, idx) => (
               <Link
                 key={`${card.id}-${idx}`}
                 href={card.linkUrl || '/products'}
-                className="group relative aspect-[3/5] h-full shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
+                className="group relative aspect-[3/5] h-[75vh] shrink-0 overflow-hidden rounded-4xl bg-black/5 dark:bg-white/5"
               >
                 <Image
                   src={card.src}
@@ -306,7 +307,7 @@ export default function Hero({
                 </div>
               </Link>
             ))}
-          </div>
+          </InteractiveMarqueeTrack>
         </div>
       )}
 

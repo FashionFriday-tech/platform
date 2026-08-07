@@ -6,6 +6,8 @@ import Link from 'next/link';
 
 import { ArrowUpRightIcon } from '@ff/ui';
 
+import { InteractiveMarqueeTrack } from '@/components/ui/InteractiveMarqueeTrack';
+
 interface CollectionItem {
   id: string;
   name: string;
@@ -58,13 +60,6 @@ export default function CollectionsSection({
   const firstHalf = collections.slice(0, midpoint);
   const secondHalf = collections.slice(midpoint);
 
-  // Duplicate subsets to allow seamless marquee looping
-  const row1Items = [...firstHalf, ...firstHalf];
-  const row2Items = [...secondHalf, ...secondHalf];
-
-  // Full items duplicated for single-row desktop marquee
-  const desktopItems = [...collections, ...collections];
-
   if (isLoading || collections.length === 0) {
     return null;
   }
@@ -83,46 +78,14 @@ export default function CollectionsSection({
 
         {/* Marquee tracks: single row on desktop (sm:block), two rows on mobile (sm:hidden) */}
         <div ref={containerRef} className="relative w-full overflow-hidden py-1 sm:py-3">
-          <style>{`
-            @keyframes collection-marquee-left {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            @keyframes collection-marquee-right {
-              0% { transform: translateX(-50%); }
-              100% { transform: translateX(0); }
-            }
-            .animate-collection-marquee-left {
-              display: flex;
-              width: max-content;
-              animation: collection-marquee-left 35s linear infinite;
-              gap: 1rem;
-            }
-            .animate-collection-marquee-right {
-              display: flex;
-              width: max-content;
-              animation: collection-marquee-right 35s linear infinite;
-              gap: 1rem;
-            }
-            @media (min-width: 640px) {
-              .animate-collection-marquee-left,
-              .animate-collection-marquee-right {
-                gap: 1.5rem;
-              }
-            }
-            .animate-collection-marquee-left:hover,
-            .animate-collection-marquee-right:hover {
-              animation-play-state: paused;
-            }
-          `}</style>
-
           {/* LARGE SCREENS ONLY: Single Row (Hidden on mobile under 640px) */}
           <div className="hidden sm:block">
-            <div
-              className="animate-collection-marquee-left relative z-10 px-6"
-              style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+            <InteractiveMarqueeTrack
+              direction="left"
+              speed={30}
+              isPaused={!isInView}
             >
-              {desktopItems.map((item, index) => (
+              {collections.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
                   className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
@@ -155,17 +118,18 @@ export default function CollectionsSection({
                   </Link>
                 </article>
               ))}
-            </div>
+            </InteractiveMarqueeTrack>
           </div>
 
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
           <div className="flex flex-col gap-4 sm:hidden">
             {/* ROW 1: Moves Left */}
-            <div
-              className="animate-collection-marquee-left relative z-10 px-6"
-              style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+            <InteractiveMarqueeTrack
+              direction="left"
+              speed={28}
+              isPaused={!isInView}
             >
-              {row1Items.map((item, index) => (
+              {firstHalf.map((item, index) => (
                 <article
                   key={`r1-mobile-${item.id}-${index}`}
                   className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
@@ -198,14 +162,15 @@ export default function CollectionsSection({
                   </Link>
                 </article>
               ))}
-            </div>
+            </InteractiveMarqueeTrack>
 
             {/* ROW 2: Moves Right */}
-            <div
-              className="animate-collection-marquee-right relative z-10 px-6"
-              style={{ animationPlayState: isInView ? 'running' : 'paused' }}
+            <InteractiveMarqueeTrack
+              direction="right"
+              speed={28}
+              isPaused={!isInView}
             >
-              {row2Items.map((item, index) => (
+              {secondHalf.map((item, index) => (
                 <article
                   key={`r2-mobile-${item.id}-${index}`}
                   className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
@@ -238,7 +203,7 @@ export default function CollectionsSection({
                   </Link>
                 </article>
               ))}
-            </div>
+            </InteractiveMarqueeTrack>
           </div>
         </div>
 
