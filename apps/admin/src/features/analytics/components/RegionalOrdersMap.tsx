@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
+import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 
 import { AnimatePresence, motion } from 'motion/react';
+
+import { MinusIcon, PlusIcon, RefreshCcwIcon } from '@ff/ui';
 
 import { type AnalyticsPayload } from '../types';
 
@@ -12,6 +14,9 @@ const NAME_MAPPINGS: Record<string, string> = {
   Uttaranchal: 'Uttarakhand',
   'Andaman and Nicobar': 'Andaman and Nicobar Islands',
 };
+
+const DEFAULT_CENTER: [number, number] = [82.8, 21.8];
+const DEFAULT_ZOOM = 1;
 
 interface RegionalOrdersMapProps {
   stateOrders?: AnalyticsPayload['stateOrders'];
@@ -22,6 +27,36 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [isMapHovered, setIsMapHovered] = useState<boolean>(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  const [position, setPosition] = useState<{ coordinates: [number, number]; zoom: number }>({
+    coordinates: DEFAULT_CENTER,
+    zoom: DEFAULT_ZOOM,
+  });
+
+  const handleZoomIn = () => {
+    setPosition((pos) => ({
+      ...pos,
+      zoom: Math.min(pos.zoom * 1.4, 6),
+    }));
+  };
+
+  const handleZoomOut = () => {
+    setPosition((pos) => ({
+      ...pos,
+      zoom: Math.max(pos.zoom / 1.4, 0.8),
+    }));
+  };
+
+  const handleResetZoom = () => {
+    setPosition({
+      coordinates: DEFAULT_CENTER,
+      zoom: DEFAULT_ZOOM,
+    });
+  };
+
+  const handleMoveEnd = (pos: { coordinates: [number, number]; zoom: number }) => {
+    setPosition(pos);
+  };
 
   const activeStateOrders = stateOrders ?? [];
   const sortedStates = [...activeStateOrders].sort((a, b) => b.orders - a.orders);
@@ -100,69 +135,109 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
               setHoveredState(null);
             }}
           >
+            {/* Zoom / Pan Controls Overlay */}
+            <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 rounded-xl border border-black/10 bg-white/90 p-1.5 shadow-md backdrop-blur-md dark:border-white/10 dark:bg-[#1f1f1f]/90">
+              <button
+                type="button"
+                onClick={handleZoomIn}
+                title="Zoom in"
+                aria-label="Zoom in"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-black/70 transition-colors hover:bg-black/5 hover:text-black active:scale-95 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleZoomOut}
+                title="Zoom out"
+                aria-label="Zoom out"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-black/70 transition-colors hover:bg-black/5 hover:text-black active:scale-95 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                <MinusIcon className="h-4 w-4" />
+              </button>
+              <div className="my-0.5 h-px w-full bg-black/10 dark:bg-white/10" />
+              <button
+                type="button"
+                onClick={handleResetZoom}
+                title="Reset view"
+                aria-label="Reset view"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-black/70 transition-colors hover:bg-black/5 hover:text-black active:scale-95 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
+              >
+                <RefreshCcwIcon className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
             <ComposableMap
               projection="geoMercator"
               projectionConfig={{
-                scale: 1100,
-                center: [82.5, 22.5],
+                scale: 1020,
+                center: DEFAULT_CENTER,
               }}
               className="h-full w-full outline-none"
               style={{ width: '100%', height: '100%' }}
             >
-              <Geographies geography="/india.json">
-                {({
-                  geographies,
-                }: {
-                  geographies: { rsmKey: string; properties: Record<string, string> }[];
-                }) =>
-                  geographies.map((geo) => {
-                    const stateName = (geo.properties.name ?? geo.properties.NAME_1) || '';
-                    if (!stateName) {
-                      return null;
-                    }
+              <ZoomableGroup
+                zoom={position.zoom}
+                center={position.coordinates}
+                onMoveEnd={handleMoveEnd}
+                minZoom={0.8}
+                maxZoom={6}
+              >
+                <Geographies geography="/india.json">
+                  {({
+                    geographies,
+                  }: {
+                    geographies: { rsmKey: string; properties: Record<string, string> }[];
+                  }) =>
+                    geographies.map((geo) => {
+                      const stateName = (geo.properties.name ?? geo.properties.NAME_1) || '';
+                      if (!stateName) {
+                        return null;
+                      }
 
-                    const data = getStateData(stateName);
-                    const orders = data?.orders ?? 0;
-                    const mappedStateName = data?.state ?? stateName;
+                      const data = getStateData(stateName);
+                      const orders = data?.orders ?? 0;
+                      const mappedStateName = data?.state ?? stateName;
 
-                    const isHovered = hoveredState === mappedStateName;
-                    const isSelected = selectedState === mappedStateName;
-                    const fillColor = getHeatColor(orders);
+                      const isHovered = hoveredState === mappedStateName;
+                      const isSelected = selectedState === mappedStateName;
+                      const fillColor = getHeatColor(orders);
 
-                    return (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        fill={(isHovered ?? isSelected) ? '#ec4899' : fillColor}
-                        stroke={(isHovered ?? isSelected) ? '#be185d' : 'rgba(255,255,255,0.8)'}
-                        strokeWidth={(isHovered ?? isSelected) ? 1 : 0.5}
-                        style={{
-                          default: { outline: 'none' },
-                          hover: { outline: 'none', cursor: 'pointer' },
-                          pressed: { outline: 'none' },
-                        }}
-                        onMouseEnter={(e: React.MouseEvent<SVGPathElement>) => {
-                          setHoveredState(mappedStateName);
-                          setTooltipPos({ x: e.clientX, y: e.clientY });
-                        }}
-                        onMouseMove={(e: React.MouseEvent<SVGPathElement>) => {
-                          setTooltipPos({ x: e.clientX, y: e.clientY });
-                        }}
-                        onMouseLeave={() => {
-                          if (hoveredState === mappedStateName) {
-                            setHoveredState(null);
-                          }
-                        }}
-                        onClick={() => {
-                          setSelectedState(
-                            selectedState === mappedStateName ? null : mappedStateName,
-                          );
-                        }}
-                      />
-                    );
-                  })
-                }
-              </Geographies>
+                      return (
+                        <Geography
+                          key={geo.rsmKey}
+                          geography={geo}
+                          fill={(isHovered ?? isSelected) ? '#ec4899' : fillColor}
+                          stroke={(isHovered ?? isSelected) ? '#be185d' : 'rgba(255,255,255,0.8)'}
+                          strokeWidth={(isHovered ?? isSelected) ? 1 : 0.5}
+                          style={{
+                            default: { outline: 'none' },
+                            hover: { outline: 'none', cursor: 'pointer' },
+                            pressed: { outline: 'none' },
+                          }}
+                          onMouseEnter={(e: React.MouseEvent<SVGPathElement>) => {
+                            setHoveredState(mappedStateName);
+                            setTooltipPos({ x: e.clientX, y: e.clientY });
+                          }}
+                          onMouseMove={(e: React.MouseEvent<SVGPathElement>) => {
+                            setTooltipPos({ x: e.clientX, y: e.clientY });
+                          }}
+                          onMouseLeave={() => {
+                            if (hoveredState === mappedStateName) {
+                              setHoveredState(null);
+                            }
+                          }}
+                          onClick={() => {
+                            setSelectedState(
+                              selectedState === mappedStateName ? null : mappedStateName,
+                            );
+                          }}
+                        />
+                      );
+                    })
+                  }
+                </Geographies>
+              </ZoomableGroup>
             </ComposableMap>
 
             {/* Hover tooltip overlay attached to mouse pos for a better interactive feel */}
