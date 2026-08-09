@@ -243,39 +243,8 @@ export class AdminProductsService {
 
     const result = await this.productsRepository.delete(id);
 
-    // Invalidate product page (which now returns 404)
-    void triggerRevalidation(`product-${result.slug}`);
-
-    // Invalidate brand listings
-    void triggerRevalidation('all-products');
-    const brands = Array.isArray(result.brand) ? result.brand : [result.brand].filter(Boolean);
-    for (const b of brands) {
-      if (b) {
-        const brandSlug = b.toLowerCase();
-        void triggerRevalidation(`brand-products-${brandSlug}`);
-        void triggerRevalidation(`brand-products-${brandSlug}`, `/brands/${brandSlug}`);
-      }
-    }
-
-    // Invalidate categories it belonged to so it disappears from listings
-    if (result.categoryId) {
-      const categorySlug = result.categoryId.toLowerCase();
-      void triggerRevalidation(`category-products-${categorySlug}`);
-      void triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
-
-      const gender = result.gender ? result.gender.toLowerCase() : null;
-      if (gender) {
-        if (gender === 'unisex') {
-          void triggerRevalidation(`category-products-${categorySlug}`, `/men/${categorySlug}`);
-          void triggerRevalidation(`category-products-${categorySlug}`, `/women/${categorySlug}`);
-        } else {
-          void triggerRevalidation(
-            `category-products-${categorySlug}`,
-            `/${gender}/${categorySlug}`,
-          );
-        }
-      }
-    }
+    // Invalidate everything related to the deleted product so it disappears across all views
+    this.triggerProductAndCategoryRevalidation(result);
 
     return result;
   }
@@ -285,11 +254,15 @@ export class AdminProductsService {
     const categorySlug = product.categoryId ? product.categoryId.toLowerCase() : null;
     const gender = product.gender ? product.gender.toLowerCase() : null;
 
-    // Revalidate specific product page
+    // 1. Revalidate specific product page and product tag
     void triggerRevalidation(`product-${slug}`, `/product/${slug}`);
 
-    // Revalidate brand listings
+    // 2. Revalidate general product list tags & pages
+    void triggerRevalidation('products', '/products');
+    void triggerRevalidation('new-arrivals-products', '/new-arrivals');
     void triggerRevalidation('all-products');
+
+    // 3. Revalidate brand listings
     const brands = Array.isArray(product.brand) ? product.brand : [product.brand].filter(Boolean);
     for (const b of brands) {
       if (b) {
@@ -299,8 +272,9 @@ export class AdminProductsService {
       }
     }
 
-    // Revalidate categories if applicable
+    // 4. Revalidate categories and similar products
     if (categorySlug) {
+      void triggerRevalidation(`similar-products-${categorySlug}`);
       void triggerRevalidation(`category-products-${categorySlug}`);
       void triggerRevalidation(`category-products-${categorySlug}`, `/categories/${categorySlug}`);
       if (gender) {
@@ -313,6 +287,17 @@ export class AdminProductsService {
             `/${gender}/${categorySlug}`,
           );
         }
+      }
+    }
+
+    // 5. Revalidate collections if product belonged to any
+    const collections: string[] = Array.isArray(product.collections)
+      ? product.collections
+      : [];
+    for (const c of collections) {
+      if (c) {
+        const colSlug = String(c).toLowerCase().trim();
+        void triggerRevalidation(`collection-products-${colSlug}`, `/collections/${colSlug}`);
       }
     }
   }
