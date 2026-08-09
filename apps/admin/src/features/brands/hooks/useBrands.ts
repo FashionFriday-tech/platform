@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { type Brand, type BrandCategory, BRAND_LOGOS } from '@ff/schemas';
+import { type Brand, type BrandCategory } from '@ff/schemas';
 
 import { api } from '../../../lib/api-client';
 
@@ -22,7 +22,7 @@ export function useBrands() {
     try {
       setIsLoading(true);
       const data = await api.get<Brand[]>('/admin/brands');
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         // Deduplicate any duplicates that might have same slug
         const seenSlugs = new Set<string>();
         const unique = data.filter((b) => {
@@ -32,18 +32,11 @@ export function useBrands() {
         });
         setBrands(unique);
       } else {
-        setBrands(BRAND_LOGOS);
+        setBrands([]);
       }
     } catch (err) {
       console.error('Failed to fetch brands from /admin/brands:', err);
-      // Fallback deduplicated so admin panel always renders clean brand catalog
-      const seenSlugs = new Set<string>();
-      const unique = BRAND_LOGOS.filter((b) => {
-        if (!b.slug || seenSlugs.has(b.slug)) return false;
-        seenSlugs.add(b.slug);
-        return true;
-      });
-      setBrands(unique);
+      setBrands([]);
     } finally {
       setIsLoading(false);
     }
