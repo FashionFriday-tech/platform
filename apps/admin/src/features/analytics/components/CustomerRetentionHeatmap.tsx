@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { motion } from 'motion/react';
 
-import { type AnalyticsPayload, MOCK_RETENTION_DATA } from '../types';
+import { type AnalyticsPayload } from '../types';
 
 const MONTH_LABELS = ['M0', 'M1', 'M2', 'M3', 'M4', 'M5'];
 
@@ -39,7 +39,7 @@ export function CustomerRetentionHeatmap({ retentionData }: CustomerRetentionHea
         cohort: r.cohort,
         months: [r.m0, r.m1, r.m2, r.m3, r.m4, r.m5],
       }))
-    : MOCK_RETENTION_DATA;
+    : [];
 
   return (
     <div className="flex h-full min-h-[440px] w-full flex-col rounded-2xl border border-black/[0.06] bg-white shadow-xl shadow-black/[0.04] dark:border-white/[0.08] dark:bg-[#1a1a1a]">

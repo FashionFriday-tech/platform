@@ -13,19 +13,17 @@ import {
   YAxis,
 } from 'recharts';
 
-import { type AnalyticsPayload, MOCK_AOV_DATA } from '../types';
+import { type AnalyticsPayload } from '../types';
 
 interface AovTrendChartProps {
   aovData?: AnalyticsPayload['aovTrend'];
 }
 
 export function AovTrendChart({ aovData }: AovTrendChartProps) {
-  const chartPoints = aovData?.data ?? MOCK_AOV_DATA;
-  const latestCurrent = aovData ? aovData.current : MOCK_AOV_DATA[MOCK_AOV_DATA.length - 1].current;
-  const latestPrevious = aovData ? aovData.previous : MOCK_AOV_DATA[MOCK_AOV_DATA.length - 1].previous;
-  const delta = aovData
-    ? aovData.delta
-    : (((latestCurrent - latestPrevious) / latestPrevious) * 100).toFixed(1);
+  const chartPoints = aovData?.data ?? [];
+  const latestCurrent = aovData ? aovData.current : 0;
+  const latestPrevious = aovData ? aovData.previous : 0;
+  const delta = aovData ? aovData.delta : '0%';
   const isUp = !delta.startsWith('-');
 
   return (

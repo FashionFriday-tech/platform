@@ -6,7 +6,7 @@ import { PackageIcon, ShoppingBagIcon, TagIcon, UsersIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 
-import { type AnalyticsPayload, STAT_SPARKLINES } from '../types';
+import { type AnalyticsPayload } from '../types';
 
 interface AnalyticsStatsProps {
   kpis?: AnalyticsPayload['kpis'];
@@ -17,55 +17,55 @@ export function AnalyticsStats({ kpis }: AnalyticsStatsProps) {
     {
       id: 1,
       title: 'Total Revenue',
-      value: kpis?.totalRevenueFormatted ?? '₹6,12,917',
-      trend: kpis?.revenueTrend ?? '+12.08%',
+      value: kpis?.totalRevenueFormatted ?? '₹0',
+      trend: kpis?.revenueTrend ?? '0%',
       trendUp: kpis ? kpis.revenueTrendUp : true,
-      description: 'vs last month',
+      description: 'vs last week',
       icon: TagIcon,
       gradient: 'from-violet-600 to-purple-700',
       accentColor: '#6a4fbb',
       sparkData: kpis?.revenueSpark
         ? kpis.revenueSpark.map((v) => ({ v }))
-        : STAT_SPARKLINES.revenue,
+        : Array(7).fill({ v: 0 }),
       isPrimary: true,
     },
     {
       id: 2,
       title: 'Total Orders',
-      value: kpis?.totalOrdersFormatted ?? '34,760',
-      trend: kpis?.ordersTrend ?? '+8.4%',
+      value: kpis?.totalOrdersFormatted ?? '0',
+      trend: kpis?.ordersTrend ?? '0%',
       trendUp: kpis ? kpis.ordersTrendUp : true,
-      description: 'vs last month',
+      description: 'vs last week',
       icon: ShoppingBagIcon,
       gradient: 'from-blue-500 to-cyan-500',
       accentColor: '#3b82f6',
-      sparkData: kpis?.ordersSpark ? kpis.ordersSpark.map((v) => ({ v })) : STAT_SPARKLINES.orders,
+      sparkData: kpis?.ordersSpark ? kpis.ordersSpark.map((v) => ({ v })) : Array(7).fill({ v: 0 }),
       isPrimary: false,
     },
     {
       id: 3,
       title: 'Site Visits',
-      value: kpis?.siteVisitsFormatted ?? '14,987',
-      trend: kpis?.visitsTrend ?? '+4.2%',
+      value: kpis?.siteVisitsFormatted ?? '0',
+      trend: kpis?.visitsTrend ?? '0%',
       trendUp: kpis ? kpis.visitsTrendUp : true,
-      description: 'vs last month',
+      description: 'vs last week',
       icon: UsersIcon,
       gradient: 'from-pink-500 to-rose-500',
       accentColor: '#ec4899',
-      sparkData: kpis?.visitsSpark ? kpis.visitsSpark.map((v) => ({ v })) : STAT_SPARKLINES.visits,
+      sparkData: kpis?.visitsSpark ? kpis.visitsSpark.map((v) => ({ v })) : Array(7).fill({ v: 0 }),
       isPrimary: false,
     },
     {
       id: 4,
       title: 'Units Sold',
-      value: kpis?.unitsSoldFormatted ?? '12,987',
-      trend: kpis?.unitsTrend ?? '+5.7%',
+      value: kpis?.unitsSoldFormatted ?? '0',
+      trend: kpis?.unitsTrend ?? '0%',
       trendUp: kpis ? kpis.unitsTrendUp : true,
-      description: 'vs last month',
+      description: 'vs last week',
       icon: PackageIcon,
       gradient: 'from-emerald-500 to-teal-500',
       accentColor: '#22c55e',
-      sparkData: kpis?.unitsSpark ? kpis.unitsSpark.map((v) => ({ v })) : STAT_SPARKLINES.units,
+      sparkData: kpis?.unitsSpark ? kpis.unitsSpark.map((v) => ({ v })) : Array(7).fill({ v: 0 }),
       isPrimary: false,
     },
   ];

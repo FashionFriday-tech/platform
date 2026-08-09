@@ -4,7 +4,7 @@ import React from 'react';
 
 import { motion } from 'motion/react';
 
-import { type AnalyticsPayload, MOCK_TRAFFIC_SOURCES } from '../types';
+import { type AnalyticsPayload } from '../types';
 
 const EMOJIS = ['🎯', '🔍', '📱', '🔗', '📧'];
 
@@ -13,7 +13,7 @@ interface TrafficSourcesFunnelProps {
 }
 
 export function TrafficSourcesFunnel({ sources }: TrafficSourcesFunnelProps) {
-  const activeSources = sources && sources.length > 0 ? sources : MOCK_TRAFFIC_SOURCES;
+  const activeSources = sources ?? [];
   const totalVisitors = activeSources.reduce((sum, s) => sum + s.visitors, 0) || 1;
 
   return (

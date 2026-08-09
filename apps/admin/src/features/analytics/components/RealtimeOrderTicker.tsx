@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import { AnimatePresence, motion } from 'motion/react';
 
-import { type AnalyticsPayload, MOCK_REALTIME_ORDERS } from '../types';
+import { type AnalyticsPayload } from '../types';
 
 interface RealtimeOrderTickerProps {
   liveOrders?: AnalyticsPayload['liveOrders'];
@@ -13,20 +13,7 @@ interface RealtimeOrderTickerProps {
 export function RealtimeOrderTicker({ liveOrders }: RealtimeOrderTickerProps) {
   const [highlightId, setHighlightId] = useState<string | null>(null);
 
-  // If liveOrders prop is provided and has items, use them; otherwise use fallback
-  const fallbackOrders = MOCK_REALTIME_ORDERS.slice(0, 6).map((m) => ({
-    id: m.id,
-    orderNumber: m.id,
-    customerName: 'Customer',
-    location: m.city,
-    amount: m.amount,
-    status: 'CONFIRMED',
-    itemsCount: 1,
-    timestamp: new Date().toISOString(),
-    timeAgo: m.timeAgo,
-  }));
-
-  const orders = liveOrders && liveOrders.length > 0 ? liveOrders.slice(0, 6) : fallbackOrders;
+  const orders = liveOrders && liveOrders.length > 0 ? liveOrders.slice(0, 6) : [];
 
   // Flash highlight on the newest order when it updates
   useEffect(() => {

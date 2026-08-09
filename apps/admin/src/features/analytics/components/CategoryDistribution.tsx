@@ -4,7 +4,7 @@ import React from 'react';
 
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
-import { type AnalyticsPayload, MOCK_CATEGORY_DATA } from '../types';
+import { type AnalyticsPayload } from '../types';
 
 const EMOJIS: Record<string, string> = {
   Men: '👔',
@@ -23,7 +23,7 @@ interface CategoryDistributionProps {
 }
 
 export function CategoryDistribution({ categoryData }: CategoryDistributionProps) {
-  const activeData = categoryData && categoryData.length > 0 ? categoryData : MOCK_CATEGORY_DATA;
+  const activeData = categoryData ?? [];
   const total = activeData.reduce((sum, d) => sum + d.value, 0) || 100;
 
   return (

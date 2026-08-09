@@ -4,7 +4,7 @@ import React from 'react';
 
 import { motion } from 'motion/react';
 
-import { type AnalyticsPayload, MOCK_TOP_PRODUCTS } from '../types';
+import { type AnalyticsPayload } from '../types';
 
 const GRADIENT_PAIRS = [
   ['#6a4fbb', '#8b5cf6'],
@@ -20,7 +20,7 @@ interface TopProductsChartProps {
 }
 
 export function TopProductsChart({ topProducts }: TopProductsChartProps) {
-  const activeProducts = topProducts && topProducts.length > 0 ? topProducts : MOCK_TOP_PRODUCTS;
+  const activeProducts = topProducts ?? [];
   const maxRevenue = Math.max(...activeProducts.map((p) => p.revenue), 1);
 
   return (

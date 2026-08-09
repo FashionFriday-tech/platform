@@ -11,7 +11,7 @@ interface ConversionGaugeProps {
 }
 
 export function ConversionGauge({ conversion }: ConversionGaugeProps) {
-  const conversionRate = conversion ? conversion.rate : 58.19;
+  const conversionRate = conversion ? conversion.rate : 0;
 
   const data = [
     { name: 'Converted', value: conversionRate },
@@ -19,13 +19,13 @@ export function ConversionGauge({ conversion }: ConversionGaugeProps) {
   ];
 
   const funnelSteps = conversion?.funnel ?? [
-    { label: 'Visits', value: '14,987', pct: '100%', color: '#6a4fbb' },
-    { label: 'Add to Cart', value: '5,620', pct: '37.5%', color: '#8b5cf6' },
-    { label: 'Checkout', value: '3,210', pct: '21.4%', color: '#a855f7' },
-    { label: 'Purchased', value: '1,870', pct: '12.5%', color: '#22c55e' },
+    { label: 'Visits', value: '0', pct: '0%', color: '#6a4fbb' },
+    { label: 'Search / Browse', value: '0', pct: '0%', color: '#8b5cf6' },
+    { label: 'Checkout', value: '0', pct: '0%', color: '#a855f7' },
+    { label: 'Purchased', value: '0', pct: '0%', color: '#22c55e' },
   ];
 
-  const rateDelta = conversion?.rateDelta ?? '+3.5%';
+  const rateDelta = conversion?.rateDelta ?? '0%';
   const rateDeltaUp = conversion ? conversion.rateDeltaUp : true;
 
   return (

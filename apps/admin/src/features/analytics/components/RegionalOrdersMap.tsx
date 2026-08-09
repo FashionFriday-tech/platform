@@ -5,7 +5,7 @@ import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 
 import { AnimatePresence, motion } from 'motion/react';
 
-import { type AnalyticsPayload, MOCK_STATE_ORDERS } from '../types';
+import { type AnalyticsPayload } from '../types';
 
 const NAME_MAPPINGS: Record<string, string> = {
   Orissa: 'Odisha',
@@ -23,7 +23,7 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
   const [isMapHovered, setIsMapHovered] = useState<boolean>(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
-  const activeStateOrders = stateOrders && stateOrders.length > 0 ? stateOrders : MOCK_STATE_ORDERS;
+  const activeStateOrders = stateOrders ?? [];
   const sortedStates = [...activeStateOrders].sort((a, b) => b.orders - a.orders);
   const maxOrders = sortedStates[0]?.orders ?? 1;
   const totalOrders = activeStateOrders.reduce((sum, s) => sum + s.orders, 0);
