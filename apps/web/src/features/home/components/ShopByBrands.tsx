@@ -3,7 +3,7 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 
-import { type Brand, BRAND_LOGOS } from '@ff/schemas';
+import { type Brand } from '@ff/schemas';
 import { ArrowUpRightIcon } from '@ff/ui';
 
 import { InteractiveMarqueeTrack } from '@/components/ui/InteractiveMarqueeTrack';
@@ -30,12 +30,11 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
   }, []);
 
   const activeBrands = brands.filter((brand) => brand.isActive !== false);
-  const sourceBrands = activeBrands.length > 0 ? activeBrands : BRAND_LOGOS;
-  const featuredBrands = sourceBrands.filter((brand) =>
+  const featuredBrands = activeBrands.filter((brand) =>
     FEATURED_BRAND_NAMES.includes(brand.name.toLowerCase()),
   );
   // Limit to 8 brands so the section stays curated and high-impact
-  const displayList = (featuredBrands.length > 0 ? featuredBrands : sourceBrands).slice(0, 8);
+  const displayList = (featuredBrands.length > 0 ? featuredBrands : activeBrands).slice(0, 8);
 
   // Split into two mobile rows with alternating brands
   const firstHalf = displayList.filter((_, i) => i % 2 === 0);
