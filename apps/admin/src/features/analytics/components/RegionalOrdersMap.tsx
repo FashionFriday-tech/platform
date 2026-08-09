@@ -125,8 +125,7 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
 
           {/* Map area */}
           <div
-            className="relative flex-1 overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/30 dark:from-slate-900/50 dark:via-purple-950/20 dark:to-blue-950/20"
-            style={{ minHeight: 480 }}
+            className="relative flex min-h-[380px] sm:min-h-[460px] lg:min-h-[500px] flex-1 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/30 p-2 sm:p-4 dark:from-slate-900/50 dark:via-purple-950/20 dark:to-blue-950/20"
             onMouseEnter={() => {
               setIsMapHovered(true);
             }}
@@ -168,13 +167,15 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
             </div>
 
             <ComposableMap
+              width={520}
+              height={580}
               projection="geoMercator"
               projectionConfig={{
-                scale: 1020,
+                scale: 950,
                 center: DEFAULT_CENTER,
               }}
-              className="h-full w-full outline-none"
-              style={{ width: '100%', height: '100%' }}
+              className="h-auto max-h-[500px] w-full max-w-[460px] outline-none"
+              style={{ width: '100%', height: 'auto' }}
             >
               <ZoomableGroup
                 zoom={position.zoom}
