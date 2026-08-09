@@ -16,6 +16,7 @@ const ALL_CATEGORIES: (BrandCategory | 'All')[] = [
   'clothing',
   'watch',
   'accessories',
+  'eyewear',
 ];
 const SORT_OPTIONS: ('a-z' | 'z-a')[] = ['a-z', 'z-a'];
 const SORT_MAP: Record<string, string> = { 'a-z': 'A - Z', 'z-a': 'Z - A' };
