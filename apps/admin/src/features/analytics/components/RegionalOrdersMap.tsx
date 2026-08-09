@@ -17,6 +17,13 @@ const NAME_MAPPINGS: Record<string, string> = {
 
 const DEFAULT_CENTER: [number, number] = [82.8, 21.8];
 const DEFAULT_ZOOM = 1;
+// Bounding box limits for the 520x580 canvas so the map cannot be panned infinitely away
+const MAP_WIDTH = 520;
+const MAP_HEIGHT = 580;
+const TRANSLATE_EXTENT: [[number, number], [number, number]] = [
+  [-60, -60],
+  [MAP_WIDTH + 60, MAP_HEIGHT + 60],
+];
 
 interface RegionalOrdersMapProps {
   stateOrders?: AnalyticsPayload['stateOrders'];
@@ -36,14 +43,14 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
   const handleZoomIn = () => {
     setPosition((pos) => ({
       ...pos,
-      zoom: Math.min(pos.zoom * 1.4, 6),
+      zoom: Math.min(pos.zoom * 1.4, 5),
     }));
   };
 
   const handleZoomOut = () => {
     setPosition((pos) => ({
       ...pos,
-      zoom: Math.max(pos.zoom / 1.4, 0.8),
+      zoom: Math.max(pos.zoom / 1.4, 1),
     }));
   };
 
@@ -167,8 +174,8 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
             </div>
 
             <ComposableMap
-              width={520}
-              height={580}
+              width={MAP_WIDTH}
+              height={MAP_HEIGHT}
               projection="geoMercator"
               projectionConfig={{
                 scale: 950,
@@ -181,8 +188,9 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
                 zoom={position.zoom}
                 center={position.coordinates}
                 onMoveEnd={handleMoveEnd}
-                minZoom={0.8}
-                maxZoom={6}
+                translateExtent={TRANSLATE_EXTENT}
+                minZoom={1}
+                maxZoom={5}
               >
                 <Geographies geography="/india.json">
                   {({
