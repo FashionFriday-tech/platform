@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { type Brand, BRAND_LOGOS } from '@ff/schemas';
+import { type Brand } from '@ff/schemas';
 
 import { getBrands } from '../services/queries';
 
@@ -48,7 +48,7 @@ export function useBrands(initialBrands?: Brand[]) {
 
     brandsPromise
       .then((data) => {
-        const finalData = Array.isArray(data) && data.length > 0 ? data : BRAND_LOGOS;
+        const finalData = Array.isArray(data) ? data : [];
         cachedBrands = finalData;
         if (isMounted) {
           setBrands(finalData);
@@ -59,7 +59,7 @@ export function useBrands(initialBrands?: Brand[]) {
         // Reset promise on error so retry is possible if needed
         brandsPromise = null;
         if (isMounted) {
-          setBrands(BRAND_LOGOS);
+          setBrands([]);
           setError(err instanceof Error ? err : new Error('Failed to load brands'));
           setIsLoading(false);
         }
