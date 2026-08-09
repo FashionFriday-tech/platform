@@ -5,10 +5,7 @@ import Link from 'next/link';
 
 import type { Brand } from '@ff/schemas';
 
-import {
-  ScrollVelocityContainer,
-  ScrollVelocityRow,
-} from '@/components/ui/magicUi/ScrollBasedVelocity';
+import { InteractiveMarqueeTrack } from '@/components/ui/InteractiveMarqueeTrack';
 import { useBrands } from '@/features/brand';
 import { cn } from '@/lib/utils';
 
@@ -25,10 +22,10 @@ const BrandList = ({
 }) => (
   <>
     {logos.map(({ name, logo, slug }, idx) => (
-      <div key={`${slug || name}-${idx}`} className="mx-2 sm:mx-3.5 md:mx-6 lg:mx-8">
+      <div key={`${slug || name}-${idx}`} className="mx-2 sm:mx-3.5 md:mx-6 lg:mx-8 shrink-0">
         <Link
           href={`/brands/${slug || slugify(name)}`}
-          className="relative block h-12 w-12 transition-transform hover:scale-110 active:scale-95 sm:h-14 sm:w-14 md:h-13 md:w-13 lg:h-16 lg:w-24"
+          className="relative block h-10 w-10 transition-transform hover:scale-110 active:scale-95 sm:h-12 sm:w-12 md:h-13 md:w-13 lg:h-14 lg:w-20"
         >
           {logo ? (
             <Image
@@ -70,19 +67,17 @@ export default function BrandScroll({
   const BRAND_ROW_B = activeBrands.slice(midIndex);
 
   return (
-    <div className={cn('w-full overflow-hidden py-0 lg:py-4', className)}>
-      <div className="relative flex w-full flex-col items-center justify-center">
-        <ScrollVelocityContainer className="flex w-full flex-col gap-1 sm:gap-2">
-          {/* Row 1: First Half (Moving Right) */}
-          <ScrollVelocityRow baseVelocity={0.6} direction={1}>
-            <BrandList logos={BRAND_ROW_A} priorityStart />
-          </ScrollVelocityRow>
+    <div className={cn('w-full overflow-hidden py-0 lg:py-2', className)}>
+      <div className="relative flex w-full flex-col items-center justify-center gap-1 sm:gap-2">
+        {/* Row 1: First Half (Auto-running Right instantly on load) */}
+        <InteractiveMarqueeTrack direction="right" speed={24}>
+          <BrandList logos={BRAND_ROW_A} priorityStart />
+        </InteractiveMarqueeTrack>
 
-          {/* Row 2: Second Half (Moving Left) */}
-          <ScrollVelocityRow baseVelocity={0.6} direction={-1}>
-            <BrandList logos={BRAND_ROW_B} />
-          </ScrollVelocityRow>
-        </ScrollVelocityContainer>
+        {/* Row 2: Second Half (Auto-running Left instantly on load) */}
+        <InteractiveMarqueeTrack direction="left" speed={24}>
+          <BrandList logos={BRAND_ROW_B} />
+        </InteractiveMarqueeTrack>
 
         {/* Side Gradients */}
         <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-linear-to-r to-transparent sm:w-1/4" />
