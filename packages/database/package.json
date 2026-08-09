@@ -14,8 +14,7 @@
     "generate": "prisma generate --schema ./prisma/schema",
     "migrate": "prisma migrate dev --schema ./prisma/schema",
     "db:push": "prisma db push --schema ./prisma/schema",
-    "studio": "prisma studio --schema ./prisma/schema",
-    "db:seed": "pnpm dlx tsx prisma/seed-products.ts"
+    "studio": "prisma studio --schema ./prisma/schema"
   },
   "include": [
     "src"
