@@ -48,25 +48,36 @@ export class AppController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
-  async getHello() {
-    try {
-      await this.prisma.db.$connect();
-      return {
-        message: 'Fashion Friday API is running',
-        database: 'Connected',
-      };
-    } catch (error) {
-      return {
-        message: 'Fashion Friday API is running',
-        database: 'Disconnected',
-        error: error instanceof Error ? error.message : String(error),
-      };
-    }
+  getHello() {
+    return {
+      message: 'Fashion Friday API is running',
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+    };
   }
 
   @Get('health')
   health() {
     return { status: 'ok', timestamp: new Date().toISOString() };
+  }
+
+  @Get('health/db')
+  async healthDb() {
+    try {
+      await this.prisma.db.$queryRaw`SELECT 1`;
+      return {
+        status: 'ok',
+        database: 'Connected',
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        database: 'Disconnected',
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: new Date().toISOString(),
+      };
+    }
   }
 
   @Get('maintenance')
