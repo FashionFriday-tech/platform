@@ -79,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Any other team member must exist in the database with status ACTIVE
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-        const res = await fetch(`${apiUrl}/admin/team`);
+        const res = await fetch(`${apiUrl}/admin/team`, { signal: AbortSignal.timeout(3500) });
         if (res.ok) {
           const team = (await res.json()) as {
             phone?: string;

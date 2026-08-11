@@ -8,7 +8,14 @@ import { useCategories } from '../../categories/hooks/useCategories';
 import { SIZE_MAP } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
-export function useAddProductForm(initialData?: Product) {
+export interface UseAddProductFormOptions {
+  onToast?: (toast: { message: string; type: 'success' | 'error' | 'warning' }) => void;
+}
+
+export function useAddProductForm(initialData?: Product, options?: UseAddProductFormOptions) {
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+
   const searchParams = useSearchParams();
   const paramCategoryId = searchParams?.get('categoryId') ?? null;
   const paramCategoryName = searchParams?.get('categoryName') ?? null;
@@ -74,6 +81,8 @@ export function useAddProductForm(initialData?: Product) {
   const [images, setImages] = useState<{ id: string; url: string; file?: File; isNew?: boolean }[]>(
     [],
   );
+  const imagesRef = useRef(images);
+  imagesRef.current = images;
   const [imagesToDelete, setImagesToDelete] = useState<{ id: string; url: string }[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
@@ -335,23 +344,51 @@ export function useAddProductForm(initialData?: Product) {
   const [isUploading, setIsUploading] = useState(false);
   const [originalFiles, setOriginalFiles] = useState<Record<string, File>>({});
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) {
-      return;
+  const processImageFiles = async (
+    files: (File | Blob)[],
+    defaultPrefix = 'pasted-image',
+  ): Promise<number> => {
+    if (!files || files.length === 0) {
+      return 0;
     }
+
+    const currentCount = imagesRef.current.length;
+    if (currentCount >= 10) {
+      optionsRef.current?.onToast?.({
+        message: 'Maximum limit of 10 images reached.',
+        type: 'warning',
+      });
+      return 0;
+    }
+
+    const availableSlots = 10 - currentCount;
+    const filesToProcess = files.slice(0, availableSlots);
 
     setIsUploading(true);
     try {
-      const newFiles = Array.from(e.target.files);
       const newImages: { id: string; url: string; file: File; isNew: boolean }[] = [];
       const newOriginalFiles: Record<string, File> = {};
 
-      for (const file of newFiles) {
+      for (let i = 0; i < filesToProcess.length; i++) {
+        const item = filesToProcess[i];
+        let file: File;
+
+        if (item instanceof File) {
+          file = item;
+        } else {
+          const ext = item.type.split('/')[1]?.replace('jpeg', 'jpg') || 'png';
+          file = new File([item], `${defaultPrefix}-${Date.now()}-${i + 1}.${ext}`, {
+            type: item.type || 'image/png',
+          });
+        }
+
         // Automatically crop to 3:4 center
         const croppedBlob = await autoCropImageTo3x4(file);
 
         // Create a File from the Blob
-        const croppedFile = new File([croppedBlob], file.name, { type: 'image/webp' });
+        const baseName = file.name.replace(/\.[^/.]+$/, '');
+        const fileName = `${baseName || defaultPrefix}.webp`;
+        const croppedFile = new File([croppedBlob], fileName, { type: 'image/webp' });
 
         // Generate a local preview URL
         const localUrl = URL.createObjectURL(croppedFile);
@@ -365,9 +402,22 @@ export function useAddProductForm(initialData?: Product) {
 
       setImages((prev) => [...prev, ...newImages].slice(0, 10));
       setOriginalFiles((prev) => ({ ...prev, ...newOriginalFiles }));
+
+      if (files.length > availableSlots) {
+        optionsRef.current?.onToast?.({
+          message: `Added ${newImages.length} image(s). Maximum limit of 10 images reached.`,
+          type: 'warning',
+        });
+      }
+
+      return newImages.length;
     } catch (error) {
       console.error('Error auto-cropping images:', error);
-      alert('Failed to process images. Please try again.');
+      optionsRef.current?.onToast?.({
+        message: 'Failed to process images. Please try again.',
+        type: 'error',
+      });
+      return 0;
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -375,6 +425,149 @@ export function useAddProductForm(initialData?: Product) {
       }
     }
   };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+    const newFiles = Array.from(e.target.files ?? []);
+    await processImageFiles(newFiles, 'upload');
+  };
+
+  const handlePasteFromClipboard = async () => {
+    if (typeof window === 'undefined' || !navigator.clipboard) {
+      optionsRef.current?.onToast?.({
+        message: 'Clipboard API is not supported in this browser. Please use Ctrl+V.',
+        type: 'warning',
+      });
+      return;
+    }
+
+    if (imagesRef.current.length >= 10) {
+      optionsRef.current?.onToast?.({
+        message: 'Maximum limit of 10 images reached.',
+        type: 'warning',
+      });
+      return;
+    }
+
+    if (navigator.clipboard.read) {
+      try {
+        const clipboardItems = await navigator.clipboard.read();
+        const imageBlobs: Blob[] = [];
+
+        for (const item of clipboardItems) {
+          const imageType = item.types.find((type) => type.startsWith('image/'));
+          if (imageType) {
+            const blob = await item.getType(imageType);
+            imageBlobs.push(blob);
+          }
+        }
+
+        if (imageBlobs.length > 0) {
+          const count = await processImageFiles(imageBlobs, 'clipboard-image');
+          if (count > 0) {
+            optionsRef.current?.onToast?.({
+              message: `${count} image${count > 1 ? 's' : ''} pasted from clipboard!`,
+              type: 'success',
+            });
+          }
+          return;
+        }
+      } catch (err: any) {
+        if (err.name === 'NotAllowedError') {
+          optionsRef.current?.onToast?.({
+            message: 'Clipboard permission denied. Please press Ctrl+V to paste directly.',
+            type: 'warning',
+          });
+          return;
+        }
+        console.warn('navigator.clipboard.read failed, falling back:', err);
+      }
+    }
+
+    optionsRef.current?.onToast?.({
+      message: 'No image found in clipboard. Copy an image (from WhatsApp, web, etc.) and try again.',
+      type: 'warning',
+    });
+  };
+
+  const handleExternalDrop = async (files: FileList | File[]) => {
+    const fileArray = Array.from(files ?? []).filter((f) => f.type.startsWith('image/'));
+    if (fileArray.length === 0) {
+      optionsRef.current?.onToast?.({
+        message: 'Please drop valid image files (PNG, JPG, WebP, etc.).',
+        type: 'warning',
+      });
+      return;
+    }
+    const count = await processImageFiles(fileArray, 'dropped-image');
+    if (count > 0) {
+      optionsRef.current?.onToast?.({
+        message: `${count} image${count > 1 ? 's' : ''} added successfully!`,
+        type: 'success',
+      });
+    }
+  };
+
+  // Listen to window paste event so users can press Ctrl+V anywhere
+  useEffect(() => {
+    const handlePaste = async (e: ClipboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput =
+        activeEl instanceof HTMLInputElement ||
+        activeEl instanceof HTMLTextAreaElement ||
+        activeEl?.getAttribute('contenteditable') === 'true';
+
+      const hasText = !!e.clipboardData?.getData('text/plain');
+
+      // If user is actively typing in a text field and pasting text, do not intercept
+      if (isInput && hasText) {
+        return;
+      }
+
+      const imageFiles: File[] = [];
+
+      // 1. Check e.clipboardData.files (e.g. copied from file explorer or screenshot)
+      if (e.clipboardData?.files && e.clipboardData.files.length > 0) {
+        for (let i = 0; i < e.clipboardData.files.length; i++) {
+          const file = e.clipboardData.files[i];
+          if (file.type.startsWith('image/')) {
+            imageFiles.push(file);
+          }
+        }
+      }
+
+      // 2. Check e.clipboardData.items (e.g. copied from WhatsApp, browser, snip tool)
+      if (imageFiles.length === 0 && e.clipboardData?.items && e.clipboardData.items.length > 0) {
+        for (let i = 0; i < e.clipboardData.items.length; i++) {
+          const item = e.clipboardData.items[i];
+          if (item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            if (file) {
+              imageFiles.push(file);
+            }
+          }
+        }
+      }
+
+      if (imageFiles.length > 0) {
+        e.preventDefault();
+        const count = await processImageFiles(imageFiles, 'pasted-image');
+        if (count > 0) {
+          optionsRef.current?.onToast?.({
+            message: `${count} image${count > 1 ? 's' : ''} pasted from clipboard!`,
+            type: 'success',
+          });
+        }
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => {
+      window.removeEventListener('paste', handlePaste);
+    };
+  }, []);
 
   const handleReCrop = (imageId: string, croppedBlob: Blob, originalName: string) => {
     const croppedFile = new File([croppedBlob], originalName, { type: 'image/webp' });
@@ -604,6 +797,9 @@ export function useAddProductForm(initialData?: Product) {
     colorRef,
     brandRef,
     handleImageUpload,
+    handlePasteFromClipboard,
+    handleExternalDrop,
+    processImageFiles,
     handleReorder,
     handleDragStart,
     handleDragOver,
