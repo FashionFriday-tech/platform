@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import { MAJOR_COLORS, type Product } from '@ff/schemas';
+import { type Product } from '@ff/schemas';
 
 import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
+import { useColors } from '../../colors/hooks/useColors';
 import { getCategorySizes, SIZE_MAP } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
@@ -23,6 +24,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
   const { categories: apiCategories } = useCategories();
   const { brands: apiBrands } = useBrands();
+  const { colors: apiColors } = useColors();
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialData?.categoryId ?? (initialData as any)?.category?.id ?? paramCategoryId,
@@ -199,7 +201,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       // Color — reverse-map from hex to color name
       const savedColorHex = initialData.attributes?.colors?.[0];
       if (savedColorHex) {
-        const matchedColor = MAJOR_COLORS.find(
+        const matchedColor = apiColors.find(
           (c) => c.hex.toLowerCase() === savedColorHex.toLowerCase(),
         );
         setColorInput(matchedColor ? matchedColor.name : savedColorHex);
@@ -256,7 +258,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
       setImages(allImages.length > 0 ? allImages : []);
     }
-  }, [initialData, apiCategories]);
+  }, [initialData, apiCategories, apiColors]);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -713,9 +715,16 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     setImagesToDelete((prev) => prev.filter((img) => img.id !== idToRestore));
   };
 
-  const filteredColors = MAJOR_COLORS.filter((c) =>
-    c.name.toLowerCase().includes(colorInput.toLowerCase()),
-  );
+  const filteredColors = useMemo(() => {
+    if (!colorInput.trim()) {
+      return apiColors;
+    }
+    return apiColors.filter(
+      (c) =>
+        c.name.toLowerCase().includes(colorInput.toLowerCase()) ||
+        c.hex.toLowerCase().includes(colorInput.toLowerCase()),
+    );
+  }, [apiColors, colorInput]);
   const availableSizes = getCategorySizes(category);
 
   const [availableCollections, setAvailableCollections] = useState<string[]>([
