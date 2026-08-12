@@ -963,31 +963,37 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     />
                   </div>
 
-                  {isColorOpen && colorInput.length > 0 && (
-                    <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
+                  {isColorOpen && (
+                    <div className="absolute z-20 mt-2 max-h-60 overflow-y-auto w-full rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
                       {filteredColors.length > 0 ? (
                         filteredColors.map((c) => (
                           <button
-                            key={c.name}
+                            key={c.id ?? c.name}
+                            type="button"
                             onClick={() => {
                               setColorInput(c.name);
                               setSelectedColorHex(c.hex);
                               setIsColorOpen(false);
                             }}
-                            className="flex w-full items-center space-x-3 px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+                            className="flex w-full items-center justify-between px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
                           >
-                            <div
-                              className="h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20"
-                              style={{ backgroundColor: c.hex }}
-                            />
-                            <span className="text-sm font-medium text-black/80 dark:text-white/80">
-                              {c.name}
+                            <div className="flex items-center space-x-3">
+                              <div
+                                className="h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20 shrink-0"
+                                style={{ backgroundColor: c.hex }}
+                              />
+                              <span className="text-sm font-medium text-black/80 dark:text-white/80">
+                                {c.name}
+                              </span>
+                            </div>
+                            <span className="font-mono text-xs text-black/40 dark:text-white/40">
+                              {c.hex}
                             </span>
                           </button>
                         ))
                       ) : (
                         <div className="px-4 py-3 text-center text-sm font-medium text-black/50 dark:text-white/50">
-                          No colors found. Hit enter to add "{colorInput}"
+                          No colors found. Hit enter to add &ldquo;{colorInput}&rdquo;
                         </div>
                       )}
                     </div>
