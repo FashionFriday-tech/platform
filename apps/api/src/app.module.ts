@@ -11,6 +11,7 @@ import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { CartModule } from './modules/cart/cart.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CollectionsModule } from './modules/collections/collections.module';
+import { ColorsModule } from './modules/colors/colors.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
@@ -36,6 +37,7 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
     AddressesModule,
     BrandsModule,
     CollectionsModule,
+    ColorsModule,
     ProductsModule,
     CategoriesModule,
     UploadModule,
