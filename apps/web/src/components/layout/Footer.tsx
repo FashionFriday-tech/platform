@@ -17,12 +17,12 @@ const FOOTER_SECTIONS = [
   {
     title: 'Shop',
     links: [
-      { name: 'New Arrivals', href: '/new-arrivals' },
-      { name: 'Best Sellers', href: '/best-sellers' },
-      { name: 'Men', href: '/men' },
-      { name: 'Women', href: '/women' },
-      { name: 'Accessories', href: '/accessories' },
-      { name: 'Footwear', href: '/footwear' },
+      { name: 'New Arrivals', href: '/collections/new-arrivals' },
+      { name: 'Best Sellers', href: '/collections/best-sellers' },
+      { name: 'Men', href: '/category/men' },
+      { name: 'Women', href: '/category/women' },
+      { name: 'Accessories', href: '/collections/accessories' },
+      { name: 'Footwear', href: '/collections/footwear' },
       { name: 'Gift Cards', href: '/gift-cards' },
     ],
   },

@@ -54,7 +54,7 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
   return (
     <div className="bg-background text-foreground min-h-screen transition-colors duration-500">
       {/* --- MOBILE TOOLBAR --- */}
-      <div className="bg-background border-border sticky top-16 z-30 border-y md:hidden">
+      <div className="bg-background sticky top-[51px] z-30 md:hidden">
         <div className="mx-auto flex h-12">
           <button
             onClick={() => {
