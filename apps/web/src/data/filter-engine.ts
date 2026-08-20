@@ -340,6 +340,24 @@ export const getProductsByBrand = async (brand: string): Promise<Product[]> => {
   }
 };
 
+export const getProductsByCollection = async (collectionSlug: string): Promise<Product[]> => {
+  try {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const res = await fetch(`${API_URL}/products?collection=${encodeURIComponent(collectionSlug)}&take=100`, {
+      next: { revalidate: 86400, tags: [`collection-products-${collectionSlug.toLowerCase()}`] },
+    });
+    if (!res.ok) {
+      return [];
+    }
+    const json = await res.json();
+    const data = json.data || [];
+    return data.map(mapDbProductToSchema);
+  } catch (err) {
+    console.error('getProductsByCollection error:', err);
+    return [];
+  }
+};
+
 export const getMaxPrice = (products: Product[]): number => {
   if (products.length === 0) {
     return 50000;
