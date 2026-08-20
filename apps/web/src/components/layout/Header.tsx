@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { AnimatedLogo } from '@/components/ui/animated-logo';
 import {
   BellIcon,
   CategoryIcon,
@@ -88,9 +89,7 @@ export function Header() {
         {/* DESKTOP TOP BAR */}
         <div className="text-foreground relative z-50 mx-auto hidden h-20 items-center justify-between px-6 sm:flex lg:px-12">
           <Link href="/" className="relative z-50 flex h-8 items-center">
-            <span className="text-2xl font-black tracking-tighter uppercase lg:text-3xl">
-              Fashion Friday
-            </span>
+            <AnimatedLogo className="text-2xl font-black tracking-tighter uppercase lg:text-3xl" />
           </Link>
 
           {/* Clean Navigation: No Dropdowns */}
@@ -207,9 +206,7 @@ export function Header() {
               href="/"
               className="flex items-center whitespace-nowrap transition-transform active:scale-95"
             >
-              <span className="text-xl font-black tracking-tighter uppercase sm:text-2xl">
-                Fashion Friday
-              </span>
+              <AnimatedLogo className="text-xl font-black tracking-tighter uppercase sm:text-2xl" />
             </Link>
           </div>
 
