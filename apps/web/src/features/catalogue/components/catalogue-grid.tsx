@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 
 import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
 import Request from '@/components/ui/sections/Request';
+import { PromoVideo } from './promo-video';
 
 interface GridProps {
   products: Product[];
@@ -52,12 +53,10 @@ export const CatalogueGrid = ({
   return (
     <div className="w-full">
       {/* --- REFINEMENT & SORTING BAR --- */}
-      <div className="border-border mb-6 flex flex-col gap-3 border-b pt-2 pb-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Results Count & Active Filter Chips */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-black tracking-widest uppercase opacity-80">
-            {products.length} {products.length === 1 ? 'Product Found' : 'Products Found'}
-          </span>
+
 
           {activeChips.length > 0 && (
             <div className="border-border flex flex-wrap items-center gap-1.5 pl-2 sm:border-l">
@@ -86,27 +85,7 @@ export const CatalogueGrid = ({
           )}
         </div>
 
-        {/* Desktop / Tablet Sort Selector */}
-        {sortOptions.length > 0 && onSortChange && (
-          <div className="hidden items-center gap-2 sm:flex">
-            <span className="text-[10px] font-black tracking-widest uppercase opacity-50">
-              Sort By:
-            </span>
-            <select
-              value={sortBy}
-              onChange={(e) => {
-                onSortChange(e.target.value);
-              }}
-              className="border-border bg-background hover:border-foreground/40 focus:border-foreground cursor-pointer rounded-2xl border px-3.5 py-1.5 text-[11px] font-black tracking-wider uppercase shadow-xs transition-colors outline-none"
-            >
-              {sortOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        {/* Desktop / Tablet Sort Selector (Removed per request as it exists in sidebar) */}
       </div>
 
       {/* --- PRODUCT GRID --- */}
@@ -132,24 +111,9 @@ export const CatalogueGrid = ({
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-background-muted relative col-span-2 aspect-4/5 h-full min-h-[280px] w-full overflow-hidden rounded-4xl sm:aspect-auto lg:rounded-[2.5rem]"
+                  className="bg-background-muted relative col-span-2 aspect-[8/5] sm:aspect-auto sm:h-full w-full overflow-hidden rounded-4xl lg:rounded-[2.5rem]"
                 >
-                  <Image
-                    src="/gif/ad.gif"
-                    alt="Promotion"
-                    fill
-                    className="object-cover transition-transform duration-700 hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
-                    unoptimized
-                  />
-                  <div className="absolute inset-0 flex flex-col justify-center bg-black/35 px-6 backdrop-blur-[0.5px] md:px-10">
-                    <h4 className="text-2xl font-black tracking-tighter text-white uppercase italic sm:text-3xl md:text-4xl">
-                      Exclusive Drop
-                    </h4>
-                    <p className="mt-1 text-[10px] font-bold tracking-widest text-white/80 uppercase sm:text-xs">
-                      Premium Quality Guaranteed
-                    </p>
-                  </div>
+                  <PromoVideo src="/gif/ad.gif" />
                 </motion.div>
               )}
             </React.Fragment>
