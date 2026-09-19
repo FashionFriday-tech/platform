@@ -67,8 +67,8 @@ export function CustomSelect({
         className={
           buttonClassName ??
           (size === 'sm'
-            ? 'flex w-full items-center justify-between gap-2.5 rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-sm font-medium text-black/80 transition-all outline-none hover:bg-black/5 focus:border-black/30 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5 dark:focus:border-white/30'
-            : 'flex w-full items-center justify-between rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-black shadow-sm transition-all outline-none hover:border-black/30 focus:border-black/30 dark:border-white/10 dark:bg-[#111] dark:text-white dark:hover:border-white/30')
+            ? 'flex w-full items-center justify-between gap-2.5 rounded-xl bg-[#f8f9fa] px-3 py-2 text-sm font-medium text-black/80 transition-all outline-none hover:bg-black/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5'
+            : 'flex w-full items-center justify-between rounded-xl bg-[#f8f9fa] px-4 py-3 text-sm font-semibold text-black transition-all outline-none hover:bg-black/5 dark:bg-[#1a1a1a] dark:text-white dark:hover:bg-white/5')
         }
       >
         <div className="flex items-center gap-2 truncate">
@@ -98,7 +98,7 @@ export function CustomSelect({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
             transition={{ duration: 0.15 }}
-            className={`scrollbar-hide absolute z-50 mt-2 max-h-60 min-w-full w-max max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-black/10 bg-white p-1.5 shadow-xl dark:border-white/10 dark:bg-[#1a1a1a] ${
+            className={`scrollbar-hide absolute z-50 mt-2 max-h-60 min-w-full w-max max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl bg-white p-1.5 dark:bg-[#1a1a1a] ${
               align === 'right' ? 'right-0' : 'left-0'
             } ${dropdownClassName ?? ''}`}
           >
