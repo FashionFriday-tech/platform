@@ -147,8 +147,10 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
                         <span className="skew-x-[12deg] px-5 py-2.5 text-xs sm:text-sm font-black tracking-widest text-white uppercase transition-colors">
                           {cat.buttonText}
                         </span>
-                        <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-3.5 py-2.5 text-black transition-all group-hover:bg-zinc-200">
-                          <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        <span className="flex shrink-0 items-center justify-center bg-white px-3.5 py-2.5 text-black transition-all group-hover:bg-zinc-200">
+                          <span className="skew-x-[12deg]">
+                            <ArrowUpRightIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                          </span>
                         </span>
                       </span>
                     </div>

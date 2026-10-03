@@ -365,10 +365,12 @@ export default function Footer() {
                       />
                       <button
                         type="submit"
-                        className="group flex shrink-0 skew-x-[12deg] items-center gap-2 bg-white px-5 py-3.5 text-xs font-black tracking-widest text-black uppercase transition-all hover:bg-zinc-200 active:scale-95"
+                        className="group flex shrink-0 items-center justify-center bg-white px-5 py-3.5 text-xs font-black tracking-widest text-black uppercase transition-all hover:bg-zinc-200 active:scale-95"
                       >
-                        <span>JOIN</span>
-                        <ArrowUpRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        <span className="flex items-center gap-2 skew-x-[12deg]">
+                          <span>JOIN</span>
+                          <ArrowUpRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        </span>
                       </button>
                     </div>
                     <p className="text-[10px] font-medium tracking-wide text-zinc-500 uppercase text-center lg:text-left">
