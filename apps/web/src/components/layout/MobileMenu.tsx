@@ -123,6 +123,14 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
       return;
     }
 
+    if (nextTheme === 'dark') {
+      document.documentElement.style.setProperty('--vt-old-z', '2');
+      document.documentElement.style.setProperty('--vt-new-z', '1');
+    } else {
+      document.documentElement.style.setProperty('--vt-old-z', '1');
+      document.documentElement.style.setProperty('--vt-new-z', '2');
+    }
+
     const transition = document.startViewTransition(() => {
       flushSync(() => {
         setTheme(nextTheme);
@@ -132,37 +140,46 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     await transition.ready;
 
     // Thematic Dual-Shutter View Transition:
-    // - Making Dark Mode: CLOSING animation (two dark shutters sweep in from both corners and meet/touch at the exact same point on the center line)
-    // - Making Light Mode: OPENING animation (light splits open from the center and expands outward to the corners)
-    // Slower, ultra-smooth cinematic transition without abrupt stops.
-    const keyframes =
+    // - Making Dark Mode: CLOSING animation. Old light theme (on top) shrinks/closes from full screen into the center line,
+    //   revealing the dark shutters closing in from both corners and meeting at the exact center line without ANY gap!
+    // - Making Light Mode: OPENING animation. New light theme (on top) splits open from the center line outward to both corners!
+    const anim =
       nextTheme === 'dark'
-        ? [
+        ? document.documentElement.animate(
+            [
+              {
+                clipPath: 'polygon(-40% -160%, 260% 140%, 140% 260%, -160% -40%)',
+              },
+              {
+                clipPath: 'polygon(-100% -100%, 200% 200%, 200% 200%, -100% -100%)',
+              },
+            ],
             {
-              clipPath:
-                'polygon(-48% -153%, 253% 148%, 453% -53%, 153% -353%, -353% 153%, -153% -48%, 148% 253%, -53% 453%)',
+              duration: 900,
+              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              pseudoElement: '::view-transition-old(root)',
             },
+          )
+        : document.documentElement.animate(
+            [
+              {
+                clipPath: 'polygon(-100% -100%, 200% 200%, 200% 200%, -100% -100%)',
+              },
+              {
+                clipPath: 'polygon(-40% -160%, 260% 140%, 140% 260%, -160% -40%)',
+              },
+            ],
             {
-              clipPath:
-                'polygon(-101% -99%, 200% 201%, 400% 0%, 100% -300%, -300% 100%, -99% -101%, 201% 200%, 0% 400%)',
+              duration: 900,
+              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              pseudoElement: '::view-transition-new(root)',
             },
-          ]
-        : [
-            {
-              clipPath:
-                'polygon(-100% -100%, 200% 200%, 200% 200%, -100% -100%)',
-            },
-            {
-              clipPath:
-                'polygon(-40% -160%, 260% 140%, 140% 260%, -160% -40%)',
-            },
-          ];
+          );
 
-    document.documentElement.animate(keyframes, {
-      duration: 900,
-      easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-      pseudoElement: '::view-transition-new(root)',
-    });
+    anim.onfinish = () => {
+      document.documentElement.style.removeProperty('--vt-old-z');
+      document.documentElement.style.removeProperty('--vt-new-z');
+    };
   }, [resolvedTheme, setTheme]);
 
   // Lock body scroll and pause Lenis when mobile menu is open
@@ -721,12 +738,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link
                       href="/login"
                       onClick={onClose}
-                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
+                      className="group bg-foreground border-foreground/20 hover:border-foreground/40 flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border shadow-lg transition-all hover:shadow-xl active:scale-95"
                     >
-                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-white uppercase transition-colors truncate">
+                      <span className="text-background flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest uppercase transition-colors truncate">
                         Sign In
                       </span>
-                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-3 sm:px-3.5 py-3 text-black transition-all group-hover:bg-zinc-200">
+                      <span className="bg-background text-foreground flex shrink-0 skew-x-[12deg] items-center justify-center px-3 sm:px-3.5 py-3 transition-all group-hover:opacity-90">
                         <UserIcon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
                       </span>
                     </Link>
@@ -736,12 +753,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <button
                       type="button"
                       onClick={handleInstallClick}
-                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700"
+                      className="group bg-foreground border-foreground/20 hover:border-foreground/40 flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border shadow-lg transition-all hover:shadow-xl active:scale-95"
                     >
-                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-white uppercase transition-colors truncate">
+                      <span className="text-background flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest uppercase transition-colors truncate">
                         Install App
                       </span>
-                      <span className="flex shrink-0 skew-x-[12deg] items-center justify-center bg-white px-3 sm:px-3.5 py-3 text-black transition-all group-hover:bg-zinc-200">
+                      <span className="bg-background text-foreground flex shrink-0 skew-x-[12deg] items-center justify-center px-3 sm:px-3.5 py-3 transition-all group-hover:opacity-90">
                         <svg
                           className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
                           viewBox="0 0 24 24"
