@@ -132,9 +132,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     await transition.ready;
 
     // Thematic Dual-Shutter View Transition:
-    // - Making Dark Mode: CLOSING animation (two dark shutters sweep in from both corners and firmly close shut in the center)
+    // - Making Dark Mode: CLOSING animation (two dark shutters sweep in from both corners and meet/touch at the exact same point on the center line)
     // - Making Light Mode: OPENING animation (light splits open from the center and expands outward to the corners)
-    // Both share the exact same parallel angle, with solid full-coverage overlap to eliminate any end ripple or gap.
+    // Slower, ultra-smooth cinematic transition without abrupt stops.
     const keyframes =
       nextTheme === 'dark'
         ? [
@@ -144,7 +144,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             },
             {
               clipPath:
-                'polygon(-113% -88%, 188% 213%, 388% 13%, 88% -288%, -288% 88%, -88% -113%, 213% 188%, 13% 388%)',
+                'polygon(-101% -99%, 200% 201%, 400% 0%, 100% -300%, -300% 100%, -99% -101%, 201% 200%, 0% 400%)',
             },
           ]
         : [
@@ -159,8 +159,8 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           ];
 
     document.documentElement.animate(keyframes, {
-      duration: 650,
-      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      duration: 900,
+      easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
       pseudoElement: '::view-transition-new(root)',
     });
   }, [resolvedTheme, setTheme]);
