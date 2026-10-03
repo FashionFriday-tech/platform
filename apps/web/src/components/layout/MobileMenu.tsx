@@ -130,9 +130,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     }
   };
 
-  // Dual-corner View Transition theme toggling:
-  // Starts from right top corner (100% 0%) and bottom left corner (0% 100%)
-  // and smoothly converges/meets at the center position (50% 50%)!
+  // Alternating diagonal wipe View Transition theme toggling:
+  // When switching to light mode: top right corner color animation moves to bottom left corner.
+  // When switching to dark mode: bottom left corner color animation moves to top right corner.
   const toggleTheme = useCallback(async () => {
     const isDark = resolvedTheme === 'dark';
     const nextTheme = isDark ? 'light' : 'dark';
@@ -151,35 +151,32 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
     await transition.ready;
 
-    // Dual-corner converging animation:
-    // Wave 1 comes from right top corner (100% 0%)
-    // Wave 2 comes from bottom left corner (0% 100%)
-    // Both wavefronts sweep inwards and meet/converge right at the center position (50% 50%)!
-    document.documentElement.animate(
-      [
-        {
-          clipPath:
-            'polygon(100% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%, 0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%, 0% 100%)',
-        },
-        {
-          clipPath:
-            'polygon(100% 0%, 65% 0%, 45% 20%, 50% 50%, 80% 45%, 100% 65%, 0% 100%, 35% 100%, 55% 80%, 50% 50%, 20% 55%, 0% 35%)',
-        },
-        {
-          clipPath:
-            'polygon(100% 0%, 20% 0%, 10% 25%, 35% 65%, 65% 65%, 100% 80%, 0% 100%, 80% 100%, 90% 75%, 65% 35%, 35% 35%, 0% 20%)',
-        },
-        {
-          clipPath:
-            'polygon(100% 0%, 0% 0%, 0% 0%, 0% 100%, 100% 100%, 100% 100%, 0% 100%, 100% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 0%)',
-        },
-      ],
-      {
-        duration: 750,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-        pseudoElement: '::view-transition-new(root)',
-      },
-    );
+    // Diagonal angled wave sweeping cleanly across:
+    // isDark -> nextTheme is 'light': sweeps from Top-Right (100% 0%) to Bottom-Left (0% 100%)
+    // !isDark -> nextTheme is 'dark': sweeps from Bottom-Left (0% 100%) to Top-Right (100% 0%)
+    const keyframes = isDark
+      ? [
+          {
+            clipPath: 'polygon(-40% -160%, 260% 140%, 460% -60%, 160% -360%)',
+          },
+          {
+            clipPath: 'polygon(-160% -40%, 140% 260%, 340% 60%, 40% -240%)',
+          },
+        ]
+      : [
+          {
+            clipPath: 'polygon(-160% -40%, 140% 260%, -60% 460%, -360% 160%)',
+          },
+          {
+            clipPath: 'polygon(-40% -160%, 260% 140%, 60% 340%, -240% 40%)',
+          },
+        ];
+
+    document.documentElement.animate(keyframes, {
+      duration: 650,
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      pseudoElement: '::view-transition-new(root)',
+    });
   }, [resolvedTheme, setTheme]);
 
   // Lock body scroll and pause Lenis when mobile menu is open
