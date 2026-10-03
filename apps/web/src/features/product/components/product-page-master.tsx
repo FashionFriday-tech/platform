@@ -272,16 +272,16 @@ export default function ProductPageMaster({
                   <button
                     type="button"
                     onClick={handleBuyNow}
-                    className="group flex h-14 w-full -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-black text-white shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black dark:hover:border-zinc-100"
+                    className="group flex h-12 w-full -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-black text-white shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black dark:hover:border-zinc-100"
                   >
-                    <span className="skew-x-[12deg] text-base font-black tracking-widest uppercase sm:text-lg">
+                    <span className="skew-x-[12deg] text-sm font-black tracking-widest uppercase sm:text-base">
                       Buy Now
                     </span>
                   </button>
                 ) : (
                   <button
                     type="button"
-                    className="border-destructive text-destructive flex h-14 w-full -skew-x-[12deg] cursor-not-allowed items-center justify-center gap-3 overflow-hidden rounded-xl border-2 font-black tracking-[0.2em] uppercase"
+                    className="border-destructive text-destructive flex h-12 w-full -skew-x-[12deg] cursor-not-allowed items-center justify-center gap-3 overflow-hidden rounded-xl border-2 font-black tracking-[0.2em] uppercase"
                   >
                     <span className="flex skew-x-[12deg] items-center gap-2">
                       <BellIcon size={20} />
@@ -291,12 +291,12 @@ export default function ProductPageMaster({
                 )}
               </div>
 
-              <div className="flex h-14 w-full items-center gap-2.5 lg:flex-1">
+              <div className="flex h-12 w-full items-center gap-2.5 lg:flex-1">
                 <button
                   type="button"
                   onClick={handleWishlistToggle}
                   aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-                  className={`flex h-14 w-14 shrink-0 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-xl border shadow-lg transition-all duration-200 active:scale-90 ${
+                  className={`flex h-12 w-12 shrink-0 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-xl border shadow-lg transition-all duration-200 active:scale-90 ${
                     isWishlisted
                       ? 'border-zinc-900 bg-black text-white dark:border-zinc-100 dark:bg-white dark:text-black'
                       : 'border-zinc-300 bg-transparent text-zinc-800 hover:border-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:bg-zinc-800'
@@ -317,9 +317,9 @@ export default function ProductPageMaster({
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="group flex h-14 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-white font-black text-black shadow-lg transition-all hover:bg-zinc-100 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-black dark:text-white dark:hover:bg-zinc-900"
+                  className="group flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-white font-black text-black shadow-lg transition-all hover:bg-zinc-100 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-black dark:text-white dark:hover:bg-zinc-900"
                 >
-                  <span className="skew-x-[12deg] text-base font-black tracking-widest uppercase sm:text-lg">
+                  <span className="skew-x-[12deg] text-sm font-black tracking-widest uppercase sm:text-base">
                     Add to Cart
                   </span>
                 </button>
