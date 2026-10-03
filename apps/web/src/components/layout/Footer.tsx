@@ -539,9 +539,11 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    className={`flex h-10 w-10 items-center justify-center rounded-xl border bg-zinc-900/70 transition-all duration-200 hover:-translate-y-1 hover:scale-105 ${social.colorClass}`}
+                    className={`flex h-10 w-10 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-lg border bg-zinc-900/70 transition-all duration-200 hover:-translate-y-1 hover:scale-105 ${social.colorClass}`}
                   >
-                    <social.icon size={18} />
+                    <span className="skew-x-[12deg]">
+                      <social.icon size={18} />
+                    </span>
                   </Link>
                 ))}
               </div>

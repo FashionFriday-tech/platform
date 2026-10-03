@@ -473,51 +473,61 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                   href="https://wa.me/+917558969093"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#25D366]/30 bg-[#25D366]/10 text-[#25D366] transition-all hover:scale-105 hover:border-[#25D366]/60 hover:bg-[#25D366]/20 active:scale-95"
+                  className="flex h-9 w-9 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-lg border border-[#25D366]/30 bg-[#25D366]/10 text-[#25D366] transition-all hover:scale-105 hover:border-[#25D366]/60 hover:bg-[#25D366]/20 active:scale-95"
                   aria-label="Chat on WhatsApp"
                   title="WhatsApp"
                 >
-                  <WhatsAppIcon className="h-4.5 w-4.5" />
+                  <span className="skew-x-[12deg]">
+                    <WhatsAppIcon className="h-4.5 w-4.5" />
+                  </span>
                 </a>
                 <a
                   href="https://instagram.com/fashionfriday.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E1306C]/30 bg-[#E1306C]/10 text-[#E1306C] transition-all hover:scale-105 hover:border-[#E1306C]/60 hover:bg-[#E1306C]/20 active:scale-95"
+                  className="flex h-9 w-9 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-lg border border-[#E1306C]/30 bg-[#E1306C]/10 text-[#E1306C] transition-all hover:scale-105 hover:border-[#E1306C]/60 hover:bg-[#E1306C]/20 active:scale-95"
                   aria-label="Follow on Instagram"
                   title="Instagram"
                 >
-                  <InstagramIcon className="h-4 w-4" />
+                  <span className="skew-x-[12deg]">
+                    <InstagramIcon className="h-4 w-4" />
+                  </span>
                 </a>
                 <a
                   href="https://youtube.com/fashionfriday.store"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#FF0000]/30 bg-[#FF0000]/10 text-[#FF0000] transition-all hover:scale-105 hover:border-[#FF0000]/60 hover:bg-[#FF0000]/20 active:scale-95"
+                  className="flex h-9 w-9 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-lg border border-[#FF0000]/30 bg-[#FF0000]/10 text-[#FF0000] transition-all hover:scale-105 hover:border-[#FF0000]/60 hover:bg-[#FF0000]/20 active:scale-95"
                   aria-label="Watch on YouTube"
                   title="YouTube"
                 >
-                  <YoutubeIcon className="h-4.5 w-4.5" />
+                  <span className="skew-x-[12deg]">
+                    <YoutubeIcon className="h-4.5 w-4.5" />
+                  </span>
                 </a>
                 <a
                   href="https://facebook.com/fashionfriday.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#1877F2]/30 bg-[#1877F2]/10 text-[#1877F2] transition-all hover:scale-105 hover:border-[#1877F2]/60 hover:bg-[#1877F2]/20 active:scale-95"
+                  className="flex h-9 w-9 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-lg border border-[#1877F2]/30 bg-[#1877F2]/10 text-[#1877F2] transition-all hover:scale-105 hover:border-[#1877F2]/60 hover:bg-[#1877F2]/20 active:scale-95"
                   aria-label="Follow on Facebook"
                   title="Facebook"
                 >
-                  <FacebookIcon className="h-4 w-4" />
+                  <span className="skew-x-[12deg]">
+                    <FacebookIcon className="h-4 w-4" />
+                  </span>
                 </a>
                 <a
                   href="https://x.com/fashionfriday.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border-border/60 bg-foreground/5 text-foreground hover:bg-foreground/10 hover:border-foreground/40 flex h-9 w-9 items-center justify-center rounded-full border transition-all hover:scale-105 active:scale-95 dark:border-white/40 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
+                  className="border-border/60 bg-foreground/5 text-foreground hover:bg-foreground/10 hover:border-foreground/40 flex h-9 w-9 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-lg border transition-all hover:scale-105 active:scale-95 dark:border-white/40 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
                   aria-label="Follow on X (Twitter)"
                   title="X (Twitter)"
                 >
-                  <TwitterIcon className="h-3.5 w-3.5" />
+                  <span className="skew-x-[12deg]">
+                    <TwitterIcon className="h-3.5 w-3.5" />
+                  </span>
                 </a>
               </div>
 
