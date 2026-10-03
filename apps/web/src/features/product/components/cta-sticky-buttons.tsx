@@ -18,7 +18,7 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
   onCartClick,
 }) => {
   return (
-    <div className="border-foreground/10 bg-background/90 fixed right-0 bottom-0 left-0 z-50 flex w-full items-center gap-2 border-t px-4 py-3 backdrop-blur-md md:hidden lg:hidden">
+    <div className="bg-background/90 fixed right-0 bottom-0 left-0 z-50 flex w-full items-center gap-2 px-4 py-3 backdrop-blur-md md:hidden lg:hidden">
       {/* Wishlist Button */}
       <button
         type="button"
