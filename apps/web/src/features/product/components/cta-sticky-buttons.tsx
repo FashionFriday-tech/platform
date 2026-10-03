@@ -24,24 +24,30 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
         type="button"
         onClick={onWishlistToggle}
         aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-        className={`border-border hover:border-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-all duration-300 active:scale-90 ${
-          isWishlisted ? 'border-red-500 bg-red-500/10 text-red-500' : 'text-foreground'
+        className={`flex h-12 w-12 shrink-0 items-center justify-center -skew-x-[12deg] overflow-hidden rounded-xl border transition-all duration-200 active:scale-90 ${
+          isWishlisted
+            ? 'border-black bg-black text-white shadow-md dark:border-white'
+            : 'border-border text-foreground hover:border-foreground/60'
         }`}
       >
-        {isWishlisted ? (
-          <HeartFilledIcon size={20} className="scale-110 text-red-500" />
-        ) : (
-          <HeartIcon size={20} />
-        )}
+        <span className="skew-x-[12deg]">
+          {isWishlisted ? (
+            <HeartFilledIcon size={20} className="scale-110 text-white fill-white" />
+          ) : (
+            <HeartIcon size={20} />
+          )}
+        </span>
       </button>
 
-      {/* Main Buy Button - Centered Pill */}
+      {/* Main Buy Button - Crossed Style */}
       <button
         type="button"
         onClick={onBuyNow}
-        className="bg-foreground text-background flex h-12 flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-full text-lg font-black uppercase shadow-lg transition-transform outline-none active:scale-95"
+        className="flex h-12 flex-1 cursor-pointer items-center justify-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black text-white shadow-lg transition-transform outline-none active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black"
       >
-        <span className="whitespace-nowrap">Buy Now</span>
+        <span className="skew-x-[12deg] whitespace-nowrap text-sm font-black tracking-widest uppercase">
+          Buy Now
+        </span>
       </button>
 
       {/* Cart/Bag Button */}
@@ -49,9 +55,11 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
         type="button"
         onClick={onCartClick}
         aria-label="View Cart"
-        className="border-border hover:bg-background-muted text-foreground flex h-12 w-12 shrink-0 items-center justify-center rounded-full border transition-all active:scale-90"
+        className="border-border hover:bg-foreground/5 text-foreground flex h-12 w-12 shrink-0 items-center justify-center -skew-x-[12deg] overflow-hidden rounded-xl border transition-all active:scale-90"
       >
-        <ShoppingBagIcon size={18} />
+        <span className="skew-x-[12deg]">
+          <ShoppingBagIcon size={18} />
+        </span>
       </button>
     </div>
   );
