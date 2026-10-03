@@ -8,14 +8,11 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 
 import {
-  BellIcon,
   FacebookIcon,
   InstagramIcon,
-  ShoppingBagIcon,
   TwitterIcon,
   UserIcon,
   WhatsAppIcon,
-  WishlistIcon,
   YoutubeIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
@@ -52,10 +49,10 @@ const MAIN_NAV_ITEMS = [
 ];
 
 const ACCOUNT_LINKS = [
-  { label: 'My Orders', href: '/account/orders', icon: ShoppingBagIcon },
-  { label: 'Wishlist', href: '/account/wishlist', icon: WishlistIcon },
-  { label: 'Notifications', href: '/account/notifications', icon: BellIcon },
-  { label: 'Customer Care & FAQ', href: '/help', icon: UserIcon },
+  { label: 'My Orders', href: '/account/orders' },
+  { label: 'Wishlist', href: '/account/wishlist' },
+  { label: 'Notifications', href: '/account/notifications' },
+  { label: 'Customer Care & FAQ', href: '/help' },
 ];
 
 export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
@@ -70,43 +67,26 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const [mounted, setMounted] = useState(false);
   const prevPathname = useRef(pathname);
 
-  // Swipe to close gesture tracking
+  // Swipe to close gesture tracking (swipe right to left anywhere on the drawer to close)
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
-  const isHorizontalSwipeRef = useRef<boolean | null>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
-    isHorizontalSwipeRef.current = null;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStartXRef.current === null || touchStartYRef.current === null) {
-      return;
-    }
-    const diffX = e.touches[0].clientX - touchStartXRef.current;
-    const diffY = e.touches[0].clientY - touchStartYRef.current;
-
-    // Detect direction on initial motion to avoid capturing vertical scrolling
-    if (isHorizontalSwipeRef.current === null) {
-      if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) {
-        isHorizontalSwipeRef.current = Math.abs(diffX) > Math.abs(diffY);
-      }
-    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartXRef.current !== null && isHorizontalSwipeRef.current) {
+    if (touchStartXRef.current !== null && touchStartYRef.current !== null) {
       const diffX = e.changedTouches[0].clientX - touchStartXRef.current;
-      // If user swiped left by more than 40px, trigger close!
-      if (diffX < -40) {
+      const diffY = e.changedTouches[0].clientY - touchStartYRef.current;
+      // Trigger close when swiped left (diffX < -30) and movement is predominantly horizontal
+      if (diffX < -30 && Math.abs(diffX) > Math.abs(diffY)) {
         onClose();
       }
     }
     touchStartXRef.current = null;
     touchStartYRef.current = null;
-    isHorizontalSwipeRef.current = null;
   };
 
   useEffect(() => {
@@ -253,8 +233,8 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 280 }}
             onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
             data-lenis-prevent="true"
             data-lenis-prevent-wheel="true"
             data-lenis-prevent-touch="true"
@@ -344,9 +324,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               data-lenis-prevent-wheel="true"
               data-lenis-prevent-touch="true"
               className="scrollbar-none flex-1 [touch-action:pan-y] overflow-y-auto overscroll-contain px-5 py-4 [-webkit-overflow-scrolling:touch]"
-              onTouchMove={(e) => {
-                e.stopPropagation();
-              }}
             >
               <style>{`
                 @keyframes electric-blink {
@@ -419,7 +396,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 </div>
               )}
 
-              {/* Main Categories Navigation */}
+              {/* Navigation Links: Categories & Account seamlessly unified with arrows and zero extra gap */}
               <div className="mb-4 flex flex-col gap-1">
                 {MAIN_NAV_ITEMS.map((item) => (
                   <Link
@@ -430,35 +407,13 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       item.isRed ? 'text-destructive' : 'text-foreground'
                     }`}
                   >
-                    <span className="flex items-center gap-2">{item.label}</span>
-                    {item.badge && (
-                      <span className="animate-electric-blink text-foreground text-[10px] font-black tracking-widest uppercase select-none">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Account & Support Section */}
-              <div className="border-border/30 mb-6 flex flex-col gap-1 border-t pt-4">
-                {ACCOUNT_LINKS.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      onClick={onClose}
-                      className="group hover:bg-foreground/5 flex items-center justify-between rounded-xl px-3 py-2.5 transition-all active:scale-98"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="bg-foreground/5 text-foreground/70 group-hover:bg-foreground/10 group-hover:text-foreground flex h-8 w-8 items-center justify-center rounded-lg transition-colors">
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <span className="text-foreground text-sm font-black tracking-wide uppercase transition-colors">
-                          {item.label}
+                    <span>{item.label}</span>
+                    <div className="flex items-center gap-2">
+                      {item.badge && (
+                        <span className="animate-electric-blink text-foreground text-[10px] font-black tracking-widest uppercase select-none">
+                          {item.badge}
                         </span>
-                      </div>
+                      )}
                       <svg
                         className="text-foreground/40 group-hover:text-foreground h-4 w-4 transition-all group-hover:translate-x-0.5"
                         fill="none"
@@ -468,9 +423,29 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
-                    </Link>
-                  );
-                })}
+                    </div>
+                  </Link>
+                ))}
+
+                {ACCOUNT_LINKS.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={onClose}
+                    className="group hover:bg-foreground/5 text-foreground flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-black tracking-wide uppercase transition-all active:scale-98"
+                  >
+                    <span>{item.label}</span>
+                    <svg
+                      className="text-foreground/40 group-hover:text-foreground h-4 w-4 transition-all group-hover:translate-x-0.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                ))}
               </div>
             </div>
 
