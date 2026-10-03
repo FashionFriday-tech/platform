@@ -738,12 +738,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <Link
                       href="/login"
                       onClick={onClose}
-                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700 dark:bg-black"
+                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-white"
                     >
-                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-black uppercase transition-colors truncate dark:text-white">
+                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-white uppercase transition-colors truncate dark:text-black">
                         Sign In
                       </span>
-                      <span className="flex shrink-0 items-center justify-center bg-black px-3 sm:px-3.5 py-3 text-white transition-all group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200">
+                      <span className="flex shrink-0 items-center justify-center bg-white px-3 sm:px-3.5 py-3 text-black transition-all group-hover:bg-zinc-200 dark:bg-black dark:text-white dark:group-hover:bg-zinc-800">
                         <span className="skew-x-[12deg]">
                           <UserIcon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
                         </span>
@@ -755,12 +755,12 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     <button
                       type="button"
                       onClick={handleInstallClick}
-                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-lg transition-all hover:border-zinc-500 hover:shadow-xl active:scale-95 dark:border-zinc-700 dark:bg-black"
+                      className="group flex flex-1 items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-800 bg-black shadow-lg transition-all hover:border-zinc-600 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-white"
                     >
-                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-black uppercase transition-colors truncate dark:text-white">
+                      <span className="flex-1 skew-x-[12deg] px-2.5 sm:px-4 py-3 text-center text-xs font-black tracking-wider sm:tracking-widest text-white uppercase transition-colors truncate dark:text-black">
                         Install App
                       </span>
-                      <span className="flex shrink-0 items-center justify-center bg-black px-3 sm:px-3.5 py-3 text-white transition-all group-hover:bg-zinc-800 dark:bg-white dark:text-black dark:group-hover:bg-zinc-200">
+                      <span className="flex shrink-0 items-center justify-center bg-white px-3 sm:px-3.5 py-3 text-black transition-all group-hover:bg-zinc-200 dark:bg-black dark:text-white dark:group-hover:bg-zinc-800">
                         <span className="skew-x-[12deg]">
                           <svg
                             className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5"
