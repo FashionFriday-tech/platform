@@ -149,7 +149,16 @@ function UpiLogo() {
     <svg viewBox="0 0 52 20" className="h-4.5 w-auto" aria-label="UPI">
       <path d="M12 2 L20 10 L12 18 L7 18 L15 10 L7 2 Z" fill="#00B050" />
       <path d="M18 2 L26 10 L18 18 L13 18 L21 10 L13 2 Z" fill="#FF7800" />
-      <text x="29" y="15" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="12" fill="#FFFFFF">UPI</text>
+      <text
+        x="29"
+        y="15"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="900"
+        fontSize="12"
+        fill="#FFFFFF"
+      >
+        UPI
+      </text>
     </svg>
   );
 }
@@ -157,11 +166,35 @@ function UpiLogo() {
 function GPayLogo() {
   return (
     <svg viewBox="0 0 56 20" className="h-4.5 w-auto" aria-label="Google Pay">
-      <path d="M11 10 C11 9.4 10.9 8.8 10.8 8.2 L5.5 8.2 L5.5 10.3 L8.6 10.3 C8.4 11.2 7.9 11.9 7.2 12.3 L7.2 14.1 L9.4 14.1 C10.7 12.9 11 11.2 11 10 Z" fill="#4285F4" />
-      <path d="M5.5 15.5 C7 15.5 8.2 15 9.1 14.1 L6.9 12.3 C6.3 12.7 5.6 13 4.8 13 C3.3 13 2 12 1.6 10.7 L-0.6 10.7 L-0.6 12.4 C0.3 14.2 2.3 15.5 4.8 15.5 Z" transform="translate(0.6,-0.3)" fill="#34A853" />
-      <path d="M2.2 10.4 C2.1 10 2 9.6 2 9.2 C2 8.8 2.1 8.4 2.2 8 L2.2 6.3 L-0.03 6.3 C-0.5 7.2 -0.7 8.2 -0.7 9.2 C-0.7 10.2 -0.5 11.2 -0.03 12.1 L2.2 10.4 Z" transform="translate(0.6,-0.3)" fill="#FBBC05" />
-      <path d="M5.5 4.9 C6.3 4.9 7.1 5.2 7.6 5.7 L9.3 4 C8.3 3.1 7 2.6 5.5 2.6 C3 2.6 1 3.8 0.1 5.6 L2.3 7.3 C2.7 6 4 4.9 5.5 4.9 Z" transform="translate(0.6,-0.3)" fill="#EA4335" />
-      <text x="14" y="14" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="11" fill="#FFFFFF">Pay</text>
+      <path
+        d="M11 10 C11 9.4 10.9 8.8 10.8 8.2 L5.5 8.2 L5.5 10.3 L8.6 10.3 C8.4 11.2 7.9 11.9 7.2 12.3 L7.2 14.1 L9.4 14.1 C10.7 12.9 11 11.2 11 10 Z"
+        fill="#4285F4"
+      />
+      <path
+        d="M5.5 15.5 C7 15.5 8.2 15 9.1 14.1 L6.9 12.3 C6.3 12.7 5.6 13 4.8 13 C3.3 13 2 12 1.6 10.7 L-0.6 10.7 L-0.6 12.4 C0.3 14.2 2.3 15.5 4.8 15.5 Z"
+        transform="translate(0.6,-0.3)"
+        fill="#34A853"
+      />
+      <path
+        d="M2.2 10.4 C2.1 10 2 9.6 2 9.2 C2 8.8 2.1 8.4 2.2 8 L2.2 6.3 L-0.03 6.3 C-0.5 7.2 -0.7 8.2 -0.7 9.2 C-0.7 10.2 -0.5 11.2 -0.03 12.1 L2.2 10.4 Z"
+        transform="translate(0.6,-0.3)"
+        fill="#FBBC05"
+      />
+      <path
+        d="M5.5 4.9 C6.3 4.9 7.1 5.2 7.6 5.7 L9.3 4 C8.3 3.1 7 2.6 5.5 2.6 C3 2.6 1 3.8 0.1 5.6 L2.3 7.3 C2.7 6 4 4.9 5.5 4.9 Z"
+        transform="translate(0.6,-0.3)"
+        fill="#EA4335"
+      />
+      <text
+        x="14"
+        y="14"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="800"
+        fontSize="11"
+        fill="#FFFFFF"
+      >
+        Pay
+      </text>
     </svg>
   );
 }
@@ -170,8 +203,20 @@ function PhonePeLogo() {
   return (
     <svg viewBox="0 0 72 20" className="h-4.5 w-auto" aria-label="PhonePe">
       <circle cx="10" cy="10" r="9" fill="#5F259F" />
-      <path d="M7 5.5 L12 5.5 C13.8 5.5 14.8 6.5 14.8 8 C14.8 9.5 13.8 10.5 12 10.5 L9.5 10.5 L9.5 15 L7 15 Z M9.5 7.2 L9.5 8.8 L11.5 8.8 C12.2 8.8 12.6 8.5 12.6 8 C12.6 7.5 12.2 7.2 11.5 7.2 Z" fill="#FFFFFF" />
-      <text x="24" y="14" fontFamily="system-ui, sans-serif" fontWeight="800" fontSize="10.5" fill="#FFFFFF">PhonePe</text>
+      <path
+        d="M7 5.5 L12 5.5 C13.8 5.5 14.8 6.5 14.8 8 C14.8 9.5 13.8 10.5 12 10.5 L9.5 10.5 L9.5 15 L7 15 Z M9.5 7.2 L9.5 8.8 L11.5 8.8 C12.2 8.8 12.6 8.5 12.6 8 C12.6 7.5 12.2 7.2 11.5 7.2 Z"
+        fill="#FFFFFF"
+      />
+      <text
+        x="24"
+        y="14"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="800"
+        fontSize="10.5"
+        fill="#FFFFFF"
+      >
+        PhonePe
+      </text>
     </svg>
   );
 }
@@ -179,8 +224,27 @@ function PhonePeLogo() {
 function PaytmLogo() {
   return (
     <svg viewBox="0 0 54 18" className="h-4 w-auto" aria-label="Paytm">
-      <text x="0" y="14" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="14" fill="#00BAF2">Pay</text>
-      <text x="28" y="14" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="14" fill="#002970" className="dark:fill-white">tm</text>
+      <text
+        x="0"
+        y="14"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="900"
+        fontSize="14"
+        fill="#00BAF2"
+      >
+        Pay
+      </text>
+      <text
+        x="28"
+        y="14"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="900"
+        fontSize="14"
+        fill="#002970"
+        className="dark:fill-white"
+      >
+        tm
+      </text>
     </svg>
   );
 }
@@ -188,7 +252,18 @@ function PaytmLogo() {
 function VisaLogo() {
   return (
     <svg viewBox="0 0 50 16" className="h-3.5 w-auto" aria-label="Visa">
-      <text x="0" y="13" fontFamily="system-ui, sans-serif" fontWeight="900" fontStyle="italic" fontSize="16" fill="#1A1F71" className="dark:fill-white">VISA</text>
+      <text
+        x="0"
+        y="13"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="900"
+        fontStyle="italic"
+        fontSize="16"
+        fill="#1A1F71"
+        className="dark:fill-white"
+      >
+        VISA
+      </text>
     </svg>
   );
 }
@@ -198,7 +273,10 @@ function MastercardLogo() {
     <svg viewBox="0 0 34 22" className="h-4.5 w-auto" aria-label="Mastercard">
       <circle cx="11" cy="11" r="9" fill="#EB001B" />
       <circle cx="23" cy="11" r="9" fill="#F79E1B" fillOpacity="0.9" />
-      <path d="M17 4.8 C15.4 6.5 14.4 8.6 14.4 11 C14.4 13.4 15.4 15.5 17 17.2 C18.6 15.5 19.6 13.4 19.6 11 C19.6 8.6 18.6 6.5 17 4.8 Z" fill="#FF5F00" />
+      <path
+        d="M17 4.8 C15.4 6.5 14.4 8.6 14.4 11 C14.4 13.4 15.4 15.5 17 17.2 C18.6 15.5 19.6 13.4 19.6 11 C19.6 8.6 18.6 6.5 17 4.8 Z"
+        fill="#FF5F00"
+      />
     </svg>
   );
 }
@@ -206,8 +284,28 @@ function MastercardLogo() {
 function RuPayLogo() {
   return (
     <svg viewBox="0 0 58 18" className="h-3.5 w-auto" aria-label="RuPay">
-      <text x="0" y="14" fontFamily="system-ui, sans-serif" fontWeight="900" fontSize="14" fill="#005B9E" className="dark:fill-white">Ru</text>
-      <text x="21" y="14" fontFamily="system-ui, sans-serif" fontWeight="900" fontStyle="italic" fontSize="14" fill="#0F75BD">Pay</text>
+      <text
+        x="0"
+        y="14"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="900"
+        fontSize="14"
+        fill="#005B9E"
+        className="dark:fill-white"
+      >
+        Ru
+      </text>
+      <text
+        x="21"
+        y="14"
+        fontFamily="system-ui, sans-serif"
+        fontWeight="900"
+        fontStyle="italic"
+        fontSize="14"
+        fill="#0F75BD"
+      >
+        Pay
+      </text>
       <polygon points="48,2 53,2 49,15 44,15" fill="#F37023" />
       <polygon points="52,2 57,2 53,15 48,15" fill="#0F75BD" />
     </svg>
@@ -217,7 +315,9 @@ function RuPayLogo() {
 function CodLogo() {
   return (
     <div className="flex items-center gap-1.5 font-mono text-[9px] font-black tracking-widest text-emerald-400">
-      <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[8px] text-emerald-300">COD</span>
+      <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[8px] text-emerald-300">
+        COD
+      </span>
       <span className="text-zinc-400">AVAILABLE</span>
     </div>
   );
@@ -230,7 +330,7 @@ export default function Footer() {
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !email.includes('@')) {
+    if (!email?.includes('@')) {
       toast.error('Please enter a valid email address');
       return;
     }
@@ -291,7 +391,7 @@ export default function Footer() {
             animation: footer-card-shine 4.8s ease-in-out infinite;
           }
         `}</style>
-        <div className="animate-footer-ticker flex items-center whitespace-nowrap text-[10px] font-black tracking-[0.25em] text-zinc-400 uppercase">
+        <div className="animate-footer-ticker flex items-center text-[10px] font-black tracking-[0.25em] whitespace-nowrap text-zinc-400 uppercase">
           {[0, 1].map((set) => (
             <div key={set} className="flex items-center gap-6 pr-6">
               {TICKER_ITEMS.map((item, idx) => (
@@ -309,7 +409,9 @@ export default function Footer() {
       <div className="border-b border-zinc-800 bg-zinc-900/80 px-4 py-3.5 sm:hidden">
         <button
           type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
+          onClick={() => {
+            setIsOpen((prev) => !prev);
+          }}
           className="flex w-full items-center justify-between text-xs font-black tracking-[0.2em] text-zinc-300 uppercase transition-colors hover:text-white"
           aria-expanded={isOpen}
         >
@@ -325,12 +427,12 @@ export default function Footer() {
       <div className={`${isOpen ? 'block' : 'hidden'} sm:block`}>
         <div className="container mx-auto px-4 pt-10 md:px-6 lg:px-8">
           {/* A. CROSSED VIP DROP NEWSLETTER BOX WITH SHINING LIGHT ANIMATION */}
-          <div className="group relative mb-14 -skew-x-[6deg] sm:-skew-x-[8deg] overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 md:p-10 shadow-2xl transition-all hover:border-zinc-700">
+          <div className="group relative mb-14 -skew-x-[6deg] overflow-hidden rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950 p-6 shadow-2xl transition-all hover:border-zinc-700 sm:-skew-x-[8deg] md:p-10">
             {/* Luminous Shining Light Sweep */}
             <div className="footer-shine-sweep pointer-events-none absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
 
-            <div className="relative z-10 skew-x-[6deg] sm:skew-x-[8deg] grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
-              <div className="lg:col-span-7 text-center lg:text-left">
+            <div className="relative z-10 grid skew-x-[6deg] grid-cols-1 items-center gap-8 sm:skew-x-[8deg] lg:grid-cols-12 lg:gap-12">
+              <div className="text-center lg:col-span-7 lg:text-left">
                 <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-800/80 px-3 py-1 text-[9px] font-black tracking-[0.25em] text-zinc-300 uppercase">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
                   VIP Access
@@ -338,9 +440,9 @@ export default function Footer() {
                 <h3 className="text-3xl font-black tracking-tighter text-white uppercase italic sm:text-4xl md:text-5xl">
                   NEVER MISS A DROP.
                 </h3>
-                <p className="mt-2 max-w-xl text-xs font-medium leading-relaxed text-zinc-400 sm:text-sm mx-auto lg:mx-0">
-                  Join the underground. Get secret drop links, restock alerts, and member-only private
-                  sales delivered straight to your inbox before the general release.
+                <p className="mx-auto mt-2 max-w-xl text-xs leading-relaxed font-medium text-zinc-400 sm:text-sm lg:mx-0">
+                  Join the underground. Get secret drop links, restock alerts, and member-only
+                  private sales delivered straight to your inbox before the general release.
                 </p>
               </div>
 
@@ -354,11 +456,13 @@ export default function Footer() {
                   </div>
                 ) : (
                   <form onSubmit={handleSubscribe} className="flex flex-col gap-3">
-                    <div className="relative flex items-center -skew-x-[12deg] overflow-hidden rounded-xl border border-zinc-700 bg-black/80 transition-all focus-within:border-zinc-400 focus-within:ring-1 focus-within:ring-zinc-400">
+                    <div className="relative flex -skew-x-[12deg] items-center overflow-hidden rounded-xl border border-zinc-700 bg-black/80 transition-all focus-within:border-zinc-400 focus-within:ring-1 focus-within:ring-zinc-400">
                       <input
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
                         placeholder="ENTER YOUR EMAIL ADDRESS"
                         className="w-full skew-x-[12deg] bg-transparent px-4 py-3.5 text-xs font-semibold text-white uppercase outline-none placeholder:text-zinc-500"
                         required
@@ -367,13 +471,13 @@ export default function Footer() {
                         type="submit"
                         className="group flex shrink-0 items-center justify-center bg-white px-5 py-3.5 text-xs font-black tracking-widest text-black uppercase transition-all hover:bg-zinc-200 active:scale-95"
                       >
-                        <span className="flex items-center gap-2 skew-x-[12deg]">
+                        <span className="flex skew-x-[12deg] items-center gap-2">
                           <span>JOIN</span>
                           <ArrowUpRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </span>
                       </button>
                     </div>
-                    <p className="text-[10px] font-medium tracking-wide text-zinc-500 uppercase text-center lg:text-left">
+                    <p className="text-center text-[10px] font-medium tracking-wide text-zinc-500 uppercase lg:text-left">
                       No spam. Only high-heat drops & private archive access.
                     </p>
                   </form>
@@ -387,12 +491,12 @@ export default function Footer() {
             {TRUST_PILLARS.map((pillar, idx) => (
               <div
                 key={idx}
-                className="group relative -skew-x-[6deg] sm:-skew-x-[8deg] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4 transition-all duration-300 hover:border-zinc-600 hover:bg-zinc-900/80"
+                className="group relative -skew-x-[6deg] overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-4 transition-all duration-300 hover:border-zinc-600 hover:bg-zinc-900/80 sm:-skew-x-[8deg]"
               >
                 {/* Luminous Shining Light Sweep */}
                 <div className="footer-shine-sweep pointer-events-none absolute -top-1/2 -bottom-1/2 -left-1/2 h-[200%] w-[200%]" />
 
-                <div className="relative z-10 flex items-start gap-4 skew-x-[6deg] sm:skew-x-[8deg]">
+                <div className="relative z-10 flex skew-x-[6deg] items-start gap-4 sm:skew-x-[8deg]">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950 text-white transition-colors group-hover:border-zinc-500">
                     <pillar.icon size={18} />
                   </div>
@@ -421,7 +525,7 @@ export default function Footer() {
                   className="h-9 w-auto invert dark:invert-0"
                 />
               </Link>
-              <p className="mt-4 max-w-sm text-xs font-medium leading-relaxed text-zinc-400">
+              <p className="mt-4 max-w-sm text-xs leading-relaxed font-medium text-zinc-400">
                 Style That Moves. High-grade streetwear, limited sneaker editions, and luxury daily
                 essentials curated for the new generation across India.
               </p>
@@ -476,7 +580,7 @@ export default function Footer() {
           {/* D. ACCEPTED PAYMENT METHODS AS ACCURATE SVG LOGOS */}
           <div className="mb-10 flex flex-wrap items-center justify-between gap-4 border-y border-zinc-800/80 py-5">
             <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-              <span className="text-[10px] font-black tracking-[0.2em] text-zinc-500 uppercase mr-1">
+              <span className="mr-1 text-[10px] font-black tracking-[0.2em] text-zinc-500 uppercase">
                 SECURE PAYMENTS:
               </span>
               <div className="flex h-7 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900/60 px-2.5 py-1">
@@ -513,7 +617,10 @@ export default function Footer() {
               aria-label="Back to top of page"
             >
               <span>BACK TO TOP</span>
-              <ArrowUpIcon size={12} className="transition-transform group-hover:-translate-y-0.5" />
+              <ArrowUpIcon
+                size={12}
+                className="transition-transform group-hover:-translate-y-0.5"
+              />
             </button>
           </div>
         </div>

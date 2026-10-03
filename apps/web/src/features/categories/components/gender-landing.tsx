@@ -11,9 +11,9 @@ import { AnimatePresence, motion, type PanInfo } from 'motion/react';
 import { fetcher } from '@/lib/api-client';
 
 import {
+  type CategoryHeroImages,
   DEFAULT_CATEGORY_HEROES,
   extractCategoryHeroImages,
-  type CategoryHeroImages,
 } from '../utils/category-images';
 
 const GENDERS = ['men', 'women'] as const;
@@ -44,10 +44,7 @@ export function GenderLanding({
   const rightListRef = useRef<HTMLDivElement>(null);
 
   const [heroes, setHeroes] = useState<CategoryHeroImages>(() => {
-    return (
-      propHeroImages ??
-      extractCategoryHeroImages(initialCampaigns)
-    );
+    return propHeroImages ?? extractCategoryHeroImages(initialCampaigns);
   });
 
   useEffect(() => {
@@ -169,14 +166,14 @@ export function GenderLanding({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:h-full lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-8 xl:gap-14 xl:px-14 lg:pt-0 lg:pb-0"
+            className="mx-auto flex h-full max-w-screen-2xl flex-col px-4 pt-20 pb-20 lg:h-full lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-8 lg:pt-0 lg:pb-0 xl:gap-14 xl:px-14"
           >
             {/* 1. HERO SECTION (STATIONARY / FIXED IN PLACE ON DESKTOP, 1:1 ASPECT RATIO) */}
             <div
               onWheel={handleLeftWheel}
               className="flex w-full items-center justify-center lg:h-full lg:w-1/2 lg:shrink-0 lg:overflow-hidden"
             >
-              <div className="border-border/50 group relative aspect-square w-full overflow-hidden rounded-4xl border shadow-2xl lg:h-auto lg:w-full lg:max-w-[min(480px,calc(100vh-8.5rem))] xl:max-w-[min(540px,calc(100vh-8.5rem))] lg:rounded-[3rem]">
+              <div className="border-border/50 group relative aspect-square w-full overflow-hidden rounded-4xl border shadow-2xl lg:h-auto lg:w-full lg:max-w-[min(480px,calc(100vh-8.5rem))] lg:rounded-[3rem] xl:max-w-[min(540px,calc(100vh-8.5rem))]">
                 <motion.div
                   initial={{ scale: 1.1 }}
                   animate={{ scale: 1 }}
@@ -201,9 +198,9 @@ export function GenderLanding({
             {/* 2. CATEGORY LIST (ONLY THIS RIGHT-SIDE SECTION SCROLLS ON DESKTOP) */}
             <div
               ref={rightListRef}
-              className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:overflow-y-auto lg:overscroll-contain lg:pt-8 lg:pb-12 lg:pr-2"
+              className="no-scrollbar flex w-full flex-col gap-4 pt-8 lg:h-full lg:w-1/2 lg:overflow-y-auto lg:overscroll-contain lg:pt-8 lg:pr-2 lg:pb-12"
             >
-              <div className="w-full max-w-xl mx-auto space-y-3 lg:space-y-4">
+              <div className="mx-auto w-full max-w-xl space-y-3 lg:space-y-4">
                 {currentData.list.map((cat) => (
                   <Link
                     key={`${activeGender}-${cat.slug}`}

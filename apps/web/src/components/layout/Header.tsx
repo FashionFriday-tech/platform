@@ -86,11 +86,6 @@ export function Header() {
     };
   }, [handleOpenSearch, handleOpenMobileMenu]);
 
-  // Hide header on login and signup pages
-  if (pathname === '/login' || pathname === '/signup') {
-    return null;
-  }
-
   const [redMarquee, setRedMarquee] = useState(
     'FREE SHIPPING ON PRE PAY • COD available +200 advance',
   );
@@ -109,12 +104,12 @@ export function Header() {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
         const res = await fetch(`${API_URL}/campaigns`);
         if (res.ok) {
-          const campaigns: Array<{
+          const campaigns: {
             placement: string;
             title: string;
             linkUrl?: string;
             isActive: boolean;
-          }> = await res.json();
+          }[] = await res.json();
           const activeRed = campaigns.find((c) => c.placement === 'marquee-red' && c.isActive);
           const activeBlue = campaigns.find((c) => c.placement === 'marquee-blue' && c.isActive);
           if (activeRed?.title) {
@@ -132,6 +127,11 @@ export function Header() {
     };
     void fetchMarqueeCampaigns();
   }, [pathname]);
+
+  // Hide header on login and signup pages
+  if (pathname === '/login' || pathname === '/signup') {
+    return null;
+  }
 
   // Unified alternating segments: when red ends, electric blue starts next!
   const marqueeSegments = Array(8)

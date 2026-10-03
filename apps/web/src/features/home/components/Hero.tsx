@@ -306,7 +306,7 @@ export default function Hero({
       {children ? (
         <div className="w-full shrink-0 lg:block lg:flex-none">{children}</div>
       ) : (
-        <div className="flex flex-1 w-full items-center justify-center pt-2 sm:pt-3 lg:mt-6 lg:block lg:flex-none lg:pt-0">
+        <div className="flex w-full flex-1 items-center justify-center pt-2 sm:pt-3 lg:mt-6 lg:block lg:flex-none lg:pt-0">
           <BrandScroll initialBrands={initialBrands} />
         </div>
       )}

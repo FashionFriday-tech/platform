@@ -49,9 +49,6 @@ export default async function StoreLandingPage({ params }: Props) {
   }
 
   return (
-    <GenderLanding
-      initialCategories={initialCategories}
-      initialCampaigns={initialCampaigns}
-    />
+    <GenderLanding initialCategories={initialCategories} initialCampaigns={initialCampaigns} />
   );
 }

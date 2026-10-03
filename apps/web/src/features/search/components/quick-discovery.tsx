@@ -37,7 +37,7 @@ export const QuickDiscovery = ({ items, query, onSelect }: QuickDiscoveryProps) 
             <span className="group-hover:text-brand font-mono text-base uppercase transition-colors sm:text-lg">
               <HighlightText text={item.label} highlight={query} />
             </span>
-            <span className="text-[10px] font-mono tracking-widest uppercase opacity-40 transition-opacity group-hover:opacity-80">
+            <span className="font-mono text-[10px] tracking-widest uppercase opacity-40 transition-opacity group-hover:opacity-80">
               {item.type}
             </span>
           </button>

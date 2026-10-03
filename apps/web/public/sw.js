@@ -66,9 +66,7 @@ self.addEventListener('fetch', (event) => {
 
   // 3. For page navigation: Network First, fallback to offline.html
   if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match('/offline.html')),
-    );
+    event.respondWith(fetch(event.request).catch(() => caches.match('/offline.html')));
     return;
   }
 
@@ -90,4 +88,3 @@ self.addEventListener('fetch', (event) => {
       }),
   );
 });
-
