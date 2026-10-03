@@ -40,7 +40,9 @@ export default function ProductPageMaster({
   similarProducts: Product[];
 }): JSX.Element {
   const router = useRouter();
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(
+    () => product.attributes?.sizes?.[0] ?? null,
+  );
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
 
   const { isItemWishlisted, toggleWishlist } = useWishlist();
@@ -65,16 +67,17 @@ export default function ProductPageMaster({
   };
 
   const handleAddToCart = (): boolean => {
-    if (product.inventory.totalStock <= 0) {
+    const totalStock = product.inventory?.totalStock ?? 10;
+    if (totalStock <= 0) {
       toast.error('This product is currently out of stock');
       return false;
     }
-    if (displaySizes && displaySizes.length > 0 && !selectedSize) {
-      toast.error('Please select a size before adding to bag');
-      return false;
+    const chosenSize =
+      selectedSize || (displaySizes && displaySizes.length > 0 ? displaySizes[0] : 'Standard');
+    if (!selectedSize && displaySizes && displaySizes.length > 0) {
+      setSelectedSize(displaySizes[0]);
     }
-    const chosenSize = selectedSize || (displaySizes.length > 0 ? displaySizes[0] : 'Standard');
-    const chosenColor = product.attributes.colors?.[0] || 'Standard';
+    const chosenColor = product.attributes?.colors?.[0] || 'Standard';
 
     void addItem({
       productId: product.id,
@@ -86,12 +89,12 @@ export default function ProductPageMaster({
         name: product.name,
         slug: product.slug,
         brand: Array.isArray(product.brand) ? product.brand : [product.brand || 'Fashion Friday'],
-        ogPrice: product.price.ogPrice,
-        sellingPrice: product.price.sellingPrice,
-        mainImage: product.media.mainImage,
-        totalStock: product.inventory.totalStock,
-        sizes: product.attributes.sizes,
-        colors: product.attributes.colors,
+        ogPrice: product.price?.ogPrice ?? 0,
+        sellingPrice: product.price?.sellingPrice ?? 0,
+        mainImage: product.media?.mainImage ?? '',
+        totalStock,
+        sizes: product.attributes?.sizes ?? [],
+        colors: product.attributes?.colors ?? [],
       },
     });
     toast.success(`Added ${product.name} (${chosenSize}) to Bag!`);
@@ -101,7 +104,7 @@ export default function ProductPageMaster({
   const handleBuyNow = () => {
     const added = handleAddToCart();
     if (added) {
-      router.push('/checkout');
+      router.push('/checkout/cart');
     }
   };
   const cols = Math.ceil(displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2);
@@ -251,7 +254,7 @@ export default function ProductPageMaster({
                       onClick={() => {
                         setSelectedSize(size);
                       }}
-                      className={`-skew-x-[12deg] overflow-hidden rounded-lg border py-2 text-center transition-all duration-200 active:scale-95 lg:flex-1 lg:px-2 ${
+                      className={`-skew-x-[12deg] cursor-pointer overflow-hidden rounded-lg border py-1 text-center transition-all duration-200 active:scale-95 lg:flex-1 lg:px-2 ${
                         selectedSize === size
                           ? 'scale-[0.98] border-zinc-900 bg-black text-white shadow-md dark:border-zinc-100 dark:bg-white dark:text-black'
                           : 'text-foreground hover:bg-foreground/5 border-zinc-300/80 bg-transparent hover:border-zinc-500 dark:border-zinc-800 dark:hover:border-zinc-600'
@@ -430,7 +433,7 @@ export default function ProductPageMaster({
         onWishlistToggle={handleWishlistToggle}
         onBuyNow={handleBuyNow}
         onCartClick={() => {
-          router.push('/checkout');
+          router.push('/checkout/cart');
         }}
       />
     </div>
