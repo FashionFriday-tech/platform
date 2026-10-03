@@ -131,25 +131,36 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
     await transition.ready;
 
-    // Simultaneous Dual-Shutter View Transition:
-    // Two shutters move inwards at the exact same time with the exact same angle:
-    // - Shutter 1 sweeps in from the top-right corner
-    // - Shutter 2 sweeps in from the bottom-left corner
-    // - Both share the exact same parallel angle and meet/close in the center!
-    const keyframes = [
-      {
-        clipPath:
-          'polygon(-48% -153%, 253% 148%, 453% -53%, 153% -353%, -353% 153%, -153% -48%, 148% 253%, -53% 453%)',
-      },
-      {
-        clipPath:
-          'polygon(-101% -99%, 199% 201%, 399% 1%, 99% -299%, -299% 99%, -99% -101%, 201% 199%, 1% 399%)',
-      },
-    ];
+    // Thematic Dual-Shutter View Transition:
+    // - Making Dark Mode: CLOSING animation (two dark shutters sweep in from both corners and firmly close shut in the center)
+    // - Making Light Mode: OPENING animation (light splits open from the center and expands outward to the corners)
+    // Both share the exact same parallel angle, with solid full-coverage overlap to eliminate any end ripple or gap.
+    const keyframes =
+      nextTheme === 'dark'
+        ? [
+            {
+              clipPath:
+                'polygon(-48% -153%, 253% 148%, 453% -53%, 153% -353%, -353% 153%, -153% -48%, 148% 253%, -53% 453%)',
+            },
+            {
+              clipPath:
+                'polygon(-113% -88%, 188% 213%, 388% 13%, 88% -288%, -288% 88%, -88% -113%, 213% 188%, 13% 388%)',
+            },
+          ]
+        : [
+            {
+              clipPath:
+                'polygon(-100% -100%, 200% 200%, 200% 200%, -100% -100%)',
+            },
+            {
+              clipPath:
+                'polygon(-40% -160%, 260% 140%, 140% 260%, -160% -40%)',
+            },
+          ];
 
     document.documentElement.animate(keyframes, {
-      duration: 700,
-      easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+      duration: 650,
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
       pseudoElement: '::view-transition-new(root)',
     });
   }, [resolvedTheme, setTheme]);
