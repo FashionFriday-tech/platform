@@ -151,30 +151,25 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
     await transition.ready;
 
-    // Diagonal angled wave sweeping cleanly across:
-    // isDark -> nextTheme is 'light': sweeps from Top-Right (100% 0%) to Bottom-Left (0% 100%)
-    // !isDark -> nextTheme is 'dark': sweeps from Bottom-Left (0% 100%) to Top-Right (100% 0%)
-    const keyframes = isDark
-      ? [
-          {
-            clipPath: 'polygon(-40% -160%, 260% 140%, 460% -60%, 160% -360%)',
-          },
-          {
-            clipPath: 'polygon(-160% -40%, 140% 260%, 340% 60%, 40% -240%)',
-          },
-        ]
-      : [
-          {
-            clipPath: 'polygon(-160% -40%, 140% 260%, -60% 460%, -360% 160%)',
-          },
-          {
-            clipPath: 'polygon(-40% -160%, 260% 140%, 60% 340%, -240% 40%)',
-          },
-        ];
+    // Simultaneous Dual-Shutter View Transition:
+    // Two shutters move inwards at the exact same time with the exact same angle:
+    // - Shutter 1 sweeps in from the top-right corner
+    // - Shutter 2 sweeps in from the bottom-left corner
+    // - Both share the exact same parallel angle and meet/close in the center!
+    const keyframes = [
+      {
+        clipPath:
+          'polygon(-48% -153%, 253% 148%, 453% -53%, 153% -353%, -353% 153%, -153% -48%, 148% 253%, -53% 453%)',
+      },
+      {
+        clipPath:
+          'polygon(-101% -99%, 199% 201%, 399% 1%, 99% -299%, -299% 99%, -99% -101%, 201% 199%, 1% 399%)',
+      },
+    ];
 
     document.documentElement.animate(keyframes, {
-      duration: 650,
-      easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      duration: 700,
+      easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
       pseudoElement: '::view-transition-new(root)',
     });
   }, [resolvedTheme, setTheme]);
