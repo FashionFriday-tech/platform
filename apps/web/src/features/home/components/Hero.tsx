@@ -126,7 +126,7 @@ export default function Hero({
   return (
     <section
       ref={containerRef}
-      className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center justify-between px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
+      className="relative flex h-[calc(100dvh-82px-env(safe-area-inset-top,0px))] max-h-[calc(100dvh-82px-env(safe-area-inset-top,0px))] w-full flex-col items-center justify-between px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0"
     >
       {/* 1. Mobile Search Input: Only shown on small devices */}
       <div className="flex w-full shrink-0 items-center justify-center px-4 py-3 sm:py-4 lg:hidden">

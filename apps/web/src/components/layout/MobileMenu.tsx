@@ -255,6 +255,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             data-lenis-prevent="true"
             data-lenis-prevent-wheel="true"
             data-lenis-prevent-touch="true"
+            style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}
             className="bg-background text-foreground relative z-10 flex h-[100dvh] w-full flex-col overscroll-contain shadow-2xl"
           >
             {/* Top Bar with Brand Centered & Close Button on Left */}

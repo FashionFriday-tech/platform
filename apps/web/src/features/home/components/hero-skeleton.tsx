@@ -13,7 +13,7 @@ export function HeroSkeleton(): JSX.Element {
   };
 
   return (
-    <section className="relative flex h-[calc(100dvh-82px)] max-h-[calc(100dvh-82px)] w-full flex-col items-center justify-between px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0">
+    <section className="relative flex h-[calc(100dvh-82px-env(safe-area-inset-top,0px))] max-h-[calc(100dvh-82px-env(safe-area-inset-top,0px))] w-full flex-col items-center justify-between px-0 pb-12 lg:mt-28 lg:block lg:h-auto lg:max-h-none lg:min-h-0 lg:p-6 lg:pb-0">
       {/* 1. Mobile Search Bar Skeleton: Exact match with search-box.tsx trigger mode */}
       <div className="flex w-full shrink-0 items-center justify-center px-4 py-3 sm:py-4 lg:hidden">
         <div className="relative flex w-full -skew-x-[12deg] items-center overflow-hidden rounded-md border border-zinc-300/80 bg-white px-5 py-2.5 sm:-skew-x-[14deg] sm:rounded-lg dark:border-zinc-800 dark:bg-black">

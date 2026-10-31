@@ -34,7 +34,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       `}</style>
 
       {/* Floating Exit Button */}
-      <div className="fixed top-5 right-5 z-50 sm:top-6 sm:right-6">
+      <div
+        style={{ top: 'calc(1.25rem + env(safe-area-inset-top, 0px))' }}
+        className="fixed right-5 z-50 sm:top-6 sm:right-6"
+      >
         <Link
           href="/"
           className="group flex items-center gap-2 text-zinc-500 transition-all duration-300 hover:text-white"

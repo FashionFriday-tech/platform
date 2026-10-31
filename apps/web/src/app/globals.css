@@ -98,8 +98,9 @@
     color-scheme: dark;
   }
 
-  /* Mobile Bottom Navigation Safe Area Tuning (prevents bloated bottom padding in iPhone PWA) */
+  /* Mobile Safe Area Insets (iPhone PWA standalone tuning) */
   :root {
+    --safe-area-top: env(safe-area-inset-top, 0px);
     --bottom-nav-safe-pb: max(0px, calc(env(safe-area-inset-bottom, 0px) - 16px));
   }
 
