@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { ProductStatusEnum } from './product.enums';
 import { ProductSchema } from './product.schema';
 
 export const CreateProductSchema = ProductSchema.omit({
@@ -8,5 +8,5 @@ export const CreateProductSchema = ProductSchema.omit({
   rating: true,
   liveMatrix: true,
 }).extend({
-  status: z.literal('DRAFT').default('DRAFT'),
+  status: ProductStatusEnum.default('DRAFT'),
 });
