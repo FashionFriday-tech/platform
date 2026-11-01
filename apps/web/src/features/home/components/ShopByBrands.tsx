@@ -64,7 +64,7 @@ export default function ShopByBrands({ initialBrands }: { initialBrands?: Brand[
               {displayList.map((brand, idx) => (
                 <div
                   key={`desktop-${brand.slug}-${idx}`}
-                  className="relative aspect-[3/4] h-[400px] w-[300px] shrink-0 md:h-[480px] md:w-[360px]"
+                  className="relative aspect-[3/4] h-[320px] w-[240px] shrink-0 md:h-[360px] md:w-[270px]"
                 >
                   <BrandCard brand={brand} skewed />
                 </div>

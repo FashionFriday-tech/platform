@@ -42,7 +42,7 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
     <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
       <div
         className={cn(
-          'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-8 md:rounded-4xl',
+          'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-6 md:rounded-3xl md:p-6',
           skewed && '-skew-x-[6deg]',
           className,
         )}

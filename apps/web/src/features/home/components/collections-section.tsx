@@ -88,7 +88,7 @@ export default function CollectionsSection({
               {collections.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[400px] w-[310px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[480px] md:w-[360px] md:rounded-4xl"
+                  className="group relative aspect-[3/4] h-[320px] w-[240px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:rounded-3xl md:h-[360px] md:w-[270px] md:rounded-3xl"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
@@ -100,17 +100,17 @@ export default function CollectionsSection({
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
                         fill
-                        sizes="320px"
+                        sizes="(max-width: 768px) 240px, 270px"
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full skew-x-[6deg] p-8">
+                    <div className="absolute bottom-0 left-0 z-10 w-full skew-x-[6deg] p-5 md:p-6">
                       <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
-                        <p className="mb-2 text-sm font-medium text-zinc-300">
+                        <p className="mb-1.5 text-xs font-medium text-zinc-300 md:text-sm">
                           {item.productCount || 0} Items
                         </p>
-                        <h3 className="text-xl font-black tracking-tighter text-white uppercase md:text-3xl">
+                        <h3 className="text-lg font-black tracking-tighter text-white uppercase md:text-2xl">
                           {item.name}
                         </h3>
                       </div>
