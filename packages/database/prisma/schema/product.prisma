@@ -67,6 +67,7 @@ model Product {
   wishlistItems WishlistItem[]
   cartItems     CartItem[]
   sellerId      String?
+  sellerIds     String[]      @default([])
   seller        Seller?       @relation(fields: [sellerId], references: [id], onDelete: SetNull)
 
   @@index([categoryId])
