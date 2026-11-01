@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'FF Admin',
   },
   icons: {
@@ -40,10 +40,6 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0e0e0e' },
-  ],
 };
 
 export default function RootLayout({
@@ -54,6 +50,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="scrollbar-hide">
       <head>
+        {/* Dynamic theme & status bar color initialization for iOS Safari & PWAs */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);var c=d?'#0e0e0e':'#ffffff';var m=document.createElement('meta');m.name='theme-color';m.content=c;document.head.appendChild(m);var a=document.createElement('meta');a.name='apple-mobile-web-app-status-bar-style';a.content=d?'black-translucent':'default';document.head.appendChild(a);document.documentElement.style.backgroundColor=c;document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){}})()`,
+          }}
+        />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png" />
       </head>
