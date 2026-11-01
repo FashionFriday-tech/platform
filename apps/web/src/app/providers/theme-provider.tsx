@@ -45,6 +45,25 @@ function ThemeColorWatcher() {
     updateStatusThemeColor(resolvedTheme === 'dark');
   }, [resolvedTheme]);
 
+  React.useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    // MutationObserver catches theme class additions/removals synchronously
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains('dark');
+      updateStatusThemeColor(isDark);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return null;
 }
 

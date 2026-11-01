@@ -87,7 +87,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Fashion Friday',
   },
   icons: {
@@ -112,16 +112,19 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
-  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Dynamic theme & status bar color initialization for iOS Safari & PWAs */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);var c=d?'#000000':'#ffffff';var m=document.createElement('meta');m.name='theme-color';m.content=c;document.head.appendChild(m);var a=document.createElement('meta');a.name='apple-mobile-web-app-status-bar-style';a.content=d?'black-translucent':'default';document.head.appendChild(a);document.documentElement.style.backgroundColor=c;document.documentElement.style.colorScheme=d?'dark':'light';}catch(e){}})()`,
+          }}
+        />
+
         {/* Google Search Favicon Standards (multiples of 48px square + ICO) */}
         <link rel="icon" href="/favicon.ico" sizes="48x48 32x32 16x16" />
         <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />

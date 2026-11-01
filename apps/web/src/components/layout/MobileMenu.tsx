@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { createPortal, flushSync } from 'react-dom';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -100,82 +100,17 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     }
   };
 
-  // Alternating diagonal wipe View Transition theme toggling:
-  // When switching to light mode: top right corner color animation moves to bottom left corner.
-  // When switching to dark mode: bottom left corner color animation moves to top right corner.
-  const toggleTheme = useCallback(async () => {
+  // Instantaneous theme toggling inside the mobile side menu drawer:
+  // Updates status bar, Safari chrome, PWA header and DOM classes instantly with zero animation lag
+  const toggleTheme = useCallback(() => {
     const isDark = resolvedTheme === 'dark';
     const nextTheme = isDark ? 'light' : 'dark';
 
-    // Immediately synchronize mobile device status bar / browser header bar
+    // 1. Immediately update status bar & browser chrome for Safari / Chrome / PWA
     updateStatusThemeColor(nextTheme === 'dark');
 
-    // Fallback if View Transitions API is not supported by the browser
-    if (!document.startViewTransition) {
-      setTheme(nextTheme);
-      updateStatusThemeColor(nextTheme === 'dark');
-      return;
-    }
-
-    if (nextTheme === 'dark') {
-      document.documentElement.style.setProperty('--vt-old-z', '2');
-      document.documentElement.style.setProperty('--vt-new-z', '1');
-    } else {
-      document.documentElement.style.setProperty('--vt-old-z', '1');
-      document.documentElement.style.setProperty('--vt-new-z', '2');
-    }
-
-    const transition = document.startViewTransition(() => {
-      flushSync(() => {
-        setTheme(nextTheme);
-        updateStatusThemeColor(nextTheme === 'dark');
-      });
-    });
-
-    await transition.ready;
-
-    // Thematic Dual-Shutter View Transition:
-    // - Making Dark Mode: CLOSING animation. Old light theme (on top) shrinks/closes from full screen into the center line,
-    //   revealing the dark shutters closing in from both corners and meeting at the exact center line without ANY gap!
-    // - Making Light Mode: OPENING animation. New light theme (on top) splits open from the center line outward to both corners!
-    const anim =
-      nextTheme === 'dark'
-        ? document.documentElement.animate(
-            [
-              {
-                clipPath: 'polygon(-40% -160%, 260% 140%, 140% 260%, -160% -40%)',
-              },
-              {
-                clipPath: 'polygon(-100% -100%, 200% 200%, 200% 200%, -100% -100%)',
-              },
-            ],
-            {
-              duration: 900,
-              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-              pseudoElement: '::view-transition-old(root)',
-            },
-          )
-        : document.documentElement.animate(
-            [
-              {
-                clipPath: 'polygon(-100% -100%, 200% 200%, 200% 200%, -100% -100%)',
-              },
-              {
-                clipPath: 'polygon(-40% -160%, 260% 140%, 140% 260%, -160% -40%)',
-              },
-            ],
-            {
-              duration: 900,
-              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-              pseudoElement: '::view-transition-new(root)',
-            },
-          );
-
-    anim.onfinish = () => {
-      document.documentElement.style.removeProperty('--vt-old-z');
-      document.documentElement.style.removeProperty('--vt-new-z');
-      updateStatusThemeColor(nextTheme === 'dark');
-    };
+    // 2. Set next theme in next-themes
+    setTheme(nextTheme);
   }, [resolvedTheme, setTheme]);
 
   // Lock body scroll and pause Lenis when mobile menu is open
