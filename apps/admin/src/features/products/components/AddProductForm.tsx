@@ -25,6 +25,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     message: string;
     type: 'success' | 'error' | 'warning';
   } | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [selectedSellerId, setSelectedSellerId] = useState<string | null>(
     (initialData as any)?.sellerId ?? (initialData as any)?.seller?.id ?? null,
   );
@@ -159,7 +161,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
   const getStatus = (
     val: string | number,
-    initVal: string | number | undefined,
+    initVal: string | number | null | undefined,
     minLen: number,
     fieldName?: string,
   ): 'empty' | 'default' | 'valid' | 'error' => {
@@ -224,28 +226,42 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     );
   }, [category, gender, apiCategories]);
 
-  const handleSaveProduct = async () => {
-    setHasSubmitted(true);
+  const handleSaveProduct = async (statusOverride?: 'DRAFT' | 'PUBLISHED') => {
+    const isDraft = statusOverride === 'DRAFT';
 
-    // Basic Validation
-    if (
-      !productName ||
-      !productDesc ||
-      !basePrice ||
-      !category ||
-      !quality ||
-      images.length === 0
-    ) {
-      setToast({
-        message: 'Please fill out all required fields and upload at least one image.',
-        type: 'warning',
-      });
-      return;
+    if (isDraft) {
+      if (!productName.trim()) {
+        setToast({
+          message: 'Please enter at least a product name to save a draft.',
+          type: 'warning',
+        });
+        return;
+      }
+      setIsSavingDraft(true);
+    } else {
+      setHasSubmitted(true);
+      if (
+        !productName.trim() ||
+        !productDesc.trim() ||
+        !basePrice ||
+        !category ||
+        !quality ||
+        images.length === 0
+      ) {
+        setToast({
+          message: 'Please fill out all required fields and upload at least one image.',
+          type: 'warning',
+        });
+        return;
+      }
+      setIsSaving(true);
     }
 
     try {
-      // Upload any new images first
-      setToast({ message: 'Uploading images and saving product...', type: 'success' });
+      setToast({
+        message: isDraft ? 'Saving draft...' : 'Uploading images and saving product...',
+        type: 'success',
+      });
 
       const uploadBlob = async (blob: Blob | File, originalName: string, pName?: string) => {
         const file =
@@ -271,15 +287,21 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         return data.url;
       };
 
-      const finalImages = await Promise.all(
-        images.map(async (img) => {
-          if (img.isNew && img.file) {
-            const url = await uploadBlob(img.file, img.file.name, productName);
-            return url;
-          }
-          return img.url;
-        }),
-      );
+      let finalImages: string[] = [];
+      if (images.length > 0) {
+        finalImages = await Promise.all(
+          images.map(async (img) => {
+            if (img.isNew && img.file) {
+              const url = await uploadBlob(img.file, img.file.name, productName);
+              return url;
+            }
+            return img.url;
+          }),
+        );
+      } else {
+        // Safe fallback placeholder image if draft is saved without images
+        finalImages = ['https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/placeholder.webp'];
+      }
 
       const targetCatName = category.toLowerCase();
       const selectedCatGender =
@@ -290,6 +312,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           c.name.toLowerCase() === targetCatName && c.gender?.toUpperCase() === selectedCatGender,
       );
       selectedApiCategory ??= apiCategories.find((c) => c.name.toLowerCase() === targetCatName);
+      selectedApiCategory ??= apiCategories[0];
 
       if (!selectedApiCategory) {
         setToast({
@@ -308,38 +331,58 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         mappedQuality = 'STANDARD';
       }
 
+      const computedSlug =
+        seoSlug.trim() ||
+        productName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)+/g, '') ||
+        `draft-${Date.now()}`;
+
+      const safeDescription =
+        productDesc.trim().length >= 10
+          ? productDesc.trim()
+          : productDesc.trim()
+            ? `${productDesc.trim()} (Draft item)`
+            : `${productName.trim()} description (Draft)`;
+
+      const targetStatus: 'DRAFT' | 'PUBLISHED' =
+        statusOverride ?? (initialData?.status === 'DRAFT' ? 'DRAFT' : 'PUBLISHED');
+
       const payload = {
-        name: productName,
-        description: productDesc,
+        name: productName.trim(),
+        description: safeDescription,
+        status: targetStatus,
         categoryId: selectedApiCategory.id,
-        sellerId: selectedSellerId ?? undefined,
-        brand: brandInput ? [brandInput] : [],
+        sellerId:
+          selectedSellerId && selectedSellerId !== 'none' ? selectedSellerId : undefined,
+        brand: brandInput.trim() ? [brandInput.trim()] : ['Fashion Friday'],
         gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
         attributes: {
-          sizes: sizes,
-          colors: selectedColorHex ? [selectedColorHex] : [],
+          sizes: sizes.length > 0 ? sizes : ['Free Size'],
+          colors: selectedColorHex ? [selectedColorHex] : ['#000000'],
           quality: mappedQuality,
         },
         price: {
-          sellingPrice: Number(basePrice),
-          gettingPrice: Number(gettingPrice),
-          ogPrice: ogPrice ? Number(ogPrice) : undefined,
+          sellingPrice: Number(basePrice) || 0,
+          gettingPrice: gettingPrice ? Number(gettingPrice) : 0,
+          ogPrice: ogPrice ? Number(ogPrice) : Number(basePrice) || 0,
         },
         inventory: {
-          totalStock: Number(stock),
+          totalStock: stock ? Number(stock) : 0,
         },
         media: {
           mainImage: finalImages[0],
-          promoImage: finalImages[1],
+          promoImage: finalImages[1] || undefined,
           liveImages: finalImages.slice(2),
-          youtubeId: videoId ?? undefined,
+          youtubeId: videoId?.trim() ? videoId.trim() : undefined,
         },
         marketing: {
           collections: tags,
-          seoTitle: seoTitle,
-          seoDescription: seoDesc,
+          seoTitle: seoTitle || undefined,
+          seoDescription: seoDesc || undefined,
         },
-        slug: seoSlug,
+        slug: computedSlug,
       };
 
       if (initialData) {
@@ -349,20 +392,27 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       }
 
       setToast({
-        message: initialData ? 'Product updated successfully!' : 'Product created successfully!',
+        message: isDraft
+          ? 'Draft saved successfully!'
+          : initialData
+            ? 'Product updated successfully!'
+            : 'Product created successfully!',
         type: 'success',
       });
 
       // Redirect to product list after a brief delay
       setTimeout(() => {
         router.push('/products');
-      }, 1500);
+      }, 1200);
     } catch (error: any) {
       console.error('Error saving product:', error);
       setToast({
         message: error?.message || 'Failed to save product. Please try again.',
         type: 'error',
       });
+    } finally {
+      setIsSaving(false);
+      setIsSavingDraft(false);
     }
   };
 
@@ -414,7 +464,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               )}
               <button
                 type="button"
-                className="flex items-center space-x-2 rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-semibold shadow-sm transition-colors hover:bg-black/5 md:px-5 md:text-sm dark:border-white/10 dark:bg-[#111111] dark:hover:bg-white/5"
+                onClick={() => void handleSaveProduct('DRAFT')}
+                disabled={isSaving || isSavingDraft}
+                className="flex items-center space-x-2 rounded-full border border-black/10 bg-white px-4 py-2 text-xs font-semibold shadow-sm transition-colors hover:bg-black/5 disabled:opacity-50 md:px-5 md:text-sm dark:border-white/10 dark:bg-[#111111] dark:hover:bg-white/5"
               >
                 <svg
                   className="h-4 w-4 text-black/60 dark:text-white/60"
@@ -429,12 +481,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                <span>Save Draft</span>
+                <span>{isSavingDraft ? 'Saving Draft...' : 'Save Draft'}</span>
               </button>
               <button
                 type="button"
-                onClick={handleSaveProduct}
-                className="flex items-center space-x-2 rounded-full bg-black px-5 py-2 text-xs font-bold text-white shadow-lg transition-opacity hover:opacity-90 md:px-6 md:text-sm dark:bg-white dark:text-black"
+                onClick={() => void handleSaveProduct(initialData?.status === 'DRAFT' ? 'PUBLISHED' : undefined)}
+                disabled={isSaving || isSavingDraft}
+                className="flex items-center space-x-2 rounded-full bg-black px-5 py-2 text-xs font-bold text-white shadow-lg transition-opacity hover:opacity-90 disabled:opacity-50 md:px-6 md:text-sm dark:bg-white dark:text-black"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -444,7 +497,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <span>{initialData ? 'Save Changes' : 'Add Product'}</span>
+                <span>
+                  {isSaving
+                    ? 'Saving...'
+                    : initialData
+                      ? initialData.status === 'DRAFT'
+                        ? 'Publish Product'
+                        : 'Save Changes'
+                      : 'Add Product'}
+                </span>
               </button>
             </div>
           </div>
@@ -453,8 +514,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           <div className="relative flex items-center space-x-1.5 sm:hidden">
             <button
               type="button"
-              onClick={handleSaveProduct}
-              className="flex items-center space-x-1 rounded-full bg-black px-3.5 py-1.5 text-xs font-bold text-white shadow-md transition-transform active:scale-95 dark:bg-white dark:text-black"
+              onClick={() => void handleSaveProduct(initialData?.status === 'DRAFT' ? 'PUBLISHED' : undefined)}
+              disabled={isSaving || isSavingDraft}
+              className="flex items-center space-x-1 rounded-full bg-black px-3.5 py-1.5 text-xs font-bold text-white shadow-md transition-transform active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black"
             >
               <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -464,7 +526,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span>{initialData ? 'Save' : 'Add'}</span>
+              <span>{isSaving ? '...' : initialData ? 'Save' : 'Add'}</span>
             </button>
 
             {/* 3-dots popup trigger */}
@@ -506,9 +568,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     type="button"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
-                      // Save draft handler
+                      void handleSaveProduct('DRAFT');
                     }}
-                    className="flex w-full items-center space-x-2.5 rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/5"
+                    disabled={isSaving || isSavingDraft}
+                    className="flex w-full items-center space-x-2.5 rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-black/80 hover:bg-black/5 disabled:opacity-50 dark:text-white/80 dark:hover:bg-white/5"
                   >
                     <svg
                       className="h-4 w-4 text-black/60 dark:text-white/60"
@@ -523,7 +586,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       />
                     </svg>
-                    <span>Save Draft</span>
+                    <span>{isSavingDraft ? 'Saving Draft...' : 'Save Draft'}</span>
                   </button>
 
                   {initialData && (
@@ -938,8 +1001,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <LabelWithTick
-                  label="Original Price"
-                  status={getStatus(ogPrice, initialData?.price?.ogPrice, 1)}
+                  label="Original Price (MRP)"
+                  status={ogPrice.trim().length > 0 ? 'valid' : 'default'}
                 />
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -997,7 +1060,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div>
                 <LabelWithTick
                   label="Getting Price"
-                  status={getStatus(gettingPrice, initialData?.price?.gettingPrice, 1)}
+                  status={gettingPrice.trim().length > 0 ? 'valid' : 'default'}
                 />
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -1420,8 +1483,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
             <div className="border-t border-black/5 pt-4 dark:border-white/5">
               <LabelWithTick
-                label="Embed Video"
-                status={videoLink.trim().length >= 10 ? 'valid' : 'empty'}
+                label="Embed Video (Optional)"
+                status={!videoLink.trim() ? 'default' : videoId ? 'valid' : 'error'}
+                subtitle="Paste a YouTube Shorts or Video URL (optional)"
               />
 
               {/* Embed Preview */}
@@ -1483,7 +1547,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     setVideoLink(e.target.value);
                     setIsPlaying(false);
                   }}
-                  placeholder="Paste YouTube URL"
+                  placeholder="Paste YouTube URL (optional)"
                   className="w-full rounded-xl border border-transparent bg-black/5 py-3 pr-4 pl-9 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                 />
               </div>
