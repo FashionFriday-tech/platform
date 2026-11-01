@@ -111,6 +111,11 @@
   }
 
   /* Base app styling */
+  html {
+    background-color: var(--surface-base);
+    color: var(--text-primary);
+  }
+
   html,
   body {
     overscroll-behavior-y: none;
