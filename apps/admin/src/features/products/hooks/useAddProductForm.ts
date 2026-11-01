@@ -224,21 +224,28 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
   // Sync YouTube Video link dynamically
   useEffect(() => {
-    if (!videoLink.trim()) {
+    const trimmed = videoLink.trim();
+    if (!trimmed) {
       setEmbedUrl(null);
+      setVideoId(null);
       return;
     }
     const shortsRegex = /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/;
     const watchRegex = /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/;
     const youtuBeRegex = /youtu\.be\/([a-zA-Z0-9_-]+)/;
+    const embedRegex = /youtube\.com\/embed\/([a-zA-Z0-9_-]+)/;
 
-    let id = null;
-    if (shortsRegex.exec(videoLink)) {
-      id = shortsRegex.exec(videoLink)![1];
-    } else if (watchRegex.exec(videoLink)) {
-      id = watchRegex.exec(videoLink)![1];
-    } else if (youtuBeRegex.exec(videoLink)) {
-      id = youtuBeRegex.exec(videoLink)![1];
+    let id: string | null = null;
+    if (shortsRegex.exec(trimmed)) {
+      id = shortsRegex.exec(trimmed)![1];
+    } else if (watchRegex.exec(trimmed)) {
+      id = watchRegex.exec(trimmed)![1];
+    } else if (youtuBeRegex.exec(trimmed)) {
+      id = youtuBeRegex.exec(trimmed)![1];
+    } else if (embedRegex.exec(trimmed)) {
+      id = embedRegex.exec(trimmed)![1];
+    } else if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+      id = trimmed;
     }
 
     if (id) {
@@ -715,11 +722,8 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       brandInput,
       colorInput,
       basePrice,
-      ogPrice,
       stock,
-      gettingPrice,
       images.length > 0 ? 'filled' : '',
-      videoLink,
       tags.length > 0 ? 'filled' : '',
       seoSlug,
       seoTitle,
