@@ -18,6 +18,7 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 
 import { AnimatedLogo } from '@/components/ui/animated-logo';
+import { updateStatusThemeColor } from '@/app/providers/theme-provider';
 import { usePwaInstall } from '@/lib/pwa/usePwaInstall';
 import { useAuthStore } from '@/store/auth-store';
 
@@ -105,6 +106,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const toggleTheme = useCallback(async () => {
     const isDark = resolvedTheme === 'dark';
     const nextTheme = isDark ? 'light' : 'dark';
+
+    // Immediately synchronize mobile device status bar / browser header bar
+    updateStatusThemeColor(nextTheme === 'dark');
 
     // Fallback if View Transitions API is not supported by the browser
     if (!document.startViewTransition) {
@@ -256,10 +260,10 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             data-lenis-prevent-wheel="true"
             data-lenis-prevent-touch="true"
             style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}
-            className="bg-background text-foreground relative z-10 flex h-[100dvh] w-full flex-col overscroll-contain shadow-2xl"
+            className="bg-background text-foreground relative z-10 flex h-[100dvh] w-full flex-col overscroll-contain shadow-2xl transition-colors duration-200"
           >
             {/* Top Bar with Brand Centered & Close Button on Left */}
-            <div className="border-border/30 relative flex min-h-[64px] shrink-0 items-center justify-center border-b px-5 py-4">
+            <div className="border-border/30 bg-background relative flex min-h-[64px] shrink-0 items-center justify-center border-b px-5 py-4 transition-colors duration-200">
               <button
                 type="button"
                 onClick={onClose}

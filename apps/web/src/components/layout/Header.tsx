@@ -254,7 +254,7 @@ export function Header() {
       {/* MOBILE UI */}
       <div
         style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}
-        className={`bg-background text-foreground sticky top-0 z-50 flex w-full flex-col lg:hidden ${
+        className={`bg-background text-foreground sticky top-0 z-50 flex w-full flex-col transition-colors duration-200 lg:hidden ${
           pathname === '/' || pathname.startsWith('/categor') ? '' : 'border-border/20 border-b'
         }`}
       >
