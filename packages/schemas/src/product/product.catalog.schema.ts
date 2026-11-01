@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { QualityEnum } from './product.enums';
 
 export const ProductCatalogItemSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
 
   name: z.string(),
 
@@ -10,9 +10,12 @@ export const ProductCatalogItemSchema = z.object({
 
   mainImage: z.string().url(),
 
-  sellingPrice: z.number().int(),
+  sellingPrice: z.coerce.number(),
 
-  ogPrice: z.number().int(),
+  ogPrice: z.preprocess(
+    (val) => (val === null || val === undefined || val === '' ? undefined : val),
+    z.coerce.number().optional(),
+  ),
 
   quality: QualityEnum,
 
