@@ -6,24 +6,24 @@ export const UpdateProductSchema = z.object({
   slug: z.string().optional(),
   description: z.string().optional(),
   brand: z.array(z.string()).optional(),
-  categoryId: z.string().uuid().optional().nullable(),
-  sellerId: z.string().uuid().optional().nullable(),
+  categoryId: z.string().optional().nullable(),
+  sellerId: z.string().optional().nullable(),
   gender: GenderEnum.optional(),
   status: z.enum(['PENDING', 'DRAFT', 'PUBLISHED', 'REJECTED', 'ARCHIVED']).optional(),
   price: z.object({
-    ogPrice: z.number().nonnegative().optional(),
-    sellingPrice: z.number().nonnegative().optional(),
-    gettingPrice: z.number().nonnegative().optional(),
+    ogPrice: z.coerce.number().nonnegative().optional().nullable(),
+    sellingPrice: z.coerce.number().nonnegative().optional(),
+    gettingPrice: z.coerce.number().nonnegative().optional().nullable(),
   }).optional(),
   inventory: z.object({
-    totalStock: z.number().int().nonnegative().optional(),
+    totalStock: z.coerce.number().int().nonnegative().optional().nullable(),
     sku: z.string().optional(),
   }).optional(),
   media: z.object({
     mainImage: z.string().url().optional(),
-    promoImage: z.string().url().optional(),
+    promoImage: z.string().url().optional().nullable(),
     liveImages: z.array(z.string().url()).optional(),
-    youtubeId: z.string().optional(),
+    youtubeId: z.string().optional().nullable(),
   }).optional(),
   attributes: z.object({
     colors: z.array(z.string()).optional(),
@@ -35,7 +35,7 @@ export const UpdateProductSchema = z.object({
   marketing: z.object({
     collections: z.array(z.string()).optional(),
     isFeatured: z.boolean().optional(),
-    seoTitle: z.string().max(70).optional(),
-    seoDescription: z.string().optional(),
+    seoTitle: z.string().max(70).optional().nullable(),
+    seoDescription: z.string().optional().nullable(),
   }).optional(),
 });
