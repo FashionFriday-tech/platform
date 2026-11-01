@@ -113,6 +113,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     // Fallback if View Transitions API is not supported by the browser
     if (!document.startViewTransition) {
       setTheme(nextTheme);
+      updateStatusThemeColor(nextTheme === 'dark');
       return;
     }
 
@@ -127,6 +128,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     const transition = document.startViewTransition(() => {
       flushSync(() => {
         setTheme(nextTheme);
+        updateStatusThemeColor(nextTheme === 'dark');
       });
     });
 
@@ -172,6 +174,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     anim.onfinish = () => {
       document.documentElement.style.removeProperty('--vt-old-z');
       document.documentElement.style.removeProperty('--vt-new-z');
+      updateStatusThemeColor(nextTheme === 'dark');
     };
   }, [resolvedTheme, setTheme]);
 
@@ -180,16 +183,13 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     const lenis = (window as unknown as { lenis?: { stop: () => void; start: () => void } }).lenis;
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
       lenis?.stop();
     } else {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
       lenis?.start();
     }
     return () => {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
       lenis?.start();
     };
   }, [isOpen]);
