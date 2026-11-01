@@ -7,28 +7,34 @@ export function updateStatusThemeColor(isDark: boolean) {
   if (typeof document === 'undefined') return;
   const color = isDark ? '#000000' : '#ffffff';
 
-  // Update or insert theme-color meta tag for mobile browsers / PWA
-  const metas = document.querySelectorAll('meta[name="theme-color"]');
-  if (metas.length > 0) {
-    metas.forEach((meta) => {
-      meta.removeAttribute('media');
-      meta.setAttribute('content', color);
-    });
-  } else {
-    const meta = document.createElement('meta');
-    meta.name = 'theme-color';
-    meta.content = color;
-    document.head.appendChild(meta);
+  // 1. Force root elements' inline background & colorScheme so iOS Safari samples the right color
+  if (document.documentElement) {
+    document.documentElement.style.backgroundColor = color;
+    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+  }
+  if (document.body) {
+    document.body.style.backgroundColor = color;
+    document.body.style.colorScheme = isDark ? 'dark' : 'light';
   }
 
-  // Update iOS status bar meta tag
-  let appleMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-  if (!appleMeta) {
-    appleMeta = document.createElement('meta');
-    appleMeta.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
-    document.head.appendChild(appleMeta);
-  }
+  // 2. WebKit bug workaround: remove all existing theme-color meta tags completely
+  // Calling setAttribute on existing tag does not trigger Safari status bar / toolbar repaint
+  document.querySelectorAll('meta[name="theme-color"]').forEach((el) => el.remove());
+
+  // 3. Create fresh theme-color meta tag
+  const meta = document.createElement('meta');
+  meta.setAttribute('name', 'theme-color');
+  meta.setAttribute('content', color);
+  document.head.appendChild(meta);
+
+  // 4. Update iOS apple-mobile-web-app-status-bar-style
+  document
+    .querySelectorAll('meta[name="apple-mobile-web-app-status-bar-style"]')
+    .forEach((el) => el.remove());
+  const appleMeta = document.createElement('meta');
+  appleMeta.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
   appleMeta.setAttribute('content', isDark ? 'black-translucent' : 'default');
+  document.head.appendChild(appleMeta);
 }
 
 function ThemeColorWatcher() {
