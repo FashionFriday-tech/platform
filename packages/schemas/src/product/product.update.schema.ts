@@ -8,6 +8,7 @@ export const UpdateProductSchema = z.object({
   brand: z.array(z.string()).optional(),
   categoryId: z.string().optional().nullable(),
   sellerId: z.string().optional().nullable(),
+  sellerIds: z.array(z.string()).optional(),
   gender: GenderEnum.optional(),
   status: z.enum(['PENDING', 'DRAFT', 'PUBLISHED', 'REJECTED', 'ARCHIVED']).optional(),
   price: z.object({

@@ -19,6 +19,10 @@ export const ProductBaseSchema = z.object({
     (val) => (val === null || val === undefined || val === '' ? undefined : val),
     z.string().optional(),
   ),
+  sellerIds: z.preprocess(
+    (val) => (Array.isArray(val) ? val.filter(Boolean) : val ? [val] : []),
+    z.array(z.string()).default([]),
+  ),
 
   gender: GenderEnum,
 
