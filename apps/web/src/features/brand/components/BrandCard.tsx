@@ -42,7 +42,7 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
     <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
       <div
         className={cn(
-          'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-5 duration-500 hover:scale-95 sm:rounded-3xl sm:p-6 md:rounded-3xl md:p-6',
+          'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-4 duration-500 hover:scale-95 sm:rounded-2xl sm:p-5 md:rounded-2xl md:p-5',
           skewed && '-skew-x-[6deg]',
           className,
         )}
@@ -84,7 +84,7 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
             )
           ) : (
             <span
-              className={`px-3 text-center text-sm font-black tracking-widest uppercase sm:text-lg md:text-xl ${
+              className={`px-2 text-center text-xs font-black tracking-widest uppercase sm:text-sm md:text-base ${
                 isBlackBackground ? 'text-background' : isDark ? 'text-white' : 'text-black'
               }`}
             >
