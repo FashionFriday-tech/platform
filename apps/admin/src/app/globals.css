@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* Enable class-based dark mode for next-themes in Tailwind v4 */
-@variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: var(--font-mulish);

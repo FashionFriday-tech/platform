@@ -140,7 +140,7 @@ export function MobileHeader({ isMobileOpen = false, onToggleMobileMenu }: Mobil
   return (
     <header
       style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 0px)' }}
-      className="mobile-header-bar fixed top-0 right-0 left-0 z-40 border-b border-black/5 bg-white/95 backdrop-blur-md md:hidden dark:border-white/10 dark:bg-[#0e0e0e]/95"
+      className="mobile-header-bar fixed top-0 right-0 left-0 z-40 border-b border-black/5 bg-white/95 backdrop-blur-md transition-colors duration-200 md:hidden dark:border-white/10 dark:bg-[#0e0e0e]/95"
     >
       <div className="relative flex h-14 w-full items-center justify-between px-3">
         {/* Left: iOS Back Button */}

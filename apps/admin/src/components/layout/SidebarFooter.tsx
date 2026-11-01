@@ -15,7 +15,7 @@ import { usePwaInstall } from '@/lib/pwa/usePwaInstall';
 export function SidebarFooter() {
   const pathname = usePathname() ?? '';
   const { user, logout } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const { unreadCount } = useNotifications();
   const [mounted, setMounted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -51,7 +51,7 @@ export function SidebarFooter() {
     }
   };
 
-  const isDark = mounted && theme === 'dark';
+  const isDark = mounted && (resolvedTheme ? resolvedTheme === 'dark' : theme === 'dark');
   const isNotificationsActive =
     pathname === '/notifications' || pathname.startsWith('/notifications/');
 
