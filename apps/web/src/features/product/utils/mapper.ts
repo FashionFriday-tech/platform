@@ -17,6 +17,12 @@ export function mapDbProductToSchema(p: any): Product {
     brand: Array.isArray(p.brand) ? p.brand : p.brand ? [p.brand] : [],
     status: p.status || 'PUBLISHED',
     categoryId: p.category?.name || p.categoryId,
+    sellerId: p.sellerId || p.seller?.id || undefined,
+    sellerIds: Array.isArray(p.sellerIds)
+      ? p.sellerIds
+      : p.sellerId
+        ? [p.sellerId]
+        : [],
     gender: p.gender || 'UNISEX',
     price: {
       ogPrice: Number(p.ogPrice) || 0,
