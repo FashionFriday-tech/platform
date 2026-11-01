@@ -27,15 +27,26 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingDraft, setIsSavingDraft] = useState(false);
-  const [selectedSellerId, setSelectedSellerId] = useState<string | null>(
-    (initialData as any)?.sellerId ?? (initialData as any)?.seller?.id ?? null,
-  );
+  const [selectedSellerIds, setSelectedSellerIds] = useState<string[]>(() => {
+    const rawIds = (initialData as any)?.sellerIds;
+    if (Array.isArray(rawIds) && rawIds.length > 0) return rawIds.filter(Boolean);
+    const single = (initialData as any)?.sellerId ?? (initialData as any)?.seller?.id;
+    return single ? [single] : [];
+  });
+  const selectedSellerId = selectedSellerIds[0] ?? null;
+  const setSelectedSellerId = (id: string | null) => {
+    setSelectedSellerIds(id ? [id] : []);
+  };
 
   useEffect(() => {
     if (initialData) {
-      setSelectedSellerId(
-        (initialData as any)?.sellerId ?? (initialData as any)?.seller?.id ?? null,
-      );
+      const rawIds = (initialData as any)?.sellerIds;
+      if (Array.isArray(rawIds) && rawIds.length > 0) {
+        setSelectedSellerIds(rawIds.filter(Boolean));
+      } else {
+        const single = (initialData as any)?.sellerId ?? (initialData as any)?.seller?.id;
+        setSelectedSellerIds(single ? [single] : []);
+      }
     }
   }, [initialData]);
   const {
@@ -355,7 +366,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         status: targetStatus,
         categoryId: selectedApiCategory.id,
         sellerId:
-          selectedSellerId && selectedSellerId !== 'none' ? selectedSellerId : undefined,
+          selectedSellerIds[0] && selectedSellerIds[0] !== 'none'
+            ? selectedSellerIds[0]
+            : undefined,
+        sellerIds: selectedSellerIds.filter((id) => id && id !== 'none'),
         brand: brandInput.trim() ? [brandInput.trim()] : ['Fashion Friday'],
         gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
         attributes: {
@@ -753,7 +767,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div className="pt-2">
                 <ProductSellerSelector
                   selectedSellerId={selectedSellerId}
+                  selectedSellerIds={selectedSellerIds}
                   onSelectSeller={setSelectedSellerId}
+                  onSelectSellers={(ids) => setSelectedSellerIds(ids)}
                   categoryId={resolvedApiCategory?.id}
                   categoryName={category}
                   status="default"

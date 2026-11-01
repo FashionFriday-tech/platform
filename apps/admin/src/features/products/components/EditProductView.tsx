@@ -16,7 +16,7 @@ interface EditProductViewProps {
 export function EditProductView({ productId }: EditProductViewProps) {
   const router = useRouter();
   const [product, setProduct] = useState<
-    (Product & { sellerId?: string | null; category?: any }) | null
+    (Product & { sellerId?: string | null; sellerIds?: string[]; category?: any }) | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +55,13 @@ export function EditProductView({ productId }: EditProductViewProps) {
           status: p.status ?? 'DRAFT',
           categoryId: p.categoryId ?? '',
           sellerId: p.sellerId ?? p.seller?.id ?? null,
+          sellerIds: Array.isArray(p.sellerIds)
+            ? p.sellerIds
+            : p.sellerId
+              ? [p.sellerId]
+              : p.seller?.id
+                ? [p.seller.id]
+                : [],
           gender: p.gender ?? 'UNISEX',
           price: {
             ogPrice: Number(p.ogPrice) || 0,
