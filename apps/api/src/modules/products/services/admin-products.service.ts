@@ -19,36 +19,36 @@ export class AdminProductsService {
       name: dto.name,
       slug: dto.slug,
       description: dto.description,
-      brand: dto.brand,
+      brand: dto.brand ?? [],
       status: dto.status.toUpperCase() as ProductStatus,
       category: { connect: { id: (dto as any).categoryId } },
       ...((dto as any).sellerId ? { seller: { connect: { id: (dto as any).sellerId } } } : {}),
       gender: dto.gender.toUpperCase() as Gender,
 
       // Pricing
-      ogPrice: dto.price.ogPrice,
+      ogPrice: dto.price.ogPrice ?? dto.price.sellingPrice ?? 0,
       sellingPrice: dto.price.sellingPrice,
-      gettingPrice: dto.price.gettingPrice,
+      gettingPrice: dto.price.gettingPrice ?? 0,
 
       // Media
       mainImage: dto.media.mainImage,
-      promoImage: dto.media.promoImage,
-      liveImages: dto.media.liveImages,
-      youtubeId: dto.media.youtubeId,
+      promoImage: dto.media.promoImage || null,
+      liveImages: dto.media.liveImages ?? [],
+      youtubeId: dto.media.youtubeId || null,
 
       // Attributes
-      colors: dto.attributes.colors,
+      colors: dto.attributes.colors ?? [],
       quality: dto.attributes.quality,
-      sizes: dto.attributes.sizes,
+      sizes: dto.attributes.sizes ?? [],
 
       // Inventory
-      totalStock: dto.inventory.totalStock,
+      totalStock: dto.inventory?.totalStock ?? 0,
 
       // Marketing
-      collections: dto.marketing.collections,
-      isFeatured: dto.marketing.isFeatured,
-      seoTitle: dto.marketing.seoTitle,
-      seoDescription: dto.marketing.seoDescription,
+      collections: dto.marketing?.collections ?? [],
+      isFeatured: dto.marketing?.isFeatured ?? false,
+      seoTitle: dto.marketing?.seoTitle || null,
+      seoDescription: dto.marketing?.seoDescription || null,
     };
 
     const result = await this.productsRepository.create(data);
