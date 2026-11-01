@@ -14,6 +14,14 @@ export class AdminProductsService {
   ) {}
 
   async createProduct(dto: CreateProductDto) {
+    const rawDto = dto as any;
+    const allSellerIds: string[] = Array.isArray(rawDto.sellerIds) && rawDto.sellerIds.length > 0
+      ? rawDto.sellerIds.filter(Boolean)
+      : rawDto.sellerId
+        ? [rawDto.sellerId]
+        : [];
+    const primarySellerId = allSellerIds[0] || rawDto.sellerId || undefined;
+
     const data: Prisma.ProductCreateInput = {
       id: generateBrandId('PROD'),
       name: dto.name,
@@ -22,7 +30,8 @@ export class AdminProductsService {
       brand: dto.brand ?? [],
       status: dto.status.toUpperCase() as ProductStatus,
       category: { connect: { id: (dto as any).categoryId } },
-      ...((dto as any).sellerId ? { seller: { connect: { id: (dto as any).sellerId } } } : {}),
+      sellerIds: allSellerIds,
+      ...(primarySellerId ? { seller: { connect: { id: primarySellerId } } } : {}),
       gender: dto.gender.toUpperCase() as Gender,
 
       // Pricing
@@ -124,11 +133,22 @@ export class AdminProductsService {
         data.category = { disconnect: true };
       }
     }
-    if (d.sellerId !== undefined) {
-      if (d.sellerId) {
-        data.seller = { connect: { id: d.sellerId } };
+    if (d.sellerIds !== undefined) {
+      const allSellerIds: string[] = Array.isArray(d.sellerIds) ? d.sellerIds.filter(Boolean) : [];
+      data.sellerIds = allSellerIds;
+      const primarySellerId = d.sellerId ?? allSellerIds[0];
+      if (primarySellerId) {
+        data.seller = { connect: { id: primarySellerId } };
       } else {
         data.seller = { disconnect: true };
+      }
+    } else if (d.sellerId !== undefined) {
+      if (d.sellerId) {
+        data.seller = { connect: { id: d.sellerId } };
+        data.sellerIds = [d.sellerId];
+      } else {
+        data.seller = { disconnect: true };
+        data.sellerIds = [];
       }
     }
     if (d.gender) {
