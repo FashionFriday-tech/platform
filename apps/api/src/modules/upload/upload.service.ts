@@ -198,6 +198,15 @@ export class UploadService {
 
   async deleteFile(fileUrl: string): Promise<boolean> {
     try {
+      if (!fileUrl || typeof fileUrl !== 'string') {
+        return false;
+      }
+
+      // Do not delete default placeholder assets
+      if (fileUrl.includes('placeholder')) {
+        return false;
+      }
+
       // 1. If it's a legacy local upload, remove from disk
       if (fileUrl.includes('/uploads/')) {
         const relativePath = fileUrl.substring(fileUrl.indexOf('/uploads/') + '/uploads/'.length);
@@ -211,8 +220,29 @@ export class UploadService {
 
       // 2. If it's on Cloudflare R2
       const { client, bucketName, publicUrl } = this.getR2Client();
+      let key = '';
+
       if (publicUrl && fileUrl.startsWith(publicUrl)) {
-        const key = fileUrl.substring(publicUrl.length).replace(/^\/+/, '');
+        key = fileUrl.substring(publicUrl.length).replace(/^\/+/, '');
+      } else if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+        try {
+          const parsed = new URL(fileUrl);
+          const publicUrlHost = publicUrl ? new URL(publicUrl).hostname : '';
+          if (
+            (publicUrlHost && parsed.hostname === publicUrlHost) ||
+            parsed.hostname.includes('r2.dev') ||
+            parsed.hostname.includes('cloudflarestorage.com')
+          ) {
+            key = parsed.pathname.replace(/^\/+/, '');
+          }
+        } catch {
+          // not a valid URL
+        }
+      } else if (!fileUrl.includes('://')) {
+        key = fileUrl.replace(/^\/+/, '');
+      }
+
+      if (key) {
         await client.send(
           new DeleteObjectCommand({
             Bucket: bucketName,
