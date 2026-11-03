@@ -23,7 +23,9 @@ import {
 import { toast } from 'sonner';
 
 import { useCart } from '@/features/cart';
+import { useBrands } from '@/features/brand';
 import { useWishlist } from '@/features/wishlist';
+import { getBrandLogo } from '@/lib/brand-logo';
 
 import { useLiveProductMetric } from '../hooks/use-live-product-metric';
 import CTAStickyButtons from './cta-sticky-buttons';
@@ -47,8 +49,17 @@ export default function ProductPageMaster({
 
   const { isItemWishlisted, toggleWishlist } = useWishlist();
   const { addItem } = useCart();
+  const { brands } = useBrands();
   const productId = product.id;
   const isWishlisted = isItemWishlisted(productId);
+
+  const brandName = Array.isArray(product.brand)
+    ? (product.brand[0] ?? '')
+    : typeof product.brand === 'string'
+      ? product.brand
+      : '';
+  const brandLogo = getBrandLogo(brandName, brands);
+  const [logoError, setLogoError] = useState(false);
 
   const displaySizes = product.attributes?.sizes ?? [];
   const isGenericOrSingleSize =
@@ -154,15 +165,27 @@ export default function ProductPageMaster({
               <div className="flex flex-col items-start justify-between">
                 <div className="mb-3 flex w-full items-center justify-between">
                   <div className="text-foreground-muted flex flex-wrap items-center gap-3 text-[10px] font-black uppercase sm:gap-4">
-                    <Link href={`/brands/${String(product.brand).toLowerCase()}`}>
-                      <Image
-                        src="/images/brand-logos/nike.png"
-                        alt={product.brand[0] ?? 'Brand Logo'}
-                        width={36}
-                        height={36}
-                        className="invert"
-                      />
-                    </Link>
+                    {brandName ? (
+                      <Link
+                        href={`/brands/${brandName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                        className="flex items-center transition-opacity hover:opacity-80"
+                      >
+                        {brandLogo && !logoError ? (
+                          <Image
+                            src={brandLogo}
+                            alt={brandName}
+                            width={36}
+                            height={36}
+                            className="max-h-7 w-auto object-contain invert-0 dark:invert"
+                            onError={() => setLogoError(true)}
+                          />
+                        ) : (
+                          <span className="text-xs font-black tracking-wider uppercase text-foreground">
+                            {brandName}
+                          </span>
+                        )}
+                      </Link>
+                    ) : null}
 
                     <Link href="/help/quality-guide">
                       <span className="flex items-center justify-center gap-1">

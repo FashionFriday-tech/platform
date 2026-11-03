@@ -1,17 +1,59 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { type Product } from '@ff/schemas';
+import { type Brand, type Product } from '@ff/schemas';
 import { StarBadgeIcon, StarsIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+
+import { useBrands } from '@/features/brand';
+import { getBrandLogo } from '@/lib/brand-logo';
 
 interface RelatedProductsProps {
   products?: Product[];
 }
 
+function RelatedProductBrandLogo({
+  brand,
+  brands,
+}: {
+  brand?: string | string[] | null;
+  brands: Brand[];
+}) {
+  const [hasError, setHasError] = useState(false);
+  const brandName = Array.isArray(brand)
+    ? (brand[0] ?? '')
+    : typeof brand === 'string'
+      ? brand
+      : '';
+  const brandLogo = getBrandLogo(brandName, brands);
+
+  if (!brandName) return null;
+
+  if (brandLogo && !hasError) {
+    return (
+      <Image
+        src={brandLogo}
+        alt={brandName}
+        width={36}
+        height={36}
+        className="max-h-6 w-auto object-contain invert-0 dark:invert"
+        onError={() => setHasError(true)}
+      />
+    );
+  }
+
+  return (
+    <span className="text-muted-foreground font-bold tracking-wider uppercase">
+      {brandName}
+    </span>
+  );
+}
+
 export default function RelatedProducts({ products }: RelatedProductsProps) {
+  const { brands } = useBrands();
   return (
     <section className="w-full py-6 lg:py-20">
       {/* Header */}
@@ -52,13 +94,7 @@ export default function RelatedProducts({ products }: RelatedProductsProps) {
                 <div className="mt-4 space-y-1 px-1">
                   {/* Brand & Quality */}
                   <div className="mb-0.5 flex items-center justify-between text-[10px]">
-                    <Image
-                      src="/images/brand-logos/nike.png"
-                      alt="brand"
-                      width={40}
-                      height={40}
-                      className="invert"
-                    />
+                    <RelatedProductBrandLogo brand={product.brand} brands={brands} />
 
                     <span className="border-border flex items-center gap-1 rounded-full border px-2 py-0.5 font-bold text-blue-500 uppercase">
                       <StarBadgeIcon /> {product.attributes.quality}
