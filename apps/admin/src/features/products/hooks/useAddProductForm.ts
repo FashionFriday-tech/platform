@@ -5,7 +5,7 @@ import { MAJOR_COLORS, type Product } from '@ff/schemas';
 
 import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
-import { SIZE_MAP } from '../utils/constants';
+import { getCategorySizes, SIZE_MAP } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export interface UseAddProductFormOptions {
@@ -27,7 +27,9 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialData?.categoryId ?? (initialData as any)?.category?.id ?? paramCategoryId,
   );
-  const [sizes, setSizes] = useState<string[]>(SIZE_MAP.Clothing ?? []);
+  const [sizes, setSizes] = useState<string[]>(() =>
+    getCategorySizes(paramCategoryName ?? (initialData as any)?.category?.name),
+  );
   const [gender, setGender] = useState<string>(() => {
     if (initialData?.gender === 'MEN') {
       return 'Men';
@@ -145,11 +147,18 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       setOgPrice(initialData.price?.ogPrice?.toString() ?? '');
       setStock(initialData.inventory?.totalStock?.toString() ?? '');
       setGettingPrice(initialData.price?.gettingPrice?.toString() ?? '');
-      setSizes(
-        initialData.attributes?.sizes && initialData.attributes.sizes.length > 0
-          ? initialData.attributes.sizes
-          : (SIZE_MAP[matchedCategoryName] ?? SIZE_MAP.Clothing) || [],
-      );
+
+      const isWatch = matchedCategoryName?.toLowerCase().includes('watch');
+      const rawSizes = initialData.attributes?.sizes;
+      const initialSizes =
+        rawSizes && rawSizes.length > 0
+          ? rawSizes.map((s) =>
+              isWatch && (s.toUpperCase() === 'ONE SIZE' || s.toUpperCase() === 'OS')
+                ? 'Free Size'
+                : s,
+            )
+          : getCategorySizes(matchedCategoryName);
+      setSizes(initialSizes);
 
       // Color — reverse-map from hex to color name
       const savedColorHex = initialData.attributes?.colors?.[0];
@@ -263,36 +272,33 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     idOrCategory: string | { id: string; name: string },
     maybeName?: string,
   ) => {
+    let catId = '';
+    let catName = '';
+
     if (typeof idOrCategory === 'object') {
-      setSelectedCategoryId(idOrCategory.id);
-      setCategory(idOrCategory.name);
-      setIsCategoryOpen(false);
-      setSizes(SIZE_MAP[idOrCategory.name] ?? SIZE_MAP.Clothing ?? []);
-      setBrandInput('');
-      setSelectedBrandLogo(null);
-      return;
-    }
-    if (maybeName) {
-      setSelectedCategoryId(idOrCategory);
-      setCategory(maybeName);
-      setIsCategoryOpen(false);
-      setSizes(SIZE_MAP[maybeName] ?? SIZE_MAP.Clothing ?? []);
-      setBrandInput('');
-      setSelectedBrandLogo(null);
-      return;
-    }
-    const found = apiCategories.find(
-      (c) => c.id === idOrCategory || c.name.toLowerCase() === idOrCategory.toLowerCase(),
-    );
-    if (found) {
-      setSelectedCategoryId(found.id);
-      setCategory(found.name);
-      setSizes(SIZE_MAP[found.name] ?? SIZE_MAP.Clothing ?? []);
+      catId = idOrCategory.id;
+      catName = idOrCategory.name;
+    } else if (maybeName) {
+      catId = idOrCategory;
+      catName = maybeName;
     } else {
-      setCategory(idOrCategory);
-      setSizes(SIZE_MAP[idOrCategory] ?? SIZE_MAP.Clothing ?? []);
+      const found = apiCategories.find(
+        (c) => c.id === idOrCategory || c.name.toLowerCase() === idOrCategory.toLowerCase(),
+      );
+      if (found) {
+        catId = found.id;
+        catName = found.name;
+      } else {
+        catName = idOrCategory;
+      }
     }
+
+    if (catId) {
+      setSelectedCategoryId(catId);
+    }
+    setCategory(catName);
     setIsCategoryOpen(false);
+    setSizes(getCategorySizes(catName));
     setBrandInput('');
     setSelectedBrandLogo(null);
   };
@@ -661,7 +667,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const filteredColors = MAJOR_COLORS.filter((c) =>
     c.name.toLowerCase().includes(colorInput.toLowerCase()),
   );
-  const availableSizes = SIZE_MAP[category] ?? SIZE_MAP.Clothing ?? SIZE_MAP.Jacket;
+  const availableSizes = getCategorySizes(category);
 
   const [availableCollections, setAvailableCollections] = useState<string[]>([
     'Summer Drop',
