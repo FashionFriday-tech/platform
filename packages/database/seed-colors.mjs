@@ -7,6 +7,7 @@ async function main() {
   console.log(`🎨 Seeding ${MAJOR_COLORS.length} colors into database...`);
 
   let added = 0;
+  let updated = 0;
   let skipped = 0;
 
   for (const c of MAJOR_COLORS) {
@@ -25,12 +26,20 @@ async function main() {
       });
       added++;
     } else {
-      skipped++;
+      if (existing.hex !== c.hex.trim().toUpperCase()) {
+        await prisma.color.update({
+          where: { id: existing.id },
+          data: { hex: c.hex.trim().toUpperCase() },
+        });
+        updated++;
+      } else {
+        skipped++;
+      }
     }
   }
 
   const total = await prisma.color.count();
-  console.log(`✅ Finished seeding colors! Added: ${added}, Skipped existing: ${skipped}, Total in DB: ${total}`);
+  console.log(`✅ Finished seeding colors! Added: ${added}, Updated: ${updated}, Skipped: ${skipped}, Total in DB: ${total}`);
 }
 
 main()
