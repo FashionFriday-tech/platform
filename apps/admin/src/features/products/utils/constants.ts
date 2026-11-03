@@ -10,20 +10,46 @@ export const CATEGORIES = [
 ];
 export const QUALITIES = ['Original', '10A', '7A', '5A', 'Premium', 'Standard'];
 
+export const FOOTWEAR_SIZES_MEN = [
+  'UK 6',
+  'UK 7',
+  'UK 8',
+  'UK 9',
+  'UK 10',
+  'UK 11',
+];
+
+export const FOOTWEAR_SIZES_WOMEN_UNISEX = [
+  'UK 3',
+  'UK 4',
+  'UK 5',
+  'UK 6',
+  'UK 7',
+  'UK 8',
+  'UK 9',
+  'UK 10',
+  'UK 11',
+];
+
 export const SIZE_MAP: Record<string, string[]> = {
   Clothing: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   Jacket: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   Shirts: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   Pants: ['28', '30', '32', '34', '36', '38'],
-  Sneakers: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+  Sneakers: FOOTWEAR_SIZES_WOMEN_UNISEX,
   Watches: ['Free Size'],
-  Slippers: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+  Slippers: FOOTWEAR_SIZES_WOMEN_UNISEX,
   Accessories: ['Free Size'],
 };
 
-export function getCategorySizes(categoryName?: string | null): string[] {
+export function getCategorySizes(
+  categoryName?: string | null,
+  gender?: string | null,
+): string[] {
   if (!categoryName) return SIZE_MAP.Clothing ?? [];
   const normalized = categoryName.trim().toLowerCase();
+  const normalizedGender = gender?.trim().toLowerCase();
+  const isMen = normalizedGender === 'men' || normalizedGender === 'man';
 
   if (normalized.includes('watch')) {
     return SIZE_MAP.Watches ?? ['Free Size'];
@@ -34,12 +60,14 @@ export function getCategorySizes(categoryName?: string | null): string[] {
   if (
     normalized.includes('slipper') ||
     normalized.includes('slide') ||
-    normalized.includes('croc')
+    normalized.includes('croc') ||
+    normalized.includes('sneak') ||
+    normalized.includes('shoe') ||
+    normalized.includes('footwear') ||
+    normalized.includes('sandal') ||
+    normalized.includes('boot')
   ) {
-    return SIZE_MAP.Slippers ?? [];
-  }
-  if (normalized.includes('sneak') || normalized.includes('shoe')) {
-    return SIZE_MAP.Sneakers ?? [];
+    return isMen ? FOOTWEAR_SIZES_MEN : FOOTWEAR_SIZES_WOMEN_UNISEX;
   }
   if (
     normalized.includes('pant') ||
@@ -66,6 +94,9 @@ export function getCategorySizes(categoryName?: string | null): string[] {
   // Direct case-insensitive match
   const directKey = Object.keys(SIZE_MAP).find((k) => k.toLowerCase() === normalized);
   if (directKey && SIZE_MAP[directKey]) {
+    if (directKey === 'Sneakers' || directKey === 'Slippers') {
+      return isMen ? FOOTWEAR_SIZES_MEN : FOOTWEAR_SIZES_WOMEN_UNISEX;
+    }
     return SIZE_MAP[directKey];
   }
 
