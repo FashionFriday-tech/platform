@@ -413,9 +413,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         },
         media: {
           mainImage: finalImages[0],
-          promoImage: finalImages[1] || undefined,
+          promoImage: finalImages[1] || null,
           liveImages: finalImages.slice(2),
-          youtubeId: videoId?.trim() ? videoId.trim() : undefined,
+          youtubeId: videoId?.trim() ? videoId.trim() : null,
         },
         marketing: {
           collections: tags,

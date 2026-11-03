@@ -241,6 +241,19 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
         }
       }
 
+      if (allImages.length === 0) {
+        if ((initialData as any).imageUrl) {
+          allImages.push({ id: `init-${uniquePrefix}-main`, url: (initialData as any).imageUrl });
+        }
+        if (Array.isArray((initialData as any).images)) {
+          for (const [i, url] of ((initialData as any).images as string[]).entries()) {
+            if (!allImages.some((img) => img.url === url)) {
+              allImages.push({ id: `init-${uniquePrefix}-${i}`, url });
+            }
+          }
+        }
+      }
+
       setImages(allImages.length > 0 ? allImages : []);
     }
   }, [initialData, apiCategories]);

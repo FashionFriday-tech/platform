@@ -27,9 +27,15 @@ export const UpdateProductSchema = z.object({
   media: z
     .object({
       mainImage: z.string().url().optional(),
-      promoImage: z.string().url().optional().nullable(),
+      promoImage: z.preprocess(
+        (val) => (val === '' ? null : val),
+        z.string().url().optional().nullable(),
+      ),
       liveImages: z.array(z.string().url()).optional(),
-      youtubeId: z.string().optional().nullable(),
+      youtubeId: z.preprocess(
+        (val) => (val === '' ? null : val),
+        z.string().optional().nullable(),
+      ),
     })
     .optional(),
   attributes: z
