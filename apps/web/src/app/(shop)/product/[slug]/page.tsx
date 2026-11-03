@@ -5,6 +5,7 @@ import ProductPageMaster, {
   getProductBySlug,
   getSimilarProducts,
 } from '@/features/product';
+import { getBrands } from '@/features/brand';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -82,7 +83,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const [product, brands] = await Promise.all([
+    getProductBySlug(slug),
+    getBrands().catch(() => []),
+  ]);
 
   if (!product) {
     return <EditorialError slug={slug} />;
@@ -126,7 +130,11 @@ export default async function Page({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ProductPageMaster product={product} similarProducts={similarProducts} />
+      <ProductPageMaster
+        product={product}
+        similarProducts={similarProducts}
+        initialBrands={brands}
+      />
     </>
   );
 }

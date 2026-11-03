@@ -13,6 +13,7 @@ import { getBrandLogo } from '@/lib/brand-logo';
 
 interface RelatedProductsProps {
   products?: Product[];
+  initialBrands?: Brand[];
 }
 
 function RelatedProductBrandLogo({
@@ -52,8 +53,8 @@ function RelatedProductBrandLogo({
   );
 }
 
-export default function RelatedProducts({ products }: RelatedProductsProps) {
-  const { brands } = useBrands();
+export default function RelatedProducts({ products, initialBrands }: RelatedProductsProps) {
+  const { brands } = useBrands(initialBrands);
   return (
     <section className="w-full py-6 lg:py-20">
       {/* Header */}

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { type Product } from '@ff/schemas';
+import { type Brand, type Product } from '@ff/schemas';
 import {
   BellIcon,
   EyeIcon,
@@ -37,9 +37,11 @@ import ProductVariantPage from './variant-dropdown';
 export default function ProductPageMaster({
   product,
   similarProducts,
+  initialBrands,
 }: {
   product: Product;
   similarProducts: Product[];
+  initialBrands?: Brand[];
 }): JSX.Element {
   const router = useRouter();
   const [selectedSize, setSelectedSize] = useState<string | null>(
@@ -49,7 +51,7 @@ export default function ProductPageMaster({
 
   const { isItemWishlisted, toggleWishlist } = useWishlist();
   const { addItem } = useCart();
-  const { brands } = useBrands();
+  const { brands } = useBrands(initialBrands);
   const productId = product.id;
   const isWishlisted = isItemWishlisted(productId);
 
@@ -59,7 +61,8 @@ export default function ProductPageMaster({
       ? product.brand
       : '';
   const brandLogo = getBrandLogo(brandName, brands);
-  const [logoError, setLogoError] = useState(false);
+  const [failedLogo, setFailedLogo] = useState<string | null>(null);
+  const hasLogoError = Boolean(brandLogo && failedLogo === brandLogo);
 
   const displaySizes = product.attributes?.sizes ?? [];
   const isGenericOrSingleSize =
@@ -170,14 +173,14 @@ export default function ProductPageMaster({
                         href={`/brands/${brandName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                         className="flex items-center transition-opacity hover:opacity-80"
                       >
-                        {brandLogo && !logoError ? (
+                        {brandLogo && !hasLogoError ? (
                           <Image
                             src={brandLogo}
                             alt={brandName}
                             width={36}
                             height={36}
                             className="max-h-7 w-auto object-contain invert-0 dark:invert"
-                            onError={() => setLogoError(true)}
+                            onError={() => setFailedLogo(brandLogo)}
                           />
                         ) : (
                           <span className="text-xs font-black tracking-wider uppercase text-foreground">
@@ -464,7 +467,7 @@ export default function ProductPageMaster({
       )}
 
       <ReviewSection productId={product.id} productName={product.name} />
-      <RelatedProducts products={similarProducts} />
+      <RelatedProducts products={similarProducts} initialBrands={brands} />
       <CTAStickyButtons
         isWishlisted={isWishlisted}
         onWishlistToggle={handleWishlistToggle}
