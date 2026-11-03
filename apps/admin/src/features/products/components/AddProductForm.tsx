@@ -48,7 +48,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   }, [initialData]);
   const {
     sizes,
+    setSizes,
     toggleSize,
+    clearSizes,
+    selectAllSizes,
     gender,
     setGender,
     category,
@@ -66,6 +69,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     setColorInput,
     selectedColorHex,
     setSelectedColorHex,
+    selectedColors,
+    setSelectedColors,
+    toggleColor,
+    removeColor,
     isColorOpen,
     setIsColorOpen,
     videoLink,
@@ -400,7 +407,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
         attributes: {
           sizes: sizes.length > 0 ? sizes : [],
-          colors: selectedColorHex ? [selectedColorHex] : ['#000000'],
+          colors:
+            selectedColors.length > 0
+              ? selectedColors.map((c) => c.hex)
+              : [
+                  selectedColorHex ||
+                    filteredColors.find((c) => c.name.toLowerCase() === colorInput.trim().toLowerCase())?.hex ||
+                    (colorInput.startsWith('#') ? colorInput : '#000000'),
+                ],
           quality: mappedQuality,
         },
         price: {
@@ -925,23 +939,62 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 </div>
 
                 <div ref={colorRef} className="relative">
-                  <LabelWithTick
-                    label="Color"
-                    status={getStatus(colorInput, initialData?.attributes?.colors?.[0], 3)}
-                  />
-                  <div className="relative flex items-center">
-                    {selectedColorHex && (
-                      <div
-                        className="absolute left-3 h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20"
-                        style={{ backgroundColor: selectedColorHex }}
-                      />
+                  <div className="flex items-center justify-between">
+                    <LabelWithTick
+                      label="Product Colors"
+                      status={
+                        selectedColors.length > 0 || colorInput.trim().length > 0
+                          ? 'valid'
+                          : getStatus(colorInput, initialData?.attributes?.colors?.[0], 3)
+                      }
+                    />
+                    {selectedColors.length > 0 && (
+                      <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">
+                        {selectedColors.length} selected
+                      </span>
                     )}
+                  </div>
+
+                  {/* Selected Color Badges / Chips */}
+                  {selectedColors.length > 0 && (
+                    <div className="mb-2.5 flex flex-wrap gap-2">
+                      {selectedColors.map((color) => (
+                        <span
+                          key={color.hex + color.name}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white py-1 pl-1.5 pr-2.5 text-xs font-semibold shadow-xs transition-all dark:border-white/10 dark:bg-[#1a1a1a]"
+                        >
+                          <span
+                            className="h-3.5 w-3.5 rounded-full border border-black/15 shadow-inner shrink-0 dark:border-white/15"
+                            style={{ backgroundColor: color.hex }}
+                          />
+                          <span className="text-black dark:text-white">{color.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeColor(color.name)}
+                            className="ml-0.5 rounded-full p-0.5 text-black/40 hover:bg-black/10 hover:text-black dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white"
+                            title={`Remove ${color.name}`}
+                          >
+                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Input Search Box */}
+                  <div className="relative flex items-center">
+                    <div className="pointer-events-none absolute left-3.5 flex items-center">
+                      <svg className="h-4 w-4 text-black/40 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                      </svg>
+                    </div>
                     <input
                       type="text"
                       value={colorInput}
                       onChange={(e) => {
                         setColorInput(e.target.value);
-                        setSelectedColorHex(null); // Clear selected hex if typing
                         setIsColorOpen(true);
                       }}
                       onFocus={() => {
@@ -952,50 +1005,92 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           e.preventDefault();
                           if (filteredColors.length > 0) {
                             const first = filteredColors[0];
-                            setColorInput(first.name);
-                            setSelectedColorHex(first.hex);
-                            setIsColorOpen(false);
+                            toggleColor(first);
+                            setColorInput('');
+                          } else if (colorInput.trim()) {
+                            toggleColor({
+                              name: colorInput.trim(),
+                              hex: colorInput.startsWith('#') ? colorInput.trim().toUpperCase() : '#000000',
+                            });
+                            setColorInput('');
                           }
                         }
                       }}
-                      placeholder="e.g. Black"
-                      className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedColorHex ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
+                      placeholder={
+                        selectedColors.length > 0
+                          ? 'Add another color...'
+                          : 'Search and select colors (e.g. Black, White, Red)'
+                      }
+                      className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-14 pl-10 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                     />
+                    {selectedColors.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedColors([])}
+                        className="absolute right-3 rounded-md px-1.5 py-0.5 text-[11px] font-bold text-black/40 transition-colors hover:bg-black/5 hover:text-black dark:text-white/40 dark:hover:bg-white/5 dark:hover:text-white"
+                      >
+                        Clear
+                      </button>
+                    )}
                   </div>
 
+                  {/* Dropdown Menu with Multi-Select Checks */}
                   {isColorOpen && (
-                    <div className="absolute z-20 mt-2 max-h-60 overflow-y-auto w-full rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
-                      {filteredColors.length > 0 ? (
-                        filteredColors.map((c) => (
-                          <button
-                            key={c.id ?? c.name}
-                            type="button"
-                            onClick={() => {
-                              setColorInput(c.name);
-                              setSelectedColorHex(c.hex);
-                              setIsColorOpen(false);
-                            }}
-                            className="flex w-full items-center justify-between px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <div
-                                className="h-4 w-4 rounded-full border border-black/10 shadow-sm dark:border-white/20 shrink-0"
-                                style={{ backgroundColor: c.hex }}
-                              />
-                              <span className="text-sm font-medium text-black/80 dark:text-white/80">
-                                {c.name}
-                              </span>
-                            </div>
-                            <span className="font-mono text-xs text-black/40 dark:text-white/40">
-                              {c.hex}
-                            </span>
-                          </button>
-                        ))
-                      ) : (
-                        <div className="px-4 py-3 text-center text-sm font-medium text-black/50 dark:text-white/50">
-                          No colors found. Hit enter to add &ldquo;{colorInput}&rdquo;
-                        </div>
-                      )}
+                    <div className="absolute z-20 mt-2 max-h-64 w-full overflow-hidden rounded-xl border border-black/10 bg-white shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1a1a]">
+                      <div className="flex items-center justify-between border-b border-black/5 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-black/50 dark:border-white/5 dark:text-white/50">
+                        <span>Available Colors</span>
+                        <span>{selectedColors.length} selected</span>
+                      </div>
+                      <div className="max-h-52 overflow-y-auto py-1">
+                        {filteredColors.length > 0 ? (
+                          filteredColors.map((c) => {
+                            const isSelected = selectedColors.some(
+                              (sc) =>
+                                sc.hex.toLowerCase() === c.hex.toLowerCase() ||
+                                sc.name.toLowerCase() === c.name.toLowerCase(),
+                            );
+                            return (
+                              <button
+                                key={c.id ?? c.name}
+                                type="button"
+                                onClick={() => {
+                                  toggleColor(c);
+                                  setColorInput('');
+                                }}
+                                className={`flex w-full items-center justify-between px-4 py-2.5 text-left transition-colors ${
+                                  isSelected
+                                    ? 'bg-black/5 font-bold text-black dark:bg-white/10 dark:text-white'
+                                    : 'text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/5'
+                                }`}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <div
+                                    className="h-4 w-4 rounded-full border border-black/10 shadow-sm shrink-0 dark:border-white/20"
+                                    style={{ backgroundColor: c.hex }}
+                                  />
+                                  <span className="text-sm">
+                                    {c.name}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-mono text-xs text-black/40 dark:text-white/40">
+                                    {c.hex}
+                                  </span>
+                                  {isSelected && (
+                                    <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })
+                        ) : (
+                          <div className="px-4 py-3 text-center text-sm font-medium text-black/50 dark:text-white/50">
+                            No colors found. Hit enter to add &ldquo;{colorInput}&rdquo;
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -1003,14 +1098,43 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
               <div className="grid grid-cols-1 gap-8 pt-2 md:grid-cols-2">
                 <div>
-                  <LabelWithTick
-                    label="Size"
-                    status={getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
-                  />
+                  <div className="flex items-center justify-between">
+                    <LabelWithTick
+                      label="Size"
+                      status={getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
+                    />
+                    <div className="flex items-center gap-2.5">
+                      {sizes.length < availableSizes.length && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            selectAllSizes();
+                            markTouched('sizes');
+                          }}
+                          className="text-xs font-semibold text-black/50 transition-colors hover:text-black dark:text-white/50 dark:hover:text-white"
+                        >
+                          Select All
+                        </button>
+                      )}
+                      {sizes.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            clearSizes();
+                            markTouched('sizes');
+                          }}
+                          className="text-xs font-bold text-red-500 transition-colors hover:text-red-600 dark:text-red-400"
+                        >
+                          Clear All ({sizes.length})
+                        </button>
+                      )}
+                    </div>
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {availableSizes.map((s) => (
                       <button
                         key={s}
+                        type="button"
                         onClick={() => {
                           toggleSize(s);
                           markTouched('sizes');
@@ -1165,108 +1289,207 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
           {/* Live Activity & Social Proof Counts */}
           <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
-            <div className="mb-4 flex items-center justify-between sm:mb-6">
-              <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
-                Live Activity & Social Proof Counts
-              </h2>
-              <span className="text-xs font-medium text-black/50 dark:text-white/50">
-                Live Matrix & Ratings
+            <div className="mb-6 flex flex-col gap-1 border-b border-black/5 pb-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/5">
+              <div>
+                <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
+                  Live Activity & Social Proof
+                </h2>
+                <p className="text-xs text-black/50 dark:text-white/50">
+                  Control real-time urgency metrics and customer feedback signals shown to shoppers
+                </p>
+              </div>
+              <span className="self-start rounded-full border border-black/10 bg-black/5 px-3 py-1 text-[11px] font-semibold text-black/70 sm:self-auto dark:border-white/10 dark:bg-white/5 dark:text-white/70">
+                Engagement & Signals
               </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-              <div>
-                <LabelWithTick
-                  label="View Count (Live Watching)"
-                  status={liveWatching.trim().length > 0 ? 'valid' : 'default'}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  value={liveWatching}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === '' || Number(val) >= 0) {
-                      setLiveWatching(val);
-                    }
-                  }}
-                  placeholder="e.g. 24"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                />
-                <p className="mt-1 text-[11px] text-black/40 dark:text-white/40">
-                  Active live viewers (never negative)
-                </p>
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {/* Card 1: Live Activity Matrix */}
+              <div className="rounded-2xl border border-black/5 bg-black/[0.02] p-5 dark:border-white/5 dark:bg-white/[0.02]">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                      <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                      </span>
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-black dark:text-white">
+                        Live Activity Matrix
+                      </h3>
+                      <p className="text-[11px] text-black/50 dark:text-white/50">
+                        Real-time urgency indicators on product page
+                      </p>
+                    </div>
+                  </div>
+                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                    Live Signals
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* View Count (Live Watching) */}
+                  <div>
+                    <LabelWithTick
+                      label="Live Viewers"
+                      status={liveWatching.trim().length > 0 ? 'valid' : 'default'}
+                    />
+                    <div className="relative mt-1">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                        <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </div>
+                      <input
+                        type="number"
+                        min="0"
+                        value={liveWatching}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === '' || Number(val) >= 0) {
+                            setLiveWatching(val);
+                          }
+                        }}
+                        placeholder="e.g. 24"
+                        className="w-full rounded-xl border border-black/10 bg-white py-3 pr-4 pl-10 text-sm font-semibold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                      />
+                    </div>
+                    <p className="mt-1.5 text-[11px] text-black/40 dark:text-white/40">
+                      Current active viewers watching this product
+                    </p>
+                  </div>
+
+                  {/* Sold in last 24h */}
+                  <div>
+                    <LabelWithTick
+                      label="Sold in Last 24 Hours"
+                      status={liveSold.trim().length > 0 ? 'valid' : 'default'}
+                    />
+                    <div className="relative mt-1">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                        <svg className="h-4 w-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                        </svg>
+                      </div>
+                      <input
+                        type="number"
+                        min="0"
+                        value={liveSold}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === '' || Number(val) >= 0) {
+                            setLiveSold(val);
+                          }
+                        }}
+                        placeholder="e.g. 142"
+                        className="w-full rounded-xl border border-black/10 bg-white py-3 pr-4 pl-10 text-sm font-semibold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                      />
+                    </div>
+                    <p className="mt-1.5 text-[11px] text-black/40 dark:text-white/40">
+                      Recent volume for urgency & popularity tags
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <LabelWithTick
-                  label="Sold in last 24h"
-                  status={liveSold.trim().length > 0 ? 'valid' : 'default'}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  value={liveSold}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === '' || Number(val) >= 0) {
-                      setLiveSold(val);
-                    }
-                  }}
-                  placeholder="e.g. 142"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                />
-                <p className="mt-1 text-[11px] text-black/40 dark:text-white/40">
-                  Units purchased recently badge
-                </p>
-              </div>
+              {/* Card 2: Social Proof & Ratings */}
+              <div className="rounded-2xl border border-black/5 bg-black/[0.02] p-5 dark:border-white/5 dark:bg-white/[0.02]">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 dark:bg-amber-500/20 dark:text-amber-400">
+                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-black dark:text-white">
+                        Social Proof & Reviews
+                      </h3>
+                      <p className="text-[11px] text-black/50 dark:text-white/50">
+                        Public ratings score and verified review count
+                      </p>
+                    </div>
+                  </div>
+                  <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                    Trust Badge
+                  </span>
+                </div>
 
-              <div>
-                <LabelWithTick
-                  label="Rating (1.0 - 5.0)"
-                  status={averageRating.trim().length > 0 ? 'valid' : 'default'}
-                />
-                <input
-                  type="number"
-                  step="0.1"
-                  min="0"
-                  max="5"
-                  value={averageRating}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === '' || (Number(val) >= 0 && Number(val) <= 5)) {
-                      setAverageRating(val);
-                    }
-                  }}
-                  placeholder="4.0"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                />
-                <p className="mt-1 text-[11px] text-black/40 dark:text-white/40">
-                  Star rating score (default 4.0)
-                </p>
-              </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {/* Rating (1.0 - 5.0) */}
+                  <div>
+                    <LabelWithTick
+                      label="Average Rating (1.0 - 5.0)"
+                      status={averageRating.trim().length > 0 ? 'valid' : 'default'}
+                    />
+                    <div className="relative mt-1">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                        <svg className="h-4 w-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      </div>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="5"
+                        value={averageRating}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === '' || (Number(val) >= 0 && Number(val) <= 5)) {
+                            setAverageRating(val);
+                          }
+                        }}
+                        placeholder="4.0"
+                        className="w-full rounded-xl border border-black/10 bg-white py-3 pr-12 pl-10 text-sm font-semibold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                      />
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs font-bold text-amber-500">
+                        ★ / 5
+                      </span>
+                    </div>
+                    <p className="mt-1.5 text-[11px] text-black/40 dark:text-white/40">
+                      Star score displayed on cards & hero (default 4.0)
+                    </p>
+                  </div>
 
-              <div>
-                <LabelWithTick
-                  label="Total Reviews"
-                  status={totalReviews.trim().length > 0 ? 'valid' : 'default'}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  value={totalReviews}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === '' || Number(val) >= 0) {
-                      setTotalReviews(val);
-                    }
-                  }}
-                  placeholder="e.g. 38"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                />
-                <p className="mt-1 text-[11px] text-black/40 dark:text-white/40">
-                  Number of verified customer reviews
-                </p>
+                  {/* Total Reviews */}
+                  <div>
+                    <LabelWithTick
+                      label="Total Reviews Count"
+                      status={totalReviews.trim().length > 0 ? 'valid' : 'default'}
+                    />
+                    <div className="relative mt-1">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                        <svg className="h-4 w-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                      </div>
+                      <input
+                        type="number"
+                        min="0"
+                        value={totalReviews}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === '' || Number(val) >= 0) {
+                            setTotalReviews(val);
+                          }
+                        }}
+                        placeholder="e.g. 38"
+                        className="w-full rounded-xl border border-black/10 bg-white py-3 pr-4 pl-10 text-sm font-semibold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                      />
+                    </div>
+                    <p className="mt-1.5 text-[11px] text-black/40 dark:text-white/40">
+                      Total customer reviews count shown next to stars
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
