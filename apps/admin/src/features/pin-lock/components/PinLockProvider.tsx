@@ -20,41 +20,7 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
   const { lock, setHasPin } = usePinLockStore();
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 1. Service Worker Registration
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-          refreshing = true;
-          window.location.reload();
-        }
-      });
-
-      navigator.serviceWorker
-        .register('/sw.js', { updateViaCache: 'none' })
-        .then((reg) => {
-          console.log('[PWA] Service Worker registered with scope:', reg.scope);
-          reg.update().catch(() => null);
-
-          reg.onupdatefound = () => {
-            const installing = reg.installing;
-            if (installing) {
-              installing.onstatechange = () => {
-                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-                  installing.postMessage({ type: 'SKIP_WAITING' });
-                }
-              };
-            }
-          };
-        })
-        .catch((err: unknown) => {
-          console.warn('[PWA] Service Worker registration failed:', err);
-        });
-    }
-  }, []);
-
-  // 2. Initialize PIN status: only lock if not already unlocked in this browser session
+  // 1. Initialize PIN status: only lock if not already unlocked in this browser session
   useEffect(() => {
     if (!isAuthenticated || !user) {
       return;

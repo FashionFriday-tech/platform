@@ -63,12 +63,16 @@ export function PwaUpdateManager() {
           console.warn('[PWA] SW registration failed:', err);
         });
 
-      // Reload smoothly when new service worker takes control
+      // Reload smoothly when new service worker takes control (prevent infinite loops in mobile WebKit)
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (!refreshing) {
-          refreshing = true;
-          window.location.reload();
+          const lastReload = Number(sessionStorage.getItem('ff_admin_sw_reload') || 0);
+          if (Date.now() - lastReload > 15000) {
+            refreshing = true;
+            sessionStorage.setItem('ff_admin_sw_reload', String(Date.now()));
+            window.location.reload();
+          }
         }
       });
     }
