@@ -78,8 +78,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Any other team member must exist in the database with status ACTIVE
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-        const res = await fetch(`${apiUrl}/admin/team`, { signal: AbortSignal.timeout(3500) });
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL ||
+          (typeof window !== 'undefined' &&
+          window.location.hostname !== 'localhost' &&
+          window.location.hostname !== '127.0.0.1'
+            ? 'https://api.fashionfriday.in'
+            : 'http://localhost:3002');
+        const res = await fetch(`${apiUrl}/admin/team`, { signal: AbortSignal.timeout(5000) });
         if (res.ok) {
           const team = (await res.json()) as {
             phone?: string;
@@ -92,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               (m) => m.phone?.replace(/\D/g, '').slice(-10) === cleanPhone && m.status === 'ACTIVE',
             );
             if (!matched) {
-              // User was deleted/removed from database! Force logout immediately.
+              // User was explicitly deleted/deactivated from database: log out immediately
               logout();
               return false;
             }
@@ -100,20 +106,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch {
-        // Fallback for offline conditions
-        try {
-          const storedInvited = localStorage.getItem('ff_admin_invited_team');
-          if (storedInvited) {
-            const list = JSON.parse(storedInvited) as { phone?: string }[];
-            const exists = list.some((m) => m.phone?.replace(/\D/g, '').endsWith(cleanPhone || ''));
-            if (!exists) {
-              logout();
-              return false;
-            }
-          }
-        } catch {
-          // ignore
-        }
+        // Network timeout, offline, or transient error: do NOT log out the user!
+        // Preserve active session during fluctuating network conditions.
+        return true;
       }
       return true;
     },
