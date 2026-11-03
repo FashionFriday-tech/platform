@@ -15,23 +15,6 @@ interface AddColorModalProps {
   isSaving: boolean;
 }
 
-const POPULAR_SWATCHES = [
-  { name: 'Black', hex: '#000000' },
-  { name: 'White', hex: '#FFFFFF' },
-  { name: 'Navy Blue', hex: '#001F3F' },
-  { name: 'Royal Blue', hex: '#4169E1' },
-  { name: 'Emerald', hex: '#50C878' },
-  { name: 'Forest Green', hex: '#228B22' },
-  { name: 'Crimson', hex: '#DC143C' },
-  { name: 'Burgundy', hex: '#800020' },
-  { name: 'Charcoal', hex: '#36454F' },
-  { name: 'Silver', hex: '#C0C0C0' },
-  { name: 'Beige', hex: '#F5F5DC' },
-  { name: 'Gold', hex: '#FFD700' },
-  { name: 'Coral', hex: '#FF7F50' },
-  { name: 'Lavender', hex: '#E6E6FA' },
-];
-
 export function AddColorModal({
   isOpen,
   onClose,
@@ -211,35 +194,6 @@ export function AddColorModal({
                     />
                   </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Quick Presets */}
-            <div>
-              <label className="mb-2 block text-xs font-bold text-black/50 uppercase tracking-wider dark:text-white/50">
-                Quick Presets
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {POPULAR_SWATCHES.map((swatch) => (
-                  <button
-                    key={swatch.name}
-                    type="button"
-                    onClick={() => {
-                      if (!name.trim() || POPULAR_SWATCHES.some((s) => s.name === name)) {
-                        setName(swatch.name);
-                      }
-                      setHex(swatch.hex);
-                      if (error) setError(null);
-                    }}
-                    className="flex items-center gap-1.5 rounded-full border border-black/10 bg-black/[0.03] px-2.5 py-1 text-xs font-medium text-black/80 transition-all hover:border-black/30 hover:bg-black/10 dark:border-white/10 dark:bg-white/[0.03] dark:text-white/80 dark:hover:border-white/30 dark:hover:bg-white/10"
-                  >
-                    <span
-                      className="h-3 w-3 rounded-full border border-black/10 dark:border-white/10 shrink-0"
-                      style={{ backgroundColor: swatch.hex }}
-                    />
-                    <span>{swatch.name}</span>
-                  </button>
-                ))}
               </div>
             </div>
 

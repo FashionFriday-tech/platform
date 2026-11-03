@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import { MAJOR_COLORS } from '@ff/schemas';
+
 import {
   createColor as createColorApi,
   deleteColor as deleteColorApi,
@@ -12,7 +14,13 @@ import {
 import { type Color, type CreateColorInput, type UpdateColorInput } from '../types';
 
 export function useColors() {
-  const [colors, setColors] = useState<Color[]>([]);
+  const [colors, setColors] = useState<Color[]>(() =>
+    MAJOR_COLORS.map((c, i) => ({
+      id: `default-${i}`,
+      name: c.name,
+      hex: c.hex,
+    })),
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,10 +33,11 @@ export function useColors() {
     setIsLoading(true);
     try {
       const data = await fetchColors();
-      setColors(data);
+      if (Array.isArray(data) && data.length > 0) {
+        setColors(data);
+      }
     } catch (err: any) {
       console.error('Failed to load colors:', err);
-      toast.error('Failed to load colors');
     } finally {
       setIsLoading(false);
     }
