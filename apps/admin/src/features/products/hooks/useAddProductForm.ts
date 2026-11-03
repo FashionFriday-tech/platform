@@ -795,6 +795,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     generateSEO,
     fileInputRef,
     images,
+    setImages,
     draggedIndex,
     categoryRef,
     qualityRef,

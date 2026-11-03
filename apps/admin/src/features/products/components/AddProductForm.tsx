@@ -101,6 +101,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     generateSEO,
     fileInputRef,
     images,
+    setImages,
     draggedIndex,
     categoryRef,
     qualityRef,
@@ -268,6 +269,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       setIsSaving(true);
     }
 
+    const newlyUploadedUrls: string[] = [];
+
     try {
       setToast({
         message: isDraft ? 'Saving draft...' : 'Uploading images and saving product...',
@@ -299,14 +302,32 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       };
 
       let finalImages: string[] = [];
+
       if (images.length > 0) {
         finalImages = await Promise.all(
           images.map(async (img) => {
             if (img.isNew && img.file) {
               const url = await uploadBlob(img.file, img.file.name, productName);
+              newlyUploadedUrls.push(url);
               return url;
             }
             return img.url;
+          }),
+        );
+
+        // Update local images state so uploaded URLs can be reused if user retries or re-saves
+        setImages((prev) =>
+          prev.map((img, idx) => {
+            const uploadedUrl = finalImages[idx];
+            if (uploadedUrl && img.isNew) {
+              return {
+                ...img,
+                url: uploadedUrl,
+                isNew: false,
+                file: undefined,
+              };
+            }
+            return img;
           }),
         );
       } else {
@@ -420,6 +441,24 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       }, 1200);
     } catch (error: any) {
       console.error('Error saving product:', error);
+
+      // If newly uploaded images were uploaded during this failed save attempt,
+      // clean them up from Cloudflare R2 so orphaned images don't accumulate
+      if (newlyUploadedUrls.length > 0) {
+        try {
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
+            {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ urls: newlyUploadedUrls }),
+            },
+          );
+        } catch (cleanupErr) {
+          console.error('Failed to cleanup uploaded images on failure:', cleanupErr);
+        }
+      }
+
       setToast({
         message: error?.message || 'Failed to save product. Please try again.',
         type: 'error',
