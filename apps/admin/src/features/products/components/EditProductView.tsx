@@ -78,7 +78,7 @@ export function EditProductView({ productId }: EditProductViewProps) {
             youtubeId: p.youtubeId ?? undefined,
           },
           attributes: {
-            sizes: Array.isArray(p.sizes) && p.sizes.length > 0 ? p.sizes : ['Standard'],
+            sizes: Array.isArray(p.sizes) ? p.sizes : [],
             colors: Array.isArray(p.colors) && p.colors.length > 0 ? p.colors : ['Default'],
             quality: p.quality ?? 'UA',
           },

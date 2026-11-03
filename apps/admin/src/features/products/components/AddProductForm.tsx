@@ -394,7 +394,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         brand: brandInput.trim() ? [brandInput.trim()] : ['Fashion Friday'],
         gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
         attributes: {
-          sizes: sizes.length > 0 ? sizes : ['Free Size'],
+          sizes: sizes.length > 0 ? sizes : [],
           colors: selectedColorHex ? [selectedColorHex] : ['#000000'],
           quality: mappedQuality,
         },
