@@ -1,5 +1,5 @@
 import { Gender, generateBrandId, Prisma, ProductStatus } from '@ff/database';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { triggerRevalidation } from '../../revalidate-helper';
 import { UploadService } from '../../upload/upload.service';
@@ -60,9 +60,27 @@ export class AdminProductsService {
       seoDescription: dto.marketing?.seoDescription || null,
     };
 
-    const result = await this.productsRepository.create(data);
-    this.triggerProductAndCategoryRevalidation(result);
-    return result;
+    try {
+      const result = await this.productsRepository.create(data);
+      this.triggerProductAndCategoryRevalidation(result);
+      return result;
+    } catch (error) {
+      console.error('Failed to create product in database, cleaning up uploaded images:', error);
+      const imagesToDelete = [
+        dto.media?.mainImage,
+        dto.media?.promoImage,
+        ...(dto.media?.liveImages || []),
+      ].filter((url): url is string => Boolean(url) && typeof url === 'string');
+
+      for (const url of imagesToDelete) {
+        if (url && !url.includes('placeholder')) {
+          await this.uploadService.deleteFile(url).catch((err) => {
+            console.error(`Failed to cleanup orphaned image ${url}:`, err);
+          });
+        }
+      }
+      throw error;
+    }
   }
 
   private paginate([total, data]: [number, any[]], skip: number, take: number) {
@@ -248,20 +266,27 @@ export class AdminProductsService {
 
   async deleteProduct(id: string) {
     const existingProduct = await this.productsRepository.findById(id);
-    if (existingProduct) {
-      const imagesToDelete = [
-        existingProduct.mainImage,
-        existingProduct.promoImage,
-        ...(existingProduct.liveImages || []),
-      ].filter(Boolean);
-      for (const url of imagesToDelete) {
-        if (url) {
-          await this.uploadService.deleteFile(url);
-        }
-      }
+    if (!existingProduct) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
     }
 
+    const imagesToDelete = [
+      existingProduct.mainImage,
+      existingProduct.promoImage,
+      ...(existingProduct.liveImages || []),
+    ].filter((url): url is string => Boolean(url) && typeof url === 'string');
+
+    // 1. Delete product record from DB first
     const result = await this.productsRepository.delete(id);
+
+    // 2. Delete all related images from Cloudflare R2 after DB deletion succeeds
+    for (const url of imagesToDelete) {
+      if (url && !url.includes('placeholder')) {
+        await this.uploadService.deleteFile(url).catch((err) => {
+          console.error(`Failed to delete product image ${url} from Cloudflare:`, err);
+        });
+      }
+    }
 
     // Invalidate everything related to the deleted product so it disappears across all views
     this.triggerProductAndCategoryRevalidation(result);
