@@ -97,3 +97,4 @@ export default function AdminError({ error, reset }: ErrorProps) {
     </div>
   );
 }
+
