@@ -50,7 +50,12 @@ export default function ProductPageMaster({
   const productId = product.id;
   const isWishlisted = isItemWishlisted(productId);
 
-  const displaySizes = product.attributes.sizes;
+  const displaySizes = product.attributes?.sizes ?? [];
+  const isGenericOrSingleSize =
+    displaySizes.length === 0 ||
+    (displaySizes.length === 1 &&
+      /^(one[- ]?size|free[- ]?size|standard|os)$/i.test(displaySizes[0]?.trim()));
+  const shouldShowSizeSelector = !isGenericOrSingleSize && displaySizes.length > 1;
 
   const handleWishlistToggle = () => {
     void toggleWishlist({
@@ -97,7 +102,8 @@ export default function ProductPageMaster({
         colors: product.attributes?.colors ?? [],
       },
     });
-    toast.success(`Added ${product.name} (${chosenSize}) to Bag!`);
+    const sizeLabel = isGenericOrSingleSize ? '' : ` (${chosenSize})`;
+    toast.success(`Added ${product.name}${sizeLabel} to Bag!`);
     return true;
   };
 
@@ -230,7 +236,7 @@ export default function ProductPageMaster({
 
             <ProductVariantPage />
 
-            {displaySizes && displaySizes.length > 0 && (
+            {shouldShowSizeSelector && (
               <div className="space-y-4">
                 <div className="flex items-end justify-between">
                   <label className="text-[10px] font-black tracking-widest uppercase">
