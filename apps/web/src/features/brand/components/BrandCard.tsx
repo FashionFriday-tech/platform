@@ -56,32 +56,20 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
             skewed && 'skew-x-[6deg]',
           )}
         >
-          {brand.logo && !hasFallbackText ? (
-            !hasError ? (
-              <Image
-                src={brand.logo}
-                alt={brand.name}
-                width={200}
-                height={200}
-                onError={() => {
-                  setHasError(true);
-                }}
-                className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
-                  isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
-                }`}
-              />
-            ) : (
-              <img
-                src={brand.logo}
-                alt={brand.name}
-                onError={() => {
-                  setHasFallbackText(true);
-                }}
-                className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
-                  isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
-                }`}
-              />
-            )
+          {brand.logo && !hasFallbackText && !hasError ? (
+            <Image
+              src={brand.logo}
+              alt={brand.name}
+              width={200}
+              height={200}
+              onError={() => {
+                setHasError(true);
+                setHasFallbackText(true);
+              }}
+              className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
+                isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
+              }`}
+            />
           ) : (
             <span
               className={`px-2 text-center text-xs font-black tracking-widest uppercase sm:text-sm md:text-base ${
