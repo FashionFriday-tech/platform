@@ -9,6 +9,11 @@ import { useColors } from '../../colors/hooks/useColors';
 import { getCategorySizes, SIZE_MAP } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
+export interface SelectedColor {
+  name: string;
+  hex: string;
+}
+
 export interface UseAddProductFormOptions {
   onToast?: (toast: { message: string; type: 'success' | 'error' | 'warning' }) => void;
 }
@@ -29,9 +34,6 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialData?.categoryId ?? (initialData as any)?.category?.id ?? paramCategoryId,
   );
-  const [sizes, setSizes] = useState<string[]>(() =>
-    getCategorySizes(paramCategoryName ?? (initialData as any)?.category?.name),
-  );
   const [gender, setGender] = useState<string>(() => {
     if (initialData?.gender === 'MEN') {
       return 'Men';
@@ -44,6 +46,12 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     }
     return 'Unisex';
   });
+  const [sizes, setSizes] = useState<string[]>(() =>
+    getCategorySizes(
+      paramCategoryName ?? (initialData as any)?.category?.name,
+      initialData?.gender ?? paramGender ?? 'Unisex',
+    ),
+  );
   const [category, setCategory] = useState<string>(
     paramCategoryName ?? (initialData as any)?.category?.name ?? '',
   );
@@ -57,7 +65,36 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
   const [colorInput, setColorInput] = useState('');
   const [selectedColorHex, setSelectedColorHex] = useState<string | null>(null);
+  const [selectedColors, setSelectedColors] = useState<SelectedColor[]>([]);
   const [isColorOpen, setIsColorOpen] = useState(false);
+
+  const toggleColor = (color: { name: string; hex: string }) => {
+    setSelectedColors((prev) => {
+      const exists = prev.some(
+        (c) =>
+          c.hex.toLowerCase() === color.hex.toLowerCase() ||
+          c.name.toLowerCase() === color.name.toLowerCase(),
+      );
+      if (exists) {
+        return prev.filter(
+          (c) =>
+            c.hex.toLowerCase() !== color.hex.toLowerCase() &&
+            c.name.toLowerCase() !== color.name.toLowerCase(),
+        );
+      }
+      return [...prev, { name: color.name.trim(), hex: color.hex.trim().toUpperCase() }];
+    });
+  };
+
+  const removeColor = (colorNameOrHex: string) => {
+    setSelectedColors((prev) =>
+      prev.filter(
+        (c) =>
+          c.hex.toLowerCase() !== colorNameOrHex.toLowerCase() &&
+          c.name.toLowerCase() !== colorNameOrHex.toLowerCase(),
+      ),
+    );
+  };
 
   const [videoLink, setVideoLink] = useState('');
   const [embedUrl, setEmbedUrl] = useState<string | null>(null);
@@ -198,14 +235,29 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
           : getCategorySizes(matchedCategoryName);
       setSizes(initialSizes);
 
-      // Color — reverse-map from hex to color name
-      const savedColorHex = initialData.attributes?.colors?.[0];
-      if (savedColorHex) {
-        const matchedColor = apiColors.find(
-          (c) => c.hex.toLowerCase() === savedColorHex.toLowerCase(),
-        );
-        setColorInput(matchedColor ? matchedColor.name : savedColorHex);
-        setSelectedColorHex(savedColorHex);
+      // Colors — reverse-map from hex or name to array of SelectedColor
+      const savedColorsList = initialData.attributes?.colors;
+      if (Array.isArray(savedColorsList) && savedColorsList.length > 0) {
+        const mappedColors: SelectedColor[] = savedColorsList.map((saved) => {
+          const matched = apiColors.find(
+            (c) =>
+              c.hex.toLowerCase() === saved.toLowerCase() ||
+              c.name.toLowerCase() === saved.toLowerCase(),
+          );
+          return {
+            name: matched ? matched.name : saved,
+            hex: matched
+              ? matched.hex
+              : saved.startsWith('#')
+                ? saved.toUpperCase()
+                : '#000000',
+          };
+        });
+        setSelectedColors(mappedColors);
+        if (mappedColors[0]) {
+          setColorInput(mappedColors[0].name);
+          setSelectedColorHex(mappedColors[0].hex);
+        }
       }
 
       // Video — convert youtubeId back to a watchable URL
@@ -349,7 +401,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     }
     setCategory(catName);
     setIsCategoryOpen(false);
-    setSizes(getCategorySizes(catName));
+    setSizes(getCategorySizes(catName, gender));
     setBrandInput('');
     setSelectedBrandLogo(null);
   };
@@ -396,7 +448,9 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       'fashion',
       'trendy',
     ]);
-    if (colorInput.trim()) {
+    if (selectedColors.length > 0) {
+      selectedColors.forEach((sc) => newTags.add(sc.name.toLowerCase().trim()));
+    } else if (colorInput.trim()) {
       newTags.add(colorInput.toLowerCase().trim());
     }
     if (brandInput.trim()) {
@@ -725,7 +779,17 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
         c.hex.toLowerCase().includes(colorInput.toLowerCase()),
     );
   }, [apiColors, colorInput]);
-  const availableSizes = getCategorySizes(category);
+  const availableSizes = useMemo(() => {
+    return getCategorySizes(category, gender);
+  }, [category, gender]);
+
+  const clearSizes = () => {
+    setSizes([]);
+  };
+
+  const selectAllSizes = () => {
+    setSizes([...availableSizes]);
+  };
 
   const [availableCollections, setAvailableCollections] = useState<string[]>([
     'Summer Drop',
@@ -784,7 +848,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       productName,
       productDesc,
       brandInput,
-      colorInput,
+      selectedColors.length > 0 ? 'filled' : colorInput,
       basePrice,
       stock,
       images.length > 0 ? 'filled' : '',
@@ -803,7 +867,10 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
   return {
     sizes,
+    setSizes,
     toggleSize,
+    clearSizes,
+    selectAllSizes,
     gender,
     setGender,
     category,
@@ -827,6 +894,10 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     setColorInput,
     selectedColorHex,
     setSelectedColorHex,
+    selectedColors,
+    setSelectedColors,
+    toggleColor,
+    removeColor,
     isColorOpen,
     setIsColorOpen,
     videoLink,
