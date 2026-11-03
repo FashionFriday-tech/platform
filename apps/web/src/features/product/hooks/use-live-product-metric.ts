@@ -6,7 +6,7 @@ import { getGlobalSlot, getPageSlot } from '../utils/time';
 
 const SLOT_MS = 5000;
 
-export function useLiveProductMetric(staticNumber: number) {
+export function useLiveProductMetric(staticNumber: number): number {
   const [slotTime, setSlotTime] = useState(() => Math.floor(Date.now() / SLOT_MS) * SLOT_MS);
 
   useEffect(() => {
@@ -16,10 +16,10 @@ export function useLiveProductMetric(staticNumber: number) {
       setSlotTime(aligned);
     };
 
-    // sync immediately
+    // Sync immediately
     syncToSlot();
 
-    // calculate delay to next exact UTC slot
+    // Calculate delay to next exact slot
     const delay = SLOT_MS - (Date.now() % SLOT_MS);
 
     const timeout = setTimeout(() => {
@@ -27,7 +27,6 @@ export function useLiveProductMetric(staticNumber: number) {
 
       const interval = setInterval(syncToSlot, SLOT_MS);
 
-      // proper cleanup
       return () => {
         clearInterval(interval);
       };
@@ -39,12 +38,29 @@ export function useLiveProductMetric(staticNumber: number) {
   }, []);
 
   return useMemo(() => {
+    const rawBase = Number(staticNumber);
+    if (!rawBase || isNaN(rawBase) || rawBase <= 0) {
+      return 0;
+    }
+
     const globalSlot = getGlobalSlot(slotTime);
     const pageSlot = getPageSlot(slotTime);
 
-    const globalNumber = (globalSlot % 90) + 60; // 60–149
-    const pageDelta = (pageSlot % 21) - 10; // -10 → +10
+    let count: number;
+    if (rawBase <= 5) {
+      // Obfuscated index scale: e.g. 1 -> ~60-149
+      const globalNumber = (globalSlot % 90) + 60; // 60–149
+      const pageDelta = (pageSlot % 21) - 10; // -10 → +10
+      count = rawBase * globalNumber + pageDelta;
+    } else {
+      // Direct count set by admin (e.g. 25, 60, 150 viewers):
+      // Add a subtle organic variance (±8%)
+      const varianceRange = Math.max(2, Math.floor(rawBase * 0.08));
+      const delta = (pageSlot % (varianceRange * 2 + 1)) - varianceRange;
+      count = rawBase + delta;
+    }
 
-    return staticNumber * globalNumber + pageDelta;
+    // View count can NEVER be negative / minus value
+    return Math.max(1, Math.round(count));
   }, [slotTime, staticNumber]);
 }

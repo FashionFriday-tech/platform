@@ -72,6 +72,12 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [stock, setStock] = useState('');
   const [gettingPrice, setGettingPrice] = useState('');
 
+  // Social Proof & Metric Counts (never negative)
+  const [liveWatching, setLiveWatching] = useState('0');
+  const [liveSold, setLiveSold] = useState('0');
+  const [averageRating, setAverageRating] = useState('4.0');
+  const [totalReviews, setTotalReviews] = useState('0');
+
   // SEO
   const [seoTitle, setSeoTitle] = useState('');
   const [seoSlug, setSeoSlug] = useState('');
@@ -147,6 +153,36 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       setOgPrice(initialData.price?.ogPrice?.toString() ?? '');
       setStock(initialData.inventory?.totalStock?.toString() ?? '');
       setGettingPrice(initialData.price?.gettingPrice?.toString() ?? '');
+
+      // Engagement & Social Proof Counts
+      setLiveWatching(
+        initialData.liveMatrix?.liveWatching !== undefined
+          ? initialData.liveMatrix.liveWatching.toString()
+          : (initialData as any).liveWatching !== undefined
+            ? (initialData as any).liveWatching.toString()
+            : '0',
+      );
+      setLiveSold(
+        initialData.liveMatrix?.liveSold !== undefined
+          ? initialData.liveMatrix.liveSold.toString()
+          : (initialData as any).liveSold !== undefined
+            ? (initialData as any).liveSold.toString()
+            : '0',
+      );
+      setAverageRating(
+        initialData.rating?.averageRating !== undefined
+          ? initialData.rating.averageRating.toString()
+          : (initialData as any).averageRating !== undefined
+            ? (initialData as any).averageRating.toString()
+            : '4.0',
+      );
+      setTotalReviews(
+        initialData.rating?.totalReviews !== undefined
+          ? initialData.rating.totalReviews.toString()
+          : (initialData as any).totalReviews !== undefined
+            ? (initialData as any).totalReviews.toString()
+            : '0',
+      );
 
       const isWatch = matchedCategoryName?.toLowerCase().includes('watch');
       const rawSizes = initialData.attributes?.sizes;
@@ -831,5 +867,13 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     toggleCollection,
     selectedCategoryId,
     setSelectedCategoryId,
+    liveWatching,
+    setLiveWatching,
+    liveSold,
+    setLiveSold,
+    averageRating,
+    setAverageRating,
+    totalReviews,
+    setTotalReviews,
   };
 }

@@ -33,6 +33,10 @@ export async function fetchProducts(search?: string): Promise<Product[]> {
         seoDescription?: string;
         slug?: string;
         youtubeId?: string;
+        liveWatching?: number;
+        liveSold?: number;
+        averageRating?: number;
+        totalReviews?: number;
       }[];
     }>(query);
 
@@ -69,6 +73,18 @@ export async function fetchProducts(search?: string): Promise<Product[]> {
       seoDesc: p.seoDescription,
       seoSlug: p.slug,
       videoLink: p.youtubeId ? `https://www.youtube.com/embed/${p.youtubeId}` : undefined,
+      liveWatching: Math.max(0, Number(p.liveWatching ?? 0)),
+      liveSold: Math.max(0, Number(p.liveSold ?? 0)),
+      averageRating: Number(p.averageRating ?? 4.0),
+      totalReviews: Math.max(0, Number(p.totalReviews ?? 0)),
+      rating: {
+        average: Number(p.averageRating ?? 4.0),
+        count: Math.max(0, Number(p.totalReviews ?? 0)),
+      },
+      liveMatrix: {
+        liveWatching: Math.max(0, Number(p.liveWatching ?? 0)),
+        liveSold: Math.max(0, Number(p.liveSold ?? 0)),
+      },
     }));
   } catch (err) {
     console.error('fetchProducts error:', err);
@@ -101,6 +117,10 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
       seoDescription?: string;
       slug?: string;
       youtubeId?: string;
+      liveWatching?: number;
+      liveSold?: number;
+      averageRating?: number;
+      totalReviews?: number;
     }>(`/admin/products/${id}`);
 
     if (!p?.id) {
@@ -135,6 +155,18 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
       seoDesc: p.seoDescription,
       seoSlug: p.slug,
       videoLink: p.youtubeId ? `https://www.youtube.com/embed/${p.youtubeId}` : undefined,
+      liveWatching: Math.max(0, Number(p.liveWatching ?? 0)),
+      liveSold: Math.max(0, Number(p.liveSold ?? 0)),
+      averageRating: Number(p.averageRating ?? 4.0),
+      totalReviews: Math.max(0, Number(p.totalReviews ?? 0)),
+      rating: {
+        average: Number(p.averageRating ?? 4.0),
+        count: Math.max(0, Number(p.totalReviews ?? 0)),
+      },
+      liveMatrix: {
+        liveWatching: Math.max(0, Number(p.liveWatching ?? 0)),
+        liveSold: Math.max(0, Number(p.liveSold ?? 0)),
+      },
     };
   } catch (err) {
     console.error('fetchProductById error:', err);

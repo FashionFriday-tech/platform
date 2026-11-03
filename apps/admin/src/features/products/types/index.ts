@@ -45,6 +45,11 @@ export interface Product {
   videoLink?: string;
   attributes?: ProductAttributes;
   rating?: { average?: number; count?: number };
+  liveWatching?: number;
+  liveSold?: number;
+  averageRating?: number;
+  totalReviews?: number;
+  liveMatrix?: { liveWatching?: number; liveSold?: number };
 }
 
 export type SortOption =

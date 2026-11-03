@@ -123,6 +123,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     apiCategories,
     availableCollections,
     toggleCollection,
+    liveWatching,
+    setLiveWatching,
+    liveSold,
+    setLiveSold,
+    averageRating,
+    setAverageRating,
+    totalReviews,
+    setTotalReviews,
   } = useAddProductForm(initialData, { onToast: setToast });
 
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
@@ -414,6 +422,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           seoTitle: seoTitle || undefined,
           seoDescription: seoDesc || undefined,
         },
+        liveMatrix: {
+          liveWatching: Math.max(0, Number(liveWatching) || 0),
+          liveSold: Math.max(0, Number(liveSold) || 0),
+        },
+        rating: {
+          averageRating: averageRating ? Math.min(5, Math.max(0, Number(averageRating))) : 4,
+          totalReviews: Math.max(0, Number(totalReviews) || 0),
+        },
+        liveWatching: Math.max(0, Number(liveWatching) || 0),
+        liveSold: Math.max(0, Number(liveSold) || 0),
+        averageRating: averageRating ? Math.min(5, Math.max(0, Number(averageRating))) : 4,
+        totalReviews: Math.max(0, Number(totalReviews) || 0),
         slug: computedSlug,
       };
 
@@ -1133,6 +1153,114 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Activity & Social Proof Counts */}
+          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+            <div className="mb-4 flex items-center justify-between sm:mb-6">
+              <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
+                Live Activity & Social Proof Counts
+              </h2>
+              <span className="text-xs font-medium text-black/50 dark:text-white/50">
+                Live Matrix & Ratings
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+              <div>
+                <LabelWithTick
+                  label="View Count (Live Watching)"
+                  status={liveWatching.trim().length > 0 ? 'valid' : 'default'}
+                />
+                <input
+                  type="number"
+                  min="0"
+                  value={liveWatching}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || Number(val) >= 0) {
+                      setLiveWatching(val);
+                    }
+                  }}
+                  placeholder="e.g. 24"
+                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                />
+                <p className="mt-1 text-[11px] text-black/40 dark:text-white/40">
+                  Active live viewers (never negative)
+                </p>
+              </div>
+
+              <div>
+                <LabelWithTick
+                  label="Sold in last 24h"
+                  status={liveSold.trim().length > 0 ? 'valid' : 'default'}
+                />
+                <input
+                  type="number"
+                  min="0"
+                  value={liveSold}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || Number(val) >= 0) {
+                      setLiveSold(val);
+                    }
+                  }}
+                  placeholder="e.g. 142"
+                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                />
+                <p className="mt-1 text-[11px] text-black/40 dark:text-white/40">
+                  Units purchased recently badge
+                </p>
+              </div>
+
+              <div>
+                <LabelWithTick
+                  label="Rating (1.0 - 5.0)"
+                  status={averageRating.trim().length > 0 ? 'valid' : 'default'}
+                />
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="5"
+                  value={averageRating}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || (Number(val) >= 0 && Number(val) <= 5)) {
+                      setAverageRating(val);
+                    }
+                  }}
+                  placeholder="4.0"
+                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                />
+                <p className="mt-1 text-[11px] text-black/40 dark:text-white/40">
+                  Star rating score (default 4.0)
+                </p>
+              </div>
+
+              <div>
+                <LabelWithTick
+                  label="Total Reviews"
+                  status={totalReviews.trim().length > 0 ? 'valid' : 'default'}
+                />
+                <input
+                  type="number"
+                  min="0"
+                  value={totalReviews}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || Number(val) >= 0) {
+                      setTotalReviews(val);
+                    }
+                  }}
+                  placeholder="e.g. 38"
+                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                />
+                <p className="mt-1 text-[11px] text-black/40 dark:text-white/40">
+                  Number of verified customer reviews
+                </p>
               </div>
             </div>
           </div>

@@ -185,7 +185,7 @@ export default function ProductPageMaster({
                       className="flex cursor-pointer items-center justify-center gap-1"
                     >
                       <EyeIcon size={11} className="mb-0.5 text-red-500" />
-                      {liveMetric}+
+                      {liveMetric > 0 ? `${liveMetric}+` : '0'}
                     </span>
                   </div>
 
@@ -227,7 +227,7 @@ export default function ProductPageMaster({
                     className="text-background inline-block scale-x-[-1]"
                   />
                   <span className="text-background font-semibold">
-                    {product.liveMatrix.liveSold}+
+                    {Math.max(0, product.liveMatrix?.liveSold ?? 0)}+
                   </span>
                 </span>
                 <span> sold in last 24h</span>
@@ -398,7 +398,9 @@ export default function ProductPageMaster({
               </div>
 
               <div className="mb-4 flex items-center gap-2">
-                <span className="text-4xl font-black">{liveMetric}+</span>
+                <span className="text-4xl font-black">
+                  {liveMetric > 0 ? `${liveMetric}+` : '0'}
+                </span>
                 <div className="rounded-full bg-red-500/10 p-2 text-red-500">
                   <svg
                     className="h-5 w-5"
@@ -416,7 +418,7 @@ export default function ProductPageMaster({
 
               <div className="mb-10 space-y-2">
                 <p className="text-sm leading-relaxed text-zinc-400">
-                  {liveMetric}+ peoples are watching the{' '}
+                  {liveMetric > 0 ? `${liveMetric}+` : '0'} peoples are watching the{' '}
                   <span className="text-foreground font-semibold">
                     {product.name.toUpperCase()}
                   </span>{' '}

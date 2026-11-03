@@ -39,8 +39,8 @@ export function mapDbProductToSchema(p: any): Product {
       youtubeId: p.youtubeId || undefined,
     },
     liveMatrix: {
-      liveWatching: Number(p.liveWatching) || 0,
-      liveSold: Number(p.liveSold) || 0,
+      liveWatching: Math.max(0, Number(p.liveWatching) || 0),
+      liveSold: Math.max(0, Number(p.liveSold) || 0),
     },
     marketing: {
       collections: Array.isArray(p.collections) ? p.collections : [],
@@ -49,8 +49,8 @@ export function mapDbProductToSchema(p: any): Product {
       seoDescription: p.seoDescription || undefined,
     },
     rating: {
-      averageRating: Number(p.averageRating) || 4,
-      totalReviews: Number(p.totalReviews) || 0,
+      averageRating: p.averageRating !== undefined && p.averageRating !== null ? Math.min(5, Math.max(0, Number(p.averageRating))) : 4,
+      totalReviews: Math.max(0, Number(p.totalReviews) || 0),
     },
     createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
     updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),

@@ -53,6 +53,26 @@ export class AdminProductsService {
       // Inventory
       totalStock: dto.inventory?.totalStock ?? 0,
 
+      // Social Proof & Real-time Metrics (never negative)
+      liveWatching: Math.max(
+        0,
+        Number(dto.liveMatrix?.liveWatching) || Number((rawDto as any).liveWatching) || 0,
+      ),
+      liveSold: Math.max(
+        0,
+        Number(dto.liveMatrix?.liveSold) || Number((rawDto as any).liveSold) || 0,
+      ),
+      averageRating:
+        dto.rating?.averageRating !== undefined && dto.rating?.averageRating !== null
+          ? Math.min(5, Math.max(0, Number(dto.rating.averageRating)))
+          : (rawDto as any).averageRating !== undefined
+            ? Math.min(5, Math.max(0, Number((rawDto as any).averageRating)))
+            : 4.0,
+      totalReviews: Math.max(
+        0,
+        Number(dto.rating?.totalReviews) || Number((rawDto as any).totalReviews) || 0,
+      ),
+
       // Marketing
       collections: dto.marketing?.collections ?? [],
       isFeatured: dto.marketing?.isFeatured ?? false,
@@ -214,8 +234,39 @@ export class AdminProductsService {
 
     if (d.inventory) {
       if (d.inventory.totalStock !== undefined) {
-        data.totalStock = d.inventory.totalStock;
+        data.totalStock = Math.max(0, Number(d.inventory.totalStock) || 0);
       }
+    }
+
+    // Social Proof & Real-time Metrics (never negative)
+    if (d.liveMatrix) {
+      if (d.liveMatrix.liveWatching !== undefined) {
+        data.liveWatching = Math.max(0, Number(d.liveMatrix.liveWatching) || 0);
+      }
+      if (d.liveMatrix.liveSold !== undefined) {
+        data.liveSold = Math.max(0, Number(d.liveMatrix.liveSold) || 0);
+      }
+    }
+    if (d.liveWatching !== undefined) {
+      data.liveWatching = Math.max(0, Number(d.liveWatching) || 0);
+    }
+    if (d.liveSold !== undefined) {
+      data.liveSold = Math.max(0, Number(d.liveSold) || 0);
+    }
+
+    if (d.rating) {
+      if (d.rating.averageRating !== undefined && d.rating.averageRating !== null) {
+        data.averageRating = Math.min(5, Math.max(0, Number(d.rating.averageRating) || 4.0));
+      }
+      if (d.rating.totalReviews !== undefined) {
+        data.totalReviews = Math.max(0, Number(d.rating.totalReviews) || 0);
+      }
+    }
+    if (d.averageRating !== undefined && d.averageRating !== null) {
+      data.averageRating = Math.min(5, Math.max(0, Number(d.averageRating) || 4.0));
+    }
+    if (d.totalReviews !== undefined) {
+      data.totalReviews = Math.max(0, Number(d.totalReviews) || 0);
     }
 
     if (d.marketing) {
