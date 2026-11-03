@@ -1287,6 +1287,98 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             </div>
           </div>
 
+          {/* Search Engine Optimization */}
+          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+            <div className="mb-4 flex items-center justify-between sm:mb-6">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
+                  Search Engine Optimization
+                </h2>
+                {seoError && (
+                  <span className="rounded-md bg-[#FF0000]/10 px-2.5 py-1 text-xs font-bold text-[#FF0000]">
+                    {seoError}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={generateSEO}
+                className="flex items-center space-x-1.5 rounded-full bg-black px-4 py-1.5 text-xs font-bold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2.5}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <span>Generate</span>
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <LabelWithTick label="URL Slug" status={getStatus(seoSlug, initialData?.slug, 3)} />
+                <div className="flex flex-col overflow-hidden rounded-xl border border-transparent bg-black/5 transition-all focus-within:border-black/20 sm:flex-row sm:items-center dark:bg-white/5 dark:focus-within:border-white/20">
+                  <span className="shrink-0 border-b border-black/5 bg-black/[0.02] px-4 py-2 text-xs font-medium text-black/40 sm:border-r sm:border-b-0 sm:bg-transparent sm:py-3.5 sm:text-sm dark:border-white/5 dark:text-white/40">
+                    fashionfriday.in/product/
+                  </span>
+                  <input
+                    type="text"
+                    value={seoSlug}
+                    onChange={(e) => {
+                      setSeoSlug(e.target.value);
+                    }}
+                    placeholder="product-name"
+                    className="w-full bg-transparent px-4 py-2.5 text-sm font-medium text-black lowercase transition-all outline-none sm:py-3.5 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <LabelWithTick
+                  label="Meta Title"
+                  status={getStatus(seoTitle, initialData?.marketing?.seoTitle, 5)}
+                  rightElement={
+                    <span className="text-xs font-medium text-black/40 dark:text-white/40">
+                      50-60 chars
+                    </span>
+                  }
+                />
+                <input
+                  type="text"
+                  value={seoTitle}
+                  onChange={(e) => {
+                    setSeoTitle(e.target.value);
+                  }}
+                  placeholder="Buy Puffer Jacket With Pocket Detail - Fashion Friday"
+                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                />
+              </div>
+
+              <div>
+                <LabelWithTick
+                  label="Meta Description"
+                  status={getStatus(seoDesc, initialData?.marketing?.seoDescription, 10)}
+                  rightElement={
+                    <span className="text-xs font-medium text-black/40 dark:text-white/40">
+                      150-160 chars
+                    </span>
+                  }
+                />
+                <textarea
+                  rows={3}
+                  value={seoDesc}
+                  onChange={(e) => {
+                    setSeoDesc(e.target.value);
+                  }}
+                  placeholder="Shop the latest Puffer Jacket with pocket details. Fast shipping, great deals, and premium materials. Buy now at Fashion Friday."
+                  className="w-full resize-none rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm leading-relaxed font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Live Activity & Social Proof Counts */}
           <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
             <div className="mb-6 flex flex-col gap-1 border-b border-black/5 pb-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/5">
@@ -1490,98 +1582,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     </p>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Search Engine Optimization */}
-          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
-            <div className="mb-4 flex items-center justify-between sm:mb-6">
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
-                  Search Engine Optimization
-                </h2>
-                {seoError && (
-                  <span className="rounded-md bg-[#FF0000]/10 px-2.5 py-1 text-xs font-bold text-[#FF0000]">
-                    {seoError}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={generateSEO}
-                className="flex items-center space-x-1.5 rounded-full bg-black px-4 py-1.5 text-xs font-bold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
-              >
-                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2.5}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                <span>Generate</span>
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <LabelWithTick label="URL Slug" status={getStatus(seoSlug, initialData?.slug, 3)} />
-                <div className="flex flex-col overflow-hidden rounded-xl border border-transparent bg-black/5 transition-all focus-within:border-black/20 sm:flex-row sm:items-center dark:bg-white/5 dark:focus-within:border-white/20">
-                  <span className="shrink-0 border-b border-black/5 bg-black/[0.02] px-4 py-2 text-xs font-medium text-black/40 sm:border-r sm:border-b-0 sm:bg-transparent sm:py-3.5 sm:text-sm dark:border-white/5 dark:text-white/40">
-                    fashionfriday.in/product/
-                  </span>
-                  <input
-                    type="text"
-                    value={seoSlug}
-                    onChange={(e) => {
-                      setSeoSlug(e.target.value);
-                    }}
-                    placeholder="product-name"
-                    className="w-full bg-transparent px-4 py-2.5 text-sm font-medium text-black lowercase transition-all outline-none sm:py-3.5 dark:text-white"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <LabelWithTick
-                  label="Meta Title"
-                  status={getStatus(seoTitle, initialData?.marketing?.seoTitle, 5)}
-                  rightElement={
-                    <span className="text-xs font-medium text-black/40 dark:text-white/40">
-                      50-60 chars
-                    </span>
-                  }
-                />
-                <input
-                  type="text"
-                  value={seoTitle}
-                  onChange={(e) => {
-                    setSeoTitle(e.target.value);
-                  }}
-                  placeholder="Buy Puffer Jacket With Pocket Detail - Fashion Friday"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                />
-              </div>
-
-              <div>
-                <LabelWithTick
-                  label="Meta Description"
-                  status={getStatus(seoDesc, initialData?.marketing?.seoDescription, 10)}
-                  rightElement={
-                    <span className="text-xs font-medium text-black/40 dark:text-white/40">
-                      150-160 chars
-                    </span>
-                  }
-                />
-                <textarea
-                  rows={3}
-                  value={seoDesc}
-                  onChange={(e) => {
-                    setSeoDesc(e.target.value);
-                  }}
-                  placeholder="Shop the latest Puffer Jacket with pocket details. Fast shipping, great deals, and premium materials. Buy now at Fashion Friday."
-                  className="w-full resize-none rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm leading-relaxed font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                />
               </div>
             </div>
           </div>
