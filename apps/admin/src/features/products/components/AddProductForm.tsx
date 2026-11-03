@@ -34,9 +34,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     return single ? [single] : [];
   });
   const selectedSellerId = selectedSellerIds[0] ?? null;
-  const setSelectedSellerId = (id: string | null) => {
-    setSelectedSellerIds(id ? [id] : []);
-  };
 
   useEffect(() => {
     if (initialData) {
@@ -807,7 +804,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <ProductSellerSelector
                   selectedSellerId={selectedSellerId}
                   selectedSellerIds={selectedSellerIds}
-                  onSelectSeller={setSelectedSellerId}
                   onSelectSellers={(ids) => setSelectedSellerIds(ids)}
                   categoryId={resolvedApiCategory?.id}
                   categoryName={category}

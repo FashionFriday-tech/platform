@@ -21,7 +21,7 @@ interface ProductSellerSelectorProps {
   selectedSellerIds?: string[];
   onSelectSeller?: (sellerId: string | null, seller?: SellerOption | null) => void;
   onSelectSellers?: (sellerIds: string[], sellers: SellerOption[]) => void;
-  selectedCategory?: string; // Can be category ID or category name/slug
+  selectedCategory?: string;
   categoryId?: string;
   categoryName?: string;
   initialSellerId?: string | null;
@@ -46,6 +46,7 @@ export function ProductSellerSelector({
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState<'category' | 'all'>('category');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Compute effective selected IDs array
@@ -123,20 +124,31 @@ export function ProductSellerSelector({
     });
   }, [allSellers, activeCategory]);
 
-  // If a category is selected, search within eligible sellers; otherwise show all sellers
+  // Auto-switch to 'all' if active category has no specific sellers registered
+  useEffect(() => {
+    if (activeCategory && eligibleSellers.length === 0 && allSellers.length > 0) {
+      setActiveTab('all');
+    }
+  }, [activeCategory, eligibleSellers.length, allSellers.length]);
+
+  // Sellers to display based on active tab and search query
   const displayedSellers = useMemo(() => {
-    const list = activeCategory ? eligibleSellers : allSellers;
+    const baseList =
+      activeCategory && activeTab === 'category' && eligibleSellers.length > 0
+        ? eligibleSellers
+        : allSellers;
+
     if (!search.trim()) {
-      return list;
+      return baseList;
     }
     const q = search.toLowerCase();
-    return list.filter(
+    return baseList.filter(
       (s) =>
         s.storeName.toLowerCase().includes(q) ||
         s.name.toLowerCase().includes(q) ||
         s.phone?.includes(q),
     );
-  }, [activeCategory, eligibleSellers, allSellers, search]);
+  }, [activeCategory, activeTab, eligibleSellers, allSellers, search]);
 
   // Click outside listener
   useEffect(() => {
@@ -175,25 +187,34 @@ export function ProductSellerSelector({
     }
 
     const nextSellers = allSellers.filter((s) => nextIds.includes(s.id));
-    onSelectSellers?.(nextIds, nextSellers);
-    onSelectSeller?.(nextIds[0] ?? null, nextSellers[0] ?? null);
+    if (onSelectSellers) {
+      onSelectSellers(nextIds, nextSellers);
+    } else if (onSelectSeller) {
+      onSelectSeller(nextIds[0] ?? null, nextSellers[0] ?? null);
+    }
   };
 
   const handleRemoveSeller = (sellerIdToRemove: string) => {
     const nextIds = effectiveSelectedIds.filter((id) => id !== sellerIdToRemove);
     const nextSellers = allSellers.filter((s) => nextIds.includes(s.id));
-    onSelectSellers?.(nextIds, nextSellers);
-    onSelectSeller?.(nextIds[0] ?? null, nextSellers[0] ?? null);
+    if (onSelectSellers) {
+      onSelectSellers(nextIds, nextSellers);
+    } else if (onSelectSeller) {
+      onSelectSeller(nextIds[0] ?? null, nextSellers[0] ?? null);
+    }
   };
 
   const handleClearAll = () => {
-    onSelectSellers?.([], []);
-    onSelectSeller?.(null, null);
+    if (onSelectSellers) {
+      onSelectSellers([], []);
+    } else if (onSelectSeller) {
+      onSelectSeller(null, null);
+    }
   };
 
   return (
-    <div ref={dropdownRef} className="relative">
-      <div className="flex items-center justify-between">
+    <div ref={dropdownRef} className="relative w-full">
+      <div className="flex items-center justify-between pb-1">
         <LabelWithTick
           label="Product Seller / Supplier"
           status={
@@ -206,27 +227,27 @@ export function ProductSellerSelector({
         />
         <div className="flex items-center gap-2">
           {selectedSellers.length > 0 && (
-            <span className="text-[11px] font-bold text-black/70 dark:text-white/70">
+            <span className="rounded-full bg-black/5 px-2 py-0.5 text-[11px] font-bold text-black/80 dark:bg-white/10 dark:text-white/80">
               {selectedSellers.length} selected
             </span>
           )}
-          {activeCategory && (
+          {activeCategory && eligibleSellers.length > 0 && (
             <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">
-              {eligibleSellers.length} eligible
+              {eligibleSellers.length} category-approved
             </span>
           )}
         </div>
       </div>
 
-      <div className="relative">
+      <div className="relative w-full">
         <button
           type="button"
           onClick={() => {
             setIsOpen((prev) => !prev);
           }}
-          className="flex w-full items-center justify-between rounded-xl border border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+          className="flex min-h-[48px] w-full items-center justify-between rounded-xl border border-transparent bg-black/5 px-4 py-3 text-sm font-medium text-black transition-all outline-none hover:bg-black/8 focus:border-black/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/8 dark:focus:border-white/20"
         >
-          <div className="flex min-w-0 items-center gap-2.5 truncate">
+          <div className="flex min-w-0 flex-1 items-center gap-2.5 truncate">
             <StoreIcon className="h-4 w-4 shrink-0 text-black/40 dark:text-white/40" />
             {selectedSellers.length === 0 ? (
               <span className="truncate text-black/40 dark:text-white/40">
@@ -236,22 +257,26 @@ export function ProductSellerSelector({
               </span>
             ) : selectedSellers.length === 1 ? (
               <span className="truncate font-semibold text-black dark:text-white">
-                {selectedSellers[0].storeName} ({selectedSellers[0].name})
+                {selectedSellers[0].storeName}{' '}
+                <span className="font-normal opacity-70">({selectedSellers[0].name})</span>
               </span>
             ) : (
               <span className="truncate font-semibold text-black dark:text-white">
-                {selectedSellers.length} suppliers selected ({selectedSellers.map((s) => s.storeName).join(', ')})
+                {selectedSellers.length} suppliers selected{' '}
+                <span className="font-normal opacity-70">
+                  ({selectedSellers.map((s) => s.storeName).join(', ')})
+                </span>
               </span>
             )}
           </div>
           <div className="flex shrink-0 items-center gap-2 pl-2">
             {selectedSellers.length > 0 && (
-              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-black/10 px-1.5 text-[11px] font-bold text-black dark:bg-white/15 dark:text-white">
+              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-black px-1.5 text-[11px] font-bold text-white dark:bg-white dark:text-black">
                 {selectedSellers.length}
               </span>
             )}
             <svg
-              className={`h-4 w-4 shrink-0 text-black/40 transition-transform dark:text-white/40 ${
+              className={`h-4 w-4 shrink-0 text-black/40 transition-transform duration-200 dark:text-white/40 ${
                 isOpen ? 'rotate-180' : ''
               }`}
               fill="none"
@@ -269,9 +294,9 @@ export function ProductSellerSelector({
             {selectedSellers.map((seller) => (
               <span
                 key={seller.id}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 bg-black/5 py-1 pr-1.5 pl-2.5 text-xs font-semibold text-black dark:border-white/10 dark:bg-white/10 dark:text-white"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 bg-black/5 py-1 pr-1.5 pl-2.5 text-xs font-semibold text-black shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-white"
               >
-                <StoreIcon className="h-3 w-3 shrink-0 opacity-60" />
+                <StoreIcon className="h-3.5 w-3.5 shrink-0 opacity-60" />
                 <span className="max-w-[160px] truncate">{seller.storeName}</span>
                 <button
                   type="button"
@@ -299,16 +324,17 @@ export function ProductSellerSelector({
                 onClick={handleClearAll}
                 className="px-1 text-[11px] font-bold text-red-500 transition-colors hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
               >
-                Clear all
+                Clear all ({selectedSellers.length})
               </button>
             )}
           </div>
         )}
 
+        {/* Dropdown Popup */}
         {isOpen && (
-          <div className="absolute z-50 mt-2 max-h-80 w-full overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-[#181818]">
-            {/* Search within dropdown */}
-            <div className="border-b border-black/5 p-2.5 dark:border-white/5">
+          <div className="absolute top-full z-50 mt-2 flex max-h-[32rem] w-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-[#181818]">
+            {/* Search Bar */}
+            <div className="shrink-0 border-b border-black/5 p-2.5 dark:border-white/5">
               <div className="relative flex items-center">
                 <SearchIcon className="absolute left-3 h-3.5 w-3.5 text-black/40 dark:text-white/40" />
                 <input
@@ -318,34 +344,52 @@ export function ProductSellerSelector({
                   onChange={(e) => {
                     setSearch(e.target.value);
                   }}
-                  className="w-full rounded-xl border-none bg-black/5 py-1.5 pr-3 pl-8 text-xs font-medium text-black outline-none dark:bg-white/5 dark:text-white"
+                  autoFocus
+                  className="w-full rounded-xl border-none bg-black/5 py-2 pr-3 pl-8 text-xs font-medium text-black outline-none placeholder:text-black/40 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40"
                 />
               </div>
             </div>
 
-            {/* Helper Notice if no category selected */}
-            {!activeCategory && (
-              <div className="border-b border-black/5 bg-amber-500/10 p-2.5 text-xs text-amber-700 dark:text-amber-300">
-                ⚠️ Select a product category above to automatically filter suppliers approved for
-                that category.
+            {/* Filter Tabs: Category vs All */}
+            {activeCategory && (
+              <div className="shrink-0 flex items-center gap-1 border-b border-black/5 bg-black/[0.02] p-1.5 dark:border-white/5 dark:bg-white/[0.02]">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('category')}
+                  className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all ${
+                    activeTab === 'category'
+                      ? 'bg-white text-black shadow-sm dark:bg-zinc-800 dark:text-white'
+                      : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+                  }`}
+                >
+                  Category Approved ({eligibleSellers.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('all')}
+                  className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all ${
+                    activeTab === 'all'
+                      ? 'bg-white text-black shadow-sm dark:bg-zinc-800 dark:text-white'
+                      : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+                  }`}
+                >
+                  All Suppliers ({allSellers.length})
+                </button>
               </div>
             )}
 
             {/* Action Bar: Direct In-house & Clear */}
-            <div className="flex items-center justify-between border-b border-black/5 px-3 py-2 dark:border-white/5">
+            <div className="shrink-0 flex items-center justify-between border-b border-black/5 bg-zinc-50/50 px-3 py-2 dark:border-white/5 dark:bg-zinc-900/50">
               <button
                 type="button"
-                onClick={() => {
-                  handleClearAll();
-                  setIsOpen(false);
-                }}
+                onClick={handleClearAll}
                 className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors ${
                   selectedSellers.length === 0
                     ? 'bg-black text-white dark:bg-white dark:text-black'
                     : 'text-black/60 hover:bg-black/5 dark:text-white/60 dark:hover:bg-white/5'
                 }`}
               >
-                None (Fashion Friday In-house)
+                None (In-house)
               </button>
               {selectedSellers.length > 0 && (
                 <button
@@ -358,17 +402,17 @@ export function ProductSellerSelector({
               )}
             </div>
 
-            {/* List */}
-            <div className="max-h-52 overflow-y-auto p-1.5 space-y-1">
+            {/* Scrollable List */}
+            <div className="scrollbar-thin flex-1 min-h-0 overflow-y-auto p-2 space-y-1">
               {isLoading ? (
-                <div className="p-4 text-center text-xs text-black/40 dark:text-white/40">
+                <div className="py-8 text-center text-xs text-black/40 dark:text-white/40">
                   Loading suppliers...
                 </div>
               ) : displayedSellers.length === 0 ? (
-                <div className="p-4 text-center text-xs text-black/40 dark:text-white/40">
-                  {activeCategory
-                    ? 'No registered suppliers for this category.'
-                    : 'No suppliers found.'}
+                <div className="py-8 text-center text-xs text-black/40 dark:text-white/40">
+                  {activeCategory && activeTab === 'category'
+                    ? 'No registered suppliers for this category. Switch to "All Suppliers" above to choose any registered supplier.'
+                    : 'No suppliers match your search.'}
                 </div>
               ) : (
                 displayedSellers.map((seller) => {
@@ -380,9 +424,9 @@ export function ProductSellerSelector({
                       onClick={() => {
                         handleToggleSeller(seller);
                       }}
-                      className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-xs transition-colors ${
+                      className={`flex w-full items-center justify-between gap-3 rounded-xl p-2.5 text-left text-xs transition-colors ${
                         isSelected
-                          ? 'bg-black/5 font-medium text-black dark:bg-white/10 dark:text-white'
+                          ? 'bg-black/5 font-semibold text-black dark:bg-white/10 dark:text-white'
                           : 'text-black/80 hover:bg-black/5 dark:text-white/80 dark:hover:bg-white/5'
                       }`}
                     >
@@ -391,7 +435,7 @@ export function ProductSellerSelector({
                           className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-md border transition-all ${
                             isSelected
                               ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                              : 'border-black/20 bg-transparent dark:border-white/20'
+                              : 'border-black/30 bg-transparent dark:border-white/30'
                           }`}
                         >
                           {isSelected && (
@@ -405,17 +449,23 @@ export function ProductSellerSelector({
                             </svg>
                           )}
                         </div>
-                        <div className="min-w-0 truncate">
-                          <p className="truncate font-semibold">{seller.storeName}</p>
-                          <p className="truncate text-[11px] opacity-70">
+                        <div className="min-w-0 flex-1 truncate">
+                          <p className="truncate font-bold text-zinc-900 dark:text-zinc-100">
+                            {seller.storeName}
+                          </p>
+                          <p className="truncate text-[11px] text-zinc-500 dark:text-zinc-400">
                             {seller.name}
                             {seller.phone ? ` • ${seller.phone}` : ''}
                           </p>
                         </div>
                       </div>
-                      {isSelected && (
-                        <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-black/60 dark:text-white/60">
+                      {isSelected ? (
+                        <span className="shrink-0 rounded-md bg-black px-1.5 py-0.5 text-[10px] font-bold text-white dark:bg-white dark:text-black">
                           Selected
+                        </span>
+                      ) : (
+                        <span className="shrink-0 text-[10px] text-black/30 opacity-0 group-hover:opacity-100 dark:text-white/30">
+                          + Add
                         </span>
                       )}
                     </button>
@@ -424,8 +474,8 @@ export function ProductSellerSelector({
               )}
             </div>
 
-            {/* Footer Bar: Add new seller and Done */}
-            <div className="flex items-center justify-between border-t border-black/5 p-2 dark:border-white/5">
+            {/* Footer Bar: Fixed at the bottom so it is NEVER cut off */}
+            <div className="shrink-0 flex items-center justify-between border-t border-black/5 bg-zinc-50 p-2.5 dark:border-white/5 dark:bg-zinc-900">
               {onAddNewSeller ? (
                 <button
                   type="button"
@@ -433,13 +483,13 @@ export function ProductSellerSelector({
                     setIsOpen(false);
                     onAddNewSeller();
                   }}
-                  className="flex items-center gap-1.5 rounded-xl bg-black/5 px-3 py-1.5 text-xs font-bold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                  className="flex items-center gap-1.5 rounded-xl bg-black/5 px-3 py-2 text-xs font-bold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                 >
                   <PlusIcon className="h-3.5 w-3.5" />
                   <span>Register New</span>
                 </button>
               ) : (
-                <span className="px-2 text-[11px] text-black/40 dark:text-white/40">
+                <span className="px-2 text-[11px] font-medium text-black/50 dark:text-white/50">
                   Multiple suppliers allowed
                 </span>
               )}
@@ -447,9 +497,14 @@ export function ProductSellerSelector({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="rounded-xl bg-black px-4 py-1.5 text-xs font-bold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
+                className="flex items-center gap-1.5 rounded-xl bg-black px-5 py-2 text-xs font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] dark:bg-white dark:text-black"
               >
-                Done {selectedSellers.length > 0 ? `(${selectedSellers.length})` : ''}
+                <span>Done</span>
+                {selectedSellers.length > 0 && (
+                  <span className="rounded-full bg-white/20 px-1.5 py-0.2 text-[10px] dark:bg-black/20">
+                    {selectedSellers.length}
+                  </span>
+                )}
               </button>
             </div>
           </div>
