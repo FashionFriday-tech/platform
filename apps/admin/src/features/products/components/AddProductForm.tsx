@@ -831,6 +831,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             src={selectedBrandLogo}
                             alt="Brand logo"
                             className="h-full w-full bg-white object-contain p-0.5"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
                           />
                         ) : (
                           selectedBrandLogo
@@ -883,6 +886,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                                   src={b.logo}
                                   alt={b.name}
                                   className="h-full w-full bg-white object-contain p-0.5"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                  }}
                                 />
                               ) : (
                                 b.name.charAt(0).toUpperCase()
