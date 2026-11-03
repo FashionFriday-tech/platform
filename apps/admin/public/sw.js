@@ -1,5 +1,5 @@
 // Fashion Friday Admin Service Worker
-const CACHE_NAME = 'ff-admin-v5-clean';
+const CACHE_NAME = 'ff-admin-v6-stable';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/icons/icon-192.png',
@@ -50,9 +50,15 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
+  // Strictly skip cross-origin requests (e.g. backend API, external assets, CDNs)
+  // Let the browser handle cross-origin network operations natively without SW interference
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
   // NEVER cache API requests
   if (
-    url.pathname.includes('/api/') ||
+    url.pathname.startsWith('/api') ||
     url.pathname.includes('/admin/team') ||
     url.pathname.includes('/orders') ||
     url.pathname.includes('/maintenance')
@@ -60,18 +66,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Navigation requests (HTML pages): Strictly network-first with no-cache revalidation
+  // Navigation requests (HTML pages): Strictly network-first
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request, { cache: 'no-cache' })
-        .then((response) => {
-          return response;
-        })
-        .catch(() => {
-          return caches.match(event.request).then((cached) => {
-            if (cached) return cached;
-            return caches.match('/');
-          });
+      fetch(event.request)
+        .then((response) => response)
+        .catch(async () => {
+          const cached = await caches.match(event.request);
+          if (cached) return cached;
+          const cachedRoot = await caches.match('/');
+          if (cachedRoot) return cachedRoot;
+
+          // Safe fallback response: Never return undefined to event.respondWith
+          return new Response(
+            '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline - Fashion Friday Admin</title><style>body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background:#111;color:#fff;text-align:center;padding:20px}button{margin-top:16px;padding:12px 24px;border-radius:999px;border:none;background:#fff;color:#000;font-weight:bold;cursor:pointer}</style></head><body><h2>Connection Problem</h2><p>Please check your internet connection and try again.</p><button onclick="window.location.reload()">Retry</button></body></html>',
+            {
+              headers: { 'Content-Type': 'text/html' },
+              status: 503,
+              statusText: 'Service Unavailable',
+            },
+          );
         }),
     );
     return;
@@ -87,13 +101,15 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(event.request).then((cached) => {
         if (cached) return cached;
-        return fetch(event.request).then((response) => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        });
+        return fetch(event.request)
+          .then((response) => {
+            if (response && response.status === 200) {
+              const clone = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+            }
+            return response;
+          })
+          .catch(() => new Response('', { status: 404, statusText: 'Not Found' }));
       }),
     );
     return;
@@ -101,8 +117,10 @@ self.addEventListener('fetch', (event) => {
 
   // Network-first for everything else
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
+    fetch(event.request).catch(async () => {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+      return new Response('', { status: 408, statusText: 'Request Timeout' });
     }),
   );
 });
