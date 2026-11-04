@@ -49,7 +49,7 @@ export default function ProductPageMaster({
   );
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
   const mainCtaRef = useRef<HTMLElement>(null);
-  const [showStickyCTA, setShowStickyCTA] = useState(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
 
   useEffect(() => {
     const target = mainCtaRef.current;
@@ -57,10 +57,12 @@ export default function ProductPageMaster({
 
     const checkVisibility = () => {
       const rect = target.getBoundingClientRect();
-      // Activate sticky button when user has scrolled down and main buy button has moved to the top and hidden
-      // On mobile the sticky header is ~56px, so when rect.top <= 40, the Buy Now button has moved to the top and hidden
-      const hasScrolledPastMainCta = rect.top <= 40;
-      setShowStickyCTA(hasScrolledPastMainCta);
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      // Main page buy button is in the view screen when its top is above the bottom of the viewport
+      // and its bottom is below the top mobile sticky header (~56px)
+      const isBuyButtonInView = rect.top < viewportHeight && rect.bottom > 56;
+      // Show sticky CTA button whenever the main page buy button is NOT in the view screen
+      setShowStickyCTA(!isBuyButtonInView);
     };
 
     checkVisibility();
