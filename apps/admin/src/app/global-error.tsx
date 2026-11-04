@@ -155,8 +155,24 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
           <div className="actions">
             <button
               className="btn-primary"
-              onClick={() => {
-                window.location.reload();
+              onClick={async () => {
+                if (typeof window !== 'undefined') {
+                  try {
+                    if ('serviceWorker' in navigator) {
+                      const registrations = await navigator.serviceWorker.getRegistrations();
+                      for (const reg of registrations) {
+                        await reg.unregister();
+                      }
+                    }
+                    if ('caches' in window) {
+                      const keys = await caches.keys();
+                      await Promise.all(keys.map((k) => caches.delete(k)));
+                    }
+                  } catch {
+                    // ignore
+                  }
+                  window.location.reload();
+                }
               }}
             >
               Reload Admin Panel

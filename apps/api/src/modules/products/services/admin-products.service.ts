@@ -376,6 +376,12 @@ export class AdminProductsService {
         `/product/${existingProduct.slug}`,
       );
     }
+    if (existingProduct?.slug && existingProduct.slug !== result.slug) {
+      void triggerRevalidation(
+        `product-${existingProduct.slug}`,
+        `/product/${existingProduct.slug}`,
+      );
+    }
     return result;
   }
 

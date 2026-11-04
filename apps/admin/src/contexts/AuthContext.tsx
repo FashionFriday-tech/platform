@@ -85,7 +85,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           window.location.hostname !== '127.0.0.1'
             ? 'https://api.fashionfriday.in'
             : 'http://localhost:3002');
-        const res = await fetch(`${apiUrl}/admin/team`, { signal: AbortSignal.timeout(5000) });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        let res: Response;
+        try {
+          res = await fetch(`${apiUrl}/admin/team`, { signal: controller.signal });
+        } finally {
+          clearTimeout(timeoutId);
+        }
         if (res.ok) {
           const team = (await res.json()) as {
             phone?: string;

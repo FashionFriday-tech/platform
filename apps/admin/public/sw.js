@@ -1,5 +1,5 @@
 // Fashion Friday Admin Service Worker
-const CACHE_NAME = 'ff-admin-v7-stable';
+const CACHE_NAME = 'ff-admin-v9-stable';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/icons/icon-192.png',
@@ -56,12 +56,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // NEVER cache API requests
+  // Strictly bypass service worker for Next.js internal chunks, static assets, and APIs
+  // This prevents ChunkLoadError and avoids serving synthetic timeouts on iPad / WebKit
   if (
+    url.pathname.startsWith('/_next/') ||
     url.pathname.startsWith('/api') ||
+    url.pathname.startsWith('/__nextjs') ||
     url.pathname.includes('/admin/team') ||
     url.pathname.includes('/orders') ||
-    url.pathname.includes('/maintenance')
+    url.pathname.includes('/maintenance') ||
+    event.request.headers.get('next-action') ||
+    event.request.headers.get('rsc')
   ) {
     return;
   }
@@ -76,8 +81,10 @@ self.addEventListener('fetch', (event) => {
           if (cached) return cached;
           const cachedRoot = await caches.match('/');
           if (cachedRoot) return cachedRoot;
-          // Fall back to native network error rather than a synthetic 503 that gets cached by WebKit
-          return fetch(event.request);
+          return new Response(
+            '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Offline | Fashion Friday</title><meta name="viewport" content="width=device-width, initial-scale=1"><style>body{background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:-apple-system,BlinkMacSystemFont,sans-serif;text-align:center;padding:24px;}h1{font-size:20px;font-weight:700;margin-bottom:8px;}p{font-size:14px;color:#888;margin-bottom:24px;}button{background:#fff;color:#000;border:none;padding:12px 24px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;}</style></head><body><h1>Offline Mode</h1><p>Check your internet connection to continue.</p><button onclick="window.location.reload()">Reload</button></body></html>',
+            { headers: { 'Content-Type': 'text/html' }, status: 200 },
+          );
         }),
     );
     return;
@@ -107,14 +114,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-first for everything else
-  event.respondWith(
-    fetch(event.request).catch(async () => {
-      const cached = await caches.match(event.request);
-      if (cached) return cached;
-      return new Response('', { status: 408, statusText: 'Request Timeout' });
-    }),
-  );
+  // For any other requests, do not intercept; let the browser fetch directly
 });
 
 // Push Notifications
@@ -137,19 +137,35 @@ self.addEventListener('push', (event) => {
     }
   }
 
+  // WebKit / iOS Safari safe notification options:
+  // actions and vibrate throw TypeErrors in Safari
   const options = {
     body: data.body,
     icon: data.icon || '/icons/icon-192.png',
     badge: data.badge || '/icons/icon-192.png',
-    vibrate: [200, 100, 200],
     data: { url: data.url || '/' },
-    actions: [
-      { action: 'open', title: 'View Details' },
-      { action: 'dismiss', title: 'Dismiss' },
-    ],
   };
 
-  event.waitUntil(self.registration.showNotification(data.title, options));
+  if ('vibrate' in self.navigator) {
+    options.vibrate = [200, 100, 200];
+  }
+
+  if (typeof Notification !== 'undefined' && 'actions' in Notification.prototype) {
+    options.actions = [
+      { action: 'open', title: 'View Details' },
+      { action: 'dismiss', title: 'Dismiss' },
+    ];
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options).catch(() => {
+      // Safe fallback for WebKit if any extended property is rejected
+      return self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: data.icon || '/icons/icon-192.png',
+      });
+    }),
+  );
 
   // Update App Badge if supported
   if ('setAppBadge' in navigator && data.badgeCount !== undefined) {

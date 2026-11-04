@@ -354,13 +354,16 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         data: { url: options.url || '/orders' },
       };
 
-      // Mobile status bar, vibration pattern, and persistence enhancements
-      (notificationOptions as any).vibrate = [200, 100, 200];
-      (notificationOptions as any).requireInteraction = true;
-      (notificationOptions as any).actions = [
-        { action: 'open', title: 'View Details' },
-        { action: 'dismiss', title: 'Dismiss' },
-      ];
+      // Mobile status bar, vibration pattern, and persistence enhancements (guarded for WebKit/Safari)
+      if ('vibrate' in navigator) {
+        (notificationOptions as any).vibrate = [200, 100, 200];
+      }
+      if ('actions' in Notification.prototype) {
+        (notificationOptions as any).actions = [
+          { action: 'open', title: 'View Details' },
+          { action: 'dismiss', title: 'Dismiss' },
+        ];
+      }
 
       // Dispatch to Service Worker or browser Notification asynchronously without blocking UI
       void (async () => {
@@ -390,7 +393,16 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
             'Notification' in window &&
             typeof window.Notification !== 'undefined'
           ) {
-            const notif = new window.Notification(title, notificationOptions);
+            let notif: Notification;
+            try {
+              notif = new window.Notification(title, notificationOptions);
+            } catch {
+              // Minimal fallback for Safari / WebKit when options throw
+              notif = new window.Notification(title, {
+                body: options.body,
+                icon: '/icons/ff_admin_app_icon.png',
+              });
+            }
             notif.onclick = () => {
               window.focus();
               if (options.url) {
