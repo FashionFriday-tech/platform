@@ -49,25 +49,33 @@ export default function ProductPageMaster({
   );
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
   const mainCtaRef = useRef<HTMLElement>(null);
-  const [isMainCtaVisible, setIsMainCtaVisible] = useState(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(false);
 
   useEffect(() => {
     const target = mainCtaRef.current;
     if (!target) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsMainCtaVisible(entry?.isIntersecting ?? false);
-      },
-      {
-        threshold: 0,
-      },
-    );
+    const checkVisibility = () => {
+      const rect = target.getBoundingClientRect();
+      // Show sticky only when main buttons have scrolled above the viewport (user scrolled down past them)
+      const isPast = rect.bottom <= 0;
+      setShowStickyCTA(isPast);
+    };
 
+    checkVisibility();
+
+    const observer = new IntersectionObserver(checkVisibility, {
+      threshold: [0, 1],
+    });
     observer.observe(target);
+
+    window.addEventListener('scroll', checkVisibility, { passive: true });
+    window.addEventListener('resize', checkVisibility, { passive: true });
 
     return () => {
       observer.disconnect();
+      window.removeEventListener('scroll', checkVisibility);
+      window.removeEventListener('resize', checkVisibility);
     };
   }, []);
 
@@ -499,7 +507,7 @@ export default function ProductPageMaster({
         onCartClick={() => {
           router.push('/checkout/cart');
         }}
-        isVisible={!isMainCtaVisible}
+        isVisible={showStickyCTA}
       />
     </div>
   );

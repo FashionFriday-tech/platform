@@ -24,11 +24,12 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
     <AnimatePresence>
       {isVisible && (
         <motion.div
+          key="sticky-cta-bar"
           initial={{ y: '100%', opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="border-border/40 bg-background/95 fixed inset-x-0 bottom-0 z-50 w-full border-t px-6 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-md md:hidden lg:hidden"
+          className="border-border/40 bg-background/95 fixed inset-x-0 bottom-0 z-50 w-full border-t px-4 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.2)] backdrop-blur-md md:hidden lg:hidden"
         >
           <div className="mx-auto flex w-full max-w-lg items-center gap-3">
             {/* Wishlist Button */}
