@@ -26,10 +26,11 @@ export class AdminProductsService {
     const name = (dto.name || '').trim().toUpperCase();
     const slug = (dto.slug || '').trim().toLowerCase();
     const description = (dto.description || '').trim().toUpperCase();
-    const brand = Array.isArray(dto.brand)
-      ? dto.brand.map((b) => b.trim().toUpperCase()).filter(Boolean)
-      : dto.brand
-        ? [dto.brand.trim().toUpperCase()]
+    const rawBrand = dto.brand as unknown;
+    const brand = Array.isArray(rawBrand)
+      ? (rawBrand as string[]).map((b) => String(b).trim().toUpperCase()).filter(Boolean)
+      : typeof rawBrand === 'string' && rawBrand.trim()
+        ? [rawBrand.trim().toUpperCase()]
         : ['FASHION FRIDAY'];
     const sizes = Array.isArray(dto.attributes?.sizes)
       ? dto.attributes.sizes.map((s) => s.trim().toUpperCase()).filter(Boolean)
