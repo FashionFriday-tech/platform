@@ -99,13 +99,23 @@ export function PwaUpdateManager() {
 
       // Reload smoothly when new service worker takes control (prevent infinite loops in mobile WebKit)
       let refreshing = false;
+      let hadController = Boolean(navigator.serviceWorker.controller);
       const onControllerChange = () => {
+        // Do not reload on initial service worker installation/activation
+        if (!hadController) {
+          hadController = true;
+          return;
+        }
         if (!refreshing) {
-          const lastReload = Number(sessionStorage.getItem('ff_admin_sw_reload') || 0);
-          if (Date.now() - lastReload > 15000) {
-            refreshing = true;
-            sessionStorage.setItem('ff_admin_sw_reload', String(Date.now()));
-            window.location.reload();
+          try {
+            const lastReload = Number(sessionStorage.getItem('ff_admin_sw_reload') || 0);
+            if (Date.now() - lastReload > 15000) {
+              refreshing = true;
+              sessionStorage.setItem('ff_admin_sw_reload', String(Date.now()));
+              window.location.reload();
+            }
+          } catch {
+            // sessionStorage blocked or restricted in Safari
           }
         }
       };

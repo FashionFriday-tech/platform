@@ -15,6 +15,9 @@ async function bootstrap() {
         !origin ||
         origin.startsWith('http://localhost:') ||
         origin.startsWith('http://127.0.0.1:') ||
+        origin.startsWith('http://192.168.') ||
+        origin.startsWith('http://10.') ||
+        origin.startsWith('http://172.') ||
         origin.endsWith('.fashionfriday.in') ||
         origin === 'https://fashionfriday.in' ||
         origin.endsWith('.vercel.app')

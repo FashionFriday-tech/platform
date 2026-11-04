@@ -117,20 +117,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const initAuth = async () => {
-      const storedUser = localStorage.getItem(STORAGE_KEY);
-      if (storedUser) {
-        try {
-          const parsed = JSON.parse(storedUser) as User;
-          const isValid = await verifySessionWithServer(parsed);
-          if (isValid) {
-            setUser(parsed);
+      try {
+        const storedUser = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
+        if (storedUser) {
+          try {
+            const parsed = JSON.parse(storedUser) as User;
+            const isValid = await verifySessionWithServer(parsed);
+            if (isValid) {
+              setUser(parsed);
+            }
+          } catch (e) {
+            console.error('Error parsing stored user:', e);
+            logout();
           }
-        } catch (e) {
-          console.error('Error parsing stored user:', e);
-          logout();
         }
+      } catch (err) {
+        console.error('Error initializing auth:', err);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     void initAuth();

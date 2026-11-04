@@ -27,8 +27,13 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
     }
     setHasPin(true);
 
-    const isUnlockedInSession =
-      typeof window !== 'undefined' && sessionStorage.getItem('ff_admin_pin_unlocked') === 'true';
+    let isUnlockedInSession = false;
+    try {
+      isUnlockedInSession =
+        typeof window !== 'undefined' && sessionStorage.getItem('ff_admin_pin_unlocked') === 'true';
+    } catch {
+      // sessionStorage restricted or partitioned in Safari
+    }
 
     if (!isUnlockedInSession) {
       lock();

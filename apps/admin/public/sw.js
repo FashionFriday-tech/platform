@@ -1,5 +1,5 @@
 // Fashion Friday Admin Service Worker
-const CACHE_NAME = 'ff-admin-v6-stable';
+const CACHE_NAME = 'ff-admin-v7-stable';
 const STATIC_ASSETS = [
   '/manifest.webmanifest',
   '/icons/icon-192.png',
@@ -76,16 +76,8 @@ self.addEventListener('fetch', (event) => {
           if (cached) return cached;
           const cachedRoot = await caches.match('/');
           if (cachedRoot) return cachedRoot;
-
-          // Safe fallback response: Never return undefined to event.respondWith
-          return new Response(
-            '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline - Fashion Friday Admin</title><style>body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;background:#111;color:#fff;text-align:center;padding:20px}button{margin-top:16px;padding:12px 24px;border-radius:999px;border:none;background:#fff;color:#000;font-weight:bold;cursor:pointer}</style></head><body><h2>Connection Problem</h2><p>Please check your internet connection and try again.</p><button onclick="window.location.reload()">Retry</button></body></html>',
-            {
-              headers: { 'Content-Type': 'text/html' },
-              status: 503,
-              statusText: 'Service Unavailable',
-            },
-          );
+          // Fall back to native network error rather than a synthetic 503 that gets cached by WebKit
+          return fetch(event.request);
         }),
     );
     return;
