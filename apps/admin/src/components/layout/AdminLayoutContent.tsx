@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { LoaderIcon, LockIcon } from '@ff/ui';
-import { Toaster } from 'sonner';
+import { AdminToaster } from '@/components/ui/AdminToaster';
 
 import { type Role, useAuth } from '@/contexts/AuthContext';
 
@@ -70,7 +70,7 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
       return (
         <>
           {children}
-          <Toaster position="top-right" richColors />
+          <AdminToaster />
         </>
       );
     }
@@ -151,7 +151,7 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
             </Link>
           </div>
         </main>
-        <Toaster position="top-right" richColors />
+        <AdminToaster />
       </>
     );
   }
@@ -168,7 +168,7 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
       <main className="pt-mobile-header relative flex h-[100dvh] min-w-0 flex-1 flex-col overflow-hidden md:h-screen md:pt-0">
         <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </main>
-      <Toaster position="top-right" richColors />
+      <AdminToaster />
     </>
   );
 }

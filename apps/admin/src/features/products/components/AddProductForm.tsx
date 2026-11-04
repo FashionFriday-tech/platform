@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +15,22 @@ import { useAddProductForm } from '../hooks/useAddProductForm';
 import { QUALITIES } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 import { ProductSellerSelector } from './ProductSellerSelector';
+
+function FieldErrorMessage({ error }: { error?: string }) {
+  if (!error) return null;
+  return (
+    <p className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-rose-500 animate-in fade-in slide-in-from-top-1">
+      <svg className="h-3.5 w-3.5 shrink-0 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
+        <path
+          fillRule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z"
+          clipRule="evenodd"
+        />
+      </svg>
+      <span>{error}</span>
+    </p>
+  );
+}
 
 interface AddProductFormProps {
   initialData?: Product;
@@ -187,6 +203,38 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const nameRef = useRef<HTMLDivElement>(null);
+  const descRef = useRef<HTMLDivElement>(null);
+  const genderRef = useRef<HTMLDivElement>(null);
+  const priceRef = useRef<HTMLDivElement>(null);
+  const ogPriceRef = useRef<HTMLDivElement>(null);
+  const stockRef = useRef<HTMLDivElement>(null);
+  const sizeRef = useRef<HTMLDivElement>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
+
+  const clearFieldError = (field: string) => {
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    if (images.length > 0 && fieldErrors.images) {
+      clearFieldError('images');
+    }
+  }, [images.length, fieldErrors.images]);
+
+  useEffect(() => {
+    if (sizes.length > 0 && fieldErrors.sizes) {
+      clearFieldError('sizes');
+    }
+  }, [sizes.length, fieldErrors.sizes]);
+
   const markTouched = (field: string) => {
     setTouched((p) => ({ ...p, [field]: true }));
   };
@@ -197,6 +245,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     minLen: number,
     fieldName?: string,
   ): 'empty' | 'default' | 'valid' | 'error' => {
+    if (fieldName && fieldErrors[fieldName]) {
+      return 'error';
+    }
     const valStr = String(val);
     if (valStr.trim().length < minLen) {
       return hasSubmitted ? 'error' : 'empty';
@@ -215,6 +266,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     initVal: string[] | undefined,
     fieldName?: string,
   ): 'empty' | 'default' | 'valid' | 'error' => {
+    if (fieldName && fieldErrors[fieldName]) {
+      return 'error';
+    }
     if (val.length === 0) {
       return hasSubmitted ? 'error' : 'empty';
     }
@@ -258,34 +312,116 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     );
   }, [category, gender, apiCategories]);
 
+  const validateForm = (isDraft: boolean): Record<string, string> => {
+    const errors: Record<string, string> = {};
+
+    if (!productName.trim()) {
+      errors.productName = 'Product name is required';
+    } else if (productName.trim().length < 3) {
+      errors.productName = 'Product name must be at least 3 characters';
+    }
+
+    if (!isDraft) {
+      if (!productDesc.trim()) {
+        errors.productDesc = 'Product description is required';
+      } else if (productDesc.trim().length < 10) {
+        errors.productDesc = 'Description must be at least 10 characters';
+      }
+
+      if (!category || !category.trim()) {
+        errors.category = 'Please select a product category';
+      }
+
+      if (!brandInput.trim()) {
+        errors.brand = 'Brand name is required';
+      } else if (brandInput.trim().length < 2) {
+        errors.brand = 'Brand name must be at least 2 characters';
+      }
+
+      if (!gender || !gender.trim()) {
+        errors.gender = 'Please select a target gender';
+      }
+
+      const cleanSelling = basePrice.replace(/,/g, '').trim();
+      if (!cleanSelling) {
+        errors.basePrice = 'Selling price is required';
+      } else if (isNaN(Number(cleanSelling)) || Number(cleanSelling) <= 0) {
+        errors.basePrice = 'Selling price must be greater than ₹0';
+      }
+
+      const cleanOg = ogPrice.replace(/,/g, '').trim();
+      if (cleanOg) {
+        if (isNaN(Number(cleanOg))) {
+          errors.ogPrice = 'Original MRP must be a valid number';
+        } else if (Number(cleanOg) < Number(cleanSelling)) {
+          errors.ogPrice = 'Original MRP must be greater than or equal to selling price';
+        }
+      }
+
+      const cleanStock = stock.replace(/,/g, '').trim();
+      if (!cleanStock) {
+        errors.stock = 'Stock quantity is required';
+      } else if (isNaN(Number(cleanStock)) || Number(cleanStock) < 0) {
+        errors.stock = 'Stock quantity must be 0 or greater';
+      }
+
+      if (!quality || !quality.trim()) {
+        errors.quality = 'Please select a quality grade';
+      }
+
+      if (sizes.length === 0) {
+        errors.sizes = 'Please select at least one available size';
+      }
+
+      if (images.length === 0) {
+        errors.images = 'Please upload at least one product image';
+      }
+    }
+
+    return errors;
+  };
+
   const handleSaveProduct = async (statusOverride?: 'DRAFT' | 'PUBLISHED') => {
     const isDraft = statusOverride === 'DRAFT';
+    setHasSubmitted(true);
+
+    const validationErrors = validateForm(isDraft);
+    setFieldErrors(validationErrors);
+
+    const errorFields = Object.keys(validationErrors);
+    if (errorFields.length > 0) {
+      const firstField = errorFields[0];
+      const firstMsg = validationErrors[firstField];
+
+      setToast({
+        message: firstMsg,
+        type: 'error',
+      });
+
+      const refMap: Record<string, React.RefObject<HTMLDivElement | null>> = {
+        productName: nameRef,
+        productDesc: descRef,
+        category: categoryRef as any,
+        brand: brandRef as any,
+        gender: genderRef,
+        basePrice: priceRef,
+        ogPrice: ogPriceRef,
+        stock: stockRef,
+        quality: qualityRef as any,
+        sizes: sizeRef,
+        images: mediaRef,
+      };
+
+      const target = refMap[firstField];
+      if (target?.current) {
+        target.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
 
     if (isDraft) {
-      if (!productName.trim()) {
-        setToast({
-          message: 'Please enter at least a product name to save a draft.',
-          type: 'warning',
-        });
-        return;
-      }
       setIsSavingDraft(true);
     } else {
-      setHasSubmitted(true);
-      if (
-        !productName.trim() ||
-        !productDesc.trim() ||
-        !basePrice ||
-        !category ||
-        !quality ||
-        images.length === 0
-      ) {
-        setToast({
-          message: 'Please fill out all required fields and upload at least one image.',
-          type: 'warning',
-        });
-        return;
-      }
       setIsSaving(true);
     }
 
@@ -741,45 +877,57 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             </h2>
 
             <div className="space-y-5">
-              <div>
+              <div ref={nameRef}>
                 <LabelWithTick
                   label="Name Product"
-                  status={getStatus(productName, initialData?.name, 3)}
+                  status={fieldErrors.productName ? 'error' : getStatus(productName, initialData?.name, 3, 'productName')}
                 />
                 <input
                   type="text"
                   value={productName}
                   onChange={(e) => {
                     setProductName(e.target.value.toUpperCase());
+                    clearFieldError('productName');
                   }}
                   placeholder="PUFFER JACKET WITH POCKET DETAIL"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black uppercase transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                  className={`w-full rounded-xl border ${
+                    fieldErrors.productName
+                      ? 'border-rose-500 ring-2 ring-rose-500/20'
+                      : 'border-transparent focus:border-black/20 dark:focus:border-white/20'
+                  } bg-black/5 px-4 py-3.5 text-sm font-medium uppercase text-black transition-all outline-none dark:bg-white/5 dark:text-white`}
                 />
+                <FieldErrorMessage error={fieldErrors.productName} />
               </div>
 
-              <div>
+              <div ref={descRef}>
                 <LabelWithTick
                   label="Description Product"
-                  status={getStatus(productDesc, initialData?.description, 10)}
+                  status={fieldErrors.productDesc ? 'error' : getStatus(productDesc, initialData?.description, 10, 'productDesc')}
                 />
                 <textarea
                   rows={4}
                   value={productDesc}
                   onChange={(e) => {
                     setProductDesc(e.target.value);
+                    clearFieldError('productDesc');
                   }}
                   placeholder="Cropped puffer jacket made of technical fabric. High neck and long sleeves..."
-                  className="w-full resize-none rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm leading-relaxed font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                  className={`w-full resize-none rounded-xl border ${
+                    fieldErrors.productDesc
+                      ? 'border-rose-500 ring-2 ring-rose-500/20'
+                      : 'border-transparent focus:border-black/20 dark:focus:border-white/20'
+                  } bg-black/5 px-4 py-3.5 text-sm leading-relaxed font-medium text-black transition-all outline-none dark:bg-white/5 dark:text-white`}
                 />
+                <FieldErrorMessage error={fieldErrors.productDesc} />
               </div>
 
               <div className="grid grid-cols-1 gap-5 pt-2 md:grid-cols-2">
-                <div>
+                <div ref={genderRef}>
                   <LabelWithTick
                     label="Gender"
-                    status={getStatus(gender, initialData?.gender, 1, 'gender')}
+                    status={fieldErrors.gender ? 'error' : getStatus(gender, initialData?.gender, 1, 'gender')}
                   />
-                  <div className="flex flex-wrap gap-2">
+                  <div className={`flex flex-wrap gap-2 rounded-xl p-1 transition-all ${fieldErrors.gender ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}>
                     {['Men', 'Woman', 'Unisex'].map((g) => (
                       <button
                         key={g}
@@ -787,6 +935,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         onClick={() => {
                           setGender(g);
                           markTouched('gender');
+                          clearFieldError('gender');
                         }}
                         className={`flex h-10 min-w-[70px] items-center justify-center rounded-xl px-4 text-sm font-bold transition-all ${
                           gender === g
@@ -798,12 +947,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       </button>
                     ))}
                   </div>
+                  <FieldErrorMessage error={fieldErrors.gender} />
                 </div>
 
                 <div ref={categoryRef} className="relative">
                   <LabelWithTick
                     label="Product Category"
-                    status={getStatus(category, initialData?.categoryId, 1, 'category')}
+                    status={fieldErrors.category ? 'error' : getStatus(category, initialData?.categoryId, 1, 'category')}
                   />
                   <button
                     type="button"
@@ -811,7 +961,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       setIsCategoryOpen(!isCategoryOpen);
                       markTouched('category');
                     }}
-                    className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${isCategoryOpen ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white' : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'}`}
+                    className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${
+                      fieldErrors.category
+                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-500/5'
+                        : isCategoryOpen
+                          ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white'
+                          : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'
+                    }`}
                   >
                     <span>{category || 'Select Category'}</span>
                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
@@ -830,6 +986,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       </svg>
                     </div>
                   </button>
+                  <FieldErrorMessage error={fieldErrors.category} />
 
                   {isCategoryOpen && (
                     <div className="absolute z-10 mt-2 max-h-60 w-full overflow-x-hidden overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
@@ -842,6 +999,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             onClick={() => {
                               handleCategorySelect(catName);
                               markTouched('category');
+                              clearFieldError('category');
                             }}
                             className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${isSelected ? 'bg-black/5 font-bold text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
                           >
@@ -876,7 +1034,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={brandRef} className="relative">
                   <LabelWithTick
                     label="Brand"
-                    status={getStatus(brandInput, initialData?.brand?.[0], 2)}
+                    status={fieldErrors.brand ? 'error' : getStatus(brandInput, initialData?.brand?.[0], 2, 'brand')}
                   />
                   <div className="relative flex items-center">
                     {selectedBrandLogo && (
@@ -903,6 +1061,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         setBrandInput(e.target.value.toUpperCase());
                         setSelectedBrandLogo(null); // Clear selected logo if typing
                         setIsBrandOpen(true);
+                        clearFieldError('brand');
                       }}
                       onFocus={() => {
                         setIsBrandOpen(true);
@@ -915,13 +1074,19 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             setBrandInput(first.name.toUpperCase());
                             setSelectedBrandLogo(first.logo ?? first.name.charAt(0).toUpperCase());
                             setIsBrandOpen(false);
+                            clearFieldError('brand');
                           }
                         }
                       }}
                       placeholder="e.g. NIKE"
-                      className={`w-full rounded-xl border-transparent bg-black/5 text-black uppercase focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
+                      className={`w-full rounded-xl border ${
+                        fieldErrors.brand
+                          ? 'border-rose-500 ring-2 ring-rose-500/20'
+                          : 'border-transparent focus:border-black/20 dark:focus:border-white/20'
+                      } bg-black/5 text-black uppercase dark:bg-white/5 dark:text-white ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
                     />
                   </div>
+                  <FieldErrorMessage error={fieldErrors.brand} />
 
                   {isBrandOpen && (
                     <div className="absolute z-10 mt-2 max-h-56 w-full overflow-y-auto rounded-xl border border-black/10 bg-white py-1 shadow-2xl [-ms-overflow-style:none] [scrollbar-width:none] dark:border-white/10 dark:bg-[#1a1a1a] [&::-webkit-scrollbar]:hidden">
@@ -933,6 +1098,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                               setBrandInput(b.name);
                               setSelectedBrandLogo(b.logo ?? b.name.charAt(0).toUpperCase());
                               setIsBrandOpen(false);
+                              clearFieldError('brand');
                             }}
                             className="flex w-full items-center space-x-3 px-4 py-2.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
                           >
@@ -1226,11 +1392,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               </div>
 
               <div className="grid grid-cols-1 gap-8 pt-2 md:grid-cols-2">
-                <div>
+                <div ref={sizeRef}>
                   <div className="flex items-center justify-between">
                     <LabelWithTick
                       label="Size"
-                      status={getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
+                      status={fieldErrors.sizes ? 'error' : getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
                     />
                     <div className="flex items-center gap-2.5">
                       {sizes.length < availableSizes.length && (
@@ -1239,6 +1405,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           onClick={() => {
                             selectAllSizes();
                             markTouched('sizes');
+                            clearFieldError('sizes');
                           }}
                           className="text-xs font-semibold text-black/50 transition-colors hover:text-black dark:text-white/50 dark:hover:text-white"
                         >
@@ -1251,6 +1418,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           onClick={() => {
                             clearSizes();
                             markTouched('sizes');
+                            clearFieldError('sizes');
                           }}
                           className="text-xs font-bold text-red-500 transition-colors hover:text-red-600 dark:text-red-400"
                         >
@@ -1259,7 +1427,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className={`flex flex-wrap gap-2 rounded-xl p-1 transition-all ${fieldErrors.sizes ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}>
                     {availableSizes.map((s) => (
                       <button
                         key={s}
@@ -1267,6 +1435,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         onClick={() => {
                           toggleSize(s);
                           markTouched('sizes');
+                          clearFieldError('sizes');
                         }}
                         className={`flex h-10 min-w-[44px] items-center justify-center rounded-xl px-3 text-sm font-bold transition-colors ${sizes.includes(s) ? 'bg-black text-white shadow-md dark:bg-white dark:text-black' : 'bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
                       >
@@ -1274,19 +1443,26 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       </button>
                     ))}
                   </div>
+                  <FieldErrorMessage error={fieldErrors.sizes} />
                 </div>
 
                 <div ref={qualityRef} className="relative">
                   <LabelWithTick
                     label="Quality"
-                    status={getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
+                    status={fieldErrors.quality ? 'error' : getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
                   />
                   <button
                     onClick={() => {
                       setIsQualityOpen(!isQualityOpen);
                       markTouched('quality');
                     }}
-                    className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${isQualityOpen ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white' : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'}`}
+                    className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${
+                      fieldErrors.quality
+                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-500/5'
+                        : isQualityOpen
+                          ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white'
+                          : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'
+                    }`}
                   >
                     <span>{quality}</span>
                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-black/10 dark:bg-white/10">
@@ -1305,6 +1481,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       </svg>
                     </div>
                   </button>
+                  <FieldErrorMessage error={fieldErrors.quality} />
 
                   {isQualityOpen && (
                     <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
@@ -1315,6 +1492,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             setQuality(q);
                             setIsQualityOpen(false);
                             markTouched('quality');
+                            clearFieldError('quality');
                           }}
                           className={`w-full px-4 py-2.5 text-left text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 ${quality === q ? 'bg-black/5 text-black dark:bg-white/5 dark:text-white' : 'text-black/70 dark:text-white/70'}`}
                         >
@@ -1335,10 +1513,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             </h2>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
+              <div ref={ogPriceRef}>
                 <LabelWithTick
                   label="Original Price (MRP)"
-                  status={ogPrice.trim().length > 0 ? 'valid' : 'default'}
+                  status={fieldErrors.ogPrice ? 'error' : ogPrice.trim().length > 0 ? 'valid' : 'default'}
                 />
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -1349,17 +1527,23 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     value={ogPrice}
                     onChange={(e) => {
                       setOgPrice(e.target.value);
+                      clearFieldError('ogPrice');
                     }}
                     placeholder="4,999"
-                    className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black line-through decoration-black/30 transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:decoration-white/30 dark:focus:border-white/20"
+                    className={`w-full rounded-xl border ${
+                      fieldErrors.ogPrice
+                        ? 'border-rose-500 ring-2 ring-rose-500/20'
+                        : 'border-transparent focus:border-black/20 dark:focus:border-white/20'
+                    } bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black line-through decoration-black/30 transition-all outline-none dark:bg-white/5 dark:text-white dark:decoration-white/30`}
                   />
                 </div>
+                <FieldErrorMessage error={fieldErrors.ogPrice} />
               </div>
 
-              <div>
+              <div ref={priceRef}>
                 <LabelWithTick
                   label="Selling Price"
-                  status={getStatus(basePrice, initialData?.price?.sellingPrice, 1)}
+                  status={fieldErrors.basePrice ? 'error' : getStatus(basePrice, initialData?.price?.sellingPrice, 1, 'basePrice')}
                 />
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -1370,27 +1554,39 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     value={basePrice}
                     onChange={(e) => {
                       setBasePrice(e.target.value);
+                      clearFieldError('basePrice');
                     }}
                     placeholder="3,999"
-                    className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                    className={`w-full rounded-xl border ${
+                      fieldErrors.basePrice
+                        ? 'border-rose-500 ring-2 ring-rose-500/20'
+                        : 'border-transparent focus:border-black/20 dark:focus:border-white/20'
+                    } bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black transition-all outline-none dark:bg-white/5 dark:text-white`}
                   />
                 </div>
+                <FieldErrorMessage error={fieldErrors.basePrice} />
               </div>
 
-              <div>
+              <div ref={stockRef}>
                 <LabelWithTick
                   label="Stock"
-                  status={getStatus(stock, initialData?.inventory?.totalStock, 1)}
+                  status={fieldErrors.stock ? 'error' : getStatus(stock, initialData?.inventory?.totalStock, 1, 'stock')}
                 />
                 <input
                   type="text"
                   value={stock}
                   onChange={(e) => {
                     setStock(e.target.value);
+                    clearFieldError('stock');
                   }}
                   placeholder="77"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                  className={`w-full rounded-xl border ${
+                    fieldErrors.stock
+                      ? 'border-rose-500 ring-2 ring-rose-500/20'
+                      : 'border-transparent focus:border-black/20 dark:focus:border-white/20'
+                  } bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none dark:bg-white/5 dark:text-white`}
                 />
+                <FieldErrorMessage error={fieldErrors.stock} />
               </div>
 
               <div>
@@ -1778,7 +1974,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         {/* Media & Video Column - Order 1 on mobile/tablet (< lg), Order 2 on desktop (lg+) */}
         <div className="order-1 space-y-4 sm:space-y-6 lg:order-2">
           {/* Upload Img */}
-          <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+          <div ref={mediaRef} className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2 sm:mb-6">
               <div>
                 <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
@@ -1837,45 +2033,50 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 </span>
               </div>
             ) : images.length === 0 ? (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                onDragOver={handleDropzoneDragOver}
-                onDragLeave={handleDropzoneDragLeave}
-                onDrop={handleDropzoneDrop}
-                className={`group relative mb-4 flex aspect-[3/4] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed transition-all ${
-                  isExternalDragOver
-                    ? 'scale-[1.01] border-black bg-black/10 dark:border-white dark:bg-white/10'
-                    : 'border-black/20 bg-black/5 hover:border-black/40 hover:bg-black/10 dark:border-white/20 dark:bg-white/5 dark:hover:border-white/40 dark:hover:bg-white/10'
-                }`}
-              >
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm transition-transform group-hover:scale-110 dark:bg-black">
-                  <svg
-                    className="h-5 w-5 text-black dark:text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2.5}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
+              <>
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={handleDropzoneDragOver}
+                  onDragLeave={handleDropzoneDragLeave}
+                  onDrop={handleDropzoneDrop}
+                  className={`group relative mb-2 flex aspect-[3/4] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 transition-all ${
+                    fieldErrors.images
+                      ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-500/5'
+                      : isExternalDragOver
+                        ? 'scale-[1.01] border-black bg-black/10 dark:border-white dark:bg-white/10'
+                        : 'border-dashed border-black/20 bg-black/5 hover:border-black/40 hover:bg-black/10 dark:border-white/20 dark:bg-white/5 dark:hover:border-white/40 dark:hover:bg-white/10'
+                  }`}
+                >
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm transition-transform group-hover:scale-110 dark:bg-black">
+                    <svg
+                      className="h-5 w-5 text-black dark:text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2.5}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-bold text-black/80 dark:text-white/80">
+                    Click to upload or drag images here
+                  </span>
+                  <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-black/50 dark:text-white/50">
+                    <span>or copy image & press</span>
+                    <kbd className="rounded border border-black/15 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-black shadow-xs dark:border-white/15 dark:bg-[#1a1a1a] dark:text-white">
+                      Ctrl + V
+                    </kbd>
+                  </div>
+                  <span className="mt-1.5 text-[11px] font-medium text-black/40 dark:text-white/40">
+                    Auto-crops to 3:4 ratio • Up to 10 images
+                  </span>
                 </div>
-                <span className="text-sm font-bold text-black/80 dark:text-white/80">
-                  Click to upload or drag images here
-                </span>
-                <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-black/50 dark:text-white/50">
-                  <span>or copy image & press</span>
-                  <kbd className="rounded border border-black/15 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-black shadow-xs dark:border-white/15 dark:bg-[#1a1a1a] dark:text-white">
-                    Ctrl + V
-                  </kbd>
-                </div>
-                <span className="mt-1.5 text-[11px] font-medium text-black/40 dark:text-white/40">
-                  Auto-crops to 3:4 ratio • Up to 10 images
-                </span>
-              </div>
+                <FieldErrorMessage error={fieldErrors.images} />
+              </>
             ) : (
               <>
                 {/* Main Image Preview */}
