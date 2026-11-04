@@ -615,24 +615,8 @@ export class NotificationsService implements OnModuleInit {
       },
     };
 
-    // 2. Send push to Customer
-    const customerPayload: PushPayload = {
-      title: `🛍️ Order Confirmed #${orderNumber}`,
-      body: `Thank you for your order! ₹${amount} confirmed. We are preparing your shipment. Tap to track.`,
-      icon: '/icons/icon-192.png',
-      badge: '/favicon-48x48.png',
-      url: '/account/orders',
-      id: `cust-order-${order.id}-${Date.now()}`,
-      data: {
-        orderId: order.id,
-        orderNumber,
-      },
-    };
-
+    // Only send push notification to Admins for new order alerts
     const promises: Promise<any>[] = [this.broadcast(adminPayload, { role: 'ADMIN' })];
-    if (order.userId) {
-      promises.push(this.broadcast(customerPayload, { userId: order.userId }));
-    }
 
     await Promise.allSettled(promises);
   }
