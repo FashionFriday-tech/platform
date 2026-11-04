@@ -221,7 +221,7 @@ export const getProductBySlug = async (slug: string): Promise<Product | undefine
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
     const res = await fetch(`${API_URL}/products/${slug}`, {
-      next: { revalidate: 86400, tags: [`product-${slug}`] },
+      next: { revalidate: 60, tags: [`product-${slug}`, 'products'] },
     });
     if (!res.ok) {
       return undefined;

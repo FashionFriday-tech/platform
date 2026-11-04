@@ -11,11 +11,13 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
   const [activeMode, setActiveMode] = useState<'image' | 'video'>('image');
   const [isZoomed, setIsZoomed] = useState(false);
 
+  const safeIndex = images.length > 0 ? Math.min(Math.max(0, index), images.length - 1) : 0;
+
   const hasVideo = Boolean(
     videoUrl &&
-      videoUrl.trim() !== '' &&
-      videoUrl.trim() !== 'null' &&
-      videoUrl.trim() !== 'undefined',
+    videoUrl.trim() !== '' &&
+    videoUrl.trim() !== 'null' &&
+    videoUrl.trim() !== 'undefined',
   );
 
   const lastTap = useRef<number>(0);
@@ -65,7 +67,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                 setIsZoomed(false);
               }}
               className={`relative aspect-4/5 w-full shrink-0 overflow-hidden rounded-4xl border-2 transition-all duration-300 ${
-                index === i && activeMode === 'image'
+                safeIndex === i && activeMode === 'image'
                   ? 'scale-95 border-black shadow-lg'
                   : 'border-transparent opacity-70 hover:scale-105 hover:opacity-100'
               }`}
@@ -118,7 +120,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
           <AnimatePresence mode="wait">
             {activeMode === 'image' ? (
               <motion.div
-                key={`img-wrap-${index}`}
+                key={`img-wrap-${safeIndex}-${images[safeIndex]}`}
                 className="h-full w-full overflow-hidden bg-white"
                 initial={{ opacity: 0, scale: 1.1 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -144,7 +146,8 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                   transition={{ type: 'spring', stiffness: 200, damping: 30 }}
                 >
                   <motion.img
-                    src={images[index]}
+                    key={images[safeIndex]}
+                    src={images[safeIndex]}
                     alt="Product Detail"
                     className="pointer-events-none h-full w-full object-cover"
                   />
@@ -196,7 +199,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                       : 'text-white opacity-60 hover:opacity-100'
                   }`}
                 >
-                  <ImageIcon size={14} /> {index + 1} / {images.length}
+                  <ImageIcon size={14} /> {safeIndex + 1} / {images.length}
                 </button>
 
                 {hasVideo && (

@@ -329,48 +329,53 @@ export class AdminProductsService {
       }
     }
 
-    // Handle image cleanup
+    // Handle image cleanup & fetch existing product for revalidation tracking
+    const existingProduct = await this.productsRepository.findById(id);
     if (
+      existingProduct &&
       d.media &&
       (d.media.liveImages !== undefined || d.media.mainImage || d.media.promoImage !== undefined)
     ) {
-      const existingProduct = await this.productsRepository.findById(id);
-      if (existingProduct) {
-        const oldImages = [
-          existingProduct.mainImage,
-          existingProduct.promoImage,
-          ...(existingProduct.liveImages || []),
-        ].filter((u): u is string => Boolean(u));
+      const oldImages = [
+        existingProduct.mainImage,
+        existingProduct.promoImage,
+        ...(existingProduct.liveImages || []),
+      ].filter((u): u is string => Boolean(u));
 
-        // Use the actual values being persisted to database
-        const finalMainImage =
-          data.mainImage !== undefined ? data.mainImage : existingProduct.mainImage;
-        const finalPromoImage =
-          data.promoImage !== undefined ? data.promoImage : existingProduct.promoImage;
-        const finalLiveImages =
-          data.liveImages !== undefined ? data.liveImages : existingProduct.liveImages;
+      // Use the actual values being persisted to database
+      const finalMainImage =
+        data.mainImage !== undefined ? data.mainImage : existingProduct.mainImage;
+      const finalPromoImage =
+        data.promoImage !== undefined ? data.promoImage : existingProduct.promoImage;
+      const finalLiveImages =
+        data.liveImages !== undefined ? data.liveImages : existingProduct.liveImages;
 
-        const newImages = [
-          finalMainImage,
-          finalPromoImage,
-          ...(Array.isArray(finalLiveImages) ? finalLiveImages : []),
-        ].filter((u): u is string => Boolean(u));
+      const newImages = [
+        finalMainImage,
+        finalPromoImage,
+        ...(Array.isArray(finalLiveImages) ? finalLiveImages : []),
+      ].filter((u): u is string => Boolean(u));
 
-        // Find images that exist in the old product but not in the new payload
-        const imagesToDelete = oldImages.filter((oldUrl) => !newImages.includes(oldUrl));
+      // Find images that exist in the old product but not in the new payload
+      const imagesToDelete = oldImages.filter((oldUrl) => !newImages.includes(oldUrl));
 
-        for (const url of imagesToDelete) {
-          if (url && !url.includes('placeholder')) {
-            await this.uploadService.deleteFile(url).catch((err) => {
-              console.error(`Failed to delete orphaned image ${url} from Cloudflare:`, err);
-            });
-          }
+      for (const url of imagesToDelete) {
+        if (url && !url.includes('placeholder')) {
+          await this.uploadService.deleteFile(url).catch((err) => {
+            console.error(`Failed to delete orphaned image ${url} from Cloudflare:`, err);
+          });
         }
       }
     }
 
     const result = await this.productsRepository.update(id, data);
     this.triggerProductAndCategoryRevalidation(result);
+    if (existingProduct?.slug && existingProduct.slug !== result.slug) {
+      void triggerRevalidation(
+        `product-${existingProduct.slug}`,
+        `/product/${existingProduct.slug}`,
+      );
+    }
     return result;
   }
 

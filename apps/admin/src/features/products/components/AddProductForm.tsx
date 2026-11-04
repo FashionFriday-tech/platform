@@ -420,7 +420,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               ? selectedColors.map((c) => c.hex)
               : [
                   selectedColorHex ||
-                    filteredColors.find((c) => c.name.toLowerCase() === colorInput.trim().toLowerCase())?.hex ||
+                    filteredColors.find(
+                      (c) => c.name.toLowerCase() === colorInput.trim().toLowerCase(),
+                    )?.hex ||
                     (colorInput.startsWith('#') ? colorInput : '#000000'),
                 ],
           quality: mappedQuality.toUpperCase(),
@@ -464,6 +466,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       } else {
         await api.post('/admin/products', payload);
       }
+
+      // Immediately trigger storefront cache revalidation for instant reflection on product details page
+      const storefrontUrl =
+        process.env.NEXT_PUBLIC_STOREFRONT_URL ||
+        (process.env.NODE_ENV === 'production'
+          ? 'https://fashionfriday.in'
+          : 'http://localhost:3000');
+      const revalSecret = 'f2a7c9e1b4d6f8a0c2e4b6d8f0a2c4e6b8d0f2a4c6e8b0d2f4a6c8e0b2d4f6a8';
+      void fetch(
+        `${storefrontUrl}/api/revalidate?secret=${revalSecret}&tag=product-${computedSlug}&path=/product/${computedSlug}`,
+        { method: 'POST', mode: 'no-cors' },
+      ).catch(() => {});
 
       setToast({
         message: isDraft
@@ -577,7 +591,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               </button>
               <button
                 type="button"
-                onClick={() => void handleSaveProduct(initialData?.status === 'DRAFT' ? 'PUBLISHED' : undefined)}
+                onClick={() =>
+                  void handleSaveProduct(initialData?.status === 'DRAFT' ? 'PUBLISHED' : undefined)
+                }
                 disabled={isSaving || isSavingDraft}
                 className="flex items-center space-x-2 rounded-full bg-black px-5 py-2 text-xs font-bold text-white shadow-lg transition-opacity hover:opacity-90 disabled:opacity-50 md:px-6 md:text-sm dark:bg-white dark:text-black"
               >
@@ -606,7 +622,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           <div className="relative flex items-center space-x-1.5 sm:hidden">
             <button
               type="button"
-              onClick={() => void handleSaveProduct(initialData?.status === 'DRAFT' ? 'PUBLISHED' : undefined)}
+              onClick={() =>
+                void handleSaveProduct(initialData?.status === 'DRAFT' ? 'PUBLISHED' : undefined)
+              }
               disabled={isSaving || isSavingDraft}
               className="flex items-center space-x-1 rounded-full bg-black px-3.5 py-1.5 text-xs font-bold text-white shadow-md transition-transform active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black"
             >
@@ -735,7 +753,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     setProductName(e.target.value.toUpperCase());
                   }}
                   placeholder="PUFFER JACKET WITH POCKET DETAIL"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium uppercase text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black uppercase transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                 />
               </div>
 
@@ -901,7 +919,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         }
                       }}
                       placeholder="e.g. NIKE"
-                      className={`w-full rounded-xl border-transparent bg-black/5 uppercase text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
+                      className={`w-full rounded-xl border-transparent bg-black/5 text-black uppercase focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
                     />
                   </div>
 
@@ -968,8 +986,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         className="flex items-center gap-1 rounded-lg border border-black/10 bg-black/5 px-2.5 py-1 text-[11px] font-bold text-black/80 transition-all hover:bg-black/10 hover:text-black dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
                         title="Add a new custom color to catalog"
                       >
-                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                        <svg
+                          className="h-3 w-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2.5}
+                            d="M12 4v16m8-8H4"
+                          />
                         </svg>
                         <span>Add Color</span>
                       </button>
@@ -982,10 +1010,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       {selectedColors.map((color) => (
                         <span
                           key={color.hex + color.name}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white py-1 pl-1.5 pr-2.5 text-xs font-semibold shadow-xs transition-all dark:border-white/10 dark:bg-[#1a1a1a]"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white py-1 pr-2.5 pl-1.5 text-xs font-semibold shadow-xs transition-all dark:border-white/10 dark:bg-[#1a1a1a]"
                         >
                           <span
-                            className="h-3.5 w-3.5 rounded-full border border-black/15 shadow-inner shrink-0 dark:border-white/15"
+                            className="h-3.5 w-3.5 shrink-0 rounded-full border border-black/15 shadow-inner dark:border-white/15"
                             style={{ backgroundColor: color.hex }}
                           />
                           <span className="text-black dark:text-white">{color.name}</span>
@@ -995,8 +1023,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             className="ml-0.5 rounded-full p-0.5 text-black/40 hover:bg-black/10 hover:text-black dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white"
                             title={`Remove ${color.name}`}
                           >
-                            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                            <svg
+                              className="h-3 w-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
                             </svg>
                           </button>
                         </span>
@@ -1007,8 +1045,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   {/* Input Search Box */}
                   <div className="relative flex items-center">
                     <div className="pointer-events-none absolute left-3.5 flex items-center">
-                      <svg className="h-4 w-4 text-black/40 dark:text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                      <svg
+                        className="h-4 w-4 text-black/40 dark:text-white/40"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                        />
                       </svg>
                     </div>
                     <input
@@ -1054,7 +1102,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   {/* Dropdown Menu with Multi-Select Checks */}
                   {isColorOpen && (
                     <div className="absolute z-20 mt-2 max-h-64 w-full overflow-hidden rounded-xl border border-black/10 bg-white shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1a1a]">
-                      <div className="flex items-center justify-between border-b border-black/5 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-black/50 dark:border-white/5 dark:text-white/50">
+                      <div className="flex items-center justify-between border-b border-black/5 px-4 py-2 text-[11px] font-bold tracking-wider text-black/50 uppercase dark:border-white/5 dark:text-white/50">
                         <span>Available Colors</span>
                         <span>{selectedColors.length} selected</span>
                       </div>
@@ -1082,20 +1130,28 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                               >
                                 <div className="flex items-center space-x-3">
                                   <div
-                                    className="h-4 w-4 rounded-full border border-black/10 shadow-sm shrink-0 dark:border-white/20"
+                                    className="h-4 w-4 shrink-0 rounded-full border border-black/10 shadow-sm dark:border-white/20"
                                     style={{ backgroundColor: c.hex }}
                                   />
-                                  <span className="text-sm">
-                                    {c.name}
-                                  </span>
+                                  <span className="text-sm">{c.name}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <span className="font-mono text-xs text-black/40 dark:text-white/40">
                                     {c.hex}
                                   </span>
                                   {isSelected && (
-                                    <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                    <svg
+                                      className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2.5}
+                                        d="M5 13l4 4L19 7"
+                                      />
                                     </svg>
                                   )}
                                 </div>
@@ -1114,11 +1170,23 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                               onClick={() => openAddColorModal(colorInput)}
                               className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:scale-105 active:scale-95 dark:bg-white dark:text-black"
                             >
-                              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                              <svg
+                                className="h-3.5 w-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2.5}
+                                  d="M12 4v16m8-8H4"
+                                />
                               </svg>
                               <span>
-                                {colorInput.trim() ? `+ Add "${colorInput.trim()}"` : '+ Add New Color'}
+                                {colorInput.trim()
+                                  ? `+ Add "${colorInput.trim()}"`
+                                  : '+ Add New Color'}
                               </span>
                             </button>
                           </div>
@@ -1131,11 +1199,23 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             onClick={() => openAddColorModal(colorInput)}
                             className="flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold text-black/70 transition-colors hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white"
                           >
-                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                            <svg
+                              className="h-3.5 w-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M12 4v16m8-8H4"
+                              />
                             </svg>
                             <span>
-                              {colorInput.trim() ? `+ Add "${colorInput.trim()}" as new color` : '+ Add New Color'}
+                              {colorInput.trim()
+                                ? `+ Add "${colorInput.trim()}" as new color`
+                                : '+ Add New Color'}
                             </span>
                           </button>
                         </div>
@@ -1454,9 +1534,24 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                       </span>
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                     </div>
                     <div>
@@ -1468,7 +1563,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       </p>
                     </div>
                   </div>
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-emerald-600 uppercase dark:bg-emerald-500/20 dark:text-emerald-400">
                     Live Signals
                   </span>
                 </div>
@@ -1482,9 +1577,24 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     />
                     <div className="relative mt-1">
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        <svg
+                          className="h-4 w-4 text-emerald-600 dark:text-emerald-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
                         </svg>
                       </div>
                       <input
@@ -1514,9 +1624,24 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     />
                     <div className="relative mt-1">
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <svg className="h-4 w-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                        <svg
+                          className="h-4 w-4 text-orange-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"
+                          />
                         </svg>
                       </div>
                       <input
@@ -1558,7 +1683,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       </p>
                     </div>
                   </div>
-                  <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                  <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-amber-600 uppercase dark:bg-amber-500/20 dark:text-amber-400">
                     Trust Badge
                   </span>
                 </div>
@@ -1572,7 +1697,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     />
                     <div className="relative mt-1">
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <svg className="h-4 w-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                        <svg
+                          className="h-4 w-4 text-amber-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
                       </div>
@@ -1608,8 +1737,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     />
                     <div className="relative mt-1">
                       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <svg className="h-4 w-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        <svg
+                          className="h-4 w-4 text-blue-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                          />
                         </svg>
                       </div>
                       <input
@@ -1657,7 +1796,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   className="flex items-center gap-1.5 rounded-lg border border-black/10 bg-black/5 px-2.5 py-1.5 text-xs font-semibold text-black/80 transition-all hover:bg-black/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
                   title="Paste copied image from WhatsApp, website, or screenshot (Ctrl+V)"
                 >
-                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

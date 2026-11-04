@@ -1,6 +1,25 @@
 import { type Product } from '@ff/schemas';
 
 /**
+ * Appends a version query parameter based on product's updatedAt timestamp.
+ * This guarantees browser & CDN image cache busting when images are edited,
+ * while maintaining 100% cache efficiency when the product is unchanged.
+ */
+function withVersion(url: string | undefined | null, version?: number): string {
+  if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+    return url || '';
+  }
+  if (!version) {
+    return url;
+  }
+  const sep = url.includes('?') ? '&' : '?';
+  if (url.includes('v=')) {
+    return url;
+  }
+  return `${url}${sep}v=${version}`;
+}
+
+/**
  * Maps a flat product record returned from the PostgreSQL database API
  * to the nested Zod schema shape expected by the frontend.
  */
@@ -8,6 +27,8 @@ export function mapDbProductToSchema(p: any): Product {
   if (!p) {
     return p;
   }
+
+  const version = p.updatedAt ? new Date(p.updatedAt).getTime() : undefined;
 
   return {
     id: p.id,
@@ -18,11 +39,7 @@ export function mapDbProductToSchema(p: any): Product {
     status: p.status || 'PUBLISHED',
     categoryId: p.category?.name || p.categoryId,
     sellerId: p.sellerId || p.seller?.id || undefined,
-    sellerIds: Array.isArray(p.sellerIds)
-      ? p.sellerIds
-      : p.sellerId
-        ? [p.sellerId]
-        : [],
+    sellerIds: Array.isArray(p.sellerIds) ? p.sellerIds : p.sellerId ? [p.sellerId] : [],
     gender: p.gender || 'UNISEX',
     price: {
       ogPrice: Number(p.ogPrice) || 0,
@@ -33,9 +50,11 @@ export function mapDbProductToSchema(p: any): Product {
       totalStock: Number(p.totalStock) || 0,
     },
     media: {
-      mainImage: p.mainImage || '',
-      promoImage: p.promoImage || undefined,
-      liveImages: Array.isArray(p.liveImages) ? p.liveImages : [],
+      mainImage: withVersion(p.mainImage, version) || '',
+      promoImage: p.promoImage ? withVersion(p.promoImage, version) : undefined,
+      liveImages: Array.isArray(p.liveImages)
+        ? p.liveImages.map((img: string) => withVersion(img, version))
+        : [],
       youtubeId: p.youtubeId || undefined,
     },
     liveMatrix: {
@@ -49,7 +68,10 @@ export function mapDbProductToSchema(p: any): Product {
       seoDescription: p.seoDescription || undefined,
     },
     rating: {
-      averageRating: p.averageRating !== undefined && p.averageRating !== null ? Math.min(5, Math.max(0, Number(p.averageRating))) : 4,
+      averageRating:
+        p.averageRating !== undefined && p.averageRating !== null
+          ? Math.min(5, Math.max(0, Number(p.averageRating)))
+          : 4,
       totalReviews: Math.max(0, Number(p.totalReviews) || 0),
     },
     createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
