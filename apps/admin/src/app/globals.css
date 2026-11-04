@@ -92,6 +92,17 @@ body {
       padding-top: 0;
     }
   }
+
+  /* Safe-area aware toast container offset so it never overlaps mobile headers */
+  .toast-safe-top {
+    padding-top: calc(3.5rem + max(env(safe-area-inset-top, 0px), 0px) + 0.75rem);
+  }
+
+  @media (min-width: 768px) {
+    .toast-safe-top {
+      padding-top: calc(max(env(safe-area-inset-top, 0px), 0px) + 1.25rem);
+    }
+  }
 }
 
 /* Prevent auto-zoom on mobile devices when input is focused */
