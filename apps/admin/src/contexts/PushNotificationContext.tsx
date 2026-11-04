@@ -246,8 +246,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       typeof window !== 'undefined' &&
       'serviceWorker' in navigator &&
       'Notification' in window &&
-      typeof window.Notification !== 'undefined' &&
-      window.Notification.permission === 'granted';
+      window.Notification?.permission === 'granted';
 
     if (hasGrantedPermission) {
       void (async () => {
@@ -339,8 +338,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       const hasNotificationPerm =
         typeof window !== 'undefined' &&
         'Notification' in window &&
-        typeof window.Notification !== 'undefined' &&
-        window.Notification.permission === 'granted';
+        window.Notification?.permission === 'granted';
 
       if (!hasNotificationPerm) {
         return;

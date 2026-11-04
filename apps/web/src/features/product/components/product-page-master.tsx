@@ -22,8 +22,8 @@ import {
 } from '@ff/ui';
 import { toast } from 'sonner';
 
-import { useCart } from '@/features/cart';
 import { useBrands } from '@/features/brand';
+import { useCart } from '@/features/cart';
 import { useWishlist } from '@/features/wishlist';
 import { getBrandLogo } from '@/lib/brand-logo';
 
@@ -53,7 +53,9 @@ export default function ProductPageMaster({
 
   useEffect(() => {
     const target = mainCtaRef.current;
-    if (!target) return;
+    if (!target) {
+      return;
+    }
 
     const checkVisibility = () => {
       const rect = target.getBoundingClientRect();
@@ -207,10 +209,12 @@ export default function ProductPageMaster({
                             width={36}
                             height={36}
                             className="max-h-7 w-auto object-contain invert-0 dark:invert"
-                            onError={() => setFailedLogo(brandLogo)}
+                            onError={() => {
+                              setFailedLogo(brandLogo);
+                            }}
                           />
                         ) : (
-                          <span className="text-xs font-black tracking-wider uppercase text-foreground">
+                          <span className="text-foreground text-xs font-black tracking-wider uppercase">
                             {brandName}
                           </span>
                         )}

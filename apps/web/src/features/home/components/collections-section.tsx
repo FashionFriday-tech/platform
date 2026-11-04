@@ -80,11 +80,7 @@ export default function CollectionsSection({
         <div ref={containerRef} className="relative w-full overflow-hidden py-1 sm:py-3">
           {/* LARGE SCREENS ONLY: Single Row (Hidden on mobile under 640px) */}
           <div className="hidden sm:block">
-            <InteractiveMarqueeTrack
-              direction="left"
-              speed={30}
-              isPaused={!isInView}
-            >
+            <InteractiveMarqueeTrack direction="left" speed={30} isPaused={!isInView}>
               {collections.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
@@ -124,11 +120,7 @@ export default function CollectionsSection({
           {/* SMALL MOBILE DEVICES ONLY: Two Opposing Direction Rows (Hidden on screens >= 640px) */}
           <div className="flex flex-col gap-4 sm:hidden">
             {/* ROW 1: Moves Left */}
-            <InteractiveMarqueeTrack
-              direction="left"
-              speed={28}
-              isPaused={!isInView}
-            >
+            <InteractiveMarqueeTrack direction="left" speed={28} isPaused={!isInView}>
               {firstHalf.map((item, index) => (
                 <article
                   key={`r1-mobile-${item.id}-${index}`}
@@ -165,11 +157,7 @@ export default function CollectionsSection({
             </InteractiveMarqueeTrack>
 
             {/* ROW 2: Moves Right */}
-            <InteractiveMarqueeTrack
-              direction="right"
-              speed={28}
-              isPaused={!isInView}
-            >
+            <InteractiveMarqueeTrack direction="right" speed={28} isPaused={!isInView}>
               {secondHalf.map((item, index) => (
                 <article
                   key={`r2-mobile-${item.id}-${index}`}

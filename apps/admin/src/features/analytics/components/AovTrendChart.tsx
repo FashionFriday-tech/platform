@@ -22,7 +22,7 @@ interface AovTrendChartProps {
 export function AovTrendChart({ aovData }: AovTrendChartProps) {
   const chartPoints = aovData?.data ?? [];
   const latestCurrent = aovData ? aovData.current : 0;
-  const latestPrevious = aovData ? aovData.previous : 0;
+  const _latestPrevious = aovData ? aovData.previous : 0;
   const delta = aovData ? aovData.delta : '0%';
   const isUp = !delta.startsWith('-');
 
@@ -46,11 +46,7 @@ export function AovTrendChart({ aovData }: AovTrendChartProps) {
                 : 'bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400'
             }`}
           >
-            <svg
-              className={`h-3 w-3 ${isUp ? '' : 'rotate-180'}`}
-              viewBox="0 0 12 12"
-              fill="none"
-            >
+            <svg className={`h-3 w-3 ${isUp ? '' : 'rotate-180'}`} viewBox="0 0 12 12" fill="none">
               <path
                 d="M6 2.5V9.5M6 2.5L9 5.5M6 2.5L3 5.5"
                 stroke="currentColor"

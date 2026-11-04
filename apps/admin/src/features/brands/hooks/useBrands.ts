@@ -26,7 +26,9 @@ export function useBrands() {
         // Deduplicate any duplicates that might have same slug
         const seenSlugs = new Set<string>();
         const unique = data.filter((b) => {
-          if (!b.slug || seenSlugs.has(b.slug)) return false;
+          if (!b.slug || seenSlugs.has(b.slug)) {
+            return false;
+          }
           seenSlugs.add(b.slug);
           return true;
         });
@@ -86,15 +88,18 @@ export function useBrands() {
     try {
       if (isEdit && originalSlug) {
         // Find existing brand to get ID or match by slug
-        const existingBrand = brands.find((b) => b.slug === originalSlug || (b.id && b.id === (savedBrand as any).id));
+        const existingBrand = brands.find(
+          (b) => b.slug === originalSlug || (b.id && b.id === (savedBrand as any).id),
+        );
         const targetId = existingBrand?.id || (savedBrand as any).id;
-        
+
         if (targetId) {
-          const updated = await api.patch<Brand>(
-            `/admin/brands/${targetId}`,
-            savedBrand,
+          const updated = await api.patch<Brand>(`/admin/brands/${targetId}`, savedBrand);
+          setBrands((prev) =>
+            prev.map((b) =>
+              b.slug === originalSlug || b.id === targetId ? { ...b, ...updated } : b,
+            ),
           );
-          setBrands((prev) => prev.map((b) => (b.slug === originalSlug || b.id === targetId ? { ...b, ...updated } : b)));
           if (selectedBrand?.slug === originalSlug || selectedBrand?.id === targetId) {
             setSelectedBrand((prev) => (prev ? { ...prev, ...updated } : updated));
           }
@@ -119,10 +124,13 @@ export function useBrands() {
     }
 
     const brandToDelete = selectedBrand;
-    const targetId = brandToDelete.id || brands.find((b) => b.slug === brandToDelete.slug && b.id)?.id;
+    const targetId =
+      brandToDelete.id || brands.find((b) => b.slug === brandToDelete.slug && b.id)?.id;
 
     // Immediately remove from local state
-    setBrands((prev) => prev.filter((b) => b.slug !== brandToDelete.slug && (!targetId || b.id !== targetId)));
+    setBrands((prev) =>
+      prev.filter((b) => b.slug !== brandToDelete.slug && (!targetId || b.id !== targetId)),
+    );
     setSelectedBrand(null);
 
     try {
@@ -158,9 +166,16 @@ export function useBrands() {
 
     // Optimistic state update across all instances
     setBrands((prev) =>
-      prev.map((b) => ((targetId && b.id === targetId) || b.slug === brand.slug ? { ...b, isActive: nextActive } : b)),
+      prev.map((b) =>
+        (targetId && b.id === targetId) || b.slug === brand.slug
+          ? { ...b, isActive: nextActive }
+          : b,
+      ),
     );
-    if (selectedBrand && ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)) {
+    if (
+      selectedBrand &&
+      ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)
+    ) {
       setSelectedBrand((prev) => (prev ? { ...prev, isActive: nextActive } : null));
     }
 
@@ -172,18 +187,30 @@ export function useBrands() {
     try {
       const updated = await api.patch<Brand>(`/admin/brands/${targetId}/toggle`);
       setBrands((prev) =>
-        prev.map((b) => ((targetId && b.id === targetId) || b.slug === brand.slug ? { ...b, ...updated } : b)),
+        prev.map((b) =>
+          (targetId && b.id === targetId) || b.slug === brand.slug ? { ...b, ...updated } : b,
+        ),
       );
-      if (selectedBrand && ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)) {
+      if (
+        selectedBrand &&
+        ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)
+      ) {
         setSelectedBrand((prev) => (prev ? { ...prev, ...updated } : updated));
       }
     } catch (err) {
       console.error('Failed to toggle brand status:', err);
       // Rollback on failure
       setBrands((prev) =>
-        prev.map((b) => ((targetId && b.id === targetId) || b.slug === brand.slug ? { ...b, isActive: currentActive } : b)),
+        prev.map((b) =>
+          (targetId && b.id === targetId) || b.slug === brand.slug
+            ? { ...b, isActive: currentActive }
+            : b,
+        ),
       );
-      if (selectedBrand && ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)) {
+      if (
+        selectedBrand &&
+        ((targetId && selectedBrand.id === targetId) || selectedBrand.slug === brand.slug)
+      ) {
         setSelectedBrand((prev) => (prev ? { ...prev, isActive: currentActive } : null));
       }
     }

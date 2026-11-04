@@ -9,9 +9,13 @@ const KNOWN_SECRETS = [
 ];
 
 function isAuthorizedSecret(provided: string | null | undefined): boolean {
-  if (!provided || typeof provided !== 'string') return false;
+  if (!provided || typeof provided !== 'string') {
+    return false;
+  }
   const cleanProvided = provided.replace(/["']/g, '').trim();
-  if (!cleanProvided) return false;
+  if (!cleanProvided) {
+    return false;
+  }
 
   const validSecrets = [...KNOWN_SECRETS];
   if (process.env.REVALIDATION_SECRET) {

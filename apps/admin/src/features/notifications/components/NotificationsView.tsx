@@ -17,7 +17,11 @@ import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
 import { useNotifications } from '../hooks/useNotifications';
-import { type AdminNotification, type NotificationCategory, type SendNotificationPayload } from '../types';
+import {
+  type AdminNotification,
+  type NotificationCategory,
+  type SendNotificationPayload,
+} from '../types';
 import { SendNotificationModal } from './SendNotificationModal';
 
 export function NotificationsView() {
@@ -134,11 +138,18 @@ export function NotificationsView() {
             {/* Custom Send Notification Button */}
             <button
               type="button"
-              onClick={() => setIsSendModalOpen(true)}
+              onClick={() => {
+                setIsSendModalOpen(true);
+              }}
               className="flex items-center gap-1.5 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-md transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/90"
             >
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
               <span>Send Notification</span>
             </button>
@@ -322,7 +333,9 @@ export function NotificationsView() {
                 {!isLoading && (
                   <button
                     type="button"
-                    onClick={() => setIsSendModalOpen(true)}
+                    onClick={() => {
+                      setIsSendModalOpen(true);
+                    }}
                     className="mt-4 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/90 active:scale-95 dark:bg-white dark:text-black"
                   >
                     Compose Custom Notification
@@ -337,7 +350,9 @@ export function NotificationsView() {
       {/* Send Notification Modal */}
       <SendNotificationModal
         isOpen={isSendModalOpen}
-        onClose={() => setIsSendModalOpen(false)}
+        onClose={() => {
+          setIsSendModalOpen(false);
+        }}
         onSend={handleSend}
         isSending={isSending}
       />

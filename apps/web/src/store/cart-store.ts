@@ -23,7 +23,9 @@ export function consolidateCartItems(items: CartItem[]): CartItem[] {
   const map = new Map<string, CartItem>();
 
   for (const item of items) {
-    if (!item) continue;
+    if (!item) {
+      continue;
+    }
     const normSize = (item.size || 'Standard').trim().toLowerCase();
     const productId = item.productId || item.product?.id || item.id;
     const key = `${productId}_${normSize}`;
@@ -241,7 +243,10 @@ export const useCartStore = create<CartState>()(
           console.log(
             `[CartStore] Fetched ${Array.isArray(remote) ? remote.length : 0} items from server`,
           );
-          set({ items: consolidateCartItems(Array.isArray(remote) ? remote : []), isInitialized: true });
+          set({
+            items: consolidateCartItems(Array.isArray(remote) ? remote : []),
+            isInitialized: true,
+          });
         } catch (error) {
           console.error('[CartStore] Failed to sync cart with server:', error);
         } finally {

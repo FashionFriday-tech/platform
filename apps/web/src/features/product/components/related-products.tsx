@@ -31,7 +31,9 @@ function RelatedProductBrandLogo({
       : '';
   const brandLogo = getBrandLogo(brandName, brands);
 
-  if (!brandName) return null;
+  if (!brandName) {
+    return null;
+  }
 
   if (brandLogo && !hasError) {
     return (
@@ -41,15 +43,15 @@ function RelatedProductBrandLogo({
         width={36}
         height={36}
         className="max-h-6 w-auto object-contain invert-0 dark:invert"
-        onError={() => setHasError(true)}
+        onError={() => {
+          setHasError(true);
+        }}
       />
     );
   }
 
   return (
-    <span className="text-muted-foreground font-bold tracking-wider uppercase">
-      {brandName}
-    </span>
+    <span className="text-muted-foreground font-bold tracking-wider uppercase">{brandName}</span>
   );
 }
 

@@ -7,7 +7,7 @@ export default function AdminNotFound() {
   return (
     <div className="flex min-h-[75vh] w-full flex-col items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-md rounded-3xl border border-black/10 bg-white/80 p-8 text-center shadow-xl backdrop-blur-xl sm:p-10 dark:border-white/10 dark:bg-zinc-900/80">
-        <span className="inline-block rounded-full bg-black/5 px-3 py-1 text-xs font-bold uppercase tracking-wider text-black/60 dark:bg-white/5 dark:text-white/60">
+        <span className="inline-block rounded-full bg-black/5 px-3 py-1 text-xs font-bold tracking-wider text-black/60 uppercase dark:bg-white/5 dark:text-white/60">
           404 Not Found
         </span>
 
@@ -16,7 +16,8 @@ export default function AdminNotFound() {
         </h1>
 
         <p className="mt-3 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-          The admin route or resource you are looking for could not be found. It may have been moved, renamed, or deleted.
+          The admin route or resource you are looking for could not be found. It may have been
+          moved, renamed, or deleted.
         </p>
 
         <div className="mt-8 flex justify-center">
@@ -31,4 +32,3 @@ export default function AdminNotFound() {
     </div>
   );
 }
-

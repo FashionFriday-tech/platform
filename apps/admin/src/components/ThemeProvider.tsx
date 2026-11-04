@@ -15,7 +15,9 @@ function ThemeColorWatcher({
 
   const applyColors = React.useCallback(
     (isDark: boolean) => {
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined') {
+        return;
+      }
       const color = isDark ? darkColor : lightColor;
 
       if (document.documentElement) {
@@ -28,7 +30,9 @@ function ThemeColorWatcher({
       }
 
       // WebKit bug workaround: remove all existing theme-color meta tags completely
-      document.querySelectorAll('meta[name="theme-color"]').forEach((el) => el.remove());
+      document.querySelectorAll('meta[name="theme-color"]').forEach((el) => {
+        el.remove();
+      });
       const meta = document.createElement('meta');
       meta.setAttribute('name', 'theme-color');
       meta.setAttribute('content', color);
@@ -37,7 +41,9 @@ function ThemeColorWatcher({
       // Update iOS status bar meta tag
       document
         .querySelectorAll('meta[name="apple-mobile-web-app-status-bar-style"]')
-        .forEach((el) => el.remove());
+        .forEach((el) => {
+          el.remove();
+        });
       const appleMeta = document.createElement('meta');
       appleMeta.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
       appleMeta.setAttribute('content', isDark ? 'black-translucent' : 'default');
@@ -47,12 +53,16 @@ function ThemeColorWatcher({
   );
 
   React.useEffect(() => {
-    if (!resolvedTheme) return;
+    if (!resolvedTheme) {
+      return;
+    }
     applyColors(resolvedTheme === 'dark');
   }, [resolvedTheme, applyColors]);
 
   React.useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === 'undefined') {
+      return;
+    }
 
     const observer = new MutationObserver(() => {
       const isDark = document.documentElement.classList.contains('dark');

@@ -14,7 +14,9 @@ interface BrandDetailsModalProps {
 }
 
 function isDarkColor(hexColor?: string): boolean {
-  if (!hexColor) return true;
+  if (!hexColor) {
+    return true;
+  }
   const hex = hexColor.replace('#', '');
   if (hex.length === 3) {
     const r = parseInt(hex[0] + hex[0], 16);

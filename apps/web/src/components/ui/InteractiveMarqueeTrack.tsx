@@ -56,7 +56,9 @@ export function InteractiveMarqueeTrack({
   // Measure cycle width (one set of children width)
   const measure = () => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track) {
+      return;
+    }
     // We render 2 identical sets inside the track, so 1 cycle is exactly half the track width
     const totalWidth = track.scrollWidth;
     if (totalWidth > 0) {
@@ -66,15 +68,21 @@ export function InteractiveMarqueeTrack({
 
   useEffect(() => {
     measure();
-    const handleResize = () => measure();
+    const handleResize = () => {
+      measure();
+    };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, [children]);
 
   // Apply smooth 3D transform
   const applyTransform = (val: number) => {
     const track = trackRef.current;
-    if (!track) return;
+    if (!track) {
+      return;
+    }
     track.style.transform = `translate3d(${-val}px, 0, 0)`;
   };
 
@@ -118,12 +126,16 @@ export function InteractiveMarqueeTrack({
 
     animId = requestAnimationFrame(step);
 
-    return () => cancelAnimationFrame(animId);
+    return () => {
+      cancelAnimationFrame(animId);
+    };
   }, [direction, speed, isPaused]);
 
   // Pointer drag handlers
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    if (e.button !== 0 && e.pointerType === 'mouse') {
+      return;
+    }
 
     if (resumeTimerRef.current) {
       clearTimeout(resumeTimerRef.current);
@@ -147,7 +159,9 @@ export function InteractiveMarqueeTrack({
   };
 
   const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isPointerDownRef.current) return;
+    if (!isPointerDownRef.current) {
+      return;
+    }
 
     const diff = e.clientX - startXRef.current;
     if (Math.abs(diff) > 4) {
@@ -183,7 +197,9 @@ export function InteractiveMarqueeTrack({
   };
 
   const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isPointerDownRef.current) return;
+    if (!isPointerDownRef.current) {
+      return;
+    }
     isPointerDownRef.current = false;
 
     try {
@@ -199,13 +215,19 @@ export function InteractiveMarqueeTrack({
       const decay = 0.93;
 
       const glide = () => {
-        if (isPointerDownRef.current) return;
+        if (isPointerDownRef.current) {
+          return;
+        }
         if (Math.abs(v) > 0.4) {
           const cycle = cycleWidthRef.current;
           offsetRef.current -= v;
           if (cycle > 0) {
-            while (offsetRef.current >= cycle) offsetRef.current -= cycle;
-            while (offsetRef.current < 0) offsetRef.current += cycle;
+            while (offsetRef.current >= cycle) {
+              offsetRef.current -= cycle;
+            }
+            while (offsetRef.current < 0) {
+              offsetRef.current += cycle;
+            }
           }
           applyTransform(offsetRef.current);
           v *= decay;
@@ -231,7 +253,9 @@ export function InteractiveMarqueeTrack({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      onMouseEnter={() => setIsInteracting(true)}
+      onMouseEnter={() => {
+        setIsInteracting(true);
+      }}
       onMouseLeave={() => {
         if (!isPointerDownRef.current) {
           setIsInteracting(false);
@@ -243,7 +267,7 @@ export function InteractiveMarqueeTrack({
           e.stopPropagation();
         }
       }}
-      className={`no-scrollbar relative flex w-full overflow-hidden touch-pan-y select-none ${
+      className={`no-scrollbar relative flex w-full touch-pan-y overflow-hidden select-none ${
         isInteracting ? 'cursor-grabbing' : 'cursor-grab'
       } ${className}`}
       style={{
@@ -259,9 +283,7 @@ export function InteractiveMarqueeTrack({
         }}
       >
         {/* Set 1 */}
-        <div className="flex shrink-0 items-center gap-4 px-2 sm:gap-6 sm:px-3">
-          {children}
-        </div>
+        <div className="flex shrink-0 items-center gap-4 px-2 sm:gap-6 sm:px-3">{children}</div>
         {/* Set 2 (Identical mirror for infinite 3D wrap) */}
         <div className="flex shrink-0 items-center gap-4 px-2 sm:gap-6 sm:px-3" aria-hidden="true">
           {children}

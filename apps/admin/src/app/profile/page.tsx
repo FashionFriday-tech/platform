@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Image from 'next/image';
+
 import { toast } from 'sonner';
 
 import { useAuth } from '@/contexts/AuthContext';
@@ -285,7 +286,13 @@ export default function ProfilePage() {
                         className="rounded-full p-1 text-black/30 transition-all hover:bg-black/5 hover:text-indigo-600 dark:text-white/30 dark:hover:bg-white/10 dark:hover:text-indigo-400"
                         title="Edit Contact Number"
                       >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -324,7 +331,13 @@ export default function ProfilePage() {
                         className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all hover:scale-105 hover:bg-indigo-700"
                         title="Save Number"
                       >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       </button>
@@ -337,8 +350,18 @@ export default function ProfilePage() {
                         className="flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-black transition-all hover:scale-105 hover:bg-black/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
                         title="Cancel"
                       >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </div>

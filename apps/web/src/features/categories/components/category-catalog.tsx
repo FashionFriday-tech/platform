@@ -18,8 +18,7 @@ export async function CategoryCatalog({ category }: CategoryCatalogProps): Promi
   };
 
   const formattedCategory =
-    categoryMap[category.toLowerCase()] ||
-    category.charAt(0).toUpperCase() + category.slice(1);
+    categoryMap[category.toLowerCase()] || category.charAt(0).toUpperCase() + category.slice(1);
 
   const products = await getProductsByCategory(formattedCategory);
 

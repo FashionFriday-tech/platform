@@ -22,7 +22,7 @@ const BrandList = ({
 }) => (
   <>
     {logos.map(({ name, logo, slug }, idx) => (
-      <div key={`${slug || name}-${idx}`} className="mx-2 sm:mx-3.5 md:mx-6 lg:mx-8 shrink-0">
+      <div key={`${slug || name}-${idx}`} className="mx-2 shrink-0 sm:mx-3.5 md:mx-6 lg:mx-8">
         <Link
           href={`/brands/${slug || slugify(name)}`}
           className="relative block h-10 w-10 transition-transform hover:scale-110 active:scale-95 sm:h-12 sm:w-12 md:h-13 md:w-13 lg:h-14 lg:w-20"

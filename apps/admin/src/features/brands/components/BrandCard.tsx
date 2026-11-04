@@ -11,7 +11,9 @@ interface BrandCardProps {
 }
 
 function isDarkColor(hexColor?: string): boolean {
-  if (!hexColor) return true;
+  if (!hexColor) {
+    return true;
+  }
   const hex = hexColor.replace('#', '');
   if (hex.length === 3) {
     const r = parseInt(hex[0] + hex[0], 16);
@@ -116,7 +118,7 @@ export function BrandCard({ brand, onClick, onToggleStatus }: BrandCardProps) {
             </div>
           ) : (
             <span
-              className={`text-center text-sm sm:text-base font-black tracking-wider uppercase break-words ${
+              className={`text-center text-sm font-black tracking-wider break-words uppercase sm:text-base ${
                 isDark ? 'text-white' : 'text-black'
               }`}
             >

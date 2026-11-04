@@ -8,13 +8,19 @@ export function getBrandLogo(
   brandName?: string | string[] | null,
   brands?: Brand[],
 ): string | null {
-  if (!brandName) return null;
+  if (!brandName) {
+    return null;
+  }
 
   const rawName = Array.isArray(brandName) ? brandName[0] : brandName;
-  if (!rawName || typeof rawName !== 'string') return null;
+  if (!rawName || typeof rawName !== 'string') {
+    return null;
+  }
 
   const trimmed = rawName.trim();
-  if (!trimmed) return null;
+  if (!trimmed) {
+    return null;
+  }
 
   const normalized = trimmed.toLowerCase().replace(/[^a-z0-9]/g, '');
 

@@ -30,7 +30,9 @@ export function CategoryDistribution({ categoryData }: CategoryDistributionProps
     <div className="flex h-full min-h-[400px] w-full flex-col rounded-2xl border border-black/[0.06] bg-white shadow-xl shadow-black/[0.04] dark:border-white/[0.08] dark:bg-[#1a1a1a]">
       <div className="border-b border-black/[0.04] p-6 pb-4 dark:border-white/[0.04]">
         <h2 className="text-lg font-bold text-black dark:text-white">Category Mix</h2>
-        <p className="text-sm font-medium text-black/40 dark:text-white/40">Product Catalog Distribution</p>
+        <p className="text-sm font-medium text-black/40 dark:text-white/40">
+          Product Catalog Distribution
+        </p>
       </div>
 
       <div className="relative flex flex-1 items-center justify-center p-6">

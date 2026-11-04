@@ -17,7 +17,9 @@ export function useNotifications() {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored) as AdminNotification[];
-          if (Array.isArray(parsed)) return parsed;
+          if (Array.isArray(parsed)) {
+            return parsed;
+          }
         }
       } catch {
         // ignore
@@ -31,7 +33,9 @@ export function useNotifications() {
   const [mounted, setMounted] = useState(false);
 
   const getReadSet = (): Set<string> => {
-    if (typeof window === 'undefined') return new Set();
+    if (typeof window === 'undefined') {
+      return new Set();
+    }
     try {
       const stored = localStorage.getItem(READ_KEY);
       return stored ? new Set(JSON.parse(stored)) : new Set();
@@ -41,7 +45,9 @@ export function useNotifications() {
   };
 
   const getDeletedSet = (): Set<string> => {
-    if (typeof window === 'undefined') return new Set();
+    if (typeof window === 'undefined') {
+      return new Set();
+    }
     try {
       const stored = localStorage.getItem(DELETED_KEY);
       return stored ? new Set(JSON.parse(stored)) : new Set();
@@ -95,7 +101,9 @@ export function useNotifications() {
       void fetchLiveNotifications();
     }, 20000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchLiveNotifications]);
 
   const markAsRead = useCallback((id: string) => {
@@ -188,7 +196,7 @@ export function useNotifications() {
           throw new Error('Failed to send notification');
         }
 
-        const data = await res.json();
+        await res.json();
         // Refresh notifications list to show the sent broadcast immediately
         await fetchLiveNotifications();
         return { success: true };
@@ -218,7 +226,9 @@ export function useNotifications() {
 
   const addNotification = useCallback((notif: AdminNotification) => {
     setNotifications((prev) => {
-      if (prev.some((n) => n.id === notif.id)) return prev;
+      if (prev.some((n) => n.id === notif.id)) {
+        return prev;
+      }
       const updated = [notif, ...prev];
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));

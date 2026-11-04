@@ -22,7 +22,9 @@ export function RealtimeOrderTicker({ liveOrders }: RealtimeOrderTickerProps) {
       const timer = setTimeout(() => {
         setHighlightId(null);
       }, 2000);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+      };
     }
   }, [orders[0]?.id]);
 

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { toast } from 'sonner';
 
 import { EditIcon, TrashIcon } from '@ff/ui';
 import { motion } from 'motion/react';
+import { toast } from 'sonner';
 
 import { type Color } from '../types';
 
@@ -15,12 +15,7 @@ interface ColorsTableProps {
   onDeleteColor: (color: Color) => void;
 }
 
-export function ColorsTable({
-  colors,
-  isLoading,
-  onEditColor,
-  onDeleteColor,
-}: ColorsTableProps) {
+export function ColorsTable({ colors, isLoading, onEditColor, onDeleteColor }: ColorsTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopyHex = (e: React.MouseEvent, hex: string, id: string) => {
@@ -96,14 +91,14 @@ export function ColorsTable({
                 {/* Color & Swatch */}
                 <div className="flex items-center gap-3">
                   <span
-                    className="h-7 w-7 rounded-full border border-black/15 shadow-xs shrink-0 dark:border-white/15"
+                    className="h-7 w-7 shrink-0 rounded-full border border-black/15 shadow-xs dark:border-white/15"
                     style={{ backgroundColor: color.hex }}
                   />
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-black truncate dark:text-white">
+                    <p className="truncate text-sm font-bold text-black dark:text-white">
                       {color.name}
                     </p>
-                    <p className="text-[11px] text-black/40 font-mono dark:text-white/40">
+                    <p className="font-mono text-[11px] text-black/40 dark:text-white/40">
                       ID: {color.id.slice(0, 8)}
                     </p>
                   </div>
@@ -116,7 +111,9 @@ export function ColorsTable({
                   </span>
                   <button
                     type="button"
-                    onClick={(e) => handleCopyHex(e, color.hex, color.id)}
+                    onClick={(e) => {
+                      handleCopyHex(e, color.hex, color.id);
+                    }}
                     className="cursor-pointer text-xs text-black/40 transition-colors hover:text-black dark:text-white/40 dark:hover:text-white"
                     title="Copy hex code"
                   >
@@ -125,7 +122,12 @@ export function ColorsTable({
                         Copied!
                       </span>
                     ) : (
-                      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        className="h-3.5 w-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -169,7 +171,9 @@ export function ColorsTable({
                 <div className="flex items-center justify-end gap-1.5">
                   <button
                     type="button"
-                    onClick={() => onEditColor(color)}
+                    onClick={() => {
+                      onEditColor(color);
+                    }}
                     className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/5 bg-black/[0.02] text-black/70 transition-all hover:border-black/20 hover:bg-black/10 hover:text-black dark:border-white/5 dark:bg-white/[0.02] dark:text-white/70 dark:hover:border-white/20 dark:hover:bg-white/10 dark:hover:text-white"
                     title="Edit Color"
                   >
@@ -177,7 +181,9 @@ export function ColorsTable({
                   </button>
                   <button
                     type="button"
-                    onClick={() => onDeleteColor(color)}
+                    onClick={() => {
+                      onDeleteColor(color);
+                    }}
                     className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/10 bg-red-500/[0.03] text-red-500 transition-all hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-600 dark:border-red-500/20 dark:bg-red-500/[0.05] dark:hover:bg-red-500/20"
                     title="Delete Color"
                   >

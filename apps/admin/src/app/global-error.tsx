@@ -177,7 +177,12 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             >
               Reload Admin Panel
             </button>
-            <button className="btn-secondary" onClick={() => reset()}>
+            <button
+              className="btn-secondary"
+              onClick={() => {
+                reset();
+              }}
+            >
               Try Again
             </button>
             <button
@@ -191,7 +196,9 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                     localStorage.removeItem('adminRefreshToken');
                     sessionStorage.clear();
                     if ('caches' in window) {
-                      void caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
+                      void caches
+                        .keys()
+                        .then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
                     }
                   } catch {
                     // ignore
@@ -208,4 +215,3 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
     </html>
   );
 }
-

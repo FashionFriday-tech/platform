@@ -13,7 +13,7 @@ interface CustomerActivityRadialProps {
 export function CustomerActivityRadial({ activity }: CustomerActivityRadialProps) {
   const menSales = activity?.menSales ?? 0;
   const womenSales = activity?.womenSales ?? 0;
-  const totalSales = activity?.totalSales ?? (menSales + womenSales);
+  const totalSales = activity?.totalSales ?? menSales + womenSales;
 
   const data = [
     { name: 'Women', sales: womenSales, fill: '#ec4899', trend: '0%', emoji: '👗' },

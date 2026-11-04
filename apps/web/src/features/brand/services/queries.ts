@@ -29,7 +29,7 @@ export async function getBrandBySlug(slug: string): Promise<Brand | null> {
 
   try {
     const data = await fetcher<Brand>(`/brands/${encodeURIComponent(cleanSlug)}`);
-    if (data && data.name) {
+    if (data?.name) {
       return data;
     }
   } catch (error) {

@@ -10,14 +10,7 @@ export const CATEGORIES = [
 ];
 export const QUALITIES = ['Original', '10A', '7A', '5A', 'Premium', 'Standard'];
 
-export const FOOTWEAR_SIZES_MEN = [
-  'UK 6',
-  'UK 7',
-  'UK 8',
-  'UK 9',
-  'UK 10',
-  'UK 11',
-];
+export const FOOTWEAR_SIZES_MEN = ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'];
 
 export const FOOTWEAR_SIZES_WOMEN_UNISEX = [
   'UK 3',
@@ -42,11 +35,10 @@ export const SIZE_MAP: Record<string, string[]> = {
   Accessories: ['Free Size'],
 };
 
-export function getCategorySizes(
-  categoryName?: string | null,
-  gender?: string | null,
-): string[] {
-  if (!categoryName) return SIZE_MAP.Clothing ?? [];
+export function getCategorySizes(categoryName?: string | null, gender?: string | null): string[] {
+  if (!categoryName) {
+    return SIZE_MAP.Clothing ?? [];
+  }
   const normalized = categoryName.trim().toLowerCase();
   const normalizedGender = gender?.trim().toLowerCase();
   const isMen = normalizedGender === 'men' || normalizedGender === 'man';

@@ -120,7 +120,10 @@ export function ProductDetailView({ productId }: Props) {
       : [];
 
   const liveSold = Math.max(0, Number(product.liveSold ?? product.liveMatrix?.liveSold ?? 0));
-  const liveWatching = Math.max(0, Number(product.liveWatching ?? product.liveMatrix?.liveWatching ?? 0));
+  const liveWatching = Math.max(
+    0,
+    Number(product.liveWatching ?? product.liveMatrix?.liveWatching ?? 0),
+  );
 
   return (
     <div className="scrollbar-hide flex min-h-0 flex-1 flex-col overflow-y-auto pb-20 text-black transition-colors dark:text-white">
@@ -382,8 +385,8 @@ export function ProductDetailView({ productId }: Props) {
                 {liveWatching > 0 && (
                   <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
                     <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                     </span>
                     {liveWatching} watching
                   </div>

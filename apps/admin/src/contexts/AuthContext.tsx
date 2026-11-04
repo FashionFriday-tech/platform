@@ -86,7 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             ? 'https://api.fashionfriday.in'
             : 'http://localhost:3002');
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => {
+          controller.abort();
+        }, 5000);
         let res: Response;
         try {
           res = await fetch(`${apiUrl}/admin/team`, { signal: controller.signal });

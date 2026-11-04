@@ -68,17 +68,23 @@ export function useAnalytics() {
   // Update timeAgo counter every 3 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      if (!lastFetched) return;
+      if (!lastFetched) {
+        return;
+      }
       const sec = Math.floor((Date.now() - lastFetched.getTime()) / 1000);
-      if (sec < 5) setTimeAgoText('Just now');
-      else if (sec < 60) setTimeAgoText(`${sec}s ago`);
-      else {
+      if (sec < 5) {
+        setTimeAgoText('Just now');
+      } else if (sec < 60) {
+        setTimeAgoText(`${sec}s ago`);
+      } else {
         const min = Math.floor(sec / 60);
         setTimeAgoText(`${min}m ago`);
       }
     }, 3000);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+    };
   }, [lastFetched]);
 
   // Tab visibility management: pauses polling when hidden, resumes immediately when visible
@@ -107,7 +113,9 @@ export function useAnalytics() {
       }
     }, POLL_INTERVAL_MS);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [fetchAnalytics]);
 
   return {

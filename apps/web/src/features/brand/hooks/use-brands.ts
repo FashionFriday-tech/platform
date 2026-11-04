@@ -19,8 +19,12 @@ export function useBrands(initialBrands?: Brand[]) {
   const hasCached = Array.isArray(cachedBrands) && cachedBrands.length > 0;
 
   const [brands, setBrands] = useState<Brand[]>(() => {
-    if (hasInitial) return initialBrands as Brand[];
-    if (hasCached) return cachedBrands as Brand[];
+    if (hasInitial) {
+      return initialBrands;
+    }
+    if (hasCached) {
+      return cachedBrands!;
+    }
     return [];
   });
   const [isLoading, setIsLoading] = useState(!hasInitial && !hasCached);
@@ -37,7 +41,7 @@ export function useBrands(initialBrands?: Brand[]) {
     }
 
     if (hasCached) {
-      setBrands(cachedBrands as Brand[]);
+      setBrands(cachedBrands!);
       setIsLoading(false);
       return;
     }

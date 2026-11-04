@@ -17,9 +17,11 @@ import { LabelWithTick } from './LabelWithTick';
 import { ProductSellerSelector } from './ProductSellerSelector';
 
 function FieldErrorMessage({ error }: { error?: string }) {
-  if (!error) return null;
+  if (!error) {
+    return null;
+  }
   return (
-    <p className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-rose-500 animate-in fade-in slide-in-from-top-1">
+    <p className="animate-in fade-in slide-in-from-top-1 mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-rose-500">
       <svg className="h-3.5 w-3.5 shrink-0 text-rose-500" viewBox="0 0 20 20" fill="currentColor">
         <path
           fillRule="evenodd"
@@ -46,7 +48,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [selectedSellerIds, setSelectedSellerIds] = useState<string[]>(() => {
     const rawIds = (initialData as any)?.sellerIds;
-    if (Array.isArray(rawIds) && rawIds.length > 0) return rawIds.filter(Boolean);
+    if (Array.isArray(rawIds) && rawIds.length > 0) {
+      return rawIds.filter(Boolean);
+    }
     const single = (initialData as any)?.sellerId ?? (initialData as any)?.seller?.id;
     return single ? [single] : [];
   });
@@ -65,7 +69,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   }, [initialData]);
   const {
     sizes,
-    setSizes,
     toggleSize,
     clearSizes,
     selectAllSizes,
@@ -85,7 +88,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     colorInput,
     setColorInput,
     selectedColorHex,
-    setSelectedColorHex,
     selectedColors,
     setSelectedColors,
     toggleColor,
@@ -214,9 +216,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
   const clearFieldError = (field: string) => {
     setFieldErrors((prev) => {
-      if (!prev[field]) return prev;
-      const next = { ...prev };
-      delete next[field];
+      if (!prev[field]) {
+        return prev;
+      }
+      const { [field]: _removed, ...next } = prev;
       return next;
     });
   };
@@ -326,7 +329,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         errors.productDesc = 'Description must be at least 10 characters';
       }
 
-      if (!category || !category.trim()) {
+      if (!category?.trim()) {
         errors.category = 'Please select a product category';
       }
 
@@ -336,7 +339,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         errors.brand = 'Brand name must be at least 2 characters';
       }
 
-      if (!gender || !gender.trim()) {
+      if (!gender?.trim()) {
         errors.gender = 'Please select a target gender';
       }
 
@@ -363,7 +366,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         errors.stock = 'Stock quantity must be 0 or greater';
       }
 
-      if (!quality || !quality.trim()) {
+      if (!quality?.trim()) {
         errors.quality = 'Please select a quality grade';
       }
 
@@ -399,13 +402,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       const refMap: Record<string, React.RefObject<HTMLDivElement | null>> = {
         productName: nameRef,
         productDesc: descRef,
-        category: categoryRef as any,
-        brand: brandRef as any,
+        category: categoryRef,
+        brand: brandRef,
         gender: genderRef,
         basePrice: priceRef,
         ogPrice: ogPriceRef,
         stock: stockRef,
-        quality: qualityRef as any,
+        quality: qualityRef,
         sizes: sizeRef,
         images: mediaRef,
       };
@@ -611,7 +614,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       void fetch(
         `${storefrontUrl}/api/revalidate?secret=${revalSecret}&tag=product-${computedSlug}&path=/product/${computedSlug}`,
         { method: 'POST', mode: 'no-cors' },
-      ).catch(() => {});
+      ).catch((err: unknown) => {
+        void err;
+      });
 
       setToast({
         message: isDraft
@@ -878,7 +883,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div ref={nameRef}>
                 <LabelWithTick
                   label="Name Product"
-                  status={fieldErrors.productName ? 'error' : getStatus(productName, initialData?.name, 3, 'productName')}
+                  status={
+                    fieldErrors.productName
+                      ? 'error'
+                      : getStatus(productName, initialData?.name, 3, 'productName')
+                  }
                   rightElement={
                     <span className="font-mono text-xs font-semibold text-black/50 dark:text-white/50">
                       <span className={productName.length >= 200 ? 'font-bold text-amber-500' : ''}>
@@ -901,7 +910,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     fieldErrors.productName
                       ? 'border-rose-500 ring-2 ring-rose-500/20'
                       : 'border-transparent focus:border-black/20 dark:focus:border-white/20'
-                  } bg-black/5 px-4 py-3.5 text-sm font-medium uppercase text-black transition-all outline-none dark:bg-white/5 dark:text-white`}
+                  } bg-black/5 px-4 py-3.5 text-sm font-medium text-black uppercase transition-all outline-none dark:bg-white/5 dark:text-white`}
                 />
                 <FieldErrorMessage error={fieldErrors.productName} />
               </div>
@@ -909,7 +918,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div ref={descRef}>
                 <LabelWithTick
                   label="Description Product"
-                  status={fieldErrors.productDesc ? 'error' : getStatus(productDesc, initialData?.description, 10, 'productDesc')}
+                  status={
+                    fieldErrors.productDesc
+                      ? 'error'
+                      : getStatus(productDesc, initialData?.description, 10, 'productDesc')
+                  }
                   rightElement={
                     <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-black/50 dark:text-white/50">
                       {productDesc.trim().length > 0 && productDesc.trim().length < 10 && (
@@ -917,7 +930,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           (min 10)
                         </span>
                       )}
-                      <span className={productDesc.length >= 2000 ? 'font-bold text-amber-500' : ''}>
+                      <span
+                        className={productDesc.length >= 2000 ? 'font-bold text-amber-500' : ''}
+                      >
                         {productDesc.length}
                       </span>
                       <span className="opacity-40"> / 2000</span>
@@ -946,9 +961,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={genderRef}>
                   <LabelWithTick
                     label="Gender"
-                    status={fieldErrors.gender ? 'error' : getStatus(gender, initialData?.gender, 1, 'gender')}
+                    status={
+                      fieldErrors.gender
+                        ? 'error'
+                        : getStatus(gender, initialData?.gender, 1, 'gender')
+                    }
                   />
-                  <div className={`flex flex-wrap gap-2 rounded-xl p-1 transition-all ${fieldErrors.gender ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}>
+                  <div
+                    className={`flex flex-wrap gap-2 rounded-xl p-1 transition-all ${fieldErrors.gender ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}
+                  >
                     {['Men', 'Woman', 'Unisex'].map((g) => (
                       <button
                         key={g}
@@ -974,7 +995,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={categoryRef} className="relative">
                   <LabelWithTick
                     label="Product Category"
-                    status={fieldErrors.category ? 'error' : getStatus(category, initialData?.categoryId, 1, 'category')}
+                    status={
+                      fieldErrors.category
+                        ? 'error'
+                        : getStatus(category, initialData?.categoryId, 1, 'category')
+                    }
                   />
                   <button
                     type="button"
@@ -984,7 +1009,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     }}
                     className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${
                       fieldErrors.category
-                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-500/5'
+                        ? 'border-rose-500 bg-rose-500/5 ring-2 ring-rose-500/20'
                         : isCategoryOpen
                           ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white'
                           : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'
@@ -1043,7 +1068,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <ProductSellerSelector
                   selectedSellerId={selectedSellerId}
                   selectedSellerIds={selectedSellerIds}
-                  onSelectSellers={(ids) => setSelectedSellerIds(ids)}
+                  onSelectSellers={(ids) => {
+                    setSelectedSellerIds(ids);
+                  }}
                   categoryId={resolvedApiCategory?.id}
                   categoryName={category}
                   status="default"
@@ -1055,7 +1082,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={brandRef} className="relative">
                   <LabelWithTick
                     label="Brand"
-                    status={fieldErrors.brand ? 'error' : getStatus(brandInput, initialData?.brand?.[0], 2, 'brand')}
+                    status={
+                      fieldErrors.brand
+                        ? 'error'
+                        : getStatus(brandInput, initialData?.brand?.[0], 2, 'brand')
+                    }
                   />
                   <div className="relative flex items-center">
                     {selectedBrandLogo && (
@@ -1169,7 +1200,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       )}
                       <button
                         type="button"
-                        onClick={() => openAddColorModal(colorInput)}
+                        onClick={() => {
+                          openAddColorModal(colorInput);
+                        }}
                         className="flex items-center gap-1 rounded-lg border border-black/10 bg-black/5 px-2.5 py-1 text-[11px] font-bold text-black/80 transition-all hover:bg-black/10 hover:text-black dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
                         title="Add a new custom color to catalog"
                       >
@@ -1206,7 +1239,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           <span className="text-black dark:text-white">{color.name}</span>
                           <button
                             type="button"
-                            onClick={() => removeColor(color.name)}
+                            onClick={() => {
+                              removeColor(color.name);
+                            }}
                             className="ml-0.5 rounded-full p-0.5 text-black/40 hover:bg-black/10 hover:text-black dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white"
                             title={`Remove ${color.name}`}
                           >
@@ -1278,7 +1313,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     {selectedColors.length > 0 && (
                       <button
                         type="button"
-                        onClick={() => setSelectedColors([])}
+                        onClick={() => {
+                          setSelectedColors([]);
+                        }}
                         className="absolute right-3 rounded-md px-1.5 py-0.5 text-[11px] font-bold text-black/40 transition-colors hover:bg-black/5 hover:text-black dark:text-white/40 dark:hover:bg-white/5 dark:hover:text-white"
                       >
                         Clear
@@ -1354,7 +1391,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             </p>
                             <button
                               type="button"
-                              onClick={() => openAddColorModal(colorInput)}
+                              onClick={() => {
+                                openAddColorModal(colorInput);
+                              }}
                               className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:scale-105 active:scale-95 dark:bg-white dark:text-black"
                             >
                               <svg
@@ -1383,7 +1422,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         <div className="border-t border-black/5 p-2 dark:border-white/5">
                           <button
                             type="button"
-                            onClick={() => openAddColorModal(colorInput)}
+                            onClick={() => {
+                              openAddColorModal(colorInput);
+                            }}
                             className="flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold text-black/70 transition-colors hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white"
                           >
                             <svg
@@ -1417,7 +1458,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <div className="flex items-center justify-between">
                     <LabelWithTick
                       label="Size"
-                      status={fieldErrors.sizes ? 'error' : getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')}
+                      status={
+                        fieldErrors.sizes
+                          ? 'error'
+                          : getArrayStatus(sizes, initialData?.attributes?.sizes, 'sizes')
+                      }
                     />
                     <div className="flex items-center gap-2.5">
                       {sizes.length < availableSizes.length && (
@@ -1448,7 +1493,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       )}
                     </div>
                   </div>
-                  <div className={`flex flex-wrap gap-2 rounded-xl p-1 transition-all ${fieldErrors.sizes ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}>
+                  <div
+                    className={`flex flex-wrap gap-2 rounded-xl p-1 transition-all ${fieldErrors.sizes ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}
+                  >
                     {availableSizes.map((s) => (
                       <button
                         key={s}
@@ -1470,7 +1517,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={qualityRef} className="relative">
                   <LabelWithTick
                     label="Quality"
-                    status={fieldErrors.quality ? 'error' : getStatus(quality, initialData?.attributes?.quality, 1, 'quality')}
+                    status={
+                      fieldErrors.quality
+                        ? 'error'
+                        : getStatus(quality, initialData?.attributes?.quality, 1, 'quality')
+                    }
                   />
                   <button
                     onClick={() => {
@@ -1479,7 +1530,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     }}
                     className={`flex w-full items-center justify-between rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-all outline-none ${
                       fieldErrors.quality
-                        ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-500/5'
+                        ? 'border-rose-500 bg-rose-500/5 ring-2 ring-rose-500/20'
                         : isQualityOpen
                           ? 'border-black/20 bg-transparent text-black dark:border-white/20 dark:text-white'
                           : 'border-transparent bg-black/5 text-black dark:bg-white/5 dark:text-white'
@@ -1537,7 +1588,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div ref={ogPriceRef}>
                 <LabelWithTick
                   label="Original Price (MRP)"
-                  status={fieldErrors.ogPrice ? 'error' : ogPrice.trim().length > 0 ? 'valid' : 'default'}
+                  status={
+                    fieldErrors.ogPrice ? 'error' : ogPrice.trim().length > 0 ? 'valid' : 'default'
+                  }
                 />
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -1585,7 +1638,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div ref={priceRef}>
                 <LabelWithTick
                   label="Selling Price"
-                  status={fieldErrors.basePrice ? 'error' : getStatus(basePrice, initialData?.price?.sellingPrice, 1, 'basePrice')}
+                  status={
+                    fieldErrors.basePrice
+                      ? 'error'
+                      : getStatus(basePrice, initialData?.price?.sellingPrice, 1, 'basePrice')
+                  }
                 />
                 <div className="relative">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
@@ -1612,7 +1669,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               <div ref={stockRef}>
                 <LabelWithTick
                   label="Stock"
-                  status={fieldErrors.stock ? 'error' : getStatus(stock, initialData?.inventory?.totalStock, 1, 'stock')}
+                  status={
+                    fieldErrors.stock
+                      ? 'error'
+                      : getStatus(stock, initialData?.inventory?.totalStock, 1, 'stock')
+                  }
                 />
                 <input
                   type="text"
@@ -1755,7 +1816,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   className="flex items-center gap-1.5 rounded-xl border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-semibold text-black/70 transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10"
                   title="Generate new random numbers (Viewers: 1k-10k, Sold: 0-100)"
                 >
-                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -1781,12 +1847,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     subtitle="Active shoppers viewing this product"
                   />
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -1814,7 +1875,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       }
                     }}
                     placeholder="e.g. 2450"
-                    className="w-full rounded-xl border border-black/10 bg-white py-3.5 px-4 text-base font-bold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                    className="w-full rounded-xl border border-black/10 bg-white px-4 py-3.5 text-base font-bold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
                   />
                 </div>
                 <p className="mt-2 text-[11px] font-medium text-black/40 dark:text-white/40">
@@ -1831,12 +1892,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     subtitle="Recent purchases for urgency tags"
                   />
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500 dark:bg-orange-500/20 dark:text-orange-400">
-                    <svg
-                      className="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -1864,7 +1920,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       }
                     }}
                     placeholder="e.g. 42"
-                    className="w-full rounded-xl border border-black/10 bg-white py-3.5 px-4 text-base font-bold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                    className="w-full rounded-xl border border-black/10 bg-white px-4 py-3.5 text-base font-bold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
                   />
                 </div>
                 <p className="mt-2 text-[11px] font-medium text-black/40 dark:text-white/40">
@@ -1878,7 +1934,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         {/* Media & Video Column - Order 1 on mobile/tablet (< lg), Order 2 on desktop (lg+) */}
         <div className="order-1 space-y-4 sm:space-y-6 lg:order-2">
           {/* Upload Img */}
-          <div ref={mediaRef} className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
+          <div
+            ref={mediaRef}
+            className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]"
+          >
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2 sm:mb-6">
               <div>
                 <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
@@ -1897,12 +1956,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   title="Paste copied image (Ctrl+V)"
                   aria-label="Paste copied image"
                 >
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -1942,7 +1996,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   onDrop={handleDropzoneDrop}
                   className={`group relative mb-2 flex aspect-[3/4] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 transition-all ${
                     fieldErrors.images
-                      ? 'border-rose-500 ring-2 ring-rose-500/20 bg-rose-500/5'
+                      ? 'border-rose-500 bg-rose-500/5 ring-2 ring-rose-500/20'
                       : isExternalDragOver
                         ? 'scale-[1.01] border-black bg-black/10 dark:border-white dark:bg-white/10'
                         : 'border-dashed border-black/20 bg-black/5 hover:border-black/40 hover:bg-black/10 dark:border-white/20 dark:bg-white/5 dark:hover:border-white/40 dark:hover:bg-white/10'

@@ -1,11 +1,11 @@
 import { type Metadata } from 'next';
 
+import { getBrands } from '@/features/brand';
 import ProductPageMaster, {
   EditorialError,
   getProductBySlug,
   getSimilarProducts,
 } from '@/features/product';
-import { getBrands } from '@/features/brand';
 
 interface Props {
   params: Promise<{ slug: string }>;

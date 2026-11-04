@@ -22,7 +22,11 @@ interface RevenueChartProps {
 export function RevenueChart({ trendData }: RevenueChartProps) {
   const [activeRange, setActiveRange] = useState<'7d' | '30d' | '90d'>('7d');
 
-  const rangeOptions: Array<{ key: '7d' | '30d' | '90d'; label: string; data: Array<{ date: string; revenue: number; orders: number }> }> = [
+  const rangeOptions: {
+    key: '7d' | '30d' | '90d';
+    label: string;
+    data: { date: string; revenue: number; orders: number }[];
+  }[] = [
     { key: '7d', label: '7D', data: trendData ? trendData['7d'] : [] },
     { key: '30d', label: '30D', data: trendData ? trendData['30d'] : [] },
     { key: '90d', label: '90D', data: trendData ? trendData['90d'] : [] },

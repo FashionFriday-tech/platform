@@ -7,7 +7,7 @@ import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
 import { type CreateColorInput } from '../../colors/types';
-import { getCategorySizes, SIZE_MAP } from '../utils/constants';
+import { getCategorySizes } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export interface SelectedColor {
@@ -21,7 +21,9 @@ export interface UseAddProductFormOptions {
 
 export function useAddProductForm(initialData?: Product, options?: UseAddProductFormOptions) {
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   const searchParams = useSearchParams();
   const paramCategoryId = searchParams?.get('categoryId') ?? null;
@@ -185,7 +187,9 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     [],
   );
   const imagesRef = useRef(images);
-  imagesRef.current = images;
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
   const [imagesToDelete, setImagesToDelete] = useState<{ id: string; url: string }[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
@@ -302,11 +306,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
           );
           return {
             name: matched ? matched.name : saved,
-            hex: matched
-              ? matched.hex
-              : saved.startsWith('#')
-                ? saved.toUpperCase()
-                : '#000000',
+            hex: matched ? matched.hex : saved.startsWith('#') ? saved.toUpperCase() : '#000000',
           };
         });
         setSelectedColors(mappedColors);
@@ -661,7 +661,8 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     }
 
     optionsRef.current?.onToast?.({
-      message: 'No image found in clipboard. Copy an image (from WhatsApp, web, etc.) and try again.',
+      message:
+        'No image found in clipboard. Copy an image (from WhatsApp, web, etc.) and try again.',
       type: 'warning',
     });
   };
@@ -704,8 +705,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
       // 1. Check e.clipboardData.files (e.g. copied from file explorer or screenshot)
       if (e.clipboardData?.files && e.clipboardData.files.length > 0) {
-        for (let i = 0; i < e.clipboardData.files.length; i++) {
-          const file = e.clipboardData.files[i];
+        for (const file of Array.from(e.clipboardData.files)) {
           if (file.type.startsWith('image/')) {
             imageFiles.push(file);
           }
@@ -714,8 +714,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
       // 2. Check e.clipboardData.items (e.g. copied from WhatsApp, browser, snip tool)
       if (imageFiles.length === 0 && e.clipboardData?.items && e.clipboardData.items.length > 0) {
-        for (let i = 0; i < e.clipboardData.items.length; i++) {
-          const item = e.clipboardData.items[i];
+        for (const item of Array.from(e.clipboardData.items)) {
           if (item.type.startsWith('image/')) {
             const file = item.getAsFile();
             if (file) {

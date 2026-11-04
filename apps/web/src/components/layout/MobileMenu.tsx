@@ -17,8 +17,8 @@ import {
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
-import { AnimatedLogo } from '@/components/ui/animated-logo';
 import { updateStatusThemeColor } from '@/app/providers/theme-provider';
+import { AnimatedLogo } from '@/components/ui/animated-logo';
 import { usePwaInstall } from '@/lib/pwa/usePwaInstall';
 import { useAuthStore } from '@/store/auth-store';
 
@@ -217,7 +217,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    void toggleTheme();
+                    toggleTheme();
                   }}
                   className="text-foreground/80 hover:text-foreground absolute top-1/2 right-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center transition-all active:scale-90"
                   aria-label={

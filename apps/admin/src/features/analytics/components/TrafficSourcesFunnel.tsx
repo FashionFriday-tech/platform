@@ -27,8 +27,7 @@ export function TrafficSourcesFunnel({ sources }: TrafficSourcesFunnelProps) {
 
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-6">
         {activeSources.map((source, i) => {
-          const widthPct =
-            40 + ((activeSources.length - i) / activeSources.length) * 55;
+          const widthPct = 40 + ((activeSources.length - i) / activeSources.length) * 55;
           const sharePct = ((source.visitors / totalVisitors) * 100).toFixed(1);
 
           return (

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+
 import { toast } from 'sonner';
 
 import { type Role, useAuth } from '@/contexts/AuthContext';
@@ -222,9 +223,7 @@ export function useTeam() {
         }
         const updated = await res.json();
         if (updated?.id) {
-          setTeam((prev) =>
-            prev.map((m) => (m.id === updated.id ? { ...m, ...updated } : m)),
-          );
+          setTeam((prev) => prev.map((m) => (m.id === updated.id ? { ...m, ...updated } : m)));
         }
         toast.success('Admin details updated successfully');
       })

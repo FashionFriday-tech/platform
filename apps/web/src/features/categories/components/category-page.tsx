@@ -19,8 +19,7 @@ export async function CategoryPage({ gender, category }: CategoryPageProps): Pro
   };
 
   const formattedCategory =
-    categoryMap[category.toLowerCase()] ||
-    category.charAt(0).toUpperCase() + category.slice(1);
+    categoryMap[category.toLowerCase()] || category.charAt(0).toUpperCase() + category.slice(1);
   const formattedGender = gender.toLowerCase();
   const validGenders = ['men', 'women'];
 

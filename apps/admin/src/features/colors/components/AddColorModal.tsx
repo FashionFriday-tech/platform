@@ -31,7 +31,7 @@ export function AddColorModal({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialData && initialData.id) {
+    if (initialData?.id) {
       setName(initialData.name);
       setHex(initialData.hex.startsWith('#') ? initialData.hex : `#${initialData.hex}`);
     } else {
@@ -135,17 +135,19 @@ export function AddColorModal({
                 <input
                   type="color"
                   value={isValidHex(hex) ? hex : '#000000'}
-                  onChange={(e) => handleHexChange(e.target.value.toUpperCase())}
+                  onChange={(e) => {
+                    handleHexChange(e.target.value.toUpperCase());
+                  }}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                   title="Click to pick color"
                 />
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-base font-bold text-black truncate dark:text-white">
+                <p className="truncate text-base font-bold text-black dark:text-white">
                   {name.trim() || 'Color Name'}
                 </p>
-                <div className="flex items-center gap-2 mt-0.5">
+                <div className="mt-0.5 flex items-center gap-2">
                   <span className="font-mono text-xs font-semibold text-black/60 uppercase dark:text-white/60">
                     {isValidHex(hex) ? hex.toUpperCase() : '#------'}
                   </span>
@@ -158,7 +160,7 @@ export function AddColorModal({
 
             {/* Color Name Input */}
             <div>
-              <label className="mb-1.5 block text-xs font-bold text-black/70 uppercase tracking-wider dark:text-white/70">
+              <label className="mb-1.5 block text-xs font-bold tracking-wider text-black/70 uppercase dark:text-white/70">
                 Color Name
               </label>
               <input
@@ -166,25 +168,29 @@ export function AddColorModal({
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
-                  if (error) setError(null);
+                  if (error) {
+                    setError(null);
+                  }
                 }}
                 placeholder="e.g. Royal Blue, Emerald Green"
-                className="w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 text-sm font-medium text-black outline-none transition-all focus:border-black/30 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white/30"
+                className="w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 text-sm font-medium text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white/30"
               />
             </div>
 
             {/* HEX Input with native picker */}
             <div>
-              <label className="mb-1.5 block text-xs font-bold text-black/70 uppercase tracking-wider dark:text-white/70">
+              <label className="mb-1.5 block text-xs font-bold tracking-wider text-black/70 uppercase dark:text-white/70">
                 Hex Code
               </label>
               <div className="relative flex items-center">
                 <input
                   type="text"
                   value={hex}
-                  onChange={(e) => handleHexChange(e.target.value)}
+                  onChange={(e) => {
+                    handleHexChange(e.target.value);
+                  }}
                   placeholder="#000000"
-                  className="w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 text-sm font-mono font-medium text-black uppercase outline-none transition-all focus:border-black/30 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white/30"
+                  className="w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 font-mono text-sm font-medium text-black uppercase transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white/30"
                 />
                 <div className="absolute right-2.5 flex items-center gap-1.5">
                   <div
@@ -194,7 +200,9 @@ export function AddColorModal({
                     <input
                       type="color"
                       value={isValidHex(hex) ? hex : '#000000'}
-                      onChange={(e) => handleHexChange(e.target.value.toUpperCase())}
+                      onChange={(e) => {
+                        handleHexChange(e.target.value.toUpperCase());
+                      }}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                     />
                   </div>
@@ -209,7 +217,7 @@ export function AddColorModal({
             )}
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-black/5 dark:border-white/5">
+            <div className="flex items-center justify-end gap-3 border-t border-black/5 pt-3 dark:border-white/5">
               <button
                 type="button"
                 onClick={onClose}

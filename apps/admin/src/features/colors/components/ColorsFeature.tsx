@@ -44,7 +44,7 @@ export function ColorsFeature() {
           className="relative z-30 flex items-center justify-between gap-3 rounded-2xl border border-black/5 bg-white p-3 sm:p-4 dark:border-white/5 dark:bg-[#111111]"
         >
           {/* Search Input */}
-          <div className="relative min-w-0 flex-1 max-w-md">
+          <div className="relative max-w-md min-w-0 flex-1">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
               <SearchIcon className="h-4 w-4 text-black/30 dark:text-white/30" />
             </div>
@@ -52,8 +52,10 @@ export function ColorsFeature() {
               type="text"
               placeholder="Search colors by name or hex code..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-black/10 bg-black/5 py-2.5 pr-4 pl-10 text-xs font-medium text-black outline-none transition-all placeholder:text-black/40 focus:border-black/30 sm:text-sm dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40 dark:focus:border-white/30"
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+              className="w-full rounded-xl border border-black/10 bg-black/5 py-2.5 pr-4 pl-10 text-xs font-medium text-black transition-all outline-none placeholder:text-black/40 focus:border-black/30 sm:text-sm dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40 dark:focus:border-white/30"
             />
           </div>
 
@@ -73,7 +75,9 @@ export function ColorsFeature() {
             colors={filteredColors}
             isLoading={isLoading}
             onEditColor={openEditModal}
-            onDeleteColor={(color) => setColorToDelete(color)}
+            onDeleteColor={(color) => {
+              setColorToDelete(color);
+            }}
           />
         </div>
       </div>
@@ -95,7 +99,11 @@ export function ColorsFeature() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => !isDeleting && setColorToDelete(null)}
+              onClick={() => {
+                if (!isDeleting) {
+                  setColorToDelete(null);
+                }
+              }}
               className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             />
 
@@ -105,7 +113,7 @@ export function ColorsFeature() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="relative z-10 w-full max-w-sm rounded-3xl border border-black/10 bg-white p-6 text-center shadow-2xl dark:border-white/10 dark:bg-[#141417]"
             >
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 text-red-500 mb-4">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 text-red-500">
                 <TrashIcon className="h-6 w-6" />
               </div>
 
@@ -120,7 +128,9 @@ export function ColorsFeature() {
                 <button
                   type="button"
                   disabled={isDeleting}
-                  onClick={() => setColorToDelete(null)}
+                  onClick={() => {
+                    setColorToDelete(null);
+                  }}
                   className="rounded-full px-5 py-2.5 text-xs font-bold text-black/60 transition-colors hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
                 >
                   Cancel

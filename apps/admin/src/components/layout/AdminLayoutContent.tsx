@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { LoaderIcon, LockIcon } from '@ff/ui';
-import { AdminToaster } from '@/components/ui/AdminToaster';
 
+import { AdminToaster } from '@/components/ui/AdminToaster';
 import { type Role, useAuth } from '@/contexts/AuthContext';
 
 import { MobileHeader } from './Header';

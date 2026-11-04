@@ -217,13 +217,7 @@ export function ProductSellerSelector({
       <div className="flex items-center justify-between pb-1">
         <LabelWithTick
           label="Product Seller / Supplier"
-          status={
-            status !== 'default'
-              ? status
-              : selectedSellers.length > 0
-                ? 'valid'
-                : 'default'
-          }
+          status={status !== 'default' ? status : selectedSellers.length > 0 ? 'valid' : 'default'}
         />
         <div className="flex items-center gap-2">
           {selectedSellers.length > 0 && (
@@ -283,7 +277,12 @@ export function ProductSellerSelector({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </button>
@@ -352,10 +351,12 @@ export function ProductSellerSelector({
 
             {/* Filter Tabs: Category vs All */}
             {activeCategory && (
-              <div className="shrink-0 flex items-center gap-1 border-b border-black/5 bg-black/[0.02] p-1.5 dark:border-white/5 dark:bg-white/[0.02]">
+              <div className="flex shrink-0 items-center gap-1 border-b border-black/5 bg-black/[0.02] p-1.5 dark:border-white/5 dark:bg-white/[0.02]">
                 <button
                   type="button"
-                  onClick={() => setActiveTab('category')}
+                  onClick={() => {
+                    setActiveTab('category');
+                  }}
                   className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all ${
                     activeTab === 'category'
                       ? 'bg-white text-black shadow-sm dark:bg-zinc-800 dark:text-white'
@@ -366,7 +367,9 @@ export function ProductSellerSelector({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActiveTab('all')}
+                  onClick={() => {
+                    setActiveTab('all');
+                  }}
                   className={`flex-1 rounded-lg py-1.5 text-xs font-bold transition-all ${
                     activeTab === 'all'
                       ? 'bg-white text-black shadow-sm dark:bg-zinc-800 dark:text-white'
@@ -379,7 +382,7 @@ export function ProductSellerSelector({
             )}
 
             {/* Action Bar: Direct In-house & Clear */}
-            <div className="shrink-0 flex items-center justify-between border-b border-black/5 bg-zinc-50/50 px-3 py-2 dark:border-white/5 dark:bg-zinc-900/50">
+            <div className="flex shrink-0 items-center justify-between border-b border-black/5 bg-zinc-50/50 px-3 py-2 dark:border-white/5 dark:bg-zinc-900/50">
               <button
                 type="button"
                 onClick={handleClearAll}
@@ -403,7 +406,7 @@ export function ProductSellerSelector({
             </div>
 
             {/* Scrollable List */}
-            <div className="scrollbar-thin flex-1 min-h-0 overflow-y-auto p-2 space-y-1">
+            <div className="scrollbar-thin min-h-0 flex-1 space-y-1 overflow-y-auto p-2">
               {isLoading ? (
                 <div className="py-8 text-center text-xs text-black/40 dark:text-white/40">
                   Loading suppliers...
@@ -445,7 +448,11 @@ export function ProductSellerSelector({
                               stroke="currentColor"
                               viewBox="0 0 24 24"
                             >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 13l4 4L19 7"
+                              />
                             </svg>
                           )}
                         </div>
@@ -475,7 +482,7 @@ export function ProductSellerSelector({
             </div>
 
             {/* Footer Bar: Fixed at the bottom so it is NEVER cut off */}
-            <div className="shrink-0 flex items-center justify-between border-t border-black/5 bg-zinc-50 p-2.5 dark:border-white/5 dark:bg-zinc-900">
+            <div className="flex shrink-0 items-center justify-between border-t border-black/5 bg-zinc-50 p-2.5 dark:border-white/5 dark:bg-zinc-900">
               {onAddNewSeller ? (
                 <button
                   type="button"
@@ -496,12 +503,14 @@ export function ProductSellerSelector({
 
               <button
                 type="button"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                }}
                 className="flex items-center gap-1.5 rounded-xl bg-black px-5 py-2 text-xs font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-[0.98] dark:bg-white dark:text-black"
               >
                 <span>Done</span>
                 {selectedSellers.length > 0 && (
-                  <span className="rounded-full bg-white/20 px-1.5 py-0.2 text-[10px] dark:bg-black/20">
+                  <span className="py-0.2 rounded-full bg-white/20 px-1.5 text-[10px] dark:bg-black/20">
                     {selectedSellers.length}
                   </span>
                 )}

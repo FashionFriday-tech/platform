@@ -189,7 +189,7 @@ export const CatalogueSidebar = ({
         const matched = brands.find(
           (dbBrand) => dbBrand.name.toLowerCase() === b.label.toLowerCase(),
         );
-        return !matched || matched.isActive !== false;
+        return matched?.isActive !== false;
       });
     }
     if (!brandSearch.trim()) {

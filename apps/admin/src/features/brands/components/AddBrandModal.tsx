@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Image from 'next/image';
 
 import { type Brand, type BrandCategory } from '@ff/schemas';
 import { ImageIcon } from '@ff/ui';
@@ -15,7 +14,9 @@ interface AddBrandModalProps {
 const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
 function isDarkColor(hexColor?: string): boolean {
-  if (!hexColor) return true;
+  if (!hexColor) {
+    return true;
+  }
   const hex = hexColor.replace('#', '');
   if (hex.length === 3) {
     const r = parseInt(hex[0] + hex[0], 16);
@@ -288,7 +289,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                   <label
                     htmlFor="brand-logo-upload"
                     style={{ backgroundColor: color || undefined }}
-                    className="group flex h-36 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-[#f8f9fa] transition-all hover:opacity-95 sm:h-auto sm:aspect-square dark:border-white/20 dark:bg-[#1a1a1a]"
+                    className="group flex h-36 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-[#f8f9fa] transition-all hover:opacity-95 sm:aspect-square sm:h-auto dark:border-white/20 dark:bg-[#1a1a1a]"
                   >
                     {logoUrl ? (
                       <div className="relative h-full w-full">
@@ -298,7 +299,9 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                           className={`h-full w-full object-contain p-3 sm:p-4 ${color ? (isDarkColor(color) ? 'invert' : 'invert-0') : 'dark:invert'}`}
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
-                          <span className="text-xs font-bold text-white sm:text-sm">Change Image</span>
+                          <span className="text-xs font-bold text-white sm:text-sm">
+                            Change Image
+                          </span>
                         </div>
                       </div>
                     ) : (
@@ -339,7 +342,9 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
             {/* Brand Status Switch */}
             <div className="flex items-center justify-between rounded-xl border border-black/5 bg-[#f8f9fa] p-3 sm:rounded-2xl sm:p-4 dark:border-white/5 dark:bg-[#1a1a1a]">
               <div>
-                <p className="text-xs font-semibold text-black sm:text-sm dark:text-white">Enable Brand</p>
+                <p className="text-xs font-semibold text-black sm:text-sm dark:text-white">
+                  Enable Brand
+                </p>
                 <p className="text-[10px] text-black/50 sm:text-xs dark:text-white/50">
                   {isActive
                     ? 'Brand will be active and visible in the store'

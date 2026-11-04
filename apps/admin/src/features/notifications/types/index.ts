@@ -18,7 +18,7 @@ export interface SendNotificationPayload {
   title: string;
   message: string;
   type?: 'promo' | 'order' | 'announcement' | 'system';
-  target: 'ALL' | 'CUSTOMERS' | 'ADMIN' | string;
+  target: 'ALL' | 'CUSTOMERS' | 'ADMIN' | (string & {});
   userId?: string | null;
   targetUserName?: string | null;
   linkUrl?: string | null;
@@ -32,4 +32,3 @@ export interface TargetUser {
   phone?: string;
   email?: string;
 }
-

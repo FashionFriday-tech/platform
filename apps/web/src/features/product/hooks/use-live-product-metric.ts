@@ -38,7 +38,7 @@ export function useLiveProductMetric(staticNumber: number): number {
   }, []);
 
   return useMemo(() => {
-    const rawBase = Number(staticNumber);
+    const rawBase = staticNumber;
     if (!rawBase || isNaN(rawBase) || rawBase <= 0) {
       return 0;
     }

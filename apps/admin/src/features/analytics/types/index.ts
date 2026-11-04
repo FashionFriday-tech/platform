@@ -77,23 +77,23 @@ export interface AnalyticsPayload {
   };
 
   revenueTrend: {
-    '7d': Array<{ date: string; revenue: number; orders: number }>;
-    '30d': Array<{ date: string; revenue: number; orders: number }>;
-    '90d': Array<{ date: string; revenue: number; orders: number }>;
+    '7d': { date: string; revenue: number; orders: number }[];
+    '30d': { date: string; revenue: number; orders: number }[];
+    '90d': { date: string; revenue: number; orders: number }[];
   };
 
   conversion: {
     rate: number;
     rateDelta: string;
     rateDeltaUp: boolean;
-    funnel: Array<{ label: string; value: string; count: number; pct: string; color: string }>;
+    funnel: { label: string; value: string; count: number; pct: string; color: string }[];
   };
 
-  stateOrders: Array<{ state: string; orders: number; revenue: number }>;
+  stateOrders: { state: string; orders: number; revenue: number }[];
 
-  categoryDistribution: Array<{ name: string; value: number; color: string; count: number }>;
+  categoryDistribution: { name: string; value: number; color: string; count: number }[];
 
-  topProducts: Array<{ name: string; sales: number; revenue: number; image?: string }>;
+  topProducts: { name: string; sales: number; revenue: number; image?: string }[];
 
   customerActivity: {
     menSales: number;
@@ -105,16 +105,16 @@ export interface AnalyticsPayload {
     newCustomersToday: number;
   };
 
-  trafficSources: Array<{ source: string; visitors: number; color: string }>;
+  trafficSources: { source: string; visitors: number; color: string }[];
 
   aovTrend: {
     current: number;
     previous: number;
     delta: string;
-    data: Array<{ date: string; current: number; previous: number }>;
+    data: { date: string; current: number; previous: number }[];
   };
 
-  customerRetention: Array<{
+  customerRetention: {
     cohort: string;
     m0: number;
     m1: number;
@@ -122,9 +122,9 @@ export interface AnalyticsPayload {
     m3: number;
     m4: number;
     m5: number;
-  }>;
+  }[];
 
-  liveOrders: Array<{
+  liveOrders: {
     id: string;
     orderNumber: string;
     customerName: string;
@@ -134,7 +134,7 @@ export interface AnalyticsPayload {
     itemsCount: number;
     timestamp: string;
     timeAgo: string;
-  }>;
+  }[];
 
   lastUpdated: string;
   cached: boolean;

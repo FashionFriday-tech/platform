@@ -50,7 +50,8 @@ export default function AdminError({ error, reset }: ErrorProps) {
         <p className="mt-3 text-center text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
           {isChunkError
             ? 'A new version of the admin panel was recently published. Reloading will apply the latest update and restore full functionality.'
-            : error?.message || 'An unexpected error occurred while loading this view. You can reload or return to the dashboard.'}
+            : error?.message ||
+              'An unexpected error occurred while loading this view. You can reload or return to the dashboard.'}
         </p>
 
         {error?.digest && (
@@ -78,7 +79,9 @@ export default function AdminError({ error, reset }: ErrorProps) {
           </button>
 
           <button
-            onClick={() => reset()}
+            onClick={() => {
+              reset();
+            }}
             className="flex flex-1 items-center justify-center rounded-xl border border-black/10 bg-transparent px-5 py-3 text-sm font-semibold text-zinc-800 transition-colors hover:bg-black/5 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-white/5"
           >
             Try Again
@@ -96,7 +99,9 @@ export default function AdminError({ error, reset }: ErrorProps) {
                   localStorage.removeItem('adminRefreshToken');
                   sessionStorage.clear();
                   if ('caches' in window) {
-                    void caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
+                    void caches
+                      .keys()
+                      .then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
                   }
                 } catch {
                   // ignore
@@ -119,4 +124,3 @@ export default function AdminError({ error, reset }: ErrorProps) {
     </div>
   );
 }
-

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import { BellIcon, CheckIcon, UsersIcon } from '@ff/ui';
+import { BellIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { type SendNotificationPayload, type TargetUser } from '../types';
@@ -41,27 +41,35 @@ export function SendNotificationModal({
       fetch(`${apiUrl}/admin/notifications/users`)
         .then((res) => (res.ok ? res.json() : []))
         .then((data) => {
-          if (Array.isArray(data)) setUsers(data);
+          if (Array.isArray(data)) {
+            setUsers(data);
+          }
         })
-        .catch(() => {})
-        .finally(() => setIsLoadingUsers(false));
+        .catch((err: unknown) => {
+          console.warn('[Notifications] Failed to load users:', err);
+        })
+        .finally(() => {
+          setIsLoadingUsers(false);
+        });
     }
   }, [isOpen, targetType, users.length]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const filteredUsers = users.filter((u) => {
     const q = userSearch.toLowerCase();
     return (
-      u.name.toLowerCase().includes(q) ||
-      (u.phone && u.phone.includes(q)) ||
-      (u.email && u.email.toLowerCase().includes(q))
+      u.name.toLowerCase().includes(q) || u.phone?.includes(q) || u.email?.toLowerCase().includes(q)
     );
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !message.trim()) return;
+    if (!title.trim() || !message.trim()) {
+      return;
+    }
     if (targetType === 'USER' && !selectedUser) {
       alert('Please select a recipient user');
       return;
@@ -194,7 +202,9 @@ export function SendNotificationModal({
                     </div>
                     <button
                       type="button"
-                      onClick={() => setSelectedUser(null)}
+                      onClick={() => {
+                        setSelectedUser(null);
+                      }}
                       className="text-xs font-bold text-red-500 hover:underline"
                     >
                       Change
@@ -206,20 +216,28 @@ export function SendNotificationModal({
                       type="text"
                       placeholder="Search customer by name or phone..."
                       value={userSearch}
-                      onChange={(e) => setUserSearch(e.target.value)}
+                      onChange={(e) => {
+                        setUserSearch(e.target.value);
+                      }}
                       className="mb-2 w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-xs text-black outline-none focus:border-[#6a4fbb] dark:border-white/10 dark:bg-[#222] dark:text-white"
                     />
-                    <div className="max-h-36 overflow-y-auto space-y-1">
+                    <div className="max-h-36 space-y-1 overflow-y-auto">
                       {isLoadingUsers ? (
-                        <p className="p-2 text-xs text-black/40 dark:text-white/40">Loading users...</p>
+                        <p className="p-2 text-xs text-black/40 dark:text-white/40">
+                          Loading users...
+                        </p>
                       ) : filteredUsers.length === 0 ? (
-                        <p className="p-2 text-xs text-black/40 dark:text-white/40">No matching customers found</p>
+                        <p className="p-2 text-xs text-black/40 dark:text-white/40">
+                          No matching customers found
+                        </p>
                       ) : (
                         filteredUsers.map((u) => (
                           <button
                             key={u.id}
                             type="button"
-                            onClick={() => setSelectedUser(u)}
+                            onClick={() => {
+                              setSelectedUser(u);
+                            }}
                             className="flex w-full items-center justify-between rounded-lg p-2 text-left text-xs transition-colors hover:bg-black/5 dark:hover:bg-white/5"
                           >
                             <span className="font-bold text-black dark:text-white">{u.name}</span>
@@ -244,7 +262,9 @@ export function SendNotificationModal({
                 type="text"
                 required
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
                 placeholder="e.g. ⚡ Exclusive Flash Drop: 25% Off"
                 className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] px-3.5 py-2.5 text-xs text-black placeholder-black/30 transition-all outline-none focus:border-[#6a4fbb] focus:bg-white sm:text-sm dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:bg-[#222]"
               />
@@ -259,7 +279,9 @@ export function SendNotificationModal({
                 required
                 rows={3}
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                }}
                 placeholder="Write your announcement or promotion message here..."
                 className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] p-3 text-xs text-black placeholder-black/30 transition-all outline-none focus:border-[#6a4fbb] focus:bg-white sm:text-sm dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:placeholder-white/30 dark:focus:bg-[#222]"
               />
@@ -273,7 +295,9 @@ export function SendNotificationModal({
                 </label>
                 <select
                   value={category}
-                  onChange={(e) => setCategory(e.target.value as any)}
+                  onChange={(e) => {
+                    setCategory(e.target.value as any);
+                  }}
                   className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] px-3 py-2 text-xs font-semibold text-black outline-none focus:border-[#6a4fbb] sm:text-sm dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white"
                 >
                   <option value="promo">Promo & Drops</option>
@@ -290,9 +314,11 @@ export function SendNotificationModal({
                 <input
                   type="text"
                   value={badge}
-                  onChange={(e) => setBadge(e.target.value)}
+                  onChange={(e) => {
+                    setBadge(e.target.value);
+                  }}
                   placeholder="e.g. DROP LIVE, OFFER, ALERT"
-                  className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] px-3 py-2 text-xs font-mono text-black uppercase outline-none focus:border-[#6a4fbb] sm:text-sm dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white"
+                  className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] px-3 py-2 font-mono text-xs text-black uppercase outline-none focus:border-[#6a4fbb] sm:text-sm dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white"
                 />
               </div>
             </div>
@@ -305,7 +331,9 @@ export function SendNotificationModal({
               <input
                 type="text"
                 value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
+                onChange={(e) => {
+                  setLinkUrl(e.target.value);
+                }}
                 placeholder="e.g. /collections/sneakers or /products/nike-air"
                 className="w-full rounded-xl border border-black/10 bg-[#f8f9fa] px-3.5 py-2 text-xs text-black placeholder-black/30 outline-none focus:border-[#6a4fbb] sm:text-sm dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white"
               />
@@ -318,12 +346,15 @@ export function SendNotificationModal({
                   Send Push Notification
                 </p>
                 <p className="text-[11px] text-black/50 dark:text-white/50">
-                  Dispatches an instant device notification to subscribers even when browser is closed
+                  Dispatches an instant device notification to subscribers even when browser is
+                  closed
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => setSendPush(!sendPush)}
+                onClick={() => {
+                  setSendPush(!sendPush);
+                }}
                 className={`flex h-6 w-11 shrink-0 items-center rounded-full p-0.5 transition-colors focus:outline-none ${
                   sendPush ? 'bg-emerald-500' : 'bg-zinc-600'
                 }`}

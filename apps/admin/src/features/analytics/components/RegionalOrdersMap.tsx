@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
 
-import { AnimatePresence, motion } from 'motion/react';
-
 import { MinusIcon, PlusIcon, RefreshCcwIcon } from '@ff/ui';
+import { AnimatePresence, motion } from 'motion/react';
 
 import { type AnalyticsPayload } from '../types';
 
@@ -132,7 +131,7 @@ export function RegionalOrdersMap({ stateOrders }: RegionalOrdersMapProps) {
 
           {/* Map area */}
           <div
-            className="relative flex min-h-[380px] sm:min-h-[460px] lg:min-h-[500px] flex-1 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/30 p-2 sm:p-4 dark:from-slate-900/50 dark:via-purple-950/20 dark:to-blue-950/20"
+            className="relative flex min-h-[380px] flex-1 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/30 p-2 sm:min-h-[460px] sm:p-4 lg:min-h-[500px] dark:from-slate-900/50 dark:via-purple-950/20 dark:to-blue-950/20"
             onMouseEnter={() => {
               setIsMapHovered(true);
             }}
