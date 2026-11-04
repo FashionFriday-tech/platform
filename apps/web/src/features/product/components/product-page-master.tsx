@@ -82,6 +82,8 @@ export default function ProductPageMaster({
       category: Array.isArray(product.brand)
         ? product.brand[0]
         : (product.brand ?? 'Fashion Friday'),
+      availableSizes: product.attributes?.sizes ?? [],
+      inStock: (product.inventory?.totalStock ?? 1) > 0,
     });
   };
 

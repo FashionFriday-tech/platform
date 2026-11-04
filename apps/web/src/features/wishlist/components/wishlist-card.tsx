@@ -23,6 +23,9 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
   const { addItem } = useCart();
   const [isSelectingSize, setIsSelectingSize] = useState(false);
 
+  // Default to inStock = true unless explicitly set to false
+  const isInStock = product.inStock !== false;
+
   // Typecast or cast product to check for availableSizes
   const productSizes = (product as WishlistProductItem).availableSizes || ['Standard'];
 
@@ -31,7 +34,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
     : 0;
 
   const handleAddToCartClick = () => {
-    if (!product.inStock) {
+    if (!isInStock) {
       toast.error('This product is currently out of stock');
       return;
     }
@@ -57,7 +60,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
         ogPrice: product.originalPrice || product.price,
         sellingPrice: product.price,
         mainImage: product.image,
-        totalStock: product.inStock ? 10 : 0,
+        totalStock: isInStock ? 10 : 0,
       },
     });
 
@@ -89,12 +92,12 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
           </button>
 
           <button
-            disabled={!product.inStock}
+            disabled={!isInStock}
             onClick={handleAddToCartClick}
             className="bg-foreground text-background flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 disabled:opacity-50 disabled:hover:scale-100"
             aria-label="Add to cart"
           >
-            {product.inStock ? <ShoppingBagIcon size={20} /> : <BellIcon size={20} />}
+            {isInStock ? <ShoppingBagIcon size={20} /> : <BellIcon size={20} />}
           </button>
         </div>
 
@@ -135,7 +138,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
           )}
         </AnimatePresence>
 
-        {!product.inStock && !isSelectingSize && (
+        {!isInStock && !isSelectingSize && (
           <div className="bg-background/80 text-foreground absolute top-2 left-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-black tracking-wider uppercase backdrop-blur-sm">
             Sold Out
           </div>
@@ -160,7 +163,7 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
         </Link>
 
         {/* Out of Stock Overlay */}
-        {!product.inStock && (
+        {!isInStock && (
           <div className="bg-background/60 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-[1px]">
             <div className="bg-background text-foreground rounded-full px-2.5 py-1 text-[9px] font-black tracking-wider uppercase">
               Sold Out
@@ -213,11 +216,11 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
         <div className="mt-4">
           <button
             type="button"
-            disabled={!product.inStock}
+            disabled={!isInStock}
             onClick={handleAddToCartClick}
             className="bg-foreground text-background hover:bg-foreground/90 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full py-2.5 text-[10px] font-black tracking-widest uppercase shadow-sm transition-transform active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5 sm:py-2.5 sm:text-[11px]"
           >
-            {product.inStock ? (
+            {isInStock ? (
               <>
                 <ShoppingBagIcon size={13} />
                 Add to Cart

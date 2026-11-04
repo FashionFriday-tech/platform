@@ -50,11 +50,16 @@ export const useWishlistStore = create<WishlistState>()(
         const { items } = get();
         const exists = items.some((item) => item.id === product.id);
 
+        const normalizedProduct: WishlistProductItem = {
+          ...product,
+          inStock: product.inStock !== false,
+        };
+
         // Optimistic UI Update (Instant response)
         if (exists) {
           set({ items: items.filter((item) => item.id !== product.id) });
         } else {
-          set({ items: [product, ...items] });
+          set({ items: [normalizedProduct, ...items] });
         }
 
         // If authenticated, sync with database
@@ -172,6 +177,14 @@ export const useWishlistStore = create<WishlistState>()(
     {
       name: 'ff_wishlist_storage',
       partialize: (state) => ({ items: state.items }),
+      onRehydrateStorage: () => (state) => {
+        if (state && Array.isArray(state.items)) {
+          state.items = state.items.map((item) => ({
+            ...item,
+            inStock: item.inStock !== false,
+          }));
+        }
+      },
     },
   ),
 );

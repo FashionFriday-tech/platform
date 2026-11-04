@@ -45,6 +45,8 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
       originalPrice: product.price.ogPrice,
       image: product.media.mainImage || '/images/placeholder.png',
       category: brandName,
+      availableSizes: product.attributes?.sizes ?? [],
+      inStock: (product.inventory?.totalStock ?? 1) > 0,
     });
   };
 
