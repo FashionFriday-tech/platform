@@ -11,6 +11,7 @@ import { useWishlist } from '@/features/wishlist';
 
 import { useCart } from '../hooks/use-cart';
 import { type CartItem } from '../types';
+import { formatColorLabel } from '../utils/format-color';
 
 interface BagItemCardProps {
   item: CartItem;
@@ -130,8 +131,12 @@ export function CartItemsCard({ item }: BagItemCardProps) {
               </h3>
             </Link>
             <div className="text-foreground-subtle flex items-center gap-3 text-[11px] font-semibold tracking-widest uppercase md:text-sm">
-              <span>{item.color}</span>
-              <span className="bg-border h-3 w-px" />
+              {formatColorLabel(item.color) ? (
+                <>
+                  <span>{formatColorLabel(item.color)}</span>
+                  <span className="bg-border h-3 w-px" />
+                </>
+              ) : null}
               <span>{item.size}</span>
               {!inStock && <span className="font-bold text-red-500">• Out of Stock</span>}
             </div>

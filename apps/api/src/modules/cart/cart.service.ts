@@ -12,10 +12,11 @@ export class CartService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * Fetch all cart items for an authenticated user with product details
+   * Fetch all cart items for an authenticated user with product details.
+   * Consolidates any duplicate variants with identical product and size into a single card.
    */
   async getUserCart(userId: string) {
-    const items = await this.prisma.db.cartItem.findMany({
+    const rawItems = await this.prisma.db.cartItem.findMany({
       where: { userId },
       include: {
         product: {
@@ -34,8 +35,47 @@ export class CartService {
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' },
     });
+
+    const consolidatedMap = new Map<string, (typeof rawItems)[0]>();
+    const duplicateIdsToDelete: string[] = [];
+
+    for (const item of rawItems) {
+      const normalizedSize = (item.size || 'Standard').trim().toLowerCase();
+      const key = `${item.productId}_${normalizedSize}`;
+      const existing = consolidatedMap.get(key);
+
+      if (existing) {
+        const maxStock = existing.product?.totalStock ?? 10;
+        const newQty = Math.min(existing.quantity + item.quantity, maxStock, MAX_QUANTITY_PER_ITEM);
+        existing.quantity = newQty;
+        if (item.color && item.color.toLowerCase() !== 'standard') {
+          existing.color = item.color;
+        }
+        duplicateIdsToDelete.push(item.id);
+      } else {
+        consolidatedMap.set(key, { ...item });
+      }
+    }
+
+    if (duplicateIdsToDelete.length > 0) {
+      try {
+        await this.prisma.db.cartItem.deleteMany({
+          where: { id: { in: duplicateIdsToDelete } },
+        });
+        for (const item of consolidatedMap.values()) {
+          await this.prisma.db.cartItem.update({
+            where: { id: item.id },
+            data: { quantity: item.quantity, color: item.color },
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to cleanup duplicate cart items in DB:', err);
+      }
+    }
+
+    const items = Array.from(consolidatedMap.values());
 
     return items.map((item) => ({
       id: item.id,
@@ -57,7 +97,7 @@ export class CartService {
   }
 
   /**
-   * Add an item to user's cart (or increment quantity if identical variant exists)
+   * Add an item to user's cart (or increment quantity if identical product & size exists)
    */
   async addToCart(userId: string, dto: AddToCartDto) {
     const product = await this.prisma.db.product.findUnique({
@@ -69,33 +109,26 @@ export class CartService {
       throw new NotFoundException('Product not found');
     }
 
-    // Relaxed stock validation for demo/dev mode
-    // if (product.totalStock <= 0) {
-    //   throw new BadRequestException('Product is currently out of stock');
-    // }
-
     const size = dto.size || 'Standard';
     const color = dto.color || 'Standard';
     const addQuantity = Math.max(1, dto.quantity || 1);
 
-    const existing = await this.prisma.db.cartItem.findUnique({
+    const existing = await this.prisma.db.cartItem.findFirst({
       where: {
-        userId_productId_size_color: {
-          userId,
-          productId: dto.productId,
-          size,
-          color,
-        },
+        userId,
+        productId: dto.productId,
+        size: { equals: size, mode: 'insensitive' },
       },
     });
 
     if (existing) {
       const maxAllowed = Math.min(Math.max(product.totalStock, 10), MAX_QUANTITY_PER_ITEM);
       const newQuantity = Math.min(existing.quantity + addQuantity, maxAllowed);
+      const preferredColor = color && color.toLowerCase() !== 'standard' ? color : existing.color;
 
       await this.prisma.db.cartItem.update({
         where: { id: existing.id },
-        data: { quantity: newQuantity },
+        data: { quantity: newQuantity, color: preferredColor },
       });
     } else {
       const initialQuantity = Math.min(
@@ -205,23 +238,21 @@ export class CartService {
       const color = item.color || 'Standard';
       const maxAllowed = Math.min(Math.max(product.totalStock, 10), MAX_QUANTITY_PER_ITEM);
 
-      const existing = await this.prisma.db.cartItem.findUnique({
+      const existing = await this.prisma.db.cartItem.findFirst({
         where: {
-          userId_productId_size_color: {
-            userId,
-            productId: item.productId,
-            size,
-            color,
-          },
+          userId,
+          productId: item.productId,
+          size: { equals: size, mode: 'insensitive' },
         },
       });
 
       if (existing) {
         // Merge quantities safely without duplicate doubling
         const mergedQuantity = Math.min(Math.max(existing.quantity, item.quantity), maxAllowed);
+        const preferredColor = color && color.toLowerCase() !== 'standard' ? color : existing.color;
         await this.prisma.db.cartItem.update({
           where: { id: existing.id },
-          data: { quantity: mergedQuantity },
+          data: { quantity: mergedQuantity, color: preferredColor },
         });
       } else {
         const initialQuantity = Math.min(item.quantity, maxAllowed);

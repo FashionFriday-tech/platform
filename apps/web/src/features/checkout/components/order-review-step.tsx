@@ -14,6 +14,8 @@ import {
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
+import { formatColorLabel } from '@/features/cart';
+
 import { useCheckoutReview } from '../hooks/use-checkout-review';
 import { AddressFormDrawer } from './address-form-drawer';
 import { CheckoutProgress } from './checkout-progress';
@@ -154,9 +156,11 @@ export function OrderReviewStep() {
                           <p className="text-foreground-muted mt-1 text-[10px] font-bold uppercase">
                             Size: {item.size} • Qty: {item.quantity}
                           </p>
-                          <p className="text-foreground-muted mt-1 text-[10px] font-bold uppercase">
-                            Color: {item.color}
-                          </p>
+                          {formatColorLabel(item.color) ? (
+                            <p className="text-foreground-muted mt-1 text-[10px] font-bold uppercase">
+                              Color: {formatColorLabel(item.color)}
+                            </p>
+                          ) : null}
                         </div>
                         <p className="text-sm font-black tracking-tighter">
                           ₹{price.toLocaleString()}

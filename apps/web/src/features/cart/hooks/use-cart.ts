@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAuthStore } from '@/store/auth-store';
-import { useCartStore } from '@/store/cart-store';
+import { consolidateCartItems, useCartStore } from '@/store/cart-store';
 
 import { type AddToCartInput, type CartTotals } from '../types';
 
@@ -15,7 +15,14 @@ export function useCart() {
   }, []);
 
   const user = useAuthStore((state) => state.user);
-  const items = useCartStore((state) => state.items);
+  const rawItems = useCartStore((state) => state.items);
+  const items = useMemo(() => consolidateCartItems(rawItems), [rawItems]);
+
+  useEffect(() => {
+    if (rawItems.length !== items.length) {
+      useCartStore.setState({ items });
+    }
+  }, [rawItems, items]);
   const loading = useCartStore((state) => state.loading);
   const isInitialized = useCartStore((state) => state.isInitialized);
   const addItem = useCartStore((state) => state.addItem);

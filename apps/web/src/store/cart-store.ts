@@ -11,6 +11,44 @@ import {
 } from '@/features/cart/services/cart.actions';
 import { type AddToCartInput, type CartItem } from '@/features/cart/types';
 
+/**
+ * Consolidate duplicate cart items that have the same product and size.
+ * Combines their quantities into a single card up to maximum allowed stock.
+ */
+export function consolidateCartItems(items: CartItem[]): CartItem[] {
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return [];
+  }
+
+  const map = new Map<string, CartItem>();
+
+  for (const item of items) {
+    if (!item) continue;
+    const normSize = (item.size || 'Standard').trim().toLowerCase();
+    const productId = item.productId || item.product?.id || item.id;
+    const key = `${productId}_${normSize}`;
+    const existing = map.get(key);
+
+    if (existing) {
+      const maxStock = existing.product?.totalStock ?? item.product?.totalStock ?? 10;
+      const combinedQty = Math.min(existing.quantity + (item.quantity || 1), maxStock, 10);
+      const preferredColor =
+        item.color && item.color.toLowerCase() !== 'standard' ? item.color : existing.color;
+      const preferredProduct = existing.product || item.product;
+      map.set(key, {
+        ...existing,
+        color: preferredColor,
+        quantity: combinedQty,
+        product: preferredProduct,
+      });
+    } else {
+      map.set(key, { ...item });
+    }
+  }
+
+  return Array.from(map.values());
+}
+
 interface CartState {
   items: CartItem[];
   loading: boolean;
@@ -32,25 +70,29 @@ export const useCartStore = create<CartState>()(
       isInitialized: false,
 
       addItem: async (input: AddToCartInput, isAuthenticated = false) => {
-        const { items } = get();
+        const currentItems = consolidateCartItems(get().items);
         const size = input.size || 'Standard';
+        const normSize = size.trim().toLowerCase();
         const color = input.color || 'Standard';
         const addQty = input.quantity || 1;
 
-        // Check for existing variant in local store
-        const existingIndex = items.findIndex(
+        // Check for existing variant in local store by same product and same size
+        const existingIndex = currentItems.findIndex(
           (item) =>
-            item.productId === input.productId && item.size === size && item.color === color,
+            item.productId === input.productId &&
+            (item.size || 'Standard').trim().toLowerCase() === normSize,
         );
 
         let optimisticItems: CartItem[];
 
         if (existingIndex >= 0) {
-          optimisticItems = items.map((item, idx) => {
+          optimisticItems = currentItems.map((item, idx) => {
             if (idx === existingIndex) {
               const maxStock = item.product?.totalStock ?? 10;
               const newQuantity = Math.min(item.quantity + addQty, maxStock, 10);
-              return { ...item, quantity: newQuantity };
+              const preferredColor =
+                color && color.toLowerCase() !== 'standard' ? color : item.color;
+              return { ...item, quantity: newQuantity, color: preferredColor };
             }
             return item;
           });
@@ -67,11 +109,11 @@ export const useCartStore = create<CartState>()(
             quantity: Math.min(addQty, input.product.totalStock || 10, 10),
             product: input.product,
           };
-          optimisticItems = [newItem, ...items];
+          optimisticItems = [newItem, ...currentItems];
         }
 
-        // Optimistic UI update
-        set({ items: optimisticItems });
+        // Optimistic UI update with consolidated items
+        set({ items: consolidateCartItems(optimisticItems) });
 
         // If authenticated, sync mutation with database
         if (isAuthenticated) {
@@ -83,7 +125,7 @@ export const useCartStore = create<CartState>()(
               quantity: addQty,
             });
             if (serverItems && serverItems.length > 0) {
-              set({ items: serverItems });
+              set({ items: consolidateCartItems(serverItems) });
             }
           } catch (error) {
             console.error('Failed to add item to server cart:', error);
@@ -92,13 +134,13 @@ export const useCartStore = create<CartState>()(
       },
 
       updateQuantity: async (itemId: string, quantity: number, isAuthenticated = false) => {
-        const { items } = get();
+        const currentItems = consolidateCartItems(get().items);
 
         if (quantity <= 0) {
-          set({ items: items.filter((item) => item.id !== itemId) });
+          set({ items: currentItems.filter((item) => item.id !== itemId) });
         } else {
           set({
-            items: items.map((item) => {
+            items: currentItems.map((item) => {
               if (item.id === itemId) {
                 const maxStock = item.product?.totalStock ?? 10;
                 return { ...item, quantity: Math.min(quantity, maxStock, 10) };
@@ -112,7 +154,7 @@ export const useCartStore = create<CartState>()(
           try {
             const serverItems = await updateCartQuantityAction(itemId, quantity);
             if (serverItems) {
-              set({ items: serverItems });
+              set({ items: consolidateCartItems(serverItems) });
             }
           } catch (error) {
             console.error('Failed to update cart quantity on server:', error);
@@ -121,14 +163,14 @@ export const useCartStore = create<CartState>()(
       },
 
       removeItem: async (itemId: string, isAuthenticated = false) => {
-        const { items } = get();
-        set({ items: items.filter((item) => item.id !== itemId) });
+        const currentItems = consolidateCartItems(get().items);
+        set({ items: currentItems.filter((item) => item.id !== itemId) });
 
         if (isAuthenticated) {
           try {
             const serverItems = await removeCartItemAction(itemId);
             if (serverItems) {
-              set({ items: serverItems });
+              set({ items: consolidateCartItems(serverItems) });
             }
           } catch (error) {
             console.error('Failed to remove cart item on server:', error);
@@ -172,7 +214,7 @@ export const useCartStore = create<CartState>()(
 
         set({ loading: true });
         try {
-          const localItems = get().items;
+          const localItems = consolidateCartItems(get().items);
           // Identify un-synced guest items (temporary IDs generated in guest session)
           const guestItems = localItems.filter((item) => item.id.startsWith('temp_'));
 
@@ -188,7 +230,7 @@ export const useCartStore = create<CartState>()(
             const merged = await syncCartAction(syncPayload);
             if (merged !== null && Array.isArray(merged)) {
               console.log('[CartStore] Guest items merged successfully:', merged.length, 'items');
-              set({ items: merged, isInitialized: true });
+              set({ items: consolidateCartItems(merged), isInitialized: true });
               return;
             }
           }
@@ -199,7 +241,7 @@ export const useCartStore = create<CartState>()(
           console.log(
             `[CartStore] Fetched ${Array.isArray(remote) ? remote.length : 0} items from server`,
           );
-          set({ items: Array.isArray(remote) ? remote : [], isInitialized: true });
+          set({ items: consolidateCartItems(Array.isArray(remote) ? remote : []), isInitialized: true });
         } catch (error) {
           console.error('[CartStore] Failed to sync cart with server:', error);
         } finally {
@@ -209,7 +251,12 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'ff_cart_storage',
-      partialize: (state) => ({ items: state.items }),
+      partialize: (state) => ({ items: consolidateCartItems(state.items) }),
+      onRehydrateStorage: () => (state) => {
+        if (state && Array.isArray(state.items)) {
+          state.items = consolidateCartItems(state.items);
+        }
+      },
     },
   ),
 );
