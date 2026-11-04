@@ -402,8 +402,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         statusOverride ?? (initialData?.status === 'DRAFT' ? 'DRAFT' : 'PUBLISHED');
 
       const payload = {
-        name: productName.trim(),
-        description: safeDescription,
+        name: productName.trim().toUpperCase(),
+        description: safeDescription.toUpperCase(),
         status: targetStatus,
         categoryId: selectedApiCategory.id,
         sellerId:
@@ -411,10 +411,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             ? selectedSellerIds[0]
             : undefined,
         sellerIds: selectedSellerIds.filter((id) => id && id !== 'none'),
-        brand: brandInput.trim() ? [brandInput.trim()] : ['Fashion Friday'],
+        brand: brandInput.trim() ? [brandInput.trim().toUpperCase()] : ['FASHION FRIDAY'],
         gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
         attributes: {
-          sizes: sizes.length > 0 ? sizes : [],
+          sizes: sizes.length > 0 ? sizes.map((s) => s.trim().toUpperCase()) : [],
           colors:
             selectedColors.length > 0
               ? selectedColors.map((c) => c.hex)
@@ -423,7 +423,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     filteredColors.find((c) => c.name.toLowerCase() === colorInput.trim().toLowerCase())?.hex ||
                     (colorInput.startsWith('#') ? colorInput : '#000000'),
                 ],
-          quality: mappedQuality,
+          quality: mappedQuality.toUpperCase(),
         },
         price: {
           sellingPrice: Number(basePrice) || 0,
@@ -440,9 +440,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           youtubeId: videoId?.trim() ? videoId.trim() : null,
         },
         marketing: {
-          collections: tags,
-          seoTitle: seoTitle || undefined,
-          seoDescription: seoDesc || undefined,
+          collections: tags.map((t) => t.trim().toUpperCase()),
+          seoTitle: seoTitle?.trim() ? seoTitle.trim().toUpperCase() : undefined,
+          seoDescription: seoDesc?.trim() ? seoDesc.trim().toUpperCase() : undefined,
         },
         liveMatrix: {
           liveWatching: Math.max(0, Number(liveWatching) || 0),
@@ -732,10 +732,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   type="text"
                   value={productName}
                   onChange={(e) => {
-                    setProductName(e.target.value);
+                    setProductName(e.target.value.toUpperCase());
                   }}
-                  placeholder="Puffer Jacket With Pocket Detail"
-                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                  placeholder="PUFFER JACKET WITH POCKET DETAIL"
+                  className="w-full rounded-xl border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium uppercase text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
                 />
               </div>
 
@@ -882,7 +882,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       type="text"
                       value={brandInput}
                       onChange={(e) => {
-                        setBrandInput(e.target.value);
+                        setBrandInput(e.target.value.toUpperCase());
                         setSelectedBrandLogo(null); // Clear selected logo if typing
                         setIsBrandOpen(true);
                       }}
@@ -894,14 +894,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           e.preventDefault();
                           if (filteredBrands.length > 0) {
                             const first = filteredBrands[0];
-                            setBrandInput(first.name);
+                            setBrandInput(first.name.toUpperCase());
                             setSelectedBrandLogo(first.logo ?? first.name.charAt(0).toUpperCase());
                             setIsBrandOpen(false);
                           }
                         }
                       }}
-                      placeholder="e.g. Nike"
-                      className={`w-full rounded-xl border-transparent bg-black/5 text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
+                      placeholder="e.g. NIKE"
+                      className={`w-full rounded-xl border-transparent bg-black/5 uppercase text-black focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20 ${selectedBrandLogo ? 'pl-10' : 'px-4'} py-3.5 text-sm font-medium transition-all outline-none`}
                     />
                   </div>
 

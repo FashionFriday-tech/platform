@@ -23,12 +23,32 @@ export class AdminProductsService {
           : [];
     const primarySellerId = allSellerIds[0] || rawDto.sellerId || undefined;
 
+    const name = (dto.name || '').trim().toUpperCase();
+    const slug = (dto.slug || '').trim().toLowerCase();
+    const description = (dto.description || '').trim().toUpperCase();
+    const brand = Array.isArray(dto.brand)
+      ? dto.brand.map((b) => b.trim().toUpperCase()).filter(Boolean)
+      : dto.brand
+        ? [dto.brand.trim().toUpperCase()]
+        : ['FASHION FRIDAY'];
+    const sizes = Array.isArray(dto.attributes?.sizes)
+      ? dto.attributes.sizes.map((s) => s.trim().toUpperCase()).filter(Boolean)
+      : [];
+    const quality = (dto.attributes?.quality || 'STANDARD').toUpperCase();
+    const collections = Array.isArray(dto.marketing?.collections)
+      ? dto.marketing.collections.map((c) => c.trim().toUpperCase()).filter(Boolean)
+      : [];
+    const seoTitle = dto.marketing?.seoTitle ? dto.marketing.seoTitle.trim().toUpperCase() : null;
+    const seoDescription = dto.marketing?.seoDescription
+      ? dto.marketing.seoDescription.trim().toUpperCase()
+      : null;
+
     const data: Prisma.ProductCreateInput = {
       id: generateBrandId('PROD'),
-      name: dto.name,
-      slug: dto.slug,
-      description: dto.description,
-      brand: dto.brand ?? [],
+      name,
+      slug,
+      description,
+      brand,
       status: dto.status.toUpperCase() as ProductStatus,
       category: { connect: { id: (dto as any).categoryId } },
       sellerIds: allSellerIds,
@@ -48,8 +68,8 @@ export class AdminProductsService {
 
       // Attributes
       colors: dto.attributes.colors ?? [],
-      quality: dto.attributes.quality,
-      sizes: dto.attributes.sizes ?? [],
+      quality,
+      sizes,
 
       // Inventory
       totalStock: dto.inventory?.totalStock ?? 0,
@@ -75,10 +95,10 @@ export class AdminProductsService {
       ),
 
       // Marketing
-      collections: dto.marketing?.collections ?? [],
+      collections,
       isFeatured: dto.marketing?.isFeatured ?? false,
-      seoTitle: dto.marketing?.seoTitle || null,
-      seoDescription: dto.marketing?.seoDescription || null,
+      seoTitle,
+      seoDescription,
     };
 
     try {
@@ -151,16 +171,21 @@ export class AdminProductsService {
     const d = dto as any;
 
     if (d.name) {
-      data.name = d.name;
+      data.name = typeof d.name === 'string' ? d.name.trim().toUpperCase() : undefined;
     }
     if (d.slug) {
-      data.slug = d.slug;
+      data.slug = typeof d.slug === 'string' ? d.slug.trim().toLowerCase() : undefined;
     }
     if (d.description) {
-      data.description = d.description;
+      data.description =
+        typeof d.description === 'string' ? d.description.trim().toUpperCase() : undefined;
     }
     if (d.brand) {
-      data.brand = d.brand;
+      data.brand = Array.isArray(d.brand)
+        ? d.brand.map((b: string) => b.trim().toUpperCase()).filter(Boolean)
+        : typeof d.brand === 'string'
+          ? [d.brand.trim().toUpperCase()]
+          : [];
     }
     if (d.status) {
       data.status = d.status.toUpperCase() as ProductStatus;
@@ -234,10 +259,13 @@ export class AdminProductsService {
         data.colors = d.attributes.colors;
       }
       if (d.attributes.quality) {
-        data.quality = d.attributes.quality;
+        data.quality =
+          typeof d.attributes.quality === 'string' ? d.attributes.quality.toUpperCase() : undefined;
       }
       if (d.attributes.sizes) {
-        data.sizes = d.attributes.sizes;
+        data.sizes = Array.isArray(d.attributes.sizes)
+          ? d.attributes.sizes.map((s: string) => s.trim().toUpperCase()).filter(Boolean)
+          : [];
       }
     }
 
@@ -280,16 +308,24 @@ export class AdminProductsService {
 
     if (d.marketing) {
       if (d.marketing.collections) {
-        data.collections = d.marketing.collections;
+        data.collections = Array.isArray(d.marketing.collections)
+          ? d.marketing.collections.map((c: string) => c.trim().toUpperCase()).filter(Boolean)
+          : [];
       }
       if (d.marketing.isFeatured !== undefined) {
         data.isFeatured = d.marketing.isFeatured;
       }
       if (d.marketing.seoTitle !== undefined) {
-        data.seoTitle = d.marketing.seoTitle;
+        data.seoTitle =
+          typeof d.marketing.seoTitle === 'string'
+            ? d.marketing.seoTitle.trim().toUpperCase()
+            : null;
       }
       if (d.marketing.seoDescription !== undefined) {
-        data.seoDescription = d.marketing.seoDescription;
+        data.seoDescription =
+          typeof d.marketing.seoDescription === 'string'
+            ? d.marketing.seoDescription.trim().toUpperCase()
+            : null;
       }
     }
 
