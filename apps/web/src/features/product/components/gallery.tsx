@@ -11,6 +11,13 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
   const [activeMode, setActiveMode] = useState<'image' | 'video'>('image');
   const [isZoomed, setIsZoomed] = useState(false);
 
+  const hasVideo = Boolean(
+    videoUrl &&
+      videoUrl.trim() !== '' &&
+      videoUrl.trim() !== 'null' &&
+      videoUrl.trim() !== 'undefined',
+  );
+
   const lastTap = useRef<number>(0);
   const ZOOM_LEVEL = 2.7;
 
@@ -74,28 +81,30 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
           ))}
 
           {/* Video Thumbnail Button */}
-          <button
-            onClick={() => {
-              setActiveMode('video');
-              setIsZoomed(false);
-            }}
-            className={`relative flex aspect-4/5 w-full shrink-0 items-center justify-center overflow-hidden rounded-4xl border-2 bg-gray-100 transition-all duration-300 ${
-              activeMode === 'video'
-                ? 'scale-95 border-black shadow-lg'
-                : 'border-transparent opacity-70 hover:opacity-100'
-            }`}
-          >
-            <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-              <PlayIcon size={24} fill="white" className="text-white" />
-            </div>
-            <Image
-              src={images[0]}
-              alt="Video Preview"
-              fill
-              className="object-cover blur-[1px]"
-              sizes="(max-width: 768px) 80px, 100px"
-            />
-          </button>
+          {hasVideo && (
+            <button
+              onClick={() => {
+                setActiveMode('video');
+                setIsZoomed(false);
+              }}
+              className={`relative flex aspect-4/5 w-full shrink-0 items-center justify-center overflow-hidden rounded-4xl border-2 bg-gray-100 transition-all duration-300 ${
+                activeMode === 'video'
+                  ? 'scale-95 border-black shadow-lg'
+                  : 'border-transparent opacity-70 hover:opacity-100'
+              }`}
+            >
+              <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                <PlayIcon size={24} fill="white" className="text-white" />
+              </div>
+              <Image
+                src={images[0] || '/images/placeholder.png'}
+                alt="Video Preview"
+                fill
+                className="object-cover blur-[1px]"
+                sizes="(max-width: 768px) 80px, 100px"
+              />
+            </button>
+          )}
         </div>
       </div>
 
@@ -173,39 +182,46 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
             )}
           </AnimatePresence>
           {/* --- CAPSULE SWITCHER (Floating controls) --- */}
-          <div className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2">
-            <div className="flex items-center gap-1 rounded-full border border-white/20 bg-black/20 p-1 shadow-2xl backdrop-blur-xl">
-              <button
-                onClick={() => {
-                  setActiveMode('image');
-                  setIsZoomed(false);
-                }}
-                className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase transition-all ${
-                  activeMode === 'image'
-                    ? 'bg-white text-gray-400'
-                    : 'text-white opacity-60 hover:opacity-100'
-                }`}
-              >
-                <ImageIcon size={14} /> {index + 1} / {images.length}
-              </button>
+          {(images.length > 1 || hasVideo) && (
+            <div className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2">
+              <div className="flex items-center gap-1 rounded-full border border-white/20 bg-black/20 p-1 shadow-2xl backdrop-blur-xl">
+                <button
+                  onClick={() => {
+                    setActiveMode('image');
+                    setIsZoomed(false);
+                  }}
+                  className={`flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase transition-all ${
+                    activeMode === 'image'
+                      ? 'bg-white text-gray-400'
+                      : 'text-white opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <ImageIcon size={14} /> {index + 1} / {images.length}
+                </button>
 
-              <button
-                onClick={() => {
-                  setActiveMode('video');
-                  setIsZoomed(false);
-                }}
-                className={`flex items-center gap-1 rounded-full p-1 transition-all ${
-                  activeMode === 'video' ? 'bg-white' : 'text-white opacity-60 hover:opacity-100'
-                }`}
-              >
-                {activeMode !== 'video' ? (
-                  <PlayIcon size={14} />
-                ) : (
-                  <PauseIcon size={14} fill="black" />
+                {hasVideo && (
+                  <button
+                    onClick={() => {
+                      setActiveMode((prev) => (prev === 'video' ? 'image' : 'video'));
+                      setIsZoomed(false);
+                    }}
+                    aria-label={activeMode === 'video' ? 'View Photos' : 'Watch Video'}
+                    className={`flex items-center gap-1 rounded-full p-1 transition-all ${
+                      activeMode === 'video'
+                        ? 'bg-white text-black'
+                        : 'text-white opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    {activeMode !== 'video' ? (
+                      <PlayIcon size={14} />
+                    ) : (
+                      <PauseIcon size={14} fill="black" />
+                    )}
+                  </button>
                 )}
-              </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
