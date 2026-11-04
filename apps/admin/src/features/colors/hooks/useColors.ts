@@ -72,19 +72,24 @@ export function useColors() {
     setColorToEdit(null);
   };
 
-  const handleSaveColor = async (input: CreateColorInput | UpdateColorInput) => {
+  const handleSaveColor = async (
+    input: CreateColorInput | UpdateColorInput,
+  ): Promise<Color | undefined> => {
     setIsSaving(true);
     try {
       if (colorToEdit) {
         const updated = await updateColorApi(colorToEdit.id, input);
         setColors((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
         toast.success(`Color "${updated.name}" updated successfully`);
+        closeModal();
+        return updated;
       } else {
         const created = await createColorApi(input as CreateColorInput);
         setColors((prev) => [created, ...prev]);
         toast.success(`Color "${created.name}" created successfully`);
+        closeModal();
+        return created;
       }
-      closeModal();
     } catch (err: any) {
       console.error('Error saving color:', err);
       toast.error(err?.message || 'Failed to save color');

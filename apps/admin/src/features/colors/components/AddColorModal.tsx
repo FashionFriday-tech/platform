@@ -10,8 +10,10 @@ import { type Color, type CreateColorInput } from '../types';
 interface AddColorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (color: CreateColorInput) => Promise<void>;
+  onSave: (color: CreateColorInput) => Promise<unknown>;
   initialData?: Color | null;
+  defaultName?: string;
+  defaultHex?: string;
   isSaving: boolean;
 }
 
@@ -20,6 +22,8 @@ export function AddColorModal({
   onClose,
   onSave,
   initialData,
+  defaultName = '',
+  defaultHex = '#000000',
   isSaving,
 }: AddColorModalProps) {
   const [name, setName] = useState('');
@@ -27,15 +31,16 @@ export function AddColorModal({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialData) {
+    if (initialData && initialData.id) {
       setName(initialData.name);
       setHex(initialData.hex.startsWith('#') ? initialData.hex : `#${initialData.hex}`);
     } else {
-      setName('');
-      setHex('#000000');
+      setName(defaultName || initialData?.name || '');
+      const initialHex = defaultHex || initialData?.hex || '#000000';
+      setHex(initialHex.startsWith('#') ? initialHex : `#${initialHex}`);
     }
     setError(null);
-  }, [initialData, isOpen]);
+  }, [initialData, defaultName, defaultHex, isOpen]);
 
   if (!isOpen) {
     return null;
@@ -103,10 +108,10 @@ export function AddColorModal({
           <div className="mb-6 flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
             <div>
               <h2 className="text-xl font-bold text-black dark:text-white">
-                {initialData ? 'Edit Color' : 'Add New Color'}
+                {initialData?.id ? 'Edit Color' : 'Add New Color'}
               </h2>
               <p className="text-xs text-black/50 dark:text-white/50">
-                {initialData
+                {initialData?.id
                   ? 'Update color name and hex code'
                   : 'Add a new color to your product catalog'}
               </p>
