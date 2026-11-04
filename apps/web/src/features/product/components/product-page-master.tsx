@@ -1,6 +1,6 @@
 'use client';
 
-import { type JSX, useState } from 'react';
+import { type JSX, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -48,6 +48,28 @@ export default function ProductPageMaster({
     () => product.attributes?.sizes?.[0] ?? null,
   );
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
+  const mainCtaRef = useRef<HTMLElement>(null);
+  const [isMainCtaVisible, setIsMainCtaVisible] = useState(false);
+
+  useEffect(() => {
+    const target = mainCtaRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsMainCtaVisible(entry?.isIntersecting ?? false);
+      },
+      {
+        threshold: 0,
+      },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const { isItemWishlisted, toggleWishlist } = useWishlist();
   const { addItem } = useCart();
@@ -305,7 +327,7 @@ export default function ProductPageMaster({
               </div>
             )}
 
-            <section className="flex flex-col items-stretch gap-4 lg:flex-row">
+            <section ref={mainCtaRef} className="flex flex-col items-stretch gap-4 lg:flex-row">
               <div className="w-full lg:flex-1">
                 {product.inventory.totalStock > 0 ? (
                   <button
@@ -477,6 +499,7 @@ export default function ProductPageMaster({
         onCartClick={() => {
           router.push('/checkout/cart');
         }}
+        isVisible={!isMainCtaVisible}
       />
     </div>
   );
