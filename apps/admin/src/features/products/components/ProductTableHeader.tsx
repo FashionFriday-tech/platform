@@ -20,19 +20,21 @@ export function ProductTableHeader({
     <div className="sticky top-0 z-20 pb-0.5">
       <div
         style={{ gridTemplateColumns }}
-        className="grid items-center rounded-xl border border-black/10 bg-black px-6 py-3.5 text-xs font-semibold tracking-wider text-white uppercase shadow-md backdrop-blur-md dark:border-white/10 dark:bg-white dark:text-black dark:shadow-sm"
+        className="grid items-center rounded-xl border border-black/10 bg-black px-4 py-3.5 text-xs font-semibold tracking-wider text-white uppercase shadow-md backdrop-blur-md sm:px-6 dark:border-white/10 dark:bg-white dark:text-black dark:shadow-sm"
       >
         {/* Product Info */}
-        <div className="flex items-center space-x-3">
+        <div className="flex min-w-0 items-center space-x-3">
           <div
             className="flex cursor-pointer items-center space-x-1 hover:text-white/80 dark:hover:text-black/80"
             onClick={() => {
               setSortOption(sortOption === 'Name: A to Z' ? 'Name: Z to A' : 'Name: A to Z');
             }}
           >
-            <span className={sortOption.includes('Name') ? 'font-bold' : ''}>Product info</span>
+            <span className={`truncate ${sortOption.includes('Name') ? 'font-bold' : ''}`}>
+              Product info
+            </span>
             <svg
-              className={`h-3 w-3 transition-transform ${
+              className={`h-3 w-3 shrink-0 transition-transform ${
                 sortOption === 'Name: Z to A'
                   ? 'rotate-180 text-white dark:text-black'
                   : sortOption === 'Name: A to Z'
@@ -53,22 +55,24 @@ export function ProductTableHeader({
           </div>
         </div>
 
-        {visibleColumns.has('Category') && <div>Category</div>}
-        {visibleColumns.has('Cost Price') && <div>Cost Price</div>}
-        {visibleColumns.has('OG Price') && <div>OG Price</div>}
+        {visibleColumns.has('Category') && <div className="truncate">Category</div>}
+        {visibleColumns.has('Cost Price') && <div className="truncate">Cost Price</div>}
+        {visibleColumns.has('OG Price') && <div className="truncate">OG Price</div>}
 
         {/* Selling Price */}
         <div
-          className="flex cursor-pointer items-center space-x-1 hover:text-white/80 dark:hover:text-black/80"
+          className="flex min-w-0 cursor-pointer items-center space-x-1 hover:text-white/80 dark:hover:text-black/80"
           onClick={() => {
             setSortOption(
               sortOption === 'Price: Low to High' ? 'Price: High to Low' : 'Price: Low to High',
             );
           }}
         >
-          <span className={sortOption.includes('Price') ? 'font-bold' : ''}>Selling Price</span>
+          <span className={`truncate ${sortOption.includes('Price') ? 'font-bold' : ''}`}>
+            Selling Price
+          </span>
           <svg
-            className={`h-3 w-3 transition-transform ${
+            className={`h-3 w-3 shrink-0 transition-transform ${
               sortOption === 'Price: High to Low'
                 ? 'rotate-180 text-white dark:text-black'
                 : sortOption === 'Price: Low to High'
@@ -83,17 +87,17 @@ export function ProductTableHeader({
           </svg>
         </div>
 
-        {visibleColumns.has('Variants') && <div>Variants</div>}
-        {visibleColumns.has('Sales') && <div>Sales</div>}
-        {visibleColumns.has('Date Added') && <div>Date Added</div>}
+        {visibleColumns.has('Variants') && <div className="truncate">Variants</div>}
+        {visibleColumns.has('Sales') && <div className="truncate">Sales</div>}
+        {visibleColumns.has('Date Added') && <div className="truncate">Date Added</div>}
 
         {/* Status */}
-        <div>Status</div>
+        <div className="truncate">Status</div>
 
-        {visibleColumns.has('Stock') && <div>Stock</div>}
+        {visibleColumns.has('Stock') && <div className="truncate">Stock</div>}
 
         {/* Actions */}
-        <div className="text-right">Actions</div>
+        <div className="truncate text-right">Actions</div>
       </div>
     </div>
   );

@@ -88,26 +88,26 @@ export function ProductTable({
   };
 
   const gridTemplateColumns = [
-    'minmax(320px, 2.5fr)',
-    visibleColumns.has('Category') ? 'minmax(130px, 1.2fr)' : null,
-    visibleColumns.has('Cost Price') ? 'minmax(110px, 1fr)' : null,
-    visibleColumns.has('OG Price') ? 'minmax(110px, 1fr)' : null,
-    'minmax(130px, 1.1fr)',
-    visibleColumns.has('Variants') ? 'minmax(120px, 1fr)' : null,
-    visibleColumns.has('Sales') ? 'minmax(100px, 0.9fr)' : null,
-    visibleColumns.has('Date Added') ? 'minmax(120px, 1fr)' : null,
-    'minmax(120px, 1fr)',
-    visibleColumns.has('Stock') ? 'minmax(130px, 1.1fr)' : null,
-    'minmax(90px, 0.8fr)',
+    'minmax(180px, 2.2fr)',
+    visibleColumns.has('Category') ? 'minmax(90px, 1fr)' : null,
+    visibleColumns.has('Cost Price') ? 'minmax(85px, 0.9fr)' : null,
+    visibleColumns.has('OG Price') ? 'minmax(85px, 0.9fr)' : null,
+    'minmax(85px, 0.9fr)',
+    visibleColumns.has('Variants') ? 'minmax(90px, 0.9fr)' : null,
+    visibleColumns.has('Sales') ? 'minmax(75px, 0.8fr)' : null,
+    visibleColumns.has('Date Added') ? 'minmax(95px, 0.9fr)' : null,
+    'minmax(80px, 0.8fr)',
+    visibleColumns.has('Stock') ? 'minmax(95px, 1fr)' : null,
+    'minmax(48px, 0.4fr)',
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
     <>
-      <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-slate-50/50 p-2.5 shadow-xs dark:border-white/10 dark:bg-black/20">
-        <div className="scrollbar-hide flex-1 overflow-x-auto overflow-y-auto">
-          <div className="flex min-w-[1200px] flex-col gap-2.5 pb-2">
+      <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-slate-50/50 p-2 shadow-xs sm:p-2.5 dark:border-white/10 dark:bg-black/20">
+        <div className="scrollbar-hide flex-1 overflow-x-auto overflow-y-auto overscroll-contain [overscroll-behavior-x:none] [-webkit-overflow-scrolling:touch]">
+          <div className="flex w-full min-w-full flex-col gap-2.5 pb-2">
             <ProductTableHeader
               products={products}
               sortOption={sortOption}

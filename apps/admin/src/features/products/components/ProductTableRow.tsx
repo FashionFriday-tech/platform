@@ -30,11 +30,11 @@ export function ProductTableRow({
     <div
       onClick={onClick}
       style={{ gridTemplateColumns }}
-      className="grid cursor-pointer items-center rounded-xl border border-black/5 bg-white px-6 py-3.5 shadow-xs transition-all hover:border-black/15 hover:shadow-md dark:border-white/10 dark:bg-[#141417] dark:hover:border-white/20"
+      className="grid cursor-pointer items-center rounded-xl border border-black/5 bg-white px-4 py-3.5 shadow-xs transition-all hover:border-black/15 hover:shadow-md sm:px-6 dark:border-white/10 dark:bg-[#141417] dark:hover:border-white/20"
     >
       {/* Product Info */}
-      <div className="flex items-center space-x-3">
-        <div className="flex items-center space-x-3">
+      <div className="flex min-w-0 items-center space-x-3">
+        <div className="flex min-w-0 items-center space-x-3">
           <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/10">
             {product.imageUrl ? (
               <Image
@@ -56,7 +56,7 @@ export function ProductTableRow({
               {product.name}
             </p>
             <p
-              className="mt-0.5 font-mono text-xs text-black/40 dark:text-white/40"
+              className="mt-0.5 truncate font-mono text-xs text-black/40 dark:text-white/40"
               title={product.id}
             >
               ID: {product.id}
@@ -66,28 +66,28 @@ export function ProductTableRow({
       </div>
 
       {visibleColumns.has('Category') && (
-        <div>
-          <span className="inline-flex min-w-[90px] items-center justify-center rounded-md bg-black/5 px-2.5 py-1 text-xs font-medium text-black/70 dark:bg-white/5 dark:text-white/70">
+        <div className="min-w-0">
+          <span className="inline-flex max-w-full items-center justify-center rounded-md bg-black/5 px-2.5 py-1 text-xs font-medium text-black/70 dark:bg-white/5 dark:text-white/70">
             {getCategoryIcon(product.category)}
-            {product.category}
+            <span className="truncate">{product.category}</span>
           </span>
         </div>
       )}
 
       {visibleColumns.has('Cost Price') && (
-        <div className="text-sm font-medium text-black/70 dark:text-white/70">
+        <div className="min-w-0 truncate text-sm font-medium text-black/70 dark:text-white/70">
           ₹{Number(product.costPrice ?? 0).toFixed(2)}
         </div>
       )}
 
       {visibleColumns.has('OG Price') && (
-        <div className="text-sm font-medium text-black/70 dark:text-white/70">
+        <div className="min-w-0 truncate text-sm font-medium text-black/70 dark:text-white/70">
           ₹{Number(product.originalPrice ?? 0).toFixed(2)}
         </div>
       )}
 
       {/* Selling Price */}
-      <div className="text-sm font-semibold">
+      <div className="min-w-0 truncate text-sm font-semibold">
         {Number(product.sellingPrice ?? 0) < Number(product.costPrice ?? 0) ? (
           <span className="font-bold text-red-600 dark:text-red-500">
             ₹{Number(product.sellingPrice ?? 0).toFixed(2)}
@@ -100,7 +100,7 @@ export function ProductTableRow({
       </div>
 
       {visibleColumns.has('Variants') && (
-        <div>
+        <div className="min-w-0">
           <div className="grid w-max grid-flow-col grid-rows-2 gap-1">
             {product.variants?.map((v) => (
               <span
@@ -115,19 +115,21 @@ export function ProductTableRow({
       )}
 
       {visibleColumns.has('Sales') && (
-        <div className="text-sm font-semibold text-black/80 dark:text-white/80">
+        <div className="min-w-0 truncate text-sm font-semibold text-black/80 dark:text-white/80">
           {product.sales ? product.sales.toLocaleString() : '0'}
         </div>
       )}
 
       {visibleColumns.has('Date Added') && (
-        <div className="text-sm text-black/60 dark:text-white/60">{product.dateAdded ?? 'N/A'}</div>
+        <div className="min-w-0 truncate text-sm text-black/60 dark:text-white/60">
+          {product.dateAdded ?? 'N/A'}
+        </div>
       )}
 
       {/* Status */}
-      <div>
+      <div className="min-w-0">
         <span
-          className={`inline-flex min-w-[85px] items-center justify-center rounded-md border px-2.5 py-1 text-xs font-medium ${
+          className={`inline-flex max-w-full items-center justify-center rounded-md border px-2.5 py-1 text-xs font-medium ${
             product.status === 'Active'
               ? 'border-black/10 bg-black/5 text-black dark:border-white/20 dark:bg-white/10 dark:text-white'
               : product.status === 'Draft'
@@ -135,13 +137,13 @@ export function ProductTableRow({
                 : 'border-transparent bg-black/5 text-black/50 dark:bg-white/5 dark:text-white/50'
           }`}
         >
-          {product.status}
+          <span className="truncate">{product.status}</span>
         </span>
       </div>
 
       {visibleColumns.has('Stock') && (
-        <div>
-          <div className="flex w-24 flex-col justify-center">
+        <div className="min-w-0">
+          <div className="flex w-24 max-w-full flex-col justify-center">
             <div className="mb-1 h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
               <div
                 className={`h-full rounded-full transition-all duration-1000 ease-out ${
