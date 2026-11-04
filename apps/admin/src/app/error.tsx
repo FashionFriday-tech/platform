@@ -85,7 +85,29 @@ export default function AdminError({ error, reset }: ErrorProps) {
           </button>
         </div>
 
-        <div className="mt-4 text-center">
+        <div className="mt-4 flex flex-col items-center gap-2 text-center">
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                try {
+                  localStorage.removeItem('ff_admin_user');
+                  localStorage.removeItem('adminAccessToken');
+                  localStorage.removeItem('adminRefreshToken');
+                  sessionStorage.clear();
+                  if ('caches' in window) {
+                    void caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
+                  }
+                } catch {
+                  // ignore
+                }
+                window.location.href = '/login';
+              }
+            }}
+            className="text-xs font-semibold text-red-500 underline underline-offset-4 hover:text-red-600"
+          >
+            Reset Session & Return to Login
+          </button>
           <Link
             href="/"
             className="text-xs font-semibold text-zinc-500 underline underline-offset-4 hover:text-black dark:text-zinc-400 dark:hover:text-white"

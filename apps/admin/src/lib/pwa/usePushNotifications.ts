@@ -24,9 +24,15 @@ export function usePushNotifications() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window) {
+    if (
+      typeof window !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      'PushManager' in window &&
+      'Notification' in window &&
+      typeof window.Notification !== 'undefined'
+    ) {
       setIsSupported(true);
-      setPermission(Notification.permission);
+      setPermission(window.Notification.permission);
 
       void navigator.serviceWorker.ready
         .then((reg) => reg.pushManager.getSubscription())
@@ -55,7 +61,9 @@ export function usePushNotifications() {
       });
 
       setSubscription(sub);
-      setPermission(Notification.permission);
+      if (typeof window !== 'undefined' && typeof window.Notification !== 'undefined') {
+        setPermission(window.Notification.permission);
+      }
 
       // Save subscription to backend API
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.fashionfriday.in';

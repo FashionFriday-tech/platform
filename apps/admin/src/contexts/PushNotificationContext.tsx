@@ -150,11 +150,14 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
       return;
     }
 
-    const supported = 'Notification' in window;
-    setIsSupported(supported);
+    const hasNotificationApi =
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      typeof window.Notification !== 'undefined';
+    setIsSupported(hasNotificationApi);
 
-    if (supported) {
-      setPermission(Notification.permission);
+    if (hasNotificationApi) {
+      setPermission(window.Notification.permission);
     } else {
       setPermission('unsupported');
     }
@@ -194,7 +197,8 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
       const storedEnabled = localStorage.getItem(ENABLED_STORAGE_KEY);
       if (storedEnabled !== null) {
-        setIsEnabled(storedEnabled === 'true' && Notification.permission === 'granted');
+        const isGranted = hasNotificationApi && window.Notification.permission === 'granted';
+        setIsEnabled(storedEnabled === 'true' && isGranted);
       }
 
       const storedKnown = localStorage.getItem(KNOWN_ORDERS_KEY);
@@ -238,11 +242,14 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
   // Auto-sync active push subscription on mount if permission is granted
   useEffect(() => {
-    if (
+    const hasGrantedPermission =
       typeof window !== 'undefined' &&
       'serviceWorker' in navigator &&
-      Notification.permission === 'granted'
-    ) {
+      'Notification' in window &&
+      typeof window.Notification !== 'undefined' &&
+      window.Notification.permission === 'granted';
+
+    if (hasGrantedPermission) {
       void (async () => {
         try {
           const reg = await navigator.serviceWorker.register('/sw.js');
@@ -329,7 +336,13 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         actionLabel: 'View Details',
       });
 
-      if (!('Notification' in window) || Notification.permission !== 'granted') {
+      const hasNotificationPerm =
+        typeof window !== 'undefined' &&
+        'Notification' in window &&
+        typeof window.Notification !== 'undefined' &&
+        window.Notification.permission === 'granted';
+
+      if (!hasNotificationPerm) {
         return;
       }
 
@@ -372,13 +385,19 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
         }
 
         try {
-          const notif = new Notification(title, notificationOptions);
-          notif.onclick = () => {
-            window.focus();
-            if (options.url) {
-              window.location.href = options.url;
-            }
-          };
+          if (
+            typeof window !== 'undefined' &&
+            'Notification' in window &&
+            typeof window.Notification !== 'undefined'
+          ) {
+            const notif = new window.Notification(title, notificationOptions);
+            notif.onclick = () => {
+              window.focus();
+              if (options.url) {
+                window.location.href = options.url;
+              }
+            };
+          }
         } catch (err) {
           console.warn('[Push] Direct notification fallback error:', err);
         }
@@ -417,13 +436,17 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
   // Activate push notifications (optimistic & non-blocking)
   const activatePushNotifications = useCallback(async (): Promise<boolean> => {
-    if (typeof window === 'undefined' || !('Notification' in window)) {
+    if (
+      typeof window === 'undefined' ||
+      !('Notification' in window) ||
+      typeof window.Notification === 'undefined'
+    ) {
       toast.error('Browser push notifications are not supported on this device.');
       return false;
     }
 
     try {
-      const result = await Notification.requestPermission();
+      const result = await window.Notification.requestPermission();
       setPermission(result);
 
       if (result === 'granted') {

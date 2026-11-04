@@ -132,6 +132,26 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               ? 'A fresh update has been deployed. Reloading the page will immediately apply the changes.'
               : 'The admin panel encountered an unexpected state. Reloading will safely reset and refresh the interface.'}
           </p>
+          {error?.message && !isChunkError && (
+            <div
+              style={{
+                margin: '0 0 1.5rem 0',
+                padding: '0.75rem 1rem',
+                borderRadius: '0.75rem',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.25)',
+                color: '#ef4444',
+                fontSize: '0.75rem',
+                textAlign: 'left',
+                wordBreak: 'break-word',
+                fontFamily: 'monospace',
+                maxHeight: '6rem',
+                overflowY: 'auto',
+              }}
+            >
+              {error.message}
+            </div>
+          )}
           <div className="actions">
             <button
               className="btn-primary"
@@ -143,6 +163,28 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             </button>
             <button className="btn-secondary" onClick={() => reset()}>
               Try Again
+            </button>
+            <button
+              className="btn-secondary"
+              style={{ opacity: 0.8 }}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  try {
+                    localStorage.removeItem('ff_admin_user');
+                    localStorage.removeItem('adminAccessToken');
+                    localStorage.removeItem('adminRefreshToken');
+                    sessionStorage.clear();
+                    if ('caches' in window) {
+                      void caches.keys().then((keys) => Promise.all(keys.map((k) => caches.delete(k))));
+                    }
+                  } catch {
+                    // ignore
+                  }
+                  window.location.href = '/login';
+                }
+              }}
+            >
+              Reset Session & Sign In
             </button>
           </div>
         </div>

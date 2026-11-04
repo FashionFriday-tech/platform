@@ -43,7 +43,7 @@ export function DashboardView() {
         >
           <div className="flex flex-col gap-1.5">
             <h1 className="text-3xl font-black tracking-tight text-black dark:text-white">
-              Welcome back, {user.name.split(' ')[0]}
+              Welcome back, {user?.name ? user.name.split(' ')[0] : 'Admin'}
             </h1>
             <p className="text-sm font-medium text-black/60 dark:text-white/60">
               Live operations and performance dashboard for your store.
