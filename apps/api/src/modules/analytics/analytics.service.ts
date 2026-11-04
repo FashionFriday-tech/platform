@@ -35,23 +35,23 @@ export interface AnalyticsPayload {
   };
 
   revenueTrend: {
-    '7d': Array<{ date: string; revenue: number; orders: number }>;
-    '30d': Array<{ date: string; revenue: number; orders: number }>;
-    '90d': Array<{ date: string; revenue: number; orders: number }>;
+    '7d': { date: string; revenue: number; orders: number }[];
+    '30d': { date: string; revenue: number; orders: number }[];
+    '90d': { date: string; revenue: number; orders: number }[];
   };
 
   conversion: {
     rate: number;
     rateDelta: string;
     rateDeltaUp: boolean;
-    funnel: Array<{ label: string; value: string; count: number; pct: string; color: string }>;
+    funnel: { label: string; value: string; count: number; pct: string; color: string }[];
   };
 
-  stateOrders: Array<{ state: string; orders: number; revenue: number }>;
+  stateOrders: { state: string; orders: number; revenue: number }[];
 
-  categoryDistribution: Array<{ name: string; value: number; color: string; count: number }>;
+  categoryDistribution: { name: string; value: number; color: string; count: number }[];
 
-  topProducts: Array<{ name: string; sales: number; revenue: number; image?: string }>;
+  topProducts: { name: string; sales: number; revenue: number; image?: string }[];
 
   customerActivity: {
     menSales: number;
@@ -63,16 +63,16 @@ export interface AnalyticsPayload {
     newCustomersToday: number;
   };
 
-  trafficSources: Array<{ source: string; visitors: number; color: string }>;
+  trafficSources: { source: string; visitors: number; color: string }[];
 
   aovTrend: {
     current: number;
     previous: number;
     delta: string;
-    data: Array<{ date: string; current: number; previous: number }>;
+    data: { date: string; current: number; previous: number }[];
   };
 
-  customerRetention: Array<{
+  customerRetention: {
     cohort: string;
     m0: number;
     m1: number;
@@ -80,9 +80,9 @@ export interface AnalyticsPayload {
     m3: number;
     m4: number;
     m5: number;
-  }>;
+  }[];
 
-  liveOrders: Array<{
+  liveOrders: {
     id: string;
     orderNumber: string;
     customerName: string;
@@ -92,7 +92,7 @@ export interface AnalyticsPayload {
     itemsCount: number;
     timestamp: string;
     timeAgo: string;
-  }>;
+  }[];
 
   lastUpdated: string;
   cached: boolean;
@@ -168,11 +168,17 @@ function formatCurrencyINR(amount: number): string {
 
 function timeAgo(date: Date): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return `${Math.max(seconds, 1)}s ago`;
+  if (seconds < 60) {
+    return `${Math.max(seconds, 1)}s ago`;
+  }
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) {
+    return `${minutes}m ago`;
+  }
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) {
+    return `${hours}h ago`;
+  }
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
@@ -344,7 +350,7 @@ export class AnalyticsService {
 
     const totalRevenue = Number(revenueAgg._sum.finalAmount || 0);
     const totalOrders = totalOrdersCount;
-    const unitsSold = Number(unitsSoldAgg._sum.quantity || 0);
+    const unitsSold = unitsSoldAgg._sum.quantity ?? 0;
     const siteVisits = searchLogsCount + customersCount + totalOrders;
 
     // Growth rates based strictly on actual past vs current periods
@@ -369,16 +375,21 @@ export class AnalyticsService {
     );
     const ordTrendInfo = calcTrend(recentWeekOrdersCount, prevWeekOrdersCount);
     const unitTrendInfo = calcTrend(
-      Number(recentWeekUnitsAgg._sum.quantity || 0),
-      Number(prevWeekUnitsAgg._sum.quantity || 0),
+      recentWeekUnitsAgg._sum.quantity ?? 0,
+      prevWeekUnitsAgg._sum.quantity ?? 0,
     );
     const visitTrendInfo = calcTrend(recentWeekSearchesCount, prevWeekSearchesCount);
 
     // Compute actual 7-day sparklines from actual orders
-    const getSparklinePoints = (days: number, valueGetter: (ord: (typeof ordersWithItems)[0]) => number) => {
-      const points = Array(days).fill(0);
+    const getSparklinePoints = (
+      days: number,
+      valueGetter: (ord: (typeof ordersWithItems)[0]) => number,
+    ) => {
+      const points: number[] = Array.from({ length: days }, () => 0);
       ordersWithItems.forEach((ord) => {
-        const diffDays = Math.floor((now.getTime() - ord.createdAt.getTime()) / (24 * 60 * 60 * 1000));
+        const diffDays = Math.floor(
+          (now.getTime() - ord.createdAt.getTime()) / (24 * 60 * 60 * 1000),
+        );
         if (diffDays >= 0 && diffDays < days) {
           const idx = days - 1 - diffDays;
           points[idx] += valueGetter(ord);
@@ -501,7 +512,8 @@ export class AnalyticsService {
       .slice(0, 5);
 
     // Real Conversion Funnel
-    const conversionRate = siteVisits > 0 ? Number(((totalOrders / siteVisits) * 100).toFixed(2)) : 0;
+    const conversionRate =
+      siteVisits > 0 ? Number(((totalOrders / siteVisits) * 100).toFixed(2)) : 0;
     const funnel = [
       {
         label: 'Visits',
@@ -514,7 +526,10 @@ export class AnalyticsService {
         label: 'Search / Browse',
         value: (searchLogsCount + totalOrders).toLocaleString('en-IN'),
         count: searchLogsCount + totalOrders,
-        pct: siteVisits > 0 ? `${Math.round(((searchLogsCount + totalOrders) / siteVisits) * 100)}%` : '0%',
+        pct:
+          siteVisits > 0
+            ? `${Math.round(((searchLogsCount + totalOrders) / siteVisits) * 100)}%`
+            : '0%',
         color: '#8b5cf6',
       },
       {
@@ -559,10 +574,7 @@ export class AnalyticsService {
       prevWeekOrdersCount > 0
         ? Math.round(Number(prevWeekRevAgg._sum.finalAmount || 0) / prevWeekOrdersCount)
         : aov;
-    const aovDelta =
-      prevAov > 0
-        ? `${(((aov - prevAov) / prevAov) * 100).toFixed(1)}%`
-        : '0%';
+    const aovDelta = prevAov > 0 ? `${(((aov - prevAov) / prevAov) * 100).toFixed(1)}%` : '0%';
 
     const aovData = [
       { date: 'W1', current: Math.round(aov * 0.9), previous: prevAov },

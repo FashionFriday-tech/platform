@@ -14,7 +14,8 @@ export class ColorsService implements OnModuleInit {
 
   async seedDefaultColorsIfEmpty() {
     try {
-      const count = (await this.repository.findAll()).length;
+      const allColors = await this.repository.findAll();
+      const count = allColors.length;
       if (count === 0) {
         for (const c of MAJOR_COLORS) {
           await this.repository.create({

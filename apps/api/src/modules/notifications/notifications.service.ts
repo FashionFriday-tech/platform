@@ -33,7 +33,7 @@ export interface CustomNotification {
   title: string;
   message: string;
   type: 'promo' | 'order' | 'announcement' | 'system';
-  target: 'ALL' | 'CUSTOMERS' | 'ADMIN' | string;
+  target: 'ALL' | 'CUSTOMERS' | 'ADMIN' | (string & {});
   userId?: string | null;
   targetUserName?: string | null;
   linkUrl?: string | null;
@@ -43,11 +43,17 @@ export interface CustomNotification {
 
 function timeAgo(date: Date): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'Just now';
+  if (seconds < 60) {
+    return 'Just now';
+  }
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60) {
+    return `${minutes}m ago`;
+  }
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) {
+    return `${hours}h ago`;
+  }
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
 }
@@ -316,7 +322,7 @@ export class NotificationsService implements OnModuleInit {
     title: string;
     message: string;
     type?: 'promo' | 'order' | 'announcement' | 'system';
-    target?: 'ALL' | 'CUSTOMERS' | 'ADMIN' | string;
+    target?: 'ALL' | 'CUSTOMERS' | 'ADMIN' | (string & {});
     userId?: string | null;
     targetUserName?: string | null;
     linkUrl?: string | null;
@@ -376,7 +382,7 @@ export class NotificationsService implements OnModuleInit {
   /**
    * Retrieve active custom notifications for a customer (used by Web Storefront)
    */
-  getNotificationsForUser(userId?: string): Array<{
+  getNotificationsForUser(userId?: string): {
     id: string;
     type: 'promo' | 'order';
     title: string;
@@ -386,11 +392,15 @@ export class NotificationsService implements OnModuleInit {
     link?: string;
     badge?: string;
     isRead: boolean;
-  }> {
+  }[] {
     return this.customNotifications
       .filter((n) => {
-        if (n.target === 'ALL' || n.target === 'CUSTOMERS') return true;
-        if (userId && n.userId === userId) return true;
+        if (n.target === 'ALL' || n.target === 'CUSTOMERS') {
+          return true;
+        }
+        if (userId && n.userId === userId) {
+          return true;
+        }
         return false;
       })
       .map((n) => ({
@@ -455,7 +465,7 @@ export class NotificationsService implements OnModuleInit {
           .catch(() => []),
       ]);
 
-      const items: Array<{
+      const items: {
         id: string;
         title: string;
         description: string;
@@ -466,7 +476,7 @@ export class NotificationsService implements OnModuleInit {
         read: boolean;
         actionUrl?: string;
         actionLabel?: string;
-      }> = [];
+      }[] = [];
 
       // Add real orders
       recentOrders.forEach((ord) => {

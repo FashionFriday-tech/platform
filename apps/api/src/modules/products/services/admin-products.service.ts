@@ -15,11 +15,12 @@ export class AdminProductsService {
 
   async createProduct(dto: CreateProductDto) {
     const rawDto = dto as any;
-    const allSellerIds: string[] = Array.isArray(rawDto.sellerIds) && rawDto.sellerIds.length > 0
-      ? rawDto.sellerIds.filter(Boolean)
-      : rawDto.sellerId
-        ? [rawDto.sellerId]
-        : [];
+    const allSellerIds: string[] =
+      Array.isArray(rawDto.sellerIds) && rawDto.sellerIds.length > 0
+        ? rawDto.sellerIds.filter(Boolean)
+        : rawDto.sellerId
+          ? [rawDto.sellerId]
+          : [];
     const primarySellerId = allSellerIds[0] || rawDto.sellerId || undefined;
 
     const data: Prisma.ProductCreateInput = {
@@ -56,21 +57,21 @@ export class AdminProductsService {
       // Social Proof & Real-time Metrics (never negative)
       liveWatching: Math.max(
         0,
-        Number(dto.liveMatrix?.liveWatching) || Number((rawDto as any).liveWatching) || 0,
+        dto.liveMatrix?.liveWatching ?? (rawDto.liveWatching ? Number(rawDto.liveWatching) : 0),
       ),
       liveSold: Math.max(
         0,
-        Number(dto.liveMatrix?.liveSold) || Number((rawDto as any).liveSold) || 0,
+        dto.liveMatrix?.liveSold ?? (rawDto.liveSold ? Number(rawDto.liveSold) : 0),
       ),
       averageRating:
         dto.rating?.averageRating !== undefined && dto.rating?.averageRating !== null
-          ? Math.min(5, Math.max(0, Number(dto.rating.averageRating)))
-          : (rawDto as any).averageRating !== undefined
-            ? Math.min(5, Math.max(0, Number((rawDto as any).averageRating)))
+          ? Math.min(5, Math.max(0, dto.rating.averageRating))
+          : rawDto.averageRating !== undefined
+            ? Math.min(5, Math.max(0, Number(rawDto.averageRating)))
             : 4.0,
       totalReviews: Math.max(
         0,
-        Number(dto.rating?.totalReviews) || Number((rawDto as any).totalReviews) || 0,
+        dto.rating?.totalReviews ?? (rawDto.totalReviews ? Number(rawDto.totalReviews) : 0),
       ),
 
       // Marketing
@@ -293,7 +294,10 @@ export class AdminProductsService {
     }
 
     // Handle image cleanup
-    if (d.media && (d.media.liveImages !== undefined || d.media.mainImage || d.media.promoImage !== undefined)) {
+    if (
+      d.media &&
+      (d.media.liveImages !== undefined || d.media.mainImage || d.media.promoImage !== undefined)
+    ) {
       const existingProduct = await this.productsRepository.findById(id);
       if (existingProduct) {
         const oldImages = [
@@ -406,12 +410,10 @@ export class AdminProductsService {
     }
 
     // 5. Revalidate collections if product belonged to any
-    const collections: string[] = Array.isArray(product.collections)
-      ? product.collections
-      : [];
+    const collections: string[] = Array.isArray(product.collections) ? product.collections : [];
     for (const c of collections) {
       if (c) {
-        const colSlug = String(c).toLowerCase().trim();
+        const colSlug = c.toLowerCase().trim();
         void triggerRevalidation(`collection-products-${colSlug}`, `/collections/${colSlug}`);
       }
     }
