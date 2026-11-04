@@ -22,6 +22,7 @@ export default [
       'no-console': 'off',
       '@typescript-eslint/use-unknown-in-catch-callback-variable': 'off',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      'security/detect-non-literal-fs-filename': 'off',
     },
   },
 ];

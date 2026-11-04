@@ -28,7 +28,7 @@ export class AdminProductsService {
     const description = (dto.description || '').trim().toUpperCase();
     const rawBrand = dto.brand as unknown;
     const brand = Array.isArray(rawBrand)
-      ? (rawBrand as string[]).map((b) => String(b).trim().toUpperCase()).filter(Boolean)
+      ? rawBrand.map((b) => (typeof b === 'string' ? b.trim().toUpperCase() : '')).filter(Boolean)
       : typeof rawBrand === 'string' && rawBrand.trim()
         ? [rawBrand.trim().toUpperCase()]
         : ['FASHION FRIDAY'];
