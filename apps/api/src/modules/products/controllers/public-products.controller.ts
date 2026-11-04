@@ -50,8 +50,14 @@ export class ProductsController {
     @Param('slug') slug: string,
     @Query('skip') skip?: number,
     @Query('take') take?: number,
+    @Query('gender') gender?: string,
   ) {
-    return this.productsService.getProductsByCategory(slug, Number(skip) || 0, Number(take) || 10);
+    return this.productsService.getProductsByCategory(
+      slug,
+      Number(skip) || 0,
+      Number(take) || 10,
+      gender,
+    );
   }
 
   @Get(':slug')

@@ -1,5 +1,4 @@
 import type { JSX } from 'react';
-import { notFound } from 'next/navigation';
 
 import { getProductsByCategory } from '@/data/filter-engine';
 import { CatalogueClient } from '@/features/catalogue';
@@ -15,18 +14,14 @@ export async function CategoryCatalog({ category }: CategoryCatalogProps): Promi
     clothing: 'Clothing',
     accessories: 'Accessories',
     sneakers: 'Sneakers',
+    slippers: 'Slippers',
   };
 
-  const formattedCategory = categoryMap[category.toLowerCase()];
-
-  if (!formattedCategory) {
-    return notFound();
-  }
+  const formattedCategory =
+    categoryMap[category.toLowerCase()] ||
+    category.charAt(0).toUpperCase() + category.slice(1);
 
   const products = await getProductsByCategory(formattedCategory);
-  const initialProducts = products.filter(
-    (p) => p.categoryId?.toLowerCase() === formattedCategory.toLowerCase(),
-  );
 
-  return <CatalogueClient categorySlug={formattedCategory} initialProducts={initialProducts} />;
+  return <CatalogueClient categorySlug={formattedCategory} initialProducts={products} />;
 }

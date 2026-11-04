@@ -239,40 +239,65 @@ export const getSimilarProducts = async (
   currentProductId?: string,
 ): Promise<Product[]> => {
   try {
-    if (!category || typeof category !== 'string' || !category.trim()) {
-      return [];
-    }
-    const cleanCategory = category.trim().toLowerCase();
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
-    const res = await fetch(`${API_URL}/products/category/${encodeURIComponent(cleanCategory)}`, {
-      next: { revalidate: 86400, tags: [`similar-products-${cleanCategory}`] },
-    });
-    if (!res.ok) {
-      return [];
+    let filtered: Product[] = [];
+
+    if (category && typeof category === 'string' && category.trim()) {
+      const cleanCategory = category.trim().toLowerCase();
+      const res = await fetch(
+        `${API_URL}/products/category/${encodeURIComponent(cleanCategory)}?take=20`,
+        {
+          next: { revalidate: 300, tags: [`similar-products-${cleanCategory}`] },
+        },
+      );
+      if (res.ok) {
+        const json = await res.json();
+        const data = json.data || [];
+        filtered = data
+          .map(mapDbProductToSchema)
+          .filter((p: Product) => p.id !== currentProductId)
+          .slice(0, 10);
+      }
     }
-    const json = await res.json();
-    const data = json.data || [];
-    return data
-      .map(mapDbProductToSchema)
-      .filter((p: Product) => p.id !== currentProductId)
-      .slice(0, 10);
+
+    if (filtered.length > 0) {
+      return filtered;
+    }
+
+    // Fallback: If not enough products in same specific category, fetch featured drops
+    const fallbackRes = await fetch(`${API_URL}/products/featured?take=10`, {
+      next: { revalidate: 300 },
+    });
+    if (fallbackRes.ok) {
+      const fallbackJson = await fallbackRes.json();
+      return (fallbackJson.data || [])
+        .map(mapDbProductToSchema)
+        .filter((p: Product) => p.id !== currentProductId)
+        .slice(0, 10);
+    }
+
+    return [];
   } catch (err) {
     console.error('getSimilarProducts error:', err);
     return [];
   }
 };
 
-export const getProductsByCategory = async (category?: string | null): Promise<Product[]> => {
+export const getProductsByCategory = async (
+  category?: string | null,
+  gender?: string | null,
+): Promise<Product[]> => {
   try {
     if (!category || typeof category !== 'string' || !category.trim()) {
       return [];
     }
     const cleanCategory = category.trim().toLowerCase();
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const genderParam = gender ? `&gender=${encodeURIComponent(gender.toLowerCase())}` : '';
     const res = await fetch(
-      `${API_URL}/products/category/${encodeURIComponent(cleanCategory)}?take=100`,
+      `${API_URL}/products/category/${encodeURIComponent(cleanCategory)}?take=100${genderParam}`,
       {
-        next: { revalidate: 86400, tags: [`category-products-${cleanCategory}`] },
+        next: { revalidate: 300, tags: [`category-products-${cleanCategory}`] },
       },
     );
     if (!res.ok) {

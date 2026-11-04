@@ -55,12 +55,15 @@ function RelatedProductBrandLogo({
 
 export default function RelatedProducts({ products, initialBrands }: RelatedProductsProps) {
   const { brands } = useBrands(initialBrands);
+  if (!products || products.length === 0) {
+    return null;
+  }
   return (
     <section className="w-full py-6 lg:py-20">
       {/* Header */}
       <div className="mb-8 flex items-end justify-between px-4 lg:px-8">
         <h2 className="text-3xl font-black tracking-tighter uppercase italic lg:text-4xl">
-          Similer Drops
+          Similar Drops
         </h2>
       </div>
 

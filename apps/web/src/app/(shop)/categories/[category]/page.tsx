@@ -14,6 +14,7 @@ export function generateStaticParams() {
     { category: 'clothing' },
     { category: 'accessories' },
     { category: 'sneakers' },
+    { category: 'slippers' },
   ];
 }
 

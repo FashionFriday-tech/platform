@@ -1,4 +1,4 @@
-import { ProductStatus } from '@ff/database';
+import { Gender, Prisma, ProductStatus } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
 import { ProductsRepository } from '../products.repository';
@@ -382,16 +382,38 @@ export class PublicProductsService {
     return this.paginate(result, skip, take);
   }
 
-  async getProductsByCategory(categorySlug: string, skip = 0, take = 10) {
+  async getProductsByCategory(categorySlug: string, skip = 0, take = 10, gender?: string) {
+    const clean = categorySlug.trim().toLowerCase();
+    const baseSlug = clean.replace(/^(men|women)-/, '');
+
+    const categoryIds = await this.productsRepository.findMatchingCategoryIds(categorySlug);
+
+    const where: Prisma.ProductWhereInput = {
+      status: ProductStatus.PUBLISHED,
+      ...(categoryIds.length > 0
+        ? { categoryId: { in: categoryIds } }
+        : {
+            OR: [
+              { categoryId: categorySlug },
+              { category: { slug: { equals: clean, mode: 'insensitive' } } },
+              { category: { name: { equals: clean, mode: 'insensitive' } } },
+              { category: { slug: { contains: baseSlug, mode: 'insensitive' } } },
+              { category: { name: { contains: baseSlug, mode: 'insensitive' } } },
+            ],
+          }),
+      ...(gender
+        ? {
+            gender: {
+              in: [gender.toUpperCase() as Gender, Gender.UNISEX],
+            },
+          }
+        : {}),
+    };
+
     const result = await this.productsRepository.findPublicProducts({
       skip,
       take,
-      where: {
-        status: ProductStatus.PUBLISHED,
-        category: {
-          slug: categorySlug,
-        },
-      },
+      where,
       orderBy: { createdAt: 'desc' as const },
     });
     return this.paginate(result, skip, take);

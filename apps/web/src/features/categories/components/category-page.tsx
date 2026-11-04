@@ -18,23 +18,23 @@ export async function CategoryPage({ gender, category }: CategoryPageProps): Pro
     slippers: 'Slippers',
   };
 
-  const formattedCategory = categoryMap[category.toLowerCase()];
+  const formattedCategory =
+    categoryMap[category.toLowerCase()] ||
+    category.charAt(0).toUpperCase() + category.slice(1);
   const formattedGender = gender.toLowerCase();
   const validGenders = ['men', 'women'];
 
-  if (!formattedCategory || !validGenders.includes(formattedGender)) {
+  if (!validGenders.includes(formattedGender)) {
     return notFound();
   }
 
-  const products = await getProductsByCategory(formattedCategory);
+  const products = await getProductsByCategory(formattedCategory, formattedGender);
 
   const initialProducts = products.filter((p) => {
-    const isCorrectCategory = p.categoryId?.toLowerCase() === formattedCategory.toLowerCase();
-
-    const pGender = p.gender.toLowerCase();
+    const pGender = p.gender?.toLowerCase() || 'unisex';
     const isCorrectGender = pGender === formattedGender || pGender === 'unisex';
 
-    return isCorrectCategory && isCorrectGender;
+    return isCorrectGender;
   });
 
   return <CatalogueClient categorySlug={formattedCategory} initialProducts={initialProducts} />;

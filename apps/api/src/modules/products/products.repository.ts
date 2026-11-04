@@ -69,6 +69,28 @@ export class ProductsRepository {
     return { brands, categories };
   }
 
+  async findMatchingCategoryIds(categoryIdentifier: string): Promise<string[]> {
+    const clean = categoryIdentifier.trim().toLowerCase();
+    const baseSlug = clean.replace(/^(men|women)-/, '');
+
+    const categories = await this.prisma.db.category.findMany({
+      where: {
+        OR: [
+          { id: categoryIdentifier },
+          { slug: { equals: clean, mode: 'insensitive' } },
+          { slug: { equals: baseSlug, mode: 'insensitive' } },
+          { slug: { contains: baseSlug, mode: 'insensitive' } },
+          { name: { equals: clean, mode: 'insensitive' } },
+          { name: { equals: baseSlug, mode: 'insensitive' } },
+          { name: { contains: baseSlug, mode: 'insensitive' } },
+        ],
+      },
+      select: { id: true },
+    });
+
+    return categories.map((c) => c.id);
+  }
+
   async findQuickSuggestions(
     query: string,
     matchedBrandNames: string[] = [],
