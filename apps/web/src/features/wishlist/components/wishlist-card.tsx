@@ -64,7 +64,6 @@ export function WishlistCard({ product, layoutMode = 'list', onRemove }: Wishlis
       },
     });
 
-    toast.success(`Added ${product.name} to Cart!`);
     setIsSelectingSize(false);
   };
 

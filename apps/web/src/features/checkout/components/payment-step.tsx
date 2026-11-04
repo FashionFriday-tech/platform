@@ -98,8 +98,6 @@ export function PaymentStep() {
       console.log('[PaymentStep] Step 4: Clearing cart (local and database)...');
       await clearCart(true);
 
-      toast.success(`Order ${order.orderNumber || ''} placed successfully!`);
-
       console.log('[PaymentStep] Step 5: Redirecting customer to /account/orders...');
       router.push('/account/orders');
     } catch (err: any) {

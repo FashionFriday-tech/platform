@@ -145,8 +145,6 @@ export default function ProductPageMaster({
         colors: product.attributes?.colors ?? [],
       },
     });
-    const sizeLabel = isGenericOrSingleSize ? '' : ` (${chosenSize})`;
-    toast.success(`Added ${product.name}${sizeLabel} to Bag!`);
     return true;
   };
 
