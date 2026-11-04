@@ -44,9 +44,9 @@ export const ProductSchema = ProductBaseSchema.extend({
     ),
   }).default({ collections: [], isFeatured: false }),
   rating: z.object({
-    averageRating: z.number().default(4),
+    averageRating: z.number().default(4.5),
     totalReviews: z.number().int().default(0),
-  }).default({ averageRating: 4, totalReviews: 0 }),
+  }).default({ averageRating: 4.5, totalReviews: 0 }),
 });
 
 export type Product = z.infer<typeof ProductSchema>;

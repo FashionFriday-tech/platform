@@ -159,9 +159,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     liveSold,
     setLiveSold,
     averageRating,
-    setAverageRating,
     totalReviews,
-    setTotalReviews,
   } = useAddProductForm(initialData, { onToast: setToast });
 
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
@@ -587,12 +585,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           liveSold: Math.max(0, Number(liveSold) || 0),
         },
         rating: {
-          averageRating: averageRating ? Math.min(5, Math.max(0, Number(averageRating))) : 4,
+          averageRating: averageRating ? Math.min(5, Math.max(0, Number(averageRating))) : 4.5,
           totalReviews: Math.max(0, Number(totalReviews) || 0),
         },
         liveWatching: Math.max(0, Number(liveWatching) || 0),
         liveSold: Math.max(0, Number(liveSold) || 0),
-        averageRating: averageRating ? Math.min(5, Math.max(0, Number(averageRating))) : 4,
+        averageRating: averageRating ? Math.min(5, Math.max(0, Number(averageRating))) : 4.5,
         totalReviews: Math.max(0, Number(totalReviews) || 0),
         slug: computedSlug,
       };
@@ -881,9 +879,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <LabelWithTick
                   label="Name Product"
                   status={fieldErrors.productName ? 'error' : getStatus(productName, initialData?.name, 3, 'productName')}
+                  rightElement={
+                    <span className="font-mono text-xs font-semibold text-black/50 dark:text-white/50">
+                      <span className={productName.length >= 200 ? 'font-bold text-amber-500' : ''}>
+                        {productName.length}
+                      </span>
+                      <span className="opacity-40"> / 200</span>
+                    </span>
+                  }
                 />
                 <input
                   type="text"
+                  maxLength={200}
                   value={productName}
                   onChange={(e) => {
                     setProductName(e.target.value.toUpperCase());
@@ -903,9 +910,23 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <LabelWithTick
                   label="Description Product"
                   status={fieldErrors.productDesc ? 'error' : getStatus(productDesc, initialData?.description, 10, 'productDesc')}
+                  rightElement={
+                    <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-black/50 dark:text-white/50">
+                      {productDesc.trim().length > 0 && productDesc.trim().length < 10 && (
+                        <span className="font-sans text-[10px] font-bold text-rose-500 dark:text-rose-400">
+                          (min 10)
+                        </span>
+                      )}
+                      <span className={productDesc.length >= 2000 ? 'font-bold text-amber-500' : ''}>
+                        {productDesc.length}
+                      </span>
+                      <span className="opacity-40"> / 2000</span>
+                    </div>
+                  }
                 />
                 <textarea
                   rows={4}
+                  maxLength={2000}
                   value={productDesc}
                   onChange={(e) => {
                     setProductDesc(e.target.value);
@@ -1540,6 +1561,27 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <FieldErrorMessage error={fieldErrors.ogPrice} />
               </div>
 
+              <div>
+                <LabelWithTick
+                  label="Getting Price"
+                  status={gettingPrice.trim().length > 0 ? 'valid' : 'default'}
+                />
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                    <span className="text-sm font-bold text-black/50 dark:text-white/50">₹</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={gettingPrice}
+                    onChange={(e) => {
+                      setGettingPrice(e.target.value);
+                    }}
+                    placeholder="2,500"
+                    className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                  />
+                </div>
+              </div>
+
               <div ref={priceRef}>
                 <LabelWithTick
                   label="Selling Price"
@@ -1587,27 +1629,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   } bg-black/5 px-4 py-3.5 text-sm font-medium text-black transition-all outline-none dark:bg-white/5 dark:text-white`}
                 />
                 <FieldErrorMessage error={fieldErrors.stock} />
-              </div>
-
-              <div>
-                <LabelWithTick
-                  label="Getting Price"
-                  status={gettingPrice.trim().length > 0 ? 'valid' : 'default'}
-                />
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                    <span className="text-sm font-bold text-black/50 dark:text-white/50">₹</span>
-                  </div>
-                  <input
-                    type="text"
-                    value={gettingPrice}
-                    onChange={(e) => {
-                      setGettingPrice(e.target.value);
-                    }}
-                    placeholder="2,500"
-                    className="w-full rounded-xl border-transparent bg-black/5 py-3.5 pr-4 pl-8 text-sm font-medium text-black transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -1704,268 +1725,151 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             </div>
           </div>
 
-          {/* Live Activity & Social Proof Counts */}
+          {/* Live Activity Matrix */}
           <div className="rounded-2xl bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-7 dark:bg-[#111]">
-            <div className="mb-6 flex flex-col gap-1 border-b border-black/5 pb-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/5">
+            <div className="mb-6 flex flex-col gap-3 border-b border-black/5 pb-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/5">
               <div>
-                <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
-                  Live Activity & Social Proof
-                </h2>
-                <p className="text-xs text-black/50 dark:text-white/50">
-                  Control real-time urgency metrics and customer feedback signals shown to shoppers
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-bold text-black sm:text-lg dark:text-white">
+                    Live Activity Matrix
+                  </h2>
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
+                  Real-time storefront urgency metrics (Social proof defaults to 4.5★ automatically)
                 </p>
               </div>
-              <span className="self-start rounded-full border border-black/10 bg-black/5 px-3 py-1 text-[11px] font-semibold text-black/70 sm:self-auto dark:border-white/10 dark:bg-white/5 dark:text-white/70">
-                Engagement & Signals
-              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const randomWatching = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
+                    const randomSold = Math.floor(Math.random() * 101);
+                    setLiveWatching(randomWatching.toString());
+                    setLiveSold(randomSold.toString());
+                  }}
+                  className="flex items-center gap-1.5 rounded-xl border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-semibold text-black/70 transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10"
+                  title="Generate new random numbers (Viewers: 1k-10k, Sold: 0-100)"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  <span>Re-roll Random</span>
+                </button>
+                <span className="rounded-md bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold tracking-wider text-emerald-600 uppercase dark:bg-emerald-500/20 dark:text-emerald-400">
+                  Live Signals
+                </span>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {/* Card 1: Live Activity Matrix */}
-              <div className="rounded-2xl border border-black/5 bg-black/[0.02] p-5 dark:border-white/5 dark:bg-white/[0.02]">
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
-                      <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                      </span>
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-black dark:text-white">
-                        Live Activity Matrix
-                      </h3>
-                      <p className="text-[11px] text-black/50 dark:text-white/50">
-                        Real-time urgency indicators on product page
-                      </p>
-                    </div>
-                  </div>
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-emerald-600 uppercase dark:bg-emerald-500/20 dark:text-emerald-400">
-                    Live Signals
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {/* View Count (Live Watching) */}
-                  <div>
-                    <LabelWithTick
-                      label="Live Viewers"
-                      status={liveWatching.trim().length > 0 ? 'valid' : 'default'}
-                    />
-                    <div className="relative mt-1">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <svg
-                          className="h-4 w-4 text-emerald-600 dark:text-emerald-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                          />
-                        </svg>
-                      </div>
-                      <input
-                        type="number"
-                        min="0"
-                        value={liveWatching}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val === '' || Number(val) >= 0) {
-                            setLiveWatching(val);
-                          }
-                        }}
-                        placeholder="e.g. 24"
-                        className="w-full rounded-xl border border-black/10 bg-white py-3 pr-4 pl-10 text-sm font-semibold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {/* View Count (Live Watching) */}
+              <div className="rounded-xl border border-black/5 bg-black/[0.02] p-4 transition-all dark:border-white/5 dark:bg-white/[0.02]">
+                <div className="mb-2 flex items-center justify-between">
+                  <LabelWithTick
+                    label="Live Viewers"
+                    status={liveWatching.trim().length > 0 ? 'valid' : 'default'}
+                    subtitle="Active shoppers viewing this product"
+                  />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                       />
-                    </div>
-                    <p className="mt-1.5 text-[11px] text-black/40 dark:text-white/40">
-                      Current active viewers watching this product
-                    </p>
-                  </div>
-
-                  {/* Sold in last 24h */}
-                  <div>
-                    <LabelWithTick
-                      label="Sold in Last 24 Hours"
-                      status={liveSold.trim().length > 0 ? 'valid' : 'default'}
-                    />
-                    <div className="relative mt-1">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <svg
-                          className="h-4 w-4 text-orange-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"
-                          />
-                        </svg>
-                      </div>
-                      <input
-                        type="number"
-                        min="0"
-                        value={liveSold}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val === '' || Number(val) >= 0) {
-                            setLiveSold(val);
-                          }
-                        }}
-                        placeholder="e.g. 142"
-                        className="w-full rounded-xl border border-black/10 bg-white py-3 pr-4 pl-10 text-sm font-semibold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                       />
-                    </div>
-                    <p className="mt-1.5 text-[11px] text-black/40 dark:text-white/40">
-                      Recent volume for urgency & popularity tags
-                    </p>
+                    </svg>
                   </div>
                 </div>
+                <div className="relative mt-1">
+                  <input
+                    type="number"
+                    min="0"
+                    value={liveWatching}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || Number(val) >= 0) {
+                        setLiveWatching(val);
+                      }
+                    }}
+                    placeholder="e.g. 2450"
+                    className="w-full rounded-xl border border-black/10 bg-white py-3.5 px-4 text-base font-bold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                  />
+                </div>
+                <p className="mt-2 text-[11px] font-medium text-black/40 dark:text-white/40">
+                  Auto-randomized between 1,000 and 10,000
+                </p>
               </div>
 
-              {/* Card 2: Social Proof & Ratings */}
-              <div className="rounded-2xl border border-black/5 bg-black/[0.02] p-5 dark:border-white/5 dark:bg-white/[0.02]">
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-500 dark:bg-amber-500/20 dark:text-amber-400">
-                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-black dark:text-white">
-                        Social Proof & Reviews
-                      </h3>
-                      <p className="text-[11px] text-black/50 dark:text-white/50">
-                        Public ratings score and verified review count
-                      </p>
-                    </div>
-                  </div>
-                  <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-amber-600 uppercase dark:bg-amber-500/20 dark:text-amber-400">
-                    Trust Badge
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {/* Rating (1.0 - 5.0) */}
-                  <div>
-                    <LabelWithTick
-                      label="Average Rating (1.0 - 5.0)"
-                      status={averageRating.trim().length > 0 ? 'valid' : 'default'}
-                    />
-                    <div className="relative mt-1">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <svg
-                          className="h-4 w-4 text-amber-500"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="5"
-                        value={averageRating}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val === '' || (Number(val) >= 0 && Number(val) <= 5)) {
-                            setAverageRating(val);
-                          }
-                        }}
-                        placeholder="4.0"
-                        className="w-full rounded-xl border border-black/10 bg-white py-3 pr-12 pl-10 text-sm font-semibold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+              {/* Sold in last 24h */}
+              <div className="rounded-xl border border-black/5 bg-black/[0.02] p-4 transition-all dark:border-white/5 dark:bg-white/[0.02]">
+                <div className="mb-2 flex items-center justify-between">
+                  <LabelWithTick
+                    label="Sold in Last 24 Hours"
+                    status={liveSold.trim().length > 0 ? 'valid' : 'default'}
+                    subtitle="Recent purchases for urgency tags"
+                  />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500 dark:bg-orange-500/20 dark:text-orange-400">
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
                       />
-                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs font-bold text-amber-500">
-                        ★ / 5
-                      </span>
-                    </div>
-                    <p className="mt-1.5 text-[11px] text-black/40 dark:text-white/40">
-                      Star score displayed on cards & hero (default 4.0)
-                    </p>
-                  </div>
-
-                  {/* Total Reviews */}
-                  <div>
-                    <LabelWithTick
-                      label="Total Reviews Count"
-                      status={totalReviews.trim().length > 0 ? 'valid' : 'default'}
-                    />
-                    <div className="relative mt-1">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                        <svg
-                          className="h-4 w-4 text-blue-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                          />
-                        </svg>
-                      </div>
-                      <input
-                        type="number"
-                        min="0"
-                        value={totalReviews}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          if (val === '' || Number(val) >= 0) {
-                            setTotalReviews(val);
-                          }
-                        }}
-                        placeholder="e.g. 38"
-                        className="w-full rounded-xl border border-black/10 bg-white py-3 pr-4 pl-10 text-sm font-semibold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"
                       />
-                    </div>
-                    <p className="mt-1.5 text-[11px] text-black/40 dark:text-white/40">
-                      Total customer reviews count shown next to stars
-                    </p>
+                    </svg>
                   </div>
                 </div>
+                <div className="relative mt-1">
+                  <input
+                    type="number"
+                    min="0"
+                    value={liveSold}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === '' || Number(val) >= 0) {
+                        setLiveSold(val);
+                      }
+                    }}
+                    placeholder="e.g. 42"
+                    className="w-full rounded-xl border border-black/10 bg-white py-3.5 px-4 text-base font-bold text-black transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#161618] dark:text-white dark:focus:border-white/30"
+                  />
+                </div>
+                <p className="mt-2 text-[11px] font-medium text-black/40 dark:text-white/40">
+                  Auto-randomized between 0 and 100
+                </p>
               </div>
             </div>
           </div>
@@ -1989,11 +1893,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   type="button"
                   onClick={() => void handlePasteFromClipboard()}
                   disabled={isUploading || images.length >= 10}
-                  className="flex items-center gap-1.5 rounded-lg border border-black/10 bg-black/5 px-2.5 py-1.5 text-xs font-semibold text-black/80 transition-all hover:bg-black/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
-                  title="Paste copied image from WhatsApp, website, or screenshot (Ctrl+V)"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-black/10 bg-black/5 text-black/80 transition-all hover:bg-black/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10"
+                  title="Paste copied image (Ctrl+V)"
+                  aria-label="Paste copied image"
                 >
                   <svg
-                    className="h-3.5 w-3.5"
+                    className="h-4 w-4"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -2005,10 +1910,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                     />
                   </svg>
-                  <span>Paste Image</span>
-                  <kbd className="hidden rounded bg-black/10 px-1 py-0.5 text-[9px] font-bold text-black/60 sm:inline-block dark:bg-white/10 dark:text-white/60">
-                    Ctrl+V
-                  </kbd>
                 </button>
                 <span className="text-xs font-bold text-black/50 dark:text-white/50">
                   {images.length}/10

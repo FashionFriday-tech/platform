@@ -25,13 +25,13 @@ export const CreateProductSchema = ProductSchema.omit({
   rating: z
     .object({
       averageRating: z.preprocess(
-        (val) => (val === null || val === undefined || val === '' ? 4 : val),
-        z.coerce.number().min(0).max(5).default(4),
+        (val) => (val === null || val === undefined || val === '' ? 4.5 : val),
+        z.coerce.number().min(0).max(5).default(4.5),
       ),
       totalReviews: z.preprocess(
         (val) => (val === null || val === undefined || val === '' ? 0 : val),
         z.coerce.number().int().nonnegative().default(0),
       ),
     })
-    .default({ averageRating: 4, totalReviews: 0 }),
+    .default({ averageRating: 4.5, totalReviews: 0 }),
 });

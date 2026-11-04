@@ -151,10 +151,27 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [gettingPrice, setGettingPrice] = useState('');
 
   // Social Proof & Metric Counts (never negative)
-  const [liveWatching, setLiveWatching] = useState('0');
-  const [liveSold, setLiveSold] = useState('0');
-  const [averageRating, setAverageRating] = useState('4.0');
-  const [totalReviews, setTotalReviews] = useState('0');
+  // Randomized on creation: liveWatching (1000 - 10000), liveSold (0 - 100), averageRating defaults to 4.5
+  const [liveWatching, setLiveWatching] = useState(() =>
+    initialData?.liveMatrix?.liveWatching !== undefined
+      ? initialData.liveMatrix.liveWatching.toString()
+      : (Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000).toString(),
+  );
+  const [liveSold, setLiveSold] = useState(() =>
+    initialData?.liveMatrix?.liveSold !== undefined
+      ? initialData.liveMatrix.liveSold.toString()
+      : Math.floor(Math.random() * 101).toString(),
+  );
+  const [averageRating, setAverageRating] = useState(() =>
+    initialData?.rating?.averageRating !== undefined
+      ? initialData.rating.averageRating.toString()
+      : '4.5',
+  );
+  const [totalReviews, setTotalReviews] = useState(() =>
+    initialData?.rating?.totalReviews !== undefined
+      ? initialData.rating.totalReviews.toString()
+      : '0',
+  );
 
   // SEO
   const [seoTitle, setSeoTitle] = useState('');
@@ -232,27 +249,27 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       setStock(initialData.inventory?.totalStock?.toString() ?? '');
       setGettingPrice(initialData.price?.gettingPrice?.toString() ?? '');
 
-      // Engagement & Social Proof Counts
+      // Engagement & Live Metrics
       setLiveWatching(
         initialData.liveMatrix?.liveWatching !== undefined
           ? initialData.liveMatrix.liveWatching.toString()
           : (initialData as any).liveWatching !== undefined
             ? (initialData as any).liveWatching.toString()
-            : '0',
+            : (Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000).toString(),
       );
       setLiveSold(
         initialData.liveMatrix?.liveSold !== undefined
           ? initialData.liveMatrix.liveSold.toString()
           : (initialData as any).liveSold !== undefined
             ? (initialData as any).liveSold.toString()
-            : '0',
+            : Math.floor(Math.random() * 101).toString(),
       );
       setAverageRating(
         initialData.rating?.averageRating !== undefined
           ? initialData.rating.averageRating.toString()
           : (initialData as any).averageRating !== undefined
             ? (initialData as any).averageRating.toString()
-            : '4.0',
+            : '4.5',
       );
       setTotalReviews(
         initialData.rating?.totalReviews !== undefined
