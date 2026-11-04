@@ -49,7 +49,7 @@ export default function ProductPageMaster({
   );
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
   const mainCtaRef = useRef<HTMLElement>(null);
-  const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [showStickyCTA, setShowStickyCTA] = useState(false);
 
   useEffect(() => {
     const target = mainCtaRef.current;
@@ -57,29 +57,18 @@ export default function ProductPageMaster({
 
     const checkVisibility = () => {
       const rect = target.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-      // Main CTA is in the view screen when its top is below viewport bottom and its bottom is above viewport top
-      const isInViewport = rect.top < viewportHeight && rect.bottom > 0;
-      setShowStickyCTA(!isInViewport);
+      // Activate sticky button when user has scrolled down and main buy button has moved to the top and hidden
+      // On mobile the sticky header is ~56px, so when rect.top <= 40, the Buy Now button has moved to the top and hidden
+      const hasScrolledPastMainCta = rect.top <= 40;
+      setShowStickyCTA(hasScrolledPastMainCta);
     };
 
     checkVisibility();
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowStickyCTA(!entry?.isIntersecting);
-      },
-      {
-        threshold: 0,
-      },
-    );
-    observer.observe(target);
 
     window.addEventListener('scroll', checkVisibility, { passive: true });
     window.addEventListener('resize', checkVisibility, { passive: true });
 
     return () => {
-      observer.disconnect();
       window.removeEventListener('scroll', checkVisibility);
       window.removeEventListener('resize', checkVisibility);
     };
