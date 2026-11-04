@@ -8,6 +8,7 @@ import { type Product } from '@ff/schemas';
 
 import { ImageCropModal } from '@/components/ui/ImageCropModal';
 import { Toast } from '@/components/ui/Toast';
+import { AddColorModal } from '@/features/colors';
 import { api } from '@/lib/api-client';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
@@ -75,6 +76,13 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     removeColor,
     isColorOpen,
     setIsColorOpen,
+    isAddColorModalOpen,
+    newColorDefaultName,
+    newColorDefaultHex,
+    isSavingNewColor,
+    openAddColorModal,
+    closeAddColorModal,
+    handleCreateAndSelectColor,
     videoLink,
     setVideoLink,
     embedUrl,
@@ -948,11 +956,24 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           : getStatus(colorInput, initialData?.attributes?.colors?.[0], 3)
                       }
                     />
-                    {selectedColors.length > 0 && (
-                      <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">
-                        {selectedColors.length} selected
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {selectedColors.length > 0 && (
+                        <span className="text-[11px] font-semibold text-black/50 dark:text-white/50">
+                          {selectedColors.length} selected
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => openAddColorModal(colorInput)}
+                        className="flex items-center gap-1 rounded-lg border border-black/10 bg-black/5 px-2.5 py-1 text-[11px] font-bold text-black/80 transition-all hover:bg-black/10 hover:text-black dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
+                        title="Add a new custom color to catalog"
+                      >
+                        <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Add Color</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Selected Color Badges / Chips */}
@@ -1008,11 +1029,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             toggleColor(first);
                             setColorInput('');
                           } else if (colorInput.trim()) {
-                            toggleColor({
-                              name: colorInput.trim(),
-                              hex: colorInput.startsWith('#') ? colorInput.trim().toUpperCase() : '#000000',
-                            });
-                            setColorInput('');
+                            openAddColorModal(colorInput);
                           }
                         }
                       }}
@@ -1086,11 +1103,43 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             );
                           })
                         ) : (
-                          <div className="px-4 py-3 text-center text-sm font-medium text-black/50 dark:text-white/50">
-                            No colors found. Hit enter to add &ldquo;{colorInput}&rdquo;
+                          <div className="p-4 text-center">
+                            <p className="mb-2.5 text-xs font-medium text-black/50 dark:text-white/50">
+                              {colorInput.trim()
+                                ? `No color found matching "${colorInput.trim()}"`
+                                : 'No colors available'}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => openAddColorModal(colorInput)}
+                              className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:scale-105 active:scale-95 dark:bg-white dark:text-black"
+                            >
+                              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                              </svg>
+                              <span>
+                                {colorInput.trim() ? `+ Add "${colorInput.trim()}"` : '+ Add New Color'}
+                              </span>
+                            </button>
                           </div>
                         )}
                       </div>
+                      {filteredColors.length > 0 && (
+                        <div className="border-t border-black/5 p-2 dark:border-white/5">
+                          <button
+                            type="button"
+                            onClick={() => openAddColorModal(colorInput)}
+                            className="flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold text-black/70 transition-colors hover:bg-black/5 hover:text-black dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white"
+                          >
+                            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>
+                              {colorInput.trim() ? `+ Add "${colorInput.trim()}" as new color` : '+ Add New Color'}
+                            </span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -2029,6 +2078,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           }}
         />
       )}
+      <AddColorModal
+        isOpen={isAddColorModalOpen}
+        onClose={closeAddColorModal}
+        onSave={handleCreateAndSelectColor}
+        defaultName={newColorDefaultName}
+        defaultHex={newColorDefaultHex}
+        isSaving={isSavingNewColor}
+      />
     </div>
   );
 }

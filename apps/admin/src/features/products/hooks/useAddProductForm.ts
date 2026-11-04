@@ -6,6 +6,7 @@ import { type Product } from '@ff/schemas';
 import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
+import { type CreateColorInput } from '../../colors/types';
 import { getCategorySizes, SIZE_MAP } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
@@ -29,7 +30,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
   const { categories: apiCategories } = useCategories();
   const { brands: apiBrands } = useBrands();
-  const { colors: apiColors } = useColors();
+  const { colors: apiColors, handleSaveColor: saveColorToApi } = useColors();
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialData?.categoryId ?? (initialData as any)?.category?.id ?? paramCategoryId,
@@ -94,6 +95,44 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
           c.name.toLowerCase() !== colorNameOrHex.toLowerCase(),
       ),
     );
+  };
+
+  const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
+  const [newColorDefaultName, setNewColorDefaultName] = useState('');
+  const [newColorDefaultHex, setNewColorDefaultHex] = useState('#000000');
+  const [isSavingNewColor, setIsSavingNewColor] = useState(false);
+
+  const openAddColorModal = (initialQuery?: string) => {
+    const q = initialQuery?.trim() || '';
+    if (q.startsWith('#')) {
+      setNewColorDefaultHex(q.toUpperCase());
+      setNewColorDefaultName('');
+    } else {
+      setNewColorDefaultName(q);
+      setNewColorDefaultHex('#000000');
+    }
+    setIsAddColorModalOpen(true);
+    setIsColorOpen(false);
+  };
+
+  const closeAddColorModal = () => {
+    setIsAddColorModalOpen(false);
+    setNewColorDefaultName('');
+    setNewColorDefaultHex('#000000');
+  };
+
+  const handleCreateAndSelectColor = async (input: CreateColorInput) => {
+    setIsSavingNewColor(true);
+    try {
+      const created = await saveColorToApi(input);
+      if (created) {
+        toggleColor({ name: created.name, hex: created.hex });
+        setColorInput('');
+      }
+      closeAddColorModal();
+    } finally {
+      setIsSavingNewColor(false);
+    }
   };
 
   const [videoLink, setVideoLink] = useState('');
@@ -900,6 +939,13 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     removeColor,
     isColorOpen,
     setIsColorOpen,
+    isAddColorModalOpen,
+    newColorDefaultName,
+    newColorDefaultHex,
+    isSavingNewColor,
+    openAddColorModal,
+    closeAddColorModal,
+    handleCreateAndSelectColor,
     videoLink,
     setVideoLink,
     embedUrl,
