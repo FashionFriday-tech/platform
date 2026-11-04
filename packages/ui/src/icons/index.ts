@@ -72,6 +72,7 @@ import {
   MdNavigation,
   MdOpenInNew,
   MdOutlineAdd,
+  MdOutlineAddShoppingCart,
   MdOutlineAutoAwesome,
   MdOutlineCalendarMonth,
   MdOutlineCardGiftcard,
@@ -129,6 +130,7 @@ export const ChevronDownIcon = IoChevronDownOutline;
 // SHOPPING & COMMERCE
 export const ShoppingBagIcon = CgShoppingBag;
 export const ShoppingCartIcon = MdShoppingCart;
+export const AddToCartIcon = MdOutlineAddShoppingCart;
 export const PackageIcon = MdOutlineInventory2;
 export const TruckIcon = MdOutlineLocalShipping;
 export const GiftIcon = MdOutlineCardGiftcard;

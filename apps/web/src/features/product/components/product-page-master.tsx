@@ -499,9 +499,8 @@ export default function ProductPageMaster({
         isWishlisted={isWishlisted}
         onWishlistToggle={handleWishlistToggle}
         onBuyNow={handleBuyNow}
-        onCartClick={() => {
-          router.push('/checkout/cart');
-        }}
+        onAddToCart={handleAddToCart}
+        onCartClick={handleAddToCart}
         isVisible={showStickyCTA}
       />
     </div>

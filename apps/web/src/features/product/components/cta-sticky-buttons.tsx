@@ -3,12 +3,13 @@
 import React from 'react';
 import { motion } from 'motion/react';
 
-import { HeartFilledIcon, HeartIcon, ShoppingBagIcon } from '@ff/ui';
+import { AddToCartIcon, HeartFilledIcon, HeartIcon } from '@ff/ui';
 
 interface CTAStickyButtonsProps {
   isWishlisted: boolean;
   onWishlistToggle: () => void;
   onBuyNow?: () => void;
+  onAddToCart?: () => void;
   onCartClick?: () => void;
   isVisible?: boolean;
 }
@@ -17,6 +18,7 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
   isWishlisted,
   onWishlistToggle,
   onBuyNow,
+  onAddToCart,
   onCartClick,
   isVisible = true,
 }) => {
@@ -67,15 +69,15 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
           </span>
         </button>
 
-        {/* Cart/Bag Button */}
+        {/* Add to Cart Button */}
         <button
           type="button"
-          onClick={onCartClick}
-          aria-label="View Cart"
-          className="border-border hover:bg-foreground/5 text-foreground flex h-12 w-12 shrink-0 -skew-x-[12deg] items-center justify-center overflow-hidden rounded-xl border transition-all active:scale-90"
+          onClick={onAddToCart || onCartClick}
+          aria-label="Add to Cart"
+          className="border-border hover:bg-foreground/5 text-foreground flex h-12 w-12 shrink-0 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border transition-all active:scale-90"
         >
           <span className="skew-x-[12deg]">
-            <ShoppingBagIcon size={18} />
+            <AddToCartIcon size={20} />
           </span>
         </button>
       </div>
