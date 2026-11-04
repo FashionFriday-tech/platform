@@ -49,7 +49,7 @@ export default function ProductPageMaster({
   );
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
   const mainCtaRef = useRef<HTMLElement>(null);
-  const [showStickyCTA, setShowStickyCTA] = useState(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(true);
 
   useEffect(() => {
     const target = mainCtaRef.current;
@@ -57,16 +57,22 @@ export default function ProductPageMaster({
 
     const checkVisibility = () => {
       const rect = target.getBoundingClientRect();
-      // Show sticky only when main buttons have scrolled above the viewport (user scrolled down past them)
-      const isPast = rect.bottom <= 0;
-      setShowStickyCTA(isPast);
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      // Main CTA is in the view screen when its top is below viewport bottom and its bottom is above viewport top
+      const isInViewport = rect.top < viewportHeight && rect.bottom > 0;
+      setShowStickyCTA(!isInViewport);
     };
 
     checkVisibility();
 
-    const observer = new IntersectionObserver(checkVisibility, {
-      threshold: [0, 1],
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowStickyCTA(!entry?.isIntersecting);
+      },
+      {
+        threshold: 0,
+      },
+    );
     observer.observe(target);
 
     window.addEventListener('scroll', checkVisibility, { passive: true });
