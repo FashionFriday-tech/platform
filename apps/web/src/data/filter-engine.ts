@@ -1,5 +1,6 @@
 import { type Product } from '@ff/schemas';
 
+import { formatColorLabel } from '@/features/cart/utils/format-color';
 import { mapDbProductToSchema } from '@/features/product/utils/mapper';
 
 /**
@@ -76,7 +77,16 @@ export function filterProducts(products: Product[], activeFilters: Record<string
       if (key === 'colors') {
         const productColors = product.attributes?.colors || [];
         const match = productColors.some((c) =>
-          selectedOptions.some((opt) => opt.toLowerCase() === c.toLowerCase()),
+          selectedOptions.some((opt) => {
+            const optLower = opt.toLowerCase().trim();
+            const cLower = c.toLowerCase().trim();
+            if (optLower === cLower) {
+              return true;
+            }
+            const optLabel = formatColorLabel(opt).toLowerCase().trim();
+            const cLabel = formatColorLabel(c).toLowerCase().trim();
+            return Boolean(optLabel && cLabel && optLabel === cLabel);
+          }),
         );
         if (!match) {
           return false;
@@ -143,7 +153,7 @@ export interface FacetCount {
 export function extractFacets(products: Product[]) {
   const brandMap = new Map<string, number>();
   const qualityMap = new Map<string, number>();
-  const colorMap = new Map<string, number>();
+  const colorFacetMap = new Map<string, { value: string; label: string; count: number }>();
   const sizeMap = new Map<string, number>();
 
   let minPrice = Infinity;
@@ -172,11 +182,28 @@ export function extractFacets(products: Product[]) {
       qualityMap.set(q, (qualityMap.get(q) || 0) + 1);
     }
 
-    // Colors
+    // Colors - group by human-readable color label and preserve hex for swatch display
     for (const c of product.attributes?.colors || []) {
-      const key = c.trim();
-      if (key) {
-        colorMap.set(key, (colorMap.get(key) || 0) + 1);
+      const raw = c.trim();
+      if (!raw) {
+        continue;
+      }
+      const label = formatColorLabel(raw);
+      if (!label) {
+        continue;
+      }
+      const existing = colorFacetMap.get(label);
+      if (existing) {
+        existing.count += 1;
+        if (!existing.value.startsWith('#') && raw.startsWith('#')) {
+          existing.value = raw;
+        }
+      } else {
+        colorFacetMap.set(label, {
+          value: raw,
+          label,
+          count: 1,
+        });
       }
     }
 
@@ -197,7 +224,7 @@ export function extractFacets(products: Product[]) {
   return {
     brands: toFacetList(brandMap),
     qualities: toFacetList(qualityMap),
-    colors: toFacetList(colorMap),
+    colors: Array.from(colorFacetMap.values()).sort((a, b) => b.count - a.count),
     sizes: Array.from(sizeMap.entries())
       .map(([value, count]) => ({ value, label: value, count }))
       .sort((a, b) => {

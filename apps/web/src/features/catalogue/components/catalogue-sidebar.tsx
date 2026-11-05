@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from 'motion/react';
 
 import { COLOR_SWATCH_MAP, extractFacets } from '@/data/filter-engine';
 import { useBrands } from '@/features/brand';
+import { formatColorLabel, isLightColor } from '@/features/cart/utils/format-color';
 
 interface SidebarProps {
   category: string;
@@ -577,15 +578,57 @@ export const CatalogueSidebar = ({
                 >
                   {facets.colors.map((c) => {
                     const colorKey = c.value.toLowerCase().trim();
-                    const swatch = COLOR_SWATCH_MAP[colorKey];
+                    const swatch =
+                      COLOR_SWATCH_MAP[colorKey] || COLOR_SWATCH_MAP[c.label.toLowerCase().trim()];
                     const isActive =
-                      draftFilters?.colors?.some((val) => val.toLowerCase() === colorKey) ?? false;
+                      draftFilters?.colors?.some((val) => {
+                        const valLower = val.toLowerCase().trim();
+                        return (
+                          valLower === colorKey ||
+                          valLower === c.label.toLowerCase().trim() ||
+                          formatColorLabel(val).toLowerCase().trim() ===
+                            c.label.toLowerCase().trim()
+                        );
+                      }) ?? false;
+                    const isLight = swatch?.isLight ?? isLightColor(c.value || c.label);
 
                     return (
                       <button
                         key={c.value}
                         onClick={() => {
-                          handleDraftToggle('colors', c.value);
+                          setDraftFilters((prev) => {
+                            const currentValues = prev.colors || [];
+                            const isCurrentlyActive = currentValues.some((val) => {
+                              const valLower = val.toLowerCase().trim();
+                              return (
+                                valLower === colorKey ||
+                                valLower === c.label.toLowerCase().trim() ||
+                                formatColorLabel(val).toLowerCase().trim() ===
+                                  c.label.toLowerCase().trim()
+                              );
+                            });
+                            const nextValues = isCurrentlyActive
+                              ? currentValues.filter((val) => {
+                                  const valLower = val.toLowerCase().trim();
+                                  return (
+                                    valLower !== colorKey &&
+                                    valLower !== c.label.toLowerCase().trim() &&
+                                    formatColorLabel(val).toLowerCase().trim() !==
+                                      c.label.toLowerCase().trim()
+                                  );
+                                })
+                              : [...currentValues, c.value];
+
+                            const updated =
+                              nextValues.length === 0
+                                ? (() => {
+                                    const { colors: _, ...rest } = prev;
+                                    return rest;
+                                  })()
+                                : { ...prev, colors: nextValues };
+                            onDraftFiltersChangeRef.current?.(updated);
+                            return updated;
+                          });
                         }}
                         className={`group/color inline-flex -skew-x-[12deg] items-stretch overflow-hidden rounded-sm border text-[10px] font-black tracking-widest uppercase transition-all duration-200 active:scale-95 ${
                           isActive
@@ -597,13 +640,14 @@ export const CatalogueSidebar = ({
                         <span
                           className="flex w-5 shrink-0 items-center justify-center self-stretch border-r border-black/15 dark:border-white/20"
                           style={{
-                            background: swatch?.bg || colorKey,
+                            background:
+                              swatch?.bg || (c.value.startsWith('#') ? c.value : colorKey),
                           }}
                         >
                           {isActive && (
                             <span
                               className={`skew-x-[12deg] text-[9px] leading-none font-black ${
-                                swatch?.isLight ? 'text-black' : 'text-white'
+                                isLight ? 'text-black' : 'text-white'
                               }`}
                             >
                               ✓
