@@ -4,6 +4,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 import { PrismaModule } from '../../database/prisma.module';
+import { WhatsAppModule } from '../whatsapp/whatsapp.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { Msg91Service } from './msg91.service';
@@ -14,6 +15,7 @@ import { RefreshTokenStrategy } from './strategies/refresh.strategy';
   imports: [
     PrismaModule,
     PassportModule,
+    WhatsAppModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): JwtModuleOptions => ({

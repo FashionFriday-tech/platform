@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 
 import { PrismaService } from '../../database/prisma.service';
+import { WhatsAppService } from '../whatsapp/whatsapp.service';
 import { SendOtpDto, SignupDto, VerifyOtpDto } from './dto/auth.dto';
 import { Msg91Service } from './msg91.service';
 
@@ -31,6 +32,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private msg91Service: Msg91Service,
+    private whatsAppService: WhatsAppService,
   ) {}
 
   // In-memory fallbacks for development when DB is down
@@ -55,8 +57,15 @@ export class AuthService {
   async sendOtp(dto: SendOtpDto) {
     const { phone } = dto;
 
-    // Fixed testing OTP until WhatsApp Business OTP integration
-    const otp = '786786';
+    const hasWhatsAppCreds = Boolean(
+      this.configService.get<string>('WHATSAPP_ACCESS_TOKEN') ||
+      this.configService.get<string>('META_WHATSAPP_ACCESS_TOKEN'),
+    );
+
+    // Generate secure 6-digit random numeric OTP in production, or test OTP if credentials missing
+    const otp = hasWhatsAppCreds
+      ? Math.floor(100000 + Math.random() * 900000).toString()
+      : '786786';
 
     // Hash it securely using Argon2
     const otpHash = await argon2.hash(otp);
@@ -68,7 +77,7 @@ export class AuthService {
     try {
       await this.prisma.db.otp.upsert({
         where: { phone },
-        update: { otpHash, expiresAt },
+        update: { otpHash, expiresAt, createdAt: new Date() },
         create: { phone, otpHash, expiresAt },
       });
     } catch {
@@ -76,7 +85,23 @@ export class AuthService {
       this.otpMap.set(phone, { otpHash, expiresAt });
     }
 
-    return { success: true, message: 'OTP sent successfully' };
+    // Dispatch via WhatsApp Meta Cloud API
+    if (hasWhatsAppCreds) {
+      const result = await this.whatsAppService.sendOtp(phone, otp);
+      if (!result.success) {
+        this.logger.error(
+          `[AuthService] WhatsApp OTP dispatch failed for ${phone}: ${result.error ?? 'Unknown error'}`,
+        );
+        // Fallback to Msg91 if configured
+        if (this.configService.get<string>('MSG91_AUTH_KEY')) {
+          await this.msg91Service.sendOtp(phone, otp);
+        }
+      }
+    } else {
+      this.logger.log(`[AuthService] Dev/Test mode: Test OTP for ${phone} is ${otp}`);
+    }
+
+    return { success: true, message: 'OTP sent successfully to your WhatsApp' };
   }
 
   async verifyOtp(dto: VerifyOtpDto) {
@@ -110,7 +135,9 @@ export class AuthService {
     }
 
     if (!isValid) {
-      throw new UnauthorizedException('Invalid OTP. Use 786786 for testing.');
+      throw new UnauthorizedException(
+        'Invalid OTP. Please check your WhatsApp and enter the 6-digit code.',
+      );
     }
 
     // 3. Cleanup
@@ -447,10 +474,24 @@ export class AuthService {
       }
     }
 
-    const otp = '786786';
+    const hasWhatsAppCreds = Boolean(
+      this.configService.get<string>('WHATSAPP_ACCESS_TOKEN') ||
+      this.configService.get<string>('META_WHATSAPP_ACCESS_TOKEN'),
+    );
 
-    // Call Msg91Service to dispatch the WhatsApp/SMS OTP
-    await this.msg91Service.sendOtp(user.phone, otp);
+    const otp = hasWhatsAppCreds
+      ? Math.floor(100000 + Math.random() * 900000).toString()
+      : '786786';
+
+    // Dispatch via WhatsApp Meta Cloud API
+    if (hasWhatsAppCreds) {
+      const result = await this.whatsAppService.sendOtp(user.phone, otp);
+      if (!result.success && this.configService.get<string>('MSG91_AUTH_KEY')) {
+        await this.msg91Service.sendOtp(user.phone, otp);
+      }
+    } else if (this.configService.get<string>('MSG91_AUTH_KEY')) {
+      await this.msg91Service.sendOtp(user.phone, otp);
+    }
 
     const otpHash = await argon2.hash(otp);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
