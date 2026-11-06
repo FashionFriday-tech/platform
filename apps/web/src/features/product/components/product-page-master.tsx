@@ -50,6 +50,7 @@ export default function ProductPageMaster({
   const [showWatchingPopup, setShowWatchingPopup] = useState(false);
   const mainCtaRef = useRef<HTMLElement>(null);
   const [showStickyCTA, setShowStickyCTA] = useState(true);
+  const [isNotified, setIsNotified] = useState(false);
 
   useEffect(() => {
     const target = mainCtaRef.current;
@@ -100,6 +101,19 @@ export default function ProductPageMaster({
       /^(one[- ]?size|free[- ]?size|standard|os)$/i.test(displaySizes[0]?.trim()));
   const shouldShowSizeSelector = !isGenericOrSingleSize && displaySizes.length > 1;
 
+  const isSoldOut = (product.inventory?.totalStock ?? 1) <= 0;
+
+  const handleNotifyMe = () => {
+    if (isNotified) {
+      toast.info(`You're already subscribed to restock alerts for ${product.name}.`);
+      return;
+    }
+    setIsNotified(true);
+    toast.success("You're on the priority restock list!", {
+      description: `We'll alert you the moment ${product.name} is restocked.`,
+    });
+  };
+
   const handleWishlistToggle = () => {
     void toggleWishlist({
       id: productId,
@@ -112,7 +126,7 @@ export default function ProductPageMaster({
         ? product.brand[0]
         : (product.brand ?? 'Fashion Friday'),
       availableSizes: product.attributes?.sizes ?? [],
-      inStock: (product.inventory?.totalStock ?? 1) > 0,
+      inStock: !isSoldOut,
     });
   };
 
@@ -278,6 +292,11 @@ export default function ProductPageMaster({
                     ₹{product.price.ogPrice.toLocaleString()}
                   </span>
                 )}
+                {isSoldOut && (
+                  <span className="rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-xs font-black tracking-wider text-rose-500 uppercase">
+                    Sold Out
+                  </span>
+                )}
               </div>
               <p className="text-foreground-muted relative flex items-center justify-center gap-2 overflow-hidden rounded-full border pr-2 text-end text-[10px]">
                 <span className="bg-foreground h-full rounded-full px-1.5 py-0.5">
@@ -338,7 +357,7 @@ export default function ProductPageMaster({
 
             <section ref={mainCtaRef} className="flex flex-col items-stretch gap-4 lg:flex-row">
               <div className="w-full lg:flex-1">
-                {product.inventory.totalStock > 0 ? (
+                {!isSoldOut ? (
                   <button
                     type="button"
                     onClick={handleBuyNow}
@@ -351,11 +370,16 @@ export default function ProductPageMaster({
                 ) : (
                   <button
                     type="button"
-                    className="border-destructive text-destructive flex h-12 w-full -skew-x-[12deg] cursor-not-allowed items-center justify-center gap-3 overflow-hidden rounded-xl border-2 font-black tracking-[0.2em] uppercase"
+                    onClick={handleNotifyMe}
+                    className={`flex h-12 w-full -skew-x-[12deg] cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl border-2 font-black tracking-[0.2em] uppercase shadow-lg transition-all active:scale-95 ${
+                      isNotified
+                        ? 'border-emerald-500 bg-emerald-600/10 text-emerald-500'
+                        : 'border-destructive text-destructive hover:bg-destructive/10'
+                    }`}
                   >
                     <span className="flex skew-x-[12deg] items-center gap-2">
-                      <BellIcon size={20} />
-                      Notify Me
+                      <BellIcon size={20} className={isNotified ? 'animate-bounce' : ''} />
+                      {isNotified ? 'Subscribed' : 'Notify Me'}
                     </span>
                   </button>
                 )}
@@ -384,15 +408,25 @@ export default function ProductPageMaster({
                   </span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  className="group flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-white font-black text-black shadow-lg transition-all hover:bg-zinc-100 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-black dark:text-white dark:hover:bg-zinc-900"
-                >
-                  <span className="skew-x-[12deg] text-sm font-black tracking-widest uppercase sm:text-base">
-                    Add to Cart
-                  </span>
-                </button>
+                {!isSoldOut ? (
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="group flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-white font-black text-black shadow-lg transition-all hover:bg-zinc-100 hover:shadow-xl active:scale-95 dark:border-zinc-300 dark:bg-black dark:text-white dark:hover:bg-zinc-900"
+                  >
+                    <span className="skew-x-[12deg] text-sm font-black tracking-widest uppercase sm:text-base">
+                      Add to Cart
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="flex h-12 flex-1 -skew-x-[12deg] cursor-not-allowed items-center justify-center overflow-hidden rounded-xl border border-zinc-300/40 bg-zinc-100/50 text-xs font-black tracking-widest text-zinc-400 uppercase dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-600"
+                  >
+                    <span className="skew-x-[12deg]">Sold Out</span>
+                  </button>
+                )}
               </div>
             </section>
 
@@ -508,6 +542,9 @@ export default function ProductPageMaster({
         onAddToCart={handleAddToCart}
         onCartClick={handleAddToCart}
         isVisible={showStickyCTA}
+        isSoldOut={isSoldOut}
+        onNotifyMe={handleNotifyMe}
+        isNotified={isNotified}
       />
     </div>
   );

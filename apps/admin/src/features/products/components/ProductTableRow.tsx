@@ -130,14 +130,18 @@ export function ProductTableRow({
       <div className="min-w-0">
         <span
           className={`inline-flex max-w-full items-center justify-center rounded-md border px-2.5 py-1 text-xs font-medium ${
-            product.status === 'Active'
-              ? 'border-black/10 bg-black/5 text-black dark:border-white/20 dark:bg-white/10 dark:text-white'
-              : product.status === 'Draft'
-                ? 'border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-500'
-                : 'border-transparent bg-black/5 text-black/50 dark:bg-white/5 dark:text-white/50'
+            product.stock <= 0
+              ? 'border-rose-500/20 bg-rose-500/10 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-400'
+              : product.status === 'Active'
+                ? 'border-black/10 bg-black/5 text-black dark:border-white/20 dark:bg-white/10 dark:text-white'
+                : product.status === 'Draft'
+                  ? 'border-yellow-500/20 bg-yellow-500/10 text-yellow-700 dark:text-yellow-500'
+                  : 'border-transparent bg-black/5 text-black/50 dark:bg-white/5 dark:text-white/50'
           }`}
         >
-          <span className="truncate">{product.status}</span>
+          <span className="truncate">
+            {product.stock <= 0 && product.status === 'Active' ? 'Sold Out' : product.status}
+          </span>
         </span>
       </div>
 
@@ -147,25 +151,27 @@ export function ProductTableRow({
             <div className="mb-1 h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
               <div
                 className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                  product.stock < 100
-                    ? 'bg-red-500'
-                    : product.stock < 500
-                      ? 'bg-yellow-500'
+                  product.stock <= 0
+                    ? 'bg-rose-500'
+                    : product.stock <= 20
+                      ? 'bg-amber-500'
                       : 'bg-green-500'
                 }`}
-                style={{ width: `${(product.stock / product.maxStock) * 100}%` }}
+                style={{
+                  width: `${Math.min(100, Math.max(product.stock > 0 ? 5 : 0, (product.stock / (product.maxStock || 100)) * 100))}%`,
+                }}
               />
             </div>
             <p
               className={`text-right text-[10px] font-medium ${
-                product.stock < 100
-                  ? 'text-red-500'
-                  : product.stock < 500
-                    ? 'text-yellow-600 dark:text-yellow-500'
+                product.stock <= 0
+                  ? 'font-bold text-rose-500'
+                  : product.stock <= 20
+                    ? 'font-semibold text-amber-600 dark:text-amber-500'
                     : 'text-green-600 dark:text-green-500'
               }`}
             >
-              {product.stock}/{product.maxStock}
+              {product.stock}/{product.maxStock || 100}
             </p>
           </div>
         </div>

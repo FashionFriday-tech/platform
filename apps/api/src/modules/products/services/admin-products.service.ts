@@ -120,7 +120,7 @@ export class AdminProductsService {
       sizes,
 
       // Inventory
-      totalStock: dto.inventory?.totalStock ?? 0,
+      totalStock: Math.min(100, Math.max(0, Number(dto.inventory?.totalStock) || 0)),
 
       // Social Proof & Real-time Metrics (never negative)
       liveWatching: Math.max(
@@ -330,7 +330,7 @@ export class AdminProductsService {
 
     if (d.inventory) {
       if (d.inventory.totalStock !== undefined) {
-        data.totalStock = Math.max(0, Number(d.inventory.totalStock) || 0);
+        data.totalStock = Math.min(100, Math.max(0, Number(d.inventory.totalStock) || 0));
       }
     }
 

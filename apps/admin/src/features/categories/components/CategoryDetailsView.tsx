@@ -104,7 +104,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
             originalPrice: Number(p.ogPrice ?? p.sellingPrice) || 0,
             sellingPrice: Number(p.sellingPrice) || 0,
             stock: Number(p.totalStock) || 0,
-            maxStock: 1000,
+            maxStock: 100,
             status:
               p.status === 'PUBLISHED' ? 'Active' : p.status === 'DRAFT' ? 'Draft' : 'Inactive',
             categoryId: p.categoryId ?? '',

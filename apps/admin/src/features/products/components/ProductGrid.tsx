@@ -195,7 +195,7 @@ export function ProductGrid({ products, isLoading, onToggleStatus, onDeleteProdu
                                 : 'font-bold text-black dark:text-white'
                           }
                         >
-                          {product.stock} units
+                          {product.stock <= 0 ? 'Sold Out' : `${product.stock} units`}
                         </span>
                       </div>
                       <div className="h-1.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10">

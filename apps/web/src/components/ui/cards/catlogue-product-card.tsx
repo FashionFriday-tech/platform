@@ -64,9 +64,20 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
             src={product.media.mainImage || '/images/placeholder.png'}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className={`object-cover transition-transform duration-700 group-hover:scale-105 ${
+              (product.inventory?.totalStock ?? 1) <= 0 ? 'opacity-80 grayscale-[25%]' : ''
+            }`}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+
+          {/* Sold Out Badge */}
+          {(product.inventory?.totalStock ?? 1) <= 0 && (
+            <div className="absolute top-3.5 left-3.5 z-10 sm:top-4 sm:left-4">
+              <span className="inline-flex -skew-x-[12deg] items-center rounded-md border border-white/20 bg-black/80 px-2.5 py-1 text-[9px] font-black tracking-widest text-white uppercase shadow-md backdrop-blur-md">
+                <span className="skew-x-[12deg]">Sold Out</span>
+              </span>
+            </div>
+          )}
 
           {/* Favorite Borderless Button with Refined Position and 50% Opacity */}
           <button

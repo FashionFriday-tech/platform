@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { AddToCartIcon, HeartFilledIcon, HeartIcon } from '@ff/ui';
+import { AddToCartIcon, BellIcon, HeartFilledIcon, HeartIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 interface CTAStickyButtonsProps {
@@ -12,6 +12,9 @@ interface CTAStickyButtonsProps {
   onAddToCart?: () => void;
   onCartClick?: () => void;
   isVisible?: boolean;
+  isSoldOut?: boolean;
+  onNotifyMe?: () => void;
+  isNotified?: boolean;
 }
 
 const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
@@ -21,6 +24,9 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
   onAddToCart,
   onCartClick,
   isVisible = true,
+  isSoldOut = false,
+  onNotifyMe,
+  isNotified = false,
 }) => {
   return (
     <motion.div
@@ -58,28 +64,47 @@ const CTAStickyButtons: React.FC<CTAStickyButtonsProps> = ({
           </span>
         </button>
 
-        {/* Main Buy Button - Crossed Style */}
-        <button
-          type="button"
-          onClick={onBuyNow}
-          className="flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-black text-white shadow-lg transition-transform outline-none active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black"
-        >
-          <span className="skew-x-[12deg] text-sm font-black tracking-widest whitespace-nowrap uppercase">
-            Buy Now
-          </span>
-        </button>
+        {/* Main Action Button: Notify Me (if Sold Out) or Buy Now */}
+        {isSoldOut ? (
+          <button
+            type="button"
+            onClick={onNotifyMe}
+            className={`flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border shadow-lg transition-transform outline-none active:scale-95 ${
+              isNotified
+                ? 'border-emerald-600 bg-emerald-600 text-white shadow-emerald-500/20'
+                : 'border-zinc-800 bg-black text-white hover:border-zinc-700 dark:border-zinc-300 dark:bg-white dark:text-black'
+            }`}
+          >
+            <span className="flex skew-x-[12deg] items-center gap-2 text-sm font-black tracking-widest uppercase">
+              <BellIcon size={18} />
+              {isNotified ? 'Subscribed' : 'Notify Me'}
+            </span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onBuyNow}
+            className="flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-800 bg-black text-white shadow-lg transition-transform outline-none active:scale-95 dark:border-zinc-300 dark:bg-white dark:text-black"
+          >
+            <span className="skew-x-[12deg] text-sm font-black tracking-widest whitespace-nowrap uppercase">
+              Buy Now
+            </span>
+          </button>
+        )}
 
-        {/* Add to Cart Button */}
-        <button
-          type="button"
-          onClick={onAddToCart || onCartClick}
-          aria-label="Add to Cart"
-          className="border-border hover:bg-foreground/5 text-foreground flex h-12 w-12 shrink-0 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border transition-all active:scale-90"
-        >
-          <span className="skew-x-[12deg]">
-            <AddToCartIcon size={20} />
-          </span>
-        </button>
+        {/* Add to Cart Button (only if not sold out) */}
+        {!isSoldOut && (
+          <button
+            type="button"
+            onClick={onAddToCart || onCartClick}
+            aria-label="Add to Cart"
+            className="border-border hover:bg-foreground/5 text-foreground flex h-12 w-12 shrink-0 -skew-x-[12deg] cursor-pointer items-center justify-center overflow-hidden rounded-xl border transition-all active:scale-90"
+          >
+            <span className="skew-x-[12deg]">
+              <AddToCartIcon size={20} />
+            </span>
+          </button>
+        )}
       </div>
     </motion.div>
   );

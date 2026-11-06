@@ -360,10 +360,16 @@ export function ProductDetailView({ productId }: Props) {
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2 rounded-full border border-black/5 bg-white px-3 py-1.5 shadow-sm dark:border-white/5 dark:bg-black">
                   <div
-                    className={`h-2.5 w-2.5 animate-pulse rounded-full ${product.stock < 100 ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : product.stock < 500 ? 'bg-yellow-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]' : 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]'}`}
+                    className={`h-2.5 w-2.5 animate-pulse rounded-full ${
+                      product.stock <= 0
+                        ? 'bg-rose-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]'
+                        : product.stock <= 20
+                          ? 'bg-amber-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]'
+                          : 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]'
+                    }`}
                   />
                   <span className="text-xs font-black text-black uppercase dark:text-white">
-                    {product.stock} in stock
+                    {product.stock <= 0 ? 'Sold Out' : `${product.stock} in stock`}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-full bg-black/5 px-3 py-1.5 text-xs font-bold text-black/60 dark:bg-white/5 dark:text-white/60">
