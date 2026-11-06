@@ -11,6 +11,7 @@ import {
   deleteProduct as deleteProductApi,
   fetchProductById,
   updateProductStatus,
+  updateProductStock,
 } from '../services/api';
 import { type Product } from '../types';
 import { DeleteProductModal } from './DeleteProductModal';
@@ -29,6 +30,7 @@ export function ProductDetailView({ productId }: Props) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isUpdatingStock, setIsUpdatingStock] = useState(false);
 
   const handleDeleteConfirm = async () => {
     if (!product) {
@@ -66,6 +68,34 @@ export function ProductDetailView({ productId }: Props) {
       toast.error(err?.message || 'Failed to update product status');
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleToggleSoldOut = async () => {
+    if (!product || isUpdatingStock) {
+      return;
+    }
+    const isCurrentlySoldOut = product.stock <= 0;
+    const nextStock = isCurrentlySoldOut ? 100 : 0;
+    const prevStock = product.stock;
+
+    // Optimistic update
+    setProduct({ ...product, stock: nextStock });
+    setIsUpdatingStock(true);
+
+    try {
+      await updateProductStock(product.id, nextStock);
+      toast.success(
+        nextStock === 0
+          ? 'Product marked as Sold Out (Stock set to 0)'
+          : 'Product restocked to 100 units',
+      );
+    } catch (err: any) {
+      console.error('Failed to update product stock:', err);
+      setProduct({ ...product, stock: prevStock });
+      toast.error(err?.message || 'Failed to update product stock');
+    } finally {
+      setIsUpdatingStock(false);
     }
   };
 
@@ -267,6 +297,30 @@ export function ProductDetailView({ productId }: Props) {
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Sold Out Toggle Button */}
+              <button
+                type="button"
+                onClick={handleToggleSoldOut}
+                disabled={isUpdatingStock}
+                className={`flex cursor-pointer items-center space-x-2 rounded-full border px-5 py-2 text-xs font-bold transition-all hover:scale-105 hover:shadow ${
+                  product.stock <= 0
+                    ? 'border-rose-500 bg-rose-500/10 text-rose-600 hover:bg-rose-500/20 dark:border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-400'
+                    : 'border-black/10 bg-black/5 text-black hover:bg-black/10 dark:border-white/10 dark:bg-white/10 dark:text-white'
+                }`}
+                title={
+                  product.stock <= 0
+                    ? 'Currently Sold Out. Click to restock to 100.'
+                    : 'Click to mark this product as Sold Out'
+                }
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    product.stock <= 0 ? 'animate-pulse bg-rose-500' : 'bg-emerald-500'
+                  }`}
+                />
+                <span>{product.stock <= 0 ? 'Sold Out (Restock)' : 'Mark Sold Out'}</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -358,7 +412,17 @@ export function ProductDetailView({ productId }: Props) {
                 Availability
               </span>
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-black/5 bg-white px-3 py-1.5 shadow-sm dark:border-white/5 dark:bg-black">
+                <button
+                  type="button"
+                  onClick={handleToggleSoldOut}
+                  disabled={isUpdatingStock}
+                  className="flex cursor-pointer items-center gap-2 rounded-full border border-black/5 bg-white px-3.5 py-1.5 shadow-sm transition-all hover:scale-105 active:scale-95 dark:border-white/5 dark:bg-black"
+                  title={
+                    product.stock <= 0
+                      ? 'Currently Sold Out. Click to restock to 100.'
+                      : 'Click to mark as Sold Out'
+                  }
+                >
                   <div
                     className={`h-2.5 w-2.5 animate-pulse rounded-full ${
                       product.stock <= 0
@@ -371,7 +435,7 @@ export function ProductDetailView({ productId }: Props) {
                   <span className="text-xs font-black text-black uppercase dark:text-white">
                     {product.stock <= 0 ? 'Sold Out' : `${product.stock} in stock`}
                   </span>
-                </div>
+                </button>
                 <div className="flex items-center gap-1.5 rounded-full bg-black/5 px-3 py-1.5 text-xs font-bold text-black/60 dark:bg-white/5 dark:text-white/60">
                   <svg
                     className="h-3.5 w-3.5"

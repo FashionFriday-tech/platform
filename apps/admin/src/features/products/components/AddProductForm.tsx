@@ -706,39 +706,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <span>Cancel</span>
                 </button>
               )}
-              {/* Sold Out Quick Button in Edit Mode */}
-              {initialData && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const nextStock = stock === '0' ? '100' : '0';
-                    setStock(nextStock);
-                    clearFieldError('stock');
-                    setToast({
-                      message:
-                        nextStock === '0'
-                          ? 'Product marked as Sold Out (Stock set to 0). Save changes to apply.'
-                          : 'Product stock set to 100. Save changes to apply.',
-                      type: 'warning',
-                    });
-                  }}
-                  className={`flex items-center space-x-1.5 rounded-full border px-3.5 py-2 text-xs font-bold transition-all active:scale-95 md:px-4 md:text-sm ${
-                    stock === '0'
-                      ? 'border-rose-500 bg-rose-500/10 text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/20 dark:text-rose-400'
-                      : 'border-black/10 bg-black/5 text-black hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10'
-                  }`}
-                  title={
-                    stock === '0'
-                      ? 'Currently Sold Out (Click to Restock to 100)'
-                      : 'Click to mark this product as Sold Out'
-                  }
-                >
-                  <span
-                    className={`h-2 w-2 rounded-full ${stock === '0' ? 'animate-pulse bg-rose-500' : 'bg-emerald-500'}`}
-                  />
-                  <span>{stock === '0' ? 'Sold Out' : 'Mark Sold Out'}</span>
-                </button>
-              )}
 
               <button
                 type="button"
@@ -792,28 +759,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
           {/* Right Mobile Actions (Save button + 3-dots action menu) */}
           <div className="relative flex items-center space-x-1.5 sm:hidden">
-            {initialData && (
-              <button
-                type="button"
-                onClick={() => {
-                  const nextStock = stock === '0' ? '100' : '0';
-                  setStock(nextStock);
-                  clearFieldError('stock');
-                  setToast({
-                    message:
-                      nextStock === '0' ? 'Marked Sold Out (Stock: 0)' : 'Stock set to 100',
-                    type: 'warning',
-                  });
-                }}
-                className={`flex items-center space-x-1 rounded-full border px-2.5 py-1.5 text-[11px] font-bold transition-transform active:scale-95 ${
-                  stock === '0'
-                    ? 'border-rose-500 bg-rose-500/10 text-rose-600'
-                    : 'border-black/10 bg-black/5 text-black dark:border-white/10 dark:bg-white/5 dark:text-white'
-                }`}
-              >
-                <span>{stock === '0' ? 'Sold Out' : 'Sold Out?'}</span>
-              </button>
-            )}
             <button
               type="button"
               onClick={() =>
@@ -1722,32 +1667,14 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
               </div>
 
               <div ref={stockRef}>
-                <div className="flex items-center justify-between">
-                  <LabelWithTick
-                    label="Stock"
-                    status={
-                      fieldErrors.stock
-                        ? 'error'
-                        : getStatus(stock, initialData?.inventory?.totalStock, 1, 'stock')
-                    }
-                  />
-                  {/* Quick Sold Out Toggle */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const next = stock === '0' ? '100' : '0';
-                      setStock(next);
-                      clearFieldError('stock');
-                    }}
-                    className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition-all ${
-                      stock === '0'
-                        ? 'border-rose-500/40 bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400'
-                        : 'border-black/10 bg-black/5 text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
-                    }`}
-                  >
-                    {stock === '0' ? '✓ Sold Out (0)' : 'Make Sold Out'}
-                  </button>
-                </div>
+                <LabelWithTick
+                  label="Stock"
+                  status={
+                    fieldErrors.stock
+                      ? 'error'
+                      : getStatus(stock, initialData?.inventory?.totalStock, 1, 'stock')
+                  }
+                />
                 <div className="relative mt-1">
                   <input
                     type="number"
@@ -1779,29 +1706,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-[11px] text-black/40 dark:text-white/40">
                   <span>Product count max 100</span>
-                  <div className="flex gap-2 font-semibold">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStock('0');
-                        clearFieldError('stock');
-                      }}
-                      className="transition-colors hover:text-rose-500"
-                    >
-                      Set 0 (Sold Out)
-                    </button>
-                    <span>•</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStock('100');
-                        clearFieldError('stock');
-                      }}
-                      className="transition-colors hover:text-emerald-500"
-                    >
-                      Set 100 (Full Stock)
-                    </button>
-                  </div>
                 </div>
                 <FieldErrorMessage error={fieldErrors.stock} />
               </div>

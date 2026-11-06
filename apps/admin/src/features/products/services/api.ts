@@ -183,6 +183,11 @@ export async function updateProductStatus(
   return true;
 }
 
+export async function updateProductStock(id: string, stock: number): Promise<boolean> {
+  await api.patch(`/admin/products/${id}`, { inventory: { totalStock: stock } });
+  return true;
+}
+
 export async function deleteProduct(id: string): Promise<boolean> {
   await api.delete(`/admin/products/${id}`);
   return true;
