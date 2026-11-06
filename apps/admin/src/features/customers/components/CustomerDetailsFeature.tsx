@@ -14,6 +14,7 @@ import {
   ShoppingBagIcon,
   ShoppingCartIcon,
   UserIcon,
+  WhatsAppIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
@@ -74,6 +75,33 @@ const ChevronUpIcon = ({ className }: { className?: string }) => (
     <path d="m18 15-6-6-6 6" />
   </svg>
 );
+
+function getWhatsAppUrl(phone?: string | null): string | null {
+  if (!phone) {
+    return null;
+  }
+  const digits = phone.replace(/\D/g, '');
+  if (!digits) {
+    return null;
+  }
+  const fullPhone = digits.length === 10 ? `91${digits}` : digits;
+  return `https://wa.me/${fullPhone}`;
+}
+
+function getTelUrl(phone?: string | null): string | null {
+  if (!phone) {
+    return null;
+  }
+  const clean = phone.replace(/[^\d+]/g, '');
+  return clean ? `tel:${clean}` : null;
+}
+
+function getMailtoUrl(email?: string | null): string | null {
+  if (!email?.includes('@')) {
+    return null;
+  }
+  return `mailto:${email.trim()}`;
+}
 
 interface CustomerDetailsFeatureProps {
   customerId: string;
@@ -494,6 +522,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
     );
   }
 
+  const waUrl = getWhatsAppUrl(customer.phone);
+  const telUrl = getTelUrl(customer.phone);
+  const mailUrl = getMailtoUrl(customer.email);
+
   return (
     <div className="mx-auto w-full max-w-7xl space-y-3">
       {/* Header Profile Section */}
@@ -533,19 +565,77 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       </span>
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-4 text-sm font-semibold text-black/60 dark:text-white/60">
-                      <span className="flex items-center gap-1.5">
-                        <MailIcon className="h-4 w-4" />
-                        {customer.email}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <PhoneIcon className="h-4 w-4" />
-                        {customer.phone || 'No phone number'}
-                      </span>
+                      {mailUrl ? (
+                        <a
+                          href={mailUrl}
+                          className="flex items-center gap-1.5 transition-colors hover:text-purple-600 dark:hover:text-purple-400"
+                          title="Click to send email"
+                        >
+                          <MailIcon className="h-4 w-4 shrink-0" />
+                          <span>{customer.email}</span>
+                        </a>
+                      ) : (
+                        <span className="flex items-center gap-1.5 opacity-60">
+                          <MailIcon className="h-4 w-4 shrink-0" />
+                          <span>{customer.email || 'No email'}</span>
+                        </span>
+                      )}
+
+                      {telUrl ? (
+                        <a
+                          href={telUrl}
+                          className="flex items-center gap-1.5 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                          title="Click to call"
+                        >
+                          <PhoneIcon className="h-4 w-4 shrink-0" />
+                          <span>{customer.phone}</span>
+                        </a>
+                      ) : (
+                        <span className="flex items-center gap-1.5 opacity-60">
+                          <PhoneIcon className="h-4 w-4 shrink-0" />
+                          <span>{customer.phone || 'No phone number'}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 pb-2 md:flex-row md:items-center">
+                <div className="flex flex-wrap items-center gap-2.5 pb-2">
+                  {waUrl && (
+                    <a
+                      href={waUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-10 items-center justify-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 text-sm font-semibold text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white active:scale-95 dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
+                      title={`Chat with ${customer.name} on WhatsApp`}
+                    >
+                      <WhatsAppIcon className="h-4 w-4 shrink-0" />
+                      <span>WhatsApp</span>
+                    </a>
+                  )}
+
+                  {telUrl && (
+                    <a
+                      href={telUrl}
+                      className="flex h-10 items-center justify-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 text-sm font-semibold text-blue-600 transition-all hover:bg-blue-500 hover:text-white active:scale-95 dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                      title={`Call ${customer.phone}`}
+                    >
+                      <PhoneIcon className="h-4 w-4 shrink-0" />
+                      <span>Call</span>
+                    </a>
+                  )}
+
+                  {mailUrl && (
+                    <a
+                      href={mailUrl}
+                      className="flex h-10 items-center justify-center gap-2 rounded-xl border border-purple-500/20 bg-purple-500/10 px-4 text-sm font-semibold text-purple-600 transition-all hover:bg-purple-500 hover:text-white active:scale-95 dark:bg-purple-500/20 dark:text-purple-400 dark:hover:bg-purple-500 dark:hover:text-white"
+                      title={`Email ${customer.email}`}
+                    >
+                      <MailIcon className="h-4 w-4 shrink-0" />
+                      <span>Email</span>
+                    </a>
+                  )}
+
                   <button
                     onClick={() => {
                       setEditName(customer.name);
@@ -553,7 +643,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       setEditErrors({});
                       setIsEditModalOpen(true);
                     }}
-                    className="flex h-10 items-center justify-center gap-2 rounded-xl border border-black/10 bg-transparent px-5 text-sm font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                    className="flex h-10 items-center justify-center gap-2 rounded-xl border border-black/10 bg-transparent px-4 text-sm font-semibold text-black transition-colors hover:bg-black/5 active:scale-95 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
                   >
                     Edit Profile
                   </button>
@@ -713,7 +803,40 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
           </div>
 
           {/* Action Buttons (Right) */}
-          <div className="flex flex-1 justify-end">
+          <div className="flex flex-1 items-center justify-end gap-2">
+            {!isProfileBoxOpen && (
+              <div className="mr-1 hidden items-center gap-1.5 sm:flex">
+                {waUrl && (
+                  <a
+                    href={waUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white active:scale-95 dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
+                    title={`WhatsApp ${customer.name}`}
+                  >
+                    <WhatsAppIcon className="h-4 w-4" />
+                  </a>
+                )}
+                {telUrl && (
+                  <a
+                    href={telUrl}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10 text-blue-600 transition-all hover:bg-blue-500 hover:text-white active:scale-95 dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                    title={`Call ${customer.phone}`}
+                  >
+                    <PhoneIcon className="h-4 w-4" />
+                  </a>
+                )}
+                {mailUrl && (
+                  <a
+                    href={mailUrl}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-500/20 bg-purple-500/10 text-purple-600 transition-all hover:bg-purple-500 hover:text-white active:scale-95 dark:bg-purple-500/20 dark:text-purple-400 dark:hover:bg-purple-500 dark:hover:text-white"
+                    title={`Email ${customer.email}`}
+                  >
+                    <MailIcon className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
+            )}
             {activeTab === 'orders' && (
               <button
                 onClick={() => {
@@ -1128,18 +1251,68 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                           <span>{address.landmark}</span>
                         </div>
                       )}
-                      <div className="flex items-start gap-2">
+                      <div className="flex items-center gap-2">
                         <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
                           Mobile Number :
                         </span>
-                        <span>{address.phoneNumber}</span>
+                        <span className="font-medium text-black dark:text-white">
+                          {address.phoneNumber}
+                        </span>
+                        {address.phoneNumber && (
+                          <div className="ml-2 flex items-center gap-1.5">
+                            {getWhatsAppUrl(address.phoneNumber) && (
+                              <a
+                                href={getWhatsAppUrl(address.phoneNumber)!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 transition-colors hover:bg-emerald-500 hover:text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
+                                title="WhatsApp this address"
+                              >
+                                <WhatsAppIcon className="h-3 w-3" />
+                              </a>
+                            )}
+                            {getTelUrl(address.phoneNumber) && (
+                              <a
+                                href={getTelUrl(address.phoneNumber)!}
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-blue-600 transition-colors hover:bg-blue-500 hover:text-white dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                                title="Call this address"
+                              >
+                                <PhoneIcon className="h-3 w-3" />
+                              </a>
+                            )}
+                          </div>
+                        )}
                       </div>
                       {address.altPhoneNumber && (
-                        <div className="flex items-start gap-2">
+                        <div className="flex items-center gap-2">
                           <span className="w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
                             Alt Number :
                           </span>
-                          <span>{address.altPhoneNumber}</span>
+                          <span className="font-medium text-black dark:text-white">
+                            {address.altPhoneNumber}
+                          </span>
+                          <div className="ml-2 flex items-center gap-1.5">
+                            {getWhatsAppUrl(address.altPhoneNumber) && (
+                              <a
+                                href={getWhatsAppUrl(address.altPhoneNumber)!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 transition-colors hover:bg-emerald-500 hover:text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
+                                title="WhatsApp alt number"
+                              >
+                                <WhatsAppIcon className="h-3 w-3" />
+                              </a>
+                            )}
+                            {getTelUrl(address.altPhoneNumber) && (
+                              <a
+                                href={getTelUrl(address.altPhoneNumber)!}
+                                className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500/10 text-blue-600 transition-colors hover:bg-blue-500 hover:text-white dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                                title="Call alt number"
+                              >
+                                <PhoneIcon className="h-3 w-3" />
+                              </a>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
