@@ -800,7 +800,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   setStock(nextStock);
                   clearFieldError('stock');
                   setToast({
-                    message: nextStock === '0' ? 'Marked Sold Out (Stock: 0)' : 'Stock set to 100',
+                    message:
+                      nextStock === '0' ? 'Marked Sold Out (Stock: 0)' : 'Stock set to 100',
                     type: 'warning',
                   });
                 }}

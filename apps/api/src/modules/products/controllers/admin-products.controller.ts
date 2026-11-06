@@ -38,6 +38,11 @@ export class AdminProductsController {
     );
   }
 
+  @Get(':id/performance')
+  async getProductPerformance(@Param('id') id: string) {
+    return this.productsService.getProductPerformance(id);
+  }
+
   @Get(':id')
   async getProductById(@Param('id') id: string) {
     const product = await this.productsService.getProductById(id);

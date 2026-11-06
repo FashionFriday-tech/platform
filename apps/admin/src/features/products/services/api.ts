@@ -57,7 +57,7 @@ export async function fetchProducts(search?: string): Promise<Product[]> {
       category: p.category?.name ?? 'Unknown',
       store: 'Main Store', // Dummy store
       variants: p.sizes ?? [],
-      sales: 0,
+      sales: Math.max(0, Number(p.liveSold ?? 0)),
       dateAdded: p.createdAt
         ? new Date(p.createdAt).toISOString().split('T')[0]
         : new Date().toISOString().split('T')[0],
@@ -141,7 +141,7 @@ export async function fetchProductById(id: string): Promise<Product | undefined>
       category: p.category?.name ?? 'Unknown',
       store: 'Main Store',
       variants: p.sizes ?? [],
-      sales: 0,
+      sales: Math.max(0, Number(p.liveSold ?? 0)),
       dateAdded: p.createdAt
         ? new Date(p.createdAt).toISOString().split('T')[0]
         : new Date().toISOString().split('T')[0],
@@ -190,4 +190,38 @@ export async function deleteProduct(id: string): Promise<boolean> {
 
 export function updateProduct(id: string, data: Partial<Product>): Promise<Product> {
   return Promise.resolve(data as Product);
+}
+
+export interface PerformanceDataPoint {
+  label: string;
+  sales: number;
+  views: number;
+  date?: string;
+}
+
+export interface TimeframePerformance {
+  totalSales: number;
+  totalViews: number;
+  avgSales: number;
+  points: PerformanceDataPoint[];
+}
+
+export interface ProductPerformanceMatrix {
+  productId: string;
+  productName: string;
+  daily: TimeframePerformance;
+  weekly: TimeframePerformance;
+  monthly: TimeframePerformance;
+  yearly: TimeframePerformance;
+}
+
+export async function fetchProductPerformance(
+  productId: string,
+): Promise<ProductPerformanceMatrix | undefined> {
+  try {
+    return await api.get<ProductPerformanceMatrix>(`/admin/products/${productId}/performance`);
+  } catch (err) {
+    console.error('fetchProductPerformance error:', err);
+    return undefined;
+  }
 }
