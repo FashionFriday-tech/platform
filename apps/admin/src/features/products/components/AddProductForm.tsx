@@ -481,7 +481,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 ...img,
                 url: uploadedUrl,
                 isNew: false,
-                file: undefined,
+                file: img.file,
               };
             }
             return img;
@@ -573,9 +573,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
           totalStock: stock ? Number(stock) : 0,
         },
         media: {
-          mainImage: finalImages[0],
+          mainImage:
+            finalImages.find((u) => Boolean(u) && typeof u === 'string') ||
+            'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/placeholder.webp',
           promoImage: finalImages[1] || null,
-          liveImages: finalImages.slice(2),
+          liveImages: finalImages.slice(2).filter((u) => Boolean(u)),
           youtubeId: videoId?.trim() ? videoId.trim() : null,
         },
         marketing: {
@@ -634,25 +636,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     } catch (error: any) {
       console.error('Error saving product:', error);
 
-      // If newly uploaded images were uploaded during this failed save attempt,
-      // clean them up from Cloudflare R2 so orphaned images don't accumulate
-      if (newlyUploadedUrls.length > 0) {
-        try {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-            {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ urls: newlyUploadedUrls }),
-            },
-          );
-        } catch (cleanupErr) {
-          console.error('Failed to cleanup uploaded images on failure:', cleanupErr);
-        }
-      }
+      const isNetworkError =
+        error?.message?.toLowerCase().includes('failed to fetch') ||
+        error?.message?.toLowerCase().includes('network') ||
+        (typeof navigator !== 'undefined' && !navigator.onLine);
 
       setToast({
-        message: error?.message || 'Failed to save product. Please try again.',
+        message: isNetworkError
+          ? 'Network connection issue. Please check your internet connection and try again.'
+          : error?.message || 'Failed to save product. Please try again.',
         type: 'error',
       });
     } finally {

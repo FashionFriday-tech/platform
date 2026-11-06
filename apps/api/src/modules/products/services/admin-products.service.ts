@@ -1,6 +1,7 @@
 import { Gender, generateBrandId, Prisma, ProductStatus } from '@ff/database';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { PrismaService } from '../../../database/prisma.service';
 import { triggerRevalidation } from '../../revalidate-helper';
 import { UploadService } from '../../upload/upload.service';
 import { CreateProductDto, UpdateProductDto } from '../dto';
@@ -11,6 +12,7 @@ export class AdminProductsService {
   constructor(
     private readonly productsRepository: ProductsRepository,
     private readonly uploadService: UploadService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async createProduct(dto: CreateProductDto) {
@@ -24,7 +26,21 @@ export class AdminProductsService {
     const primarySellerId = allSellerIds[0] || rawDto.sellerId || undefined;
 
     const name = (dto.name || '').trim().toUpperCase();
-    const slug = (dto.slug || '').trim().toLowerCase();
+    let slug = (dto.slug || '').trim().toLowerCase();
+    if (!slug) {
+      slug =
+        name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)+/g, '') || `prod-${Date.now()}`;
+    }
+
+    // Auto-deduplicate slug if already exists in database
+    const existingWithSlug = await this.productsRepository.findBySlug(slug);
+    if (existingWithSlug) {
+      slug = `${slug}-${Math.floor(1000 + Math.random() * 9000)}`;
+    }
+
     const description = (dto.description || '').trim().toUpperCase();
     const rawBrand = dto.brand as unknown;
     const brand = Array.isArray(rawBrand)
@@ -44,6 +60,37 @@ export class AdminProductsService {
       ? dto.marketing.seoDescription.trim().toUpperCase()
       : null;
 
+    // Verify category exists
+    let validCategoryId: string | undefined;
+    const requestedCatId = (dto as any).categoryId;
+    if (requestedCatId) {
+      const cat = await this.prisma.db.category.findUnique({
+        where: { id: requestedCatId },
+      });
+      if (cat) {
+        validCategoryId = cat.id;
+      }
+    }
+    if (!validCategoryId) {
+      const fallbackCat = await this.prisma.db.category.findFirst();
+      validCategoryId = fallbackCat?.id;
+    }
+
+    // Verify seller exists
+    let validSellerId: string | undefined;
+    if (primarySellerId && primarySellerId !== 'none') {
+      const seller = await this.prisma.db.seller.findUnique({
+        where: { id: primarySellerId },
+      });
+      if (seller) {
+        validSellerId = seller.id;
+      }
+    }
+
+    const mainImage =
+      dto.media?.mainImage ||
+      'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/placeholder.webp';
+
     const data: Prisma.ProductCreateInput = {
       id: generateBrandId('PROD'),
       name,
@@ -51,9 +98,9 @@ export class AdminProductsService {
       description,
       brand,
       status: dto.status.toUpperCase() as ProductStatus,
-      category: { connect: { id: (dto as any).categoryId } },
+      ...(validCategoryId ? { category: { connect: { id: validCategoryId } } } : {}),
       sellerIds: allSellerIds,
-      ...(primarySellerId ? { seller: { connect: { id: primarySellerId } } } : {}),
+      ...(validSellerId ? { seller: { connect: { id: validSellerId } } } : {}),
       gender: dto.gender.toUpperCase() as Gender,
 
       // Pricing
@@ -62,7 +109,7 @@ export class AdminProductsService {
       gettingPrice: dto.price.gettingPrice ?? 0,
 
       // Media
-      mainImage: dto.media.mainImage,
+      mainImage,
       promoImage: dto.media.promoImage || null,
       liveImages: dto.media.liveImages ?? [],
       youtubeId: dto.media.youtubeId || null,
@@ -107,20 +154,9 @@ export class AdminProductsService {
       this.triggerProductAndCategoryRevalidation(result);
       return result;
     } catch (error) {
-      console.error('Failed to create product in database, cleaning up uploaded images:', error);
-      const imagesToDelete = [
-        dto.media?.mainImage,
-        dto.media?.promoImage,
-        ...(dto.media?.liveImages || []),
-      ].filter((url): url is string => Boolean(url) && typeof url === 'string');
-
-      for (const url of imagesToDelete) {
-        if (url && !url.includes('placeholder')) {
-          await this.uploadService.deleteFile(url).catch((err) => {
-            console.error(`Failed to cleanup orphaned image ${url}:`, err);
-          });
-        }
-      }
+      console.error('Failed to create product in database:', error);
+      // NOTE: We do NOT delete uploaded images here!
+      // Preserving uploaded images in storage prevents 404s when the user retries saving the form.
       throw error;
     }
   }
@@ -193,7 +229,14 @@ export class AdminProductsService {
     }
     if (d.categoryId !== undefined) {
       if (d.categoryId) {
-        data.category = { connect: { id: d.categoryId } };
+        const catExists = await this.prisma.db.category.findUnique({
+          where: { id: d.categoryId },
+        });
+        if (catExists) {
+          data.category = { connect: { id: catExists.id } };
+        } else {
+          data.category = { disconnect: true };
+        }
       } else {
         data.category = { disconnect: true };
       }
@@ -202,15 +245,30 @@ export class AdminProductsService {
       const allSellerIds: string[] = Array.isArray(d.sellerIds) ? d.sellerIds.filter(Boolean) : [];
       data.sellerIds = allSellerIds;
       const primarySellerId = d.sellerId ?? allSellerIds[0];
-      if (primarySellerId) {
-        data.seller = { connect: { id: primarySellerId } };
+      if (primarySellerId && primarySellerId !== 'none') {
+        const sellerExists = await this.prisma.db.seller.findUnique({
+          where: { id: primarySellerId },
+        });
+        if (sellerExists) {
+          data.seller = { connect: { id: sellerExists.id } };
+        } else {
+          data.seller = { disconnect: true };
+        }
       } else {
         data.seller = { disconnect: true };
       }
     } else if (d.sellerId !== undefined) {
-      if (d.sellerId) {
-        data.seller = { connect: { id: d.sellerId } };
-        data.sellerIds = [d.sellerId];
+      if (d.sellerId && d.sellerId !== 'none') {
+        const sellerExists = await this.prisma.db.seller.findUnique({
+          where: { id: d.sellerId },
+        });
+        if (sellerExists) {
+          data.seller = { connect: { id: sellerExists.id } };
+          data.sellerIds = [sellerExists.id];
+        } else {
+          data.seller = { disconnect: true };
+          data.sellerIds = [];
+        }
       } else {
         data.seller = { disconnect: true };
         data.sellerIds = [];
