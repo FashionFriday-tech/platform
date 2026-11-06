@@ -8,7 +8,35 @@ export const CATEGORIES = [
   'Slippers',
   'Accessories',
 ];
-export const QUALITIES = ['Original', '10A', '7A', '5A', 'Premium', 'Standard'];
+export const QUALITIES = ['UA', 'Semi UA', 'Original', '10A', '7A', '5A', 'Premium', 'Standard'];
+
+export const FOOTWEAR_QUALITIES = ['UA', 'Semi UA', '10A', '7A', '5A', 'Original', 'Standard'];
+
+export const GENERAL_QUALITIES = ['Original', 'Premium', 'Standard', 'Surplus', '10A', '7A'];
+
+export function isFootwearCategory(categoryName?: string | null): boolean {
+  if (!categoryName) {
+    return false;
+  }
+  const normalized = categoryName.trim().toLowerCase();
+  return (
+    normalized.includes('slipper') ||
+    normalized.includes('slide') ||
+    normalized.includes('croc') ||
+    normalized.includes('sneak') ||
+    normalized.includes('shoe') ||
+    normalized.includes('footwear') ||
+    normalized.includes('sandal') ||
+    normalized.includes('boot')
+  );
+}
+
+export function getCategoryQualities(categoryName?: string | null): string[] {
+  if (isFootwearCategory(categoryName)) {
+    return FOOTWEAR_QUALITIES;
+  }
+  return QUALITIES;
+}
 
 export const FOOTWEAR_SIZES_MEN = ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'];
 

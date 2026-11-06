@@ -224,7 +224,9 @@ export default function ProductPageMaster({
                     <Link href="/help/quality-guide">
                       <span className="flex items-center justify-center gap-1">
                         <StarBadgeIcon className="mb-0.5 inline-block text-blue-500" />
-                        {product.attributes.quality}
+                        {product.attributes.quality === 'SEMI_UA'
+                          ? 'Semi UA'
+                          : product.attributes.quality?.replace(/_/g, ' ')}
                       </span>
                     </Link>
 

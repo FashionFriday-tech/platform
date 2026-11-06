@@ -66,7 +66,11 @@ export function filterProducts(products: Product[], activeFilters: Record<string
         if (!quality) {
           return false;
         }
-        const match = selectedOptions.some((opt) => opt.toLowerCase() === quality.toLowerCase());
+        const match = selectedOptions.some((opt) => {
+          const cleanOpt = opt.toLowerCase().replace(/[-_\s]+/g, '');
+          const cleanQ = quality.toLowerCase().replace(/[-_\s]+/g, '');
+          return cleanOpt === cleanQ;
+        });
         if (!match) {
           return false;
         }
@@ -221,9 +225,25 @@ export function extractFacets(products: Product[]) {
       .map(([value, count]) => ({ value, label: value, count }))
       .sort((a, b) => b.count - a.count);
 
+  const toQualityFacetList = (map: Map<string, number>): FacetCount[] =>
+    Array.from(map.entries())
+      .map(([value, count]) => {
+        let label = value;
+        const norm = value.toUpperCase().replace(/[-_\s]+/g, '_');
+        if (norm === 'SEMI_UA') {
+          label = 'Semi UA';
+        } else if (norm === 'UA') {
+          label = 'UA';
+        } else if (value.includes('_')) {
+          label = value.replace(/_/g, ' ');
+        }
+        return { value, label, count };
+      })
+      .sort((a, b) => b.count - a.count);
+
   return {
     brands: toFacetList(brandMap),
-    qualities: toFacetList(qualityMap),
+    qualities: toQualityFacetList(qualityMap),
     colors: Array.from(colorFacetMap.values()).sort((a, b) => b.count - a.count),
     sizes: Array.from(sizeMap.entries())
       .map(([value, count]) => ({ value, label: value, count }))

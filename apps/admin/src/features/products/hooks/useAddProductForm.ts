@@ -7,7 +7,7 @@ import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
 import { type CreateColorInput } from '../../colors/types';
-import { getCategorySizes } from '../utils/constants';
+import { getCategoryQualities, getCategorySizes, isFootwearCategory } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export interface SelectedColor {
@@ -58,7 +58,27 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [category, setCategory] = useState<string>(
     paramCategoryName ?? (initialData as any)?.category?.name ?? '',
   );
-  const [quality, setQuality] = useState<string>('Original');
+  const [quality, setQuality] = useState<string>(() => {
+    const initialQuality = initialData?.attributes?.quality;
+    if (initialQuality) {
+      const qStr = String(initialQuality).toUpperCase();
+      if (qStr === 'SEMI_UA' || qStr === 'SEMI-UA') {
+        return 'Semi UA';
+      }
+      if (qStr === 'UA') {
+        return 'UA';
+      }
+      if (qStr === 'STANDARD') {
+        return 'Standard';
+      }
+      return initialQuality;
+    }
+    const catName = paramCategoryName ?? (initialData as any)?.category?.name;
+    if (isFootwearCategory(catName)) {
+      return 'UA';
+    }
+    return 'Original';
+  });
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
 
@@ -215,11 +235,13 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
       // Map Quality
       let mappedUIQuality: string = initialData.attributes?.quality ?? 'Original';
-      if (mappedUIQuality === 'UA') {
-        mappedUIQuality = 'Original';
-      }
-      if (mappedUIQuality === 'STANDARD') {
-        mappedUIQuality = '5A';
+      const qUpper = String(mappedUIQuality).toUpperCase();
+      if (qUpper === 'UA') {
+        mappedUIQuality = 'UA';
+      } else if (qUpper === 'SEMI_UA' || qUpper === 'SEMI-UA') {
+        mappedUIQuality = 'Semi UA';
+      } else if (qUpper === 'STANDARD') {
+        mappedUIQuality = 'Standard';
       }
 
       // Map Category from apiCategories or attached category object
@@ -458,6 +480,11 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     setCategory(catName);
     setIsCategoryOpen(false);
     setSizes(getCategorySizes(catName, gender));
+
+    const validQualities = getCategoryQualities(catName);
+    if (!validQualities.includes(quality)) {
+      setQuality(validQualities[0] || 'UA');
+    }
     setBrandInput('');
     setSelectedBrandLogo(null);
   };

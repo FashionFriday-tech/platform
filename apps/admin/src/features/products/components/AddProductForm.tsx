@@ -12,7 +12,7 @@ import { AddColorModal } from '@/features/colors';
 import { api } from '@/lib/api-client';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
-import { QUALITIES } from '../utils/constants';
+import { getCategoryQualities } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 import { ProductSellerSelector } from './ProductSellerSelector';
 
@@ -313,6 +313,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     );
   }, [category, gender, apiCategories]);
 
+  const availableQualities = useMemo(() => getCategoryQualities(category), [category]);
+
   const validateForm = (isDraft: boolean): Record<string, string> => {
     const errors: Record<string, string> = {};
 
@@ -512,7 +514,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       }
 
       // Map frontend quality to backend enum
-      let mappedQuality = quality.toUpperCase().replace(/\s+/g, '_');
+      let mappedQuality = quality
+        .trim()
+        .toUpperCase()
+        .replace(/[-\s]+/g, '_');
       if (mappedQuality === 'ORIGINAL') {
         mappedQuality = 'UA';
       }
@@ -1549,7 +1554,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
                   {isQualityOpen && (
                     <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-2xl dark:border-white/10 dark:bg-[#1a1a1a]">
-                      {QUALITIES.map((q) => (
+                      {availableQualities.map((q) => (
                         <button
                           key={q}
                           onClick={() => {

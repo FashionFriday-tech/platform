@@ -103,7 +103,10 @@ export default function RelatedProducts({ products, initialBrands }: RelatedProd
                     <RelatedProductBrandLogo brand={product.brand} brands={brands} />
 
                     <span className="border-border flex items-center gap-1 rounded-full border px-2 py-0.5 font-bold text-blue-500 uppercase">
-                      <StarBadgeIcon /> {product.attributes.quality}
+                      <StarBadgeIcon />{' '}
+                      {product.attributes.quality === 'SEMI_UA'
+                        ? 'Semi UA'
+                        : product.attributes.quality?.replace(/_/g, ' ')}
                     </span>
                   </div>
 
