@@ -779,4 +779,243 @@ export class AdminProductsService {
       }
     }
   }
+
+  async getProductInteractionsSummary(productIdOrSlug: string) {
+    const product = await this.prisma.db.product.findFirst({
+      where: { OR: [{ id: productIdOrSlug }, { slug: productIdOrSlug }] },
+      select: { id: true },
+    });
+    const productId = product?.id || productIdOrSlug;
+
+    const [wishlistCount, cartCount, notificationsCount, clicksCount] = await Promise.all([
+      this.prisma.db.wishlistItem.count({ where: { productId } }),
+      this.prisma.db.cartItem.count({ where: { productId } }),
+      this.prisma.db.productNotification.count({ where: { productId } }),
+      this.prisma.db.productClickLog.count({ where: { productId } }),
+    ]);
+
+    return {
+      wishlistCount,
+      cartCount,
+      notificationsCount,
+      clicksCount,
+    };
+  }
+
+  async getProductInteractionsList(
+    productIdOrSlug: string,
+    type: 'wishlist' | 'cart' | 'notifications' | 'clicks',
+    page = 1,
+    limit = 10,
+    search?: string,
+  ) {
+    const product = await this.prisma.db.product.findFirst({
+      where: { OR: [{ id: productIdOrSlug }, { slug: productIdOrSlug }] },
+      select: { id: true },
+    });
+    const productId = product?.id || productIdOrSlug;
+
+    const safePage = Math.max(1, page);
+    const safeLimit = Math.min(50, Math.max(1, limit));
+    const skip = (safePage - 1) * safeLimit;
+
+    const userSearchWhere = search?.trim()
+      ? {
+          OR: [
+            { name: { contains: search.trim(), mode: 'insensitive' as const } },
+            { email: { contains: search.trim(), mode: 'insensitive' as const } },
+            { phone: { contains: search.trim(), mode: 'insensitive' as const } },
+          ],
+        }
+      : undefined;
+
+    switch (type) {
+      case 'wishlist': {
+        const where: any = {
+          productId,
+          ...(userSearchWhere ? { user: userSearchWhere } : {}),
+        };
+        const [total, items] = await Promise.all([
+          this.prisma.db.wishlistItem.count({ where }),
+          this.prisma.db.wishlistItem.findMany({
+            where,
+            select: {
+              id: true,
+              createdAt: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  phone: true,
+                  accountStatus: true,
+                  createdAt: true,
+                },
+              },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: safeLimit,
+            skip,
+          }),
+        ]);
+
+        return {
+          total,
+          page: safePage,
+          limit: safeLimit,
+          totalPages: Math.ceil(total / safeLimit),
+          data: items.map((item) => ({
+            id: item.id,
+            interactionType: 'wishlist' as const,
+            timestamp: item.createdAt,
+            user: item.user,
+          })),
+        };
+      }
+
+      case 'cart': {
+        const where: any = {
+          productId,
+          ...(userSearchWhere ? { user: userSearchWhere } : {}),
+        };
+        const [total, items] = await Promise.all([
+          this.prisma.db.cartItem.count({ where }),
+          this.prisma.db.cartItem.findMany({
+            where,
+            select: {
+              id: true,
+              size: true,
+              color: true,
+              quantity: true,
+              createdAt: true,
+              updatedAt: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  phone: true,
+                  accountStatus: true,
+                  createdAt: true,
+                },
+              },
+            },
+            orderBy: { updatedAt: 'desc' },
+            take: safeLimit,
+            skip,
+          }),
+        ]);
+
+        return {
+          total,
+          page: safePage,
+          limit: safeLimit,
+          totalPages: Math.ceil(total / safeLimit),
+          data: items.map((item) => ({
+            id: item.id,
+            interactionType: 'cart' as const,
+            timestamp: item.updatedAt || item.createdAt,
+            details: {
+              size: item.size,
+              color: item.color,
+              quantity: item.quantity,
+            },
+            user: item.user,
+          })),
+        };
+      }
+
+      case 'notifications': {
+        const where: any = {
+          productId,
+          ...(userSearchWhere ? { user: userSearchWhere } : {}),
+        };
+        const [total, items] = await Promise.all([
+          this.prisma.db.productNotification.count({ where }),
+          this.prisma.db.productNotification.findMany({
+            where,
+            select: {
+              id: true,
+              createdAt: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  phone: true,
+                  accountStatus: true,
+                  createdAt: true,
+                },
+              },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: safeLimit,
+            skip,
+          }),
+        ]);
+
+        return {
+          total,
+          page: safePage,
+          limit: safeLimit,
+          totalPages: Math.ceil(total / safeLimit),
+          data: items.map((item) => ({
+            id: item.id,
+            interactionType: 'notifications' as const,
+            timestamp: item.createdAt,
+            user: item.user,
+          })),
+        };
+      }
+
+      case 'clicks': {
+        const where: any = {
+          productId,
+          ...(userSearchWhere ? { user: userSearchWhere } : {}),
+        };
+        const [total, items] = await Promise.all([
+          this.prisma.db.productClickLog.count({ where }),
+          this.prisma.db.productClickLog.findMany({
+            where,
+            select: {
+              id: true,
+              clickCount: true,
+              lastClickedAt: true,
+              createdAt: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  phone: true,
+                  accountStatus: true,
+                  createdAt: true,
+                },
+              },
+            },
+            orderBy: { lastClickedAt: 'desc' },
+            take: safeLimit,
+            skip,
+          }),
+        ]);
+
+        return {
+          total,
+          page: safePage,
+          limit: safeLimit,
+          totalPages: Math.ceil(total / safeLimit),
+          data: items.map((item) => ({
+            id: item.id,
+            interactionType: 'clicks' as const,
+            timestamp: item.lastClickedAt,
+            details: {
+              clickCount: item.clickCount,
+              firstClickedAt: item.createdAt,
+            },
+            user: item.user,
+          })),
+        };
+      }
+    }
+  }
 }

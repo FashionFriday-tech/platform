@@ -66,6 +66,8 @@ model Product {
   variants      ProductVariant[]
   wishlistItems WishlistItem[]
   cartItems     CartItem[]
+  notifications ProductNotification[]
+  clickLogs     ProductClickLog[]
   sellerId      String?
   sellerIds     String[]      @default([])
   seller        Seller?       @relation(fields: [sellerId], references: [id], onDelete: SetNull)

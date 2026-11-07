@@ -1,0 +1,16 @@
+model ProductClickLog {
+  id            String   @id @default(uuid())
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clickCount    Int      @default(1)
+  lastClickedAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  // Bounded storage: Exactly 1 row per customer per product
+  @@unique([productId, userId])
+  @@index([productId, lastClickedAt(sort: Desc)])
+  @@index([userId])
+  @@map("product_click_logs")
+}

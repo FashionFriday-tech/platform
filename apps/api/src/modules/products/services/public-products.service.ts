@@ -1,6 +1,7 @@
 import { Gender, Prisma, ProductStatus } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
+import { PrismaService } from '../../../database/prisma.service';
 import { ProductsRepository } from '../products.repository';
 
 function levenshteinDistance(s1: string, s2: string): number {
@@ -53,7 +54,10 @@ const SYNONYM_MAP: Record<string, string[]> = {
 
 @Injectable()
 export class PublicProductsService {
-  constructor(private readonly productsRepository: ProductsRepository) {}
+  constructor(
+    private readonly productsRepository: ProductsRepository,
+    private readonly prisma: PrismaService,
+  ) {}
 
   private paginate([total, data]: [number, any[]], skip: number, take: number) {
     return {
@@ -421,5 +425,80 @@ export class PublicProductsService {
 
   async getProductBySlug(slug: string) {
     return this.productsRepository.findBySlug(slug);
+  }
+
+  async trackProductClick(idOrSlug: string, userId: string) {
+    try {
+      let productId = idOrSlug;
+      const prod = await this.prisma.db.product.findFirst({
+        where: { OR: [{ id: idOrSlug }, { slug: idOrSlug }] },
+        select: { id: true },
+      });
+      if (prod) {
+        productId = prod.id;
+      }
+
+      await this.prisma.db.productClickLog.upsert({
+        where: {
+          productId_userId: { productId, userId },
+        },
+        create: {
+          productId,
+          userId,
+          clickCount: 1,
+          lastClickedAt: new Date(),
+        },
+        update: {
+          clickCount: { increment: 1 },
+          lastClickedAt: new Date(),
+        },
+      });
+      return { tracked: true };
+    } catch {
+      return { tracked: false };
+    }
+  }
+
+  async subscribeRestockNotification(idOrSlug: string, userId: string) {
+    let productId = idOrSlug;
+    const prod = await this.prisma.db.product.findFirst({
+      where: { OR: [{ id: idOrSlug }, { slug: idOrSlug }] },
+      select: { id: true },
+    });
+    if (prod) {
+      productId = prod.id;
+    }
+
+    await this.prisma.db.productNotification.upsert({
+      where: {
+        productId_userId: { productId, userId },
+      },
+      create: {
+        productId,
+        userId,
+      },
+      update: {
+        createdAt: new Date(),
+      },
+    });
+    return { success: true };
+  }
+
+  async getRestockNotificationStatus(idOrSlug: string, userId: string) {
+    let productId = idOrSlug;
+    const prod = await this.prisma.db.product.findFirst({
+      where: { OR: [{ id: idOrSlug }, { slug: idOrSlug }] },
+      select: { id: true },
+    });
+    if (prod) {
+      productId = prod.id;
+    }
+
+    const found = await this.prisma.db.productNotification.findUnique({
+      where: {
+        productId_userId: { productId, userId },
+      },
+    });
+    return { isNotified: Boolean(found) };
   }
 }

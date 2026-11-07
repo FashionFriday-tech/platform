@@ -230,3 +230,90 @@ export async function fetchProductPerformance(
     return undefined;
   }
 }
+
+export type ProductInteractionType = 'wishlist' | 'cart' | 'notifications' | 'clicks';
+
+export interface CustomerInteractionUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  accountStatus: string;
+  createdAt: string;
+}
+
+export interface CustomerInteractionItem {
+  id: string;
+  interactionType: ProductInteractionType;
+  timestamp: string;
+  details?: {
+    size?: string;
+    color?: string;
+    quantity?: number;
+    clickCount?: number;
+    firstClickedAt?: string;
+  };
+  user: CustomerInteractionUser;
+}
+
+export interface ProductInteractionsResponse {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  data: CustomerInteractionItem[];
+}
+
+export interface ProductInteractionsSummary {
+  wishlistCount: number;
+  cartCount: number;
+  notificationsCount: number;
+  clicksCount: number;
+}
+
+export async function fetchProductInteractionsSummary(
+  productId: string,
+): Promise<ProductInteractionsSummary> {
+  try {
+    return await api.get<ProductInteractionsSummary>(
+      `/admin/products/${productId}/interactions/summary`,
+    );
+  } catch (err) {
+    console.error('fetchProductInteractionsSummary error:', err);
+    return {
+      wishlistCount: 0,
+      cartCount: 0,
+      notificationsCount: 0,
+      clicksCount: 0,
+    };
+  }
+}
+
+export async function fetchProductInteractionsList(
+  productId: string,
+  type: ProductInteractionType,
+  page = 1,
+  limit = 10,
+  search?: string,
+): Promise<ProductInteractionsResponse> {
+  try {
+    const params = new URLSearchParams({
+      type,
+      page: String(page),
+      limit: String(limit),
+      ...(search?.trim() ? { search: search.trim() } : {}),
+    });
+    return await api.get<ProductInteractionsResponse>(
+      `/admin/products/${productId}/interactions?${params.toString()}`,
+    );
+  } catch (err) {
+    console.error('fetchProductInteractionsList error:', err);
+    return {
+      total: 0,
+      page: 1,
+      limit,
+      totalPages: 0,
+      data: [],
+    };
+  }
+}

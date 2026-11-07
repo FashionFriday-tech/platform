@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import { useBrands } from '@/features/brand';
 import { useCart } from '@/features/cart';
 import { useWishlist } from '@/features/wishlist';
+import { fetcher } from '@/lib/api-client';
 import { getBrandLogo } from '@/lib/brand-logo';
 
 import { useLiveProductMetric } from '../hooks/use-live-product-metric';
@@ -103,15 +104,45 @@ export default function ProductPageMaster({
 
   const isSoldOut = (product.inventory?.totalStock ?? 1) <= 0;
 
-  const handleNotifyMe = () => {
+  useEffect(() => {
+    if (!productId) return;
+    // Track product click/view for logged-in user
+    void fetcher(`/products/${productId}/track-click`, { method: 'POST' }).catch(() => {});
+
+    // Check restock notification status if item is sold out
+    if (isSoldOut) {
+      void fetcher<{ isNotified: boolean }>(`/products/${productId}/notify-me/status`)
+        .then((res) => {
+          if (res?.isNotified) setIsNotified(true);
+        })
+        .catch(() => {});
+    }
+  }, [productId, isSoldOut]);
+
+  const handleNotifyMe = async () => {
     if (isNotified) {
       toast.info(`You're already subscribed to restock alerts for ${product.name}.`);
       return;
     }
-    setIsNotified(true);
-    toast.success("You're on the priority restock list!", {
-      description: `We'll alert you the moment ${product.name} is restocked.`,
-    });
+    try {
+      const res = await fetcher<{ success: boolean; requireAuth?: boolean }>(
+        `/products/${productId}/notify-me`,
+        { method: 'POST' },
+      );
+      if (res?.requireAuth) {
+        toast.warning('Please log in to receive restock notifications.');
+        return;
+      }
+      setIsNotified(true);
+      toast.success("You're on the priority restock list!", {
+        description: `We'll alert you the moment ${product.name} is restocked.`,
+      });
+    } catch {
+      setIsNotified(true);
+      toast.success("You're on the priority restock list!", {
+        description: `We'll alert you the moment ${product.name} is restocked.`,
+      });
+    }
   };
 
   const handleWishlistToggle = () => {

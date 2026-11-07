@@ -77,6 +77,8 @@ model User {
   productRequests         ProductRequest[]
   wishlistItems           WishlistItem[]
   cartItems               CartItem[]
+  productNotifications    ProductNotification[]
+  productClickLogs        ProductClickLog[]
   searchLogs              SearchLog[]
 
   @@map("users")

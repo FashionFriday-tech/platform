@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 
+import { OptionalJwtAuthGuard } from '../../auth/guards/optional-jwt.guard';
 import { PublicProductsService } from '../services/public-products.service';
 
 @Controller('products')
@@ -58,6 +59,36 @@ export class ProductsController {
       Number(take) || 10,
       gender,
     );
+  }
+
+  @Post(':id/track-click')
+  @UseGuards(OptionalJwtAuthGuard)
+  async trackProductClick(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user?.id ?? req.user?.sub;
+    if (!userId) {
+      return { tracked: false };
+    }
+    return this.productsService.trackProductClick(id, userId);
+  }
+
+  @Post(':id/notify-me')
+  @UseGuards(OptionalJwtAuthGuard)
+  async subscribeRestockNotification(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user?.id ?? req.user?.sub;
+    if (!userId) {
+      return { success: false, requireAuth: true };
+    }
+    return this.productsService.subscribeRestockNotification(id, userId);
+  }
+
+  @Get(':id/notify-me/status')
+  @UseGuards(OptionalJwtAuthGuard)
+  async getRestockNotificationStatus(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user?.id ?? req.user?.sub;
+    if (!userId) {
+      return { isNotified: false };
+    }
+    return this.productsService.getRestockNotificationStatus(id, userId);
   }
 
   @Get(':slug')

@@ -15,6 +15,7 @@ import {
 } from '../services/api';
 import { type Product } from '../types';
 import { DeleteProductModal } from './DeleteProductModal';
+import { ProductCustomerInteractions } from './ProductCustomerInteractions';
 import { ProductPerformance } from './ProductPerformance';
 import { ProductReviews } from './ProductReviews';
 
@@ -668,6 +669,11 @@ export function ProductDetailView({ productId }: Props) {
         <div className="w-full">
           <ProductPerformance product={product} />
         </div>
+      </div>
+
+      {/* Customer Engagement & Interactions (Wishlist, Cart, Notify Me, Views) */}
+      <div className="mb-16">
+        <ProductCustomerInteractions productId={product.id} productName={product.name} />
       </div>
 
       {/* Reviews Section */}

@@ -38,6 +38,28 @@ export class AdminProductsController {
     );
   }
 
+  @Get(':id/interactions/summary')
+  async getProductInteractionsSummary(@Param('id') id: string) {
+    return this.productsService.getProductInteractionsSummary(id);
+  }
+
+  @Get(':id/interactions')
+  async getProductInteractionsList(
+    @Param('id') id: string,
+    @Query('type') type: 'wishlist' | 'cart' | 'notifications' | 'clicks',
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.productsService.getProductInteractionsList(
+      id,
+      type || 'wishlist',
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 10,
+      search,
+    );
+  }
+
   @Get(':id/performance')
   async getProductPerformance(@Param('id') id: string) {
     return this.productsService.getProductPerformance(id);
