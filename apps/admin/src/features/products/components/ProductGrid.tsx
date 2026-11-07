@@ -208,7 +208,7 @@ export function ProductGrid({ products, isLoading, onToggleStatus, onDeleteProdu
                                 : 'bg-black dark:bg-white'
                           }`}
                           style={{
-                            width: `${Math.min(100, Math.max(5, (product.stock / (product.maxStock || 100)) * 100))}%`,
+                            width: `${Math.min(100, Math.max(5, (Math.min(100, product.stock) / 100) * 100))}%`,
                           }}
                         />
                       </div>

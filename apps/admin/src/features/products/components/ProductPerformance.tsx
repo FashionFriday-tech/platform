@@ -15,6 +15,27 @@ interface Props {
 
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
+function getCurvedPath(points: { x: number; y: number }[]): string {
+  if (points.length === 0) return '';
+  if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
+
+  let path = `M ${points[0].x},${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[Math.max(i - 1, 0)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(i + 2, points.length - 1)];
+
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+    path += ` C ${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  }
+  return path;
+}
+
 export function ProductPerformance({ product }: Props) {
   const [timeframe, setTimeframe] = useState<Timeframe>('weekly');
   const [matrixData, setMatrixData] = useState<ProductPerformanceMatrix | null>(null);
@@ -76,9 +97,11 @@ export function ProductPerformance({ product }: Props) {
         points = Array.from({ length: 7 }, (_, idx) => {
           const d = new Date(now);
           d.setDate(d.getDate() - (6 - idx));
-          const dayMultiplier = [0.8, 1.2, 0.9, 1.4, 1.1, 1.6, 1.5][(d.getDay() + 6) % 7];
-          const sVal = Math.round((liveSold / 10) * dayMultiplier);
-          const vVal = Math.max(sVal * 3, Math.round((liveWatching * 1.5 + 8) * dayMultiplier));
+          const dayMultiplier = [0.75, 1.15, 0.9, 1.35, 1.1, 1.6, 1.45][(d.getDay() + 6) % 7];
+          const baseS = liveSold > 0 ? liveSold : 12;
+          const baseV = liveWatching > 0 ? liveWatching : 45;
+          const sVal = Math.max(1, Math.round((baseS / 8) * dayMultiplier));
+          const vVal = Math.max(sVal * 3 + 5, Math.round((baseV * 1.5 + 12) * dayMultiplier));
           return {
             label: dayNames[d.getDay()],
             sales: sVal,
@@ -90,9 +113,11 @@ export function ProductPerformance({ product }: Props) {
       }
       case 'weekly': {
         points = Array.from({ length: 7 }, (_, idx) => {
-          const weekMultiplier = [0.7, 0.9, 1.2, 1.0, 1.4, 1.7, 1.5][idx];
-          const sVal = Math.round((liveSold / 4) * weekMultiplier);
-          const vVal = Math.max(sVal * 4, Math.round((liveWatching * 6 + 24) * weekMultiplier));
+          const weekMultiplier = [0.75, 0.95, 1.3, 1.05, 1.45, 1.7, 1.5][idx];
+          const baseS = liveSold > 0 ? liveSold : 24;
+          const baseV = liveWatching > 0 ? liveWatching : 70;
+          const sVal = Math.max(1, Math.round((baseS / 4) * weekMultiplier));
+          const vVal = Math.max(sVal * 4 + 8, Math.round((baseV * 5 + 30) * weekMultiplier));
           return {
             label: `W${idx + 1}`,
             sales: sVal,
@@ -104,9 +129,11 @@ export function ProductPerformance({ product }: Props) {
       case 'monthly': {
         points = Array.from({ length: 7 }, (_, idx) => {
           const mDate = new Date(now.getFullYear(), now.getMonth() - (6 - idx), 1);
-          const monthMultiplier = [0.6, 0.8, 1.1, 1.3, 1.5, 1.9, 1.7][idx];
-          const sVal = Math.round((liveSold / 2) * monthMultiplier);
-          const vVal = Math.max(sVal * 5, Math.round((liveWatching * 18 + 50) * monthMultiplier));
+          const monthMultiplier = [0.65, 0.85, 1.15, 1.35, 1.5, 1.85, 1.7][idx];
+          const baseS = liveSold > 0 ? liveSold : 35;
+          const baseV = liveWatching > 0 ? liveWatching : 90;
+          const sVal = Math.max(1, Math.round((baseS / 2) * monthMultiplier));
+          const vVal = Math.max(sVal * 5 + 15, Math.round((baseV * 16 + 60) * monthMultiplier));
           return {
             label: monthNames[mDate.getMonth()],
             sales: sVal,
@@ -173,14 +200,11 @@ export function ProductPerformance({ product }: Props) {
     return height - paddingY - ((clamped - minVal) / (maxVal - minVal)) * (height - 2 * paddingY);
   };
 
-  const salesPath =
-    chartData.length > 0
-      ? `M ${chartData.map((d, i) => `${getX(i)},${getY(d.sales)}`).join(' L ')}`
-      : '';
-  const viewsPath =
-    chartData.length > 0
-      ? `M ${chartData.map((d, i) => `${getX(i)},${getY(d.views)}`).join(' L ')}`
-      : '';
+  const salesPoints = chartData.map((d, i) => ({ x: getX(i), y: getY(d.sales) }));
+  const viewsPoints = chartData.map((d, i) => ({ x: getX(i), y: getY(d.views) }));
+
+  const salesPath = getCurvedPath(salesPoints);
+  const viewsPath = getCurvedPath(viewsPoints);
 
   return (
     <div className="rounded-[2.5rem] border border-black/5 bg-black/5 p-8 transition-colors dark:border-white/5 dark:bg-white/5">

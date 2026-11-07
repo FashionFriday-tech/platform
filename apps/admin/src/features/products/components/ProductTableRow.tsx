@@ -158,7 +158,7 @@ export function ProductTableRow({
                       : 'bg-green-500'
                 }`}
                 style={{
-                  width: `${Math.min(100, Math.max(product.stock > 0 ? 5 : 0, (product.stock / (product.maxStock || 100)) * 100))}%`,
+                  width: `${Math.min(100, Math.max(product.stock > 0 ? 5 : 0, (Math.min(100, product.stock) / 100) * 100))}%`,
                 }}
               />
             </div>
@@ -171,7 +171,7 @@ export function ProductTableRow({
                     : 'text-green-600 dark:text-green-500'
               }`}
             >
-              {product.stock}/{product.maxStock || 100}
+              {Math.min(100, product.stock)}/100
             </p>
           </div>
         </div>
