@@ -13,3 +13,4 @@ model ProductNotification {
   @@index([userId])
   @@map("product_notifications")
 }
+

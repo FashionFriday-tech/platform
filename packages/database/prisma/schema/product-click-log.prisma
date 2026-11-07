@@ -14,3 +14,4 @@ model ProductClickLog {
   @@index([userId])
   @@map("product_click_logs")
 }
+
