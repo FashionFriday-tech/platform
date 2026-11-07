@@ -100,8 +100,8 @@ export class CartService {
    * Add an item to user's cart (or increment quantity if identical product & size exists)
    */
   async addToCart(userId: string, dto: AddToCartDto) {
-    const product = await this.prisma.db.product.findUnique({
-      where: { id: dto.productId },
+    const product = await this.prisma.db.product.findFirst({
+      where: { OR: [{ id: dto.productId }, { slug: dto.productId }] },
       select: { id: true, totalStock: true, status: true },
     });
 
@@ -109,6 +109,7 @@ export class CartService {
       throw new NotFoundException('Product not found');
     }
 
+    const productId = product.id;
     const size = dto.size || 'Standard';
     const color = dto.color || 'Standard';
     const addQuantity = Math.max(1, dto.quantity || 1);
@@ -116,7 +117,7 @@ export class CartService {
     const existing = await this.prisma.db.cartItem.findFirst({
       where: {
         userId,
-        productId: dto.productId,
+        productId,
         size: { equals: size, mode: 'insensitive' },
       },
     });
@@ -139,7 +140,7 @@ export class CartService {
       await this.prisma.db.cartItem.create({
         data: {
           userId,
-          productId: dto.productId,
+          productId,
           size,
           color,
           quantity: initialQuantity,
@@ -219,14 +220,23 @@ export class CartService {
       return this.getUserCart(userId);
     }
 
-    // Get all valid products from DB
-    const productIds = dto.items.map((i) => i.productId);
+    // Get all valid products from DB (matching by ID or slug)
+    const productKeys = dto.items.map((i) => i.productId);
     const validProducts = await this.prisma.db.product.findMany({
-      where: { id: { in: productIds } },
-      select: { id: true, totalStock: true },
+      where: {
+        OR: [
+          { id: { in: productKeys } },
+          { slug: { in: productKeys } },
+        ],
+      },
+      select: { id: true, slug: true, totalStock: true },
     });
 
-    const productMap = new Map(validProducts.map((p) => [p.id, p]));
+    const productMap = new Map<string, (typeof validProducts)[0]>();
+    for (const p of validProducts) {
+      productMap.set(p.id, p);
+      if (p.slug) productMap.set(p.slug, p);
+    }
 
     for (const item of dto.items) {
       const product = productMap.get(item.productId);
@@ -241,7 +251,7 @@ export class CartService {
       const existing = await this.prisma.db.cartItem.findFirst({
         where: {
           userId,
-          productId: item.productId,
+          productId: product.id,
           size: { equals: size, mode: 'insensitive' },
         },
       });
@@ -259,7 +269,7 @@ export class CartService {
         await this.prisma.db.cartItem.create({
           data: {
             userId,
-            productId: item.productId,
+            productId: product.id,
             size,
             color,
             quantity: initialQuantity,

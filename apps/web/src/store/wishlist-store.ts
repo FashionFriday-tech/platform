@@ -62,31 +62,42 @@ export const useWishlistStore = create<WishlistState>()(
           set({ items: [normalizedProduct, ...items] });
         }
 
+        // Check if user is authenticated (either explicitly passed or via session tokens)
+        const isAuthed =
+          isAuthenticated ||
+          (typeof document !== 'undefined' &&
+            (document.cookie.includes('accessToken=') ||
+              document.cookie.includes('refreshToken=') ||
+              !!localStorage.getItem('accessToken')));
+
         // If authenticated, sync with database
-        if (isAuthenticated) {
+        if (isAuthed) {
           try {
             await toggleWishlistAction(product.id);
           } catch (error) {
             console.error('Failed to toggle wishlist on server:', error);
-            // Rollback optimistic update on server error
-            set({ items });
           }
         }
       },
 
       removeItem: async (productId: string, isAuthenticated = false) => {
         const { items } = get();
-        const previousItems = [...items];
 
         // Optimistic UI update
         set({ items: items.filter((item) => item.id !== productId) });
 
-        if (isAuthenticated) {
+        const isAuthed =
+          isAuthenticated ||
+          (typeof document !== 'undefined' &&
+            (document.cookie.includes('accessToken=') ||
+              document.cookie.includes('refreshToken=') ||
+              !!localStorage.getItem('accessToken')));
+
+        if (isAuthed) {
           try {
             await removeWishlistItemAction(productId);
           } catch (error) {
             console.error('Failed to remove item on server:', error);
-            set({ items: previousItems });
           }
         }
       },

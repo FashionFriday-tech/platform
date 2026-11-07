@@ -117,8 +117,16 @@ export const useCartStore = create<CartState>()(
         // Optimistic UI update with consolidated items
         set({ items: consolidateCartItems(optimisticItems) });
 
+        // Check if user is authenticated (either explicitly passed or via session tokens)
+        const isAuthed =
+          isAuthenticated ||
+          (typeof document !== 'undefined' &&
+            (document.cookie.includes('accessToken=') ||
+              document.cookie.includes('refreshToken=') ||
+              !!localStorage.getItem('accessToken')));
+
         // If authenticated, sync mutation with database
-        if (isAuthenticated) {
+        if (isAuthed) {
           try {
             const serverItems = await addToCartAction({
               productId: input.productId,
@@ -152,7 +160,14 @@ export const useCartStore = create<CartState>()(
           });
         }
 
-        if (isAuthenticated) {
+        const isAuthed =
+          isAuthenticated ||
+          (typeof document !== 'undefined' &&
+            (document.cookie.includes('accessToken=') ||
+              document.cookie.includes('refreshToken=') ||
+              !!localStorage.getItem('accessToken')));
+
+        if (isAuthed) {
           try {
             const serverItems = await updateCartQuantityAction(itemId, quantity);
             if (serverItems) {
@@ -168,7 +183,14 @@ export const useCartStore = create<CartState>()(
         const currentItems = consolidateCartItems(get().items);
         set({ items: currentItems.filter((item) => item.id !== itemId) });
 
-        if (isAuthenticated) {
+        const isAuthed =
+          isAuthenticated ||
+          (typeof document !== 'undefined' &&
+            (document.cookie.includes('accessToken=') ||
+              document.cookie.includes('refreshToken=') ||
+              !!localStorage.getItem('accessToken')));
+
+        if (isAuthed) {
           try {
             const serverItems = await removeCartItemAction(itemId);
             if (serverItems) {
@@ -192,12 +214,18 @@ export const useCartStore = create<CartState>()(
           }
         }
 
-        if (isAuthenticated) {
+        const isAuthed =
+          isAuthenticated ||
+          (typeof document !== 'undefined' &&
+            (document.cookie.includes('accessToken=') ||
+              document.cookie.includes('refreshToken=') ||
+              !!localStorage.getItem('accessToken')));
+
+        if (isAuthed) {
           try {
             await clearCartAction();
-            console.log('[CartStore] Successfully cleared server cart');
           } catch (error) {
-            console.error('[CartStore] Failed to clear cart on server:', error);
+            console.error('Failed to clear cart on server:', error);
           }
         }
       },

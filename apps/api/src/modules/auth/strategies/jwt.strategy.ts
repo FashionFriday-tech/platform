@@ -9,6 +9,19 @@ interface JwtPayload {
   sub: string;
 }
 
+const cookieExtractor = (req: any): string | null => {
+  if (req?.cookies?.accessToken) {
+    return req.cookies.accessToken;
+  }
+  if (req?.headers?.cookie) {
+    const match = req.headers.cookie.match(/(?:^|;\s*)accessToken=([^;]+)/);
+    if (match) {
+      return decodeURIComponent(match[1]);
+    }
+  }
+  return null;
+};
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -16,7 +29,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private prisma: PrismaService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        cookieExtractor,
+      ]),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('JWT_SECRET', 'super-secret-default-key'),
     });

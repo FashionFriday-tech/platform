@@ -4,12 +4,15 @@ import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { TrashIcon } from '@ff/ui';
+import { BellIcon, EyeIcon, HeartIcon, ShoppingBagIcon, TrashIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
 import {
   deleteProduct as deleteProductApi,
   fetchProductById,
+  fetchProductInteractionsSummary,
+  type ProductInteractionsSummary,
+  type ProductInteractionType,
   updateProductStatus,
   updateProductStock,
 } from '../services/api';
@@ -69,6 +72,22 @@ export function ProductDetailView({ productId }: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [isUpdatingStock, setIsUpdatingStock] = useState(false);
+  const [activeInteractionTab, setActiveInteractionTab] =
+    useState<ProductInteractionType>('wishlist');
+  const [interactionsSummary, setInteractionsSummary] = useState<ProductInteractionsSummary>({
+    wishlistCount: 0,
+    cartCount: 0,
+    notificationsCount: 0,
+    clicksCount: 0,
+  });
+
+  const scrollToInteractions = (tab: ProductInteractionType) => {
+    setActiveInteractionTab(tab);
+    const element = document.getElementById('customer-interactions');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleDeleteConfirm = async () => {
     if (!product) {
@@ -141,9 +160,15 @@ export function ProductDetailView({ productId }: Props) {
     async function load() {
       setIsLoading(true);
       try {
-        const data = await fetchProductById(productId);
+        const [data, summary] = await Promise.all([
+          fetchProductById(productId),
+          fetchProductInteractionsSummary(productId),
+        ]);
         if (data) {
           setProduct(data);
+        }
+        if (summary) {
+          setInteractionsSummary(summary);
         }
       } catch (err) {
         console.error(err);
@@ -582,6 +607,109 @@ export function ProductDetailView({ productId }: Props) {
                 </div>
               </div>
             </div>
+
+            {/* Audience Engagement Quick Tiles (Direct jump to customer tables) */}
+            <div className="mt-2.5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {/* Wishlist */}
+              <button
+                type="button"
+                onClick={() => scrollToInteractions('wishlist')}
+                className={`group flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
+                  activeInteractionTab === 'wishlist'
+                    ? 'border-rose-500/40 bg-rose-500/10 shadow-sm'
+                    : 'border-rose-500/10 bg-rose-500/[0.03] hover:border-rose-500/30 hover:bg-rose-500/[0.08] dark:bg-rose-500/[0.04]'
+                }`}
+                title="View customers who added to wishlist"
+              >
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-500 transition-transform group-hover:scale-110">
+                  <HeartIcon className="h-3.5 w-3.5 fill-current" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[9px] font-bold tracking-wider text-rose-600/70 uppercase dark:text-rose-400/70">
+                    Wishlisted
+                  </div>
+                  <div className="truncate text-xs font-black text-rose-600 dark:text-rose-400">
+                    {interactionsSummary.wishlistCount.toLocaleString()}{' '}
+                    <span className="text-[10px] font-normal opacity-80">users</span>
+                  </div>
+                </div>
+              </button>
+
+              {/* Cart */}
+              <button
+                type="button"
+                onClick={() => scrollToInteractions('cart')}
+                className={`group flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
+                  activeInteractionTab === 'cart'
+                    ? 'border-blue-500/40 bg-blue-500/10 shadow-sm'
+                    : 'border-blue-500/10 bg-blue-500/[0.03] hover:border-blue-500/30 hover:bg-blue-500/[0.08] dark:bg-blue-500/[0.04]'
+                }`}
+                title="View customers with this item in their bag"
+              >
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500 transition-transform group-hover:scale-110">
+                  <ShoppingBagIcon className="h-3.5 w-3.5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[9px] font-bold tracking-wider text-blue-600/70 uppercase dark:text-blue-400/70">
+                    In Cart
+                  </div>
+                  <div className="truncate text-xs font-black text-blue-600 dark:text-blue-400">
+                    {interactionsSummary.cartCount.toLocaleString()}{' '}
+                    <span className="text-[10px] font-normal opacity-80">carts</span>
+                  </div>
+                </div>
+              </button>
+
+              {/* Notify Me */}
+              <button
+                type="button"
+                onClick={() => scrollToInteractions('notifications')}
+                className={`group flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
+                  activeInteractionTab === 'notifications'
+                    ? 'border-amber-500/40 bg-amber-500/10 shadow-sm'
+                    : 'border-amber-500/10 bg-amber-500/[0.03] hover:border-amber-500/30 hover:bg-amber-500/[0.08] dark:bg-amber-500/[0.04]'
+                }`}
+                title="View customers waiting for restock"
+              >
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500 transition-transform group-hover:scale-110">
+                  <BellIcon className="h-3.5 w-3.5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[9px] font-bold tracking-wider text-amber-600/70 uppercase dark:text-amber-400/70">
+                    Notify Me
+                  </div>
+                  <div className="truncate text-xs font-black text-amber-600 dark:text-amber-400">
+                    {interactionsSummary.notificationsCount.toLocaleString()}{' '}
+                    <span className="text-[10px] font-normal opacity-80">waiting</span>
+                  </div>
+                </div>
+              </button>
+
+              {/* Clicks */}
+              <button
+                type="button"
+                onClick={() => scrollToInteractions('clicks')}
+                className={`group flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
+                  activeInteractionTab === 'clicks'
+                    ? 'border-emerald-500/40 bg-emerald-500/10 shadow-sm'
+                    : 'border-emerald-500/10 bg-emerald-500/[0.03] hover:border-emerald-500/30 hover:bg-emerald-500/[0.08] dark:bg-emerald-500/[0.04]'
+                }`}
+                title="View customers who viewed or clicked this product"
+              >
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500 transition-transform group-hover:scale-110">
+                  <EyeIcon className="h-3.5 w-3.5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[9px] font-bold tracking-wider text-emerald-600/70 uppercase dark:text-emerald-400/70">
+                    Clicks
+                  </div>
+                  <div className="truncate text-xs font-black text-emerald-600 dark:text-emerald-400">
+                    {interactionsSummary.clicksCount.toLocaleString()}{' '}
+                    <span className="text-[10px] font-normal opacity-80">views</span>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
 
           {/* Variants / Sizes */}
@@ -685,8 +813,14 @@ export function ProductDetailView({ productId }: Props) {
       </div>
 
       {/* Customer Engagement & Interactions (Wishlist, Cart, Notify Me, Views) */}
-      <div className="mb-16">
-        <ProductCustomerInteractions productId={product.id} productName={product.name} />
+      <div id="customer-interactions" className="mb-16 scroll-mt-6">
+        <ProductCustomerInteractions
+          productId={product.id}
+          productName={product.name}
+          activeTab={activeInteractionTab}
+          onTabChange={setActiveInteractionTab}
+          onSummaryLoaded={setInteractionsSummary}
+        />
       </div>
 
       {/* Reviews Section */}

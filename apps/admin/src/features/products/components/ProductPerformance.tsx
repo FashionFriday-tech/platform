@@ -224,9 +224,9 @@ export function ProductPerformance({ product }: Props) {
 
   // Chart configuration
   const width = 600;
-  const height = 190;
-  const paddingX = 35;
-  const paddingY = 32;
+  const height = 220;
+  const paddingX = 40;
+  const paddingY = 38;
 
   const maxVal =
     Math.max(10, ...chartData.map((d) => Math.max(Number(d.views || 0), Number(d.sales || 0)))) *
@@ -250,7 +250,7 @@ export function ProductPerformance({ product }: Props) {
   const viewsPath = getCurvedPath(viewsPoints);
 
   return (
-    <div className="rounded-3xl border border-black/5 bg-black/[0.02] p-5 transition-colors sm:rounded-[2.5rem] sm:p-7 md:p-8 dark:border-white/5 dark:bg-white/[0.02]">
+    <div className="rounded-3xl border border-black/5 bg-black/[0.02] p-4 transition-colors sm:rounded-[2.5rem] sm:p-6 md:p-8 dark:border-white/5 dark:bg-white/[0.02]">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
           <h3 className="text-xs font-black tracking-widest text-black uppercase sm:text-sm dark:text-white">
@@ -265,7 +265,7 @@ export function ProductPerformance({ product }: Props) {
           </span>
         </div>
 
-        <div className="inline-flex max-w-full items-center rounded-full border border-black/10 bg-white p-1 dark:border-white/10 dark:bg-black">
+        <div className="scrollbar-hide flex max-w-full items-center overflow-x-auto rounded-full border border-black/10 bg-white p-1 dark:border-white/10 dark:bg-black">
           {(['daily', 'weekly', 'monthly', 'yearly'] as Timeframe[]).map((t) => (
             <button
               key={t}
@@ -286,27 +286,27 @@ export function ProductPerformance({ product }: Props) {
       </div>
 
       <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4">
-        <div className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm sm:p-5 dark:border-white/5 dark:bg-black">
+        <div className="rounded-2xl border border-black/5 bg-white p-3.5 shadow-sm sm:p-5 dark:border-white/5 dark:bg-black">
           <span className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
             <div className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
             <span className="truncate">Total {timeframe} Sales</span>
           </span>
-          <span className="text-2xl font-black text-black sm:text-3xl dark:text-white">
+          <span className="text-xl font-black text-black sm:text-2xl md:text-3xl dark:text-white">
             {isLoading ? '...' : totalSales.toLocaleString()}
           </span>
         </div>
-        <div className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm sm:p-5 dark:border-white/5 dark:bg-black">
+        <div className="rounded-2xl border border-black/5 bg-white p-3.5 shadow-sm sm:p-5 dark:border-white/5 dark:bg-black">
           <span className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
             <div className="h-2 w-2 shrink-0 rounded-full bg-blue-500" />
             <span className="truncate">Total {timeframe} Views</span>
           </span>
-          <span className="text-2xl font-black text-black sm:text-3xl dark:text-white">
+          <span className="text-xl font-black text-black sm:text-2xl md:text-3xl dark:text-white">
             {isLoading ? '...' : totalViews.toLocaleString()}
           </span>
         </div>
       </div>
 
-      <div className="relative w-full rounded-2xl border border-black/5 bg-white p-3 shadow-sm sm:p-5 dark:border-white/5 dark:bg-[#111]">
+      <div className="relative w-full rounded-2xl border border-black/5 bg-white p-2 sm:p-4 md:p-5 shadow-sm dark:border-white/5 dark:bg-[#111]">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="block h-auto w-full overflow-visible select-none"
@@ -485,7 +485,7 @@ export function ProductPerformance({ product }: Props) {
                 {/* X Axis Label */}
                 <text
                   x={cx}
-                  y={height - 15}
+                  y={height - 12}
                   textAnchor="middle"
                   fill="currentColor"
                   className={`text-[10px] font-bold transition-colors ${

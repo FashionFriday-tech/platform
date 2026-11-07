@@ -50,16 +50,18 @@ export class WishlistService {
   /**
    * Toggle product in user's wishlist (Add if absent, Remove if present)
    */
-  async toggleWishlist(userId: string, productId: string) {
-    // 1. Verify product exists
-    const product = await this.prisma.db.product.findUnique({
-      where: { id: productId },
+  async toggleWishlist(userId: string, productIdOrSlug: string) {
+    // 1. Resolve canonical product ID
+    const product = await this.prisma.db.product.findFirst({
+      where: { OR: [{ id: productIdOrSlug }, { slug: productIdOrSlug }] },
       select: { id: true },
     });
 
     if (!product) {
       throw new NotFoundException('Product not found');
     }
+
+    const productId = product.id;
 
     // 2. Check if already wishlisted
     const existing = await this.prisma.db.wishlistItem.findUnique({
@@ -100,7 +102,13 @@ export class WishlistService {
   /**
    * Remove a single product from user's wishlist
    */
-  async removeFromWishlist(userId: string, productId: string) {
+  async removeFromWishlist(userId: string, productIdOrSlug: string) {
+    const product = await this.prisma.db.product.findFirst({
+      where: { OR: [{ id: productIdOrSlug }, { slug: productIdOrSlug }] },
+      select: { id: true },
+    });
+    const productId = product?.id || productIdOrSlug;
+
     const existing = await this.prisma.db.wishlistItem.findUnique({
       where: {
         userId_productId: {
@@ -126,15 +134,18 @@ export class WishlistService {
   /**
    * Smart Merge guest items into user account upon login
    */
-  async syncGuestWishlist(userId: string, productIds: string[]) {
-    if (!productIds || productIds.length === 0) {
+  async syncGuestWishlist(userId: string, productIdsOrSlugs: string[]) {
+    if (!productIdsOrSlugs || productIdsOrSlugs.length === 0) {
       return this.getUserWishlist(userId);
     }
 
-    // Find valid existing products only
+    // Find valid existing products by ID or slug
     const validProducts = await this.prisma.db.product.findMany({
       where: {
-        id: { in: productIds },
+        OR: [
+          { id: { in: productIdsOrSlugs } },
+          { slug: { in: productIdsOrSlugs } },
+        ],
       },
       select: { id: true },
     });
@@ -155,7 +166,13 @@ export class WishlistService {
   /**
    * Check if a specific product is in user's wishlist (O(1) B-tree lookup)
    */
-  async checkIsWishlisted(userId: string, productId: string): Promise<boolean> {
+  async checkIsWishlisted(userId: string, productIdOrSlug: string): Promise<boolean> {
+    const product = await this.prisma.db.product.findFirst({
+      where: { OR: [{ id: productIdOrSlug }, { slug: productIdOrSlug }] },
+      select: { id: true },
+    });
+    const productId = product?.id || productIdOrSlug;
+
     const item = await this.prisma.db.wishlistItem.findUnique({
       where: {
         userId_productId: {

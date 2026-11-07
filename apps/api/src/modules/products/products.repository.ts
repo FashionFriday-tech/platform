@@ -31,7 +31,18 @@ export class ProductsRepository {
         take,
         where,
         orderBy,
-        include: { category: true, seller: true },
+        include: {
+          category: true,
+          seller: true,
+          _count: {
+            select: {
+              wishlistItems: true,
+              cartItems: true,
+              notifications: true,
+              clickLogs: true,
+            },
+          },
+        },
       }),
     ]);
   }
@@ -131,14 +142,36 @@ export class ProductsRepository {
   async findById(id: string) {
     return this.prisma.db.product.findUnique({
       where: { id },
-      include: { category: true, seller: true },
+      include: {
+        category: true,
+        seller: true,
+        _count: {
+          select: {
+            wishlistItems: true,
+            cartItems: true,
+            notifications: true,
+            clickLogs: true,
+          },
+        },
+      },
     });
   }
 
   async findBySlug(slug: string) {
     return this.prisma.db.product.findUnique({
       where: { slug },
-      include: { category: true, seller: true },
+      include: {
+        category: true,
+        seller: true,
+        _count: {
+          select: {
+            wishlistItems: true,
+            cartItems: true,
+            notifications: true,
+            clickLogs: true,
+          },
+        },
+      },
     });
   }
 

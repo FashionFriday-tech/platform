@@ -212,12 +212,10 @@ export class AdminProductsService {
   }
 
   async getProductById(idOrSlug: string) {
-    const isUuid =
-      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
-        idOrSlug,
-      );
-    if (isUuid) {
-      return this.productsRepository.findById(idOrSlug);
+    if (!idOrSlug) return null;
+    const byId = await this.productsRepository.findById(idOrSlug);
+    if (byId) {
+      return byId;
     }
     return this.productsRepository.findBySlug(idOrSlug);
   }

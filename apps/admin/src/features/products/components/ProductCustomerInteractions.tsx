@@ -26,6 +26,9 @@ import {
 interface Props {
   productId: string;
   productName?: string;
+  activeTab?: ProductInteractionType;
+  onTabChange?: (tab: ProductInteractionType) => void;
+  onSummaryLoaded?: (summary: ProductInteractionsSummary) => void;
 }
 
 const TABS: {
@@ -69,8 +72,21 @@ const TABS: {
   },
 ];
 
-export function ProductCustomerInteractions({ productId, productName }: Props) {
-  const [activeTab, setActiveTab] = useState<ProductInteractionType>('wishlist');
+export function ProductCustomerInteractions({
+  productId,
+  productName,
+  activeTab: controlledTab,
+  onTabChange,
+  onSummaryLoaded,
+}: Props) {
+  const [internalTab, setInternalTab] = useState<ProductInteractionType>('wishlist');
+  const activeTab = controlledTab ?? internalTab;
+
+  const setActiveTab = (tab: ProductInteractionType) => {
+    setInternalTab(tab);
+    onTabChange?.(tab);
+  };
+
   const [summary, setSummary] = useState<ProductInteractionsSummary>({
     wishlistCount: 0,
     cartCount: 0,
@@ -101,6 +117,7 @@ export function ProductCustomerInteractions({ productId, productName }: Props) {
     try {
       const data = await fetchProductInteractionsSummary(productId);
       setSummary(data);
+      onSummaryLoaded?.(data);
     } catch (err) {
       console.error('Failed to load interactions summary:', err);
     }

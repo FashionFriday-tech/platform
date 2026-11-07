@@ -10,6 +10,7 @@ import { motion } from 'motion/react';
 
 import { useBrands } from '@/features/brand';
 import { useWishlist } from '@/features/wishlist';
+import { fetcher } from '@/lib/api-client';
 
 interface StoreProductCardProps {
   product: Product;
@@ -50,6 +51,12 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
     });
   };
 
+  const handleCardClick = () => {
+    if (productId) {
+      void fetcher(`/products/${productId}/track-click`, { method: 'POST' }).catch(() => {});
+    }
+  };
+
   return (
     <motion.div
       layout
@@ -58,7 +65,11 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
       exit={{ opacity: 0 }}
       className="group relative cursor-pointer"
     >
-      <Link href={`/product/${product.slug}`} className="block cursor-pointer">
+      <Link
+        href={`/product/${product.slug}`}
+        onClick={handleCardClick}
+        className="block cursor-pointer"
+      >
         <div className="bg-background-muted relative aspect-4/5 overflow-hidden rounded-4xl lg:rounded-[2.5rem]">
           <Image
             src={product.media.mainImage || '/images/placeholder.png'}
