@@ -15,6 +15,25 @@ interface Props {
 
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
+function distributeTotal(total: number, weights: number[]): number[] {
+  if (total <= 0 || weights.length === 0) return weights.map(() => 0);
+  const sumWeights = weights.reduce((a, b) => a + b, 0);
+  if (sumWeights <= 0) return weights.map(() => 0);
+
+  const exact = weights.map((w) => (w / sumWeights) * total);
+  const floored = exact.map((v) => Math.floor(v));
+  let remainder = total - floored.reduce((a, b) => a + b, 0);
+
+  const fractions = exact.map((v, i) => ({ index: i, frac: v - floored[i] }));
+  fractions.sort((a, b) => b.frac - a.frac);
+
+  for (let i = 0; i < remainder; i++) {
+    floored[fractions[i % fractions.length].index] += 1;
+  }
+
+  return floored;
+}
+
 function getCurvedPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return '';
   if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
@@ -94,67 +113,91 @@ export function ProductPerformance({ product }: Props) {
 
     switch (timeframe) {
       case 'daily': {
+        const dailyWeights = [0.8, 1.15, 0.9, 1.35, 1.1, 1.65, 1.3];
+        const dailySalesTarget =
+          liveSold > 0 ? Math.min(liveSold, Math.max(1, Math.round(liveSold * 0.35))) : 0;
+        const distSales = distributeTotal(dailySalesTarget, dailyWeights);
+        const weeklyViewsTarget = Math.max(
+          30,
+          Math.min(180, Math.round(liveWatching / 60 + liveSold * 3)),
+        );
+        const distViews = distributeTotal(weeklyViewsTarget, dailyWeights);
+
         points = Array.from({ length: 7 }, (_, idx) => {
           const d = new Date(now);
           d.setDate(d.getDate() - (6 - idx));
-          const dayMultiplier = [0.75, 1.15, 0.9, 1.35, 1.1, 1.6, 1.45][(d.getDay() + 6) % 7];
-          const baseS = liveSold > 0 ? liveSold : 12;
-          const baseV = liveWatching > 0 ? liveWatching : 45;
-          const sVal = Math.max(1, Math.round((baseS / 8) * dayMultiplier));
-          const vVal = Math.max(sVal * 3 + 5, Math.round((baseV * 1.5 + 12) * dayMultiplier));
+          const s = distSales[idx];
+          const v = Math.max(s + 1, distViews[idx]);
           return {
             label: dayNames[d.getDay()],
-            sales: sVal,
-            views: vVal,
+            sales: s,
+            views: v,
             date: d.toISOString().split('T')[0],
           };
         });
         break;
       }
       case 'weekly': {
+        const weeklyWeights = [0.75, 0.9, 1.25, 1.0, 1.4, 1.65, 1.3];
+        const distSales = distributeTotal(liveSold, weeklyWeights);
+        const sevenWeekViews = Math.max(
+          120,
+          Math.min(650, Math.round(liveWatching / 15 + liveSold * 8)),
+        );
+        const distViews = distributeTotal(sevenWeekViews, weeklyWeights);
+
         points = Array.from({ length: 7 }, (_, idx) => {
-          const weekMultiplier = [0.75, 0.95, 1.3, 1.05, 1.45, 1.7, 1.5][idx];
-          const baseS = liveSold > 0 ? liveSold : 24;
-          const baseV = liveWatching > 0 ? liveWatching : 70;
-          const sVal = Math.max(1, Math.round((baseS / 4) * weekMultiplier));
-          const vVal = Math.max(sVal * 4 + 8, Math.round((baseV * 5 + 30) * weekMultiplier));
+          const s = distSales[idx];
+          const v = Math.max(s * 2 + 3, distViews[idx]);
           return {
             label: `W${idx + 1}`,
-            sales: sVal,
-            views: vVal,
+            sales: s,
+            views: v,
           };
         });
         break;
       }
       case 'monthly': {
+        const monthlyWeights = [0.65, 0.8, 1.1, 1.25, 1.45, 1.8, 1.5];
+        const distSales = distributeTotal(liveSold, monthlyWeights);
+        const sevenMonthViews = Math.max(
+          400,
+          Math.min(2200, Math.round(liveWatching / 5 + liveSold * 22)),
+        );
+        const distViews = distributeTotal(sevenMonthViews, monthlyWeights);
+
         points = Array.from({ length: 7 }, (_, idx) => {
           const mDate = new Date(now.getFullYear(), now.getMonth() - (6 - idx), 1);
-          const monthMultiplier = [0.65, 0.85, 1.15, 1.35, 1.5, 1.85, 1.7][idx];
-          const baseS = liveSold > 0 ? liveSold : 35;
-          const baseV = liveWatching > 0 ? liveWatching : 90;
-          const sVal = Math.max(1, Math.round((baseS / 2) * monthMultiplier));
-          const vVal = Math.max(sVal * 5 + 15, Math.round((baseV * 16 + 60) * monthMultiplier));
+          const s = distSales[idx];
+          const v = Math.max(s * 3 + 5, distViews[idx]);
           return {
             label: monthNames[mDate.getMonth()],
-            sales: sVal,
-            views: vVal,
+            sales: s,
+            views: v,
           };
         });
         break;
       }
       case 'yearly': {
         const curYear = now.getFullYear();
-        const startY = Math.max(2023, curYear - 3);
+        const startY = Math.max(2023, curYear - 2);
         const yearsCount = curYear - startY + 1;
+        const yearlyWeights = [0.4, 0.7, 1.0].slice(3 - yearsCount);
+        const distSales = distributeTotal(liveSold, yearlyWeights);
+        const yearlyViews = Math.max(
+          1200,
+          Math.min(6500, Math.round(liveWatching * 0.8 + liveSold * 65)),
+        );
+        const distViews = distributeTotal(yearlyViews, yearlyWeights);
+
         points = Array.from({ length: yearsCount }, (_, idx) => {
           const y = startY + idx;
-          const yMultiplier = y === curYear ? 1.0 : y === curYear - 1 ? 0.8 : 0.4;
-          const sVal = Math.round(liveSold * yMultiplier);
-          const vVal = Math.max(sVal * 6, Math.round((liveWatching * 80 + 150) * yMultiplier));
+          const s = distSales[idx];
+          const v = Math.max(s * 4 + 10, distViews[idx]);
           return {
             label: String(y),
-            sales: sVal,
-            views: vVal,
+            sales: s,
+            views: v,
           };
         });
         break;
@@ -182,8 +225,8 @@ export function ProductPerformance({ product }: Props) {
   // Chart configuration
   const width = 600;
   const height = 190;
-  const paddingX = 40;
-  const paddingY = 40;
+  const paddingX = 35;
+  const paddingY = 32;
 
   const maxVal =
     Math.max(10, ...chartData.map((d) => Math.max(Number(d.views || 0), Number(d.sales || 0)))) *
@@ -207,10 +250,10 @@ export function ProductPerformance({ product }: Props) {
   const viewsPath = getCurvedPath(viewsPoints);
 
   return (
-    <div className="rounded-[2.5rem] border border-black/5 bg-black/5 p-8 transition-colors dark:border-white/5 dark:bg-white/5">
-      <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+    <div className="rounded-3xl border border-black/5 bg-black/[0.02] p-5 transition-colors sm:rounded-[2.5rem] sm:p-7 md:p-8 dark:border-white/5 dark:bg-white/[0.02]">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
-          <h3 className="text-sm font-black tracking-widest text-black uppercase dark:text-white">
+          <h3 className="text-xs font-black tracking-widest text-black uppercase sm:text-sm dark:text-white">
             Performance Matrix
           </h3>
           <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
@@ -222,7 +265,7 @@ export function ProductPerformance({ product }: Props) {
           </span>
         </div>
 
-        <div className="flex rounded-full border border-black/10 bg-white p-1 dark:border-white/10 dark:bg-black">
+        <div className="inline-flex max-w-full items-center rounded-full border border-black/10 bg-white p-1 dark:border-white/10 dark:bg-black">
           {(['daily', 'weekly', 'monthly', 'yearly'] as Timeframe[]).map((t) => (
             <button
               key={t}
@@ -230,7 +273,7 @@ export function ProductPerformance({ product }: Props) {
                 setTimeframe(t);
                 setHoveredIndex(null);
               }}
-              className={`cursor-pointer rounded-full px-4 py-1.5 text-xs font-bold capitalize transition-all ${
+              className={`shrink-0 cursor-pointer rounded-full px-3 py-1 text-[11px] font-bold capitalize transition-all sm:px-3.5 sm:py-1.5 sm:text-xs ${
                 timeframe === t
                   ? 'bg-black text-white shadow-sm dark:bg-white dark:text-black'
                   : 'text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white'
@@ -242,31 +285,31 @@ export function ProductPerformance({ product }: Props) {
         </div>
       </div>
 
-      <div className="mb-6 grid grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-black">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4">
+        <div className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm sm:p-5 dark:border-white/5 dark:bg-black">
           <span className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
-            <div className="h-2 w-2 rounded-full bg-emerald-500" />
-            Total {timeframe} Sales
+            <div className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+            <span className="truncate">Total {timeframe} Sales</span>
           </span>
-          <span className="text-3xl font-black text-black dark:text-white">
+          <span className="text-2xl font-black text-black sm:text-3xl dark:text-white">
             {isLoading ? '...' : totalSales.toLocaleString()}
           </span>
         </div>
-        <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/5 dark:bg-black">
+        <div className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm sm:p-5 dark:border-white/5 dark:bg-black">
           <span className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
-            <div className="h-2 w-2 rounded-full bg-blue-500" />
-            Total {timeframe} Views
+            <div className="h-2 w-2 shrink-0 rounded-full bg-blue-500" />
+            <span className="truncate">Total {timeframe} Views</span>
           </span>
-          <span className="text-3xl font-black text-black dark:text-white">
+          <span className="text-2xl font-black text-black sm:text-3xl dark:text-white">
             {isLoading ? '...' : totalViews.toLocaleString()}
           </span>
         </div>
       </div>
 
-      <div className="scrollbar-hide relative w-full overflow-x-auto rounded-2xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111]">
+      <div className="relative w-full rounded-2xl border border-black/5 bg-white p-3 shadow-sm sm:p-5 dark:border-white/5 dark:bg-[#111]">
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          className="h-auto w-full min-w-[500px] overflow-visible"
+          className="block h-auto w-full overflow-visible select-none"
         >
           {/* Grid lines */}
           <line

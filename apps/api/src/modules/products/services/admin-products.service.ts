@@ -7,6 +7,25 @@ import { UploadService } from '../../upload/upload.service';
 import { CreateProductDto, UpdateProductDto } from '../dto';
 import { ProductsRepository } from '../products.repository';
 
+function distributeTotal(total: number, weights: number[]): number[] {
+  if (total <= 0 || weights.length === 0) return weights.map(() => 0);
+  const sumWeights = weights.reduce((a, b) => a + b, 0);
+  if (sumWeights <= 0) return weights.map(() => 0);
+
+  const exact = weights.map((w) => (w / sumWeights) * total);
+  const floored = exact.map((v) => Math.floor(v));
+  let remainder = total - floored.reduce((a, b) => a + b, 0);
+
+  const fractions = exact.map((v, i) => ({ index: i, frac: v - floored[i] }));
+  fractions.sort((a, b) => b.frac - a.frac);
+
+  for (let i = 0; i < remainder; i++) {
+    floored[fractions[i % fractions.length].index] += 1;
+  }
+
+  return floored;
+}
+
 @Injectable()
 export class AdminProductsService {
   constructor(
@@ -232,6 +251,22 @@ export class AdminProductsService {
       },
     });
 
+    // Fetch real customer clicks, cart additions, and wishlist actions
+    const [clickLogs, cartItems, wishlistItems] = await Promise.all([
+      this.prisma.db.productClickLog.findMany({
+        where: { productId },
+        select: { createdAt: true },
+      }),
+      this.prisma.db.cartItem.findMany({
+        where: { productId },
+        select: { createdAt: true },
+      }),
+      this.prisma.db.wishlistItem.findMany({
+        where: { productId },
+        select: { createdAt: true },
+      }),
+    ]);
+
     // Fetch relevant search queries/impressions for this product
     const nameWords = (product.name || '').split(' ').filter((w) => w.length > 2);
     const searchLogs = await this.prisma.db.searchLog.findMany({
@@ -255,17 +290,33 @@ export class AdminProductsService {
     const liveWatching = Math.max(0, product.liveWatching ?? 0);
     const actualOrderSales = orderItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
     const totalKnownSales = Math.max(actualOrderSales, liveSold);
+    const hasActualOrders = actualOrderSales > 0;
 
     // 1. DAILY (Last 7 Days)
     const dailyPoints: { label: string; sales: number; views: number; date: string }[] = [];
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dailyWeights = [0.8, 1.15, 0.9, 1.35, 1.1, 1.65, 1.3];
+
+    const dailySalesTarget = hasActualOrders
+      ? 0
+      : liveSold > 0
+        ? Math.min(liveSold, Math.max(1, Math.round(liveSold * 0.35)))
+        : 0;
+    const distributedDailySales = distributeTotal(dailySalesTarget, dailyWeights);
+
+    // Realistic baseline views: 30-180 total views over 7 days
+    const weeklyViewsTarget = Math.max(
+      30,
+      Math.min(180, Math.round(liveWatching / 60 + totalKnownSales * 3)),
+    );
+    const distributedDailyViews = distributeTotal(weeklyViewsTarget, dailyWeights);
+
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const startOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
       const endOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
 
-      // Real order item sales on this date
       const dayOrders = orderItems.filter((item) => {
         const itemDate = item.order?.createdAt
           ? new Date(item.order.createdAt)
@@ -274,35 +325,54 @@ export class AdminProductsService {
       });
       const dayActualSales = dayOrders.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
-      // Real searches / views on this date
+      const dayClicks = clickLogs.filter((log) => {
+        const logDate = new Date(log.createdAt);
+        return logDate >= startOfDay && logDate <= endOfDay;
+      }).length;
+
       const daySearches = searchLogs.filter((log) => {
         const logDate = new Date(log.createdAt);
         return logDate >= startOfDay && logDate <= endOfDay;
       }).length;
 
-      // Dynamic baseline if liveSold > actual order sales
-      const dayOffsetMultiplier = [0.8, 1.1, 0.9, 1.3, 1.2, 1.5, 1.4][(d.getDay() + 6) % 7];
-      const syntheticSales =
-        actualOrderSales === 0 && totalKnownSales > 0
-          ? Math.max(0, Math.round((totalKnownSales / 14) * dayOffsetMultiplier))
-          : 0;
+      const dayCarts = cartItems.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= startOfDay && itemDate <= endOfDay;
+      }).length;
 
-      const sales = dayActualSales + syntheticSales;
-      const baseDailyViews = Math.max(
-        sales * 4,
-        Math.round((liveWatching * 1.5 + 8) * dayOffsetMultiplier + daySearches * 2),
-      );
+      const dayWishlists = wishlistItems.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= startOfDay && itemDate <= endOfDay;
+      }).length;
+
+      const dayInteractions = dayClicks + daySearches + dayCarts * 2 + dayWishlists * 2;
+      const idx = 6 - i;
+      const sales = hasActualOrders ? dayActualSales : distributedDailySales[idx];
+      const views =
+        dayInteractions > 0
+          ? Math.max(sales + 1, dayInteractions)
+          : Math.max(sales + 1, distributedDailyViews[idx]);
 
       dailyPoints.push({
         label: dayNames[d.getDay()],
         sales,
-        views: baseDailyViews,
+        views,
         date: startOfDay.toISOString().split('T')[0],
       });
     }
 
     // 2. WEEKLY (Last 7 Weeks)
     const weeklyPoints: { label: string; sales: number; views: number; date: string }[] = [];
+    const weeklyWeights = [0.75, 0.9, 1.25, 1.0, 1.4, 1.65, 1.3];
+    const distributedWeeklySales = distributeTotal(liveSold, weeklyWeights);
+
+    // Realistic views over 7 weeks: 120-650 total views
+    const sevenWeekViewsTarget = Math.max(
+      120,
+      Math.min(650, Math.round(liveWatching / 15 + totalKnownSales * 8)),
+    );
+    const distributedWeeklyViews = distributeTotal(sevenWeekViewsTarget, weeklyWeights);
+
     for (let i = 6; i >= 0; i--) {
       const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
       const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
@@ -315,22 +385,33 @@ export class AdminProductsService {
       });
       const weekActualSales = weekOrders.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
+      const weekClicks = clickLogs.filter((log) => {
+        const logDate = new Date(log.createdAt);
+        return logDate >= weekStart && logDate < weekEnd;
+      }).length;
+
       const weekSearches = searchLogs.filter((log) => {
         const logDate = new Date(log.createdAt);
         return logDate >= weekStart && logDate < weekEnd;
       }).length;
 
-      const weekMultiplier = [0.7, 0.9, 1.2, 1.0, 1.4, 1.6, 1.5][6 - i];
-      const syntheticSales =
-        actualOrderSales === 0 && totalKnownSales > 0
-          ? Math.max(0, Math.round((totalKnownSales / 5) * weekMultiplier))
-          : 0;
+      const weekCarts = cartItems.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= weekStart && itemDate < weekEnd;
+      }).length;
 
-      const sales = weekActualSales + syntheticSales;
-      const views = Math.max(
-        sales * 5,
-        Math.round((liveWatching * 6 + 25) * weekMultiplier + weekSearches * 3),
-      );
+      const weekWishlists = wishlistItems.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= weekStart && itemDate < weekEnd;
+      }).length;
+
+      const weekInteractions = weekClicks + weekSearches + weekCarts * 2 + weekWishlists * 2;
+      const idx = 6 - i;
+      const sales = hasActualOrders ? weekActualSales : distributedWeeklySales[idx];
+      const views =
+        weekInteractions > 0
+          ? Math.max(sales * 2 + 2, weekInteractions)
+          : Math.max(sales * 2 + 3, distributedWeeklyViews[idx]);
 
       weeklyPoints.push({
         label: `W${7 - i}`,
@@ -356,6 +437,16 @@ export class AdminProductsService {
       'Dec',
     ];
     const monthlyPoints: { label: string; sales: number; views: number; date: string }[] = [];
+    const monthlyWeights = [0.65, 0.8, 1.1, 1.25, 1.45, 1.8, 1.5];
+    const distributedMonthlySales = distributeTotal(liveSold, monthlyWeights);
+
+    // Realistic views over 7 months: 400-2200 total views
+    const sevenMonthViewsTarget = Math.max(
+      400,
+      Math.min(2200, Math.round(liveWatching / 5 + totalKnownSales * 22)),
+    );
+    const distributedMonthlyViews = distributeTotal(sevenMonthViewsTarget, monthlyWeights);
+
     for (let i = 6; i >= 0; i--) {
       const mDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const nextMDate = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
@@ -368,22 +459,33 @@ export class AdminProductsService {
       });
       const monthActualSales = monthOrders.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
+      const monthClicks = clickLogs.filter((log) => {
+        const logDate = new Date(log.createdAt);
+        return logDate >= mDate && logDate < nextMDate;
+      }).length;
+
       const monthSearches = searchLogs.filter((log) => {
         const logDate = new Date(log.createdAt);
         return logDate >= mDate && logDate < nextMDate;
       }).length;
 
-      const monthMultiplier = [0.6, 0.8, 1.1, 1.3, 1.5, 1.8, 1.7][6 - i];
-      const syntheticSales =
-        actualOrderSales === 0 && totalKnownSales > 0
-          ? Math.max(0, Math.round((totalKnownSales / 3) * monthMultiplier))
-          : 0;
+      const monthCarts = cartItems.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= mDate && itemDate < nextMDate;
+      }).length;
 
-      const sales = monthActualSales + syntheticSales;
-      const views = Math.max(
-        sales * 6,
-        Math.round((liveWatching * 20 + 60) * monthMultiplier + monthSearches * 5),
-      );
+      const monthWishlists = wishlistItems.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= mDate && itemDate < nextMDate;
+      }).length;
+
+      const monthInteractions = monthClicks + monthSearches + monthCarts * 2 + monthWishlists * 2;
+      const idx = 6 - i;
+      const sales = hasActualOrders ? monthActualSales : distributedMonthlySales[idx];
+      const views =
+        monthInteractions > 0
+          ? Math.max(sales * 3 + 4, monthInteractions)
+          : Math.max(sales * 3 + 5, distributedMonthlyViews[idx]);
 
       monthlyPoints.push({
         label: monthNames[mDate.getMonth()],
@@ -393,10 +495,24 @@ export class AdminProductsService {
       });
     }
 
-    // 4. YEARLY (Years active, e.g. 2024, 2025, 2026)
+    // 4. YEARLY (Past 3 Years)
     const yearlyPoints: { label: string; sales: number; views: number; date: string }[] = [];
     const currentYear = now.getFullYear();
-    const startYear = Math.max(2023, currentYear - 3);
+    const startYear = Math.max(2023, currentYear - 2);
+    const yearlyWeights: number[] = [];
+    for (let y = startYear; y <= currentYear; y++) {
+      yearlyWeights.push(y === currentYear ? 1.0 : y === currentYear - 1 ? 0.7 : 0.4);
+    }
+    const distributedYearlySales = distributeTotal(liveSold, yearlyWeights);
+
+    // Realistic views per year: 1200-6500 total views
+    const yearlyViewsTarget = Math.max(
+      1200,
+      Math.min(6500, Math.round(liveWatching * 0.8 + totalKnownSales * 65)),
+    );
+    const distributedYearlyViews = distributeTotal(yearlyViewsTarget, yearlyWeights);
+
+    let yearIdx = 0;
     for (let y = startYear; y <= currentYear; y++) {
       const yStart = new Date(y, 0, 1);
       const yEnd = new Date(y + 1, 0, 1);
@@ -409,22 +525,32 @@ export class AdminProductsService {
       });
       const yearActualSales = yearOrders.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
+      const yearClicks = clickLogs.filter((log) => {
+        const logDate = new Date(log.createdAt);
+        return logDate >= yStart && logDate < yEnd;
+      }).length;
+
       const yearSearches = searchLogs.filter((log) => {
         const logDate = new Date(log.createdAt);
         return logDate >= yStart && logDate < yEnd;
       }).length;
 
-      const yearMultiplier = y === currentYear ? 1.0 : y === currentYear - 1 ? 0.8 : 0.4;
-      const syntheticSales =
-        actualOrderSales === 0 && totalKnownSales > 0
-          ? Math.max(0, Math.round(totalKnownSales * yearMultiplier))
-          : 0;
+      const yearCarts = cartItems.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= yStart && itemDate < yEnd;
+      }).length;
 
-      const sales = yearActualSales + syntheticSales;
-      const views = Math.max(
-        sales * 7,
-        Math.round((liveWatching * 100 + 200) * yearMultiplier + yearSearches * 10),
-      );
+      const yearWishlists = wishlistItems.filter((item) => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= yStart && itemDate < yEnd;
+      }).length;
+
+      const yearInteractions = yearClicks + yearSearches + yearCarts * 2 + yearWishlists * 2;
+      const sales = hasActualOrders ? yearActualSales : distributedYearlySales[yearIdx];
+      const views =
+        yearInteractions > 0
+          ? Math.max(sales * 4 + 8, yearInteractions)
+          : Math.max(sales * 4 + 10, distributedYearlyViews[yearIdx]);
 
       yearlyPoints.push({
         label: String(y),
@@ -432,6 +558,7 @@ export class AdminProductsService {
         views,
         date: String(y),
       });
+      yearIdx++;
     }
 
     const calcTimeframeMeta = (

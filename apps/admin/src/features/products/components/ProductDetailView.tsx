@@ -611,9 +611,9 @@ export function ProductDetailView({ productId }: Props) {
       </div>
 
       {/* Metrics & SEO Section */}
-      <div className="mb-16 grid grid-cols-1 items-stretch gap-8 lg:grid-cols-2">
+      <div className="mb-16 grid grid-cols-1 items-stretch gap-8 xl:grid-cols-12">
         {/* Left: SEO Details Bento */}
-        <div className="group flex flex-col justify-between rounded-3xl border border-black/5 bg-white p-7 shadow-sm transition-all dark:border-white/5 dark:bg-black/60">
+        <div className="group flex flex-col justify-between rounded-3xl border border-black/5 bg-white p-6 shadow-sm transition-all sm:p-7 xl:col-span-5 dark:border-white/5 dark:bg-black/60">
           <div>
             <div className="mb-5 flex items-center justify-between">
               <h3 className="text-xs font-black tracking-widest text-black/60 uppercase dark:text-white/60">
@@ -666,7 +666,7 @@ export function ProductDetailView({ productId }: Props) {
         </div>
 
         {/* Right: Performance Matrix */}
-        <div className="w-full">
+        <div className="w-full xl:col-span-7">
           <ProductPerformance product={product} />
         </div>
       </div>
