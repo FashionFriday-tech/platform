@@ -7,25 +7,6 @@ import { UploadService } from '../../upload/upload.service';
 import { CreateProductDto, UpdateProductDto } from '../dto';
 import { ProductsRepository } from '../products.repository';
 
-function distributeTotal(total: number, weights: number[]): number[] {
-  if (total <= 0 || weights.length === 0) return weights.map(() => 0);
-  const sumWeights = weights.reduce((a, b) => a + b, 0);
-  if (sumWeights <= 0) return weights.map(() => 0);
-
-  const exact = weights.map((w) => (w / sumWeights) * total);
-  const floored = exact.map((v) => Math.floor(v));
-  let remainder = total - floored.reduce((a, b) => a + b, 0);
-
-  const fractions = exact.map((v, i) => ({ index: i, frac: v - floored[i] }));
-  fractions.sort((a, b) => b.frac - a.frac);
-
-  for (let i = 0; i < remainder; i++) {
-    floored[fractions[i % fractions.length].index] += 1;
-  }
-
-  return floored;
-}
-
 @Injectable()
 export class AdminProductsService {
   constructor(
@@ -229,7 +210,7 @@ export class AdminProductsService {
     const productId = product.id;
     const now = new Date();
 
-    // Fetch actual order items for this product
+    // Fetch actual order items for this product (only confirmed orders)
     const orderItems = await this.prisma.db.orderItem.findMany({
       where: {
         productId,
@@ -239,7 +220,6 @@ export class AdminProductsService {
       },
       select: {
         quantity: true,
-        price: true,
         createdAt: true,
         order: {
           select: {
@@ -249,11 +229,11 @@ export class AdminProductsService {
       },
     });
 
-    // Fetch real customer clicks, cart additions, and wishlist actions
+    // Fetch real interaction logs
     const [clickLogs, cartItems, wishlistItems] = await Promise.all([
       this.prisma.db.productClickLog.findMany({
         where: { productId },
-        select: { createdAt: true },
+        select: { createdAt: true, clickCount: true },
       }),
       this.prisma.db.cartItem.findMany({
         where: { productId },
@@ -265,231 +245,86 @@ export class AdminProductsService {
       }),
     ]);
 
-    // Fetch relevant search queries/impressions for this product
-    const nameWords = (product.name || '').split(' ').filter((w) => w.length > 2);
-    const searchLogs = await this.prisma.db.searchLog.findMany({
-      where: {
-        OR: [
-          { query: { contains: product.name, mode: 'insensitive' } },
-          ...(nameWords.length > 0
-            ? nameWords.slice(0, 3).map((w) => ({
-                query: { contains: w, mode: 'insensitive' as const },
-              }))
-            : []),
-        ],
-      },
-      select: {
-        createdAt: true,
-      },
-      take: 200,
-    });
+    // Helper: count items in a date range
+    const countInRange = (items: { createdAt: Date }[], start: Date, end: Date) =>
+      items.filter((item) => {
+        const d = new Date(item.createdAt);
+        return d >= start && d < end;
+      }).length;
 
-    const liveSold = Math.max(0, product.liveSold ?? 0);
-    const liveWatching = Math.max(0, product.liveWatching ?? 0);
-    const actualOrderSales = orderItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
-    const totalKnownSales = Math.max(actualOrderSales, liveSold);
-    const hasActualOrders = actualOrderSales > 0;
+    // Helper: sum order quantities in a date range
+    const salesInRange = (start: Date, end: Date) =>
+      orderItems
+        .filter((item) => {
+          const d = item.order?.createdAt
+            ? new Date(item.order.createdAt)
+            : new Date(item.createdAt);
+          return d >= start && d < end;
+        })
+        .reduce((sum, item) => sum + (item.quantity || 1), 0);
+
+    // Helper: sum click counts in a date range
+    const clicksInRange = (start: Date, end: Date) =>
+      clickLogs
+        .filter((log) => {
+          const d = new Date(log.createdAt);
+          return d >= start && d < end;
+        })
+        .reduce((sum, log) => sum + (log.clickCount || 1), 0);
+
+    // Views = clicks + cart adds + wishlist adds (real engagement signals)
+    const viewsInRange = (start: Date, end: Date) =>
+      clicksInRange(start, end) +
+      countInRange(cartItems, start, end) +
+      countInRange(wishlistItems, start, end);
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
 
     // 1. DAILY (Last 7 Days)
     const dailyPoints: { label: string; sales: number; views: number; date: string }[] = [];
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const dailyWeights = [0.8, 1.15, 0.9, 1.35, 1.1, 1.65, 1.3];
-
-    const dailySalesTarget = hasActualOrders
-      ? 0
-      : liveSold > 0
-        ? Math.min(liveSold, Math.max(1, Math.round(liveSold * 0.35)))
-        : 0;
-    const distributedDailySales = distributeTotal(dailySalesTarget, dailyWeights);
-
-    // Realistic baseline views: 30-180 total views over 7 days
-    const weeklyViewsTarget = Math.max(
-      30,
-      Math.min(180, Math.round(liveWatching / 60 + totalKnownSales * 3)),
-    );
-    const distributedDailyViews = distributeTotal(weeklyViewsTarget, dailyWeights);
-
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
-      const startOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      const endOfDay = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
-
-      const dayOrders = orderItems.filter((item) => {
-        const itemDate = item.order?.createdAt
-          ? new Date(item.order.createdAt)
-          : new Date(item.createdAt);
-        return itemDate >= startOfDay && itemDate <= endOfDay;
-      });
-      const dayActualSales = dayOrders.reduce((sum, item) => sum + (item.quantity || 1), 0);
-
-      const dayClicks = clickLogs.filter((log) => {
-        const logDate = new Date(log.createdAt);
-        return logDate >= startOfDay && logDate <= endOfDay;
-      }).length;
-
-      const daySearches = searchLogs.filter((log) => {
-        const logDate = new Date(log.createdAt);
-        return logDate >= startOfDay && logDate <= endOfDay;
-      }).length;
-
-      const dayCarts = cartItems.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= startOfDay && itemDate <= endOfDay;
-      }).length;
-
-      const dayWishlists = wishlistItems.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= startOfDay && itemDate <= endOfDay;
-      }).length;
-
-      const dayInteractions = dayClicks + daySearches + dayCarts * 2 + dayWishlists * 2;
-      const idx = 6 - i;
-      const sales = hasActualOrders ? dayActualSales : distributedDailySales[idx];
-      const views =
-        dayInteractions > 0
-          ? Math.max(sales + 1, dayInteractions)
-          : Math.max(sales + 1, distributedDailyViews[idx]);
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const end = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
 
       dailyPoints.push({
-        label: dayNames[d.getDay()],
-        sales,
-        views,
-        date: startOfDay.toISOString().split('T')[0],
+        label: dayNames[start.getDay()],
+        sales: salesInRange(start, end),
+        views: viewsInRange(start, end),
+        date: start.toISOString().split('T')[0],
       });
     }
 
-    // 2. WEEKLY (Past 5 Weeks: W1 - W5)
+    // 2. WEEKLY (Past 5 Weeks)
     const weeklyPoints: { label: string; sales: number; views: number; date: string }[] = [];
-    const weeklyWeights = [0.65, 0.85, 1.35, 1.05, 1.55];
-    const distributedWeeklySales = distributeTotal(liveSold, weeklyWeights);
-
-    // Dynamic views over 5 weeks based on live watching impressions and sales
-    const fiveWeekViewsTarget = Math.max(
-      150,
-      Math.round(liveWatching * 2.8 + totalKnownSales * 14 + 120),
-    );
-    const distributedWeeklyViews = distributeTotal(fiveWeekViewsTarget, weeklyWeights);
-
     for (let i = 4; i >= 0; i--) {
-      const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
-      const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
-
-      const weekOrders = orderItems.filter((item) => {
-        const itemDate = item.order?.createdAt
-          ? new Date(item.order.createdAt)
-          : new Date(item.createdAt);
-        return itemDate >= weekStart && itemDate < weekEnd;
-      });
-      const weekActualSales = weekOrders.reduce((sum, item) => sum + (item.quantity || 1), 0);
-
-      const weekClicks = clickLogs.filter((log) => {
-        const logDate = new Date(log.createdAt);
-        return logDate >= weekStart && logDate < weekEnd;
-      }).length;
-
-      const weekSearches = searchLogs.filter((log) => {
-        const logDate = new Date(log.createdAt);
-        return logDate >= weekStart && logDate < weekEnd;
-      }).length;
-
-      const weekCarts = cartItems.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= weekStart && itemDate < weekEnd;
-      }).length;
-
-      const weekWishlists = wishlistItems.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= weekStart && itemDate < weekEnd;
-      }).length;
-
-      const weekInteractions = weekClicks + weekSearches + weekCarts * 2 + weekWishlists * 2;
-      const idx = 4 - i;
-      const sales = hasActualOrders ? weekActualSales : distributedWeeklySales[idx];
-      const views =
-        weekInteractions > 0
-          ? Math.max(sales * 2 + 2, weekInteractions)
-          : Math.max(sales * 2 + 3, distributedWeeklyViews[idx]);
+      const weekStart = new Date(now.getTime() - (i + 1) * 7 * 86400000);
+      const weekEnd = new Date(now.getTime() - i * 7 * 86400000);
 
       weeklyPoints.push({
         label: `W${5 - i}`,
-        sales,
-        views,
+        sales: salesInRange(weekStart, weekEnd),
+        views: viewsInRange(weekStart, weekEnd),
         date: weekStart.toISOString().split('T')[0],
       });
     }
 
     // 3. MONTHLY (Last 7 Months)
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
     const monthlyPoints: { label: string; sales: number; views: number; date: string }[] = [];
-    const monthlyWeights = [0.65, 0.8, 1.1, 1.25, 1.45, 1.8, 1.5];
-    const distributedMonthlySales = distributeTotal(liveSold, monthlyWeights);
-
-    // Realistic views over 7 months: 400-2200 total views
-    const sevenMonthViewsTarget = Math.max(
-      400,
-      Math.min(2200, Math.round(liveWatching / 5 + totalKnownSales * 22)),
-    );
-    const distributedMonthlyViews = distributeTotal(sevenMonthViewsTarget, monthlyWeights);
-
     for (let i = 6; i >= 0; i--) {
-      const mDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const nextMDate = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
-
-      const monthOrders = orderItems.filter((item) => {
-        const itemDate = item.order?.createdAt
-          ? new Date(item.order.createdAt)
-          : new Date(item.createdAt);
-        return itemDate >= mDate && itemDate < nextMDate;
-      });
-      const monthActualSales = monthOrders.reduce((sum, item) => sum + (item.quantity || 1), 0);
-
-      const monthClicks = clickLogs.filter((log) => {
-        const logDate = new Date(log.createdAt);
-        return logDate >= mDate && logDate < nextMDate;
-      }).length;
-
-      const monthSearches = searchLogs.filter((log) => {
-        const logDate = new Date(log.createdAt);
-        return logDate >= mDate && logDate < nextMDate;
-      }).length;
-
-      const monthCarts = cartItems.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= mDate && itemDate < nextMDate;
-      }).length;
-
-      const monthWishlists = wishlistItems.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= mDate && itemDate < nextMDate;
-      }).length;
-
-      const monthInteractions = monthClicks + monthSearches + monthCarts * 2 + monthWishlists * 2;
-      const idx = 6 - i;
-      const sales = hasActualOrders ? monthActualSales : distributedMonthlySales[idx];
-      const views =
-        monthInteractions > 0
-          ? Math.max(sales * 3 + 4, monthInteractions)
-          : Math.max(sales * 3 + 5, distributedMonthlyViews[idx]);
+      const mStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const mEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
 
       monthlyPoints.push({
-        label: monthNames[mDate.getMonth()],
-        sales,
-        views,
-        date: `${mDate.getFullYear()}-${String(mDate.getMonth() + 1).padStart(2, '0')}`,
+        label: monthNames[mStart.getMonth()],
+        sales: salesInRange(mStart, mEnd),
+        views: viewsInRange(mStart, mEnd),
+        date: `${mStart.getFullYear()}-${String(mStart.getMonth() + 1).padStart(2, '0')}`,
       });
     }
 
@@ -497,66 +332,16 @@ export class AdminProductsService {
     const yearlyPoints: { label: string; sales: number; views: number; date: string }[] = [];
     const currentYear = now.getFullYear();
     const startYear = Math.max(2023, currentYear - 2);
-    const yearlyWeights: number[] = [];
-    for (let y = startYear; y <= currentYear; y++) {
-      yearlyWeights.push(y === currentYear ? 1.0 : y === currentYear - 1 ? 0.7 : 0.4);
-    }
-    const distributedYearlySales = distributeTotal(liveSold, yearlyWeights);
-
-    // Realistic views per year: 1200-6500 total views
-    const yearlyViewsTarget = Math.max(
-      1200,
-      Math.min(6500, Math.round(liveWatching * 0.8 + totalKnownSales * 65)),
-    );
-    const distributedYearlyViews = distributeTotal(yearlyViewsTarget, yearlyWeights);
-
-    let yearIdx = 0;
     for (let y = startYear; y <= currentYear; y++) {
       const yStart = new Date(y, 0, 1);
       const yEnd = new Date(y + 1, 0, 1);
 
-      const yearOrders = orderItems.filter((item) => {
-        const itemDate = item.order?.createdAt
-          ? new Date(item.order.createdAt)
-          : new Date(item.createdAt);
-        return itemDate >= yStart && itemDate < yEnd;
-      });
-      const yearActualSales = yearOrders.reduce((sum, item) => sum + (item.quantity || 1), 0);
-
-      const yearClicks = clickLogs.filter((log) => {
-        const logDate = new Date(log.createdAt);
-        return logDate >= yStart && logDate < yEnd;
-      }).length;
-
-      const yearSearches = searchLogs.filter((log) => {
-        const logDate = new Date(log.createdAt);
-        return logDate >= yStart && logDate < yEnd;
-      }).length;
-
-      const yearCarts = cartItems.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= yStart && itemDate < yEnd;
-      }).length;
-
-      const yearWishlists = wishlistItems.filter((item) => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= yStart && itemDate < yEnd;
-      }).length;
-
-      const yearInteractions = yearClicks + yearSearches + yearCarts * 2 + yearWishlists * 2;
-      const sales = hasActualOrders ? yearActualSales : distributedYearlySales[yearIdx];
-      const views =
-        yearInteractions > 0
-          ? Math.max(sales * 4 + 8, yearInteractions)
-          : Math.max(sales * 4 + 10, distributedYearlyViews[yearIdx]);
-
       yearlyPoints.push({
         label: String(y),
-        sales,
-        views,
+        sales: salesInRange(yStart, yEnd),
+        views: viewsInRange(yStart, yEnd),
         date: String(y),
       });
-      yearIdx++;
     }
 
     const calcTimeframeMeta = (

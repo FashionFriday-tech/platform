@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   fetchProductPerformance,
@@ -14,25 +14,6 @@ interface Props {
 }
 
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
-
-function distributeTotal(total: number, weights: number[]): number[] {
-  if (total <= 0 || weights.length === 0) return weights.map(() => 0);
-  const sumWeights = weights.reduce((a, b) => a + b, 0);
-  if (sumWeights <= 0) return weights.map(() => 0);
-
-  const exact = weights.map((w) => (w / sumWeights) * total);
-  const floored = exact.map((v) => Math.floor(v));
-  let remainder = total - floored.reduce((a, b) => a + b, 0);
-
-  const fractions = exact.map((v, i) => ({ index: i, frac: v - floored[i] }));
-  fractions.sort((a, b) => b.frac - a.frac);
-
-  for (let i = 0; i < remainder; i++) {
-    floored[fractions[i % fractions.length].index] += 1;
-  }
-
-  return floored;
-}
 
 function getCurvedPath(points: { x: number; y: number }[]): string {
   if (points.length === 0) return '';
@@ -55,30 +36,50 @@ function getCurvedPath(points: { x: number; y: number }[]): string {
   return path;
 }
 
+const EMPTY_TIMEFRAME = {
+  totalSales: 0,
+  totalViews: 0,
+  avgSales: 0,
+  points: [] as PerformanceDataPoint[],
+};
+
+const timeframeLabels: Record<Timeframe, string> = {
+  daily: 'Daily',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+  yearly: 'Yearly',
+};
+
 export function ProductPerformance({ product }: Props) {
   const [timeframe, setTimeframe] = useState<Timeframe>('weekly');
   const [matrixData, setMatrixData] = useState<ProductPerformanceMatrix | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     let isMounted = true;
     async function loadPerformance() {
       if (!product.id) {
+        setIsLoading(false);
         return;
       }
       setIsLoading(true);
+      setError(false);
       try {
         const data = await fetchProductPerformance(product.id);
-        if (isMounted && data) {
-          setMatrixData(data);
+        if (isMounted) {
+          if (data) {
+            setMatrixData(data);
+          } else {
+            setError(true);
+          }
         }
       } catch (err) {
         console.error('Failed to load performance matrix:', err);
+        if (isMounted) setError(true);
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       }
     }
     void loadPerformance();
@@ -87,140 +88,12 @@ export function ProductPerformance({ product }: Props) {
     };
   }, [product.id]);
 
-  // Fallback dynamic generation if API hasn't loaded yet
-  const fallbackData = useMemo(() => {
-    const liveSold = Math.max(0, product.liveSold ?? product.sales ?? 0);
-    const liveWatching = Math.max(0, product.liveWatching ?? 0);
-    const now = new Date();
-
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-
-    let points: PerformanceDataPoint[] = [];
-
-    switch (timeframe) {
-      case 'daily': {
-        const dailyWeights = [0.8, 1.15, 0.9, 1.35, 1.1, 1.65, 1.3];
-        const dailySalesTarget =
-          liveSold > 0 ? Math.min(liveSold, Math.max(1, Math.round(liveSold * 0.35))) : 0;
-        const distSales = distributeTotal(dailySalesTarget, dailyWeights);
-        const weeklyViewsTarget = Math.max(
-          30,
-          Math.min(180, Math.round(liveWatching / 60 + liveSold * 3)),
-        );
-        const distViews = distributeTotal(weeklyViewsTarget, dailyWeights);
-
-        points = Array.from({ length: 7 }, (_, idx) => {
-          const d = new Date(now);
-          d.setDate(d.getDate() - (6 - idx));
-          const s = distSales[idx];
-          const v = Math.max(s + 1, distViews[idx]);
-          return {
-            label: dayNames[d.getDay()],
-            sales: s,
-            views: v,
-            date: d.toISOString().split('T')[0],
-          };
-        });
-        break;
-      }
-      case 'weekly': {
-        const weeklyWeights = [0.65, 0.85, 1.35, 1.05, 1.55];
-        const distSales = distributeTotal(liveSold, weeklyWeights);
-        const fiveWeekViews = Math.max(
-          150,
-          Math.round(liveWatching * 2.8 + liveSold * 14 + 120),
-        );
-        const distViews = distributeTotal(fiveWeekViews, weeklyWeights);
-
-        points = Array.from({ length: 5 }, (_, idx) => {
-          const s = distSales[idx];
-          const v = Math.max(s * 2 + 3, distViews[idx]);
-          return {
-            label: `W${idx + 1}`,
-            sales: s,
-            views: v,
-          };
-        });
-        break;
-      }
-      case 'monthly': {
-        const monthlyWeights = [0.65, 0.8, 1.1, 1.25, 1.45, 1.8, 1.5];
-        const distSales = distributeTotal(liveSold, monthlyWeights);
-        const sevenMonthViews = Math.max(
-          400,
-          Math.min(2200, Math.round(liveWatching / 5 + liveSold * 22)),
-        );
-        const distViews = distributeTotal(sevenMonthViews, monthlyWeights);
-
-        points = Array.from({ length: 7 }, (_, idx) => {
-          const mDate = new Date(now.getFullYear(), now.getMonth() - (6 - idx), 1);
-          const s = distSales[idx];
-          const v = Math.max(s * 3 + 5, distViews[idx]);
-          return {
-            label: monthNames[mDate.getMonth()],
-            sales: s,
-            views: v,
-          };
-        });
-        break;
-      }
-      case 'yearly': {
-        const curYear = now.getFullYear();
-        const startY = Math.max(2023, curYear - 2);
-        const yearsCount = curYear - startY + 1;
-        const yearlyWeights = [0.4, 0.7, 1.0].slice(3 - yearsCount);
-        const distSales = distributeTotal(liveSold, yearlyWeights);
-        const yearlyViews = Math.max(
-          1200,
-          Math.min(6500, Math.round(liveWatching * 0.8 + liveSold * 65)),
-        );
-        const distViews = distributeTotal(yearlyViews, yearlyWeights);
-
-        points = Array.from({ length: yearsCount }, (_, idx) => {
-          const y = startY + idx;
-          const s = distSales[idx];
-          const v = Math.max(s * 4 + 10, distViews[idx]);
-          return {
-            label: String(y),
-            sales: s,
-            views: v,
-          };
-        });
-        break;
-      }
-    }
-
-    const totalSales = points.reduce((acc, curr) => acc + curr.sales, 0);
-    const totalViews = points.reduce((acc, curr) => acc + curr.views, 0);
-    const avgSales = points.length > 0 ? Math.round(totalSales / points.length) : 0;
-
-    return {
-      points,
-      totalSales,
-      totalViews,
-      avgSales,
-    };
-  }, [product.sales, product.liveSold, product.liveWatching, timeframe]);
-
-  const activeTimeframeData = matrixData?.[timeframe] || fallbackData;
+  const activeTimeframeData = matrixData?.[timeframe] || EMPTY_TIMEFRAME;
   const chartData = activeTimeframeData.points;
   const totalSales = activeTimeframeData.totalSales;
   const totalViews = activeTimeframeData.totalViews;
   const avgSales = activeTimeframeData.avgSales;
+  const hasData = chartData.length > 0 && (totalSales > 0 || totalViews > 0);
 
   // Chart configuration
   const width = 600;
@@ -289,7 +162,7 @@ export function ProductPerformance({ product }: Props) {
         <div className="rounded-2xl border border-black/5 bg-white p-3.5 shadow-sm sm:p-5 dark:border-white/5 dark:bg-black">
           <span className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
             <div className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
-            <span className="truncate">Total {timeframe} Sales</span>
+            <span className="truncate">Total {timeframeLabels[timeframe]} Sales</span>
           </span>
           <span className="text-xl font-black text-black sm:text-2xl md:text-3xl dark:text-white">
             {isLoading ? '...' : totalSales.toLocaleString()}
@@ -298,7 +171,7 @@ export function ProductPerformance({ product }: Props) {
         <div className="rounded-2xl border border-black/5 bg-white p-3.5 shadow-sm sm:p-5 dark:border-white/5 dark:bg-black">
           <span className="mb-1 flex items-center gap-2 text-[10px] font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
             <div className="h-2 w-2 shrink-0 rounded-full bg-blue-500" />
-            <span className="truncate">Total {timeframe} Views</span>
+            <span className="truncate">Total {timeframeLabels[timeframe]} Engagements</span>
           </span>
           <span className="text-xl font-black text-black sm:text-2xl md:text-3xl dark:text-white">
             {isLoading ? '...' : totalViews.toLocaleString()}
@@ -306,210 +179,257 @@ export function ProductPerformance({ product }: Props) {
         </div>
       </div>
 
-      <div className="relative w-full rounded-2xl border border-black/5 bg-white p-2 sm:p-4 md:p-5 shadow-sm dark:border-white/5 dark:bg-[#111]">
-        <svg
-          viewBox={`0 0 ${width} ${height}`}
-          className="block h-auto w-full overflow-visible select-none"
-        >
-          {/* Grid lines */}
-          <line
-            x1={paddingX}
-            y1={getY(maxVal * 0.75)}
-            x2={width - paddingX}
-            y2={getY(maxVal * 0.75)}
-            stroke="currentColor"
-            className="text-black/5 dark:text-white/5"
-            strokeDasharray="4 4"
-          />
-          <line
-            x1={paddingX}
-            y1={getY(maxVal * 0.5)}
-            x2={width - paddingX}
-            y2={getY(maxVal * 0.5)}
-            stroke="currentColor"
-            className="text-black/5 dark:text-white/5"
-            strokeDasharray="4 4"
-          />
-          <line
-            x1={paddingX}
-            y1={getY(maxVal * 0.25)}
-            x2={width - paddingX}
-            y2={getY(maxVal * 0.25)}
-            stroke="currentColor"
-            className="text-black/5 dark:text-white/5"
-            strokeDasharray="4 4"
-          />
-
-          {/* Gradients */}
-          <defs>
-            <linearGradient id="viewsGradient" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
-            </linearGradient>
-            <linearGradient id="salesGradient" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#22c55e" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-
-          {/* Average Sales Reference Line */}
-          {avgSales > 0 && (
-            <>
+      <div className="relative w-full rounded-2xl border border-black/5 bg-white p-2 shadow-sm sm:p-4 md:p-5 dark:border-white/5 dark:bg-[#111]">
+        {isLoading ? (
+          <div className="flex h-[220px] items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+              <span className="text-xs font-medium text-black/40 dark:text-white/40">
+                Loading performance data...
+              </span>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex h-[220px] items-center justify-center">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <svg className="h-8 w-8 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+              <span className="text-xs font-medium text-black/40 dark:text-white/40">
+                Failed to load performance data
+              </span>
+            </div>
+          </div>
+        ) : !hasData ? (
+          <div className="flex h-[220px] items-center justify-center">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <svg className="h-8 w-8 text-black/20 dark:text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+              </svg>
+              <span className="text-xs font-medium text-black/40 dark:text-white/40">
+                No {timeframeLabels[timeframe].toLowerCase()} data yet
+              </span>
+              <span className="text-[10px] text-black/30 dark:text-white/25">
+                Sales & engagement data will appear as customers interact
+              </span>
+            </div>
+          </div>
+        ) : (
+          <>
+            <svg
+              viewBox={`0 0 ${width} ${height}`}
+              className="block h-auto w-full overflow-visible select-none"
+            >
+              {/* Grid lines */}
               <line
                 x1={paddingX}
-                y1={getY(avgSales)}
+                y1={getY(maxVal * 0.75)}
                 x2={width - paddingX}
-                y2={getY(avgSales)}
+                y2={getY(maxVal * 0.75)}
                 stroke="currentColor"
-                strokeWidth="1.2"
+                className="text-black/5 dark:text-white/5"
                 strokeDasharray="4 4"
-                className="text-emerald-500/50"
               />
-              <text
-                x={width - paddingX}
-                y={getY(avgSales) - 6}
-                textAnchor="end"
-                className="fill-emerald-600 text-[9px] font-bold dark:fill-emerald-400"
-              >
-                Avg Sales: {Math.round(avgSales).toLocaleString()}
-              </text>
-            </>
-          )}
+              <line
+                x1={paddingX}
+                y1={getY(maxVal * 0.5)}
+                x2={width - paddingX}
+                y2={getY(maxVal * 0.5)}
+                stroke="currentColor"
+                className="text-black/5 dark:text-white/5"
+                strokeDasharray="4 4"
+              />
+              <line
+                x1={paddingX}
+                y1={getY(maxVal * 0.25)}
+                x2={width - paddingX}
+                y2={getY(maxVal * 0.25)}
+                stroke="currentColor"
+                className="text-black/5 dark:text-white/5"
+                strokeDasharray="4 4"
+              />
 
-          {/* Views Area & Line */}
-          {viewsPath && (
-            <>
-              <path
-                d={`${viewsPath} L ${width - paddingX},${height - paddingY} L ${paddingX},${height - paddingY} Z`}
-                fill="url(#viewsGradient)"
-              />
-              <path
-                d={viewsPath}
-                fill="none"
-                stroke="#3b82f6"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </>
-          )}
+              {/* Gradients */}
+              <defs>
+                <linearGradient id="viewsGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+                </linearGradient>
+                <linearGradient id="salesGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="#22c55e" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#22c55e" stopOpacity="0.0" />
+                </linearGradient>
+              </defs>
 
-          {/* Sales Area & Line */}
-          {salesPath && (
-            <>
-              <path
-                d={`${salesPath} L ${width - paddingX},${height - paddingY} L ${paddingX},${height - paddingY} Z`}
-                fill="url(#salesGradient)"
-              />
-              <path
-                d={salesPath}
-                fill="none"
-                stroke="#22c55e"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </>
-          )}
-
-          {/* Points & Interactive Tooltips */}
-          {chartData.map((d, i) => {
-            const cx = getX(i);
-            const sy = getY(d.sales);
-            const vy = getY(d.views);
-            const isHovered = hoveredIndex === i;
-
-            return (
-              <g
-                key={i}
-                className="cursor-pointer"
-                onMouseEnter={() => {
-                  setHoveredIndex(i);
-                }}
-                onMouseLeave={() => {
-                  setHoveredIndex(null);
-                }}
-              >
-                {/* Vertical hover guide */}
-                {isHovered && (
+              {/* Average Sales Reference Line */}
+              {avgSales > 0 && (
+                <>
                   <line
-                    x1={cx}
-                    y1={paddingY / 2}
-                    x2={cx}
-                    y2={height - paddingY}
+                    x1={paddingX}
+                    y1={getY(avgSales)}
+                    x2={width - paddingX}
+                    y2={getY(avgSales)}
                     stroke="currentColor"
-                    strokeWidth="1"
-                    strokeDasharray="2 2"
-                    className="text-black/20 dark:text-white/20"
+                    strokeWidth="1.2"
+                    strokeDasharray="4 4"
+                    className="text-emerald-500/50"
                   />
-                )}
+                  <text
+                    x={width - paddingX}
+                    y={getY(avgSales) - 6}
+                    textAnchor="end"
+                    className="fill-emerald-600 text-[9px] font-bold dark:fill-emerald-400"
+                  >
+                    Avg Sales: {Math.round(avgSales).toLocaleString()}
+                  </text>
+                </>
+              )}
 
-                {/* Views Point & Label */}
-                <circle
-                  cx={cx}
-                  cy={vy}
-                  r={isHovered ? 6 : 4}
-                  fill="#3b82f6"
-                  className="transition-all"
-                />
-                <text
-                  x={cx}
-                  y={vy - 10}
-                  textAnchor="middle"
-                  fill="#3b82f6"
-                  fontSize="10"
-                  fontWeight="bold"
-                >
-                  {d.views >= 1000 ? (d.views / 1000).toFixed(1) + 'k' : d.views}
-                </text>
+              {/* Views Area & Line */}
+              {viewsPath && (
+                <>
+                  <path
+                    d={`${viewsPath} L ${width - paddingX},${height - paddingY} L ${paddingX},${height - paddingY} Z`}
+                    fill="url(#viewsGradient)"
+                  />
+                  <path
+                    d={viewsPath}
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </>
+              )}
 
-                {/* Sales Point & Label */}
-                <circle
-                  cx={cx}
-                  cy={sy}
-                  r={isHovered ? 6 : 4}
-                  fill="#22c55e"
-                  className="transition-all"
-                />
-                <text
-                  x={cx}
-                  y={sy + 16}
-                  textAnchor="middle"
-                  fill="#22c55e"
-                  fontSize="10"
-                  fontWeight="bold"
-                >
-                  {d.sales >= 1000 ? (d.sales / 1000).toFixed(1) + 'k' : d.sales}
-                </text>
+              {/* Sales Area & Line */}
+              {salesPath && (
+                <>
+                  <path
+                    d={`${salesPath} L ${width - paddingX},${height - paddingY} L ${paddingX},${height - paddingY} Z`}
+                    fill="url(#salesGradient)"
+                  />
+                  <path
+                    d={salesPath}
+                    fill="none"
+                    stroke="#22c55e"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </>
+              )}
 
-                {/* X Axis Label */}
-                <text
-                  x={cx}
-                  y={height - 12}
-                  textAnchor="middle"
-                  fill="currentColor"
-                  className={`text-[10px] font-bold transition-colors ${
-                    isHovered ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50'
-                  }`}
-                >
-                  {d.label}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
+              {/* Points & Interactive Tooltips */}
+              {chartData.map((d, i) => {
+                const cx = getX(i);
+                const sy = getY(d.sales);
+                const vy = getY(d.views);
+                const isHovered = hoveredIndex === i;
 
-        {/* Legend */}
-        <div className="mt-2 flex items-center justify-center gap-6 border-t border-black/5 pt-3 text-[11px] font-bold text-black/60 dark:border-white/5 dark:text-white/60">
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-            <span>Sales</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-            <span>Views / Impressions</span>
-          </div>
-        </div>
+                return (
+                  <g
+                    key={i}
+                    className="cursor-pointer"
+                    onMouseEnter={() => {
+                      setHoveredIndex(i);
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredIndex(null);
+                    }}
+                  >
+                    {/* Vertical hover guide */}
+                    {isHovered && (
+                      <line
+                        x1={cx}
+                        y1={paddingY / 2}
+                        x2={cx}
+                        y2={height - paddingY}
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeDasharray="2 2"
+                        className="text-black/20 dark:text-white/20"
+                      />
+                    )}
+
+                    {/* Views Point & Label */}
+                    <circle
+                      cx={cx}
+                      cy={vy}
+                      r={isHovered ? 6 : 4}
+                      fill="#3b82f6"
+                      className="transition-all"
+                    />
+                    <text
+                      x={cx}
+                      y={vy - 10}
+                      textAnchor="middle"
+                      fill="#3b82f6"
+                      fontSize="10"
+                      fontWeight="bold"
+                    >
+                      {d.views >= 1000 ? (d.views / 1000).toFixed(1) + 'k' : d.views}
+                    </text>
+
+                    {/* Sales Point & Label */}
+                    <circle
+                      cx={cx}
+                      cy={sy}
+                      r={isHovered ? 6 : 4}
+                      fill="#22c55e"
+                      className="transition-all"
+                    />
+                    <text
+                      x={cx}
+                      y={sy + 16}
+                      textAnchor="middle"
+                      fill="#22c55e"
+                      fontSize="10"
+                      fontWeight="bold"
+                    >
+                      {d.sales >= 1000 ? (d.sales / 1000).toFixed(1) + 'k' : d.sales}
+                    </text>
+
+                    {/* Invisible hit area */}
+                    <rect
+                      x={cx - 20}
+                      y={0}
+                      width={40}
+                      height={height}
+                      fill="transparent"
+                    />
+
+                    {/* X Axis Label */}
+                    <text
+                      x={cx}
+                      y={height - 12}
+                      textAnchor="middle"
+                      fill="currentColor"
+                      className={`text-[10px] font-bold transition-colors ${
+                        isHovered ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50'
+                      }`}
+                    >
+                      {d.label}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* Legend */}
+            <div className="mt-2 flex items-center justify-center gap-6 border-t border-black/5 pt-3 text-[11px] font-bold text-black/60 dark:border-white/5 dark:text-white/60">
+              <div className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <span>Sales</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+                <span>Engagements</span>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
