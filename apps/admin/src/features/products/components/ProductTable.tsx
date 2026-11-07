@@ -95,7 +95,7 @@ export function ProductTable({
     'minmax(85px, 0.9fr)',
     visibleColumns.has('Variants') ? 'minmax(90px, 0.9fr)' : null,
     visibleColumns.has('Sales') ? 'minmax(75px, 0.8fr)' : null,
-    visibleColumns.has('Date Added') ? 'minmax(95px, 0.9fr)' : null,
+    visibleColumns.has('Date Added') ? 'minmax(115px, 1fr)' : null,
     'minmax(80px, 0.8fr)',
     visibleColumns.has('Stock') ? 'minmax(95px, 1fr)' : null,
     'minmax(48px, 0.4fr)',

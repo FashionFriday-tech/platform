@@ -5,6 +5,33 @@ import Image from 'next/image';
 import { type ColumnId, type Product } from '../types';
 import { ProductActionMenu } from './ProductActionMenu';
 
+function formatDateTime(dateStr?: string): { date: string; time: string } {
+  if (!dateStr) return { date: 'N/A', time: '' };
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return { date: dateStr, time: '' };
+
+    const date = d.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+
+    const hasTime = dateStr.includes('T') || dateStr.includes(':');
+    const time = hasTime
+      ? d.toLocaleTimeString('en-IN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        })
+      : '';
+
+    return { date, time };
+  } catch {
+    return { date: dateStr, time: '' };
+  }
+}
+
 interface Props {
   product: Product;
   isSelected?: boolean;
@@ -120,11 +147,27 @@ export function ProductTableRow({
         </div>
       )}
 
-      {visibleColumns.has('Date Added') && (
-        <div className="min-w-0 truncate text-sm text-black/60 dark:text-white/60">
-          {product.dateAdded ?? 'N/A'}
-        </div>
-      )}
+      {visibleColumns.has('Date Added') &&
+        (() => {
+          const { date, time } = formatDateTime(product.dateAdded);
+          return (
+            <div
+              className="flex min-w-0 flex-col justify-center leading-tight"
+              title={
+                product.dateAdded ? new Date(product.dateAdded).toLocaleString('en-IN') : undefined
+              }
+            >
+              <span className="truncate text-xs font-semibold text-black/85 dark:text-white/85">
+                {date}
+              </span>
+              {time ? (
+                <span className="truncate text-[10px] font-medium text-black/45 dark:text-white/45">
+                  {time}
+                </span>
+              ) : null}
+            </div>
+          );
+        })()}
 
       {/* Status */}
       <div className="min-w-0">

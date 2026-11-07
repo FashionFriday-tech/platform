@@ -112,9 +112,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
             store: 'Main Store',
             variants: p.sizes ?? [],
             sales: 0,
-            dateAdded: p.createdAt
-              ? new Date(p.createdAt).toISOString().split('T')[0]
-              : new Date().toISOString().split('T')[0],
+            dateAdded: p.createdAt ? new Date(p.createdAt).toISOString() : new Date().toISOString(),
             imageUrl: p.mainImage,
             images: [p.mainImage, p.promoImage, ...(p.liveImages ?? [])].filter(
               (img): img is string => Boolean(img),

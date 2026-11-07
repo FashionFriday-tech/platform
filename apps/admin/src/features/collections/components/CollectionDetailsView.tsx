@@ -59,7 +59,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
             store: 'Main Store',
             variants: p.sizes ?? [],
             sales: 0,
-            dateAdded: p.createdAt ? new Date(p.createdAt).toISOString().split('T')[0] : '',
+            dateAdded: p.createdAt ? new Date(p.createdAt).toISOString() : '',
             imageUrl: p.mainImage,
             brand: Array.isArray(p.brand) ? p.brand.join(', ') : p.brand || '',
             collections: p.collections || [],
