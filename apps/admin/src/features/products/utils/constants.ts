@@ -8,11 +8,31 @@ export const CATEGORIES = [
   'Slippers',
   'Accessories',
 ];
-export const QUALITIES = ['UA', 'Semi UA', 'Original', '10A', '7A', '5A', 'Premium', 'Standard'];
+export const QUALITIES = [
+  '7AA',
+  'UA',
+  'Semi UA',
+  'Original',
+  '10A',
+  '7A',
+  '5A',
+  'Premium',
+  'Standard',
+];
 
 export const FOOTWEAR_QUALITIES = ['UA', 'Semi UA', '10A', '7A', '5A', 'Original', 'Standard'];
 
-export const GENERAL_QUALITIES = ['Original', 'Premium', 'Standard', 'Surplus', '10A', '7A'];
+export const WATCH_QUALITIES = ['7AA', '10A', '7A', '5A', 'Original', 'Premium', 'Standard'];
+
+export const GENERAL_QUALITIES = ['Original', 'Premium', 'Standard', 'Surplus', '10A', '7AA', '7A'];
+
+export function isWatchCategory(categoryName?: string | null): boolean {
+  if (!categoryName) {
+    return false;
+  }
+  const normalized = categoryName.trim().toLowerCase();
+  return normalized.includes('watch');
+}
 
 export function isFootwearCategory(categoryName?: string | null): boolean {
   if (!categoryName) {
@@ -32,6 +52,9 @@ export function isFootwearCategory(categoryName?: string | null): boolean {
 }
 
 export function getCategoryQualities(categoryName?: string | null): string[] {
+  if (isWatchCategory(categoryName)) {
+    return WATCH_QUALITIES;
+  }
   if (isFootwearCategory(categoryName)) {
     return FOOTWEAR_QUALITIES;
   }

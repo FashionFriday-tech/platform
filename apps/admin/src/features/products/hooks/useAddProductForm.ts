@@ -7,7 +7,12 @@ import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
 import { type CreateColorInput } from '../../colors/types';
-import { getCategoryQualities, getCategorySizes, isFootwearCategory } from '../utils/constants';
+import {
+  getCategoryQualities,
+  getCategorySizes,
+  isFootwearCategory,
+  isWatchCategory,
+} from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export interface SelectedColor {
@@ -71,9 +76,15 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       if (qStr === 'STANDARD') {
         return 'Standard';
       }
+      if (qStr === '7AA') {
+        return '7AA';
+      }
       return initialQuality;
     }
     const catName = paramCategoryName ?? (initialData as any)?.category?.name;
+    if (isWatchCategory(catName)) {
+      return '7AA';
+    }
     if (isFootwearCategory(catName)) {
       return 'UA';
     }
@@ -240,6 +251,8 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
         mappedUIQuality = 'UA';
       } else if (qUpper === 'SEMI_UA' || qUpper === 'SEMI-UA') {
         mappedUIQuality = 'Semi UA';
+      } else if (qUpper === '7AA') {
+        mappedUIQuality = '7AA';
       } else if (qUpper === 'STANDARD') {
         mappedUIQuality = 'Standard';
       }
@@ -483,7 +496,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
     const validQualities = getCategoryQualities(catName);
     if (!validQualities.includes(quality)) {
-      setQuality(validQualities[0] || 'UA');
+      setQuality(validQualities[0] || (isWatchCategory(catName) ? '7AA' : 'UA'));
     }
     setBrandInput('');
     setSelectedBrandLogo(null);
