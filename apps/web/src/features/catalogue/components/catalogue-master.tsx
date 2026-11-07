@@ -24,9 +24,18 @@ const SORT_OPTIONS = [
 interface CatalogueClientProps {
   initialProducts: Product[];
   categorySlug: string;
+  brandName?: string;
+  collectionSlug?: string;
+  isNewArrivals?: boolean;
 }
 
-export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClientProps) {
+export function CatalogueClient({
+  initialProducts,
+  categorySlug,
+  brandName,
+  collectionSlug,
+  isNewArrivals,
+}: CatalogueClientProps) {
   const {
     products,
     activeFilters,
@@ -38,7 +47,16 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
     setSortBy,
     isAutoScrolling,
     toggleAutoScroll,
-  } = useCatalogue({ initialProducts });
+    hasMore,
+    isLoadingMore,
+    loadMore,
+  } = useCatalogue({
+    initialProducts,
+    categorySlug,
+    brandName,
+    collectionSlug,
+    isNewArrivals,
+  });
 
   const [activeDrawer, setActiveDrawer] = useState<'filter' | 'sort' | null>(null);
   const [drawerDraftFilters, setDrawerDraftFilters] =
@@ -177,6 +195,9 @@ export function CatalogueClient({ initialProducts, categorySlug }: CatalogueClie
             sortBy={sortBy}
             onSortChange={setSortBy}
             sortOptions={SORT_OPTIONS}
+            hasMore={hasMore}
+            isLoadingMore={isLoadingMore}
+            onLoadMore={loadMore}
           />
         </div>
       </main>

@@ -509,7 +509,17 @@ export function ProductDetailView({ productId }: Props) {
             {/* Live Stats Bento */}
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
               {/* Stock status */}
-              <div className="flex items-center gap-2.5 rounded-xl border border-black/5 bg-white p-3 shadow-sm dark:border-white/5 dark:bg-black/60">
+              <button
+                type="button"
+                onClick={handleToggleSoldOut}
+                disabled={isUpdatingStock}
+                className="group flex cursor-pointer items-center gap-2.5 rounded-xl border border-black/5 bg-white p-3 text-left shadow-sm transition-all hover:border-black/20 hover:shadow-md dark:border-white/5 dark:bg-black/60 dark:hover:border-white/20"
+                title={
+                  product.stock <= 0
+                    ? 'Currently Sold Out. Click to restock to 100.'
+                    : 'Click to mark this product as Sold Out'
+                }
+              >
                 <span
                   className={`h-2.5 w-2.5 rounded-full ${
                     product.stock <= 0
@@ -520,14 +530,17 @@ export function ProductDetailView({ productId }: Props) {
                   }`}
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="text-[10px] font-bold text-black/40 uppercase dark:text-white/40">
-                    Stock
+                  <div className="flex items-center justify-between text-[10px] font-bold text-black/40 uppercase dark:text-white/40">
+                    <span>Stock</span>
+                    <span className="text-[9px] font-semibold text-black/40 group-hover:text-black/80 dark:text-white/40 dark:group-hover:text-white/80">
+                      {product.stock <= 0 ? 'Restock' : 'Set Sold Out'}
+                    </span>
                   </div>
                   <div className="truncate text-xs font-bold text-black dark:text-white">
                     {product.stock <= 0 ? 'Sold Out' : `${Math.min(100, product.stock)} in stock`}
                   </div>
                 </div>
-              </div>
+              </button>
 
               {/* Total Orders Sold */}
               <div className="flex items-center gap-2.5 rounded-xl border border-black/5 bg-white p-3 shadow-sm dark:border-white/5 dark:bg-black/60">

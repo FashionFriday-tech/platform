@@ -138,15 +138,15 @@ export function ProductPerformance({ product }: Props) {
         break;
       }
       case 'weekly': {
-        const weeklyWeights = [0.75, 0.9, 1.25, 1.0, 1.4, 1.65, 1.3];
+        const weeklyWeights = [0.65, 0.85, 1.35, 1.05, 1.55];
         const distSales = distributeTotal(liveSold, weeklyWeights);
-        const sevenWeekViews = Math.max(
-          120,
-          Math.min(650, Math.round(liveWatching / 15 + liveSold * 8)),
+        const fiveWeekViews = Math.max(
+          150,
+          Math.round(liveWatching * 2.8 + liveSold * 14 + 120),
         );
-        const distViews = distributeTotal(sevenWeekViews, weeklyWeights);
+        const distViews = distributeTotal(fiveWeekViews, weeklyWeights);
 
-        points = Array.from({ length: 7 }, (_, idx) => {
+        points = Array.from({ length: 5 }, (_, idx) => {
           const s = distSales[idx];
           const v = Math.max(s * 2 + 3, distViews[idx]);
           return {

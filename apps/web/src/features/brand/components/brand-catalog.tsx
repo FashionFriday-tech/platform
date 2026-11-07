@@ -23,15 +23,8 @@ export async function BrandCatalog({ brandName }: BrandCatalogProps): Promise<JS
     return notFound();
   }
 
-  // 2. Fetch products specifically for this brand from API
-  const brandProducts = await getProductsByBrand(brand.name);
-  console.log('BRAND PRODUCTS COUNT for brand', brand.name, ':', brandProducts.length);
-
-  // 3. Determine initial sidebar context
-  const contextCategory =
-    brandProducts.length > 0
-      ? brandProducts[0].categoryId
-      : (brand.categories?.[0] as string) || 'sneakers';
+  // 2. Fetch initial batch of products specifically for this brand from API (dynamic pagination loads the rest)
+  const brandProducts = await getProductsByBrand(brand.name, 0, 24);
 
   return (
     <div className="flex w-full flex-col">
@@ -105,7 +98,11 @@ export async function BrandCatalog({ brandName }: BrandCatalogProps): Promise<JS
         </div>
       </div>
 
-      <CatalogueClient categorySlug={contextCategory} initialProducts={brandProducts} />
+      <CatalogueClient
+        categorySlug="all"
+        brandName={brand.name}
+        initialProducts={brandProducts}
+      />
     </div>
   );
 }

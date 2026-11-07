@@ -65,11 +65,15 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       isFallback = true;
     }
   } else {
-    products = await getNewArrivalsProducts(100);
+    products = await getNewArrivalsProducts(24, 0);
     total = products.length;
   }
 
-  const contextCategory = products.length > 0 ? products[0].categoryId || 'all' : 'all';
+  const contextCategory = rawQuery
+    ? products.length > 0
+      ? products[0].categoryId || 'all'
+      : 'all'
+    : 'all';
 
   return (
     <div className="flex w-full flex-col">

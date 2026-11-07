@@ -9,11 +9,98 @@ import { useSettingsStore } from '@/store/settings-store';
 interface UseCatalogueProps {
   initialProducts: Product[];
   initialFilters?: Record<string, string[]>;
+  categorySlug?: string;
+  brandName?: string;
+  collectionSlug?: string;
+  isNewArrivals?: boolean;
 }
 
-export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalogueProps) => {
+export const useCatalogue = ({
+  initialProducts,
+  initialFilters = {},
+  categorySlug,
+  brandName,
+  collectionSlug,
+  isNewArrivals,
+}: UseCatalogueProps) => {
+  const [allProducts, setAllProducts] = useState<Product[]>(initialProducts);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters);
   const [sortBy, setSortBy] = useState<string>('newest');
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(initialProducts.length >= 24);
+
+  // Sync when initialProducts change
+  useEffect(() => {
+    setAllProducts(initialProducts);
+    setHasMore(initialProducts.length >= 24);
+  }, [initialProducts]);
+
+  // Load more products dynamically
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+
+    try {
+      const skip = allProducts.length;
+      const take = 24;
+      const params = new URLSearchParams({
+        skip: String(skip),
+        take: String(take),
+      });
+
+      if (brandName) {
+        params.set('brand', brandName);
+      }
+      if (collectionSlug) {
+        params.set('collection', collectionSlug);
+      }
+      if (!isNewArrivals && categorySlug && categorySlug !== 'all') {
+        params.set('category', categorySlug);
+      }
+
+      const res = await fetch(`/api/products?${params.toString()}`);
+      if (!res.ok) {
+        setHasMore(false);
+        return;
+      }
+
+      const json = await res.json();
+      const newItems: Product[] = json.data || [];
+
+      if (newItems.length === 0) {
+        setHasMore(false);
+      } else {
+        setAllProducts((prev) => {
+          const existingIds = new Set(prev.map((p) => p.id));
+          const uniqueNew = newItems.filter((p) => !existingIds.has(p.id));
+          if (uniqueNew.length === 0) {
+            setHasMore(false);
+            return prev;
+          }
+          return [...prev, ...uniqueNew];
+        });
+
+        if (json.meta && typeof json.meta.hasMore === 'boolean') {
+          setHasMore(json.meta.hasMore);
+        } else if (newItems.length < take) {
+          setHasMore(false);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load more products:', err);
+      setHasMore(false);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [
+    isLoadingMore,
+    hasMore,
+    allProducts.length,
+    brandName,
+    collectionSlug,
+    categorySlug,
+    isNewArrivals,
+  ]);
 
   // --- AUTO-SCROLL ENGINE ---
   const settings = useSettingsStore((state) => state.settings);
@@ -95,7 +182,7 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
 
   // --- FILTER & SORT LOGIC ---
   const filteredAndSortedProducts = useMemo(() => {
-    const result = filterProducts(initialProducts, activeFilters);
+    const result = filterProducts(allProducts, activeFilters);
     const sorted = [...result];
 
     switch (sortBy) {
@@ -141,7 +228,7 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
         break;
     }
     return sorted;
-  }, [initialProducts, activeFilters, sortBy]);
+  }, [allProducts, activeFilters, sortBy]);
 
   const handleFilterChange = useCallback((key: string, value: string, isSingleSelect = false) => {
     setActiveFilters((prev) => {
@@ -194,5 +281,8 @@ export const useCatalogue = ({ initialProducts, initialFilters = {} }: UseCatalo
     totalResults: filteredAndSortedProducts.length,
     isAutoScrolling,
     toggleAutoScroll,
+    hasMore,
+    isLoadingMore,
+    loadMore,
   };
 };

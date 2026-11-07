@@ -361,19 +361,19 @@ export class AdminProductsService {
       });
     }
 
-    // 2. WEEKLY (Last 7 Weeks)
+    // 2. WEEKLY (Past 5 Weeks: W1 - W5)
     const weeklyPoints: { label: string; sales: number; views: number; date: string }[] = [];
-    const weeklyWeights = [0.75, 0.9, 1.25, 1.0, 1.4, 1.65, 1.3];
+    const weeklyWeights = [0.65, 0.85, 1.35, 1.05, 1.55];
     const distributedWeeklySales = distributeTotal(liveSold, weeklyWeights);
 
-    // Realistic views over 7 weeks: 120-650 total views
-    const sevenWeekViewsTarget = Math.max(
-      120,
-      Math.min(650, Math.round(liveWatching / 15 + totalKnownSales * 8)),
+    // Dynamic views over 5 weeks based on live watching impressions and sales
+    const fiveWeekViewsTarget = Math.max(
+      150,
+      Math.round(liveWatching * 2.8 + totalKnownSales * 14 + 120),
     );
-    const distributedWeeklyViews = distributeTotal(sevenWeekViewsTarget, weeklyWeights);
+    const distributedWeeklyViews = distributeTotal(fiveWeekViewsTarget, weeklyWeights);
 
-    for (let i = 6; i >= 0; i--) {
+    for (let i = 4; i >= 0; i--) {
       const weekStart = new Date(now.getTime() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
       const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
 
@@ -406,7 +406,7 @@ export class AdminProductsService {
       }).length;
 
       const weekInteractions = weekClicks + weekSearches + weekCarts * 2 + weekWishlists * 2;
-      const idx = 6 - i;
+      const idx = 4 - i;
       const sales = hasActualOrders ? weekActualSales : distributedWeeklySales[idx];
       const views =
         weekInteractions > 0
@@ -414,7 +414,7 @@ export class AdminProductsService {
           : Math.max(sales * 2 + 3, distributedWeeklyViews[idx]);
 
       weeklyPoints.push({
-        label: `W${7 - i}`,
+        label: `W${5 - i}`,
         sales,
         views,
         date: weekStart.toISOString().split('T')[0],

@@ -30,11 +30,8 @@ export const metadata: Metadata = {
 };
 
 export default async function NewArrivalsPage() {
-  // Fetch latest products from database sorted newest added to oldest (top to bottom)
-  const products = await getNewArrivalsProducts(100);
-
-  // Determine initial filter category context from first available product or fallback
-  const contextCategory = products.length > 0 ? products[0].categoryId || 'all' : 'all';
+  // Fetch initial batch of newest arrivals (dynamic pagination loads subsequent pages on demand)
+  const products = await getNewArrivalsProducts(24, 0);
 
   return (
     <div className="flex w-full flex-col">
@@ -59,8 +56,8 @@ export default async function NewArrivalsPage() {
         </div>
       </div>
 
-      {/* Catalogue Grid reusing central CatalogueClient (DRY) */}
-      <CatalogueClient categorySlug={contextCategory} initialProducts={products} />
+      {/* Catalogue Grid with dynamic pagination & all categories */}
+      <CatalogueClient categorySlug="all" initialProducts={products} isNewArrivals />
     </div>
   );
 }

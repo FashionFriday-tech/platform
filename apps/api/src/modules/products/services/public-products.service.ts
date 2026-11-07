@@ -78,9 +78,29 @@ export class PublicProductsService {
     };
 
     if (brand) {
-      where.brand = {
-        has: brand,
-      };
+      const decoded = decodeURIComponent(brand).trim();
+      const titleCase = decoded
+        .split(/[\s-]+/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
+      const variants = Array.from(
+        new Set(
+          [
+            decoded,
+            decoded.toUpperCase(),
+            decoded.toLowerCase(),
+            decoded.replace(/-/g, ' '),
+            decoded.replace(/-/g, ' ').toUpperCase(),
+            decoded.replace(/-/g, ' ').toLowerCase(),
+            titleCase,
+          ].filter(Boolean),
+        ),
+      );
+
+      where.OR = [
+        { brand: { hasSome: variants } },
+        { name: { contains: decoded.replace(/-/g, ' '), mode: 'insensitive' } },
+      ];
     }
 
     if (collection) {
@@ -186,7 +206,18 @@ export class PublicProductsService {
     ];
 
     if (matchedBrandNames.length > 0) {
-      orConditions.push({ brand: { hasSome: matchedBrandNames } });
+      const brandVariants = Array.from(
+        new Set(
+          matchedBrandNames.flatMap((n) => [
+            n,
+            n.toUpperCase(),
+            n.toLowerCase(),
+            n.replace(/-/g, ' '),
+            n.replace(/-/g, ' ').toUpperCase(),
+          ]),
+        ),
+      );
+      orConditions.push({ brand: { hasSome: brandVariants } });
     }
 
     // Check synonym map

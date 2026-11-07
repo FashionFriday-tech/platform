@@ -359,7 +359,11 @@ export const getProductsByCategory = async (
   }
 };
 
-export const getProductsByBrand = async (brand?: string | null): Promise<Product[]> => {
+export const getProductsByBrand = async (
+  brand?: string | null,
+  skip = 0,
+  take = 24,
+): Promise<Product[]> => {
   try {
     if (!brand || typeof brand !== 'string' || !brand.trim()) {
       return [];
@@ -367,9 +371,9 @@ export const getProductsByBrand = async (brand?: string | null): Promise<Product
     const cleanBrand = brand.trim();
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
     const res = await fetch(
-      `${API_URL}/products?brand=${encodeURIComponent(cleanBrand)}&take=100`,
+      `${API_URL}/products?brand=${encodeURIComponent(cleanBrand)}&skip=${skip}&take=${take}`,
       {
-        next: { revalidate: 86400, tags: [`brand-products-${cleanBrand.toLowerCase()}`] },
+        next: { revalidate: 30, tags: ['brand-products', `brand-products-${cleanBrand.toLowerCase()}`] },
       },
     );
     if (!res.ok) {
@@ -433,11 +437,11 @@ export const getProductsByCollection = async (
   }
 };
 
-export const getNewArrivalsProducts = async (take = 100): Promise<Product[]> => {
+export const getNewArrivalsProducts = async (take = 24, skip = 0): Promise<Product[]> => {
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
     // Fetch latest products with short revalidation cache so newly added products show up immediately
-    const res = await fetch(`${API_URL}/products?take=${take}`, {
+    const res = await fetch(`${API_URL}/products?skip=${skip}&take=${take}`, {
       next: { revalidate: 30, tags: ['new-arrivals-products', 'products'] },
     });
     if (!res.ok) {
