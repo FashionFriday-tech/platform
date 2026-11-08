@@ -92,6 +92,19 @@ export class UploadService {
           processedBuffer = await sharp(file.buffer).webp({ quality: 90 }).toBuffer();
           fileExtension = 'webp';
           contentType = 'image/webp';
+        } else if (folder === 'brands' || folder === 'brand-logos') {
+          // Brand logos: 1:1 square ratio with transparent padding so logos are never cropped
+          processedBuffer = await sharp(file.buffer)
+            .resize({
+              width: 800,
+              height: 800,
+              fit: 'contain',
+              background: { r: 0, g: 0, b: 0, alpha: 0 },
+            })
+            .webp({ quality: 90 })
+            .toBuffer();
+          fileExtension = 'webp';
+          contentType = 'image/webp';
         } else {
           let width = 900;
           let height = 1200;

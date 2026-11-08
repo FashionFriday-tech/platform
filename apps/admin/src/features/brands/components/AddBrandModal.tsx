@@ -269,9 +269,14 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-black/70 sm:text-sm dark:text-white/70">
-                  Logo Preview
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-black/70 sm:text-sm dark:text-white/70">
+                    Logo Preview
+                  </label>
+                  <span className="text-[11px] font-medium text-black/40 dark:text-white/40">
+                    1:1 square ratio
+                  </span>
+                </div>
                 <div className="relative w-full">
                   <input
                     type="file"
@@ -289,7 +294,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                   <label
                     htmlFor="brand-logo-upload"
                     style={{ backgroundColor: color || undefined }}
-                    className="group flex h-36 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-[#f8f9fa] transition-all hover:opacity-95 sm:aspect-square sm:h-auto dark:border-white/20 dark:bg-[#1a1a1a]"
+                    className="group flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-[#f8f9fa] transition-all hover:opacity-95 dark:border-white/20 dark:bg-[#1a1a1a]"
                   >
                     {logoUrl ? (
                       <div className="relative h-full w-full">
