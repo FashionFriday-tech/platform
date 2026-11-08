@@ -5,6 +5,7 @@ export { ProductActionMenu } from './components/ProductActionMenu';
 export { ProductCustomerInteractions } from './components/ProductCustomerInteractions';
 export { ProductDetailView } from './components/ProductDetailView';
 export { ProductListView } from './components/ProductListView';
+export { ProductPagination } from './components/ProductPagination';
 export { ProductPerformance } from './components/ProductPerformance';
 export { ProductSellerSelector } from './components/ProductSellerSelector';
 export { ProductTable } from './components/ProductTable';
