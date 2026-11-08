@@ -343,12 +343,12 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
             <div className="flex items-center justify-between rounded-xl border border-black/5 bg-[#f8f9fa] p-3 sm:rounded-2xl sm:p-4 dark:border-white/5 dark:bg-[#1a1a1a]">
               <div>
                 <p className="text-xs font-semibold text-black sm:text-sm dark:text-white">
-                  Enable Brand
+                  Brand Status
                 </p>
                 <p className="text-[10px] text-black/50 sm:text-xs dark:text-white/50">
                   {isActive
                     ? 'Brand will be active and visible in the store'
-                    : 'Brand will be disabled and hidden from the store'}
+                    : 'Brand will be inactive and hidden from the store'}
                 </p>
               </div>
               <button

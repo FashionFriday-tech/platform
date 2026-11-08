@@ -296,8 +296,8 @@ export default function BrandsFeature() {
             className="scrollbar-hide min-h-0 flex-1 overflow-auto pb-6"
           >
             {isLoading ? (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                {Array.from({ length: 12 }).map((_, i) => (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={`skeleton-${i}`}
                     className="flex aspect-square animate-pulse flex-col overflow-hidden rounded-2xl border border-black/5 bg-black/5 p-4 dark:border-white/5 dark:bg-white/5"
@@ -311,7 +311,7 @@ export default function BrandsFeature() {
                 <p>No brands found matching your search.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                 {filteredBrands.map((brand, idx) => (
                   <motion.div
                     key={`${brand.slug}-${idx}`}
@@ -323,9 +323,6 @@ export default function BrandsFeature() {
                       brand={brand}
                       onClick={() => {
                         setSelectedBrand(brand);
-                      }}
-                      onToggleStatus={() => {
-                        void handleToggleBrandStatus(brand);
                       }}
                     />
                   </motion.div>

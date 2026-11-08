@@ -59,7 +59,7 @@ export function useBrands() {
   const statusOptions = [
     { label: 'All Status', value: 'all' as const },
     { label: 'Active', value: 'active' as const },
-    { label: 'Disabled', value: 'disabled' as const },
+    { label: 'Inactive', value: 'disabled' as const },
   ];
 
   const filteredBrands = useMemo(() => {

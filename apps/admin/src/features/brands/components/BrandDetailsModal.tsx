@@ -89,13 +89,12 @@ export function BrandDetailsModal({
               </svg>
             </button>
             {brand.logo ? (
-              <div className="relative flex h-28 w-full max-w-[80%] items-center justify-center">
+              <div className="relative flex h-28 w-full max-w-[85%] items-center justify-center">
                 <Image
                   src={brand.logo}
                   alt={brand.name}
-                  width={220}
-                  height={110}
-                  className={`max-h-full max-w-full object-contain drop-shadow-md ${isDark ? 'invert' : 'invert-0'}`}
+                  fill
+                  className={`object-contain drop-shadow-md ${isDark ? 'invert' : 'invert-0'}`}
                 />
               </div>
             ) : (
@@ -114,15 +113,15 @@ export function BrandDetailsModal({
                   className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase ${
                     isActive
                       ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
-                      : 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'
+                      : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
                   }`}
                 >
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${
-                      isActive ? 'bg-emerald-500' : 'bg-red-500'
+                      isActive ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-500'
                     }`}
                   />
-                  {isActive ? 'Active' : 'Disabled'}
+                  {isActive ? 'Active' : 'Inactive'}
                 </span>
               </div>
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -142,11 +141,22 @@ export function BrandDetailsModal({
               <div className="flex items-center gap-2.5">
                 <span
                   className={`h-2.5 w-2.5 rounded-full ${
-                    isActive ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500'
+                    isActive ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-zinc-400'
                   }`}
                 />
                 <div>
-                  <p className="text-xs font-bold text-black dark:text-white">Store Visibility</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-black dark:text-white">Store Visibility</p>
+                    <span
+                      className={`rounded px-1.5 py-0.2 text-[10px] font-bold uppercase ${
+                        isActive
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                          : 'bg-zinc-500/10 text-zinc-500 dark:text-zinc-400'
+                      }`}
+                    >
+                      {isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
                   <p className="text-[11px] text-black/50 dark:text-white/50">
                     {isActive ? 'Visible in store & search' : 'Hidden from public store'}
                   </p>
@@ -163,7 +173,8 @@ export function BrandDetailsModal({
                       ? 'bg-emerald-500 hover:bg-emerald-600'
                       : 'bg-zinc-600 hover:bg-zinc-500'
                   }`}
-                  aria-label={isActive ? 'Disable brand' : 'Enable brand'}
+                  aria-label={isActive ? 'Deactivate brand' : 'Activate brand'}
+                  title={isActive ? 'Click to deactivate' : 'Click to activate'}
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white shadow-md transition-transform ${
@@ -207,13 +218,13 @@ export function BrandDetailsModal({
                 onClick={() => {
                   onToggleStatus(brand);
                 }}
-                className={`flex-1 rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
+                className={`flex-1 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
                   isActive
-                    ? 'border border-amber-500/20 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 dark:text-amber-400'
-                    : 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400'
+                    ? 'border border-amber-500/30 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 dark:text-amber-400'
+                    : 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400'
                 }`}
               >
-                {isActive ? 'Disable' : 'Enable'}
+                {isActive ? 'Set Inactive' : 'Set Active'}
               </button>
             )}
             <button

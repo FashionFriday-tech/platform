@@ -38,11 +38,11 @@ export function BrandStats({ brands }: BrandStatsProps) {
       dotColor: 'bg-emerald-400',
     },
     {
-      name: 'Disabled Brands',
+      name: 'Inactive Brands',
       value: disabledCount,
       icon: ShoppingBagIcon,
       subLabel: 'STORE HIDDEN',
-      dotColor: disabledCount > 0 ? 'bg-red-400' : 'bg-zinc-400',
+      dotColor: disabledCount > 0 ? 'bg-zinc-400' : 'bg-zinc-500',
     },
     {
       name: 'Clothing',
