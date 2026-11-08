@@ -19,9 +19,20 @@ interface Props {
   selectedIds?: Set<string>;
   onToggleSelection?: (id: string) => void;
   onToggleAllSelection?: (ids: string[]) => void;
+  totalProducts?: number;
+  currentPage?: number;
+  pageSize?: number;
 }
 
-export function ProductGrid({ products, isLoading, onToggleStatus, onDeleteProduct }: Props) {
+export function ProductGrid({
+  products,
+  isLoading,
+  onToggleStatus,
+  onDeleteProduct,
+  totalProducts,
+  currentPage = 1,
+  pageSize = 20,
+}: Props) {
   const router = useRouter();
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -61,7 +72,17 @@ export function ProductGrid({ products, isLoading, onToggleStatus, onDeleteProdu
       {/* Top Controls: Counts */}
       <div className="mb-4 flex items-center justify-between px-2">
         <div className="text-sm font-medium text-black/60 dark:text-white/60">
-          Showing <span className="font-bold text-black dark:text-white">{products.length}</span>{' '}
+          Showing{' '}
+          <span className="font-bold text-black dark:text-white">
+            {totalProducts !== undefined
+              ? totalProducts === 0
+                ? 0
+                : `${((currentPage - 1) * pageSize + 1).toLocaleString()}–${Math.min(
+                    currentPage * pageSize,
+                    totalProducts,
+                  ).toLocaleString()} of ${totalProducts.toLocaleString()}`
+              : products.length.toLocaleString()}
+          </span>{' '}
           products
         </div>
       </div>
