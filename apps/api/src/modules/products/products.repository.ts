@@ -30,7 +30,7 @@ export class ProductsRepository {
         skip,
         take,
         where,
-        orderBy,
+        orderBy: orderBy ?? { createdAt: 'desc' },
         include: {
           category: true,
           seller: true,
@@ -61,7 +61,7 @@ export class ProductsRepository {
         skip,
         take,
         where,
-        orderBy,
+        orderBy: orderBy ?? { createdAt: 'desc' },
         include: { category: true },
       }),
     ]);
