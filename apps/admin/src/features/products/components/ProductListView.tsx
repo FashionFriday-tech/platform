@@ -3,7 +3,6 @@
 import { useProducts } from '../hooks/useProducts';
 import { ProductActionBar } from './ProductActionBar';
 import { ProductGrid } from './ProductGrid';
-import { ProductPagination } from './ProductPagination';
 import { ProductStats } from './ProductStats';
 import { ProductTable } from './ProductTable';
 
@@ -11,14 +10,12 @@ export function ProductListView() {
   const {
     products,
     isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
     isStatsLoading,
     stats,
     totalProducts,
-    page,
-    totalPages,
-    pageSize,
-    setPage,
-    setPageSize,
     searchQuery,
     setSearchQuery,
     sortOption,
@@ -54,6 +51,10 @@ export function ProductListView() {
             <ProductTable
               products={products}
               isLoading={isLoading}
+              isLoadingMore={isLoadingMore}
+              hasMore={hasMore}
+              onLoadMore={loadMore}
+              totalProducts={totalProducts}
               onToggleStatus={toggleProductStatus}
               onDeleteProduct={deleteProduct}
               sortOption={sortOption}
@@ -64,25 +65,15 @@ export function ProductListView() {
             <ProductGrid
               products={products}
               isLoading={isLoading}
+              isLoadingMore={isLoadingMore}
+              hasMore={hasMore}
+              onLoadMore={loadMore}
+              totalProducts={totalProducts}
               onToggleStatus={toggleProductStatus}
               onDeleteProduct={deleteProduct}
-              totalProducts={totalProducts}
-              currentPage={page}
-              pageSize={pageSize}
             />
           )}
         </div>
-
-        {/* Dynamic Pagination Controls */}
-        <ProductPagination
-          currentPage={page}
-          totalPages={totalPages}
-          totalItems={totalProducts}
-          pageSize={pageSize}
-          onPageChange={setPage}
-          onPageSizeChange={setPageSize}
-          isLoading={isLoading}
-        />
       </div>
     </div>
   );

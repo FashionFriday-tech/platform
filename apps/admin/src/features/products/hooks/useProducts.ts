@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { toast } from 'sonner';
 
@@ -17,9 +17,13 @@ import {
   type ViewMode,
 } from '../types';
 
+const PAGE_SIZE = 40;
+
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [isStatsLoading, setIsStatsLoading] = useState(true);
   const [stats, setStats] = useState<ProductStatsData>({
     total: 0,
@@ -28,11 +32,9 @@ export function useProducts() {
     draft: 0,
   });
 
-  // Pagination state
+  // Dynamic pagination state
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
   const [totalProducts, setTotalProducts] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
 
   // Filters & sorting
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,11 +60,6 @@ export function useProducts() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Reset page to 1 when filters, search, sort, or page size change
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearchQuery, appliedAdvancedFilters, sortOption, pageSize]);
-
   // Column Visibility
   const [visibleColumns, setVisibleColumns] = useState<Set<ColumnId>>(
     new Set(['Category', 'Stock']),
@@ -80,7 +77,7 @@ export function useProducts() {
     });
   };
 
-  // Fetch overall inventory stats (independent of page/filter)
+  // Fetch overall inventory stats
   const loadStats = useCallback(async () => {
     try {
       setIsStatsLoading(true);
@@ -97,37 +94,43 @@ export function useProducts() {
     void loadStats();
   }, [loadStats]);
 
-  // Load products based on pagination, filters, and sorting
-  const loadProducts = useCallback(async () => {
+  // Helper to parse sorting parameters
+  const getSortParams = useCallback(() => {
+    let sortBy: string | undefined;
+    let sortOrder: 'asc' | 'desc' | undefined;
+
+    switch (sortOption) {
+      case 'Price: Low to High':
+        sortBy = 'price';
+        sortOrder = 'asc';
+        break;
+      case 'Price: High to Low':
+        sortBy = 'price';
+        sortOrder = 'desc';
+        break;
+      case 'Name: A to Z':
+        sortBy = 'name';
+        sortOrder = 'asc';
+        break;
+      case 'Name: Z to A':
+        sortBy = 'name';
+        sortOrder = 'desc';
+        break;
+      default:
+        sortBy = 'createdAt';
+        sortOrder = 'desc';
+        break;
+    }
+    return { sortBy, sortOrder };
+  }, [sortOption]);
+
+  // Initial load or when filters/search/sort change
+  const loadInitialProducts = useCallback(async () => {
     try {
       setIsLoading(true);
+      setPage(1);
 
-      let sortBy: string | undefined;
-      let sortOrder: 'asc' | 'desc' | undefined;
-
-      switch (sortOption) {
-        case 'Price: Low to High':
-          sortBy = 'price';
-          sortOrder = 'asc';
-          break;
-        case 'Price: High to Low':
-          sortBy = 'price';
-          sortOrder = 'desc';
-          break;
-        case 'Name: A to Z':
-          sortBy = 'name';
-          sortOrder = 'asc';
-          break;
-        case 'Name: Z to A':
-          sortBy = 'name';
-          sortOrder = 'desc';
-          break;
-        default:
-          sortBy = 'createdAt';
-          sortOrder = 'desc';
-          break;
-      }
-
+      const { sortBy, sortOrder } = getSortParams();
       const minPriceNum = appliedAdvancedFilters.minPrice
         ? parseFloat(appliedAdvancedFilters.minPrice)
         : undefined;
@@ -136,8 +139,8 @@ export function useProducts() {
         : undefined;
 
       const res = await fetchProductsPaginated({
-        page,
-        limit: pageSize,
+        page: 1,
+        limit: PAGE_SIZE,
         search: debouncedSearchQuery || undefined,
         categories:
           appliedAdvancedFilters.categories.size > 0
@@ -155,18 +158,78 @@ export function useProducts() {
 
       setProducts(res.data);
       setTotalProducts(res.meta.total);
-      setTotalPages(Math.max(1, res.meta.totalPages));
+      setHasMore(res.data.length < res.meta.total);
     } catch (error) {
       console.error('Failed to load products:', error);
       toast.error('Failed to load products');
     } finally {
       setIsLoading(false);
     }
-  }, [page, pageSize, debouncedSearchQuery, appliedAdvancedFilters, sortOption]);
+  }, [debouncedSearchQuery, appliedAdvancedFilters, getSortParams]);
 
   useEffect(() => {
-    void loadProducts();
-  }, [loadProducts]);
+    void loadInitialProducts();
+  }, [loadInitialProducts]);
+
+  // Dynamic pagination: Load more products when scrolling down
+  const pageRef = useRef(page);
+  pageRef.current = page;
+
+  const loadMore = useCallback(async () => {
+    if (isLoading || isLoadingMore || !hasMore) return;
+    setIsLoadingMore(true);
+
+    try {
+      const nextPage = pageRef.current + 1;
+      const { sortBy, sortOrder } = getSortParams();
+      const minPriceNum = appliedAdvancedFilters.minPrice
+        ? parseFloat(appliedAdvancedFilters.minPrice)
+        : undefined;
+      const maxPriceNum = appliedAdvancedFilters.maxPrice
+        ? parseFloat(appliedAdvancedFilters.maxPrice)
+        : undefined;
+
+      const res = await fetchProductsPaginated({
+        page: nextPage,
+        limit: PAGE_SIZE,
+        search: debouncedSearchQuery || undefined,
+        categories:
+          appliedAdvancedFilters.categories.size > 0
+            ? Array.from(appliedAdvancedFilters.categories)
+            : undefined,
+        statuses:
+          appliedAdvancedFilters.statuses.size > 0
+            ? Array.from(appliedAdvancedFilters.statuses)
+            : undefined,
+        minPrice: !isNaN(Number(minPriceNum)) ? minPriceNum : undefined,
+        maxPrice: !isNaN(Number(maxPriceNum)) ? maxPriceNum : undefined,
+        sortBy,
+        sortOrder,
+      });
+
+      setProducts((prev) => {
+        const existingIds = new Set(prev.map((p) => p.id));
+        const newUnique = res.data.filter((p) => !existingIds.has(p.id));
+        const combined = [...prev, ...newUnique];
+        setHasMore(combined.length < res.meta.total);
+        return combined;
+      });
+
+      setPage(nextPage);
+      setTotalProducts(res.meta.total);
+    } catch (error) {
+      console.error('Failed to load more products:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    debouncedSearchQuery,
+    appliedAdvancedFilters,
+    getSortParams,
+  ]);
 
   const toggleProductStatus = async (id: string) => {
     const target = products.find((p) => p.id === id);
@@ -211,15 +274,9 @@ export function useProducts() {
         }
         return prev;
       });
+      setTotalProducts((prev) => Math.max(0, prev - 1));
       toast.success('Product deleted successfully');
       void loadStats();
-
-      // If we deleted the only item on the page and page > 1, go back one page
-      if (products.length <= 1 && page > 1) {
-        setPage((p) => p - 1);
-      } else {
-        void loadProducts();
-      }
       return true;
     } catch (err: unknown) {
       console.error('Failed to delete product:', err);
@@ -250,26 +307,15 @@ export function useProducts() {
     }
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handlePageSizeChange = (newSize: number) => {
-    setPageSize(newSize);
-    setPage(1);
-  };
-
   return {
     products,
     isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
     isStatsLoading,
     stats,
     totalProducts,
-    page,
-    totalPages,
-    pageSize,
-    setPage: handlePageChange,
-    setPageSize: handlePageSizeChange,
     searchQuery,
     setSearchQuery,
     sortOption,
@@ -285,7 +331,7 @@ export function useProducts() {
     toggleColumn,
     appliedAdvancedFilters,
     setAppliedAdvancedFilters,
-    refreshProducts: loadProducts,
+    refreshProducts: loadInitialProducts,
     refreshStats: loadStats,
   };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import {
@@ -18,6 +18,10 @@ import { ProductTableRow } from './ProductTableRow';
 interface Props {
   products: Product[];
   isLoading: boolean;
+  isLoadingMore?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  totalProducts?: number;
   onToggleStatus: (id: string) => void;
   onDeleteProduct: (id: string) => Promise<boolean | undefined>;
   selectedIds?: Set<string>;
@@ -48,6 +52,10 @@ const getCategoryIcon = (category: string) => {
 export function ProductTable({
   products,
   isLoading,
+  isLoadingMore = false,
+  hasMore = false,
+  onLoadMore,
+  totalProducts,
   onToggleStatus,
   onDeleteProduct,
   sortOption,
@@ -57,6 +65,31 @@ export function ProductTable({
   const router = useRouter();
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // IntersectionObserver to trigger onLoadMore when scrolling near bottom
+  useEffect(() => {
+    if (!onLoadMore || !hasMore || isLoadingMore || isLoading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+
+    const el = sentinelRef.current;
+    if (el) {
+      observer.observe(el);
+    }
+
+    return () => {
+      if (el) observer.unobserve(el);
+      observer.disconnect();
+    };
+  }, [onLoadMore, hasMore, isLoadingMore, isLoading]);
 
   if (isLoading) {
     return (
@@ -131,6 +164,23 @@ export function ProductTable({
                 getCategoryIcon={getCategoryIcon}
               />
             ))}
+
+            {/* Sentinel for dynamic infinite scroll */}
+            <div ref={sentinelRef} className="h-4 w-full" />
+
+            {/* Dynamic Loading Indicator */}
+            {isLoadingMore && (
+              <div className="flex items-center justify-center py-4 text-xs font-semibold text-black/50 dark:text-white/50">
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
+                Loading more products...
+              </div>
+            )}
+
+            {!hasMore && products.length > 0 && (
+              <div className="py-3 text-center text-xs font-medium text-black/40 dark:text-white/40">
+                Showing all {totalProducts ?? products.length} products
+              </div>
+            )}
           </div>
         </div>
       </div>

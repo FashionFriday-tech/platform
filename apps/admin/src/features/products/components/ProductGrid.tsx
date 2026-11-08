@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -14,29 +14,56 @@ import { ProductActionMenu } from './ProductActionMenu';
 interface Props {
   products: Product[];
   isLoading: boolean;
+  isLoadingMore?: boolean;
+  hasMore?: boolean;
+  onLoadMore?: () => void;
+  totalProducts?: number;
   onToggleStatus: (id: string) => void;
   onDeleteProduct?: (id: string) => Promise<boolean | undefined>;
   selectedIds?: Set<string>;
   onToggleSelection?: (id: string) => void;
   onToggleAllSelection?: (ids: string[]) => void;
-  totalProducts?: number;
-  currentPage?: number;
-  pageSize?: number;
 }
 
 export function ProductGrid({
   products,
   isLoading,
+  isLoadingMore = false,
+  hasMore = false,
+  onLoadMore,
+  totalProducts,
   onToggleStatus,
   onDeleteProduct,
-  totalProducts,
-  currentPage = 1,
-  pageSize = 20,
 }: Props) {
   const router = useRouter();
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // IntersectionObserver to trigger onLoadMore when scrolling near bottom
+  useEffect(() => {
+    if (!onLoadMore || !hasMore || isLoadingMore || isLoading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { rootMargin: '300px' },
+    );
+
+    const el = sentinelRef.current;
+    if (el) {
+      observer.observe(el);
+    }
+
+    return () => {
+      if (el) observer.unobserve(el);
+      observer.disconnect();
+    };
+  }, [onLoadMore, hasMore, isLoadingMore, isLoading]);
 
   const handleDeleteConfirm = async () => {
     if (!productToDelete || !onDeleteProduct) {
@@ -74,14 +101,11 @@ export function ProductGrid({
         <div className="text-sm font-medium text-black/60 dark:text-white/60">
           Showing{' '}
           <span className="font-bold text-black dark:text-white">
-            {totalProducts !== undefined
-              ? totalProducts === 0
-                ? 0
-                : `${((currentPage - 1) * pageSize + 1).toLocaleString()}–${Math.min(
-                    currentPage * pageSize,
-                    totalProducts,
-                  ).toLocaleString()} of ${totalProducts.toLocaleString()}`
-              : products.length.toLocaleString()}
+            {products.length.toLocaleString()}
+          </span>{' '}
+          of{' '}
+          <span className="font-bold text-black dark:text-white">
+            {(totalProducts ?? products.length).toLocaleString()}
           </span>{' '}
           products
         </div>
@@ -261,6 +285,23 @@ export function ProductGrid({
           );
         })}
       </div>
+
+      {/* Sentinel for dynamic infinite scroll */}
+      <div ref={sentinelRef} className="h-4 w-full" />
+
+      {/* Dynamic Loading Indicator */}
+      {isLoadingMore && (
+        <div className="mt-4 flex items-center justify-center py-4 text-xs font-semibold text-black/50 dark:text-white/50">
+          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
+          Loading more products...
+        </div>
+      )}
+
+      {!hasMore && products.length > 0 && (
+        <div className="mt-4 py-3 text-center text-xs font-medium text-black/40 dark:text-white/40">
+          Showing all {(totalProducts ?? products.length).toLocaleString()} products
+        </div>
+      )}
 
       <DeleteProductModal
         isOpen={Boolean(productToDelete)}
