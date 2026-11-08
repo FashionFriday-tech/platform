@@ -174,8 +174,94 @@ export class AdminProductsService {
     };
   }
 
-  async getProducts(skip = 0, take = 10, search?: string, categoryId?: string) {
+  async getProductStats() {
+    const [total, active, draft, archived, rejected, pending] = await Promise.all([
+      this.prisma.db.product.count(),
+      this.prisma.db.product.count({ where: { status: ProductStatus.PUBLISHED } }),
+      this.prisma.db.product.count({ where: { status: ProductStatus.DRAFT } }),
+      this.prisma.db.product.count({ where: { status: ProductStatus.ARCHIVED } }),
+      this.prisma.db.product.count({ where: { status: ProductStatus.REJECTED } }),
+      this.prisma.db.product.count({ where: { status: ProductStatus.PENDING } }),
+    ]);
+
+    return {
+      total,
+      active,
+      draft,
+      inactive: archived + rejected + pending,
+    };
+  }
+
+  async getProducts(
+    skip = 0,
+    take = 20,
+    search?: string,
+    categoryId?: string,
+    status?: string,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+    minPrice?: number,
+    maxPrice?: number,
+    categories?: string,
+    statuses?: string,
+  ) {
     const trimmed = search?.trim();
+
+    // Status filter handling
+    let statusFilter: Prisma.ProductWhereInput['status'] | undefined;
+    const rawStatuses = statuses || status;
+    if (rawStatuses) {
+      const statusTokens = rawStatuses
+        .split(',')
+        .map((s) => s.trim().toUpperCase())
+        .filter(Boolean);
+
+      const resolvedStatuses: ProductStatus[] = [];
+      for (const token of statusTokens) {
+        if (token === 'ACTIVE' || token === 'PUBLISHED') {
+          resolvedStatuses.push(ProductStatus.PUBLISHED);
+        } else if (token === 'DRAFT') {
+          resolvedStatuses.push(ProductStatus.DRAFT);
+        } else if (token === 'INACTIVE' || token === 'ARCHIVED') {
+          resolvedStatuses.push(
+            ProductStatus.ARCHIVED,
+            ProductStatus.REJECTED,
+            ProductStatus.PENDING,
+          );
+        }
+      }
+
+      if (resolvedStatuses.length > 0) {
+        statusFilter = { in: Array.from(new Set(resolvedStatuses)) };
+      }
+    }
+
+    // Category filter handling
+    let categoryFilter: Prisma.ProductWhereInput['category'] | undefined;
+    let directCategoryId: string | undefined = categoryId;
+    const rawCategories = categories;
+    if (rawCategories) {
+      const catTokens = rawCategories
+        .split(',')
+        .map((c) => c.trim())
+        .filter(Boolean);
+      if (catTokens.length > 0) {
+        categoryFilter = {
+          name: { in: catTokens, mode: 'insensitive' },
+        };
+        directCategoryId = undefined;
+      }
+    }
+
+    // Price filter handling
+    let priceFilter: Prisma.DecimalFilter | undefined;
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      priceFilter = {
+        ...(minPrice !== undefined && !isNaN(minPrice) ? { gte: minPrice } : {}),
+        ...(maxPrice !== undefined && !isNaN(maxPrice) ? { lte: maxPrice } : {}),
+      };
+    }
+
     const where: Prisma.ProductWhereInput = {
       ...(trimmed
         ? {
@@ -186,9 +272,24 @@ export class AdminProductsService {
             ],
           }
         : {}),
-      ...(categoryId ? { categoryId } : {}),
+      ...(directCategoryId ? { categoryId: directCategoryId } : {}),
+      ...(categoryFilter ? { category: categoryFilter } : {}),
+      ...(statusFilter ? { status: statusFilter } : {}),
+      ...(priceFilter ? { sellingPrice: priceFilter } : {}),
     };
-    const result = await this.productsRepository.findAll({ skip, take, where });
+
+    let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' };
+    if (sortBy === 'price') {
+      orderBy = { sellingPrice: sortOrder || 'asc' };
+    } else if (sortBy === 'name') {
+      orderBy = { name: sortOrder || 'asc' };
+    } else if (sortBy === 'stock') {
+      orderBy = { totalStock: sortOrder || 'desc' };
+    } else if (sortBy === 'createdAt') {
+      orderBy = { createdAt: sortOrder || 'desc' };
+    }
+
+    const result = await this.productsRepository.findAll({ skip, take, where, orderBy });
     return this.paginate(result, skip, take);
   }
 
