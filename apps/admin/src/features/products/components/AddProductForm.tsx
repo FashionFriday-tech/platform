@@ -192,9 +192,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     e.preventDefault();
     e.stopPropagation();
     setIsExternalDragOver(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      void handleExternalDrop(e.dataTransfer.files);
-    }
+    void handleExternalDrop(e);
   };
 
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
@@ -2012,7 +2010,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   onDragOver={handleDropzoneDragOver}
                   onDragLeave={handleDropzoneDragLeave}
                   onDrop={handleDropzoneDrop}
-                  className={`group relative mb-2 flex aspect-[3/4] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 transition-all ${
+                  className={`group relative mb-2 flex aspect-[3/4] w-full cursor-pointer select-none flex-col items-center justify-center overflow-hidden rounded-2xl border-2 transition-all ${
                     fieldErrors.images
                       ? 'border-rose-500 bg-rose-500/5 ring-2 ring-rose-500/20'
                       : isExternalDragOver
@@ -2063,14 +2061,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     handleDrop(e, 0);
                   }}
                   onDragEnd={handleDragEnd}
-                  className={`group relative mb-4 aspect-[3/4] w-full cursor-move overflow-hidden rounded-2xl border border-black/5 bg-black/5 transition-all dark:border-white/5 dark:bg-white/5 ${draggedIndex === 0 ? 'scale-95 border-black/20 opacity-50 dark:border-white/20' : ''}`}
+                  className={`group relative mb-4 aspect-[3/4] w-full cursor-grab active:cursor-grabbing select-none overflow-hidden rounded-2xl border border-black/5 bg-black/5 transition-all dark:border-white/5 dark:bg-white/5 ${draggedIndex === 0 ? 'scale-95 border-black/20 opacity-50 dark:border-white/20' : ''}`}
                 >
                   <Image
+                    draggable={false}
                     width={500}
                     height={500}
                     src={images[0].url}
                     alt="Main product"
-                    className="pointer-events-none h-full w-full object-cover"
+                    className="pointer-events-none select-none h-full w-full object-cover"
                   />
                   <div className="pointer-events-none absolute top-3 left-3 rounded-lg border border-black/5 bg-white/90 px-3 py-1.5 shadow-sm backdrop-blur-md dark:border-white/5 dark:bg-black/90">
                     <span className="text-xs font-bold text-black dark:text-white">Main Image</span>
@@ -2132,14 +2131,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           handleDrop(e, actualIndex);
                         }}
                         onDragEnd={handleDragEnd}
-                        className={`group relative aspect-[3/4] cursor-move overflow-hidden rounded-xl border border-black/5 bg-black/5 transition-all dark:border-white/5 dark:bg-white/5 ${draggedIndex === actualIndex ? 'scale-95 border-black/20 opacity-50 dark:border-white/20' : ''}`}
+                        className={`group relative aspect-[3/4] cursor-grab active:cursor-grabbing select-none overflow-hidden rounded-xl border border-black/5 bg-black/5 transition-all dark:border-white/5 dark:bg-white/5 ${draggedIndex === actualIndex ? 'scale-95 border-black/20 opacity-50 dark:border-white/20' : ''}`}
                       >
                         <Image
+                          draggable={false}
                           width={500}
                           height={500}
                           src={img.url}
                           alt={`Preview ${actualIndex}`}
-                          className="pointer-events-none h-full w-full object-cover"
+                          className="pointer-events-none select-none h-full w-full object-cover"
                         />
 
                         {/* Position Number Overlay */}
@@ -2221,7 +2221,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       onDragOver={handleDropzoneDragOver}
                       onDragLeave={handleDropzoneDragLeave}
                       onDrop={handleDropzoneDrop}
-                      className={`group flex aspect-[3/4] flex-col items-center justify-center rounded-xl border border-dashed transition-all ${
+                      className={`group flex aspect-[3/4] select-none flex-col items-center justify-center rounded-xl border border-dashed transition-all ${
                         isUploading
                           ? 'cursor-not-allowed bg-black/5 opacity-50 dark:bg-white/5'
                           : isExternalDragOver

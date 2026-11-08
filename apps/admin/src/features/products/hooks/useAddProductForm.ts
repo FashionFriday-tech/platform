@@ -675,6 +675,21 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
           if (imageType) {
             const blob = await item.getType(imageType);
             imageBlobs.push(blob);
+          } else if (item.types.includes('text/html')) {
+            try {
+              const htmlBlob = await item.getType('text/html');
+              const htmlText = await htmlBlob.text();
+              const match = htmlText.match(/<img[^>]+src=["']([^"']+)["']/i);
+              if (match && match[1]) {
+                const imgRes = await fetch(match[1]);
+                const b = await imgRes.blob();
+                if (b.type.startsWith('image/')) {
+                  imageBlobs.push(b);
+                }
+              }
+            } catch (htmlErr) {
+              console.warn('Could not extract image from clipboard HTML:', htmlErr);
+            }
           }
         }
 
@@ -691,24 +706,119 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       } catch (err: any) {
         if (err.name === 'NotAllowedError') {
           optionsRef.current?.onToast?.({
-            message: 'Clipboard permission denied. Please press Ctrl+V to paste directly.',
+            message:
+              'Clipboard access was blocked. Please press Ctrl+V directly, or set Clipboard to Allow in your browser site settings.',
             type: 'warning',
           });
           return;
         }
-        console.warn('navigator.clipboard.read failed, falling back:', err);
+        console.warn('navigator.clipboard.read failed, checking readText fallback:', err);
+      }
+    }
+
+    // Fallback: Check if clipboard has an image URL
+    if (navigator.clipboard.readText) {
+      try {
+        const text = await navigator.clipboard.readText();
+        const trimmed = (text || '').trim();
+        if (
+          trimmed &&
+          (trimmed.startsWith('http://') ||
+            trimmed.startsWith('https://') ||
+            trimmed.startsWith('data:image/'))
+        ) {
+          const res = await fetch(trimmed);
+          const blob = await res.blob();
+          if (blob.type.startsWith('image/')) {
+            const count = await processImageFiles([blob], 'clipboard-url-image');
+            if (count > 0) {
+              optionsRef.current?.onToast?.({
+                message: 'Image pasted from copied URL!',
+                type: 'success',
+              });
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('readText fallback failed:', e);
       }
     }
 
     optionsRef.current?.onToast?.({
       message:
-        'No image found in clipboard. Copy an image (from WhatsApp, web, etc.) and try again.',
+        'No image found in clipboard. Copy an image (or press Ctrl+V) and try again.',
       type: 'warning',
     });
   };
 
-  const handleExternalDrop = async (files: FileList | File[]) => {
-    const fileArray = Array.from(files ?? []).filter((f) => f.type.startsWith('image/'));
+  const handleExternalDrop = async (
+    filesOrEvent: FileList | File[] | React.DragEvent,
+  ) => {
+    let fileArray: File[] = [];
+
+    if ('dataTransfer' in filesOrEvent) {
+      const e = filesOrEvent as React.DragEvent;
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Check files dropped from desktop/file manager
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        fileArray = Array.from(e.dataTransfer.files).filter((f) =>
+          f.type.startsWith('image/'),
+        );
+      }
+
+      // Check items
+      if (fileArray.length === 0 && e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+        for (const item of Array.from(e.dataTransfer.items)) {
+          if (item.kind === 'file' && item.type.startsWith('image/')) {
+            const f = item.getAsFile();
+            if (f) fileArray.push(f);
+          }
+        }
+      }
+
+      // Check dragged URL or HTML image
+      if (fileArray.length === 0) {
+        const uriList = e.dataTransfer.getData('text/uri-list');
+        const htmlData = e.dataTransfer.getData('text/html');
+        const plainText = e.dataTransfer.getData('text/plain');
+
+        let imageUrl = uriList;
+        if (!imageUrl && htmlData) {
+          const match = htmlData.match(/<img[^>]+src=["']([^"']+)["']/i);
+          if (match && match[1]) {
+            imageUrl = match[1];
+          }
+        }
+        if (
+          !imageUrl &&
+          plainText &&
+          plainText.match(/^https?:\/\/.+\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i)
+        ) {
+          imageUrl = plainText.trim();
+        }
+
+        if (imageUrl) {
+          try {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            if (blob.type.startsWith('image/')) {
+              const filename = `dropped-${Date.now()}.${blob.type.split('/')[1] || 'webp'}`;
+              fileArray.push(new File([blob], filename, { type: blob.type }));
+            }
+          } catch (err) {
+            console.warn('Could not fetch dropped image URL:', err);
+          }
+        }
+      }
+    } else {
+      fileArray = Array.from(filesOrEvent ?? []).filter((f) =>
+        f.type.startsWith('image/'),
+      );
+    }
+
     if (fileArray.length === 0) {
       optionsRef.current?.onToast?.({
         message: 'Please drop valid image files (PNG, JPG, WebP, etc.).',
@@ -716,6 +826,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       });
       return;
     }
+
     const count = await processImageFiles(fileArray, 'dropped-image');
     if (count > 0) {
       optionsRef.current?.onToast?.({
@@ -808,26 +919,33 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index);
-    // Firefox requires setting data in dragStart
-    e.dataTransfer.setData('text/plain', index.toString());
+    // Use application/x-product-image-index to avoid browser entering plain-text drag/copy mode
+    e.dataTransfer.setData('application/x-product-image-index', index.toString());
     e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault(); // Necessary to allow dropping
+    e.stopPropagation();
     e.dataTransfer.dropEffect = 'move';
   };
 
   const handleDrop = (e: React.DragEvent, toIndex: number) => {
     e.preventDefault();
-    if (draggedIndex === null || draggedIndex === toIndex) {
+    e.stopPropagation();
+
+    const dataIndex = e.dataTransfer.getData('application/x-product-image-index');
+    const sourceIndex = dataIndex !== '' ? parseInt(dataIndex, 10) : draggedIndex;
+
+    if (sourceIndex === null || isNaN(sourceIndex) || sourceIndex === toIndex) {
+      setDraggedIndex(null);
       return;
     }
 
     setImages((prev) => {
       const newImages = [...prev];
-      const temp = newImages[draggedIndex];
-      newImages[draggedIndex] = newImages[toIndex];
+      const temp = newImages[sourceIndex];
+      newImages[sourceIndex] = newImages[toIndex];
       newImages[toIndex] = temp;
       return newImages;
     });
