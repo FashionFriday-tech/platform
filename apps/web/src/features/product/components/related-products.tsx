@@ -42,7 +42,7 @@ function RelatedProductBrandLogo({
         alt={brandName}
         width={36}
         height={36}
-        className="max-h-4 w-auto object-contain invert-0 dark:invert"
+        className="max-h-5 sm:max-h-6 w-auto object-contain invert-0 dark:invert"
         onError={() => {
           setHasError(true);
         }}

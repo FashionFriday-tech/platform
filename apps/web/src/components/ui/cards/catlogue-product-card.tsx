@@ -107,14 +107,14 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
         </div>
 
         <div className="mt-1 px-1">
-          <div className="flex h-5 items-center justify-between text-[8px] md:text-[10px]">
+          <div className="flex h-6 sm:h-7 items-center justify-between text-[8px] md:text-[10px]">
             {brandLogo ? (
-              <div className="relative flex h-3.5 w-10 sm:h-4 sm:w-12 items-center justify-start">
+              <div className="relative flex h-5 w-16 sm:h-6 sm:w-20 items-center justify-start">
                 <Image
                   src={brandLogo}
                   alt={brandName}
                   fill
-                  sizes="48px"
+                  sizes="80px"
                   className="object-contain object-left invert-0 dark:invert"
                 />
               </div>
