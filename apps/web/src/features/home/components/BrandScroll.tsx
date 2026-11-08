@@ -28,14 +28,14 @@ const BrandList = ({
       <div key={`${slug || name}-${idx}`} className="mx-2 shrink-0 sm:mx-3.5 md:mx-6 lg:mx-8">
         <Link
           href={`/brands/${slug || slugify(name)}`}
-          className="relative block h-11 w-11 transition-transform hover:scale-110 active:scale-95 sm:h-12 sm:w-12 md:h-13 md:w-13 lg:h-14 lg:w-20"
+          className="relative block h-7 w-7 transition-transform hover:scale-110 active:scale-95 sm:h-8 sm:w-8 md:h-8 md:w-10 lg:h-9 lg:w-14"
         >
           {logo ? (
             <Image
               src={logo}
               alt={name}
               fill
-              sizes="(max-width: 640px) 44px, (max-width: 768px) 48px, 96px"
+              sizes="(max-width: 640px) 28px, (max-width: 768px) 32px, 56px"
               className="object-contain invert-0 dark:invert"
               priority={priorityStart && idx < 4}
             />

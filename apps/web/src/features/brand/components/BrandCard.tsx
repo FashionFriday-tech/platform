@@ -54,24 +54,26 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
       >
         <div
           className={cn(
-            'relative flex h-full w-full items-center justify-center',
+            'relative flex h-full w-full items-center justify-center p-3 sm:p-4',
             skewed && 'skew-x-[6deg]',
           )}
         >
           {brand.logo && !hasFallbackText && !hasError ? (
-            <Image
-              src={brand.logo}
-              alt={brand.name}
-              width={200}
-              height={200}
-              onError={() => {
-                setHasError(true);
-                setHasFallbackText(true);
-              }}
-              className={`max-h-[65%] max-w-[70%] object-contain duration-500 group-hover:scale-110 ${
-                isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
-              }`}
-            />
+            <div className="relative flex h-full w-full max-h-[82%] max-w-[85%] items-center justify-center">
+              <Image
+                src={brand.logo}
+                alt={brand.name}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 220px"
+                onError={() => {
+                  setHasError(true);
+                  setHasFallbackText(true);
+                }}
+                className={`object-contain p-1.5 duration-500 group-hover:scale-105 ${
+                  isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
+                }`}
+              />
+            </div>
           ) : (
             <span
               className={`px-2 text-center text-xs font-black tracking-widest uppercase sm:text-sm md:text-base ${

@@ -55,7 +55,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
         {/* Centered logo container fitted inside the card */}
         <div className="relative z-10 flex h-full w-full items-center justify-center p-6 sm:p-7 md:p-8">
           {brand.logo && !hasFallbackText ? (
-            <div className="relative flex h-full w-full items-center justify-center">
+            <div className="relative flex h-full w-full max-h-[82%] max-w-[84%] items-center justify-center">
               {!hasImageError ? (
                 <Image
                   src={brand.logo}
@@ -65,7 +65,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                   onError={() => {
                     setHasImageError(true);
                   }}
-                  className={`object-contain p-1 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+                  className={`object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
                     isDark ? 'invert' : 'invert-0'
                   }`}
                 />
@@ -76,7 +76,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                   onError={() => {
                     setHasFallbackText(true);
                   }}
-                  className={`h-full w-full object-contain p-1 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+                  className={`h-full w-full object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
                     isDark ? 'invert' : 'invert-0'
                   }`}
                 />

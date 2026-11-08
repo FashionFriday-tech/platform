@@ -107,15 +107,17 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
         </div>
 
         <div className="mt-1 px-1">
-          <div className="flex items-center justify-between text-[8px] md:text-[10px]">
+          <div className="flex h-5 items-center justify-between text-[8px] md:text-[10px]">
             {brandLogo ? (
-              <Image
-                src={brandLogo}
-                alt={brandName}
-                width={32}
-                height={32}
-                className="object-contain invert-0 dark:invert"
-              />
+              <div className="relative flex h-3.5 w-10 sm:h-4 sm:w-12 items-center justify-start">
+                <Image
+                  src={brandLogo}
+                  alt={brandName}
+                  fill
+                  sizes="48px"
+                  className="object-contain object-left invert-0 dark:invert"
+                />
+              </div>
             ) : (
               <span className="text-muted-foreground font-bold tracking-wider uppercase">
                 {brandName}
