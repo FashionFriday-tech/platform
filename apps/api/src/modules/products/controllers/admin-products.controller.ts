@@ -23,18 +23,44 @@ export class AdminProductsController {
     return this.productsService.createProduct(createProductDto);
   }
 
+  @Get('stats')
+  async getProductStats() {
+    return this.productsService.getProductStats();
+  }
+
   @Get()
   async getProducts(
     @Query('skip') skip?: number,
     @Query('take') take?: number,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
     @Query('search') search?: string,
     @Query('categoryId') categoryId?: string,
+    @Query('categories') categories?: string,
+    @Query('status') status?: string,
+    @Query('statuses') statuses?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortOrder') sortOrder?: 'asc' | 'desc',
+    @Query('minPrice') minPrice?: number,
+    @Query('maxPrice') maxPrice?: number,
   ) {
+    const takeNum = Number(limit) || Number(take) || 20;
+    const pageNum =
+      Number(page) || (skip !== undefined ? Math.floor(Number(skip) / takeNum) + 1 : 1);
+    const skipNum = skip !== undefined ? Number(skip) : (pageNum - 1) * takeNum;
+
     return this.productsService.getProducts(
-      Number(skip) || 0,
-      Number(take) || 100,
+      skipNum,
+      takeNum,
       search,
       categoryId,
+      status,
+      sortBy,
+      sortOrder,
+      minPrice !== undefined && !isNaN(Number(minPrice)) ? Number(minPrice) : undefined,
+      maxPrice !== undefined && !isNaN(Number(maxPrice)) ? Number(maxPrice) : undefined,
+      categories,
+      statuses,
     );
   }
 
