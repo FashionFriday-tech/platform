@@ -3,19 +3,28 @@ import React from 'react';
 import { ActivityIcon, AlertCircleIcon, ClockIcon, ShoppingBagIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
+import { type ProductStatsData } from '../services/api';
 import { type Product } from '../types';
 
 interface ProductStatsProps {
-  products: Product[];
+  products?: Product[];
+  stats?: ProductStatsData;
+  isLoading?: boolean;
 }
 
-export function ProductStats({ products }: ProductStatsProps) {
-  const totalProducts = products.length;
-  const activeProducts = products.filter((p) => p.status === 'Active').length;
-  const inactiveProducts = products.filter((p) => p.status === 'Inactive').length;
-  const draftProducts = products.filter((p) => p.status === 'Draft').length;
+export function ProductStats({ products, stats, isLoading }: ProductStatsProps) {
+  const totalProducts = stats ? stats.total : (products?.length ?? 0);
+  const activeProducts = stats
+    ? stats.active
+    : (products?.filter((p) => p.status === 'Active').length ?? 0);
+  const inactiveProducts = stats
+    ? stats.inactive
+    : (products?.filter((p) => p.status === 'Inactive').length ?? 0);
+  const draftProducts = stats
+    ? stats.draft
+    : (products?.filter((p) => p.status === 'Draft').length ?? 0);
 
-  const stats = [
+  const statCards = [
     {
       name: 'Total Products',
       value: totalProducts,
@@ -48,7 +57,7 @@ export function ProductStats({ products }: ProductStatsProps) {
 
   return (
     <div className="scrollbar-hide flex w-full gap-3 overflow-x-auto pb-1 md:grid md:grid-cols-4 md:overflow-visible md:pb-0">
-      {stats.map((stat, i) => (
+      {statCards.map((stat, i) => (
         <motion.div
           key={stat.name}
           initial={{ opacity: 0, y: 10 }}
@@ -75,7 +84,11 @@ export function ProductStats({ products }: ProductStatsProps) {
           {/* Bottom Row: Metric & Subtitle with Dot */}
           <div className="relative z-10 mt-2 flex items-baseline justify-between gap-2">
             <dd className="text-2xl font-black tracking-tight text-white md:text-3xl dark:text-black">
-              {stat.value}
+              {isLoading && !stats ? (
+                <span className="inline-block h-8 w-16 animate-pulse rounded bg-white/20 dark:bg-black/20" />
+              ) : (
+                stat.value.toLocaleString()
+              )}
             </dd>
             <div className="flex items-center gap-1.5">
               <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${stat.dotColor}`} />
