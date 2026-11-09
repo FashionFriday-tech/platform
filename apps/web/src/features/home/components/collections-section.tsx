@@ -27,7 +27,7 @@ function CollectionMarqueeCard({
   return (
     <article
       className={cn(
-        'group relative aspect-[3/4] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 bg-black shadow-sm duration-500 hover:scale-95 dark:border-white/10',
+        'group relative aspect-[3/4] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm duration-500 hover:scale-95 dark:border-white/10',
         isMobile
           ? 'h-[260px] w-[195px]'
           : 'h-[260px] w-[195px] sm:h-[270px] sm:w-[202px] sm:rounded-2xl md:h-[280px] md:w-[210px] md:rounded-2xl',
@@ -35,21 +35,19 @@ function CollectionMarqueeCard({
     >
       <Link
         href={`/collections/${item.slug}`}
-        className="relative flex h-full w-full items-center justify-center"
+        className="block h-full w-full"
         title={`Browse ${item.name}`}
       >
-        <div className="relative flex h-full w-full skew-x-[6deg] items-center justify-center p-1.5 sm:p-2">
-          <figure className="relative m-0 h-full w-full overflow-hidden rounded-xl">
-            <Image
-              src={item.image}
-              alt={`Model featuring ${item.name} collection`}
-              fill
-              sizes={isMobile ? '200px' : '(max-width: 768px) 210px, 240px'}
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
-          </figure>
-        </div>
+        <figure className="relative m-0 h-full w-full overflow-hidden">
+          <Image
+            src={item.image}
+            alt={`Model featuring ${item.name} collection`}
+            fill
+            sizes={isMobile ? '200px' : '(max-width: 768px) 210px, 240px'}
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+        </figure>
       </Link>
     </article>
   );
