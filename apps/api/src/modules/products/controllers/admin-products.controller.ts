@@ -43,6 +43,10 @@ export class AdminProductsController {
     @Query('sortOrder') sortOrder?: 'asc' | 'desc',
     @Query('minPrice') minPrice?: number,
     @Query('maxPrice') maxPrice?: number,
+    @Query('brand') brand?: string,
+    @Query('brands') brands?: string,
+    @Query('quality') quality?: string,
+    @Query('qualities') qualities?: string,
   ) {
     const takeNum = Number(limit) || Number(take) || 20;
     const pageNum =
@@ -61,6 +65,10 @@ export class AdminProductsController {
       maxPrice !== undefined && !isNaN(Number(maxPrice)) ? Number(maxPrice) : undefined,
       categories,
       statuses,
+      brand,
+      brands,
+      quality,
+      qualities,
     );
   }
 

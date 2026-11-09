@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { EditIcon, PackageIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
+import api from '@/lib/api-client';
+
 // We simulate fetching all products using the products feature mock
 import { type Product } from '../../products/types';
 import { type ProductCollection } from '../types';
@@ -25,6 +27,8 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   const [collectionProducts, setCollectionProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive' | 'Draft'>('All');
+  const [brandFilter, setBrandFilter] = useState<string>('All');
+  const [qualityFilter, setQualityFilter] = useState<string>('All');
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState(initialCollection.name);
@@ -33,13 +37,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   useEffect(() => {
     async function loadCollectionProducts() {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
-        );
-        if (!res.ok) {
-          return;
-        }
-        const data = await res.json();
+        const data = await api.get<{ data?: any[] } | any[]>('/admin/products?take=500');
         const items = Array.isArray(data) ? data : (data.data ?? []);
         const matching: Product[] = items
           .filter((p: any) => (p.collections || []).includes(collection.slug))
@@ -62,6 +60,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
             dateAdded: p.createdAt ? new Date(p.createdAt).toISOString() : '',
             imageUrl: p.mainImage,
             brand: Array.isArray(p.brand) ? p.brand.join(', ') : p.brand || '',
+            quality: p.quality || '',
             collections: p.collections || [],
           }));
         setCollectionProducts(matching);
@@ -249,18 +248,47 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     }
   };
 
-  const filteredProducts = useMemo(() => {
-    const q = searchQuery.toLowerCase();
-    return collectionProducts.filter((p) => {
-      const matchesSearch =
-        p.name.toLowerCase().includes(q) ||
-        (p.brand?.toLowerCase().includes(q) ?? false) ||
-        p.id.toLowerCase().includes(q) ||
-        (p.sku?.toLowerCase().includes(q) ?? false);
-      const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
-      return matchesSearch && matchesStatus;
+  const availableBrands = useMemo(() => {
+    const set = new Set<string>();
+    collectionProducts.forEach((p) => {
+      if (p.brand?.trim()) set.add(p.brand.trim());
     });
-  }, [collectionProducts, searchQuery, statusFilter]);
+    return Array.from(set).sort();
+  }, [collectionProducts]);
+
+  const availableQualities = useMemo(() => {
+    const set = new Set<string>();
+    collectionProducts.forEach((p) => {
+      if (p.quality?.trim()) set.add(p.quality.trim());
+    });
+    return Array.from(set).sort();
+  }, [collectionProducts]);
+
+  const filteredProducts = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return collectionProducts.filter((p) => {
+      const pQuality = (p.quality || '').toLowerCase();
+      const pBrand = (p.brand || '').toLowerCase();
+      const pCat = (p.category || '').toLowerCase();
+
+      const matchesSearch =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        pBrand.includes(q) ||
+        p.id.toLowerCase().includes(q) ||
+        (p.sku?.toLowerCase().includes(q) ?? false) ||
+        pQuality.includes(q) ||
+        pCat.includes(q);
+
+      const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
+      const matchesQuality =
+        qualityFilter === 'All' || pQuality === qualityFilter.toLowerCase();
+      const matchesBrand =
+        brandFilter === 'All' || pBrand === brandFilter.toLowerCase();
+
+      return matchesSearch && matchesStatus && matchesQuality && matchesBrand;
+    });
+  }, [collectionProducts, searchQuery, statusFilter, qualityFilter, brandFilter]);
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
@@ -362,7 +390,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
                 </div>
                 <input
                   type="text"
-                  placeholder="Search products by name, id or brand..."
+                  placeholder="Search products by name, brand, quality, or SKU..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -372,7 +400,41 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              {availableBrands.length > 0 && (
+                <select
+                  value={brandFilter}
+                  onChange={(e) => {
+                    setBrandFilter(e.target.value);
+                  }}
+                  className="rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-xs font-medium text-black/80 transition-all outline-none hover:bg-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5"
+                >
+                  <option value="All">All Brands</option>
+                  {availableBrands.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {availableQualities.length > 0 && (
+                <select
+                  value={qualityFilter}
+                  onChange={(e) => {
+                    setQualityFilter(e.target.value);
+                  }}
+                  className="rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-xs font-medium text-black/80 transition-all outline-none hover:bg-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5"
+                >
+                  <option value="All">All Qualities</option>
+                  {availableQualities.map((q) => (
+                    <option key={q} value={q}>
+                      {q}
+                    </option>
+                  ))}
+                </select>
+              )}
+
               <div className="group relative z-50 flex cursor-pointer items-center space-x-2 rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm font-medium whitespace-nowrap text-black/70 transition-colors hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path

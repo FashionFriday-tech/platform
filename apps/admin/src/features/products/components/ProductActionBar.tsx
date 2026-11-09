@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+import api from '@/lib/api-client';
 import { useProductActionBar } from '../hooks/useProductActionBar';
 import { type AdvancedFilters, type ColumnId, type ProductStatus, type ViewMode } from '../types';
 
@@ -45,11 +46,67 @@ export function ProductActionBar({
     popupRef,
     toggleCategory,
     toggleStore,
+    toggleBrand,
+    toggleQuality,
     toggleStatus,
     applyFilters,
     clearFilters,
     isAdvancedActive,
   } = useProductActionBar(appliedAdvancedFilters, setAppliedAdvancedFilters);
+
+  const [categoriesList, setCategoriesList] = useState<string[]>([
+    'Clothing',
+    'Footwear',
+    'Shirts',
+    'Pants',
+    'Sneakers',
+    'Watches',
+    'Outerwear',
+    'Accessories',
+  ]);
+  const [brandsList, setBrandsList] = useState<string[]>([
+    'Nike',
+    'Adidas',
+    'Puma',
+    'Jordan',
+    'New Balance',
+    'Crocs',
+    'Fossil',
+    'Balenciaga',
+  ]);
+  const qualitiesList = [
+    '7AA',
+    'UA',
+    'Semi UA',
+    'Original',
+    '10A',
+    '7A',
+    '5A',
+    'Premium',
+    'Standard',
+  ];
+
+  useEffect(() => {
+    async function loadFilterData() {
+      try {
+        const [catsData, brandsData] = await Promise.all([
+          api.get<any[]>('/admin/categories').catch(() => []),
+          api.get<any[]>('/admin/brands').catch(() => []),
+        ]);
+        if (Array.isArray(catsData) && catsData.length > 0) {
+          const names = catsData.map((c: any) => c.name).filter(Boolean);
+          if (names.length > 0) setCategoriesList(Array.from(new Set(names)));
+        }
+        if (Array.isArray(brandsData) && brandsData.length > 0) {
+          const names = brandsData.map((b: any) => b.name).filter(Boolean);
+          if (names.length > 0) setBrandsList(Array.from(new Set(names)));
+        }
+      } catch (e) {
+        // Fallback already preset
+      }
+    }
+    void loadFilterData();
+  }, []);
 
   return (
     <div className="relative z-30 flex items-center justify-between gap-2 rounded-2xl border border-black/5 bg-white p-2.5 sm:p-3 md:p-4 dark:border-white/5 dark:bg-[#111111]">
@@ -118,7 +175,7 @@ export function ProductActionBar({
           </div>
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search by name, brand, category, quality, or SKU..."
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -391,13 +448,63 @@ export function ProductActionBar({
                     </div>
                   </div>
 
+                  {/* Quality Filter */}
+                  <div>
+                    <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
+                      Quality
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {qualitiesList.map((q) => (
+                        <button
+                          key={q}
+                          type="button"
+                          onClick={() => {
+                            toggleQuality(q);
+                          }}
+                          className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition-all ${
+                            localFilters.qualities?.has(q)
+                              ? 'border-transparent bg-black text-white dark:bg-white dark:text-black'
+                              : 'border-black/10 bg-black/5 text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70'
+                          }`}
+                        >
+                          {q}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Brand Filter */}
+                  <div>
+                    <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
+                      Brand
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {brandsList.slice(0, 10).map((brand) => (
+                        <button
+                          key={brand}
+                          type="button"
+                          onClick={() => {
+                            toggleBrand(brand);
+                          }}
+                          className={`rounded-lg border px-2.5 py-1 text-xs font-medium transition-all ${
+                            localFilters.brands?.has(brand)
+                              ? 'border-transparent bg-black text-white dark:bg-white dark:text-black'
+                              : 'border-black/10 bg-black/5 text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70'
+                          }`}
+                        >
+                          {brand}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Categories */}
                   <div>
                     <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
                       Categories
                     </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {['Outerwear', 'Footwear', 'Shirts', 'Sneakers'].map((cat) => (
+                    <div className="grid max-h-36 grid-cols-2 gap-2 overflow-y-auto pr-1">
+                      {categoriesList.map((cat) => (
                         <label
                           key={cat}
                           className="group flex cursor-pointer items-center space-x-2"
@@ -407,7 +514,7 @@ export function ProductActionBar({
                           }}
                         >
                           <div
-                            className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
+                            className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
                               localFilters.categories.has(cat)
                                 ? 'border-black bg-black dark:border-white dark:bg-white'
                                 : 'border-black/20 group-hover:border-black/60 dark:border-white/20 dark:group-hover:border-white/60'
@@ -429,7 +536,7 @@ export function ProductActionBar({
                               </svg>
                             )}
                           </div>
-                          <span className="text-xs text-black/80 select-none dark:text-white/80">
+                          <span className="truncate text-xs text-black/80 select-none dark:text-white/80">
                             {cat}
                           </span>
                         </label>

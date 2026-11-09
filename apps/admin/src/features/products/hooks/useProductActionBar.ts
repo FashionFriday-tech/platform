@@ -48,6 +48,26 @@ export function useProductActionBar(
     setLocalFilters({ ...localFilters, stores: next });
   };
 
+  const toggleBrand = (brand: string) => {
+    const next = new Set(localFilters.brands ?? []);
+    if (next.has(brand)) {
+      next.delete(brand);
+    } else {
+      next.add(brand);
+    }
+    setLocalFilters({ ...localFilters, brands: next });
+  };
+
+  const toggleQuality = (quality: string) => {
+    const next = new Set(localFilters.qualities ?? []);
+    if (next.has(quality)) {
+      next.delete(quality);
+    } else {
+      next.add(quality);
+    }
+    setLocalFilters({ ...localFilters, qualities: next });
+  };
+
   const toggleStatus = (status: ProductStatus) => {
     const next = new Set(localFilters.statuses);
     if (next.has(status)) {
@@ -68,6 +88,8 @@ export function useProductActionBar(
       categories: new Set<string>(),
       statuses: new Set<ProductStatus>(),
       stores: new Set<string>(),
+      brands: new Set<string>(),
+      qualities: new Set<string>(),
       minPrice: '',
       maxPrice: '',
     };
@@ -79,7 +101,9 @@ export function useProductActionBar(
   const isAdvancedActive =
     appliedAdvancedFilters.categories.size > 0 ||
     appliedAdvancedFilters.statuses.size > 0 ||
-    appliedAdvancedFilters.stores?.size > 0 ||
+    (appliedAdvancedFilters.stores?.size ?? 0) > 0 ||
+    (appliedAdvancedFilters.brands?.size ?? 0) > 0 ||
+    (appliedAdvancedFilters.qualities?.size ?? 0) > 0 ||
     appliedAdvancedFilters.minPrice !== '' ||
     appliedAdvancedFilters.maxPrice !== '';
 
@@ -91,6 +115,8 @@ export function useProductActionBar(
     popupRef,
     toggleCategory,
     toggleStore,
+    toggleBrand,
+    toggleQuality,
     toggleStatus,
     applyFilters,
     clearFilters,

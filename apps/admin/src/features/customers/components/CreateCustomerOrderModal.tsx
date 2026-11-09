@@ -446,7 +446,7 @@ export function CreateCustomerOrderModal({
                   Find Product to Order
                 </h3>
                 <p className="text-xs text-black/50 dark:text-white/50">
-                  Search by product name, slug, or exact product ID.
+                  Search by product name, brand, quality, category, slug, or exact product ID.
                 </p>
               </div>
 
@@ -458,7 +458,7 @@ export function CreateCustomerOrderModal({
                   </div>
                   <input
                     type="text"
-                    placeholder="Search by product name or ID (e.g. Cotton Shirt, prod-123)..."
+                    placeholder="Search by name, brand, quality, category, or ID (e.g. Crocs, 7A, Footwear)..."
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);

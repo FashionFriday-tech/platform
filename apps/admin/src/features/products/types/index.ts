@@ -73,6 +73,8 @@ export interface AdvancedFilters {
   categories: Set<string>;
   statuses: Set<ProductStatus>;
   stores: Set<string>;
+  brands?: Set<string>;
+  qualities?: Set<string>;
   minPrice: string;
   maxPrice: string;
 }

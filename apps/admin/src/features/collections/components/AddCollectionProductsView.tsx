@@ -7,12 +7,14 @@ import { useRouter } from 'next/navigation';
 import { CheckIcon, SearchIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
+import api from '@/lib/api-client';
 import { type ProductCollection } from '../types';
 
 interface ApiProduct {
   id: string;
   name: string;
   brand?: string[];
+  quality?: string;
   categoryId?: string;
   category?: { id: string; name: string };
   gender?: string;
@@ -34,6 +36,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [genderFilter, setGenderFilter] = useState<string>('All');
+  const [brandFilter, setBrandFilter] = useState<string>('All');
+  const [qualityFilter, setQualityFilter] = useState<string>('All');
+  const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
 
@@ -41,13 +46,7 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
     async function loadProducts() {
       setIsLoading(true);
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products`,
-        );
-        if (!res.ok) {
-          throw new Error('Failed to load products');
-        }
-        const data = await res.json();
+        const data = await api.get<{ data?: ApiProduct[] } | ApiProduct[]>('/admin/products?take=500');
         const items: ApiProduct[] = Array.isArray(data) ? data : (data.data ?? []);
         setProducts(items);
       } catch (err: any) {
@@ -60,21 +59,66 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
     void loadProducts();
   }, []);
 
+  const availableBrands = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => {
+      p.brand?.forEach((b) => {
+        if (b.trim()) set.add(b.trim());
+      });
+    });
+    return Array.from(set).sort();
+  }, [products]);
+
+  const availableQualities = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => {
+      if (p.quality?.trim()) set.add(p.quality.trim());
+    });
+    return Array.from(set).sort();
+  }, [products]);
+
+  const availableCategories = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((p) => {
+      if (p.category?.name?.trim()) set.add(p.category.name.trim());
+    });
+    return Array.from(set).sort();
+  }, [products]);
+
   const filteredProducts = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     return products.filter((p) => {
+      const pQuality = (p.quality || '').toLowerCase();
+      const pCatName = (p.category?.name || '').toLowerCase();
+      const pBrands = (p.brand || []).map((b) => b.toLowerCase());
+      const pId = p.id.toLowerCase();
+
       const matchesSearch =
         !q ||
         p.name.toLowerCase().includes(q) ||
-        (p.brand?.some((b) => b.toLowerCase().includes(q)) ?? false) ||
-        p.id.toLowerCase().includes(q);
+        pId.includes(q) ||
+        pQuality.includes(q) ||
+        pCatName.includes(q) ||
+        pBrands.some((b) => b.includes(q));
 
       const matchesGender =
         genderFilter === 'All' || p.gender?.toUpperCase() === genderFilter.toUpperCase();
 
-      return matchesSearch && matchesGender;
+      const matchesBrand =
+        brandFilter === 'All' ||
+        (p.brand && p.brand.some((b) => b.toLowerCase() === brandFilter.toLowerCase()));
+
+      const matchesQuality =
+        qualityFilter === 'All' ||
+        (p.quality && p.quality.toUpperCase() === qualityFilter.toUpperCase());
+
+      const matchesCategory =
+        categoryFilter === 'All' ||
+        p.category?.name?.toLowerCase() === categoryFilter.toLowerCase();
+
+      return matchesSearch && matchesGender && matchesBrand && matchesQuality && matchesCategory;
     });
-  }, [products, searchQuery, genderFilter]);
+  }, [products, searchQuery, genderFilter, brandFilter, qualityFilter, categoryFilter]);
 
   const toggleProductSelection = (id: string, isAlreadyInThisCollection: boolean) => {
     if (isAlreadyInThisCollection) {
@@ -115,18 +159,8 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
         const existingCollections = prod?.collections || [];
         const updatedCollections = Array.from(new Set([...existingCollections, collection.slug]));
 
-        return fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}`,
-          {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ marketing: { collections: updatedCollections } }),
-          },
-        ).then((res) => {
-          if (!res.ok) {
-            throw new Error(`Failed to update product ${productId}`);
-          }
-          return res.json();
+        return api.patch(`/admin/products/${productId}`, {
+          marketing: { collections: updatedCollections },
         });
       });
 
@@ -138,7 +172,7 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
       router.refresh();
     } catch (err: any) {
       console.error('Error adding products to collection:', err);
-      toast.error(err.message || 'Failed to add products to collection');
+      toast.error(err?.message || 'Failed to add products to collection');
       setIsSaving(false);
     }
   };
@@ -209,12 +243,12 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
 
       {/* Toolbar: Search, Filters & Bulk select */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 flex-wrap items-center gap-3">
-          <div className="relative w-full max-w-sm">
+        <div className="flex flex-1 flex-wrap items-center gap-2.5">
+          <div className="relative min-w-[240px] flex-1 max-w-sm">
             <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-black/40 dark:text-white/40" />
             <input
               type="text"
-              placeholder="Search by name, brand, or SKU..."
+              placeholder="Search by name, brand, quality, category, SKU..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -223,7 +257,7 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
             />
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-xl border border-black/5 bg-[#f8f9fa] p-1 text-xs font-semibold dark:border-white/5 dark:bg-[#1a1a1a]">
+          <div className="flex items-center gap-1 rounded-xl border border-black/5 bg-[#f8f9fa] p-1 text-xs font-semibold dark:border-white/5 dark:bg-[#1a1a1a]">
             {(['All', 'Men', 'Women', 'Unisex'] as const).map((g) => (
               <button
                 key={g}
@@ -231,7 +265,7 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
                 onClick={() => {
                   setGenderFilter(g);
                 }}
-                className={`rounded-lg px-3 py-1.5 transition-colors ${
+                className={`rounded-lg px-2.5 py-1.5 transition-colors ${
                   genderFilter === g
                     ? 'bg-white text-black shadow-sm dark:bg-[#282828] dark:text-white'
                     : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
@@ -241,6 +275,54 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
               </button>
             ))}
           </div>
+
+          {/* Brand Filter Dropdown */}
+          <select
+            value={brandFilter}
+            onChange={(e) => {
+              setBrandFilter(e.target.value);
+            }}
+            className="rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-xs font-medium text-black/80 transition-all outline-none hover:bg-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5"
+          >
+            <option value="All">All Brands</option>
+            {availableBrands.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
+
+          {/* Quality Filter Dropdown */}
+          <select
+            value={qualityFilter}
+            onChange={(e) => {
+              setQualityFilter(e.target.value);
+            }}
+            className="rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-xs font-medium text-black/80 transition-all outline-none hover:bg-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5"
+          >
+            <option value="All">All Qualities</option>
+            {availableQualities.map((q) => (
+              <option key={q} value={q}>
+                {q}
+              </option>
+            ))}
+          </select>
+
+          {/* Category Filter Dropdown */}
+          <select
+            value={categoryFilter}
+            onChange={(e) => {
+              setCategoryFilter(e.target.value);
+            }}
+            className="rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-xs font-medium text-black/80 transition-all outline-none hover:bg-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5"
+          >
+            <option value="All">All Categories</option>
+            {availableCategories.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="flex items-center gap-2 text-xs">

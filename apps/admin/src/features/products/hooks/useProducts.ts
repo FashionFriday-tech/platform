@@ -61,6 +61,26 @@ function parseFilters(params: URLSearchParams | { get: (k: string) => string | n
       : [],
   );
 
+  const brandsRaw = params.get('brands') ?? params.get('brand');
+  const brands = new Set(
+    brandsRaw
+      ? brandsRaw
+          .split(',')
+          .map((b) => b.trim())
+          .filter(Boolean)
+      : [],
+  );
+
+  const qualitiesRaw = params.get('qualities') ?? params.get('quality');
+  const qualities = new Set(
+    qualitiesRaw
+      ? qualitiesRaw
+          .split(',')
+          .map((q) => q.trim())
+          .filter(Boolean)
+      : [],
+  );
+
   const minPrice = params.get('minPrice') ?? '';
   const maxPrice = params.get('maxPrice') ?? '';
   const view = (params.get('view') === 'grid' ? 'grid' : 'list') as ViewMode;
@@ -77,6 +97,8 @@ function parseFilters(params: URLSearchParams | { get: (k: string) => string | n
       categories,
       statuses,
       stores,
+      brands,
+      qualities,
       minPrice,
       maxPrice,
     },
@@ -159,6 +181,14 @@ export function useProducts() {
 
     if (appliedAdvancedFilters.stores && appliedAdvancedFilters.stores.size > 0) {
       params.set('stores', Array.from(appliedAdvancedFilters.stores).join(','));
+    }
+
+    if (appliedAdvancedFilters.brands && appliedAdvancedFilters.brands.size > 0) {
+      params.set('brands', Array.from(appliedAdvancedFilters.brands).join(','));
+    }
+
+    if (appliedAdvancedFilters.qualities && appliedAdvancedFilters.qualities.size > 0) {
+      params.set('qualities', Array.from(appliedAdvancedFilters.qualities).join(','));
     }
 
     if (appliedAdvancedFilters.minPrice) {
@@ -247,6 +277,18 @@ export function useProducts() {
       Array.from(parsed.appliedAdvancedFilters.stores ?? []).some(
         (s) => !appliedAdvancedFilters.stores?.has(s),
       );
+    const isBrandsDiff =
+      (parsed.appliedAdvancedFilters.brands?.size ?? 0) !==
+        (appliedAdvancedFilters.brands?.size ?? 0) ||
+      Array.from(parsed.appliedAdvancedFilters.brands ?? []).some(
+        (b) => !appliedAdvancedFilters.brands?.has(b),
+      );
+    const isQualitiesDiff =
+      (parsed.appliedAdvancedFilters.qualities?.size ?? 0) !==
+        (appliedAdvancedFilters.qualities?.size ?? 0) ||
+      Array.from(parsed.appliedAdvancedFilters.qualities ?? []).some(
+        (q) => !appliedAdvancedFilters.qualities?.has(q),
+      );
     const isMinPriceDiff =
       parsed.appliedAdvancedFilters.minPrice !== appliedAdvancedFilters.minPrice;
     const isMaxPriceDiff =
@@ -259,6 +301,8 @@ export function useProducts() {
       isCatsDiff ||
       isStatusDiff ||
       isStoresDiff ||
+      isBrandsDiff ||
+      isQualitiesDiff ||
       isMinPriceDiff ||
       isMaxPriceDiff
     ) {
@@ -357,6 +401,14 @@ export function useProducts() {
           appliedAdvancedFilters.statuses.size > 0
             ? Array.from(appliedAdvancedFilters.statuses)
             : undefined,
+        brands:
+          appliedAdvancedFilters.brands && appliedAdvancedFilters.brands.size > 0
+            ? Array.from(appliedAdvancedFilters.brands)
+            : undefined,
+        qualities:
+          appliedAdvancedFilters.qualities && appliedAdvancedFilters.qualities.size > 0
+            ? Array.from(appliedAdvancedFilters.qualities)
+            : undefined,
         minPrice: !isNaN(Number(minPriceNum)) ? minPriceNum : undefined,
         maxPrice: !isNaN(Number(maxPriceNum)) ? maxPriceNum : undefined,
         sortBy,
@@ -407,6 +459,14 @@ export function useProducts() {
         statuses:
           appliedAdvancedFilters.statuses.size > 0
             ? Array.from(appliedAdvancedFilters.statuses)
+            : undefined,
+        brands:
+          appliedAdvancedFilters.brands && appliedAdvancedFilters.brands.size > 0
+            ? Array.from(appliedAdvancedFilters.brands)
+            : undefined,
+        qualities:
+          appliedAdvancedFilters.qualities && appliedAdvancedFilters.qualities.size > 0
+            ? Array.from(appliedAdvancedFilters.qualities)
             : undefined,
         minPrice: !isNaN(Number(minPriceNum)) ? minPriceNum : undefined,
         maxPrice: !isNaN(Number(maxPriceNum)) ? maxPriceNum : undefined,

@@ -25,6 +25,8 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   const [categoryProducts, setCategoryProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive' | 'Draft'>('All');
+  const [qualityFilter, setQualityFilter] = useState<string>('All');
+  const [brandFilter, setBrandFilter] = useState<string>('All');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -216,18 +218,47 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
     }
   };
 
-  const filteredProducts = useMemo(() => {
-    const q = searchQuery.toLowerCase();
-    return categoryProducts.filter((p) => {
-      const matchesSearch =
-        p.name.toLowerCase().includes(q) ||
-        (p.brand?.toLowerCase().includes(q) ?? false) ||
-        p.id.toLowerCase().includes(q) ||
-        (p.sku?.toLowerCase().includes(q) ?? false);
-      const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
-      return matchesSearch && matchesStatus;
+  const availableBrands = useMemo(() => {
+    const set = new Set<string>();
+    categoryProducts.forEach((p) => {
+      if (p.brand?.trim()) set.add(p.brand.trim());
     });
-  }, [categoryProducts, searchQuery, statusFilter]);
+    return Array.from(set).sort();
+  }, [categoryProducts]);
+
+  const availableQualities = useMemo(() => {
+    const set = new Set<string>();
+    categoryProducts.forEach((p) => {
+      if (p.quality?.trim()) set.add(p.quality.trim());
+    });
+    return Array.from(set).sort();
+  }, [categoryProducts]);
+
+  const filteredProducts = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return categoryProducts.filter((p) => {
+      const pQuality = (p.quality || '').toLowerCase();
+      const pBrand = (p.brand || '').toLowerCase();
+      const pCat = (p.category || '').toLowerCase();
+
+      const matchesSearch =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        pBrand.includes(q) ||
+        p.id.toLowerCase().includes(q) ||
+        (p.sku?.toLowerCase().includes(q) ?? false) ||
+        pQuality.includes(q) ||
+        pCat.includes(q);
+
+      const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
+      const matchesQuality =
+        qualityFilter === 'All' || pQuality === qualityFilter.toLowerCase();
+      const matchesBrand =
+        brandFilter === 'All' || pBrand === brandFilter.toLowerCase();
+
+      return matchesSearch && matchesStatus && matchesQuality && matchesBrand;
+    });
+  }, [categoryProducts, searchQuery, statusFilter, qualityFilter, brandFilter]);
 
   return (
     <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
@@ -297,7 +328,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                 </div>
                 <input
                   type="text"
-                  placeholder="Search products by name, id or brand..."
+                  placeholder="Search products by name, brand, quality, or SKU..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -307,7 +338,41 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              {availableBrands.length > 0 && (
+                <select
+                  value={brandFilter}
+                  onChange={(e) => {
+                    setBrandFilter(e.target.value);
+                  }}
+                  className="rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-xs font-medium text-black/80 transition-all outline-none hover:bg-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5"
+                >
+                  <option value="All">All Brands</option>
+                  {availableBrands.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {availableQualities.length > 0 && (
+                <select
+                  value={qualityFilter}
+                  onChange={(e) => {
+                    setQualityFilter(e.target.value);
+                  }}
+                  className="rounded-xl border border-black/5 bg-[#f8f9fa] px-3 py-2 text-xs font-medium text-black/80 transition-all outline-none hover:bg-black/5 dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:bg-white/5"
+                >
+                  <option value="All">All Qualities</option>
+                  {availableQualities.map((q) => (
+                    <option key={q} value={q}>
+                      {q}
+                    </option>
+                  ))}
+                </select>
+              )}
+
               <div className="group relative z-50 flex cursor-pointer items-center space-x-2 rounded-xl border border-black/5 bg-[#f8f9fa] px-4 py-2.5 text-sm font-medium whitespace-nowrap text-black/70 transition-colors hover:bg-black/5 hover:text-black dark:border-white/5 dark:bg-[#1a1a1a] dark:text-white/70 dark:hover:bg-white/5 dark:hover:text-white">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path

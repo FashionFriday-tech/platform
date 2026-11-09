@@ -18,6 +18,10 @@ export interface FetchProductsParams {
   sortOrder?: 'asc' | 'desc';
   minPrice?: number;
   maxPrice?: number;
+  brand?: string;
+  brands?: string[];
+  quality?: string;
+  qualities?: string[];
 }
 
 export interface ProductStatsData {
@@ -123,6 +127,14 @@ export async function fetchProductsPaginated(
     }
     if (params.maxPrice !== undefined && !isNaN(params.maxPrice)) {
       query.set('maxPrice', String(params.maxPrice));
+    }
+    if (params.brand) query.set('brand', params.brand);
+    if (params.brands && params.brands.length > 0) {
+      query.set('brands', params.brands.join(','));
+    }
+    if (params.quality) query.set('quality', params.quality);
+    if (params.qualities && params.qualities.length > 0) {
+      query.set('qualities', params.qualities.join(','));
     }
 
     const qs = query.toString();

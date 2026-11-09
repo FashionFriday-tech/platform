@@ -204,6 +204,10 @@ export class AdminProductsService {
     maxPrice?: number,
     categories?: string,
     statuses?: string,
+    brand?: string,
+    brands?: string,
+    quality?: string,
+    qualities?: string,
   ) {
     const trimmed = search?.trim();
 
@@ -253,6 +257,45 @@ export class AdminProductsService {
       }
     }
 
+    // Brand filter handling
+    let brandFilter: Prisma.ProductWhereInput['brand'] | undefined;
+    const rawBrands = brands || brand;
+    if (rawBrands) {
+      const brandTokens = rawBrands
+        .split(',')
+        .map((b) => b.trim())
+        .filter(Boolean);
+      const expandedBrands = brandTokens.flatMap((b) => [
+        b,
+        b.toUpperCase(),
+        b.toLowerCase(),
+        b.charAt(0).toUpperCase() + b.slice(1).toLowerCase(),
+      ]);
+      if (brandTokens.length > 0) {
+        brandFilter = { hasSome: Array.from(new Set(expandedBrands)) };
+      }
+    }
+
+    // Quality filter handling
+    let qualityFilter: Prisma.ProductWhereInput['quality'] | undefined;
+    const rawQualities = qualities || quality;
+    if (rawQualities) {
+      const qualityTokens = rawQualities
+        .split(',')
+        .map((q) => q.trim())
+        .filter(Boolean);
+      const expandedQualities = qualityTokens.flatMap((q) => [
+        q,
+        q.toUpperCase(),
+        q.toLowerCase(),
+        q.replace(/[-\s]+/g, '_').toUpperCase(),
+        q.replace(/_/g, ' '),
+      ]);
+      if (qualityTokens.length > 0) {
+        qualityFilter = { in: Array.from(new Set(expandedQualities)) };
+      }
+    }
+
     // Price filter handling
     let priceFilter: Prisma.DecimalFilter | undefined;
     if (minPrice !== undefined || maxPrice !== undefined) {
@@ -262,18 +305,48 @@ export class AdminProductsService {
       };
     }
 
+    let orConditions: Prisma.ProductWhereInput[] | undefined;
+    if (trimmed) {
+      let brandSearchTokens: string[] = [];
+      try {
+        const matchingBrands = await this.prisma.db.brand.findMany({
+          where: { name: { contains: trimmed, mode: 'insensitive' } },
+          select: { name: true },
+          take: 10,
+        });
+        const namesFromDb = matchingBrands.map((b) => b.name);
+        brandSearchTokens = Array.from(
+          new Set([
+            trimmed,
+            trimmed.toUpperCase(),
+            trimmed.toLowerCase(),
+            trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase(),
+            trimmed.replace(/[\s-]+/g, ' ').toUpperCase(),
+            ...namesFromDb,
+            ...namesFromDb.map((n) => n.toUpperCase()),
+          ]),
+        );
+      } catch {
+        brandSearchTokens = [trimmed, trimmed.toUpperCase(), trimmed.toLowerCase()];
+      }
+
+      orConditions = [
+        { id: { contains: trimmed, mode: 'insensitive' } },
+        { name: { contains: trimmed, mode: 'insensitive' } },
+        { slug: { contains: trimmed, mode: 'insensitive' } },
+        { description: { contains: trimmed, mode: 'insensitive' } },
+        { quality: { contains: trimmed, mode: 'insensitive' } },
+        { category: { name: { contains: trimmed, mode: 'insensitive' } } },
+        ...(brandSearchTokens.length > 0 ? [{ brand: { hasSome: brandSearchTokens } }] : []),
+      ];
+    }
+
     const where: Prisma.ProductWhereInput = {
-      ...(trimmed
-        ? {
-            OR: [
-              { id: { contains: trimmed, mode: 'insensitive' } },
-              { name: { contains: trimmed, mode: 'insensitive' } },
-              { slug: { contains: trimmed, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
+      ...(orConditions && orConditions.length > 0 ? { OR: orConditions } : {}),
       ...(directCategoryId ? { categoryId: directCategoryId } : {}),
       ...(categoryFilter ? { category: categoryFilter } : {}),
+      ...(brandFilter ? { brand: brandFilter } : {}),
+      ...(qualityFilter ? { quality: qualityFilter } : {}),
       ...(statusFilter ? { status: statusFilter } : {}),
       ...(priceFilter ? { sellingPrice: priceFilter } : {}),
     };
