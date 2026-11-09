@@ -13,6 +13,12 @@ interface BrandDetailsModalProps {
   onToggleStatus?: (brand: Brand) => void;
 }
 
+function isBlackColor(color?: string): boolean {
+  if (!color) return true;
+  const c = color.trim().toLowerCase();
+  return c === '#000000' || c === '#000' || c === 'black';
+}
+
 export function BrandDetailsModal({
   isOpen,
   onClose,
@@ -26,6 +32,7 @@ export function BrandDetailsModal({
   }
 
   const isActive = brand.isActive !== false;
+  const isBlack = isBlackColor(brand.color);
 
   return (
     <AnimatePresence>
@@ -45,12 +52,18 @@ export function BrandDetailsModal({
         >
           {/* Header Image Area */}
           <div
-            className="relative flex h-48 w-full items-center justify-center p-6 transition-colors"
-            style={{ backgroundColor: brand.color ?? '#000000' }}
+            className={`relative flex h-48 w-full items-center justify-center p-6 transition-colors ${
+              isBlack ? 'bg-black dark:bg-white' : ''
+            }`}
+            style={isBlack ? undefined : { backgroundColor: brand.color }}
           >
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 rounded-full bg-black/20 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/40"
+              className={`absolute top-4 right-4 z-10 rounded-full p-2 backdrop-blur-sm transition-colors ${
+                isBlack
+                  ? 'bg-black/20 text-white hover:bg-black/40 dark:bg-black/10 dark:text-black dark:hover:bg-black/20'
+                  : 'bg-black/20 text-white hover:bg-black/40'
+              }`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -73,11 +86,19 @@ export function BrandDetailsModal({
                   src={brand.logo}
                   alt={brand.name}
                   fill
-                  className="object-contain drop-shadow-md brightness-0 invert"
+                  className={`object-contain drop-shadow-md ${
+                    isBlack
+                      ? 'brightness-0 invert dark:invert-0'
+                      : 'brightness-0 invert drop-shadow-sm'
+                  }`}
                 />
               </div>
             ) : (
-              <span className="text-xl font-bold text-white drop-shadow-sm">
+              <span
+                className={`text-xl font-bold ${
+                  isBlack ? 'text-white dark:text-black' : 'text-white drop-shadow-sm'
+                }`}
+              >
                 {brand.name}
               </span>
             )}

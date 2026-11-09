@@ -10,10 +10,17 @@ interface BrandCardProps {
   onToggleStatus?: (e: React.MouseEvent) => void;
 }
 
+function isBlackColor(color?: string): boolean {
+  if (!color) return true;
+  const c = color.trim().toLowerCase();
+  return c === '#000000' || c === '#000' || c === 'black';
+}
+
 export function BrandCard({ brand, onClick }: BrandCardProps) {
   const [hasImageError, setHasImageError] = React.useState(false);
   const [hasFallbackText, setHasFallbackText] = React.useState(false);
   const isActive = brand.isActive !== false;
+  const isBlack = isBlackColor(brand.color);
 
   return (
     <motion.div
@@ -25,8 +32,10 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
       }`}
     >
       <div
-        className="relative flex aspect-square w-full items-center justify-center transition-colors"
-        style={{ backgroundColor: brand.color ?? '#000000' }}
+        className={`relative flex aspect-square w-full items-center justify-center transition-colors ${
+          isBlack ? 'bg-black dark:bg-white' : ''
+        }`}
+        style={isBlack ? undefined : { backgroundColor: brand.color }}
       >
         {/* Glow effect on hover */}
         <div className="absolute inset-0 z-10 bg-white opacity-0 mix-blend-overlay transition-opacity group-hover:opacity-20" />
@@ -44,7 +53,11 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                   onError={() => {
                     setHasImageError(true);
                   }}
-                  className="object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 brightness-0 invert"
+                  className={`object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+                    isBlack
+                      ? 'brightness-0 invert dark:invert-0'
+                      : 'brightness-0 invert'
+                  }`}
                 />
               ) : (
                 <img
@@ -53,12 +66,20 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                   onError={() => {
                     setHasFallbackText(true);
                   }}
-                  className="h-full w-full object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 brightness-0 invert"
+                  className={`h-full w-full object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+                    isBlack
+                      ? 'brightness-0 invert dark:invert-0'
+                      : 'brightness-0 invert'
+                  }`}
                 />
               )}
             </div>
           ) : (
-            <span className="text-center text-base font-black tracking-wider break-words uppercase text-white drop-shadow-sm sm:text-lg">
+            <span
+              className={`text-center text-base font-black tracking-wider break-words uppercase drop-shadow-sm sm:text-lg ${
+                isBlack ? 'text-white dark:text-black' : 'text-white'
+              }`}
+            >
               {brand.name}
             </span>
           )}

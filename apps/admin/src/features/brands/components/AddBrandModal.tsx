@@ -13,6 +13,11 @@ interface AddBrandModalProps {
 
 const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
+function isBlackColor(color?: string): boolean {
+  if (!color) return true;
+  const c = color.trim().toLowerCase();
+  return c === '#000000' || c === '#000' || c === 'black';
+}
 
 export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrandModalProps) {
   const [name, setName] = useState('');
@@ -274,15 +279,27 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                   />
                   <label
                     htmlFor="brand-logo-upload"
-                    style={{ backgroundColor: color || undefined }}
-                    className="group flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 bg-[#f8f9fa] transition-all hover:opacity-95 dark:border-white/20 dark:bg-[#1a1a1a]"
+                    style={isBlackColor(color) ? undefined : { backgroundColor: color || undefined }}
+                    className={`group flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 transition-all hover:opacity-95 dark:border-white/20 ${
+                      isBlackColor(color)
+                        ? 'bg-black dark:bg-white'
+                        : color
+                          ? ''
+                          : 'bg-[#f8f9fa] dark:bg-[#1a1a1a]'
+                    }`}
                   >
                     {logoUrl ? (
                       <div className="relative h-full w-full">
                         <img
                           src={logoUrl}
                           alt="Logo preview"
-                          className={`h-full w-full object-contain p-3 sm:p-4 ${color ? 'brightness-0 invert drop-shadow-sm' : 'dark:invert'}`}
+                          className={`h-full w-full object-contain p-3 sm:p-4 ${
+                            isBlackColor(color)
+                              ? 'brightness-0 invert dark:invert-0'
+                              : color
+                                ? 'brightness-0 invert drop-shadow-sm'
+                                : 'dark:invert'
+                          }`}
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
                           <span className="text-xs font-bold text-white sm:text-sm">
@@ -291,7 +308,13 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center gap-1.5 text-black/60 sm:gap-2 dark:text-white/60">
+                      <div
+                        className={`flex flex-col items-center gap-1.5 sm:gap-2 ${
+                          isBlackColor(color)
+                            ? 'text-white/60 dark:text-black/60'
+                            : 'text-black/60 dark:text-white/60'
+                        }`}
+                      >
                         <ImageIcon className="h-6 w-6 opacity-50 sm:h-8 sm:w-8" />
                         <span className="text-[11px] font-medium sm:text-xs">Upload Image</span>
                       </div>

@@ -14,9 +14,16 @@ interface BrandCardProps {
   skewed?: boolean;
 }
 
+function isBlackColor(color?: string): boolean {
+  if (!color) return true;
+  const c = color.trim().toLowerCase();
+  return c === '#000000' || c === '#000' || c === 'black';
+}
+
 export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) => {
   const [hasError, setHasError] = React.useState(false);
   const [hasFallbackText, setHasFallbackText] = React.useState(false);
+  const isBlack = isBlackColor(brand.color);
 
   return (
     <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
@@ -24,10 +31,11 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
         className={cn(
           'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl border border-black/5 p-4 shadow-sm duration-500 hover:scale-95 sm:rounded-2xl sm:p-5 md:rounded-2xl md:p-5 dark:border-white/10',
           skewed && '-skew-x-[6deg]',
+          isBlack ? 'bg-black dark:bg-white' : '',
           className,
         )}
-        style={{
-          backgroundColor: brand.color ?? '#000000',
+        style={isBlack ? undefined : {
+          backgroundColor: brand.color,
         }}
       >
         <div
@@ -47,11 +55,21 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
                   setHasError(true);
                   setHasFallbackText(true);
                 }}
-                className="object-contain p-1.5 drop-shadow-sm duration-500 group-hover:scale-105 brightness-0 invert"
+                className={cn(
+                  'object-contain p-1.5 duration-500 group-hover:scale-105',
+                  isBlack
+                    ? 'brightness-0 invert dark:invert-0'
+                    : 'brightness-0 invert drop-shadow-sm',
+                )}
               />
             </div>
           ) : (
-            <span className="px-2 text-center text-xs font-black tracking-widest uppercase text-white drop-shadow-sm sm:text-sm md:text-base">
+            <span
+              className={cn(
+                'px-2 text-center text-xs font-black tracking-widest uppercase sm:text-sm md:text-base',
+                isBlack ? 'text-white dark:text-black' : 'text-white drop-shadow-sm',
+              )}
+            >
               {brand.name}
             </span>
           )}
