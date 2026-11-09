@@ -91,13 +91,13 @@ export default function CollectionsSection({
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="relative m-0 h-full w-full overflow-hidden">
+                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-[1.08] sm:skew-x-[8deg] sm:scale-[1.12]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="(max-width: 768px) 210px, 240px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
@@ -121,13 +121,13 @@ export default function CollectionsSection({
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="relative m-0 h-full w-full overflow-hidden">
+                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-[1.08]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="200px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
@@ -148,13 +148,13 @@ export default function CollectionsSection({
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="relative m-0 h-full w-full overflow-hidden">
+                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-[1.08]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="200px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
