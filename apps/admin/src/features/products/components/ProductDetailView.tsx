@@ -64,6 +64,13 @@ function parseDescription(desc?: string): {
 
 export function ProductDetailView({ productId }: Props) {
   const router = useRouter();
+  const handleBackToInventory = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/products');
+    }
+  };
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -200,9 +207,7 @@ export function ProductDetailView({ productId }: Props) {
           The product you are looking for does not exist or has been removed.
         </p>
         <button
-          onClick={() => {
-            router.push('/products');
-          }}
+          onClick={handleBackToInventory}
           className="cursor-pointer rounded-full bg-black px-6 py-2.5 text-xs font-bold text-white shadow-lg transition-transform hover:scale-105 dark:bg-white dark:text-black"
         >
           Back to Inventory
@@ -238,7 +243,7 @@ export function ProductDetailView({ productId }: Props) {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => router.push('/products')}
+            onClick={handleBackToInventory}
             className="flex cursor-pointer items-center gap-1.5 rounded-full border border-black/10 bg-white px-3.5 py-1.5 text-xs font-bold text-black shadow-sm transition-all hover:bg-black hover:text-white dark:border-white/10 dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black"
           >
             <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

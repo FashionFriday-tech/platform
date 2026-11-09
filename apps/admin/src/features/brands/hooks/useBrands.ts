@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { type Brand, type BrandCategory } from '@ff/schemas';
 
@@ -8,15 +9,86 @@ import { api } from '../../../lib/api-client';
 
 const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
+function parseBrandFilters(params: URLSearchParams | { get: (k: string) => string | null }) {
+  const search = params.get('search') ?? '';
+  const categoryRaw = params.get('category') ?? 'all';
+  const category = (ALL_CATEGORIES.includes(categoryRaw as BrandCategory) ? categoryRaw : 'all') as 'all' | BrandCategory;
+  const statusRaw = params.get('status') ?? 'all';
+  const status = (['active', 'disabled'].includes(statusRaw) ? statusRaw : 'all') as 'all' | 'active' | 'disabled';
+
+  return { search, category, status };
+}
+
 export function useBrands() {
+  const searchParams = useSearchParams();
+  const initial = useRef<ReturnType<typeof parseBrandFilters> | null>(null);
+  if (!initial.current) {
+    initial.current = parseBrandFilters(searchParams);
+  }
+
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<'all' | BrandCategory>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'disabled'>('all');
+  const [searchQuery, setSearchQuery] = useState(initial.current.search);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | BrandCategory>(initial.current.category);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'disabled'>(initial.current.status);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [brandToEdit, setBrandToEdit] = useState<Brand | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const isUpdatingFromUrl = useRef(false);
+
+  // Sync state to URL search params
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isUpdatingFromUrl.current) {
+      isUpdatingFromUrl.current = false;
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    if (categoryFilter !== 'all') params.set('category', categoryFilter);
+    if (statusFilter !== 'all') params.set('status', statusFilter);
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (currentUrl !== newUrl) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [searchQuery, categoryFilter, statusFilter]);
+
+  // Handle browser Back / Forward (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window === 'undefined') return;
+      isUpdatingFromUrl.current = true;
+      const parsed = parseBrandFilters(new URLSearchParams(window.location.search));
+      setSearchQuery(parsed.search);
+      setCategoryFilter(parsed.category);
+      setStatusFilter(parsed.status);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // Sync when searchParams changes via Next router
+  useEffect(() => {
+    const parsed = parseBrandFilters(searchParams);
+    if (
+      parsed.search !== searchQuery ||
+      parsed.category !== categoryFilter ||
+      parsed.status !== statusFilter
+    ) {
+      isUpdatingFromUrl.current = true;
+      setSearchQuery(parsed.search);
+      setCategoryFilter(parsed.category);
+      setStatusFilter(parsed.status);
+    }
+  }, [searchParams]);
 
   const fetchBrands = useCallback(async () => {
     try {

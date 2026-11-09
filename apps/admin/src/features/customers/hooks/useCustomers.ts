@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { toast } from 'sonner';
 
@@ -6,14 +7,99 @@ import { fetcher } from '@/lib/api-client';
 
 import { type Customer, type SortDirection, type SortField } from '../types';
 
+function parseCustomerFilters(params: URLSearchParams | { get: (k: string) => string | null }) {
+  const search = params.get('search') ?? '';
+  const status = params.get('status') ?? 'all';
+  const orders = params.get('orders') ?? 'all';
+  const sort = (params.get('sortField') as SortField) ?? 'joinDate';
+  const direction = (params.get('sortDir') as SortDirection) ?? 'desc';
+
+  return {
+    search,
+    status,
+    orders,
+    sort,
+    direction,
+  };
+}
+
 export function useCustomers() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [ordersFilter, setOrdersFilter] = useState('all');
-  const [sortField, setSortField] = useState<SortField>('joinDate');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const searchParams = useSearchParams();
+  const initial = useRef<ReturnType<typeof parseCustomerFilters> | null>(null);
+  if (!initial.current) {
+    initial.current = parseCustomerFilters(searchParams);
+  }
+
+  const [searchQuery, setSearchQuery] = useState(initial.current.search);
+  const [statusFilter, setStatusFilter] = useState(initial.current.status);
+  const [ordersFilter, setOrdersFilter] = useState(initial.current.orders);
+  const [sortField, setSortField] = useState<SortField>(initial.current.sort);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(initial.current.direction);
   const [customersData, setCustomersData] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const isUpdatingFromUrl = useRef(false);
+
+  // Sync state to URL search params
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isUpdatingFromUrl.current) {
+      isUpdatingFromUrl.current = false;
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    if (statusFilter && statusFilter !== 'all') params.set('status', statusFilter);
+    if (ordersFilter && ordersFilter !== 'all') params.set('orders', ordersFilter);
+    if (sortField !== 'joinDate') params.set('sortField', sortField);
+    if (sortDirection !== 'desc') params.set('sortDir', sortDirection);
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (currentUrl !== newUrl) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [searchQuery, statusFilter, ordersFilter, sortField, sortDirection]);
+
+  // Handle browser Back / Forward (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window === 'undefined') return;
+      isUpdatingFromUrl.current = true;
+      const parsed = parseCustomerFilters(new URLSearchParams(window.location.search));
+      setSearchQuery(parsed.search);
+      setStatusFilter(parsed.status);
+      setOrdersFilter(parsed.orders);
+      setSortField(parsed.sort);
+      setSortDirection(parsed.direction);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // Sync when searchParams changes via Next router
+  useEffect(() => {
+    const parsed = parseCustomerFilters(searchParams);
+    if (
+      parsed.search !== searchQuery ||
+      parsed.status !== statusFilter ||
+      parsed.orders !== ordersFilter ||
+      parsed.sort !== sortField ||
+      parsed.direction !== sortDirection
+    ) {
+      isUpdatingFromUrl.current = true;
+      setSearchQuery(parsed.search);
+      setStatusFilter(parsed.status);
+      setOrdersFilter(parsed.orders);
+      setSortField(parsed.sort);
+      setSortDirection(parsed.direction);
+    }
+  }, [searchParams]);
 
   // Fetch customers list
   const fetchCustomers = async () => {

@@ -154,7 +154,11 @@ export function EditProductView({ productId }: EditProductViewProps) {
         </p>
         <button
           onClick={() => {
-            router.push('/products');
+            if (typeof window !== 'undefined' && window.history.length > 1) {
+              router.back();
+            } else {
+              router.push('/products');
+            }
           }}
           className="rounded-full bg-black px-6 py-3 text-xs font-bold text-white shadow-lg transition-transform hover:scale-105 dark:bg-white dark:text-black"
         >

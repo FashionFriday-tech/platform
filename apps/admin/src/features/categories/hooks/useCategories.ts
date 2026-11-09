@@ -1,16 +1,79 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { toast } from 'sonner';
 
 import { type ProductCategory } from '../types';
 
+function parseCategoryFilters(params: URLSearchParams | { get: (k: string) => string | null }) {
+  const search = params.get('search') ?? '';
+  const genderRaw = params.get('gender');
+  const selectedGender = (genderRaw === 'Women' ? 'Women' : 'Men') as 'Men' | 'Women';
+
+  return { search, selectedGender };
+}
+
 export function useCategories() {
+  const searchParams = useSearchParams();
+  const initial = useRef<ReturnType<typeof parseCategoryFilters> | null>(null);
+  if (!initial.current) {
+    initial.current = parseCategoryFilters(searchParams);
+  }
+
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedGender, setSelectedGender] = useState<'Men' | 'Women'>('Men');
+  const [searchQuery, setSearchQuery] = useState(initial.current.search);
+  const [selectedGender, setSelectedGender] = useState<'Men' | 'Women'>(initial.current.selectedGender);
+
+  const isUpdatingFromUrl = useRef(false);
+
+  // Sync state to URL search params
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isUpdatingFromUrl.current) {
+      isUpdatingFromUrl.current = false;
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    if (selectedGender !== 'Men') params.set('gender', selectedGender);
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (currentUrl !== newUrl) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [searchQuery, selectedGender]);
+
+  // Handle browser Back / Forward (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window === 'undefined') return;
+      isUpdatingFromUrl.current = true;
+      const parsed = parseCategoryFilters(new URLSearchParams(window.location.search));
+      setSearchQuery(parsed.search);
+      setSelectedGender(parsed.selectedGender);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // Sync when searchParams changes via Next router
+  useEffect(() => {
+    const parsed = parseCategoryFilters(searchParams);
+    if (parsed.search !== searchQuery || parsed.selectedGender !== selectedGender) {
+      isUpdatingFromUrl.current = true;
+      setSearchQuery(parsed.search);
+      setSelectedGender(parsed.selectedGender);
+    }
+  }, [searchParams]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<ProductCategory | null>(null);

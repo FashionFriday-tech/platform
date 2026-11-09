@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { api } from '@/lib/api-client';
 
@@ -11,7 +12,24 @@ import {
   type SellerStatus,
 } from '../types';
 
+function parseSellerFilters(params: URLSearchParams | { get: (k: string) => string | null }) {
+  const search = params.get('search') ?? '';
+  const statusRaw = params.get('status') ?? 'ALL';
+  const statusFilter = (['ALL', 'ACTIVE', 'INACTIVE', 'SUSPENDED'].includes(statusRaw)
+    ? statusRaw
+    : 'ALL') as 'ALL' | SellerStatus;
+  const categoryFilter = params.get('category') ?? 'ALL';
+
+  return { search, statusFilter, categoryFilter };
+}
+
 export function useSellers() {
+  const searchParams = useSearchParams();
+  const initial = useRef<ReturnType<typeof parseSellerFilters> | null>(null);
+  if (!initial.current) {
+    initial.current = parseSellerFilters(searchParams);
+  }
+
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [stats, setStats] = useState<SellerStatsData>({
     totalSellers: 0,
@@ -20,9 +38,65 @@ export function useSellers() {
     totalOrderItems: 0,
   });
   const [categories, setCategories] = useState<SellerCategory[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | SellerStatus>('ALL');
-  const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState(initial.current.search);
+  const [statusFilter, setStatusFilter] = useState<'ALL' | SellerStatus>(initial.current.statusFilter);
+  const [categoryFilter, setCategoryFilter] = useState<string>(initial.current.categoryFilter);
+
+  const isUpdatingFromUrl = useRef(false);
+
+  // Sync state to URL search params
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isUpdatingFromUrl.current) {
+      isUpdatingFromUrl.current = false;
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    if (statusFilter !== 'ALL') params.set('status', statusFilter);
+    if (categoryFilter !== 'ALL') params.set('category', categoryFilter);
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (currentUrl !== newUrl) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [searchQuery, statusFilter, categoryFilter]);
+
+  // Handle browser Back / Forward (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window === 'undefined') return;
+      isUpdatingFromUrl.current = true;
+      const parsed = parseSellerFilters(new URLSearchParams(window.location.search));
+      setSearchQuery(parsed.search);
+      setStatusFilter(parsed.statusFilter);
+      setCategoryFilter(parsed.categoryFilter);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // Sync when searchParams changes via Next router
+  useEffect(() => {
+    const parsed = parseSellerFilters(searchParams);
+    if (
+      parsed.search !== searchQuery ||
+      parsed.statusFilter !== statusFilter ||
+      parsed.categoryFilter !== categoryFilter
+    ) {
+      isUpdatingFromUrl.current = true;
+      setSearchQuery(parsed.search);
+      setStatusFilter(parsed.statusFilter);
+      setCategoryFilter(parsed.categoryFilter);
+    }
+  }, [searchParams]);
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
   const [detailsDefaultTab, setDetailsDefaultTab] = useState<'overview' | 'products' | 'orders'>(

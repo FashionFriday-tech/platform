@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { api } from '@/lib/api-client';
 
@@ -12,14 +13,111 @@ export type SortField =
 export type SortDirection = 'asc' | 'desc';
 export type ViewMode = 'table' | 'grid';
 
+function parseOrderFilters(params: URLSearchParams | { get: (k: string) => string | null }) {
+  const search = params.get('search') ?? '';
+  const status = params.get('status') ?? 'all';
+  const payment = params.get('payment') ?? 'all';
+  const date = params.get('date') ?? '';
+  const view = (params.get('view') === 'grid' ? 'grid' : 'table') as ViewMode;
+  const sort = (params.get('sortField') as SortField) ?? 'createdAt';
+  const direction = (params.get('sortDir') as SortDirection) ?? 'desc';
+
+  return {
+    search,
+    status,
+    payment,
+    date,
+    view,
+    sort,
+    direction,
+  };
+}
+
 export function useOrders() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('');
-  const [paymentTypeFilter, setPaymentTypeFilter] = useState('all');
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
-  const [sortField, setSortField] = useState<SortField>('createdAt');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const searchParams = useSearchParams();
+  const initial = useRef<ReturnType<typeof parseOrderFilters> | null>(null);
+  if (!initial.current) {
+    initial.current = parseOrderFilters(searchParams);
+  }
+
+  const [searchQuery, setSearchQuery] = useState(initial.current.search);
+  const [statusFilter, setStatusFilter] = useState(initial.current.status);
+  const [dateFilter, setDateFilter] = useState(initial.current.date);
+  const [paymentTypeFilter, setPaymentTypeFilter] = useState(initial.current.payment);
+  const [viewMode, setViewMode] = useState<ViewMode>(initial.current.view);
+  const [sortField, setSortField] = useState<SortField>(initial.current.sort);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(initial.current.direction);
+
+  const isUpdatingFromUrl = useRef(false);
+
+  // Sync state changes to URL query parameters
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isUpdatingFromUrl.current) {
+      isUpdatingFromUrl.current = false;
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) params.set('search', searchQuery.trim());
+    if (statusFilter && statusFilter !== 'all') params.set('status', statusFilter);
+    if (paymentTypeFilter && paymentTypeFilter !== 'all') params.set('payment', paymentTypeFilter);
+    if (dateFilter) params.set('date', dateFilter);
+    if (viewMode !== 'table') params.set('view', viewMode);
+    if (sortField !== 'createdAt') params.set('sortField', sortField);
+    if (sortDirection !== 'desc') params.set('sortDir', sortDirection);
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (currentUrl !== newUrl) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [searchQuery, statusFilter, paymentTypeFilter, dateFilter, viewMode, sortField, sortDirection]);
+
+  // Handle browser Back / Forward (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window === 'undefined') return;
+      isUpdatingFromUrl.current = true;
+      const parsed = parseOrderFilters(new URLSearchParams(window.location.search));
+      setSearchQuery(parsed.search);
+      setStatusFilter(parsed.status);
+      setPaymentTypeFilter(parsed.payment);
+      setDateFilter(parsed.date);
+      setViewMode(parsed.view);
+      setSortField(parsed.sort);
+      setSortDirection(parsed.direction);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // Sync when searchParams changes via Next router
+  useEffect(() => {
+    const parsed = parseOrderFilters(searchParams);
+    if (
+      parsed.search !== searchQuery ||
+      parsed.status !== statusFilter ||
+      parsed.payment !== paymentTypeFilter ||
+      parsed.date !== dateFilter ||
+      parsed.view !== viewMode ||
+      parsed.sort !== sortField ||
+      parsed.direction !== sortDirection
+    ) {
+      isUpdatingFromUrl.current = true;
+      setSearchQuery(parsed.search);
+      setStatusFilter(parsed.status);
+      setPaymentTypeFilter(parsed.payment);
+      setDateFilter(parsed.date);
+      setViewMode(parsed.view);
+      setSortField(parsed.sort);
+      setSortDirection(parsed.direction);
+    }
+  }, [searchParams]);
 
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
