@@ -84,20 +84,20 @@ export default function CollectionsSection({
               {collections.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md sm:-skew-x-[8deg] sm:h-[280px] sm:w-[210px] sm:rounded-2xl md:h-[320px] md:w-[240px] md:rounded-3xl dark:border-white/10"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md sm:h-[280px] sm:w-[210px] sm:rounded-3xl md:h-[320px] md:w-[240px] dark:border-white/10"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-[1.08] sm:skew-x-[8deg] sm:scale-[1.12]">
+                    <figure className="relative m-0 h-full w-full overflow-hidden">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="(max-width: 768px) 210px, 240px"
-                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
@@ -114,20 +114,20 @@ export default function CollectionsSection({
               {firstHalf.map((item, index) => (
                 <article
                   key={`r1-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md dark:border-white/10"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md dark:border-white/10"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-[1.08]">
+                    <figure className="relative m-0 h-full w-full overflow-hidden">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="200px"
-                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
@@ -141,20 +141,20 @@ export default function CollectionsSection({
               {secondHalf.map((item, index) => (
                 <article
                   key={`r2-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md dark:border-white/10"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md dark:border-white/10"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-[1.08]">
+                    <figure className="relative m-0 h-full w-full overflow-hidden">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="200px"
-                        className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
