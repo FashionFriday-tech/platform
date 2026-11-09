@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 
+import { api } from '@/lib/api-client';
 import { ImageIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -58,19 +59,8 @@ export function AddCollectionModal({
         formData.append('slug', name.trim());
         formData.append('folder', 'collections');
 
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
-          {
-            method: 'POST',
-            body: formData,
-          },
-        );
-
-        if (!res.ok) {
-          throw new Error('Upload failed');
-        }
-        const data = await res.json();
-        finalImageUrl = data.url;
+        const uploadRes = await api.upload<{ url: string }>(formData);
+        finalImageUrl = uploadRes.url;
 
         // Cleanup old image if we are replacing it
         if (
@@ -80,14 +70,7 @@ export function AddCollectionModal({
           !initialData.image.includes('localhost')
         ) {
           try {
-            await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-              {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ urls: [initialData.image] }),
-              },
-            );
+            await api.post('/admin/upload/batch', { urls: [initialData.image] }, { method: 'DELETE' as any });
           } catch (err) {
             console.error('Failed to cleanup old collection image:', err);
           }

@@ -11,6 +11,7 @@ export const UpdateProductSchema = z.object({
   sellerIds: z.array(z.string()).optional(),
   gender: GenderEnum.optional(),
   status: z.enum(['PENDING', 'DRAFT', 'PUBLISHED', 'REJECTED', 'ARCHIVED']).optional(),
+  collections: z.array(z.string()).optional(),
   price: z
     .object({
       ogPrice: z.coerce.number().nonnegative().optional().nullable(),

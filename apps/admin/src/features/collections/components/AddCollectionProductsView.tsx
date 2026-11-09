@@ -120,6 +120,25 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
     });
   }, [products, searchQuery, genderFilter, brandFilter, qualityFilter, categoryFilter]);
 
+  const isInCollection = (productCollections?: string[]) => {
+    if (!Array.isArray(productCollections)) return false;
+    const targetSlug = collection.slug.toLowerCase().trim();
+    const targetName = (collection.name || '').toLowerCase().trim();
+    const clean = (s: string) => s?.toLowerCase().replace(/[^a-z0-9]/g, '') || '';
+    const targetClean = clean(targetSlug);
+
+    return productCollections.some((c) => {
+      if (!c || typeof c !== 'string') return false;
+      const lower = c.toLowerCase().trim();
+      return (
+        lower === targetSlug ||
+        lower === targetName ||
+        clean(lower) === targetClean ||
+        lower.replace(/[\s-]+/g, '-') === targetSlug
+      );
+    });
+  };
+
   const toggleProductSelection = (id: string, isAlreadyInThisCollection: boolean) => {
     if (isAlreadyInThisCollection) {
       return;
@@ -134,9 +153,7 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
   };
 
   const handleSelectAllVisible = () => {
-    const assignable = filteredProducts.filter(
-      (p) => !(p.collections || []).includes(collection.slug),
-    );
+    const assignable = filteredProducts.filter((p) => !isInCollection(p.collections));
     const newSelected = new Set(selectedProductIds);
     assignable.forEach((p) => newSelected.add(p.id));
     setSelectedProductIds(newSelected);
@@ -152,19 +169,38 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
     }
     setIsSaving(true);
     const count = selectedProductIds.size;
+    const selectedIds = Array.from(selectedProductIds);
 
     try {
-      const updatePromises = Array.from(selectedProductIds).map((productId) => {
-        const prod = products.find((p) => p.id === productId);
-        const existingCollections = prod?.collections || [];
-        const updatedCollections = Array.from(new Set([...existingCollections, collection.slug]));
-
-        return api.patch(`/admin/products/${productId}`, {
-          marketing: { collections: updatedCollections },
+      // 1. Try dedicated batch collection endpoint first (fast, single transaction)
+      try {
+        await api.post(`/admin/collections/${collection.id}/products`, {
+          productIds: selectedIds,
         });
-      });
+      } catch (batchErr) {
+        console.warn('Batch add failed, falling back to individual updates:', batchErr);
+        // Fallback: batch updates in small chunks of 3 to avoid pool starvation
+        const colSlug = collection.slug.toLowerCase().trim();
+        const chunkSize = 3;
+        for (let i = 0; i < selectedIds.length; i += chunkSize) {
+          const chunk = selectedIds.slice(i, i + chunkSize);
+          await Promise.all(
+            chunk.map(async (productId) => {
+              const prod = products.find((p) => p.id === productId);
+              const existingCollections = (prod?.collections || []).map((c) =>
+                c.toLowerCase().trim(),
+              );
+              const updatedCollections = Array.from(new Set([...existingCollections, colSlug]));
 
-      await Promise.all(updatePromises);
+              return api.patch(`/admin/products/${productId}`, {
+                collections: updatedCollections,
+                marketing: { collections: updatedCollections },
+              });
+            }),
+          );
+        }
+      }
+
       toast.success(
         `Successfully added ${count} product${count > 1 ? 's' : ''} to ${collection.name}`,
       );
@@ -359,9 +395,7 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {filteredProducts.map((product) => {
-              const isAlreadyInThisCollection = (product.collections || []).includes(
-                collection.slug,
-              );
+              const isAlreadyInThisCollection = isInCollection(product.collections);
               const isSelected = selectedProductIds.has(product.id);
 
               return (

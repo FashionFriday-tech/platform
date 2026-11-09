@@ -108,7 +108,9 @@ export class PublicProductsService {
       const variants = [
         decoded,
         decoded.toLowerCase(),
+        decoded.toUpperCase(),
         decoded.replace(/-/g, ' '),
+        decoded.replace(/-/g, ' ').toUpperCase(),
         decoded
           .split('-')
           .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())

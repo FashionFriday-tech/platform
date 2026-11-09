@@ -52,12 +52,19 @@ export class AdminProductsService {
       ? dto.attributes.sizes.map((s) => s.trim().toUpperCase()).filter(Boolean)
       : [];
     const quality = (dto.attributes?.quality || 'STANDARD').toUpperCase();
-    const collections = Array.isArray(dto.marketing?.collections)
-      ? dto.marketing.collections.map((c) => c.trim().toUpperCase()).filter(Boolean)
+    const rawCollections = (dto as any).collections ?? dto.marketing?.collections;
+    const collections = Array.isArray(rawCollections)
+      ? Array.from(
+          new Set(
+            rawCollections
+              .filter((c: any): c is string => typeof c === 'string' && Boolean(c.trim()))
+              .map((c: string) => c.trim().toLowerCase()),
+          ),
+        )
       : [];
-    const seoTitle = dto.marketing?.seoTitle ? dto.marketing.seoTitle.trim().toUpperCase() : null;
+    const seoTitle = dto.marketing?.seoTitle ? dto.marketing.seoTitle.trim() : null;
     const seoDescription = dto.marketing?.seoDescription
-      ? dto.marketing.seoDescription.trim().toUpperCase()
+      ? dto.marketing.seoDescription.trim()
       : null;
 
     // Verify category exists
@@ -704,31 +711,41 @@ export class AdminProductsService {
       data.totalReviews = Math.max(0, Number(d.totalReviews) || 0);
     }
 
+    const rawCollections = d.collections !== undefined ? d.collections : d.marketing?.collections;
+    if (rawCollections !== undefined) {
+      data.collections = Array.isArray(rawCollections)
+        ? Array.from(
+            new Set(
+              rawCollections
+                .filter((c: any): c is string => typeof c === 'string' && Boolean(c.trim()))
+                .map((c: string) => c.trim().toLowerCase()),
+            ),
+          )
+        : [];
+    }
+
     if (d.marketing) {
-      if (d.marketing.collections) {
-        data.collections = Array.isArray(d.marketing.collections)
-          ? d.marketing.collections.map((c: string) => c.trim().toUpperCase()).filter(Boolean)
-          : [];
-      }
       if (d.marketing.isFeatured !== undefined) {
         data.isFeatured = d.marketing.isFeatured;
       }
       if (d.marketing.seoTitle !== undefined) {
         data.seoTitle =
-          typeof d.marketing.seoTitle === 'string'
-            ? d.marketing.seoTitle.trim().toUpperCase()
-            : null;
+          typeof d.marketing.seoTitle === 'string' ? d.marketing.seoTitle.trim() : null;
       }
       if (d.marketing.seoDescription !== undefined) {
         data.seoDescription =
           typeof d.marketing.seoDescription === 'string'
-            ? d.marketing.seoDescription.trim().toUpperCase()
+            ? d.marketing.seoDescription.trim()
             : null;
       }
     }
 
     // Handle image cleanup & fetch existing product for revalidation tracking
     const existingProduct = await this.productsRepository.findById(id);
+    if (!existingProduct) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+
     if (
       existingProduct &&
       d.media &&
@@ -767,18 +784,16 @@ export class AdminProductsService {
     }
 
     const result = await this.productsRepository.update(id, data);
-    this.triggerProductAndCategoryRevalidation(result);
-    if (existingProduct?.slug && existingProduct.slug !== result.slug) {
-      void triggerRevalidation(
-        `product-${existingProduct.slug}`,
-        `/product/${existingProduct.slug}`,
-      );
-    }
-    if (existingProduct?.slug && existingProduct.slug !== result.slug) {
-      void triggerRevalidation(
-        `product-${existingProduct.slug}`,
-        `/product/${existingProduct.slug}`,
-      );
+    try {
+      this.triggerProductAndCategoryRevalidation(result);
+      if (existingProduct?.slug && existingProduct.slug !== result.slug) {
+        void triggerRevalidation(
+          `product-${existingProduct.slug}`,
+          `/product/${existingProduct.slug}`,
+        );
+      }
+    } catch (revalErr) {
+      console.error('Failed to trigger product revalidation:', revalErr);
     }
     return result;
   }

@@ -39,8 +39,27 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       try {
         const data = await api.get<{ data?: any[] } | any[]>('/admin/products?take=500');
         const items = Array.isArray(data) ? data : (data.data ?? []);
+        const targetSlug = collection.slug.toLowerCase().trim();
+        const targetName = (collection.name || '').toLowerCase().trim();
+        const clean = (s: string) => s?.toLowerCase().replace(/[^a-z0-9]/g, '') || '';
+        const targetClean = clean(targetSlug);
+
+        const isMatch = (collectionsList: string[]) => {
+          if (!Array.isArray(collectionsList)) return false;
+          return collectionsList.some((c) => {
+            if (!c || typeof c !== 'string') return false;
+            const lower = c.toLowerCase().trim();
+            return (
+              lower === targetSlug ||
+              lower === targetName ||
+              clean(lower) === targetClean ||
+              lower.replace(/[\s-]+/g, '-') === targetSlug
+            );
+          });
+        };
+
         const matching: Product[] = items
-          .filter((p: any) => (p.collections || []).includes(collection.slug))
+          .filter((p: any) => isMatch(p.collections || []))
           .map((p: any) => ({
             id: p.id,
             name: p.name,
@@ -70,7 +89,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       }
     }
     void loadCollectionProducts();
-  }, [collection.slug]);
+  }, [collection.slug, collection.name]);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -78,18 +97,33 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     try {
       const prod = collectionProducts.find((p) => p.id === productId);
       const existingCollections = (prod as any)?.collections || [];
-      const updated = existingCollections.filter((c: string) => c !== collection.slug);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ marketing: { collections: updated } }),
-        },
-      );
-      if (!res.ok) {
-        throw new Error('Failed to remove product from collection');
+      const targetSlug = collection.slug.toLowerCase().trim();
+      const targetName = (collection.name || '').toLowerCase().trim();
+      const clean = (s: string) => s?.toLowerCase().replace(/[^a-z0-9]/g, '') || '';
+      const targetClean = clean(targetSlug);
+
+      const updated = existingCollections.filter((c: string) => {
+        if (!c || typeof c !== 'string') return false;
+        const lower = c.toLowerCase().trim();
+        return (
+          lower !== targetSlug &&
+          lower !== targetName &&
+          clean(lower) !== targetClean &&
+          lower.replace(/[\s-]+/g, '-') !== targetSlug
+        );
+      });
+
+      // Try dedicated endpoint first
+      try {
+        await api.delete(`/admin/collections/${collection.id}/products/${productId}`);
+      } catch (endpointErr) {
+        // Fallback to updating product directly
+        await api.patch(`/admin/products/${productId}`, {
+          collections: updated,
+          marketing: { collections: updated },
+        });
       }
+
       setCollectionProducts((prev) => prev.filter((p) => p.id !== productId));
       setCollection((prev) => ({ ...prev, productCount: Math.max(0, prev.productCount - 1) }));
       toast.success('Product removed from collection');
@@ -111,47 +145,24 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       formData.append('folder', 'collections');
 
       try {
-        const uploadRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
-          {
-            method: 'POST',
-            body: formData,
-          },
-        );
+        const uploadRes = await api.upload<{ url: string }>(formData);
+        const url = uploadRes.url;
+        await api.patch(`/admin/collections/${collection.id}`, { image: url });
 
-        if (uploadRes.ok) {
-          const { url } = await uploadRes.json();
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
-            {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ image: url }),
-            },
-          );
-
-          // Cleanup old image
-          if (
-            collection.image &&
-            collection.image.startsWith('http') &&
-            !collection.image.includes('localhost')
-          ) {
-            try {
-              await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-                {
-                  method: 'DELETE',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ urls: [collection.image] }),
-                },
-              );
-            } catch (err) {
-              console.error('Failed to cleanup old image:', err);
-            }
+        // Cleanup old image
+        if (
+          collection.image &&
+          collection.image.startsWith('http') &&
+          !collection.image.includes('localhost')
+        ) {
+          try {
+            await api.post('/admin/upload/batch', { urls: [collection.image] }, { method: 'DELETE' as any });
+          } catch (err) {
+            console.error('Failed to cleanup old image:', err);
           }
-
-          setCollection((prev) => ({ ...prev, image: url }));
         }
+
+        setCollection((prev) => ({ ...prev, image: url }));
       } catch (err) {
         console.error('Failed to update image', err);
       }
@@ -166,14 +177,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     if (editNameValue.trim() && editNameValue !== collection.name) {
       setCollection((prev) => ({ ...prev, name: editNameValue.trim() }));
       try {
-        await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
-          {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: editNameValue.trim() }),
-          },
-        );
+        await api.patch(`/admin/collections/${collection.id}`, { name: editNameValue.trim() });
       } catch (err) {
         console.error('Failed to update name', err);
       }
@@ -196,25 +200,13 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
         !collection.image.includes('localhost')
       ) {
         try {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-            {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ urls: [collection.image] }),
-            },
-          );
+          await api.post('/admin/upload/batch', { urls: [collection.image] }, { method: 'DELETE' as any });
         } catch (err) {
           console.error('Failed to cleanup collection image from Cloudflare R2:', err);
         }
       }
 
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
-        {
-          method: 'DELETE',
-        },
-      );
+      await api.delete(`/admin/collections/${collection.id}`);
       router.push('/collections');
     } catch (err) {
       console.error('Failed to delete collection', err);
@@ -231,18 +223,11 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
     _id?: string,
   ) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${collection.id}`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, image }),
-        },
-      );
-      if (res.ok) {
-        const updated = await res.json();
-        setCollection(updated);
-      }
+      const updated = await api.patch<ProductCollection>(`/admin/collections/${collection.id}`, {
+        name,
+        image,
+      });
+      setCollection(updated);
     } catch (err) {
       console.error('Failed to update via modal', err);
     }

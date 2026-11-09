@@ -22,11 +22,14 @@ export class CollectionsService {
           collection.slug,
           collection.name,
           collection.slug?.toLowerCase(),
+          collection.slug?.toUpperCase(),
           collection.name?.toLowerCase(),
+          collection.name?.toUpperCase(),
+          collection.slug?.replace(/-/g, ' '),
+          collection.slug?.replace(/-/g, ' ').toUpperCase(),
         ].filter(Boolean);
         const productCount = await this.prisma.db.product.count({
           where: {
-            status: 'PUBLISHED',
             collections: { hasSome: Array.from(new Set(variants)) },
           },
         });
@@ -42,7 +45,108 @@ export class CollectionsService {
     if (!collection) {
       throw new NotFoundException('Collection not found');
     }
-    return collection;
+    const variants = [
+      collection.slug,
+      collection.name,
+      collection.slug?.toLowerCase(),
+      collection.slug?.toUpperCase(),
+      collection.name?.toLowerCase(),
+      collection.name?.toUpperCase(),
+      collection.slug?.replace(/-/g, ' '),
+      collection.slug?.replace(/-/g, ' ').toUpperCase(),
+    ].filter(Boolean);
+    const productCount = await this.prisma.db.product.count({
+      where: {
+        collections: { hasSome: Array.from(new Set(variants)) },
+      },
+    });
+    return { ...collection, productCount };
+  }
+
+  async addProducts(collectionIdOrSlug: string, productIds: string[]) {
+    const collection =
+      (await this.repository.findById(collectionIdOrSlug)) ??
+      (await this.repository.findBySlug(collectionIdOrSlug));
+    if (!collection) {
+      throw new NotFoundException('Collection not found');
+    }
+
+    const colSlug = collection.slug.toLowerCase().trim();
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      return { success: true, count: 0 };
+    }
+
+    const products = await this.prisma.db.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, collections: true, slug: true },
+    });
+
+    for (const product of products) {
+      const existing = (product.collections || []).map((c: string) => c.trim().toLowerCase());
+      if (!existing.includes(colSlug)) {
+        const updated = Array.from(new Set([...existing, colSlug]));
+        await this.prisma.db.product.update({
+          where: { id: product.id },
+          data: { collections: updated },
+        });
+        if (product.slug) {
+          void triggerRevalidation(`product-${product.slug}`, `/product/${product.slug}`);
+        }
+      }
+    }
+
+    void triggerRevalidation(`collection-products-${colSlug}`, `/collections/${colSlug}`);
+    void triggerRevalidation('home-collections');
+    void triggerRevalidation('collections');
+
+    return { success: true, count: products.length };
+  }
+
+  async removeProduct(collectionIdOrSlug: string, productId: string) {
+    const collection =
+      (await this.repository.findById(collectionIdOrSlug)) ??
+      (await this.repository.findBySlug(collectionIdOrSlug));
+    if (!collection) {
+      throw new NotFoundException('Collection not found');
+    }
+
+    const colSlug = collection.slug.toLowerCase().trim();
+    const colName = collection.name.toLowerCase().trim();
+    const clean = (s: string) => s?.toLowerCase().replace(/[^a-z0-9]/g, '') || '';
+    const colClean = clean(colSlug);
+
+    const product = await this.prisma.db.product.findUnique({
+      where: { id: productId },
+      select: { id: true, collections: true, slug: true },
+    });
+
+    if (product) {
+      const existing = product.collections || [];
+      const updated = existing.filter((c: string) => {
+        if (!c || typeof c !== 'string') return false;
+        const lower = c.toLowerCase().trim();
+        return (
+          lower !== colSlug &&
+          lower !== colName &&
+          clean(lower) !== colClean &&
+          lower.replace(/[\s-]+/g, '-') !== colSlug
+        );
+      });
+
+      await this.prisma.db.product.update({
+        where: { id: product.id },
+        data: { collections: updated },
+      });
+
+      if (product.slug) {
+        void triggerRevalidation(`product-${product.slug}`, `/product/${product.slug}`);
+      }
+      void triggerRevalidation(`collection-products-${colSlug}`, `/collections/${colSlug}`);
+      void triggerRevalidation('home-collections');
+      void triggerRevalidation('collections');
+    }
+
+    return { success: true };
   }
 
   async create(data: CreateCollectionDto) {

@@ -26,6 +26,16 @@ export class AdminCollectionsController {
   delete(@Param('id') id: string) {
     return this.collectionsService.delete(id);
   }
+
+  @Post(':id/products')
+  addProducts(@Param('id') id: string, @Body() body: { productIds: string[] }) {
+    return this.collectionsService.addProducts(id, body.productIds);
+  }
+
+  @Delete(':id/products/:productId')
+  removeProduct(@Param('id') id: string, @Param('productId') productId: string) {
+    return this.collectionsService.removeProduct(id, productId);
+  }
 }
 
 @Controller('collections')

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { api } from '@/lib/api-client';
 import { type ProductCollection } from '../types';
 
 export function useCollections() {
@@ -13,13 +14,8 @@ export function useCollections() {
   const fetchCollections = async () => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections`,
-      );
-      if (res.ok) {
-        const data = await res.json();
-        setCollections(data);
-      }
+      const data = await api.get<ProductCollection[]>('/admin/collections');
+      setCollections(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to fetch collections', error);
     } finally {
@@ -33,18 +29,9 @@ export function useCollections() {
 
   const handleAddCollection = async (name: string, image: string, slug: string) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, slug, image }),
-        },
-      );
-      if (res.ok) {
-        await fetchCollections();
-        setIsAddModalOpen(false);
-      }
+      await api.post('/admin/collections', { name, slug, image });
+      await fetchCollections();
+      setIsAddModalOpen(false);
     } catch (error) {
       console.error('Failed to create collection', error);
     }
@@ -52,17 +39,8 @@ export function useCollections() {
 
   const handleUpdateCollection = async (id: string, name: string, image: string, slug: string) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${id}`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, slug, image }),
-        },
-      );
-      if (res.ok) {
-        await fetchCollections();
-      }
+      await api.patch(`/admin/collections/${id}`, { name, slug, image });
+      await fetchCollections();
     } catch (error) {
       console.error('Failed to update collection', error);
     }
@@ -75,28 +53,14 @@ export function useCollections() {
       // Clean up Cloudflare R2 image if applicable
       if (col?.image && col.image.startsWith('http') && !col.image.includes('localhost')) {
         try {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-            {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ urls: [col.image] }),
-            },
-          );
+          await api.post('/admin/upload/batch', { urls: [col.image] }, { method: 'DELETE' as any });
         } catch (err) {
           console.error('Failed to cleanup collection image from Cloudflare R2:', err);
         }
       }
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/collections/${id}`,
-        {
-          method: 'DELETE',
-        },
-      );
-      if (res.ok) {
-        await fetchCollections();
-      }
+      await api.delete(`/admin/collections/${id}`);
+      await fetchCollections();
     } catch (error) {
       console.error('Failed to delete collection', error);
     }
