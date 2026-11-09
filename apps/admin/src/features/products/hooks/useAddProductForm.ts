@@ -7,6 +7,7 @@ import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
 import { type CreateColorInput } from '../../colors/types';
+import { useQualities } from '../../qualities/hooks/useQualities';
 import {
   getCategoryQualities,
   getCategorySizes,
@@ -38,6 +39,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const { categories: apiCategories } = useCategories();
   const { brands: apiBrands } = useBrands();
   const { colors: apiColors, handleSaveColor: saveColorToApi } = useColors();
+  const { qualities: apiQualities } = useQualities();
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialData?.categoryId ?? (initialData as any)?.category?.id ?? paramCategoryId,
@@ -1181,6 +1183,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     originalFiles,
     handleReCrop,
     apiCategories,
+    apiQualities,
     availableCollections,
     toggleCollection,
     selectedCategoryId,

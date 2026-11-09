@@ -10,6 +10,7 @@ export * from './wishlist.schema';
 export * from './cart';
 export * from './seller.schema';
 export * from './color.schema';
+export * from './quality.schema';
 
 export * from './constants';
 

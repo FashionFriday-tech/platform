@@ -227,6 +227,12 @@ export function Sidebar({
                   </div>
                   <span className="text-sm font-medium">Colors</span>
                 </Link>
+                <Link href="/qualities" className={getLinkClass('/qualities')}>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                    <ShieldCheckIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                  </div>
+                  <span className="text-sm font-medium">Quality</span>
+                </Link>
               </div>
             </div>
           )}

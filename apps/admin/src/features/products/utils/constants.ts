@@ -12,15 +12,26 @@ export const QUALITIES = [
   '7AA',
   'UA',
   'Semi UA',
-  'Original',
   '10A',
   '7A',
+  '6A',
   '5A',
+  'Original',
   'Premium',
   'Standard',
+  'Surplus',
 ];
 
-export const FOOTWEAR_QUALITIES = ['UA', 'Semi UA', '10A', '7A', '5A', 'Original', 'Standard'];
+export const FOOTWEAR_QUALITIES = [
+  'UA',
+  'Semi UA',
+  '10A',
+  '7A',
+  '6A',
+  '5A',
+  'Original',
+  'Standard',
+];
 
 export const WATCH_QUALITIES = ['7AA', '10A', '7A', '5A', 'Original', 'Premium', 'Standard'];
 

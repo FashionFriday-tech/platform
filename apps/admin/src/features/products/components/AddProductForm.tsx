@@ -12,7 +12,7 @@ import { AddColorModal } from '@/features/colors';
 import { api } from '@/lib/api-client';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
-import { getCategoryQualities } from '../utils/constants';
+import { getCategoryQualities, isFootwearCategory, isWatchCategory } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 import { ProductSellerSelector } from './ProductSellerSelector';
 
@@ -154,6 +154,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     originalFiles,
     handleReCrop,
     apiCategories,
+    apiQualities,
     availableCollections,
     toggleCollection,
     liveWatching,
@@ -311,7 +312,43 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     );
   }, [category, gender, apiCategories]);
 
-  const availableQualities = useMemo(() => getCategoryQualities(category), [category]);
+  const availableQualities = useMemo(() => {
+    const staticQualities = getCategoryQualities(category);
+    if (!apiQualities || apiQualities.length === 0) {
+      return staticQualities;
+    }
+
+    const catLower = (category || '').toLowerCase().trim();
+    const isFootwear = isFootwearCategory(category);
+    const isWatch = isWatchCategory(category);
+
+    const matching = apiQualities
+      .filter((q) => {
+        if (!category) {
+          return true;
+        }
+        return q.categories.some((c) => {
+          const cLower = c.toLowerCase().trim();
+          if (cLower === catLower) {
+            return true;
+          }
+          if (isFootwear && (cLower === 'footwear' || cLower === 'sneakers')) {
+            return true;
+          }
+          if (isWatch && (cLower === 'watches' || cLower === 'watch')) {
+            return true;
+          }
+          return false;
+        });
+      })
+      .map((q) => q.name);
+
+    if (matching.length === 0) {
+      return staticQualities;
+    }
+
+    return Array.from(new Set([...matching, ...staticQualities]));
+  }, [category, apiQualities]);
 
   const validateForm = (isDraft: boolean): Record<string, string> => {
     const errors: Record<string, string> = {};
