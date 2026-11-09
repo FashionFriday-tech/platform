@@ -16,7 +16,7 @@ export const CollectionCard = ({ collection }: CollectionCardProps) => {
   return (
     <Link
       href={`/collections/${collection.slug}`}
-      className="group relative block aspect-[4/5] w-full overflow-hidden rounded-4xl"
+      className="group relative block aspect-[3/4] w-full overflow-hidden rounded-4xl"
     >
       <Image
         src={collection.image}

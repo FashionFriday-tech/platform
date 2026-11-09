@@ -84,19 +84,19 @@ export default function CollectionsSection({
               {collections.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:h-[270px] sm:w-[202px] sm:rounded-2xl md:h-[280px] md:w-[210px] md:rounded-3xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl sm:h-[280px] sm:w-[210px] sm:rounded-2xl md:h-[320px] md:w-[240px] md:rounded-3xl"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full scale-115 skew-x-[6deg]">
+                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-x-[1.07]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
                         fill
-                        sizes="(max-width: 768px) 200px, 220px"
+                        sizes="(max-width: 768px) 210px, 240px"
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
@@ -124,14 +124,14 @@ export default function CollectionsSection({
               {firstHalf.map((item, index) => (
                 <article
                   key={`r1-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full scale-115 skew-x-[6deg]">
+                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-x-[1.07]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}
@@ -161,14 +161,14 @@ export default function CollectionsSection({
               {secondHalf.map((item, index) => (
                 <article
                   key={`r2-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[200px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
                     className="block h-full w-full"
                     title={`Browse ${item.name}`}
                   >
-                    <figure className="absolute inset-0 m-0 h-full w-full scale-115 skew-x-[6deg]">
+                    <figure className="absolute inset-0 m-0 h-full w-full skew-x-[6deg] scale-x-[1.07]">
                       <Image
                         src={item.image}
                         alt={`Model featuring ${item.name} collection`}

@@ -12,7 +12,7 @@ export default function CollectionsLoading() {
       {/* Grid of Collection Cards Skeleton */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="relative aspect-[4/5] w-full overflow-hidden rounded-4xl">
+          <div key={i} className="relative aspect-[3/4] w-full overflow-hidden rounded-4xl">
             <Skeleton className="h-full w-full rounded-4xl" />
           </div>
         ))}
