@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import Image from 'next/image';
 
 import { ImageIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
+import api from '@/lib/api-client';
 import { type ProductCategory } from '../types';
 
 interface AddCategoryModalProps {
@@ -53,25 +53,18 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
 
       if (fileToUpload) {
         const genderPrefix = gender === 'Unisex' ? 'unisex' : gender.toLowerCase();
-        const uploadSlug = `${genderPrefix}-${name.trim()}`;
+        const uploadSlug = `${genderPrefix}-${name
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)+/g, '')}`;
 
         const formData = new FormData();
         formData.append('file', fileToUpload);
         formData.append('slug', uploadSlug);
         formData.append('folder', 'categories');
 
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload`,
-          {
-            method: 'POST',
-            body: formData,
-          },
-        );
-
-        if (!res.ok) {
-          throw new Error('Upload failed');
-        }
-        const data = await res.json();
+        const data = await api.upload<{ url: string }>(formData);
         finalLogoUrl = data.url;
 
         // If we are replacing an existing Cloudflare logo, delete it
@@ -82,24 +75,22 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
           !initialData.image.includes('localhost')
         ) {
           try {
-            await fetch(
-              `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-              {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ urls: [initialData.image] }),
-              },
-            );
+            await api.delete('/admin/upload/batch', {
+              body: JSON.stringify({ urls: [initialData.image] }),
+            });
           } catch (err) {
             console.error('Failed to cleanup old category image:', err);
           }
         }
       }
 
-      const slug = `${gender === 'Unisex' ? 'unisex' : gender.toLowerCase()}-${name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)+/g, '')}`;
+      const slug =
+        initialData?.slug && initialData.name === name.trim() && initialData.gender === gender
+          ? initialData.slug
+          : `${gender === 'Unisex' ? 'unisex' : gender.toLowerCase()}-${name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/(^-|-$)+/g, '')}`;
 
       onSave(
         {
@@ -235,7 +226,12 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                   >
                     {logoUrl ? (
                       <div className="relative h-full w-full">
-                        <Image fill src={logoUrl} alt="Category preview" className="object-cover" />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={logoUrl}
+                          alt="Category preview"
+                          className="h-full w-full object-cover"
+                        />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
                           <span className="text-xs font-bold text-white">Change Image</span>
                         </div>

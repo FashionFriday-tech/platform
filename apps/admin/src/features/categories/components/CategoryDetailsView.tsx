@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { EditIcon, PackageIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
+import api from '@/lib/api-client';
+
 // We simulate fetching all products using the products feature mock
 import { type Product } from '../../products/types';
 import { type ProductCategory } from '../types';
@@ -31,13 +33,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   useEffect(() => {
     async function loadProducts() {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products?take=500`,
-        );
-        if (!res.ok) {
-          return;
-        }
-        const data = (await res.json()) as {
+        const data = await api.get<{
           data?: {
             id: string;
             name: string;
@@ -62,7 +58,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
             youtubeId?: string;
             category?: { id: string; name: string; slug: string };
           }[];
-        };
+        }>('/admin/products?take=500');
         const allProducts = data.data ?? [];
 
         const targetCatName = category.name.toLowerCase();
@@ -136,28 +132,56 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
 
   const handleRemoveProduct = async (productId: string) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/${productId}`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ categoryId: null }),
-        },
-      );
-      if (!res.ok) {
-        throw new Error('Failed to remove product from category');
-      }
+      await api.patch(`/admin/products/${productId}`, { categoryId: null });
       setCategoryProducts((prev) => prev.filter((p) => p.id !== productId));
       setCategory((prev) => ({ ...prev, productCount: Math.max(0, prev.productCount - 1) }));
       toast.success('Product removed from category');
     } catch (err: any) {
       console.error('Failed to remove product:', err);
-      toast.error(err.message || 'Failed to remove product from category');
+      toast.error(err?.message || 'Failed to remove product from category');
     }
   };
 
-  const handleSaveCategory = (savedCategory: ProductCategory) => {
-    setCategory(savedCategory);
+  const handleSaveCategory = async (savedCategory: ProductCategory) => {
+    try {
+      const apiPayload = {
+        name: savedCategory.name,
+        slug: savedCategory.slug,
+        image: savedCategory.image ?? '',
+        gender: savedCategory.gender.toUpperCase(),
+      };
+
+      const updated = await api.patch<{
+        id: string;
+        name: string;
+        slug: string;
+        image?: string;
+        gender?: string;
+      }>(`/admin/categories/${category.id}`, apiPayload);
+
+      const rawGender = updated.gender ?? savedCategory.gender;
+      const normalized: ProductCategory = {
+        ...savedCategory,
+        id: updated.id,
+        name: updated.name,
+        slug: updated.slug,
+        image: updated.image ?? '',
+        gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
+          | 'Men'
+          | 'Women',
+      };
+
+      setCategory(normalized);
+      toast.success('Category updated successfully!');
+      setIsEditModalOpen(false);
+
+      if (updated.slug !== category.slug) {
+        router.replace(`/categories/${updated.slug}`);
+      }
+    } catch (err: any) {
+      console.error('Failed to update category:', err);
+      toast.error(err?.message || 'Failed to update category');
+    }
   };
 
   const confirmDeleteCategory = async () => {
@@ -170,38 +194,23 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         !category.image.includes('localhost')
       ) {
         try {
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`,
-            {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ urls: [category.image] }),
-            },
-          );
+          await api.delete('/admin/upload/batch', {
+            body: JSON.stringify({ urls: [category.image] }),
+          });
         } catch (err) {
           console.error('Failed to cleanup category image:', err);
         }
       }
 
       // 2. Delete category from database
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${category.id}`,
-        {
-          method: 'DELETE',
-        },
-      );
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || 'Failed to delete category');
-      }
+      await api.delete(`/admin/categories/${category.id}`);
 
       toast.success('Category deleted successfully');
       setIsDeleteModalOpen(false);
       router.push('/categories');
     } catch (err: any) {
       console.error('Failed to delete category:', err);
-      toast.error(err.message || 'Failed to delete category');
+      toast.error(err?.message || 'Failed to delete category');
     } finally {
       setIsDeleting(false);
     }
@@ -227,12 +236,18 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         {/* Left: Image */}
         <div className="group relative w-32 shrink-0 overflow-hidden rounded-xl bg-black/5 dark:bg-white/5">
           <div className="relative aspect-[3/4] w-full">
-            <Image
-              src={category.image}
-              alt={category.name}
-              fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+            {category.image ? (
+              <Image
+                src={category.image}
+                alt={category.name}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gray-200 dark:bg-[#222]">
+                <span className="text-xs font-medium text-gray-400">No Image</span>
+              </div>
+            )}
           </div>
         </div>
 

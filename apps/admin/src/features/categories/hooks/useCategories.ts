@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 
 import { toast } from 'sonner';
 
+import api from '@/lib/api-client';
 import { type ProductCategory } from '../types';
 
 function parseCategoryFilters(params: URLSearchParams | { get: (k: string) => string | null }) {
@@ -83,10 +84,7 @@ export function useCategories() {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories`,
-        );
-        const data = (await res.json()) as
+        const data = await api.get<
           | {
               id: string;
               name: string;
@@ -106,7 +104,8 @@ export function useCategories() {
                 _count?: { products?: number };
                 productCount?: number;
               }[];
-            };
+            }
+        >('/admin/categories');
         const categoriesData = Array.isArray(data) ? data : (data.data ?? []);
 
         const mapped: ProductCategory[] = categoriesData.map((c) => {
@@ -157,14 +156,7 @@ export function useCategories() {
         position: index,
       }));
 
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/reorder`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items: payloadItems }),
-        },
-      );
+      await api.patch('/admin/categories/reorder', { items: payloadItems });
       toast.success('Category order saved!');
     } catch (err) {
       console.error('Failed to reorder categories', err);
@@ -186,63 +178,67 @@ export function useCategories() {
       };
 
       if (isEdit) {
-        const existingCat = categories.find((c) => c.slug === originalSlug);
-        if (existingCat) {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${existingCat.id}`,
-            {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(apiPayload),
-            },
-          );
-          if (res.ok) {
-            setCategories((prev) => prev.map((c) => (c.slug === originalSlug ? savedCategory : c)));
-            toast.success('Category updated successfully!');
-          } else {
-            toast.error('Failed to update category');
-          }
-        }
-      } else {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(apiPayload),
-          },
+        const existingCat = categories.find(
+          (c) => c.id === savedCategory.id || (originalSlug && c.slug === originalSlug),
         );
-
-        if (res.ok) {
-          const created = (await res.json()) as {
+        if (existingCat) {
+          const updated = await api.patch<{
             id: string;
             name: string;
             slug: string;
             image?: string;
             gender?: string;
+          }>(`/admin/categories/${existingCat.id}`, apiPayload);
+
+          const rawGender = updated.gender ?? savedCategory.gender;
+          const normalized: ProductCategory = {
+            ...savedCategory,
+            id: updated.id,
+            name: updated.name,
+            slug: updated.slug,
+            image: updated.image ?? '',
+            gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
+              | 'Men'
+              | 'Women',
           };
-          const rawGender = created.gender ?? 'MEN';
-          setCategories((prev) => [
-            {
-              id: created.id,
-              name: created.name,
-              slug: created.slug,
-              image: created.image ?? '',
-              gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
-                | 'Men'
-                | 'Women',
-              productCount: 0,
-            },
-            ...prev,
-          ]);
-          toast.success('Category created successfully!');
-        } else {
-          toast.error('Failed to create category');
+
+          setCategories((prev) =>
+            prev.map((c) =>
+              c.id === existingCat.id || (originalSlug && c.slug === originalSlug)
+                ? normalized
+                : c,
+            ),
+          );
+          toast.success('Category updated successfully!');
         }
+      } else {
+        const created = await api.post<{
+          id: string;
+          name: string;
+          slug: string;
+          image?: string;
+          gender?: string;
+        }>('/admin/categories', apiPayload);
+
+        const rawGender = created.gender ?? 'MEN';
+        setCategories((prev) => [
+          {
+            id: created.id,
+            name: created.name,
+            slug: created.slug,
+            image: created.image ?? '',
+            gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
+              | 'Men'
+              | 'Women',
+            productCount: 0,
+          },
+          ...prev,
+        ]);
+        toast.success('Category created successfully!');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save category via API', err);
-      toast.error('An error occurred while saving the category');
+      toast.error(err?.message || 'An error occurred while saving the category');
     }
   };
 
@@ -255,31 +251,23 @@ export function useCategories() {
 
       // Clean up Cloudflare image if remote
       if (cat.image && cat.image.startsWith('http') && !cat.image.includes('localhost')) {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/upload/batch`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ urls: [cat.image] }),
-        }).catch((err: unknown) => {
-          console.error('Failed to cleanup category image:', err);
-        });
+        api
+          .delete('/admin/upload/batch', {
+            body: JSON.stringify({ urls: [cat.image] }),
+          })
+          .catch((err: unknown) => {
+            console.error('Failed to cleanup category image:', err);
+          });
       }
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/categories/${cat.id}`,
-        { method: 'DELETE' },
-      );
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || 'Failed to delete category');
-      }
+      await api.delete(`/admin/categories/${cat.id}`);
 
       setCategories((prev) => prev.filter((c) => c.id !== cat.id));
       toast.success('Category deleted successfully');
       return true;
     } catch (err: any) {
       console.error('Failed to delete category via API', err);
-      toast.error(err.message || 'Failed to delete category');
+      toast.error(err?.message || 'Failed to delete category');
       return false;
     }
   };

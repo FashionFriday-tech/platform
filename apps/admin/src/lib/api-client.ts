@@ -76,7 +76,9 @@ export async function fetcher<T = unknown>(
 
   const buildHeaders = (token?: string | null) => {
     const headers = new Headers(customHeaders);
-    if (!headers.has('Content-Type')) {
+    const isFormData =
+      typeof FormData !== 'undefined' && customOptions.body instanceof FormData;
+    if (!isFormData && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json');
     }
     if (token) {
@@ -170,6 +172,13 @@ export const api = {
 
   delete: <T = unknown>(endpoint: string, options?: RequestOptions) =>
     fetcher<T>(endpoint, { ...options, method: 'DELETE' }),
+
+  upload: <T = { url: string }>(formData: FormData, options?: RequestOptions) =>
+    fetcher<T>('/admin/upload', {
+      ...options,
+      method: 'POST',
+      body: formData,
+    }),
 };
 
 export default api;

@@ -29,9 +29,11 @@ import { CategoryCard } from './CategoryCard';
 
 function SortableCategoryItem({
   category,
+  onEdit,
   onDelete,
 }: {
   category: ProductCategory;
+  onEdit?: (category: ProductCategory) => void;
   onDelete?: (category: ProductCategory) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -64,7 +66,7 @@ function SortableCategoryItem({
           />
         </svg>
       </button>
-      <CategoryCard category={category} onDelete={onDelete} />
+      <CategoryCard category={category} onEdit={onEdit} onDelete={onDelete} />
     </div>
   );
 }
@@ -328,6 +330,10 @@ export default function CategoriesFeature() {
                   <SortableCategoryItem
                     key={category.id}
                     category={category}
+                    onEdit={(cat) => {
+                      setCategoryToEdit(cat);
+                      setIsAddModalOpen(true);
+                    }}
                     onDelete={setCategoryToDelete}
                   />
                 ))}
@@ -341,6 +347,7 @@ export default function CategoriesFeature() {
         isOpen={isAddModalOpen}
         onClose={() => {
           setIsAddModalOpen(false);
+          setCategoryToEdit(null);
         }}
         initialData={categoryToEdit}
         onSave={handleSaveCategory}

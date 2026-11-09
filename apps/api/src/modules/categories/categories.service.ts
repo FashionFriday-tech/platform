@@ -41,7 +41,7 @@ export class CategoriesService {
     if (dto.slug) {
       data.slug = dto.slug;
     }
-    if (dto.image) {
+    if (dto.image !== undefined) {
       data.image = dto.image;
     }
     if (dto.gender) {
