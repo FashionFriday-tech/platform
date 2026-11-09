@@ -27,16 +27,15 @@ import { type QualityItem } from '../types';
 import { AddQualityModal } from './AddQualityModal';
 import { DeleteQualityModal } from './DeleteQualityModal';
 import { QualityCard } from './QualityCard';
+import { QualityDetailsModal } from './QualityDetailsModal';
 import { QualityStats } from './QualityStats';
 
 function SortableQualityItem({
   quality,
-  onEdit,
-  onDelete,
+  onSelect,
 }: {
   quality: QualityItem;
-  onEdit: (quality: QualityItem) => void;
-  onDelete: (quality: QualityItem) => void;
+  onSelect: (quality: QualityItem) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: quality.id,
@@ -53,8 +52,7 @@ function SortableQualityItem({
     <div ref={setNodeRef} style={style} className="h-full">
       <QualityCard
         quality={quality}
-        onEdit={onEdit}
-        onDelete={onDelete}
+        onSelect={onSelect}
         dragHandleProps={{ ...attributes, ...listeners }}
       />
     </div>
@@ -81,6 +79,9 @@ export function QualitiesFeature() {
   } = useQualities();
 
   const [qualityToDelete, setQualityToDelete] = useState<QualityItem | null>(null);
+  const [selectedQualityForDetails, setSelectedQualityForDetails] = useState<QualityItem | null>(
+    null,
+  );
   const [isDeleting, setIsDeleting] = useState(false);
 
   const confirmDelete = async () => {
@@ -246,12 +247,8 @@ export function QualitiesFeature() {
                   <SortableQualityItem
                     key={quality.id}
                     quality={quality}
-                    onEdit={(q) => {
-                      setQualityToEdit(q);
-                      setIsAddModalOpen(true);
-                    }}
-                    onDelete={(q) => {
-                      setQualityToDelete(q);
+                    onSelect={(q) => {
+                      setSelectedQualityForDetails(q);
                     }}
                   />
                 ))}
@@ -262,6 +259,29 @@ export function QualitiesFeature() {
       </div>
 
       {/* Modals */}
+      <QualityDetailsModal
+        isOpen={Boolean(selectedQualityForDetails)}
+        onClose={() => {
+          setSelectedQualityForDetails(null);
+        }}
+        quality={selectedQualityForDetails}
+        onEdit={() => {
+          if (selectedQualityForDetails) {
+            const q = selectedQualityForDetails;
+            setSelectedQualityForDetails(null);
+            setQualityToEdit(q);
+            setIsAddModalOpen(true);
+          }
+        }}
+        onDelete={() => {
+          if (selectedQualityForDetails) {
+            const q = selectedQualityForDetails;
+            setSelectedQualityForDetails(null);
+            setQualityToDelete(q);
+          }
+        }}
+      />
+
       <AddQualityModal
         isOpen={isAddModalOpen}
         onClose={() => {
