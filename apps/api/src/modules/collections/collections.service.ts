@@ -176,4 +176,11 @@ export class CollectionsService {
     void triggerRevalidation('home-collections');
     return result;
   }
+
+  async reorder(items: { id: string; position: number }[]) {
+    const result = await this.repository.reorder(items);
+    void triggerRevalidation('home-collections');
+    void triggerRevalidation('collections');
+    return result;
+  }
 }

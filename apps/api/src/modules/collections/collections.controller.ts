@@ -17,6 +17,11 @@ export class AdminCollectionsController {
     return this.collectionsService.create(dto);
   }
 
+  @Patch('reorder')
+  reorder(@Body() body: { items: { id: string; position: number }[] }) {
+    return this.collectionsService.reorder(body.items);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateCollectionDto) {
     return this.collectionsService.update(id, dto);

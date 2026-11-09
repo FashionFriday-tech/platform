@@ -2,6 +2,23 @@
 
 import { useState } from 'react';
 
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  rectSortingStrategy,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { PlusIcon, SearchIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
@@ -10,6 +27,49 @@ import { type ProductCollection } from '../types';
 import { AddCollectionModal } from './AddCollectionModal';
 import { CollectionCard } from './CollectionCard';
 import { DeleteCollectionModal } from './DeleteCollectionModal';
+
+function SortableCollectionItem({
+  collection,
+  onEdit,
+  onDelete,
+}: {
+  collection: ProductCollection;
+  onEdit: (collection: ProductCollection) => void;
+  onDelete: (id: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: collection.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 50 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="group relative">
+      <button
+        {...attributes}
+        {...listeners}
+        type="button"
+        className="absolute top-3 left-3 z-30 flex h-8 w-8 cursor-grab items-center justify-center rounded-xl bg-black/70 text-white opacity-75 backdrop-blur-md transition-opacity group-hover:opacity-100 hover:bg-black active:cursor-grabbing"
+        title="Drag to reorder collection"
+      >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.5}
+            d="M4 8h16M4 16h16"
+          />
+        </svg>
+      </button>
+      <CollectionCard collection={collection} onEdit={onEdit} onDelete={onDelete} />
+    </div>
+  );
+}
 
 export default function CollectionsFeature() {
   const {
@@ -22,6 +82,7 @@ export default function CollectionsFeature() {
     handleAddCollection,
     handleUpdateCollection,
     handleDeleteCollection,
+    handleReorderCollections,
   } = useCollections();
 
   const [editingCollection, setEditingCollection] = useState<ProductCollection | null>(null);
@@ -71,6 +132,23 @@ export default function CollectionsFeature() {
       console.error('Failed to delete collection:', err);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = filteredCollections.findIndex((c) => c.id === active.id);
+      const newIndex = filteredCollections.findIndex((c) => c.id === over.id);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reordered = arrayMove(filteredCollections, oldIndex, newIndex);
+        void handleReorderCollections(reordered);
+      }
     }
   };
 
@@ -154,27 +232,32 @@ export default function CollectionsFeature() {
             </p>
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            {filteredCollections.map((collection, idx) => (
+            <SortableContext
+              items={filteredCollections.map((c) => c.id)}
+              strategy={rectSortingStrategy}
+            >
               <motion.div
-                key={collection.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.05 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
               >
-                <CollectionCard
-                  collection={collection}
-                  onEdit={openEditModal}
-                  onDelete={handleDeleteRequest}
-                />
+                {filteredCollections.map((collection) => (
+                  <SortableCollectionItem
+                    key={collection.id}
+                    collection={collection}
+                    onEdit={openEditModal}
+                    onDelete={handleDeleteRequest}
+                  />
+                ))}
               </motion.div>
-            ))}
-          </motion.div>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
     </div>

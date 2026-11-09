@@ -9,7 +9,7 @@ export class CollectionsRepository {
 
   async findAll() {
     return this.prisma.db.collection.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ position: 'asc' }, { createdAt: 'desc' }],
     });
   }
 
@@ -48,5 +48,15 @@ export class CollectionsRepository {
     return this.prisma.db.collection.delete({
       where: { id },
     });
+  }
+
+  async reorder(items: { id: string; position: number }[]) {
+    const updates = items.map((item) =>
+      this.prisma.db.collection.update({
+        where: { id: item.id },
+        data: { position: item.position },
+      }),
+    );
+    return this.prisma.db.$transaction(updates);
   }
 }

@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { toast } from 'sonner';
+
 import { api } from '@/lib/api-client';
 
 import { type ProductCollection } from '../types';
@@ -67,6 +69,24 @@ export function useCollections() {
     }
   };
 
+  const handleReorderCollections = async (reordered: ProductCollection[]) => {
+    setCollections(reordered);
+
+    try {
+      const payloadItems = reordered.map((col, index) => ({
+        id: col.id,
+        position: index,
+      }));
+
+      await api.patch('/admin/collections/reorder', { items: payloadItems });
+      toast.success('Collection order saved!');
+    } catch (err) {
+      console.error('Failed to reorder collections', err);
+      toast.error('Failed to save collection order');
+      await fetchCollections();
+    }
+  };
+
   const filteredCollections = useMemo(() => {
     let result = [...collections];
     if (searchQuery) {
@@ -86,5 +106,6 @@ export function useCollections() {
     handleAddCollection,
     handleUpdateCollection,
     handleDeleteCollection,
+    handleReorderCollections,
   };
 }

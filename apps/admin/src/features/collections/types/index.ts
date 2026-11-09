@@ -4,4 +4,5 @@ export interface ProductCollection {
   slug: string;
   image: string;
   productCount: number;
+  position?: number;
 }
