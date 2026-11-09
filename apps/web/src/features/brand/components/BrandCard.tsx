@@ -14,42 +14,20 @@ interface BrandCardProps {
   skewed?: boolean;
 }
 
-function isDarkColor(hexColor?: string): boolean {
-  if (!hexColor) {
-    return true;
-  }
-  const hex = hexColor.replace('#', '');
-  if (hex.length === 3) {
-    const r = parseInt(hex[0] + hex[0], 16);
-    const g = parseInt(hex[1] + hex[1], 16);
-    const b = parseInt(hex[2] + hex[2], 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
-  }
-  if (hex.length === 6) {
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
-  }
-  return true;
-}
-
 export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) => {
   const [hasError, setHasError] = React.useState(false);
   const [hasFallbackText, setHasFallbackText] = React.useState(false);
-  const isBlackBackground = brand.color === '#000000';
-  const isDark = isDarkColor(brand.color);
 
   return (
     <Link href={`/brands/${brand.slug}`} className="group block h-full w-full">
       <div
         className={cn(
-          'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl p-4 duration-500 hover:scale-95 sm:rounded-2xl sm:p-5 md:rounded-2xl md:p-5',
+          'group relative flex aspect-[3/4] h-full w-full items-center justify-center overflow-hidden rounded-2xl border border-black/5 p-4 shadow-sm duration-500 hover:scale-95 sm:rounded-2xl sm:p-5 md:rounded-2xl md:p-5 dark:border-white/10',
           skewed && '-skew-x-[6deg]',
           className,
         )}
         style={{
-          backgroundColor: isBlackBackground ? 'var(--color-foreground)' : brand.color,
+          backgroundColor: brand.color ?? '#000000',
         }}
       >
         <div
@@ -69,17 +47,11 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
                   setHasError(true);
                   setHasFallbackText(true);
                 }}
-                className={`object-contain p-1.5 duration-500 group-hover:scale-105 ${
-                  isBlackBackground ? 'invert dark:invert-0' : isDark ? 'invert' : 'invert-0'
-                }`}
+                className="object-contain p-1.5 drop-shadow-sm duration-500 group-hover:scale-105 brightness-0 invert"
               />
             </div>
           ) : (
-            <span
-              className={`px-2 text-center text-xs font-black tracking-widest uppercase sm:text-sm md:text-base ${
-                isBlackBackground ? 'text-background' : isDark ? 'text-white' : 'text-black'
-              }`}
-            >
+            <span className="px-2 text-center text-xs font-black tracking-widest uppercase text-white drop-shadow-sm sm:text-sm md:text-base">
               {brand.name}
             </span>
           )}

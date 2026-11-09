@@ -10,31 +10,10 @@ interface BrandCardProps {
   onToggleStatus?: (e: React.MouseEvent) => void;
 }
 
-function isDarkColor(hexColor?: string): boolean {
-  if (!hexColor) {
-    return true;
-  }
-  const hex = hexColor.replace('#', '');
-  if (hex.length === 3) {
-    const r = parseInt(hex[0] + hex[0], 16);
-    const g = parseInt(hex[1] + hex[1], 16);
-    const b = parseInt(hex[2] + hex[2], 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
-  }
-  if (hex.length === 6) {
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
-  }
-  return true;
-}
-
 export function BrandCard({ brand, onClick }: BrandCardProps) {
   const [hasImageError, setHasImageError] = React.useState(false);
   const [hasFallbackText, setHasFallbackText] = React.useState(false);
   const isActive = brand.isActive !== false;
-  const isDark = isDarkColor(brand.color);
 
   return (
     <motion.div
@@ -65,9 +44,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                   onError={() => {
                     setHasImageError(true);
                   }}
-                  className={`object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
-                    isDark ? 'invert' : 'invert-0'
-                  }`}
+                  className="object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 brightness-0 invert"
                 />
               ) : (
                 <img
@@ -76,18 +53,12 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                   onError={() => {
                     setHasFallbackText(true);
                   }}
-                  className={`h-full w-full object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
-                    isDark ? 'invert' : 'invert-0'
-                  }`}
+                  className="h-full w-full object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 brightness-0 invert"
                 />
               )}
             </div>
           ) : (
-            <span
-              className={`text-center text-base font-black tracking-wider break-words uppercase sm:text-lg ${
-                isDark ? 'text-white' : 'text-black'
-              }`}
-            >
+            <span className="text-center text-base font-black tracking-wider break-words uppercase text-white drop-shadow-sm sm:text-lg">
               {brand.name}
             </span>
           )}
