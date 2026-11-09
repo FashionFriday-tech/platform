@@ -84,7 +84,7 @@ export default function CollectionsSection({
               {collections.map((item, index) => (
                 <article
                   key={`desktop-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md sm:h-[280px] sm:w-[210px] sm:rounded-3xl md:h-[320px] md:w-[240px] dark:border-white/10"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm duration-500 hover:scale-95 sm:h-[270px] sm:w-[202px] sm:rounded-2xl md:h-[280px] md:w-[210px] md:rounded-2xl dark:border-white/10"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
@@ -114,7 +114,7 @@ export default function CollectionsSection({
               {firstHalf.map((item, index) => (
                 <article
                   key={`r1-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md dark:border-white/10"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm duration-500 hover:scale-95 dark:border-white/10"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
@@ -141,7 +141,7 @@ export default function CollectionsSection({
               {secondHalf.map((item, index) => (
                 <article
                   key={`r2-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 overflow-hidden rounded-2xl border border-black/10 shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md dark:border-white/10"
+                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm duration-500 hover:scale-95 dark:border-white/10"
                 >
                   <Link
                     href={`/collections/${item.slug}`}
