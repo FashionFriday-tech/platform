@@ -102,14 +102,14 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
           {!isMounted ? (
             <>
               {/* Category skeleton placeholders */}
-              <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
-              <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
+              <div className="aspect-[3/4] w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
+              <div className="aspect-[3/4] w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
             </>
           ) : cards.length > 0 ? (
             cards.map((cat, idx) => (
               <article
                 key={cat.id}
-                className="group relative aspect-square w-full overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl"
+                className="group relative aspect-[3/4] w-full overflow-hidden rounded-3xl bg-zinc-900 shadow-2xl"
               >
                 <Link href={cat.href} className="block h-full w-full">
                   <figure className="relative m-0 h-full w-full overflow-hidden">
@@ -161,8 +161,8 @@ export default function CategoryCarousel({ initialCampaigns }: { initialCampaign
           ) : (
             <>
               {/* Category skeleton placeholders */}
-              <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
-              <div className="aspect-square w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
+              <div className="aspect-[3/4] w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
+              <div className="aspect-[3/4] w-full animate-pulse rounded-3xl bg-black/5 dark:bg-white/5" />
             </>
           )}
         </div>
