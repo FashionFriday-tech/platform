@@ -105,19 +105,41 @@ export class PublicProductsService {
 
     if (collection) {
       const decoded = decodeURIComponent(collection).trim();
+      let collectionName: string | undefined;
+      try {
+        const found = await this.prisma.db.collection.findFirst({
+          where: {
+            OR: [
+              { slug: { equals: decoded, mode: 'insensitive' } },
+              { name: { equals: decoded.replace(/-/g, ' '), mode: 'insensitive' } },
+            ],
+          },
+          select: { name: true, slug: true },
+        });
+        if (found) {
+          collectionName = found.name;
+        }
+      } catch {
+        // ignore
+      }
+
       const variants = [
         decoded,
         decoded.toLowerCase(),
         decoded.toUpperCase(),
         decoded.replace(/-/g, ' '),
         decoded.replace(/-/g, ' ').toUpperCase(),
+        collectionName,
+        collectionName?.toLowerCase(),
+        collectionName?.toUpperCase(),
         decoded
           .split('-')
           .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
           .join(' '),
-      ];
+      ].filter(Boolean) as string[];
+
       where.collections = {
-        hasSome: Array.from(new Set(variants.filter(Boolean))),
+        hasSome: Array.from(new Set(variants)),
       };
     }
 

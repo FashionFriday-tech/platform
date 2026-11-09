@@ -60,7 +60,11 @@ export async function CollectionDetails({
       </div>
 
       {/* Catalogue Grid */}
-      <CatalogueClient categorySlug={contextCategory} initialProducts={collectionProducts} />
+      <CatalogueClient
+        categorySlug={contextCategory}
+        collectionSlug={collection.slug}
+        initialProducts={collectionProducts}
+      />
     </div>
   );
 }

@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
 
     let url = '';
-    if (category && category !== 'all') {
+    if (category && category !== 'all' && !collection && !brand) {
       url = `${API_URL}/products/category/${encodeURIComponent(category)}?skip=${skip}&take=${take}`;
     } else {
       const queryParams = new URLSearchParams({
@@ -49,19 +49,30 @@ export async function GET(request: Request) {
         ? (json as unknown[])
         : [];
     const total = typeof json.meta?.total === 'number' ? json.meta.total : rawList.length;
-    const mapped = rawList.map((item) =>
+    let mapped = rawList.map((item) =>
       mapDbProductToSchema(item as Parameters<typeof mapDbProductToSchema>[0]),
     );
+
+    if (collection) {
+      const clean = (s?: string | null) => (s ? s.toLowerCase().replace(/[^a-z0-9]/g, '') : '');
+      const target = clean(collection);
+      mapped = mapped.filter((p) => {
+        const colList = p.marketing?.collections || [];
+        return colList.some(
+          (c) => clean(c) === target || c.toLowerCase() === collection.toLowerCase(),
+        );
+      });
+    }
 
     return NextResponse.json({
       data: mapped,
       meta: {
-        total,
+        total: collection ? mapped.length : total,
         skip,
         take,
         page: Math.floor(skip / take) + 1,
         totalPages: Math.ceil(total / take),
-        hasMore: skip + mapped.length < total,
+        hasMore: collection ? false : skip + mapped.length < total,
       },
     });
   } catch (error: any) {

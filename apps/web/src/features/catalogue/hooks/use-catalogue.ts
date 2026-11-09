@@ -27,13 +27,15 @@ export const useCatalogue = ({
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters);
   const [sortBy, setSortBy] = useState<string>('newest');
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(initialProducts.length >= 24);
+  const [hasMore, setHasMore] = useState(
+    collectionSlug ? initialProducts.length >= 100 : initialProducts.length >= 24,
+  );
 
   // Sync when initialProducts change
   useEffect(() => {
     setAllProducts(initialProducts);
-    setHasMore(initialProducts.length >= 24);
-  }, [initialProducts]);
+    setHasMore(collectionSlug ? initialProducts.length >= 100 : initialProducts.length >= 24);
+  }, [initialProducts, collectionSlug]);
 
   // Load more products dynamically
   const loadMore = useCallback(async () => {
@@ -56,7 +58,7 @@ export const useCatalogue = ({
       if (collectionSlug) {
         params.set('collection', collectionSlug);
       }
-      if (!isNewArrivals && categorySlug && categorySlug !== 'all') {
+      if (!isNewArrivals && !collectionSlug && categorySlug && categorySlug !== 'all') {
         params.set('category', categorySlug);
       }
 
@@ -67,7 +69,22 @@ export const useCatalogue = ({
       }
 
       const json = await res.json();
-      const newItems: Product[] = json.data || [];
+      let newItems: Product[] = json.data || [];
+
+      // Defense-in-depth: if collectionSlug is present, strictly filter to ensure products belong to this collection
+      if (collectionSlug) {
+        const clean = (s?: string | null) => (s ? s.toLowerCase().replace(/[^a-z0-9]/g, '') : '');
+        const target = clean(collectionSlug);
+        newItems = newItems.filter((p: Product) => {
+          const colList = p.marketing?.collections || [];
+          return colList.some((c) => {
+            if (!c) {
+              return false;
+            }
+            return clean(c) === target || c.toLowerCase() === collectionSlug.toLowerCase();
+          });
+        });
+      }
 
       if (newItems.length === 0) {
         setHasMore(false);
