@@ -1,3 +1,4 @@
+import { Quality } from '@ff/database';
 import { ConflictException, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
@@ -106,7 +107,7 @@ export class QualitiesService implements OnModuleInit {
     const qualities = await this.repository.findAll(category);
 
     const enriched = await Promise.all(
-      qualities.map(async (q) => {
+      qualities.map(async (q: Quality) => {
         const productCount = await this.prisma.db.product.count({
           where: {
             quality: {

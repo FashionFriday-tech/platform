@@ -1,4 +1,4 @@
-import { Prisma } from '@ff/database';
+import { Prisma, Quality } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
@@ -7,7 +7,7 @@ import { PrismaService } from '../../database/prisma.service';
 export class QualitiesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(category?: string) {
+  async findAll(category?: string): Promise<Quality[]> {
     if (category?.trim()) {
       const cat = category.trim();
       return this.prisma.db.quality.findMany({
