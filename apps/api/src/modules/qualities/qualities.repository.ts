@@ -1,4 +1,4 @@
-import { Prisma, Quality } from '@ff/database';
+import { Prisma, type Quality } from '@ff/database';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';

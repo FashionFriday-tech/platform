@@ -1,4 +1,4 @@
-import { Quality } from '@ff/database';
+import type { Quality } from '@ff/database';
 import { ConflictException, Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
