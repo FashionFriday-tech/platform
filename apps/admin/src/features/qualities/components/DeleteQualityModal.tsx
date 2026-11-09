@@ -39,7 +39,7 @@ export function DeleteQualityModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ duration: 0.2 }}
-          className="relative w-full max-w-md overflow-hidden rounded-2xl border border-black/10 bg-white p-5 shadow-2xl sm:rounded-3xl sm:p-6 dark:border-white/10 dark:bg-[#121212]"
+          className="relative w-full max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-black/10 bg-white p-5 shadow-2xl sm:max-w-md sm:rounded-3xl sm:p-6 dark:border-white/10 dark:bg-[#121212]"
         >
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-600 dark:text-red-400">
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

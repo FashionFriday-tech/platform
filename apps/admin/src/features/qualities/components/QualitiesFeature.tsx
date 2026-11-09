@@ -50,19 +50,13 @@ function SortableQualityItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="group relative">
-      <button
-        {...attributes}
-        {...listeners}
-        type="button"
-        className="absolute top-3 right-12 z-20 flex h-7 w-7 cursor-grab items-center justify-center rounded-lg text-black/30 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/5 hover:text-black active:cursor-grabbing dark:text-white/30 dark:hover:bg-white/5 dark:hover:text-white"
-        title="Drag to reorder quality tier"
-      >
-        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-        </svg>
-      </button>
-      <QualityCard quality={quality} onEdit={onEdit} onDelete={onDelete} />
+    <div ref={setNodeRef} style={style} className="h-full">
+      <QualityCard
+        quality={quality}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        dragHandleProps={{ ...attributes, ...listeners }}
+      />
     </div>
   );
 }
@@ -122,15 +116,15 @@ export function QualitiesFeature() {
   const categoryFilterTabs = ['All', ...allAvailableCategories];
 
   return (
-    <div className="scrollbar-hide flex h-full flex-col gap-6 overflow-hidden">
+    <div className="scrollbar-hide flex h-full min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-8 sm:gap-5 md:gap-6">
       {/* Top Header & Stats */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3.5 sm:gap-4">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-          <div>
-            <h1 className="text-xl font-black tracking-tight text-black sm:text-2xl dark:text-white">
+          <div className="min-w-0">
+            <h1 className="text-lg font-black tracking-tight text-black sm:text-xl md:text-2xl dark:text-white">
               Quality Management
             </h1>
-            <p className="text-xs text-black/50 sm:text-sm dark:text-white/50">
+            <p className="mt-0.5 text-xs text-black/50 sm:text-sm dark:text-white/50">
               Manage quality grades (6A, UA, 7AA, etc.) and assign applicable categories
             </p>
           </div>
@@ -141,7 +135,7 @@ export function QualitiesFeature() {
               setQualityToEdit(null);
               setIsAddModalOpen(true);
             }}
-            className="flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-all hover:bg-black/90 active:scale-95 sm:text-sm dark:bg-white dark:text-black dark:hover:bg-white/90"
+            className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-all hover:bg-black/90 active:scale-95 sm:self-auto sm:text-sm dark:bg-white dark:text-black dark:hover:bg-white/90"
           >
             <PlusIcon className="h-4 w-4" />
             <span>Add New Quality</span>
@@ -153,9 +147,9 @@ export function QualitiesFeature() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col gap-3 rounded-2xl border border-black/5 bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4 dark:border-white/5 dark:bg-[#111111]">
+      <div className="flex flex-col gap-2.5 rounded-2xl border border-black/5 bg-white p-2.5 sm:gap-3 sm:p-3 md:flex-row md:items-center md:justify-between md:p-4 dark:border-white/5 dark:bg-[#111111]">
         {/* Category Pills (Horizontal Scrollable) */}
-        <div className="scrollbar-hide flex items-center gap-1.5 overflow-x-auto py-0.5">
+        <div className="scrollbar-hide flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto py-0.5">
           {categoryFilterTabs.map((cat) => {
             const isSelected = selectedCategory === cat;
             return (
@@ -165,7 +159,7 @@ export function QualitiesFeature() {
                 onClick={() => {
                   setSelectedCategory(cat);
                 }}
-                className={`rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
                   isSelected
                     ? 'bg-black text-white shadow-xs dark:bg-white dark:text-black'
                     : 'bg-black/5 text-black/60 hover:bg-black/10 hover:text-black dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white'
@@ -178,7 +172,7 @@ export function QualitiesFeature() {
         </div>
 
         {/* Search Input */}
-        <div className="relative min-w-0 flex-1 sm:max-w-xs">
+        <div className="relative w-full min-w-0 shrink-0 md:w-64 lg:w-72">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-black/40 dark:text-white/40" />
           <input
             type="text"
@@ -211,13 +205,13 @@ export function QualitiesFeature() {
       </div>
 
       {/* Grid of Qualities */}
-      <div className="scrollbar-hide flex flex-1 flex-col gap-4 overflow-auto pb-6">
+      <div className="flex flex-col">
         {loading ? (
           <div className="flex h-64 w-full items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-black/20 border-t-black dark:border-white/20 dark:border-t-white" />
           </div>
         ) : filteredQualities.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-black/10 py-20 dark:border-white/10">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-black/10 py-16 text-center sm:py-20 dark:border-white/10">
             <p className="text-sm font-medium text-black/60 dark:text-white/60">
               No qualities found matching criteria.
             </p>
@@ -246,7 +240,7 @@ export function QualitiesFeature() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
-                className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4"
               >
                 {filteredQualities.map((quality) => (
                   <SortableQualityItem
