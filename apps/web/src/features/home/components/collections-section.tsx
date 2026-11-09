@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ArrowUpRightIcon } from '@ff/ui';
 
 import { InteractiveMarqueeTrack } from '@/components/ui/InteractiveMarqueeTrack';
+import { cn } from '@/lib/utils';
 
 interface CollectionItem {
   id: string;
@@ -14,6 +15,44 @@ interface CollectionItem {
   slug: string;
   image: string;
   productCount: number;
+}
+
+function CollectionMarqueeCard({
+  item,
+  isMobile = false,
+}: {
+  item: CollectionItem;
+  isMobile?: boolean;
+}) {
+  return (
+    <article
+      className={cn(
+        'group relative aspect-[3/4] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 bg-black shadow-sm duration-500 hover:scale-95 dark:border-white/10',
+        isMobile
+          ? 'h-[260px] w-[195px]'
+          : 'h-[260px] w-[195px] sm:h-[270px] sm:w-[202px] sm:rounded-2xl md:h-[280px] md:w-[210px] md:rounded-2xl',
+      )}
+    >
+      <Link
+        href={`/collections/${item.slug}`}
+        className="relative flex h-full w-full items-center justify-center"
+        title={`Browse ${item.name}`}
+      >
+        <div className="relative flex h-full w-full skew-x-[6deg] items-center justify-center p-1.5 sm:p-2">
+          <figure className="relative m-0 h-full w-full overflow-hidden rounded-xl">
+            <Image
+              src={item.image}
+              alt={`Model featuring ${item.name} collection`}
+              fill
+              sizes={isMobile ? '200px' : '(max-width: 768px) 210px, 240px'}
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+          </figure>
+        </div>
+      </Link>
+    </article>
+  );
 }
 
 export default function CollectionsSection({
@@ -82,27 +121,7 @@ export default function CollectionsSection({
           <div className="hidden sm:block">
             <InteractiveMarqueeTrack direction="left" speed={30} isPaused={!isInView}>
               {collections.map((item, index) => (
-                <article
-                  key={`desktop-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm duration-500 hover:scale-95 sm:h-[270px] sm:w-[202px] sm:rounded-2xl md:h-[280px] md:w-[210px] md:rounded-2xl dark:border-white/10"
-                >
-                  <Link
-                    href={`/collections/${item.slug}`}
-                    className="block h-full w-full"
-                    title={`Browse ${item.name}`}
-                  >
-                    <figure className="relative m-0 h-full w-full overflow-hidden">
-                      <Image
-                        src={item.image}
-                        alt={`Model featuring ${item.name} collection`}
-                        fill
-                        sizes="(max-width: 768px) 210px, 240px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
-                    </figure>
-                  </Link>
-                </article>
+                <CollectionMarqueeCard key={`desktop-${item.id}-${index}`} item={item} />
               ))}
             </InteractiveMarqueeTrack>
           </div>
@@ -112,54 +131,14 @@ export default function CollectionsSection({
             {/* ROW 1: Moves Left */}
             <InteractiveMarqueeTrack direction="left" speed={28} isPaused={!isInView}>
               {firstHalf.map((item, index) => (
-                <article
-                  key={`r1-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm duration-500 hover:scale-95 dark:border-white/10"
-                >
-                  <Link
-                    href={`/collections/${item.slug}`}
-                    className="block h-full w-full"
-                    title={`Browse ${item.name}`}
-                  >
-                    <figure className="relative m-0 h-full w-full overflow-hidden">
-                      <Image
-                        src={item.image}
-                        alt={`Model featuring ${item.name} collection`}
-                        fill
-                        sizes="200px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
-                    </figure>
-                  </Link>
-                </article>
+                <CollectionMarqueeCard key={`r1-mobile-${item.id}-${index}`} item={item} isMobile />
               ))}
             </InteractiveMarqueeTrack>
 
             {/* ROW 2: Moves Right */}
             <InteractiveMarqueeTrack direction="right" speed={28} isPaused={!isInView}>
               {secondHalf.map((item, index) => (
-                <article
-                  key={`r2-mobile-${item.id}-${index}`}
-                  className="group relative aspect-[3/4] h-[260px] w-[195px] shrink-0 -skew-x-[6deg] overflow-hidden rounded-2xl border border-black/10 shadow-sm duration-500 hover:scale-95 dark:border-white/10"
-                >
-                  <Link
-                    href={`/collections/${item.slug}`}
-                    className="block h-full w-full"
-                    title={`Browse ${item.name}`}
-                  >
-                    <figure className="relative m-0 h-full w-full overflow-hidden">
-                      <Image
-                        src={item.image}
-                        alt={`Model featuring ${item.name} collection`}
-                        fill
-                        sizes="200px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
-                    </figure>
-                  </Link>
-                </article>
+                <CollectionMarqueeCard key={`r2-mobile-${item.id}-${index}`} item={item} isMobile />
               ))}
             </InteractiveMarqueeTrack>
           </div>
