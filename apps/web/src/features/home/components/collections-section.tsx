@@ -97,20 +97,10 @@ export default function CollectionsSection({
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="(max-width: 768px) 210px, 240px"
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
+                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full skew-x-[6deg] p-4 sm:p-5 md:p-5">
-                      <div className="transform transition-transform duration-500 group-hover:-translate-y-1.5">
-                        <p className="mb-1 text-[11px] font-medium text-zinc-300 sm:text-xs">
-                          {item.productCount || 0} Items
-                        </p>
-                        <h3 className="text-base font-black tracking-tighter text-white uppercase sm:text-lg md:text-xl">
-                          {item.name}
-                        </h3>
-                      </div>
-                    </div>
                   </Link>
                 </article>
               ))}
@@ -137,20 +127,10 @@ export default function CollectionsSection({
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="200px"
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
+                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full skew-x-[6deg] p-4">
-                      <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
-                        <p className="mb-1 text-[10px] font-medium text-zinc-300">
-                          {item.productCount || 0} Items
-                        </p>
-                        <h3 className="text-lg font-black tracking-tighter text-white uppercase">
-                          {item.name}
-                        </h3>
-                      </div>
-                    </div>
                   </Link>
                 </article>
               ))}
@@ -174,20 +154,10 @@ export default function CollectionsSection({
                         alt={`Model featuring ${item.name} collection`}
                         fill
                         sizes="200px"
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent transition-opacity group-hover:opacity-90" />
+                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
                     </figure>
-                    <div className="absolute bottom-0 left-0 z-10 w-full skew-x-[6deg] p-4">
-                      <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
-                        <p className="mb-1 text-[10px] font-medium text-zinc-300">
-                          {item.productCount || 0} Items
-                        </p>
-                        <h3 className="text-lg font-black tracking-tighter text-white uppercase">
-                          {item.name}
-                        </h3>
-                      </div>
-                    </div>
                   </Link>
                 </article>
               ))}
