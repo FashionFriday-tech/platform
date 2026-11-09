@@ -123,7 +123,9 @@ export class CollectionsService {
     if (product) {
       const existing = product.collections || [];
       const updated = existing.filter((c: string) => {
-        if (!c || typeof c !== 'string') return false;
+        if (!c || typeof c !== 'string') {
+          return false;
+        }
         const lower = c.toLowerCase().trim();
         return (
           lower !== colSlug &&

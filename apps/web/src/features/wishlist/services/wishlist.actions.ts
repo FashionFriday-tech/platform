@@ -97,7 +97,7 @@ async function fetchWithAuth(
 export async function fetchUserWishlistAction(): Promise<WishlistItem[]> {
   try {
     const res = await fetchWithAuth('/wishlist');
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       return [];
     }
     return res.json();
@@ -117,7 +117,7 @@ export async function toggleWishlistAction(
     const res = await fetchWithAuth(`/wishlist/${productId}/toggle`, {
       method: 'POST',
     });
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       return null;
     }
     return res.json();
@@ -135,7 +135,7 @@ export async function removeWishlistItemAction(productId: string): Promise<boole
     const res = await fetchWithAuth(`/wishlist/${productId}`, {
       method: 'DELETE',
     });
-    return !!(res && res.ok);
+    return !!res?.ok;
   } catch (error) {
     console.error('Failed to remove from wishlist:', error);
     return false;
@@ -151,7 +151,7 @@ export async function syncWishlistAction(productIds: string[]): Promise<Wishlist
       method: 'POST',
       body: JSON.stringify({ productIds }),
     });
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       return [];
     }
     return res.json();

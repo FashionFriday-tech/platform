@@ -14,7 +14,9 @@ interface AddBrandModalProps {
 const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'accessories', 'eyewear'];
 
 function isBlackColor(color?: string): boolean {
-  if (!color) return true;
+  if (!color) {
+    return true;
+  }
   const c = color.trim().toLowerCase();
   return c === '#000000' || c === '#000' || c === 'black';
 }
@@ -279,7 +281,9 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                   />
                   <label
                     htmlFor="brand-logo-upload"
-                    style={isBlackColor(color) ? undefined : { backgroundColor: color || undefined }}
+                    style={
+                      isBlackColor(color) ? undefined : { backgroundColor: color || undefined }
+                    }
                     className={`group flex aspect-square w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-black/20 transition-all hover:opacity-95 dark:border-white/20 ${
                       isBlackColor(color)
                         ? 'bg-black dark:bg-white'
@@ -297,7 +301,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                             isBlackColor(color)
                               ? 'brightness-0 invert dark:invert-0'
                               : color
-                                ? 'brightness-0 invert drop-shadow-sm'
+                                ? 'brightness-0 drop-shadow-sm invert'
                                 : 'dark:invert'
                           }`}
                         />

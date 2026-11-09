@@ -76,8 +76,7 @@ export async function fetcher<T = unknown>(
 
   const buildHeaders = (token?: string | null) => {
     const headers = new Headers(customHeaders);
-    const isFormData =
-      typeof FormData !== 'undefined' && customOptions.body instanceof FormData;
+    const isFormData = typeof FormData !== 'undefined' && customOptions.body instanceof FormData;
     if (!isFormData && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json');
     }

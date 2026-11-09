@@ -45,9 +45,13 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
         const targetClean = clean(targetSlug);
 
         const isMatch = (collectionsList: string[]) => {
-          if (!Array.isArray(collectionsList)) return false;
+          if (!Array.isArray(collectionsList)) {
+            return false;
+          }
           return collectionsList.some((c) => {
-            if (!c || typeof c !== 'string') return false;
+            if (!c || typeof c !== 'string') {
+              return false;
+            }
             const lower = c.toLowerCase().trim();
             return (
               lower === targetSlug ||
@@ -103,7 +107,9 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       const targetClean = clean(targetSlug);
 
       const updated = existingCollections.filter((c: string) => {
-        if (!c || typeof c !== 'string') return false;
+        if (!c || typeof c !== 'string') {
+          return false;
+        }
         const lower = c.toLowerCase().trim();
         return (
           lower !== targetSlug &&
@@ -116,7 +122,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
       // Try dedicated endpoint first
       try {
         await api.delete(`/admin/collections/${collection.id}/products/${productId}`);
-      } catch (endpointErr) {
+      } catch {
         // Fallback to updating product directly
         await api.patch(`/admin/products/${productId}`, {
           collections: updated,
@@ -156,7 +162,11 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
           !collection.image.includes('localhost')
         ) {
           try {
-            await api.post('/admin/upload/batch', { urls: [collection.image] }, { method: 'DELETE' as any });
+            await api.post(
+              '/admin/upload/batch',
+              { urls: [collection.image] },
+              { method: 'DELETE' as any },
+            );
           } catch (err) {
             console.error('Failed to cleanup old image:', err);
           }
@@ -200,7 +210,11 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
         !collection.image.includes('localhost')
       ) {
         try {
-          await api.post('/admin/upload/batch', { urls: [collection.image] }, { method: 'DELETE' as any });
+          await api.post(
+            '/admin/upload/batch',
+            { urls: [collection.image] },
+            { method: 'DELETE' as any },
+          );
         } catch (err) {
           console.error('Failed to cleanup collection image from Cloudflare R2:', err);
         }
@@ -236,7 +250,9 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   const availableBrands = useMemo(() => {
     const set = new Set<string>();
     collectionProducts.forEach((p) => {
-      if (p.brand?.trim()) set.add(p.brand.trim());
+      if (p.brand?.trim()) {
+        set.add(p.brand.trim());
+      }
     });
     return Array.from(set).sort();
   }, [collectionProducts]);
@@ -244,7 +260,9 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
   const availableQualities = useMemo(() => {
     const set = new Set<string>();
     collectionProducts.forEach((p) => {
-      if (p.quality?.trim()) set.add(p.quality.trim());
+      if (p.quality?.trim()) {
+        set.add(p.quality.trim());
+      }
     });
     return Array.from(set).sort();
   }, [collectionProducts]);
@@ -266,10 +284,8 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
         pCat.includes(q);
 
       const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
-      const matchesQuality =
-        qualityFilter === 'All' || pQuality === qualityFilter.toLowerCase();
-      const matchesBrand =
-        brandFilter === 'All' || pBrand === brandFilter.toLowerCase();
+      const matchesQuality = qualityFilter === 'All' || pQuality === qualityFilter.toLowerCase();
+      const matchesBrand = brandFilter === 'All' || pBrand === brandFilter.toLowerCase();
 
       return matchesSearch && matchesStatus && matchesQuality && matchesBrand;
     });

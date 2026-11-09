@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import {
@@ -19,8 +19,8 @@ import {
   type CustomerInteractionItem,
   fetchProductInteractionsList,
   fetchProductInteractionsSummary,
-  type ProductInteractionType,
   type ProductInteractionsSummary,
+  type ProductInteractionType,
 } from '../services/api';
 
 interface Props {
@@ -79,6 +79,7 @@ export function ProductCustomerInteractions({
   onTabChange,
   onSummaryLoaded,
 }: Props) {
+  const [now] = useState(() => Date.now());
   const [internalTab, setInternalTab] = useState<ProductInteractionType>('wishlist');
   const activeTab = controlledTab ?? internalTab;
 
@@ -108,12 +109,16 @@ export function ProductCustomerInteractions({
       setDebouncedSearch(search);
       setPage(1); // Reset to page 1 on new search
     }, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [search]);
 
   // Load summary counts
   const loadSummary = async () => {
-    if (!productId) return;
+    if (!productId) {
+      return;
+    }
     try {
       const data = await fetchProductInteractionsSummary(productId);
       setSummary(data);
@@ -125,7 +130,9 @@ export function ProductCustomerInteractions({
 
   // Load active tab list
   const loadList = async () => {
-    if (!productId) return;
+    if (!productId) {
+      return;
+    }
     setIsLoading(true);
     try {
       const res = await fetchProductInteractionsList(
@@ -163,7 +170,9 @@ export function ProductCustomerInteractions({
   };
 
   const formatDate = (dateStr?: string) => {
-    if (!dateStr) return 'N/A';
+    if (!dateStr) {
+      return 'N/A';
+    }
     try {
       const d = new Date(dateStr);
       return d.toLocaleDateString('en-IN', {
@@ -177,14 +186,22 @@ export function ProductCustomerInteractions({
   };
 
   const formatTimeAgo = (dateStr?: string) => {
-    if (!dateStr) return '';
+    if (!dateStr) {
+      return '';
+    }
     try {
-      const diff = Date.now() - new Date(dateStr).getTime();
+      const diff = now - new Date(dateStr).getTime();
       const mins = Math.floor(diff / (60 * 1000));
-      if (mins < 1) return 'just now';
-      if (mins < 60) return `${mins}m ago`;
+      if (mins < 1) {
+        return 'just now';
+      }
+      if (mins < 60) {
+        return `${mins}m ago`;
+      }
       const hrs = Math.floor(mins / 60);
-      if (hrs < 24) return `${hrs}h ago`;
+      if (hrs < 24) {
+        return `${hrs}h ago`;
+      }
       const days = Math.floor(hrs / 24);
       return `${days}d ago`;
     } catch {
@@ -269,7 +286,9 @@ export function ProductCustomerInteractions({
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
             placeholder="Search customer name, email, or phone..."
             className="w-full rounded-xl border border-black/10 bg-black/[0.02] py-2 pr-3 pl-8 text-xs font-medium text-black placeholder-black/40 transition-colors outline-none focus:border-black dark:border-white/10 dark:bg-white/[0.02] dark:text-white dark:placeholder-white/40 dark:focus:border-white"
           />
@@ -507,7 +526,9 @@ export function ProductCustomerInteractions({
         <div className="mt-5 flex items-center justify-between border-t border-black/5 pt-4 text-xs dark:border-white/5">
           <button
             type="button"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={() => {
+              setPage((p) => Math.max(1, p - 1));
+            }}
             disabled={page <= 1 || isLoading}
             className="cursor-pointer rounded-xl border border-black/10 bg-white px-3 py-1.5 font-bold text-black transition-all hover:bg-black hover:text-white disabled:pointer-events-none disabled:opacity-40 dark:border-white/10 dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black"
           >
@@ -520,7 +541,9 @@ export function ProductCustomerInteractions({
 
           <button
             type="button"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            onClick={() => {
+              setPage((p) => Math.min(totalPages, p + 1));
+            }}
             disabled={page >= totalPages || isLoading}
             className="cursor-pointer rounded-xl border border-black/10 bg-white px-3 py-1.5 font-bold text-black transition-all hover:bg-black hover:text-white disabled:pointer-events-none disabled:opacity-40 dark:border-white/10 dark:bg-black dark:text-white dark:hover:bg-white dark:hover:text-black"
           >

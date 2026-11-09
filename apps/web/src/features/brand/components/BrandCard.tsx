@@ -15,7 +15,9 @@ interface BrandCardProps {
 }
 
 function isBlackColor(color?: string): boolean {
-  if (!color) return true;
+  if (!color) {
+    return true;
+  }
   const c = color.trim().toLowerCase();
   return c === '#000000' || c === '#000' || c === 'black';
 }
@@ -34,9 +36,13 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
           isBlack ? 'bg-black dark:bg-white' : '',
           className,
         )}
-        style={isBlack ? undefined : {
-          backgroundColor: brand.color,
-        }}
+        style={
+          isBlack
+            ? undefined
+            : {
+                backgroundColor: brand.color,
+              }
+        }
       >
         <div
           className={cn(
@@ -45,7 +51,7 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
           )}
         >
           {brand.logo && !hasFallbackText && !hasError ? (
-            <div className="relative flex h-full w-full max-h-[82%] max-w-[85%] items-center justify-center">
+            <div className="relative flex h-full max-h-[82%] w-full max-w-[85%] items-center justify-center">
               <Image
                 src={brand.logo}
                 alt={brand.name}
@@ -59,7 +65,7 @@ export const BrandCard = ({ brand, className, skewed = false }: BrandCardProps) 
                   'object-contain p-1.5 duration-500 group-hover:scale-105',
                   isBlack
                     ? 'brightness-0 invert dark:invert-0'
-                    : 'brightness-0 invert drop-shadow-sm',
+                    : 'brightness-0 drop-shadow-sm invert',
                 )}
               />
             </div>

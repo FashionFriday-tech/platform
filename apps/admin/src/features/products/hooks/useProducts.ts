@@ -83,7 +83,7 @@ function parseFilters(params: URLSearchParams | { get: (k: string) => string | n
 
   const minPrice = params.get('minPrice') ?? '';
   const maxPrice = params.get('maxPrice') ?? '';
-  const view = (params.get('view') === 'grid' ? 'grid' : 'list') as ViewMode;
+  const view = params.get('view') === 'grid' ? 'grid' : 'list';
 
   const colsRaw = params.get('columns');
   const columns = colsRaw
@@ -111,10 +111,7 @@ export function useProducts() {
   const searchParams = useSearchParams();
 
   // Parse initial filters from current URL search params
-  const initial = useRef<ReturnType<typeof parseFilters> | null>(null);
-  if (!initial.current) {
-    initial.current = parseFilters(searchParams);
-  }
+  const [initialFilters] = useState(() => parseFilters(searchParams));
 
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -133,15 +130,15 @@ export function useProducts() {
   const [totalProducts, setTotalProducts] = useState(0);
 
   // Filters & sorting initialized from URL
-  const [searchQuery, setSearchQuery] = useState(initial.current.search);
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(initial.current.search);
-  const [sortOption, setSortOption] = useState<SortOption>(initial.current.sort);
+  const [searchQuery, setSearchQuery] = useState(initialFilters.search);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(initialFilters.search);
+  const [sortOption, setSortOption] = useState<SortOption>(initialFilters.sort);
 
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<AdvancedFilters>(
-    initial.current.appliedAdvancedFilters,
+    initialFilters.appliedAdvancedFilters,
   );
 
-  const [viewMode, setViewMode] = useState<ViewMode>(initial.current.view);
+  const [viewMode, setViewMode] = useState<ViewMode>(initialFilters.view);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Debounce search input (300ms)
@@ -149,17 +146,21 @@ export function useProducts() {
     const timer = setTimeout(() => {
       setDebouncedSearchQuery(searchQuery);
     }, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [searchQuery]);
 
   // Column Visibility
-  const [visibleColumns, setVisibleColumns] = useState<Set<ColumnId>>(initial.current.columns);
+  const [visibleColumns, setVisibleColumns] = useState<Set<ColumnId>>(initialFilters.columns);
 
   const isUpdatingFromUrl = useRef(false);
 
   // Sync state changes to URL search parameters
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     if (isUpdatingFromUrl.current) {
       isUpdatingFromUrl.current = false;
       return;
@@ -224,18 +225,14 @@ export function useProducts() {
     if (currentUrl !== newUrl) {
       window.history.replaceState(null, '', newUrl);
     }
-  }, [
-    debouncedSearchQuery,
-    appliedAdvancedFilters,
-    sortOption,
-    viewMode,
-    visibleColumns,
-  ]);
+  }, [debouncedSearchQuery, appliedAdvancedFilters, sortOption, viewMode, visibleColumns]);
 
   // Handle browser Back / Forward navigation (popstate)
   useEffect(() => {
     const handlePopState = () => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        return;
+      }
       isUpdatingFromUrl.current = true;
       const currentParams = new URLSearchParams(window.location.search);
       const parsed = parseFilters(currentParams);
@@ -432,10 +429,14 @@ export function useProducts() {
 
   // Dynamic pagination: Load more products when scrolling down
   const pageRef = useRef(page);
-  pageRef.current = page;
+  useEffect(() => {
+    pageRef.current = page;
+  }, [page]);
 
   const loadMore = useCallback(async () => {
-    if (isLoading || isLoadingMore || !hasMore) return;
+    if (isLoading || isLoadingMore || !hasMore) {
+      return;
+    }
     setIsLoadingMore(true);
 
     try {

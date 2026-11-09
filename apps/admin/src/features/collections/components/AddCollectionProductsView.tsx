@@ -8,6 +8,7 @@ import { CheckIcon, SearchIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
 import api from '@/lib/api-client';
+
 import { type ProductCollection } from '../types';
 
 interface ApiProduct {
@@ -46,7 +47,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
     async function loadProducts() {
       setIsLoading(true);
       try {
-        const data = await api.get<{ data?: ApiProduct[] } | ApiProduct[]>('/admin/products?take=500');
+        const data = await api.get<{ data?: ApiProduct[] } | ApiProduct[]>(
+          '/admin/products?take=500',
+        );
         const items: ApiProduct[] = Array.isArray(data) ? data : (data.data ?? []);
         setProducts(items);
       } catch (err: any) {
@@ -63,7 +66,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
     const set = new Set<string>();
     products.forEach((p) => {
       p.brand?.forEach((b) => {
-        if (b.trim()) set.add(b.trim());
+        if (b.trim()) {
+          set.add(b.trim());
+        }
       });
     });
     return Array.from(set).sort();
@@ -72,7 +77,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
   const availableQualities = useMemo(() => {
     const set = new Set<string>();
     products.forEach((p) => {
-      if (p.quality?.trim()) set.add(p.quality.trim());
+      if (p.quality?.trim()) {
+        set.add(p.quality.trim());
+      }
     });
     return Array.from(set).sort();
   }, [products]);
@@ -80,7 +87,9 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
   const availableCategories = useMemo(() => {
     const set = new Set<string>();
     products.forEach((p) => {
-      if (p.category?.name?.trim()) set.add(p.category.name.trim());
+      if (p.category?.name?.trim()) {
+        set.add(p.category.name.trim());
+      }
     });
     return Array.from(set).sort();
   }, [products]);
@@ -106,11 +115,10 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
 
       const matchesBrand =
         brandFilter === 'All' ||
-        (p.brand && p.brand.some((b) => b.toLowerCase() === brandFilter.toLowerCase()));
+        p.brand?.some((b) => b.toLowerCase() === brandFilter.toLowerCase());
 
       const matchesQuality =
-        qualityFilter === 'All' ||
-        (p.quality && p.quality.toUpperCase() === qualityFilter.toUpperCase());
+        qualityFilter === 'All' || p.quality?.toUpperCase() === qualityFilter.toUpperCase();
 
       const matchesCategory =
         categoryFilter === 'All' ||
@@ -121,14 +129,18 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
   }, [products, searchQuery, genderFilter, brandFilter, qualityFilter, categoryFilter]);
 
   const isInCollection = (productCollections?: string[]) => {
-    if (!Array.isArray(productCollections)) return false;
+    if (!Array.isArray(productCollections)) {
+      return false;
+    }
     const targetSlug = collection.slug.toLowerCase().trim();
     const targetName = (collection.name || '').toLowerCase().trim();
     const clean = (s: string) => s?.toLowerCase().replace(/[^a-z0-9]/g, '') || '';
     const targetClean = clean(targetSlug);
 
     return productCollections.some((c) => {
-      if (!c || typeof c !== 'string') return false;
+      if (!c || typeof c !== 'string') {
+        return false;
+      }
       const lower = c.toLowerCase().trim();
       return (
         lower === targetSlug ||
@@ -280,7 +292,7 @@ export function AddCollectionProductsView({ collection }: AddCollectionProductsV
       {/* Toolbar: Search, Filters & Bulk select */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 flex-wrap items-center gap-2.5">
-          <div className="relative min-w-[240px] flex-1 max-w-sm">
+          <div className="relative max-w-sm min-w-[240px] flex-1">
             <SearchIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-black/40 dark:text-white/40" />
             <input
               type="text"

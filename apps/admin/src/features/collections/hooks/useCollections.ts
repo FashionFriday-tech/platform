@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { api } from '@/lib/api-client';
+
 import { type ProductCollection } from '../types';
 
 export function useCollections() {

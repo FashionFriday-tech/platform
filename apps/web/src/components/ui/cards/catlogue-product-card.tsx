@@ -53,7 +53,9 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
 
   const handleCardClick = () => {
     if (productId) {
-      void fetcher(`/products/${productId}/track-click`, { method: 'POST' }).catch(() => {});
+      void fetcher(`/products/${productId}/track-click`, { method: 'POST' }).catch(() => {
+        /* ignore */
+      });
     }
   };
 
@@ -107,9 +109,9 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
         </div>
 
         <div className="mt-1 px-1">
-          <div className="flex h-6 sm:h-7 items-center justify-between text-[8px] md:text-[10px]">
+          <div className="flex h-6 items-center justify-between text-[8px] sm:h-7 md:text-[10px]">
             {brandLogo ? (
-              <div className="relative flex h-5 w-16 sm:h-6 sm:w-20 items-center justify-start">
+              <div className="relative flex h-5 w-16 items-center justify-start sm:h-6 sm:w-20">
                 <Image
                   src={brandLogo}
                   alt={brandName}

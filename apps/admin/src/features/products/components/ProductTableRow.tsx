@@ -6,10 +6,14 @@ import { type ColumnId, type Product } from '../types';
 import { ProductActionMenu } from './ProductActionMenu';
 
 function formatDateTime(dateStr?: string): { date: string; time: string } {
-  if (!dateStr) return { date: 'N/A', time: '' };
+  if (!dateStr) {
+    return { date: 'N/A', time: '' };
+  }
   try {
     const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return { date: dateStr, time: '' };
+    if (isNaN(d.getTime())) {
+      return { date: dateStr, time: '' };
+    }
 
     const date = d.toLocaleDateString('en-IN', {
       day: '2-digit',

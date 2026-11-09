@@ -373,7 +373,10 @@ export const getProductsByBrand = async (
     const res = await fetch(
       `${API_URL}/products?brand=${encodeURIComponent(cleanBrand)}&skip=${skip}&take=${take}`,
       {
-        next: { revalidate: 30, tags: ['brand-products', `brand-products-${cleanBrand.toLowerCase()}`] },
+        next: {
+          revalidate: 30,
+          tags: ['brand-products', `brand-products-${cleanBrand.toLowerCase()}`],
+        },
       },
     );
     if (!res.ok) {

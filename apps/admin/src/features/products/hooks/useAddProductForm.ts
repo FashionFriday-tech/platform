@@ -679,8 +679,8 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
             try {
               const htmlBlob = await item.getType('text/html');
               const htmlText = await htmlBlob.text();
-              const match = htmlText.match(/<img[^>]+src=["']([^"']+)["']/i);
-              if (match && match[1]) {
+              const match = /<img[^>]+src=["']([^"']+)["']/i.exec(htmlText);
+              if (match?.[1]) {
                 const imgRes = await fetch(match[1]);
                 const b = await imgRes.blob();
                 if (b.type.startsWith('image/')) {
@@ -746,27 +746,22 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     }
 
     optionsRef.current?.onToast?.({
-      message:
-        'No image found in clipboard. Copy an image (or press Ctrl+V) and try again.',
+      message: 'No image found in clipboard. Copy an image (or press Ctrl+V) and try again.',
       type: 'warning',
     });
   };
 
-  const handleExternalDrop = async (
-    filesOrEvent: FileList | File[] | React.DragEvent,
-  ) => {
+  const handleExternalDrop = async (filesOrEvent: FileList | File[] | React.DragEvent) => {
     let fileArray: File[] = [];
 
     if ('dataTransfer' in filesOrEvent) {
-      const e = filesOrEvent as React.DragEvent;
+      const e = filesOrEvent;
       e.preventDefault();
       e.stopPropagation();
 
       // Check files dropped from desktop/file manager
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        fileArray = Array.from(e.dataTransfer.files).filter((f) =>
-          f.type.startsWith('image/'),
-        );
+        fileArray = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'));
       }
 
       // Check items
@@ -774,7 +769,9 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
         for (const item of Array.from(e.dataTransfer.items)) {
           if (item.kind === 'file' && item.type.startsWith('image/')) {
             const f = item.getAsFile();
-            if (f) fileArray.push(f);
+            if (f) {
+              fileArray.push(f);
+            }
           }
         }
       }
@@ -787,17 +784,27 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
         let imageUrl = uriList;
         if (!imageUrl && htmlData) {
-          const match = htmlData.match(/<img[^>]+src=["']([^"']+)["']/i);
-          if (match && match[1]) {
+          const match = /<img[^>]+src=["']([^"']+)["']/i.exec(htmlData);
+          if (match?.[1]) {
             imageUrl = match[1];
           }
         }
-        if (
-          !imageUrl &&
-          plainText &&
-          plainText.match(/^https?:\/\/.+\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i)
-        ) {
-          imageUrl = plainText.trim();
+        if (!imageUrl && plainText) {
+          const trimmed = plainText.trim();
+          try {
+            const parsed = new URL(trimmed);
+            const pathname = parsed.pathname.toLowerCase();
+            if (
+              (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+              ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'].some((ext) =>
+                pathname.endsWith(ext),
+              )
+            ) {
+              imageUrl = trimmed;
+            }
+          } catch {
+            // Not a valid URL
+          }
         }
 
         if (imageUrl) {
@@ -814,9 +821,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
         }
       }
     } else {
-      fileArray = Array.from(filesOrEvent ?? []).filter((f) =>
-        f.type.startsWith('image/'),
-      );
+      fileArray = Array.from(filesOrEvent ?? []).filter((f) => f.type.startsWith('image/'));
     }
 
     if (fileArray.length === 0) {

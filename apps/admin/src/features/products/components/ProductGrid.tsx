@@ -43,7 +43,9 @@ export function ProductGrid({
 
   // IntersectionObserver to trigger onLoadMore when scrolling near bottom
   useEffect(() => {
-    if (!onLoadMore || !hasMore || isLoadingMore || isLoading) return;
+    if (!onLoadMore || !hasMore || isLoadingMore || isLoading) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -60,7 +62,9 @@ export function ProductGrid({
     }
 
     return () => {
-      if (el) observer.unobserve(el);
+      if (el) {
+        observer.unobserve(el);
+      }
       observer.disconnect();
     };
   }, [onLoadMore, hasMore, isLoadingMore, isLoading]);

@@ -16,8 +16,12 @@ interface Props {
 type Timeframe = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
 function getCurvedPath(points: { x: number; y: number }[]): string {
-  if (points.length === 0) return '';
-  if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
+  if (points.length === 0) {
+    return '';
+  }
+  if (points.length === 1) {
+    return `M ${points[0].x},${points[0].y}`;
+  }
 
   let path = `M ${points[0].x},${points[0].y}`;
   for (let i = 0; i < points.length - 1; i++) {
@@ -77,9 +81,13 @@ export function ProductPerformance({ product }: Props) {
         }
       } catch (err) {
         console.error('Failed to load performance matrix:', err);
-        if (isMounted) setError(true);
+        if (isMounted) {
+          setError(true);
+        }
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     }
     void loadPerformance();
@@ -192,8 +200,18 @@ export function ProductPerformance({ product }: Props) {
         ) : error ? (
           <div className="flex h-[220px] items-center justify-center">
             <div className="flex flex-col items-center gap-2 text-center">
-              <svg className="h-8 w-8 text-red-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              <svg
+                className="h-8 w-8 text-red-400/60"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+                />
               </svg>
               <span className="text-xs font-medium text-black/40 dark:text-white/40">
                 Failed to load performance data
@@ -203,8 +221,18 @@ export function ProductPerformance({ product }: Props) {
         ) : !hasData ? (
           <div className="flex h-[220px] items-center justify-center">
             <div className="flex flex-col items-center gap-2 text-center">
-              <svg className="h-8 w-8 text-black/20 dark:text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+              <svg
+                className="h-8 w-8 text-black/20 dark:text-white/20"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+                />
               </svg>
               <span className="text-xs font-medium text-black/40 dark:text-white/40">
                 No {timeframeLabels[timeframe].toLowerCase()} data yet
@@ -392,13 +420,7 @@ export function ProductPerformance({ product }: Props) {
                     </text>
 
                     {/* Invisible hit area */}
-                    <rect
-                      x={cx - 20}
-                      y={0}
-                      width={40}
-                      height={height}
-                      fill="transparent"
-                    />
+                    <rect x={cx - 20} y={0} width={40} height={height} fill="transparent" />
 
                     {/* X Axis Label */}
                     <text
@@ -407,7 +429,9 @@ export function ProductPerformance({ product }: Props) {
                       textAnchor="middle"
                       fill="currentColor"
                       className={`text-[10px] font-bold transition-colors ${
-                        isHovered ? 'text-black dark:text-white' : 'text-black/50 dark:text-white/50'
+                        isHovered
+                          ? 'text-black dark:text-white'
+                          : 'text-black/50 dark:text-white/50'
                       }`}
                     >
                       {d.label}

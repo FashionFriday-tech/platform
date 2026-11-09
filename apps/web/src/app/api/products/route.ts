@@ -42,10 +42,16 @@ export async function GET(request: Request) {
       );
     }
 
-    const json = await res.json();
-    const rawList = Array.isArray(json.data) ? json.data : Array.isArray(json) ? json : [];
-    const total = json.meta?.total ?? rawList.length;
-    const mapped = rawList.map(mapDbProductToSchema);
+    const json = (await res.json()) as { data?: unknown[]; meta?: { total?: number } };
+    const rawList = Array.isArray(json.data)
+      ? json.data
+      : Array.isArray(json)
+        ? (json as unknown[])
+        : [];
+    const total = typeof json.meta?.total === 'number' ? json.meta.total : rawList.length;
+    const mapped = rawList.map((item) =>
+      mapDbProductToSchema(item as Parameters<typeof mapDbProductToSchema>[0]),
+    );
 
     return NextResponse.json({
       data: mapped,
@@ -66,4 +72,3 @@ export async function GET(request: Request) {
     );
   }
 }
-

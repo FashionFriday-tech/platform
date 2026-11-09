@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { api } from '@/lib/api-client';
@@ -18,7 +18,7 @@ function parseOrderFilters(params: URLSearchParams | { get: (k: string) => strin
   const status = params.get('status') ?? 'all';
   const payment = params.get('payment') ?? 'all';
   const date = params.get('date') ?? '';
-  const view = (params.get('view') === 'grid' ? 'grid' : 'table') as ViewMode;
+  const view: ViewMode = params.get('view') === 'grid' ? 'grid' : 'table';
   const sort = (params.get('sortField') as SortField) ?? 'createdAt';
   const direction = (params.get('sortDir') as SortDirection) ?? 'desc';
 
@@ -35,50 +35,75 @@ function parseOrderFilters(params: URLSearchParams | { get: (k: string) => strin
 
 export function useOrders() {
   const searchParams = useSearchParams();
-  const initial = useRef<ReturnType<typeof parseOrderFilters> | null>(null);
-  if (!initial.current) {
-    initial.current = parseOrderFilters(searchParams);
-  }
+  const [initialFilters] = useState(() => parseOrderFilters(searchParams));
 
-  const [searchQuery, setSearchQuery] = useState(initial.current.search);
-  const [statusFilter, setStatusFilter] = useState(initial.current.status);
-  const [dateFilter, setDateFilter] = useState(initial.current.date);
-  const [paymentTypeFilter, setPaymentTypeFilter] = useState(initial.current.payment);
-  const [viewMode, setViewMode] = useState<ViewMode>(initial.current.view);
-  const [sortField, setSortField] = useState<SortField>(initial.current.sort);
-  const [sortDirection, setSortDirection] = useState<SortDirection>(initial.current.direction);
+  const [searchQuery, setSearchQuery] = useState(initialFilters.search);
+  const [statusFilter, setStatusFilter] = useState(initialFilters.status);
+  const [dateFilter, setDateFilter] = useState(initialFilters.date);
+  const [paymentTypeFilter, setPaymentTypeFilter] = useState(initialFilters.payment);
+  const [viewMode, setViewMode] = useState<ViewMode>(initialFilters.view);
+  const [sortField, setSortField] = useState<SortField>(initialFilters.sort);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(initialFilters.direction);
 
   const isUpdatingFromUrl = useRef(false);
 
   // Sync state changes to URL query parameters
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     if (isUpdatingFromUrl.current) {
       isUpdatingFromUrl.current = false;
       return;
     }
 
     const params = new URLSearchParams();
-    if (searchQuery.trim()) params.set('search', searchQuery.trim());
-    if (statusFilter && statusFilter !== 'all') params.set('status', statusFilter);
-    if (paymentTypeFilter && paymentTypeFilter !== 'all') params.set('payment', paymentTypeFilter);
-    if (dateFilter) params.set('date', dateFilter);
-    if (viewMode !== 'table') params.set('view', viewMode);
-    if (sortField !== 'createdAt') params.set('sortField', sortField);
-    if (sortDirection !== 'desc') params.set('sortDir', sortDirection);
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery.trim());
+    }
+    if (statusFilter && statusFilter !== 'all') {
+      params.set('status', statusFilter);
+    }
+    if (paymentTypeFilter && paymentTypeFilter !== 'all') {
+      params.set('payment', paymentTypeFilter);
+    }
+    if (dateFilter) {
+      params.set('date', dateFilter);
+    }
+    if (viewMode !== 'table') {
+      params.set('view', viewMode);
+    }
+    if (sortField !== 'createdAt') {
+      params.set('sortField', sortField);
+    }
+    if (sortDirection !== 'desc') {
+      params.set('sortDir', sortDirection);
+    }
 
     const queryString = params.toString();
-    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
     const currentUrl = `${window.location.pathname}${window.location.search}`;
     if (currentUrl !== newUrl) {
       window.history.replaceState(null, '', newUrl);
     }
-  }, [searchQuery, statusFilter, paymentTypeFilter, dateFilter, viewMode, sortField, sortDirection]);
+  }, [
+    searchQuery,
+    statusFilter,
+    paymentTypeFilter,
+    dateFilter,
+    viewMode,
+    sortField,
+    sortDirection,
+  ]);
 
   // Handle browser Back / Forward (popstate)
   useEffect(() => {
     const handlePopState = () => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        return;
+      }
       isUpdatingFromUrl.current = true;
       const parsed = parseOrderFilters(new URLSearchParams(window.location.search));
       setSearchQuery(parsed.search);

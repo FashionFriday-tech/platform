@@ -221,7 +221,9 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   const availableBrands = useMemo(() => {
     const set = new Set<string>();
     categoryProducts.forEach((p) => {
-      if (p.brand?.trim()) set.add(p.brand.trim());
+      if (p.brand?.trim()) {
+        set.add(p.brand.trim());
+      }
     });
     return Array.from(set).sort();
   }, [categoryProducts]);
@@ -229,7 +231,9 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   const availableQualities = useMemo(() => {
     const set = new Set<string>();
     categoryProducts.forEach((p) => {
-      if (p.quality?.trim()) set.add(p.quality.trim());
+      if (p.quality?.trim()) {
+        set.add(p.quality.trim());
+      }
     });
     return Array.from(set).sort();
   }, [categoryProducts]);
@@ -251,10 +255,8 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         pCat.includes(q);
 
       const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
-      const matchesQuality =
-        qualityFilter === 'All' || pQuality === qualityFilter.toLowerCase();
-      const matchesBrand =
-        brandFilter === 'All' || pBrand === brandFilter.toLowerCase();
+      const matchesQuality = qualityFilter === 'All' || pQuality === qualityFilter.toLowerCase();
+      const matchesBrand = brandFilter === 'All' || pBrand === brandFilter.toLowerCase();
 
       return matchesSearch && matchesStatus && matchesQuality && matchesBrand;
     });

@@ -44,7 +44,7 @@ function parseDescription(desc?: string): {
   const narrativeParts: string[] = [];
 
   for (const part of parts) {
-    const match = part.match(/^\s*([A-Za-z0-9_\s]{2,15})\s*:\s*([\s\S]+)$/);
+    const match = /^\s*([A-Za-z0-9_\s]{2,15})\s*:\s*([\s\S]+)$/.exec(part);
     if (match) {
       const label = match[1].trim();
       const value = match[2].trim();
@@ -618,7 +618,9 @@ export function ProductDetailView({ productId }: Props) {
               {/* Wishlist */}
               <button
                 type="button"
-                onClick={() => scrollToInteractions('wishlist')}
+                onClick={() => {
+                  scrollToInteractions('wishlist');
+                }}
                 className={`group flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
                   activeInteractionTab === 'wishlist'
                     ? 'border-rose-500/40 bg-rose-500/10 shadow-sm'
@@ -643,7 +645,9 @@ export function ProductDetailView({ productId }: Props) {
               {/* Cart */}
               <button
                 type="button"
-                onClick={() => scrollToInteractions('cart')}
+                onClick={() => {
+                  scrollToInteractions('cart');
+                }}
                 className={`group flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
                   activeInteractionTab === 'cart'
                     ? 'border-blue-500/40 bg-blue-500/10 shadow-sm'
@@ -668,7 +672,9 @@ export function ProductDetailView({ productId }: Props) {
               {/* Notify Me */}
               <button
                 type="button"
-                onClick={() => scrollToInteractions('notifications')}
+                onClick={() => {
+                  scrollToInteractions('notifications');
+                }}
                 className={`group flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
                   activeInteractionTab === 'notifications'
                     ? 'border-amber-500/40 bg-amber-500/10 shadow-sm'
@@ -693,7 +699,9 @@ export function ProductDetailView({ productId }: Props) {
               {/* Clicks */}
               <button
                 type="button"
-                onClick={() => scrollToInteractions('clicks')}
+                onClick={() => {
+                  scrollToInteractions('clicks');
+                }}
                 className={`group flex cursor-pointer items-center gap-2 rounded-xl border p-2.5 text-left transition-all ${
                   activeInteractionTab === 'clicks'
                     ? 'border-emerald-500/40 bg-emerald-500/10 shadow-sm'

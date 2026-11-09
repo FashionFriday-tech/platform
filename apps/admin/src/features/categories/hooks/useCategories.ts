@@ -6,44 +6,55 @@ import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 
 import api from '@/lib/api-client';
+
 import { type ProductCategory } from '../types';
 
-function parseCategoryFilters(params: URLSearchParams | { get: (k: string) => string | null }) {
+function parseCategoryFilters(params: URLSearchParams | { get: (k: string) => string | null }): {
+  search: string;
+  selectedGender: 'Men' | 'Women';
+} {
   const search = params.get('search') ?? '';
   const genderRaw = params.get('gender');
-  const selectedGender = (genderRaw === 'Women' ? 'Women' : 'Men') as 'Men' | 'Women';
+  const selectedGender: 'Men' | 'Women' = genderRaw === 'Women' ? 'Women' : 'Men';
 
   return { search, selectedGender };
 }
 
 export function useCategories() {
   const searchParams = useSearchParams();
-  const initial = useRef<ReturnType<typeof parseCategoryFilters> | null>(null);
-  if (!initial.current) {
-    initial.current = parseCategoryFilters(searchParams);
-  }
+  const [initialFilters] = useState(() => parseCategoryFilters(searchParams));
 
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState(initial.current.search);
-  const [selectedGender, setSelectedGender] = useState<'Men' | 'Women'>(initial.current.selectedGender);
+  const [searchQuery, setSearchQuery] = useState(initialFilters.search);
+  const [selectedGender, setSelectedGender] = useState<'Men' | 'Women'>(
+    initialFilters.selectedGender,
+  );
 
   const isUpdatingFromUrl = useRef(false);
 
   // Sync state to URL search params
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     if (isUpdatingFromUrl.current) {
       isUpdatingFromUrl.current = false;
       return;
     }
 
     const params = new URLSearchParams();
-    if (searchQuery.trim()) params.set('search', searchQuery.trim());
-    if (selectedGender !== 'Men') params.set('gender', selectedGender);
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery.trim());
+    }
+    if (selectedGender !== 'Men') {
+      params.set('gender', selectedGender);
+    }
 
     const queryString = params.toString();
-    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
     const currentUrl = `${window.location.pathname}${window.location.search}`;
     if (currentUrl !== newUrl) {
       window.history.replaceState(null, '', newUrl);
@@ -53,7 +64,9 @@ export function useCategories() {
   // Handle browser Back / Forward (popstate)
   useEffect(() => {
     const handlePopState = () => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        return;
+      }
       isUpdatingFromUrl.current = true;
       const parsed = parseCategoryFilters(new URLSearchParams(window.location.search));
       setSearchQuery(parsed.search);
@@ -204,9 +217,7 @@ export function useCategories() {
 
           setCategories((prev) =>
             prev.map((c) =>
-              c.id === existingCat.id || (originalSlug && c.slug === originalSlug)
-                ? normalized
-                : c,
+              c.id === existingCat.id || (originalSlug && c.slug === originalSlug) ? normalized : c,
             ),
           );
           toast.success('Category updated successfully!');

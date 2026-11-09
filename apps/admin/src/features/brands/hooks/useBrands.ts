@@ -12,24 +12,30 @@ const ALL_CATEGORIES: BrandCategory[] = ['footwear', 'clothing', 'watch', 'acces
 function parseBrandFilters(params: URLSearchParams | { get: (k: string) => string | null }) {
   const search = params.get('search') ?? '';
   const categoryRaw = params.get('category') ?? 'all';
-  const category = (ALL_CATEGORIES.includes(categoryRaw as BrandCategory) ? categoryRaw : 'all') as 'all' | BrandCategory;
+  const category = (ALL_CATEGORIES.includes(categoryRaw as BrandCategory) ? categoryRaw : 'all') as
+    | 'all'
+    | BrandCategory;
   const statusRaw = params.get('status') ?? 'all';
-  const status = (['active', 'disabled'].includes(statusRaw) ? statusRaw : 'all') as 'all' | 'active' | 'disabled';
+  const status = (['active', 'disabled'].includes(statusRaw) ? statusRaw : 'all') as
+    | 'all'
+    | 'active'
+    | 'disabled';
 
   return { search, category, status };
 }
 
 export function useBrands() {
   const searchParams = useSearchParams();
-  const initial = useRef<ReturnType<typeof parseBrandFilters> | null>(null);
-  if (!initial.current) {
-    initial.current = parseBrandFilters(searchParams);
-  }
+  const [initialFilters] = useState(() => parseBrandFilters(searchParams));
 
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [searchQuery, setSearchQuery] = useState(initial.current.search);
-  const [categoryFilter, setCategoryFilter] = useState<'all' | BrandCategory>(initial.current.category);
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'disabled'>(initial.current.status);
+  const [searchQuery, setSearchQuery] = useState(initialFilters.search);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | BrandCategory>(
+    initialFilters.category,
+  );
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'disabled'>(
+    initialFilters.status,
+  );
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
   const [brandToEdit, setBrandToEdit] = useState<Brand | null>(null);
@@ -39,19 +45,29 @@ export function useBrands() {
 
   // Sync state to URL search params
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     if (isUpdatingFromUrl.current) {
       isUpdatingFromUrl.current = false;
       return;
     }
 
     const params = new URLSearchParams();
-    if (searchQuery.trim()) params.set('search', searchQuery.trim());
-    if (categoryFilter !== 'all') params.set('category', categoryFilter);
-    if (statusFilter !== 'all') params.set('status', statusFilter);
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery.trim());
+    }
+    if (categoryFilter !== 'all') {
+      params.set('category', categoryFilter);
+    }
+    if (statusFilter !== 'all') {
+      params.set('status', statusFilter);
+    }
 
     const queryString = params.toString();
-    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
     const currentUrl = `${window.location.pathname}${window.location.search}`;
     if (currentUrl !== newUrl) {
       window.history.replaceState(null, '', newUrl);
@@ -61,7 +77,9 @@ export function useBrands() {
   // Handle browser Back / Forward (popstate)
   useEffect(() => {
     const handlePopState = () => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        return;
+      }
       isUpdatingFromUrl.current = true;
       const parsed = parseBrandFilters(new URLSearchParams(window.location.search));
       setSearchQuery(parsed.search);

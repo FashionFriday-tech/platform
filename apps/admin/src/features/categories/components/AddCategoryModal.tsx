@@ -5,6 +5,7 @@ import { ImageIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 import api from '@/lib/api-client';
+
 import { type ProductCategory } from '../types';
 
 interface AddCategoryModalProps {
@@ -226,7 +227,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                   >
                     {logoUrl ? (
                       <div className="relative h-full w-full">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        {}
                         <img
                           src={logoUrl}
                           alt="Category preview"

@@ -127,7 +127,7 @@ export class AdminProductsService {
       sizes,
 
       // Inventory
-      totalStock: Math.min(100, Math.max(0, Number(dto.inventory?.totalStock) || 0)),
+      totalStock: Math.min(100, Math.max(0, dto.inventory?.totalStock || 0)),
 
       // Social Proof & Real-time Metrics (never negative)
       liveWatching: Math.max(
@@ -228,12 +228,12 @@ export class AdminProductsService {
         .filter(Boolean);
 
       const resolvedStatuses: ProductStatus[] = [];
-      for (const token of statusTokens) {
-        if (token === 'ACTIVE' || token === 'PUBLISHED') {
+      for (const statusItem of statusTokens) {
+        if (statusItem === 'ACTIVE' || statusItem === 'PUBLISHED') {
           resolvedStatuses.push(ProductStatus.PUBLISHED);
-        } else if (token === 'DRAFT') {
+        } else if (statusItem === 'DRAFT') {
           resolvedStatuses.push(ProductStatus.DRAFT);
-        } else if (token === 'INACTIVE' || token === 'ARCHIVED') {
+        } else if (statusItem === 'INACTIVE' || statusItem === 'ARCHIVED') {
           resolvedStatuses.push(
             ProductStatus.ARCHIVED,
             ProductStatus.REJECTED,
@@ -374,7 +374,9 @@ export class AdminProductsService {
   }
 
   async getProductById(idOrSlug: string) {
-    if (!idOrSlug) return null;
+    if (!idOrSlug) {
+      return null;
+    }
     const byId = await this.productsRepository.findById(idOrSlug);
     if (byId) {
       return byId;
@@ -461,8 +463,18 @@ export class AdminProductsService {
 
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const monthNames = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
 
     // 1. DAILY (Last 7 Days)
@@ -734,9 +746,7 @@ export class AdminProductsService {
       }
       if (d.marketing.seoDescription !== undefined) {
         data.seoDescription =
-          typeof d.marketing.seoDescription === 'string'
-            ? d.marketing.seoDescription.trim()
-            : null;
+          typeof d.marketing.seoDescription === 'string' ? d.marketing.seoDescription.trim() : null;
       }
     }
 

@@ -224,10 +224,7 @@ export class CartService {
     const productKeys = dto.items.map((i) => i.productId);
     const validProducts = await this.prisma.db.product.findMany({
       where: {
-        OR: [
-          { id: { in: productKeys } },
-          { slug: { in: productKeys } },
-        ],
+        OR: [{ id: { in: productKeys } }, { slug: { in: productKeys } }],
       },
       select: { id: true, slug: true, totalStock: true },
     });
@@ -235,7 +232,9 @@ export class CartService {
     const productMap = new Map<string, (typeof validProducts)[0]>();
     for (const p of validProducts) {
       productMap.set(p.id, p);
-      if (p.slug) productMap.set(p.slug, p);
+      if (p.slug) {
+        productMap.set(p.slug, p);
+      }
     }
 
     for (const item of dto.items) {

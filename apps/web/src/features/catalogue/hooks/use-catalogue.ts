@@ -37,7 +37,9 @@ export const useCatalogue = ({
 
   // Load more products dynamically
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasMore) return;
+    if (isLoadingMore || !hasMore) {
+      return;
+    }
     setIsLoadingMore(true);
 
     try {

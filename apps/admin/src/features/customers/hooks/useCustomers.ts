@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { toast } from 'sonner';
@@ -25,16 +25,13 @@ function parseCustomerFilters(params: URLSearchParams | { get: (k: string) => st
 
 export function useCustomers() {
   const searchParams = useSearchParams();
-  const initial = useRef<ReturnType<typeof parseCustomerFilters> | null>(null);
-  if (!initial.current) {
-    initial.current = parseCustomerFilters(searchParams);
-  }
+  const [initialFilters] = useState(() => parseCustomerFilters(searchParams));
 
-  const [searchQuery, setSearchQuery] = useState(initial.current.search);
-  const [statusFilter, setStatusFilter] = useState(initial.current.status);
-  const [ordersFilter, setOrdersFilter] = useState(initial.current.orders);
-  const [sortField, setSortField] = useState<SortField>(initial.current.sort);
-  const [sortDirection, setSortDirection] = useState<SortDirection>(initial.current.direction);
+  const [searchQuery, setSearchQuery] = useState(initialFilters.search);
+  const [statusFilter, setStatusFilter] = useState(initialFilters.status);
+  const [ordersFilter, setOrdersFilter] = useState(initialFilters.orders);
+  const [sortField, setSortField] = useState<SortField>(initialFilters.sort);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(initialFilters.direction);
   const [customersData, setCustomersData] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -42,21 +39,35 @@ export function useCustomers() {
 
   // Sync state to URL search params
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return;
+    }
     if (isUpdatingFromUrl.current) {
       isUpdatingFromUrl.current = false;
       return;
     }
 
     const params = new URLSearchParams();
-    if (searchQuery.trim()) params.set('search', searchQuery.trim());
-    if (statusFilter && statusFilter !== 'all') params.set('status', statusFilter);
-    if (ordersFilter && ordersFilter !== 'all') params.set('orders', ordersFilter);
-    if (sortField !== 'joinDate') params.set('sortField', sortField);
-    if (sortDirection !== 'desc') params.set('sortDir', sortDirection);
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery.trim());
+    }
+    if (statusFilter && statusFilter !== 'all') {
+      params.set('status', statusFilter);
+    }
+    if (ordersFilter && ordersFilter !== 'all') {
+      params.set('orders', ordersFilter);
+    }
+    if (sortField !== 'joinDate') {
+      params.set('sortField', sortField);
+    }
+    if (sortDirection !== 'desc') {
+      params.set('sortDir', sortDirection);
+    }
 
     const queryString = params.toString();
-    const newUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
     const currentUrl = `${window.location.pathname}${window.location.search}`;
     if (currentUrl !== newUrl) {
       window.history.replaceState(null, '', newUrl);
@@ -66,7 +77,9 @@ export function useCustomers() {
   // Handle browser Back / Forward (popstate)
   useEffect(() => {
     const handlePopState = () => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        return;
+      }
       isUpdatingFromUrl.current = true;
       const parsed = parseCustomerFilters(new URLSearchParams(window.location.search));
       setSearchQuery(parsed.search);

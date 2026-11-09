@@ -107,32 +107,54 @@ export async function fetchProductsPaginated(
   try {
     const query = new URLSearchParams();
 
-    if (params.page !== undefined) query.set('page', String(params.page));
-    if (params.limit !== undefined) query.set('limit', String(params.limit));
-    if (params.skip !== undefined) query.set('skip', String(params.skip));
-    if (params.take !== undefined) query.set('take', String(params.take));
-    if (params.search?.trim()) query.set('search', params.search.trim());
-    if (params.categoryId) query.set('categoryId', params.categoryId);
+    if (params.page !== undefined) {
+      query.set('page', String(params.page));
+    }
+    if (params.limit !== undefined) {
+      query.set('limit', String(params.limit));
+    }
+    if (params.skip !== undefined) {
+      query.set('skip', String(params.skip));
+    }
+    if (params.take !== undefined) {
+      query.set('take', String(params.take));
+    }
+    if (params.search?.trim()) {
+      query.set('search', params.search.trim());
+    }
+    if (params.categoryId) {
+      query.set('categoryId', params.categoryId);
+    }
     if (params.categories && params.categories.length > 0) {
       query.set('categories', params.categories.join(','));
     }
-    if (params.status) query.set('status', params.status);
+    if (params.status) {
+      query.set('status', params.status);
+    }
     if (params.statuses && params.statuses.length > 0) {
       query.set('statuses', params.statuses.join(','));
     }
-    if (params.sortBy) query.set('sortBy', params.sortBy);
-    if (params.sortOrder) query.set('sortOrder', params.sortOrder);
+    if (params.sortBy) {
+      query.set('sortBy', params.sortBy);
+    }
+    if (params.sortOrder) {
+      query.set('sortOrder', params.sortOrder);
+    }
     if (params.minPrice !== undefined && !isNaN(params.minPrice)) {
       query.set('minPrice', String(params.minPrice));
     }
     if (params.maxPrice !== undefined && !isNaN(params.maxPrice)) {
       query.set('maxPrice', String(params.maxPrice));
     }
-    if (params.brand) query.set('brand', params.brand);
+    if (params.brand) {
+      query.set('brand', params.brand);
+    }
     if (params.brands && params.brands.length > 0) {
       query.set('brands', params.brands.join(','));
     }
-    if (params.quality) query.set('quality', params.quality);
+    if (params.quality) {
+      query.set('quality', params.quality);
+    }
     if (params.qualities && params.qualities.length > 0) {
       query.set('qualities', params.qualities.join(','));
     }

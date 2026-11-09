@@ -30,10 +30,10 @@ export class AdminProductsController {
 
   @Get()
   async getProducts(
-    @Query('skip') skip?: number,
-    @Query('take') take?: number,
-    @Query('page') page?: number,
-    @Query('limit') limit?: number,
+    @Query('skip') skip?: string | number,
+    @Query('take') take?: string | number,
+    @Query('page') page?: string | number,
+    @Query('limit') limit?: string | number,
     @Query('search') search?: string,
     @Query('categoryId') categoryId?: string,
     @Query('categories') categories?: string,
@@ -41,8 +41,8 @@ export class AdminProductsController {
     @Query('statuses') statuses?: string,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: 'asc' | 'desc',
-    @Query('minPrice') minPrice?: number,
-    @Query('maxPrice') maxPrice?: number,
+    @Query('minPrice') minPrice?: string | number,
+    @Query('maxPrice') maxPrice?: string | number,
     @Query('brand') brand?: string,
     @Query('brands') brands?: string,
     @Query('quality') quality?: string,

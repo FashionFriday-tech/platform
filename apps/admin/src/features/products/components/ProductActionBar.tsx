@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import api from '@/lib/api-client';
+
 import { useProductActionBar } from '../hooks/useProductActionBar';
 import { type AdvancedFilters, type ColumnId, type ProductStatus, type ViewMode } from '../types';
 
@@ -95,13 +96,17 @@ export function ProductActionBar({
         ]);
         if (Array.isArray(catsData) && catsData.length > 0) {
           const names = catsData.map((c: any) => c.name).filter(Boolean);
-          if (names.length > 0) setCategoriesList(Array.from(new Set(names)));
+          if (names.length > 0) {
+            setCategoriesList(Array.from(new Set(names)));
+          }
         }
         if (Array.isArray(brandsData) && brandsData.length > 0) {
           const names = brandsData.map((b: any) => b.name).filter(Boolean);
-          if (names.length > 0) setBrandsList(Array.from(new Set(names)));
+          if (names.length > 0) {
+            setBrandsList(Array.from(new Set(names)));
+          }
         }
-      } catch (e) {
+      } catch {
         // Fallback already preset
       }
     }

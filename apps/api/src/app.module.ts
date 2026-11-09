@@ -26,8 +26,8 @@ import { SearchLogsModule } from './modules/search-logs/search-logs.module';
 import { SellersModule } from './modules/sellers/sellers.module';
 import { TeamModule } from './modules/team/team.module';
 import { UploadModule } from './modules/upload/upload.module';
-import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
+import { WhatsAppReviewsModule } from './modules/whatsapp-reviews/whatsapp-reviews.module';
 import { WishlistModule } from './modules/wishlist/wishlist.module';
 
 @Module({

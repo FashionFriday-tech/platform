@@ -14,7 +14,9 @@ interface BrandDetailsModalProps {
 }
 
 function isBlackColor(color?: string): boolean {
-  if (!color) return true;
+  if (!color) {
+    return true;
+  }
   const c = color.trim().toLowerCase();
   return c === '#000000' || c === '#000' || c === 'black';
 }
@@ -89,7 +91,7 @@ export function BrandDetailsModal({
                   className={`object-contain drop-shadow-md ${
                     isBlack
                       ? 'brightness-0 invert dark:invert-0'
-                      : 'brightness-0 invert drop-shadow-sm'
+                      : 'brightness-0 drop-shadow-sm invert'
                   }`}
                 />
               </div>
@@ -148,7 +150,7 @@ export function BrandDetailsModal({
                   <div className="flex items-center gap-2">
                     <p className="text-xs font-bold text-black dark:text-white">Store Visibility</p>
                     <span
-                      className={`rounded px-1.5 py-0.2 text-[10px] font-bold uppercase ${
+                      className={`py-0.2 rounded px-1.5 text-[10px] font-bold uppercase ${
                         isActive
                           ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                           : 'bg-zinc-500/10 text-zinc-500 dark:text-zinc-400'

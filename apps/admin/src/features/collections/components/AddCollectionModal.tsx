@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 
-import { api } from '@/lib/api-client';
 import { ImageIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
+
+import { api } from '@/lib/api-client';
 
 import { type ProductCollection } from '../types';
 
@@ -70,7 +71,11 @@ export function AddCollectionModal({
           !initialData.image.includes('localhost')
         ) {
           try {
-            await api.post('/admin/upload/batch', { urls: [initialData.image] }, { method: 'DELETE' as any });
+            await api.post(
+              '/admin/upload/batch',
+              { urls: [initialData.image] },
+              { method: 'DELETE' as any },
+            );
           } catch (err) {
             console.error('Failed to cleanup old collection image:', err);
           }

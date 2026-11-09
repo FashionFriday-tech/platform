@@ -142,10 +142,7 @@ export class WishlistService {
     // Find valid existing products by ID or slug
     const validProducts = await this.prisma.db.product.findMany({
       where: {
-        OR: [
-          { id: { in: productIdsOrSlugs } },
-          { slug: { in: productIdsOrSlugs } },
-        ],
+        OR: [{ id: { in: productIdsOrSlugs } }, { slug: { in: productIdsOrSlugs } }],
       },
       select: { id: true },
     });

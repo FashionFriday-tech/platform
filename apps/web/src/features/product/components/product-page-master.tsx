@@ -105,17 +105,25 @@ export default function ProductPageMaster({
   const isSoldOut = (product.inventory?.totalStock ?? 1) <= 0;
 
   useEffect(() => {
-    if (!productId) return;
+    if (!productId) {
+      return;
+    }
     // Track product click/view for logged-in user
-    void fetcher(`/products/${productId}/track-click`, { method: 'POST' }).catch(() => {});
+    void fetcher(`/products/${productId}/track-click`, { method: 'POST' }).catch(() => {
+      /* ignore */
+    });
 
     // Check restock notification status if item is sold out
     if (isSoldOut) {
       void fetcher<{ isNotified: boolean }>(`/products/${productId}/notify-me/status`)
         .then((res) => {
-          if (res?.isNotified) setIsNotified(true);
+          if (res?.isNotified) {
+            setIsNotified(true);
+          }
         })
-        .catch(() => {});
+        .catch(() => {
+          /* ignore */
+        });
     }
   }, [productId, isSoldOut]);
 

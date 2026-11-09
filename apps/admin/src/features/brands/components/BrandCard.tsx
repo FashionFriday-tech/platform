@@ -11,7 +11,9 @@ interface BrandCardProps {
 }
 
 function isBlackColor(color?: string): boolean {
-  if (!color) return true;
+  if (!color) {
+    return true;
+  }
   const c = color.trim().toLowerCase();
   return c === '#000000' || c === '#000' || c === 'black';
 }
@@ -43,7 +45,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
         {/* Centered logo container fitted inside the card */}
         <div className="relative z-10 flex h-full w-full items-center justify-center p-6 sm:p-7 md:p-8">
           {brand.logo && !hasFallbackText ? (
-            <div className="relative flex h-full w-full max-h-[82%] max-w-[84%] items-center justify-center">
+            <div className="relative flex h-full max-h-[82%] w-full max-w-[84%] items-center justify-center">
               {!hasImageError ? (
                 <Image
                   src={brand.logo}
@@ -54,9 +56,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                     setHasImageError(true);
                   }}
                   className={`object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
-                    isBlack
-                      ? 'brightness-0 invert dark:invert-0'
-                      : 'brightness-0 invert'
+                    isBlack ? 'brightness-0 invert dark:invert-0' : 'brightness-0 invert'
                   }`}
                 />
               ) : (
@@ -67,9 +67,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
                     setHasFallbackText(true);
                   }}
                   className={`h-full w-full object-contain p-2 drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
-                    isBlack
-                      ? 'brightness-0 invert dark:invert-0'
-                      : 'brightness-0 invert'
+                    isBlack ? 'brightness-0 invert dark:invert-0' : 'brightness-0 invert'
                   }`}
                 />
               )}
@@ -103,9 +101,7 @@ export function BrandCard({ brand, onClick }: BrandCardProps) {
         >
           <span
             className={`h-1.5 w-1.5 rounded-full ${
-              isActive
-                ? 'bg-emerald-500 shadow-[0_0_6px_#10b981]'
-                : 'bg-zinc-400 dark:bg-zinc-500'
+              isActive ? 'bg-emerald-500 shadow-[0_0_6px_#10b981]' : 'bg-zinc-400 dark:bg-zinc-500'
             }`}
           />
           {isActive ? 'Active' : 'Inactive'}

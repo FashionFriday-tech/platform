@@ -98,11 +98,7 @@ export async function BrandCatalog({ brandName }: BrandCatalogProps): Promise<JS
         </div>
       </div>
 
-      <CatalogueClient
-        categorySlug="all"
-        brandName={brand.name}
-        initialProducts={brandProducts}
-      />
+      <CatalogueClient categorySlug="all" brandName={brand.name} initialProducts={brandProducts} />
     </div>
   );
 }
