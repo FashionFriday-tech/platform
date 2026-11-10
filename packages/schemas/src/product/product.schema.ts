@@ -2,7 +2,21 @@ import { z } from 'zod';
 import { ProductBaseSchema } from './product.base.schema';
 import { InventorySchema } from './product.inventory.schema';
 
+export const ProductColorVariantSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string(),
+  mainImage: z.string(),
+  colors: z.array(z.string()).default([]),
+  totalStock: z.number().int().default(0),
+  sellingPrice: z.number().default(0),
+  isCurrent: z.boolean().optional(),
+});
+
+export type ProductColorVariant = z.infer<typeof ProductColorVariantSchema>;
+
 export const ProductSchema = ProductBaseSchema.extend({
+  colorVariants: z.array(ProductColorVariantSchema).optional().default([]),
   price: z.object({
     ogPrice: z.preprocess(
       (val) => (val === null || val === undefined || val === '' ? 0 : val),
