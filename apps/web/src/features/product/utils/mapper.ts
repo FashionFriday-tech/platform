@@ -41,6 +41,19 @@ export function mapDbProductToSchema(p: any): Product {
     sellerId: p.sellerId || p.seller?.id || undefined,
     sellerIds: Array.isArray(p.sellerIds) ? p.sellerIds : p.sellerId ? [p.sellerId] : [],
     gender: p.gender || 'UNISEX',
+    modelGroup: p.modelGroup || undefined,
+    colorVariants: Array.isArray(p.colorVariants)
+      ? p.colorVariants.map((v: any) => ({
+          id: v.id,
+          name: v.name,
+          slug: v.slug,
+          mainImage: withVersion(v.mainImage, version) || '',
+          colors: Array.isArray(v.colors) ? v.colors : [],
+          totalStock: Number(v.totalStock) || 0,
+          sellingPrice: Number(v.sellingPrice) || 0,
+          isCurrent: Boolean(v.isCurrent),
+        }))
+      : [],
     price: {
       ogPrice: Number(p.ogPrice) || 0,
       sellingPrice: Number(p.sellingPrice) || 0,
