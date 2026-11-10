@@ -68,7 +68,15 @@ export function ProductDetailView({ productId }: Props) {
     if (typeof window !== 'undefined' && window.history.length > 1) {
       router.back();
     } else {
-      router.push('/products');
+      const savedQuery =
+        typeof window !== 'undefined'
+          ? sessionStorage.getItem('ff_admin_products_filter')
+          : null;
+      if (savedQuery) {
+        router.push(`/products?${savedQuery}`);
+      } else {
+        router.push('/products');
+      }
     }
   };
   const [product, setProduct] = useState<Product | null>(null);
@@ -104,7 +112,15 @@ export function ProductDetailView({ productId }: Props) {
     try {
       await deleteProductApi(product.id);
       toast.success('Product deleted successfully');
-      router.push('/products');
+      const savedQuery =
+        typeof window !== 'undefined'
+          ? sessionStorage.getItem('ff_admin_products_filter')
+          : null;
+      if (savedQuery) {
+        router.push(`/products?${savedQuery}`);
+      } else {
+        router.push('/products');
+      }
     } catch (err: any) {
       console.error('Failed to delete product:', err);
       toast.error(err?.message || 'Failed to delete product');
