@@ -98,12 +98,19 @@ export class AdminProductsService {
       dto.media?.mainImage ||
       'https://pub-e317eed21d2a444d893320e08f2a283d.r2.dev/placeholder.webp';
 
-    const data: Prisma.ProductCreateInput = {
+    const rawModelGroup = (dto as any).modelGroup;
+    const modelGroup =
+      typeof rawModelGroup === 'string' && rawModelGroup.trim()
+        ? rawModelGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-')
+        : null;
+
+    const data = {
       id: generateBrandId('PROD'),
       name,
       slug,
       description,
       brand,
+      modelGroup,
       status: dto.status.toUpperCase() as ProductStatus,
       ...(validCategoryId ? { category: { connect: { id: validCategoryId } } } : {}),
       sellerIds: allSellerIds,
@@ -157,7 +164,7 @@ export class AdminProductsService {
     };
 
     try {
-      const result = await this.productsRepository.create(data);
+      const result = await this.productsRepository.create(data as Prisma.ProductCreateInput);
       this.triggerProductAndCategoryRevalidation(result);
       return result;
     } catch (error) {
@@ -562,7 +569,7 @@ export class AdminProductsService {
   }
 
   async updateProduct(id: string, dto: UpdateProductDto) {
-    const data: Prisma.ProductUpdateInput = {};
+    const data: Prisma.ProductUpdateInput & { modelGroup?: string | null } = {};
     const d = dto as any;
 
     if (d.name) {
@@ -634,6 +641,12 @@ export class AdminProductsService {
     }
     if (d.gender) {
       data.gender = d.gender.toUpperCase() as Gender;
+    }
+    if (d.modelGroup !== undefined) {
+      data.modelGroup =
+        typeof d.modelGroup === 'string' && d.modelGroup.trim()
+          ? d.modelGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-')
+          : null;
     }
 
     if (d.price) {
@@ -793,7 +806,7 @@ export class AdminProductsService {
       }
     }
 
-    const result = await this.productsRepository.update(id, data);
+    const result = await this.productsRepository.update(id, data as Prisma.ProductUpdateInput);
     try {
       this.triggerProductAndCategoryRevalidation(result);
       if (existingProduct?.slug && existingProduct.slug !== result.slug) {
@@ -1126,5 +1139,27 @@ export class AdminProductsService {
         };
       }
     }
+  }
+
+  async getModelGroups(search?: string): Promise<string[]> {
+    const cleanSearch = (search || '').trim();
+    const where: any = {
+      modelGroup: {
+        not: null,
+        ...(cleanSearch ? { contains: cleanSearch, mode: 'insensitive' } : {}),
+      },
+    };
+
+    const results = await (this.prisma.db.product.findMany as any)({
+      where,
+      distinct: ['modelGroup'],
+      select: { modelGroup: true },
+      take: 30,
+      orderBy: { modelGroup: 'asc' },
+    });
+
+    return results
+      .map((r: any) => r.modelGroup)
+      .filter((g: any): g is string => typeof g === 'string' && g.trim().length > 0);
   }
 }
