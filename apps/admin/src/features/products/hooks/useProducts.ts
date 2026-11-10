@@ -20,6 +20,7 @@ import {
 } from '../types';
 
 const PAGE_SIZE = 40;
+const FILTER_STORAGE_KEY = 'ff_admin_products_filter';
 
 function parseFilters(params: URLSearchParams | { get: (k: string) => string | null }): {
   search: string;
@@ -107,11 +108,47 @@ function parseFilters(params: URLSearchParams | { get: (k: string) => string | n
   };
 }
 
+function getInitialFilters(searchParams: URLSearchParams | { get: (k: string) => string | null }) {
+  // If URL has search params, prioritize URL
+  const hasUrlParams =
+    typeof window !== 'undefined'
+      ? Boolean(window.location.search && window.location.search.length > 1)
+      : Boolean(
+          searchParams.get('search') ||
+            searchParams.get('categories') ||
+            searchParams.get('category') ||
+            searchParams.get('statuses') ||
+            searchParams.get('status') ||
+            searchParams.get('view') ||
+            searchParams.get('sort') ||
+            searchParams.get('brands') ||
+            searchParams.get('qualities'),
+        );
+
+  if (hasUrlParams) {
+    return parseFilters(searchParams);
+  }
+
+  // Fallback to sessionStorage if available so previous filter/mode stays intact
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = sessionStorage.getItem(FILTER_STORAGE_KEY);
+      if (saved) {
+        return parseFilters(new URLSearchParams(saved));
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return parseFilters(searchParams);
+}
+
 export function useProducts() {
   const searchParams = useSearchParams();
 
-  // Parse initial filters from current URL search params
-  const [initialFilters] = useState(() => parseFilters(searchParams));
+  // Parse initial filters from current URL search params or fallback to sessionStorage
+  const [initialFilters] = useState(() => getInitialFilters(searchParams));
 
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -225,6 +262,17 @@ export function useProducts() {
     if (currentUrl !== newUrl) {
       window.history.replaceState(null, '', newUrl);
     }
+
+    // Persist filter state to sessionStorage
+    try {
+      if (queryString) {
+        sessionStorage.setItem(FILTER_STORAGE_KEY, queryString);
+      } else {
+        sessionStorage.removeItem(FILTER_STORAGE_KEY);
+      }
+    } catch {
+      // ignore
+    }
   }, [debouncedSearchQuery, appliedAdvancedFilters, sortOption, viewMode, visibleColumns]);
 
   // Handle browser Back / Forward navigation (popstate)
@@ -253,6 +301,19 @@ export function useProducts() {
 
   // Sync state when searchParams changes via Next.js router navigation
   useEffect(() => {
+    // If searchParams is empty but we restored state from sessionStorage on mount, don't wipe it
+    const searchString = searchParams.toString();
+    if (!searchString && typeof window !== 'undefined') {
+      try {
+        const saved = sessionStorage.getItem(FILTER_STORAGE_KEY);
+        if (saved) {
+          return;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
     const parsed = parseFilters(searchParams);
 
     const isSearchDiff = parsed.search !== debouncedSearchQuery;
