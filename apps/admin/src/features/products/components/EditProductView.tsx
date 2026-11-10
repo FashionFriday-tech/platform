@@ -156,7 +156,13 @@ export function EditProductView({ productId }: EditProductViewProps) {
         </p>
         <button
           onClick={() => {
-            if (typeof window !== 'undefined' && window.history.length > 1) {
+            const savedQuery =
+              typeof window !== 'undefined'
+                ? sessionStorage.getItem('ff_admin_products_filter')
+                : null;
+            if (savedQuery) {
+              router.push(`/products?${savedQuery}`);
+            } else if (typeof window !== 'undefined' && window.history.length > 1) {
               router.back();
             } else {
               router.push('/products');
