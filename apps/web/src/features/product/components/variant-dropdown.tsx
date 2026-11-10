@@ -4,155 +4,143 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { type ProductColorVariant } from '@ff/schemas';
 import { ArrowDownIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
-interface ColorOption {
-  label: string;
-  slug: string;
-  imageUrl: string;
+interface VariantDropdownProps {
+  variants?: ProductColorVariant[];
+  currentSlug: string;
+  currentColor?: string;
 }
 
-const ColorTray = ({
-  options,
-  selectedValue,
-  onChange,
-  isOpen,
-  onToggle,
-}: {
-  options: ColorOption[];
-  selectedValue: string;
-  onChange: (v: string) => void;
-  isOpen: boolean;
-  onToggle: () => void;
-}) => {
-  return (
-    <div
-      className={`border border-white/10 p-4 transition-all duration-300 ${
-        isOpen ? 'rounded-4xl' : 'rounded-full'
-      }`}
-    >
-      <button
-        onClick={onToggle}
-        className="flex w-full items-center justify-between font-black text-white uppercase transition-colors"
-      >
-        <div className="flex items-center gap-4">
-          <span className="text-[10px] tracking-[0.25em]">Color Options</span>
-        </div>
-        <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
-          <ArrowDownIcon size={18} />
-        </motion.span>
-      </button>
+export function extractColorLabel(variant: ProductColorVariant): string {
+  // 1. If product name has a color suffix after " - " or " / "
+  if (variant.name) {
+    const parts = variant.name.split(/\s*[-–—/]\s*/);
+    if (parts.length > 1) {
+      const last = parts[parts.length - 1].trim();
+      if (last.length > 0 && last.length <= 30) {
+        return last;
+      }
+    }
+  }
+  // 2. Fall back to colors array if available
+  if (variant.colors && variant.colors.length > 0 && variant.colors[0]) {
+    const c = variant.colors[0];
+    if (!c.startsWith('#')) {
+      return c;
+    }
+  }
+  // 3. Fallback to product name
+  return variant.name || 'Colorway';
+}
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
+export default function VariantDropdown({
+  variants = [],
+  currentSlug,
+}: VariantDropdownProps) {
+  // If there are no color variants or only 1 item, don't show the tray
+  if (!variants || variants.length <= 1) {
+    return null;
+  }
+
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <div className="w-full">
+      <div className="rounded-2xl border border-zinc-200/80 bg-zinc-50/60 p-3.5 transition-all duration-300 dark:border-white/10 dark:bg-zinc-900/40">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-foreground text-[10px] font-black tracking-[0.2em] uppercase">
+              Available Colors
+            </span>
+            <span className="text-foreground/70 rounded-full bg-black/5 px-2 py-0.5 text-[9px] font-bold dark:bg-white/10">
+              {variants.length} Colors
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-foreground-muted hover:text-foreground flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase transition-colors"
           >
-            <div className="no-scrollbar flex gap-4 overflow-x-auto pt-6 pb-2">
-              {options.map((opt) => (
-                <div
-                  key={opt.slug || opt.label}
-                  className={`flex shrink-0 flex-col items-center gap-2`}
-                >
-                  {/* Link wrapper for navigation */}
-                  <Link
-                    href={`/product/${opt.slug || opt.label.toLowerCase()}`}
-                    onClick={() => {
-                      onChange(opt.slug || opt.label.toLowerCase());
-                      onToggle();
-                    }}
-                    className="relative flex items-center justify-center p-1"
-                  >
-                    {/* Active Circle Border */}
+            <span>{isOpen ? 'Collapse' : 'Expand'}</span>
+            <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
+              <ArrowDownIcon size={14} />
+            </motion.span>
+          </button>
+        </div>
+
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="overflow-hidden"
+            >
+              <div className="no-scrollbar flex gap-3 overflow-x-auto pt-3.5 pb-1">
+                {variants.map((v) => {
+                  const isCurrent = v.slug === currentSlug;
+                  const label = extractColorLabel(v);
+                  const isSoldOut = (v.totalStock ?? 1) <= 0;
+
+                  return (
                     <div
-                      className={`absolute inset-0 rounded-full border transition-all duration-300 ${
-                        selectedValue === (opt.slug || opt.label.toLowerCase())
-                          ? 'border-white opacity-100'
-                          : 'border-transparent opacity-0'
-                      }`}
-                    />
+                      key={v.id || v.slug}
+                      className="group flex shrink-0 flex-col items-center gap-1.5"
+                    >
+                      <Link
+                        href={`/product/${v.slug}`}
+                        prefetch
+                        className={`relative flex items-center justify-center rounded-xl p-0.5 transition-all duration-200 ${
+                          isCurrent
+                            ? 'scale-105 ring-2 ring-black dark:ring-white'
+                            : 'ring-1 ring-transparent opacity-75 hover:scale-100 hover:opacity-100 hover:ring-zinc-400 dark:hover:ring-zinc-600'
+                        }`}
+                        title={`${v.name}${isSoldOut ? ' (Sold Out)' : ''}`}
+                      >
+                        <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                          {v.mainImage ? (
+                            <Image
+                              src={v.mainImage}
+                              width={56}
+                              height={56}
+                              className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 ${
+                                isSoldOut ? 'grayscale opacity-60' : ''
+                              }`}
+                              alt={label}
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-zinc-200 dark:bg-zinc-700" />
+                          )}
 
-                    <div className="h-14 w-14 overflow-hidden rounded-full border-2 border-transparent transition-all duration-300">
-                      <Image
-                        src={opt.imageUrl}
-                        width={56}
-                        height={56}
-                        className="h-full w-full object-cover"
-                        alt={opt.label}
-                      />
+                          {isSoldOut && (
+                            <span className="absolute inset-x-0 bottom-0 bg-rose-600/90 py-0.5 text-center text-[7px] font-black tracking-wider text-white uppercase">
+                              Sold Out
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+
+                      <span
+                        className={`max-w-[70px] truncate text-center text-[9px] font-bold tracking-wider uppercase transition-colors ${
+                          isCurrent
+                            ? 'text-foreground font-black'
+                            : 'text-foreground-muted group-hover:text-foreground'
+                        }`}
+                      >
+                        {label}
+                      </span>
                     </div>
-                  </Link>
-                  <span
-                    className={`text-[8px] font-black tracking-widest uppercase ${
-                      selectedValue === (opt.slug || opt.label.toLowerCase())
-                        ? 'text-white'
-                        : 'text-white/40'
-                    }`}
-                  >
-                    {opt.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-export default function ProductSelection() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [color, setColor] = useState('phantom');
-
-  const colorData: ColorOption[] = [
-    {
-      label: 'Phantom',
-      slug: '',
-      imageUrl:
-        'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/0fec9279-d839-45b4-a848-1d94cff031a7/NIKE+SB+DUNK+LOW+PRO.png',
-    },
-    {
-      label: 'University',
-      slug: '',
-      imageUrl:
-        'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/2be76228-ff51-4c87-b120-e7be37db4d2e/AIR+FORCE+1+LOW+QS.png',
-    },
-    {
-      label: 'Varsity',
-      slug: '',
-      imageUrl:
-        'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto/85f69d4c-7a54-4e31-be57-d8896a73f341/W+ZOOM+GP+CHALLENGE+1.5+HC+PRM.png',
-    },
-    {
-      label: 'Black',
-      slug: '',
-      imageUrl:
-        'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/401cfc12-9de2-41ff-9084-1f99f68e9b03/W+ZOOM+GP+CHALLENGE+PRO+HC.png',
-    },
-    {
-      label: 'Blue',
-      slug: '',
-      imageUrl:
-        'https://static.nike.com/a/images/t_web_pdp_535_v2/f_auto,u_9ddf04c7-2a9a-4d76-add1-d15af8f0263d,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/0fcbdc68-279b-4e41-bd31-ea3879164798/W+AIR+FORCE+1+%2707+MINI+JEWEL.png',
-    },
-  ];
-
-  return (
-    <div className="mx-auto w-full max-w-md">
-      <ColorTray
-        options={colorData}
-        selectedValue={color}
-        onChange={setColor}
-        isOpen={isOpen}
-        onToggle={() => {
-          setIsOpen(!isOpen);
-        }}
-      />
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
