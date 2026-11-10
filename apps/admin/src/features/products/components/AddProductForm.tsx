@@ -676,9 +676,17 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         type: 'success',
       });
 
-      // Redirect to product list after a brief delay
+      // Redirect to product list after a brief delay, preserving previous filters
       setTimeout(() => {
-        router.push('/products');
+        const savedQuery =
+          typeof window !== 'undefined'
+            ? sessionStorage.getItem('ff_admin_products_filter')
+            : null;
+        if (savedQuery) {
+          router.push(`/products?${savedQuery}`);
+        } else {
+          router.push('/products');
+        }
       }, 1200);
     } catch (error: any) {
       console.error('Error saving product:', error);
