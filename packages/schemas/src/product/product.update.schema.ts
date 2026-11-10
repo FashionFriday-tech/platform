@@ -10,6 +10,10 @@ export const UpdateProductSchema = z.object({
   sellerId: z.string().optional().nullable(),
   sellerIds: z.array(z.string()).optional(),
   gender: GenderEnum.optional(),
+  modelGroup: z.preprocess(
+    (val) => (val === '' || val === null ? null : typeof val === 'string' ? val.trim() : val),
+    z.string().optional().nullable(),
+  ),
   status: z.enum(['PENDING', 'DRAFT', 'PUBLISHED', 'REJECTED', 'ARCHIVED']).optional(),
   collections: z.array(z.string()).optional(),
   price: z
