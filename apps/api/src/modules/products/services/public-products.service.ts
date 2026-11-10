@@ -479,7 +479,91 @@ export class PublicProductsService {
   }
 
   async getProductBySlug(slug: string) {
-    return this.productsRepository.findBySlug(slug);
+    const product = await this.productsRepository.findBySlug(slug);
+    if (!product) {
+      return null;
+    }
+
+    const currentProduct = product as any;
+    const modelGroup: string | null = currentProduct.modelGroup || null;
+
+    let rawVariants: {
+      id: string;
+      name: string;
+      slug: string;
+      mainImage: string;
+      colors: string[];
+      totalStock: number;
+      sellingPrice: any;
+    }[] = [];
+
+    // 1. Primary path: Explicit modelGroup with B-Tree index scan (sub-millisecond, low storage & CPU)
+    if (modelGroup && modelGroup.trim()) {
+      rawVariants = await (this.prisma.db.product.findMany as any)({
+        where: {
+          modelGroup: modelGroup.trim(),
+          status: 'PUBLISHED',
+        },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          mainImage: true,
+          colors: true,
+          totalStock: true,
+          sellingPrice: true,
+        },
+        orderBy: { createdAt: 'asc' },
+      });
+    } else {
+      // 2. Scalable fallback for previously created products without modelGroup yet
+      const baseName = this.extractBaseModelName(product.name);
+      if (baseName && baseName.length >= 4) {
+        rawVariants = await this.prisma.db.product.findMany({
+          where: {
+            status: 'PUBLISHED',
+            categoryId: product.categoryId,
+            name: {
+              startsWith: baseName,
+              mode: 'insensitive',
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            mainImage: true,
+            colors: true,
+            totalStock: true,
+            sellingPrice: true,
+          },
+          take: 12,
+          orderBy: { createdAt: 'asc' },
+        });
+      }
+    }
+
+    const colorVariants = rawVariants.map((v) => ({
+      id: v.id,
+      name: v.name,
+      slug: v.slug,
+      mainImage: v.mainImage,
+      colors: v.colors,
+      totalStock: v.totalStock,
+      sellingPrice: Number(v.sellingPrice) || 0,
+      isCurrent: v.id === product.id,
+    }));
+
+    return {
+      ...product,
+      colorVariants,
+    };
+  }
+
+  private extractBaseModelName(name: string): string | null {
+    if (!name) return null;
+    const cleaned = name.split(/\s*[-–—/]\s*|\s*\(|\s*'/)[0]?.trim();
+    return cleaned && cleaned.length >= 4 ? cleaned : null;
   }
 
   async trackProductClick(idOrSlug: string, userId: string) {
