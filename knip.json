@@ -29,7 +29,7 @@
     },
     "packages/schemas": {},
     "packages/database": {
-      "ignore": ["seed-whatsapp-reviews.mjs"]
+      "ignore": ["seed-*.mjs", "seed-whatsapp-reviews.mjs", "seed-colors.mjs"]
     },
     "packages/tsconfig": {}
   },
@@ -40,6 +40,7 @@
     "apps/admin/public/sw.js",
     "apps/admin/src/lib/pwa/usePushNotifications.ts",
     "packages/database/prisma/seed-*.ts",
+    "packages/database/seed-*.mjs",
     "**/*.e2e-spec.ts"
   ],
   "ignoreDependencies": [

@@ -14,7 +14,9 @@
     "generate": "prisma generate --schema ./prisma/schema",
     "migrate": "prisma migrate dev --schema ./prisma/schema",
     "db:push": "prisma db push --schema ./prisma/schema",
-    "studio": "prisma studio --schema ./prisma/schema"
+    "studio": "prisma studio --schema ./prisma/schema",
+    "seed:colors": "node seed-colors.mjs",
+    "seed:reviews": "node seed-whatsapp-reviews.mjs"
   },
   "include": [
     "src"
