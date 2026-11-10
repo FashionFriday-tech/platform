@@ -11,6 +11,9 @@ import { COLOR_SWATCH_MAP, extractFacets } from '@/data/filter-engine';
 import { useBrands } from '@/features/brand';
 import { formatColorLabel, isLightColor } from '@/features/cart/utils/format-color';
 
+import { useColors } from '../hooks/use-colors';
+import { useQualities } from '../hooks/use-qualities';
+
 interface SidebarProps {
   category: string;
   products?: Product[];
@@ -67,6 +70,8 @@ export const CatalogueSidebar = ({
   });
 
   const { brands } = useBrands();
+  const { qualities: dbQualities } = useQualities();
+  const { colors: dbColors } = useColors();
 
   const getBrandLogo = (brandName: string) => {
     const normalized = brandName.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -85,6 +90,47 @@ export const CatalogueSidebar = ({
   const facets = useMemo(() => {
     return extractFacets(products);
   }, [products]);
+
+  // Dynamically compute all available qualities (from DB if loaded, else fallback to facets)
+  const availableQualities = useMemo(() => {
+    if (dbQualities && dbQualities.length > 0) {
+      return dbQualities.map((q) => {
+        const facetMatch = facets.qualities.find(
+          (fq) => fq.value.toLowerCase() === q.name.toLowerCase(),
+        );
+        return {
+          label: q.name,
+          value: q.name,
+          count: facetMatch ? facetMatch.count : 0,
+        };
+      });
+    }
+    return facets.qualities;
+  }, [dbQualities, facets.qualities]);
+
+  // Dynamically compute all available colors (from DB if loaded, else fallback to facets)
+  const availableColors = useMemo(() => {
+    if (dbColors && dbColors.length > 0) {
+      return dbColors.map((c) => {
+        const cNameLower = c.name.toLowerCase().trim();
+        const facetMatch = facets.colors.find(
+          (fc) =>
+            fc.value.toLowerCase().trim() === cNameLower ||
+            fc.label.toLowerCase().trim() === cNameLower,
+        );
+        return {
+          label: c.name,
+          value: c.name,
+          hex: c.hex,
+          count: facetMatch ? facetMatch.count : 0,
+        };
+      });
+    }
+    return facets.colors.map((fc) => ({
+      ...fc,
+      hex: COLOR_SWATCH_MAP[fc.value.toLowerCase().trim()]?.bg,
+    }));
+  }, [dbColors, facets.colors]);
   const toggleSection = (id: string) => {
     setOpenSections((prev) => ({
       ...prev,
@@ -478,7 +524,7 @@ export const CatalogueSidebar = ({
         )}
 
         {/* --- QUALITY SECTION --- */}
-        {facets.qualities.length > 0 && (
+        {availableQualities.length > 0 && (
           <div className="border-border border-b py-3">
             <button
               onClick={() => {
@@ -513,7 +559,7 @@ export const CatalogueSidebar = ({
                       : 'flex flex-wrap gap-1.5 overflow-hidden px-2 pt-2.5 pb-2'
                   }
                 >
-                  {facets.qualities.map((q) => {
+                  {availableQualities.map((q) => {
                     const isActive =
                       draftFilters?.quality?.some(
                         (val) => val.toLowerCase() === q.value.toLowerCase(),
@@ -541,7 +587,7 @@ export const CatalogueSidebar = ({
         )}
 
         {/* --- COLORS SECTION --- */}
-        {facets.colors.length > 0 && (
+        {availableColors.length > 0 && (
           <div className="border-border border-b py-3">
             <button
               onClick={() => {
@@ -576,7 +622,7 @@ export const CatalogueSidebar = ({
                       : 'flex flex-wrap gap-1.5 overflow-hidden px-2 pt-2.5 pb-2'
                   }
                 >
-                  {facets.colors.map((c) => {
+                  {availableColors.map((c) => {
                     const colorKey = c.value.toLowerCase().trim();
                     const swatch =
                       COLOR_SWATCH_MAP[colorKey] || COLOR_SWATCH_MAP[c.label.toLowerCase().trim()];
@@ -590,7 +636,9 @@ export const CatalogueSidebar = ({
                             c.label.toLowerCase().trim()
                         );
                       }) ?? false;
-                    const isLight = swatch?.isLight ?? isLightColor(c.value || c.label);
+                    const isLight = c.hex
+                      ? isLightColor(c.hex)
+                      : (swatch?.isLight ?? isLightColor(c.value || c.label));
 
                     return (
                       <button
@@ -641,7 +689,7 @@ export const CatalogueSidebar = ({
                           className="flex w-5 shrink-0 items-center justify-center self-stretch border-r border-black/15 dark:border-white/20"
                           style={{
                             background:
-                              swatch?.bg || (c.value.startsWith('#') ? c.value : colorKey),
+                              c.hex || swatch?.bg || (c.value.startsWith('#') ? c.value : colorKey),
                           }}
                         >
                           {isActive && (

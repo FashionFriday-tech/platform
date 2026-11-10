@@ -32,8 +32,8 @@ export function QualityCard({ quality, onSelect, dragHandleProps }: QualityCardP
         {/* Top Header: Quality Name + New Badge + Drag Handle / Arrow */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <h3 className="truncate text-base font-bold text-black sm:text-lg dark:text-white">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <h3 className="text-base font-bold text-black sm:text-lg dark:text-white">
                 {quality.name}
               </h3>
               {quality.name === '6A' && (

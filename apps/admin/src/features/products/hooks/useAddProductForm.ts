@@ -8,12 +8,7 @@ import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
 import { type CreateColorInput } from '../../colors/types';
 import { useQualities } from '../../qualities/hooks/useQualities';
-import {
-  getCategoryQualities,
-  getCategorySizes,
-  isFootwearCategory,
-  isWatchCategory,
-} from '../utils/constants';
+import { getCategorySizes, isFootwearCategory, isWatchCategory } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export interface SelectedColor {
@@ -496,9 +491,36 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     setIsCategoryOpen(false);
     setSizes(getCategorySizes(catName, gender));
 
-    const validQualities = getCategoryQualities(catName);
-    if (!validQualities.includes(quality)) {
-      setQuality(validQualities[0] || (isWatchCategory(catName) ? '7AA' : 'UA'));
+    const catLower = catName.toLowerCase().trim();
+    const isFootwear = isFootwearCategory(catName);
+    const isWatch = isWatchCategory(catName);
+
+    const matchingQualities = (apiQualities || [])
+      .filter((q) => {
+        if (!catName) {
+          return true;
+        }
+        return q.categories.some((c) => {
+          const cLower = c.toLowerCase().trim();
+          if (cLower === catLower) {
+            return true;
+          }
+          if (isFootwear && (cLower === 'footwear' || cLower === 'sneakers')) {
+            return true;
+          }
+          if (isWatch && (cLower === 'watches' || cLower === 'watch')) {
+            return true;
+          }
+          return false;
+        });
+      })
+      .map((q) => q.name);
+
+    const validQualities =
+      matchingQualities.length > 0 ? matchingQualities : (apiQualities || []).map((q) => q.name);
+
+    if (validQualities.length > 0 && !validQualities.includes(quality)) {
+      setQuality(validQualities[0]);
     }
     setBrandInput('');
     setSelectedBrandLogo(null);

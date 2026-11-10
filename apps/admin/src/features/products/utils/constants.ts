@@ -1,41 +1,8 @@
-export const CATEGORIES = [
-  'Clothing',
-  'Jacket',
-  'Shirts',
-  'Pants',
-  'Sneakers',
-  'Watches',
-  'Slippers',
-  'Accessories',
-];
-export const QUALITIES = [
-  '7AA',
-  'UA',
-  'Semi UA',
-  '10A',
-  '7A',
-  '6A',
-  '5A',
-  'Original',
-  'Premium',
-  'Standard',
-  'Surplus',
-];
-
-export const FOOTWEAR_QUALITIES = [
-  'UA',
-  'Semi UA',
-  '10A',
-  '7A',
-  '6A',
-  '5A',
-  'Original',
-  'Standard',
-];
-
-export const WATCH_QUALITIES = ['7AA', '10A', '7A', '5A', 'Original', 'Premium', 'Standard'];
-
-export const GENERAL_QUALITIES = ['Original', 'Premium', 'Standard', 'Surplus', '10A', '7AA', '7A'];
+/**
+ * Product Form Sizing Constants and Helpers.
+ * Note: Categories and Qualities are now managed 100% dynamically via database
+ * models (`Category`, `Quality`) and backend endpoints (`/categories`, `/qualities`).
+ */
 
 export function isWatchCategory(categoryName?: string | null): boolean {
   if (!categoryName) {
@@ -60,16 +27,6 @@ export function isFootwearCategory(categoryName?: string | null): boolean {
     normalized.includes('sandal') ||
     normalized.includes('boot')
   );
-}
-
-export function getCategoryQualities(categoryName?: string | null): string[] {
-  if (isWatchCategory(categoryName)) {
-    return WATCH_QUALITIES;
-  }
-  if (isFootwearCategory(categoryName)) {
-    return FOOTWEAR_QUALITIES;
-  }
-  return QUALITIES;
 }
 
 export const FOOTWEAR_SIZES_MEN = ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'];

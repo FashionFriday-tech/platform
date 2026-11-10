@@ -12,7 +12,7 @@ import { AddColorModal } from '@/features/colors';
 import { api } from '@/lib/api-client';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
-import { getCategoryQualities, isFootwearCategory, isWatchCategory } from '../utils/constants';
+import { isFootwearCategory, isWatchCategory } from '../utils/constants';
 import { LabelWithTick } from './LabelWithTick';
 import { ProductSellerSelector } from './ProductSellerSelector';
 
@@ -313,9 +313,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   }, [category, gender, apiCategories]);
 
   const availableQualities = useMemo(() => {
-    const staticQualities = getCategoryQualities(category);
     if (!apiQualities || apiQualities.length === 0) {
-      return staticQualities;
+      return [];
     }
 
     const catLower = (category || '').toLowerCase().trim();
@@ -344,10 +343,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       .map((q) => q.name);
 
     if (matching.length === 0) {
-      return staticQualities;
+      return apiQualities.map((q) => q.name);
     }
 
-    return Array.from(new Set([...matching, ...staticQualities]));
+    return matching;
   }, [category, apiQualities]);
 
   const validateForm = (isDraft: boolean): Record<string, string> => {
