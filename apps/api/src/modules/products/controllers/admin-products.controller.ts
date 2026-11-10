@@ -28,6 +28,11 @@ export class AdminProductsController {
     return this.productsService.getProductStats();
   }
 
+  @Get('model-groups')
+  async getModelGroups(@Query('search') search?: string) {
+    return this.productsService.getModelGroups(search);
+  }
+
   @Get()
   async getProducts(
     @Query('skip') skip?: string | number,
