@@ -4,7 +4,7 @@ import { PrismaService } from '../../database/prisma.service';
 
 @Injectable()
 export class WishlistService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Fetch all wishlisted products for a user with optimized fields
@@ -39,10 +39,10 @@ export class WishlistService {
       createdAt: item.createdAt,
       product: item.product
         ? {
-            ...item.product,
-            ogPrice: Number(item.product.ogPrice),
-            sellingPrice: Number(item.product.sellingPrice),
-          }
+          ...item.product,
+          ogPrice: Number(item.product.ogPrice),
+          sellingPrice: Number(item.product.sellingPrice),
+        }
         : null,
     }));
   }
@@ -142,7 +142,10 @@ export class WishlistService {
     // Find valid existing products by ID or slug
     const validProducts = await this.prisma.db.product.findMany({
       where: {
-        OR: [{ id: { in: productIdsOrSlugs } }, { slug: { in: productIdsOrSlugs } }],
+        OR: [
+          { id: { in: productIdsOrSlugs } },
+          { slug: { in: productIdsOrSlugs } },
+        ],
       },
       select: { id: true },
     });
