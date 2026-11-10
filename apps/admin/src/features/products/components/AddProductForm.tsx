@@ -163,6 +163,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     setLiveSold,
     averageRating,
     totalReviews,
+    modelGroup,
+    setModelGroup,
+    availableModelGroups,
   } = useAddProductForm(initialData, { onToast: setToast });
 
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
@@ -590,6 +593,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
             : undefined,
         sellerIds: selectedSellerIds.filter((id) => id && id !== 'none'),
         brand: brandInput.trim() ? [brandInput.trim().toUpperCase()] : ['FASHION FRIDAY'],
+        modelGroup: modelGroup?.trim()
+          ? modelGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-')
+          : undefined,
         gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
         attributes: {
           sizes: sizes.length > 0 ? sizes.map((s) => s.trim().toUpperCase()) : [],
@@ -1482,6 +1488,64 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           </button>
                         </div>
                       )}
+                    </div>
+                  )}
+                </div>
+                {/* Model / Style Group (Links different colorways of the same model) */}
+                <div className="pt-2">
+                  <div className="flex items-center justify-between">
+                    <LabelWithTick
+                      label="Model / Style Group"
+                      status={modelGroup.trim().length > 0 ? 'valid' : 'default'}
+                      rightElement={
+                        <span className="text-[11px] font-medium text-black/50 dark:text-white/50">
+                          Links different colors of this model on PDP
+                        </span>
+                      }
+                    />
+                    {modelGroup && (
+                      <button
+                        type="button"
+                        onClick={() => setModelGroup('')}
+                        className="text-[11px] font-bold text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={modelGroup}
+                    onChange={(e) =>
+                      setModelGroup(
+                        e.target.value
+                          .toLowerCase()
+                          .replace(/\s+/g, '-')
+                          .replace(/[^a-z0-9_-]+/g, ''),
+                      )
+                    }
+                    placeholder="e.g. dunk-low-retro or classic-tee"
+                    className="w-full rounded-xl border border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black lowercase transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
+                  />
+                  {availableModelGroups.length > 0 && (
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                        Existing Model Groups:
+                      </span>
+                      {availableModelGroups.slice(0, 8).map((group) => (
+                        <button
+                          key={group}
+                          type="button"
+                          onClick={() => setModelGroup(group)}
+                          className={`rounded-md border px-2 py-0.5 text-xs font-semibold transition-all ${
+                            modelGroup === group
+                              ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                              : 'border-black/10 bg-black/5 text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
+                          }`}
+                        >
+                          {group}
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>
