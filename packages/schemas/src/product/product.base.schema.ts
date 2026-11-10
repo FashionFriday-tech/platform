@@ -26,6 +26,11 @@ export const ProductBaseSchema = z.object({
 
   gender: GenderEnum,
 
+  modelGroup: z.preprocess(
+    (val) => (val === null || val === undefined || val === '' ? undefined : typeof val === 'string' ? val.trim() : val),
+    z.string().optional(),
+  ),
+
   attributes: z.object({
     colors: z.array(z.string()).default([]),
     quality: QualityEnum,
