@@ -37,9 +37,10 @@ model Product {
   youtubeId  String?
 
   // Attributes
-  colors  String[]
-  quality String
-  sizes   String[]
+  colors     String[]
+  quality    String
+  sizes      String[]
+  modelGroup String?
 
   // Inventory
   totalStock Int @default(0)
@@ -75,6 +76,7 @@ model Product {
   @@index([categoryId])
   @@index([sellerId])
   @@index([status])
+  @@index([modelGroup])
   @@map("products")
 }
 
