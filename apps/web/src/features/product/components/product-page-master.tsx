@@ -351,7 +351,11 @@ export default function ProductPageMaster({
               </p>
             </div>
 
-            <ProductVariantPage />
+            <ProductVariantPage
+              variants={product.colorVariants}
+              currentSlug={product.slug}
+              currentColor={product.attributes?.colors?.[0]}
+            />
 
             {shouldShowSizeSelector && (
               <div className="space-y-4">
