@@ -90,6 +90,11 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
 
+  const [modelGroup, setModelGroup] = useState<string>(() => {
+    return initialData?.modelGroup ?? (initialData as any)?.modelGroup ?? '';
+  });
+  const [availableModelGroups, setAvailableModelGroups] = useState<string[]>([]);
+
   const [brandInput, setBrandInput] = useState('');
   const [selectedBrandLogo, setSelectedBrandLogo] = useState<string | null>(null);
   const [isBrandOpen, setIsBrandOpen] = useState(false);
@@ -273,6 +278,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
       // Core fields
       setProductName(initialData.name ?? '');
+      setModelGroup(initialData.modelGroup ?? (initialData as any).modelGroup ?? '');
       setProductDesc(initialData.description ?? '');
       setQuality(mappedUIQuality);
       setGender(mappedGender);
@@ -1057,7 +1063,23 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
         console.error('Failed to load collections in add product form', err);
       }
     }
+    async function loadModelGroups() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/model-groups`,
+        );
+        if (res.ok) {
+          const data = (await res.json()) as string[];
+          if (Array.isArray(data)) {
+            setAvailableModelGroups(data);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load model groups in add product form', err);
+      }
+    }
     void loadCollections();
+    void loadModelGroups();
   }, []);
 
   const toggleCollection = (colName: string) => {
@@ -1218,5 +1240,8 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     setAverageRating,
     totalReviews,
     setTotalReviews,
+    modelGroup,
+    setModelGroup,
+    availableModelGroups,
   };
 }
