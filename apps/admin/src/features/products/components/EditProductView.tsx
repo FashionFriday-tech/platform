@@ -63,6 +63,8 @@ export function EditProductView({ productId }: EditProductViewProps) {
                 ? [p.seller.id]
                 : [],
           gender: p.gender ?? 'UNISEX',
+          modelGroup: p.modelGroup ?? undefined,
+          colorVariants: Array.isArray(p.colorVariants) ? p.colorVariants : [],
           price: {
             ogPrice: Number(p.ogPrice) || 0,
             sellingPrice: Number(p.sellingPrice) || 0,
