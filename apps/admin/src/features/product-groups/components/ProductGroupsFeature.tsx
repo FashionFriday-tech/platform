@@ -7,6 +7,7 @@ import { LayersIcon, PlusIcon, SearchIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { useProductGroups } from '../hooks/useProductGroups';
+import { CreateGroupModal } from './CreateGroupModal';
 import { RenameGroupModal } from './RenameGroupModal';
 
 export function ProductGroupsFeature() {
@@ -23,6 +24,13 @@ export function ProductGroupsFeature() {
     openRenameModal,
     closeRenameModal,
     handleRenameGroup,
+    isCreateModalOpen,
+    targetGroupForAdd,
+    openCreateModal,
+    closeCreateModal,
+    handleRemoveProduct,
+    existingGroupNames,
+    loadGroups,
   } = useProductGroups();
 
   return (
@@ -93,13 +101,14 @@ export function ProductGroupsFeature() {
           />
         </div>
 
-        <Link
-          href="/products/add"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-transform hover:opacity-90 sm:text-sm dark:bg-white dark:text-black"
+        <button
+          type="button"
+          onClick={() => openCreateModal()}
+          className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-transform hover:opacity-90 sm:text-sm dark:bg-white dark:text-black"
         >
           <PlusIcon className="h-4 w-4" />
-          <span>Add Product to Group</span>
-        </Link>
+          <span>Create Product Group</span>
+        </button>
       </div>
 
       {/* Main Content Area */}
@@ -122,14 +131,16 @@ export function ProductGroupsFeature() {
             <p className="mt-1 max-w-sm text-xs text-black/50 dark:text-white/50">
               {searchQuery
                 ? `No model groups match "${searchQuery}". Try a different keyword.`
-                : 'When you create or edit products, specify a "Color Option Group" to link multiple colors together on the product detail page.'}
+                : 'Create a group to link products that share the same model. Customers can then toggle color options on the Product Detail Page.'}
             </p>
-            <Link
-              href="/products/add"
-              className="mt-4 rounded-full bg-black px-5 py-2 text-xs font-bold text-white hover:opacity-90 dark:bg-white dark:text-black"
+            <button
+              type="button"
+              onClick={() => openCreateModal()}
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-black px-5 py-2 text-xs font-bold text-white shadow-md hover:opacity-90 dark:bg-white dark:text-black"
             >
-              Create Product with Group
-            </Link>
+              <PlusIcon className="h-3.5 w-3.5" />
+              <span>Create Product Group</span>
+            </button>
           </div>
         ) : (
           <div className="space-y-4 pb-6">
@@ -146,6 +157,15 @@ export function ProductGroupsFeature() {
                     <span className="font-mono text-sm font-extrabold text-black dark:text-white">
                       {group.modelGroup}
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => openCreateModal(group.modelGroup)}
+                      title="Search & add more products to this group"
+                      className="inline-flex items-center gap-1 rounded-md border border-emerald-600/30 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
+                    >
+                      <PlusIcon className="h-3 w-3" />
+                      <span>Add Products</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => openRenameModal(group)}
@@ -249,6 +269,14 @@ export function ProductGroupsFeature() {
                           >
                             View
                           </Link>
+                          <button
+                            type="button"
+                            onClick={() => void handleRemoveProduct(prod.id, prod.name)}
+                            title="Remove product from this group"
+                            className="rounded-md border border-rose-200 bg-rose-50 px-1.5 py-1 text-center text-[10px] font-bold text-rose-600 hover:bg-rose-500 hover:text-white dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-400 dark:hover:bg-rose-600 dark:hover:text-white"
+                          >
+                            ✕
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -259,6 +287,15 @@ export function ProductGroupsFeature() {
           </div>
         )}
       </div>
+
+      {/* Create / Add to Group Modal */}
+      <CreateGroupModal
+        isOpen={isCreateModalOpen}
+        onClose={closeCreateModal}
+        initialGroupName={targetGroupForAdd}
+        existingGroups={existingGroupNames}
+        onSuccess={loadGroups}
+      />
 
       {/* Rename Modal */}
       <RenameGroupModal
