@@ -410,7 +410,7 @@ export default function ReviewSection({
                 >
                   <div className="flex w-full items-start justify-between gap-3 sm:gap-5">
                     {/* High-End Image Cropping - 1:1 Aspect Ratio */}
-                    <div className="relative aspect-[4/3] w-24 shrink-0 overflow-hidden rounded-xl bg-zinc-100 shadow-md sm:w-32 sm:rounded-2xl md:w-40 dark:bg-zinc-800">
+                    <div className="relative aspect-[3/4] w-24 shrink-0 overflow-hidden rounded-xl bg-zinc-100 shadow-md sm:w-32 sm:rounded-2xl md:w-40 dark:bg-zinc-800">
                       <Image
                         src={rev.image}
                         alt={rev.name}
