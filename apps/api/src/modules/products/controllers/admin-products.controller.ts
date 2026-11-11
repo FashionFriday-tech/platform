@@ -60,6 +60,19 @@ export class AdminProductsController {
     return this.productsService.renameModelGroup(group, newGroup);
   }
 
+  @Post('model-groups/:group/products')
+  async addProductsToGroup(
+    @Param('group') group: string,
+    @Body('productIds') productIds: string[],
+  ) {
+    return this.productsService.addProductsToGroup(group, productIds);
+  }
+
+  @Delete('model-groups/products/:productId')
+  async removeProductFromGroup(@Param('productId') productId: string) {
+    return this.productsService.removeProductFromGroup(productId);
+  }
+
   @Get()
   async getProducts(
     @Query('skip') skip?: string | number,
