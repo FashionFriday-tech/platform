@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { type Product } from '@ff/schemas';
@@ -166,6 +167,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     modelGroup,
     setModelGroup,
     availableModelGroups,
+    handleProductNameChange,
+    regenerateModelGroup,
+    isModelGroupLocked,
+    setIsModelGroupLocked,
+    groupSiblingProducts,
+    isLoadingSiblings,
   } = useAddProductForm(initialData, { onToast: setToast });
 
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
@@ -950,7 +957,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   maxLength={200}
                   value={productName}
                   onChange={(e) => {
-                    setProductName(e.target.value.toUpperCase());
+                    const upper = e.target.value.toUpperCase();
+                    handleProductNameChange(upper);
                     clearFieldError('productName');
                   }}
                   placeholder="PUFFER JACKET WITH POCKET DETAIL"
@@ -961,6 +969,209 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   } bg-black/5 px-4 py-3.5 text-sm font-medium text-black uppercase transition-all outline-none dark:bg-white/5 dark:text-white`}
                 />
                 <FieldErrorMessage error={fieldErrors.productName} />
+
+                {/* Color Option Group (Model Linking) */}
+                <div className="mt-3.5 rounded-2xl border border-black/10 bg-black/[0.02] p-3.5 dark:border-white/10 dark:bg-white/[0.02]">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black tracking-wider text-black uppercase dark:text-white">
+                        Color Option Group
+                      </span>
+                      {modelGroup.trim() ? (
+                        availableModelGroups.includes(modelGroup.trim().toLowerCase()) ? (
+                          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                            Existing Group
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                            New Group
+                          </span>
+                        )
+                      ) : (
+                        <span className="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-medium text-black/40 dark:bg-white/10 dark:text-white/40">
+                          Ungrouped
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {productName.trim() && (
+                        <button
+                          type="button"
+                          onClick={regenerateModelGroup}
+                          title="Auto-generate group name from product model name"
+                          className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-bold text-black/50 hover:bg-black/5 hover:text-black dark:text-white/50 dark:hover:bg-white/5 dark:hover:text-white"
+                        >
+                          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                          </svg>
+                          <span>Auto-generate</span>
+                        </button>
+                      )}
+                      {modelGroup && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setModelGroup('');
+                            setIsModelGroupLocked(true);
+                          }}
+                          className="text-[11px] font-bold text-rose-500 hover:text-rose-600"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="mt-1 text-[11px] text-black/50 dark:text-white/50">
+                    Products with the same group name are displayed as clickable color swatches on the Product Detail Page.
+                  </p>
+
+                  <div className="mt-2.5">
+                    <input
+                      type="text"
+                      value={modelGroup}
+                      onChange={(e) => {
+                        const clean = e.target.value
+                          .toLowerCase()
+                          .replace(/\s+/g, '-')
+                          .replace(/[^a-z0-9_-]+/g, '');
+                        setModelGroup(clean);
+                        setIsModelGroupLocked(true);
+                      }}
+                      placeholder="e.g. nike-dunk-low or classic-clog-crocs"
+                      className="w-full rounded-xl border border-black/10 bg-white px-3.5 py-2.5 font-mono text-xs font-semibold text-black lowercase transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#111111] dark:text-white dark:focus:border-white/30"
+                    />
+                  </div>
+
+                  {/* Suggestion Chips */}
+                  {availableModelGroups.length > 0 && (
+                    <div className="mt-2.5">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-bold text-black/40 uppercase dark:text-white/40">
+                          Select Group:
+                        </span>
+                        {availableModelGroups
+                          .filter((g) =>
+                            modelGroup ? g.includes(modelGroup.toLowerCase().trim()) : true,
+                          )
+                          .slice(0, 8)
+                          .map((group) => {
+                            const isSelected =
+                              modelGroup.trim().toLowerCase() === group.toLowerCase();
+                            return (
+                              <button
+                                key={group}
+                                type="button"
+                                onClick={() => {
+                                  setModelGroup(group);
+                                  setIsModelGroupLocked(true);
+                                }}
+                                className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
+                                  isSelected
+                                    ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                                    : 'border-black/10 bg-white text-black/70 hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#181818] dark:text-white/70 dark:hover:bg-white/5'
+                                }`}
+                              >
+                                {group}
+                              </button>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Preview Banner: When creating a new group, show the product preview under the collection and group name */}
+                  {modelGroup.trim() &&
+                    !availableModelGroups.includes(modelGroup.trim().toLowerCase()) && (
+                      <div className="mt-3 flex items-center gap-3 rounded-xl border border-blue-500/20 bg-blue-50/50 p-2.5 dark:border-blue-500/20 dark:bg-blue-950/20">
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-black/10 dark:bg-white/10">
+                          {images[0]?.url ? (
+                            <Image
+                              src={images[0].url}
+                              alt="Product thumbnail preview"
+                              fill
+                              sizes="48px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-[10px] font-bold text-black/30 dark:text-white/30">
+                              Preview
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="rounded bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white uppercase">
+                              New Group
+                            </span>
+                            <span className="truncate font-mono text-xs font-black text-black dark:text-white">
+                              {modelGroup}
+                            </span>
+                          </div>
+                          <p className="mt-0.5 truncate text-[11px] text-black/60 dark:text-white/60">
+                            Collection: <strong className="text-black dark:text-white">{category || 'General'}</strong> • This will be the first item of this model group.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Existing Group Sibling Preview */}
+                  {modelGroup.trim() &&
+                    availableModelGroups.includes(modelGroup.trim().toLowerCase()) && (
+                      <div className="mt-3 rounded-xl border border-emerald-500/20 bg-emerald-50/40 p-2.5 dark:border-emerald-500/20 dark:bg-emerald-950/20">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                            {isLoadingSiblings
+                              ? 'Loading linked colors...'
+                              : `${groupSiblingProducts.length} other colorway${groupSiblingProducts.length === 1 ? '' : 's'} in this group:`}
+                          </span>
+                          <Link
+                            href="/product-groups"
+                            target="_blank"
+                            className="text-[10px] font-bold text-emerald-700 underline dark:text-emerald-400"
+                          >
+                            View Group Page ↗
+                          </Link>
+                        </div>
+
+                        {groupSiblingProducts.length > 0 && (
+                          <div className="scrollbar-hide mt-2 flex gap-2 overflow-x-auto pb-0.5">
+                            {groupSiblingProducts.map((p) => (
+                              <div
+                                key={p.id}
+                                className="flex w-24 shrink-0 flex-col items-center rounded-lg border border-black/5 bg-white p-1 text-center shadow-2xs dark:border-white/5 dark:bg-[#181818]"
+                              >
+                                <div className="relative aspect-square w-full overflow-hidden rounded bg-black/5 dark:bg-white/5">
+                                  {p.mainImage ? (
+                                    <Image
+                                      src={p.mainImage}
+                                      alt={p.name}
+                                      fill
+                                      sizes="96px"
+                                      className="object-cover"
+                                    />
+                                  ) : (
+                                    <div className="flex h-full w-full items-center justify-center text-[9px] font-bold text-black/30 dark:text-white/30">
+                                      No Img
+                                    </div>
+                                  )}
+                                </div>
+                                <span className="mt-1 line-clamp-1 w-full text-[10px] font-semibold text-black dark:text-white" title={p.name}>
+                                  {p.name}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                </div>
               </div>
 
               <div ref={descRef}>
@@ -1496,64 +1707,6 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           </button>
                         </div>
                       )}
-                    </div>
-                  )}
-                </div>
-                {/* Model / Style Group (Links different colorways of the same model) */}
-                <div className="pt-2">
-                  <div className="flex items-center justify-between">
-                    <LabelWithTick
-                      label="Model / Style Group"
-                      status={modelGroup.trim().length > 0 ? 'valid' : 'default'}
-                      rightElement={
-                        <span className="text-[11px] font-medium text-black/50 dark:text-white/50">
-                          Links different colors of this model on PDP
-                        </span>
-                      }
-                    />
-                    {modelGroup && (
-                      <button
-                        type="button"
-                        onClick={() => setModelGroup('')}
-                        className="text-[11px] font-bold text-black/40 hover:text-black dark:text-white/40 dark:hover:text-white"
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </div>
-                  <input
-                    type="text"
-                    value={modelGroup}
-                    onChange={(e) =>
-                      setModelGroup(
-                        e.target.value
-                          .toLowerCase()
-                          .replace(/\s+/g, '-')
-                          .replace(/[^a-z0-9_-]+/g, ''),
-                      )
-                    }
-                    placeholder="e.g. dunk-low-retro or classic-tee"
-                    className="w-full rounded-xl border border-transparent bg-black/5 px-4 py-3.5 text-sm font-medium text-black lowercase transition-all outline-none focus:border-black/20 dark:bg-white/5 dark:text-white dark:focus:border-white/20"
-                  />
-                  {availableModelGroups.length > 0 && (
-                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                        Existing Model Groups:
-                      </span>
-                      {availableModelGroups.slice(0, 8).map((group) => (
-                        <button
-                          key={group}
-                          type="button"
-                          onClick={() => setModelGroup(group)}
-                          className={`rounded-md border px-2 py-0.5 text-xs font-semibold transition-all ${
-                            modelGroup === group
-                              ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                              : 'border-black/10 bg-black/5 text-black/70 hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
-                          }`}
-                        >
-                          {group}
-                        </button>
-                      ))}
                     </div>
                   )}
                 </div>
