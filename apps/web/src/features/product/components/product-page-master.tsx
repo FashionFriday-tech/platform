@@ -576,7 +576,14 @@ export default function ProductPageMaster({
         </div>
       )}
 
-      <ReviewSection productId={product.id} productName={product.name} />
+      <ReviewSection
+        productId={product.id}
+        productName={product.name}
+        modelGroup={product.modelGroup}
+        colorVariants={product.colorVariants}
+        currentMainImage={product.media?.mainImage}
+        currentColor={product.attributes?.colors?.[0]}
+      />
       <RelatedProducts products={similarProducts} initialBrands={brands} />
       <CTAStickyButtons
         isWishlisted={isWishlisted}
