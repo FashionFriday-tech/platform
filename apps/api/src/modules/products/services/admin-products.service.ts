@@ -1,5 +1,5 @@
 import { Gender, generateBrandId, Prisma, ProductStatus } from '@ff/database';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../../database/prisma.service';
 import { triggerRevalidation } from '../../revalidate-helper';
@@ -1161,5 +1161,117 @@ export class AdminProductsService {
     return results
       .map((r: any) => r.modelGroup)
       .filter((g: any): g is string => typeof g === 'string' && g.trim().length > 0);
+  }
+
+  async getModelGroupsDetails(search?: string, page = 1, limit = 50) {
+    const cleanSearch = (search || '').trim().toLowerCase();
+    const where: any = {
+      modelGroup: {
+        not: null,
+        ...(cleanSearch ? { contains: cleanSearch, mode: 'insensitive' } : {}),
+      },
+    };
+
+    const products = await (this.prisma.db.product.findMany as any)({
+      where,
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        mainImage: true,
+        colors: true,
+        sellingPrice: true,
+        ogPrice: true,
+        totalStock: true,
+        status: true,
+        modelGroup: true,
+        brand: true,
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const groupMap = new Map<string, any>();
+    for (const p of products) {
+      const g = p.modelGroup;
+      if (!g) continue;
+      if (!groupMap.has(g)) {
+        groupMap.set(g, {
+          modelGroup: g,
+          count: 0,
+          totalStock: 0,
+          brand: p.brand || [],
+          category: p.category,
+          products: [],
+          updatedAt: p.createdAt,
+        });
+      }
+      const entry = groupMap.get(g);
+      entry.count += 1;
+      entry.totalStock += p.totalStock || 0;
+      if (entry.products.length < 12) {
+        entry.products.push(p);
+      }
+    }
+
+    const groups = Array.from(groupMap.values());
+    const total = groups.length;
+    const paginated = groups.slice((page - 1) * limit, page * limit);
+
+    return {
+      data: paginated,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getModelGroupProducts(group: string) {
+    const cleanGroup = group.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    return (this.prisma.db.product.findMany as any)({
+      where: {
+        modelGroup: cleanGroup,
+      },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        mainImage: true,
+        colors: true,
+        sellingPrice: true,
+        totalStock: true,
+        status: true,
+        modelGroup: true,
+      },
+      take: 20,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async renameModelGroup(oldGroup: string, newGroup: string) {
+    const cleanOld = oldGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    const cleanNew = newGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+
+    if (!cleanNew) {
+      throw new BadRequestException('New group name is required');
+    }
+
+    const result = await (this.prisma.db.product.updateMany as any)({
+      where: { modelGroup: cleanOld },
+      data: { modelGroup: cleanNew },
+    });
+
+    return {
+      success: true,
+      updatedCount: result.count,
+      oldGroup: cleanOld,
+      newGroup: cleanNew,
+    };
   }
 }
