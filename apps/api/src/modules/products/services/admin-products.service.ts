@@ -1274,4 +1274,58 @@ export class AdminProductsService {
       newGroup: cleanNew,
     };
   }
+
+  async addProductsToGroup(group: string, productIds: string[]) {
+    const cleanGroup = group.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    if (!cleanGroup) {
+      throw new BadRequestException('Valid group name is required');
+    }
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      throw new BadRequestException('At least one product ID is required');
+    }
+
+    const result = await (this.prisma.db.product.updateMany as any)({
+      where: {
+        id: { in: productIds },
+      },
+      data: {
+        modelGroup: cleanGroup,
+      },
+    });
+
+    // Revalidate affected products
+    const updated = await (this.prisma.db.product.findMany as any)({
+      where: { id: { in: productIds } },
+      select: { slug: true },
+    });
+    for (const p of updated) {
+      if (p.slug) {
+        void triggerRevalidation(`product-${p.slug}`, `/product/${p.slug}`);
+      }
+    }
+
+    return {
+      success: true,
+      updatedCount: result.count,
+      group: cleanGroup,
+      productIds,
+    };
+  }
+
+  async removeProductFromGroup(productId: string) {
+    const result = await (this.prisma.db.product.update as any)({
+      where: { id: productId },
+      data: { modelGroup: null },
+      select: { id: true, name: true, slug: true, modelGroup: true },
+    });
+
+    if (result.slug) {
+      void triggerRevalidation(`product-${result.slug}`, `/product/${result.slug}`);
+    }
+
+    return {
+      success: true,
+      product: result,
+    };
+  }
 }
