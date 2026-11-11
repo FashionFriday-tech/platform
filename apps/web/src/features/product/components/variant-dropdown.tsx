@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -201,13 +201,6 @@ export default function VariantDropdown({
 
   const [isOpen, setIsOpen] = useState(true);
 
-  // Determine current active variant's color label to show in header
-  const activeVariant = useMemo(
-    () => variants.find((v) => v.slug === currentSlug) ?? variants[0],
-    [variants, currentSlug],
-  );
-  const activeColorLabel = activeVariant ? extractColorLabel(activeVariant) : '';
-
   return (
     <div className="w-full">
       <div className="rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-3.5 transition-all duration-300 dark:border-white/10 dark:bg-zinc-900/40">
@@ -216,11 +209,6 @@ export default function VariantDropdown({
             <span className="text-foreground text-[10px] font-black tracking-[0.2em] uppercase">
               Available Colors
             </span>
-            {activeColorLabel && (
-              <span className="text-foreground/90 font-bold text-[10px] tracking-wide">
-                • {activeColorLabel}
-              </span>
-            )}
             <span className="text-foreground/70 rounded-full bg-black/5 px-2 py-0.5 text-[9px] font-bold dark:bg-white/10">
               {variants.length} Colors
             </span>
@@ -230,7 +218,6 @@ export default function VariantDropdown({
             onClick={() => setIsOpen(!isOpen)}
             className="text-foreground-muted hover:text-foreground flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase transition-colors"
           >
-            <span>{isOpen ? 'Collapse' : 'Expand'}</span>
             <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
               <ArrowDownIcon size={14} />
             </motion.span>
@@ -261,11 +248,10 @@ export default function VariantDropdown({
                       <Link
                         href={`/product/${v.slug}`}
                         prefetch
-                        className={`relative flex items-center justify-center rounded-xl p-0.5 transition-all duration-200 ${
-                          isCurrent
-                            ? 'scale-105 ring-2 ring-black shadow-md dark:ring-white'
-                            : 'ring-1 ring-transparent opacity-80 hover:scale-100 hover:opacity-100 hover:ring-zinc-400 dark:hover:ring-zinc-600'
-                        }`}
+                        className={`relative flex items-center justify-center rounded-xl p-0.5 transition-all duration-200 ${isCurrent
+                          ? 'scale-105 ring-2 ring-black shadow-md dark:ring-white'
+                          : 'ring-1 ring-transparent opacity-80 hover:scale-100 hover:opacity-100 hover:ring-zinc-400 dark:hover:ring-zinc-600'
+                          }`}
                         title={`${label} (${v.name})${isSoldOut ? ' - Sold Out' : ''}`}
                       >
                         <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
@@ -274,9 +260,8 @@ export default function VariantDropdown({
                               src={v.mainImage}
                               width={56}
                               height={56}
-                              className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 ${
-                                isSoldOut ? 'grayscale opacity-60' : ''
-                              }`}
+                              className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 ${isSoldOut ? 'grayscale opacity-60' : ''
+                                }`}
                               alt={label}
                             />
                           ) : (
@@ -305,11 +290,10 @@ export default function VariantDropdown({
                           />
                         )}
                         <span
-                          className={`truncate text-center text-[10px] font-bold tracking-tight uppercase transition-colors ${
-                            isCurrent
-                              ? 'text-foreground font-black'
-                              : 'text-foreground-muted group-hover:text-foreground'
-                          }`}
+                          className={`truncate text-center text-[10px] font-bold tracking-tight uppercase transition-colors ${isCurrent
+                            ? 'text-foreground font-black'
+                            : 'text-foreground-muted group-hover:text-foreground'
+                            }`}
                         >
                           {label}
                         </span>
