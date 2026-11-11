@@ -355,10 +355,10 @@ export default function ReviewSection({
                 })}
               </div>
               <span className="text-foreground text-xs font-black">
-                {averageRating.toFixed(1)} / 5.0
+                {averageRating.toFixed(1)}
               </span>
-              <span className="text-foreground-muted text-xs font-medium">
-                ({totalReviews} verified {totalReviews === 1 ? 'review' : 'reviews'} across colorways)
+              <span className="text-foreground-muted text-xs font-semibold">
+                ({totalReviews})
               </span>
             </div>
           </div>
@@ -410,7 +410,7 @@ export default function ReviewSection({
                 >
                   <div className="flex w-full items-start justify-between gap-3 sm:gap-5">
                     {/* High-End Image Cropping - 1:1 Aspect Ratio */}
-                    <div className="relative aspect-square w-24 shrink-0 overflow-hidden rounded-xl bg-zinc-100 shadow-md sm:w-32 sm:rounded-2xl md:w-40 dark:bg-zinc-800">
+                    <div className="relative aspect-[4/3] w-24 shrink-0 overflow-hidden rounded-xl bg-zinc-100 shadow-md sm:w-32 sm:rounded-2xl md:w-40 dark:bg-zinc-800">
                       <Image
                         src={rev.image}
                         alt={rev.name}
@@ -427,10 +427,10 @@ export default function ReviewSection({
                         <div className="flex items-center gap-2.5">
                           <div
                             className={`rounded-full border border-dashed p-0.5 transition-transform duration-300 group-hover:rotate-12 ${rev.membership === 'platinum'
-                                ? 'border-amber-500'
-                                : rev.membership === 'gold'
-                                  ? 'border-yellow-400'
-                                  : 'border-zinc-400'
+                              ? 'border-amber-500'
+                              : rev.membership === 'gold'
+                                ? 'border-yellow-400'
+                                : 'border-zinc-400'
                               }`}
                           >
                             <span className="bg-foreground text-background flex h-8 w-8 items-center justify-center rounded-full text-xs font-black uppercase sm:h-9 sm:w-9 sm:text-sm">
@@ -822,8 +822,8 @@ export default function ReviewSection({
                           <FilledStarIcon
                             size={28}
                             className={`transition-colors ${isFilled
-                                ? 'fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,0.35)]'
-                                : 'fill-transparent text-zinc-300 dark:text-zinc-700'
+                              ? 'fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,0.35)]'
+                              : 'fill-transparent text-zinc-300 dark:text-zinc-700'
                               }`}
                           />
                         </motion.button>
@@ -893,8 +893,8 @@ export default function ReviewSection({
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     className={`border-border hover:border-foreground flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-xl border px-3.5 text-xs font-bold transition-all active:scale-95 ${selectedImage
-                        ? 'border-amber-400 bg-amber-400/10 text-amber-500'
-                        : 'text-foreground'
+                      ? 'border-amber-400 bg-amber-400/10 text-amber-500'
+                      : 'text-foreground'
                       }`}
                   >
                     <CameraIcon size={16} />
