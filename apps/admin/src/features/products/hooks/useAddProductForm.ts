@@ -3,6 +3,8 @@ import { useSearchParams } from 'next/navigation';
 
 import { type Product } from '@ff/schemas';
 
+import api from '@/lib/api-client';
+
 import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
@@ -18,6 +20,67 @@ export interface SelectedColor {
 
 export interface UseAddProductFormOptions {
   onToast?: (toast: { message: string; type: 'success' | 'error' | 'warning' }) => void;
+}
+
+export function generateModelGroupName(productName: string): string {
+  if (!productName || !productName.trim()) return '';
+
+  // 1. Strip everything after common delimiters: " - ", " / ", " (", " | "
+  let cleaned = productName.split(/\s*[-–—/|(]\s*/)[0].trim();
+
+  // 2. Common color/variant words at the end
+  const colorWords = [
+    'black',
+    'white',
+    'grey',
+    'gray',
+    'red',
+    'blue',
+    'green',
+    'yellow',
+    'orange',
+    'purple',
+    'pink',
+    'brown',
+    'beige',
+    'cream',
+    'navy',
+    'olive',
+    'tan',
+    'maroon',
+    'teal',
+    'gold',
+    'silver',
+    'bronze',
+    'sand',
+    'bone',
+    'pine green',
+    'venom',
+    'light bone',
+    'dark mocha',
+    'university blue',
+    'chicago',
+    'bred',
+    'panda',
+    'zebra',
+    'triple black',
+    'triple white',
+    'volt',
+    'cement',
+  ];
+
+  const lower = cleaned.toLowerCase();
+  for (const cw of colorWords) {
+    if (lower.endsWith(` ${cw}`)) {
+      cleaned = cleaned.slice(0, -(cw.length + 1)).trim();
+      break;
+    }
+  }
+
+  return cleaned
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
 }
 
 export function useAddProductForm(initialData?: Product, options?: UseAddProductFormOptions) {
@@ -93,7 +156,12 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [modelGroup, setModelGroup] = useState<string>(() => {
     return initialData?.modelGroup ?? (initialData as any)?.modelGroup ?? '';
   });
+  const [isModelGroupLocked, setIsModelGroupLocked] = useState<boolean>(() => {
+    return Boolean(initialData?.modelGroup || (initialData as any)?.modelGroup);
+  });
   const [availableModelGroups, setAvailableModelGroups] = useState<string[]>([]);
+  const [groupSiblingProducts, setGroupSiblingProducts] = useState<any[]>([]);
+  const [isLoadingSiblings, setIsLoadingSiblings] = useState(false);
 
   const [brandInput, setBrandInput] = useState('');
   const [selectedBrandLogo, setSelectedBrandLogo] = useState<string | null>(null);
@@ -1065,14 +1133,9 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     }
     async function loadModelGroups() {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002'}/admin/products/model-groups`,
-        );
-        if (res.ok) {
-          const data = (await res.json()) as string[];
-          if (Array.isArray(data)) {
-            setAvailableModelGroups(data);
-          }
+        const data = await api.get<string[]>('/admin/products/model-groups');
+        if (Array.isArray(data)) {
+          setAvailableModelGroups(data);
         }
       } catch (err) {
         console.error('Failed to load model groups in add product form', err);
@@ -1081,6 +1144,57 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     void loadCollections();
     void loadModelGroups();
   }, []);
+
+  useEffect(() => {
+    let isCancelled = false;
+    const clean = modelGroup.trim().toLowerCase();
+    if (!clean) {
+      setGroupSiblingProducts([]);
+      return;
+    }
+
+    async function fetchSiblings() {
+      setIsLoadingSiblings(true);
+      try {
+        const siblings = await api.get<any[]>(
+          `/admin/products/model-groups/${encodeURIComponent(clean)}/products`,
+        );
+        if (!isCancelled && Array.isArray(siblings)) {
+          const other = initialData?.id
+            ? siblings.filter((p) => p.id !== initialData.id)
+            : siblings;
+          setGroupSiblingProducts(other);
+        }
+      } catch {
+        if (!isCancelled) {
+          setGroupSiblingProducts([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingSiblings(false);
+        }
+      }
+    }
+
+    void fetchSiblings();
+    return () => {
+      isCancelled = true;
+    };
+  }, [modelGroup, initialData?.id]);
+
+  const handleProductNameChange = (val: string) => {
+    setProductName(val);
+    if (!isModelGroupLocked && !initialData?.modelGroup) {
+      const generated = generateModelGroupName(val);
+      setModelGroup(generated);
+    }
+  };
+
+  const regenerateModelGroup = () => {
+    const generated = generateModelGroupName(productName);
+    setModelGroup(generated);
+    setIsModelGroupLocked(false);
+  };
 
   const toggleCollection = (colName: string) => {
     setTags((prev) =>
@@ -1243,5 +1357,11 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     modelGroup,
     setModelGroup,
     availableModelGroups,
+    handleProductNameChange,
+    regenerateModelGroup,
+    isModelGroupLocked,
+    setIsModelGroupLocked,
+    groupSiblingProducts,
+    isLoadingSiblings,
   };
 }
