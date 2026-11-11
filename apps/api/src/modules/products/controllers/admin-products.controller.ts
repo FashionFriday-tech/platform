@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 
@@ -31,6 +32,32 @@ export class AdminProductsController {
   @Get('model-groups')
   async getModelGroups(@Query('search') search?: string) {
     return this.productsService.getModelGroups(search);
+  }
+
+  @Get('model-groups/details')
+  async getModelGroupsDetails(
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.productsService.getModelGroupsDetails(
+      search,
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 50,
+    );
+  }
+
+  @Get('model-groups/:group/products')
+  async getModelGroupProducts(@Param('group') group: string) {
+    return this.productsService.getModelGroupProducts(group);
+  }
+
+  @Put('model-groups/:group')
+  async renameModelGroup(
+    @Param('group') group: string,
+    @Body('newGroup') newGroup: string,
+  ) {
+    return this.productsService.renameModelGroup(group, newGroup);
   }
 
   @Get()
