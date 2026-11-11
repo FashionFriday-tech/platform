@@ -42,3 +42,22 @@ export async function renameModelGroup(
   );
 }
 
+export async function addProductsToGroup(
+  group: string,
+  productIds: string[],
+): Promise<{ success: boolean; updatedCount: number; group: string; productIds: string[] }> {
+  const clean = encodeURIComponent(group.trim().toLowerCase());
+  return api.post<{ success: boolean; updatedCount: number; group: string; productIds: string[] }>(
+    `/admin/products/model-groups/${clean}/products`,
+    { productIds },
+  );
+}
+
+export async function removeProductFromGroup(
+  productId: string,
+): Promise<{ success: boolean; product: any }> {
+  return api.delete<{ success: boolean; product: any }>(
+    `/admin/products/model-groups/products/${encodeURIComponent(productId)}`,
+  );
+}
+
