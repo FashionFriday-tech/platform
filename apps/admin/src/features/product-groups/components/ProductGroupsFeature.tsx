@@ -272,3 +272,4 @@ export function ProductGroupsFeature() {
     </div>
   );
 }
+
