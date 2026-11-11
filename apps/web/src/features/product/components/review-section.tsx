@@ -459,20 +459,6 @@ export default function ReviewSection({
                           </div>
                         </div>
                       </div>
-
-                      {/* Purchased Colorway Pill (Shows group-level context!) */}
-                      {rev.colorway && (
-                        <div className="flex items-center gap-1.5 rounded-full bg-black/5 px-2.5 py-0.5 text-[9px] font-bold text-zinc-700 dark:bg-white/10 dark:text-zinc-300">
-                          {rev.colorHex && (
-                            <span
-                              className="h-2 w-2 rounded-full border border-black/10 dark:border-white/20"
-                              style={{ backgroundColor: rev.colorHex }}
-                            />
-                          )}
-                          <span>Color: {rev.colorway}</span>
-                        </div>
-                      )}
-
                       {/* Comment text */}
                       <p className="text-muted-foreground line-clamp-3 text-left text-xs leading-relaxed font-medium sm:text-sm">
                         "{rev.comment}"
