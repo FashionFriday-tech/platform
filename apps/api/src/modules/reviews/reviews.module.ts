@@ -3,13 +3,15 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from '../../database/prisma.module';
 import { UploadModule } from '../upload/upload.module';
 import { GlobalReviewsController } from './global-reviews.controller';
+import { PublicReviewsController } from './public-reviews.controller';
 import { ReviewsController } from './reviews.controller';
 import { ReviewsService } from './reviews.service';
 
 @Module({
   imports: [PrismaModule, UploadModule],
-  controllers: [ReviewsController, GlobalReviewsController],
+  controllers: [ReviewsController, GlobalReviewsController, PublicReviewsController],
   providers: [ReviewsService],
   exports: [ReviewsService],
 })
 export class ReviewsModule {}
+
