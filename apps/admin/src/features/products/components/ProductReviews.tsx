@@ -313,10 +313,10 @@ export function ProductReviews({
   const startEdit = (review: Review) => {
     setEditingId(review.id);
     setEditData({
-      userName: review.userName,
+      userName: review.userName || (review as any).name || '',
       rating: review.rating,
       comment: review.comment,
-      productImage: review.productImage ?? '',
+      productImage: review.productImage ?? (review as any).image ?? '',
       imageFile: null,
     });
     setMenuOpenId(null);
@@ -790,12 +790,12 @@ export function ProductReviews({
               ) : (
                 <>
                   {/* Image Section (Matches web app) */}
-                  {review.productImage && (
+                  {(review.productImage || (review as any).image) && (
                     <div className="relative aspect-[3/4] w-full shrink-0 overflow-hidden rounded-xl bg-black/5 shadow-sm md:w-32 lg:w-40 dark:bg-white/5">
                       <Image
                         width={500}
                         height={500}
-                        src={review.productImage}
+                        src={review.productImage || (review as any).image}
                         alt="review"
                         className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
                       />
@@ -824,14 +824,16 @@ export function ProductReviews({
                     <div className="mt-auto flex w-full items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-[10px] font-black text-white uppercase dark:bg-white dark:text-black">
-                          {review.userName.slice(0, 2)}
+                          {String((review as any).initials || review.userName || (review as any).name || 'VB')
+                            .slice(0, 2)
+                            .toUpperCase()}
                         </span>
                         <span className="text-xs font-black tracking-tight text-black uppercase dark:text-white">
-                          {review.userName}
+                          {review.userName || (review as any).name || 'Verified Buyer'}
                         </span>
                       </div>
                       <span className="text-[10px] font-bold tracking-widest text-black/40 uppercase dark:text-white/40">
-                        {new Date(review.createdAt).toLocaleDateString()}
+                        {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Recent'}
                       </span>
                     </div>
                   </div>
