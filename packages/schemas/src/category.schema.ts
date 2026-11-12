@@ -5,6 +5,7 @@ export const CreateCategorySchema = z.object({
   slug: z.string().min(1, 'Slug is required'),
   image: z.string().optional().default(''),
   gender: z.enum(['MEN', 'WOMEN', 'UNISEX']),
+  sizes: z.array(z.string()).optional().default([]),
 });
 
 
