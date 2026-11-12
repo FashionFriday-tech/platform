@@ -175,6 +175,26 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     isLoadingSiblings,
   } = useAddProductForm(initialData, { onToast: setToast });
 
+  const suggestedModelGroups = useMemo(() => {
+    const query = modelGroup.trim().toLowerCase();
+    if (!query) return [];
+
+    return availableModelGroups
+      .filter((g) => g.toLowerCase().includes(query))
+      .sort((a, b) => {
+        const aLower = a.toLowerCase();
+        const bLower = b.toLowerCase();
+        const aStarts = aLower.startsWith(query);
+        const bStarts = bLower.startsWith(query);
+
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+        if (aLower.length !== bLower.length) return aLower.length - bLower.length;
+        return aLower.localeCompare(bLower);
+      })
+      .slice(0, 5);
+  }, [availableModelGroups, modelGroup]);
+
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
 
   const handleDropzoneDragOver = (e: React.DragEvent) => {
@@ -1049,39 +1069,34 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     />
                   </div>
 
-                  {/* Suggestion Chips */}
-                  {availableModelGroups.length > 0 && (
+                  {/* Suggestion Chips: Only show when searching, sorted by relevance, top 5 */}
+                  {suggestedModelGroups.length > 0 && (
                     <div className="mt-2.5">
                       <div className="flex flex-wrap items-center gap-1.5">
                         <span className="text-[10px] font-bold text-black/40 uppercase dark:text-white/40">
-                          Select Group:
+                          Suggestions:
                         </span>
-                        {availableModelGroups
-                          .filter((g) =>
-                            modelGroup ? g.includes(modelGroup.toLowerCase().trim()) : true,
-                          )
-                          .slice(0, 8)
-                          .map((group) => {
-                            const isSelected =
-                              modelGroup.trim().toLowerCase() === group.toLowerCase();
-                            return (
-                              <button
-                                key={group}
-                                type="button"
-                                onClick={() => {
-                                  setModelGroup(group);
-                                  setIsModelGroupLocked(true);
-                                }}
-                                className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
-                                  isSelected
-                                    ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                                    : 'border-black/10 bg-white text-black/70 hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#181818] dark:text-white/70 dark:hover:bg-white/5'
-                                }`}
-                              >
-                                {group}
-                              </button>
-                            );
-                          })}
+                        {suggestedModelGroups.map((group) => {
+                          const isSelected =
+                            modelGroup.trim().toLowerCase() === group.toLowerCase();
+                          return (
+                            <button
+                              key={group}
+                              type="button"
+                              onClick={() => {
+                                setModelGroup(group);
+                                setIsModelGroupLocked(true);
+                              }}
+                              className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
+                                isSelected
+                                  ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                                  : 'border-black/10 bg-white text-black/70 hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#181818] dark:text-white/70 dark:hover:bg-white/5'
+                              }`}
+                            >
+                              {group}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
