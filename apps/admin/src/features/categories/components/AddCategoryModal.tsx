@@ -22,6 +22,31 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [sizes, setSizes] = useState<string[]>([]);
+  const [customSizeInput, setCustomSizeInput] = useState('');
+
+  const SIZE_PRESETS = [
+    {
+      name: 'Footwear (UK 3-11)',
+      sizes: ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+    },
+    {
+      name: 'Footwear Men (UK 6-11)',
+      sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
+    },
+    {
+      name: 'Clothing (XS-3XL)',
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+    },
+    {
+      name: 'Pants (28-40)',
+      sizes: ['28', '30', '32', '34', '36', '38', '40'],
+    },
+    {
+      name: 'Free Size',
+      sizes: ['Free Size'],
+    },
+  ];
 
   React.useEffect(() => {
     setMounted(true);
@@ -29,14 +54,31 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
       setName(initialData.name);
       setGender(initialData.gender);
       setLogoUrl(initialData.image);
+      setSizes(Array.isArray(initialData.sizes) ? initialData.sizes : []);
+      setCustomSizeInput('');
       setFileToUpload(null);
     } else if (isOpen) {
       setName('');
       setGender('Men');
       setLogoUrl('');
+      setSizes([]);
+      setCustomSizeInput('');
       setFileToUpload(null);
     }
   }, [initialData, isOpen]);
+
+  const handleAddCustomSize = () => {
+    const clean = customSizeInput.trim();
+    if (!clean) return;
+    if (!sizes.some((s) => s.toLowerCase() === clean.toLowerCase())) {
+      setSizes((prev) => [...prev, clean]);
+    }
+    setCustomSizeInput('');
+  };
+
+  const handleRemoveSize = (sToRemove: string) => {
+    setSizes((prev) => prev.filter((s) => s !== sToRemove));
+  };
 
   if (!isOpen || !mounted) {
     return null;
@@ -101,6 +143,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
           gender,
           image: finalLogoUrl,
           productCount: initialData?.productCount ?? 0,
+          sizes,
         },
         !!initialData,
         initialData?.slug,
@@ -110,6 +153,8 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
       setName('');
       setGender('Men');
       setLogoUrl('');
+      setSizes([]);
+      setCustomSizeInput('');
       setFileToUpload(null);
       onClose();
     } catch (error) {
@@ -134,10 +179,10 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-black/5 bg-white shadow-2xl dark:border-white/5 dark:bg-[#111]"
+          className="relative flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-black/5 bg-white shadow-2xl dark:border-white/5 dark:bg-[#111]"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
+          <div className="flex shrink-0 items-center justify-between border-b border-black/5 p-6 dark:border-white/5">
             <h2 className="text-xl font-bold text-black dark:text-white">
               {initialData ? 'Edit Category' : 'Add New Category'}
             </h2>
@@ -164,7 +209,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
           </div>
 
           {/* Body */}
-          <div className="space-y-6 p-6">
+          <div className="scrollbar-thin max-h-[calc(92vh-145px)] space-y-6 overflow-y-auto p-6">
             <div>
               <label className="mb-2 block text-sm font-medium text-black/70 dark:text-white/70">
                 Category Name
@@ -247,10 +292,103 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                 </div>
               </div>
             </div>
+
+            {/* Category Size Labels */}
+            <div className="rounded-2xl border border-black/10 bg-[#f8f9fa] p-4.5 dark:border-white/10 dark:bg-[#161616]">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-sm font-bold text-black dark:text-white">
+                    Category Size Labels {sizes.length > 0 ? `(${sizes.length})` : ''}
+                  </label>
+                  <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
+                    Sizes selectable when creating products in this category (e.g. UK sizes for footwear, Free Size for watches)
+                  </p>
+                </div>
+                {sizes.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setSizes([])}
+                    className="text-xs font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+
+              {/* Presets */}
+              <div className="mt-3">
+                <span className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Quick Presets:
+                </span>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {SIZE_PRESETS.map((preset) => (
+                    <button
+                      key={preset.name}
+                      type="button"
+                      onClick={() => setSizes([...preset.sizes])}
+                      className="rounded-lg border border-black/10 bg-white px-2.5 py-1 text-xs font-semibold text-black/70 transition-all hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#202020] dark:text-white/70 dark:hover:bg-white/10"
+                    >
+                      {preset.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Size Input */}
+              <div className="mt-3.5 flex gap-2">
+                <input
+                  type="text"
+                  value={customSizeInput}
+                  onChange={(e) => setCustomSizeInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddCustomSize();
+                    }
+                  }}
+                  placeholder="Add custom size (e.g. UK 12, 42mm, One Size)..."
+                  className="flex-1 rounded-xl border border-black/10 bg-white px-3.5 py-2 text-xs font-medium text-black placeholder-black/30 outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#202020] dark:text-white dark:placeholder-white/30"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddCustomSize}
+                  className="rounded-xl bg-black px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
+                >
+                  Add Size
+                </button>
+              </div>
+
+              {/* Selected Sizes Chips */}
+              <div className="mt-3 min-h-[34px]">
+                {sizes.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {sizes.map((s) => (
+                      <span
+                        key={s}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-2.5 py-1 text-xs font-bold text-black shadow-2xs dark:border-white/10 dark:bg-[#222] dark:text-white"
+                      >
+                        {s}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSize(s)}
+                          className="ml-0.5 text-black/40 hover:text-rose-500 dark:text-white/40 dark:hover:text-rose-400"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs italic text-black/40 dark:text-white/40">
+                    No custom sizes specified. Default sizes will be used based on category name.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 border-t border-black/5 bg-[#f8f9fa] p-6 dark:border-white/5 dark:bg-[#1a1a1a]">
+          <div className="flex shrink-0 items-center justify-end gap-3 border-t border-black/5 bg-[#f8f9fa] p-6 dark:border-white/5 dark:bg-[#1a1a1a]">
             <button
               onClick={onClose}
               disabled={isUploading}
