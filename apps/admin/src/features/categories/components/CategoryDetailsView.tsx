@@ -151,6 +151,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         slug: savedCategory.slug,
         image: savedCategory.image ?? '',
         gender: savedCategory.gender.toUpperCase(),
+        sizes: savedCategory.sizes ?? [],
       };
 
       const updated = await api.patch<{
@@ -159,6 +160,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         slug: string;
         image?: string;
         gender?: string;
+        sizes?: string[];
       }>(`/admin/categories/${category.id}`, apiPayload);
 
       const rawGender = updated.gender ?? savedCategory.gender;
@@ -171,6 +173,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
           | 'Men'
           | 'Women',
+        sizes: updated.sizes ?? savedCategory.sizes ?? [],
       };
 
       setCategory(normalized);
@@ -295,6 +298,21 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                 <PackageIcon className="h-5 w-5" />
                 <span>{categoryProducts.length} Total Products Assigned</span>
               </div>
+              {category.sizes && category.sizes.length > 0 && (
+                <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-black/40 uppercase dark:text-white/40">
+                    Sizes ({category.sizes.length}):
+                  </span>
+                  {category.sizes.map((s) => (
+                    <span
+                      key={s}
+                      className="rounded-lg border border-black/10 bg-black/5 px-2 py-0.5 font-mono text-[11px] font-bold text-black/80 dark:border-white/10 dark:bg-white/10 dark:text-white/80"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-3">
