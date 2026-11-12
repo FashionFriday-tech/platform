@@ -17,6 +17,7 @@ interface CategoryApiItem {
   gender: string;
   productCount?: number;
   _count?: { products?: number };
+  sizes?: string[];
 }
 
 export async function generateMetadata({ params }: CategoryDetailsPageProps): Promise<Metadata> {
@@ -60,6 +61,7 @@ export default async function CategoryDetailsPage({ params }: CategoryDetailsPag
         gender: (apiCategory.gender.charAt(0).toUpperCase() +
           apiCategory.gender.slice(1).toLowerCase()) as 'Men' | 'Women' | 'Unisex',
         productCount: apiCategory._count?.products ?? apiCategory.productCount ?? 0,
+        sizes: apiCategory.sizes ?? [],
       };
     }
   } catch (error) {
