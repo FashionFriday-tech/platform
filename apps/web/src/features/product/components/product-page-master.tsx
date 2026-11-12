@@ -1,6 +1,6 @@
 'use client';
 
-import { type JSX, useEffect, useRef, useState } from 'react';
+import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -231,6 +231,42 @@ export default function ProductPageMaster({
 
   const liveMetric = useLiveProductMetric(product.liveMatrix.liveWatching);
 
+  const productGalleryImages = useMemo(() => {
+    const list: string[] = [];
+    if (product.media?.mainImage) list.push(product.media.mainImage);
+    if (product.media?.promoImage) list.push(product.media.promoImage);
+    if (Array.isArray(product.media?.liveImages)) {
+      list.push(...product.media.liveImages);
+    }
+    const rawImages = (product as any)?.images;
+    if (Array.isArray(rawImages)) {
+      list.push(...rawImages);
+    }
+    const rawLiveImages = (product as any)?.liveImages;
+    if (Array.isArray(rawLiveImages)) {
+      list.push(...rawLiveImages);
+    }
+
+    const unique = Array.from(
+      new Set(
+        list
+          .filter(
+            (url): url is string =>
+              Boolean(
+                url &&
+                  typeof url === 'string' &&
+                  url.trim() !== '' &&
+                  url !== 'null' &&
+                  url !== 'undefined',
+              ),
+          )
+          .map((url) => url.trim()),
+      ),
+    );
+
+    return unique.length > 0 ? unique : ['/images/placeholder.png'];
+  }, [product]);
+
   return (
     <div className="bg-background text-foreground min-h-screen pb-16 transition-colors md:pb-6">
       {/* --- MAIN PRODUCT GRID --- */}
@@ -239,7 +275,7 @@ export default function ProductPageMaster({
           {/* LEFT: Gallery */}
           <div className="lg:col-span-6">
             <Gallery
-              images={[product.media.mainImage, ...product.media.liveImages].filter(Boolean)}
+              images={productGalleryImages}
               videoUrl={product.media.youtubeId}
             />
           </div>
