@@ -73,6 +73,7 @@ function SortableCategoryItem({
 
 export default function CategoriesFeature() {
   const {
+    categories,
     searchQuery,
     setSearchQuery,
     selectedGender,
@@ -351,6 +352,7 @@ export default function CategoriesFeature() {
         }}
         initialData={categoryToEdit}
         onSave={handleSaveCategory}
+        existingCategories={categories}
       />
 
       {/* Delete Confirmation Modal */}
