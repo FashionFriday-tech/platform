@@ -389,6 +389,11 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
             : '0',
       );
 
+      const matchedCategoryObj = apiCategories.find(
+        (c) =>
+          c.name.toLowerCase() === matchedCategoryName?.toLowerCase() ||
+          c.id === (initialData as any)?.categoryId,
+      );
       const isWatch = matchedCategoryName?.toLowerCase().includes('watch');
       const rawSizes = initialData.attributes?.sizes;
       const initialSizes =
@@ -398,7 +403,11 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
                 ? 'Free Size'
                 : s,
             )
-          : getCategorySizes(matchedCategoryName);
+          : matchedCategoryObj &&
+              Array.isArray(matchedCategoryObj.sizes) &&
+              matchedCategoryObj.sizes.length > 0
+            ? matchedCategoryObj.sizes
+            : getCategorySizes(matchedCategoryName, initialData.gender);
       setSizes(initialSizes);
 
       // Colors — reverse-map from hex or name to array of SelectedColor
@@ -563,7 +572,21 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     }
     setCategory(catName);
     setIsCategoryOpen(false);
-    setSizes(getCategorySizes(catName, gender));
+
+    const matchedCategoryObj = apiCategories.find(
+      (c) =>
+        (catId && c.id === catId) ||
+        c.name.toLowerCase() === catName.toLowerCase() ||
+        c.slug.toLowerCase() === catName.toLowerCase(),
+    );
+    const resolvedSizes =
+      matchedCategoryObj &&
+      Array.isArray(matchedCategoryObj.sizes) &&
+      matchedCategoryObj.sizes.length > 0
+        ? matchedCategoryObj.sizes
+        : getCategorySizes(catName, gender);
+
+    setSizes(resolvedSizes);
 
     const catLower = catName.toLowerCase().trim();
     const isFootwear = isFootwearCategory(catName);
@@ -1096,8 +1119,18 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     );
   }, [apiColors, colorInput]);
   const availableSizes = useMemo(() => {
+    const targetCat = (category || '').trim().toLowerCase();
+    const matched = apiCategories.find(
+      (c) =>
+        c.name.toLowerCase() === targetCat ||
+        c.id === selectedCategoryId ||
+        c.slug.toLowerCase() === targetCat,
+    );
+    if (matched && Array.isArray(matched.sizes) && matched.sizes.length > 0) {
+      return matched.sizes;
+    }
     return getCategorySizes(category, gender);
-  }, [category, gender]);
+  }, [category, gender, apiCategories, selectedCategoryId]);
 
   const clearSizes = () => {
     setSizes([]);
