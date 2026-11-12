@@ -106,6 +106,7 @@ export function useCategories() {
               gender?: string;
               _count?: { products?: number };
               productCount?: number;
+              sizes?: string[];
             }[]
           | {
               data?: {
@@ -116,6 +117,7 @@ export function useCategories() {
                 gender?: string;
                 _count?: { products?: number };
                 productCount?: number;
+                sizes?: string[];
               }[];
             }
         >('/admin/categories');
@@ -132,6 +134,7 @@ export function useCategories() {
               | 'Men'
               | 'Women',
             productCount: c._count?.products ?? c.productCount ?? 0,
+            sizes: Array.isArray(c.sizes) ? c.sizes : [],
           };
         });
         setCategories(mapped);
@@ -188,6 +191,7 @@ export function useCategories() {
         slug: savedCategory.slug,
         image: savedCategory.image ?? '',
         gender: savedCategory.gender.toUpperCase(),
+        sizes: savedCategory.sizes ?? [],
       };
 
       if (isEdit) {
@@ -201,6 +205,7 @@ export function useCategories() {
             slug: string;
             image?: string;
             gender?: string;
+            sizes?: string[];
           }>(`/admin/categories/${existingCat.id}`, apiPayload);
 
           const rawGender = updated.gender ?? savedCategory.gender;
@@ -213,6 +218,7 @@ export function useCategories() {
             gender: (rawGender.charAt(0).toUpperCase() + rawGender.slice(1).toLowerCase()) as
               | 'Men'
               | 'Women',
+            sizes: updated.sizes ?? savedCategory.sizes ?? [],
           };
 
           setCategories((prev) =>
@@ -229,6 +235,7 @@ export function useCategories() {
           slug: string;
           image?: string;
           gender?: string;
+          sizes?: string[];
         }>('/admin/categories', apiPayload);
 
         const rawGender = created.gender ?? 'MEN';
@@ -242,6 +249,7 @@ export function useCategories() {
               | 'Men'
               | 'Women',
             productCount: 0,
+            sizes: created.sizes ?? savedCategory.sizes ?? [],
           },
           ...prev,
         ]);
