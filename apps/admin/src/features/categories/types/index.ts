@@ -5,6 +5,7 @@ export interface ProductCategory {
   image: string;
   productCount: number;
   gender: 'Men' | 'Women' | 'Unisex';
+  sizes?: string[];
 }
 
 export const MOCK_CATEGORIES: ProductCategory[] = [];
