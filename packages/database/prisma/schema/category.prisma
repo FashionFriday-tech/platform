@@ -1,11 +1,11 @@
 model Category {
-  id       String @id @default(uuid())
+  id       String   @id @default(uuid())
   name     String
-  slug     String @unique
+  slug     String   @unique
   image    String
   gender   Gender
-  position Int    @default(0)
-
+  position Int      @default(0)
+  sizes    String[] @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
