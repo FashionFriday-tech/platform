@@ -68,8 +68,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       }
     }
   }, [initialData]);
+  const [isAddingCustomSize, setIsAddingCustomSize] = useState(false);
+  const [customSizeInput, setCustomSizeInput] = useState('');
+
   const {
     sizes,
+    setSizes,
     toggleSize,
     clearSizes,
     selectAllSizes,
@@ -196,6 +200,18 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
   }, [availableModelGroups, modelGroup]);
 
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
+
+  const handleAddCustomSize = () => {
+    const clean = customSizeInput.trim().toUpperCase();
+    if (!clean) return;
+    if (!sizes.some((s) => s.toLowerCase() === clean.toLowerCase())) {
+      setSizes((prev) => [...prev, clean]);
+      markTouched('sizes');
+      clearFieldError('sizes');
+    }
+    setCustomSizeInput('');
+    setIsAddingCustomSize(false);
+  };
 
   const handleDropzoneDragOver = (e: React.DragEvent) => {
     if (draggedIndex !== null) {
@@ -1768,27 +1784,68 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     </div>
                   </div>
                   <div
-                    className={`flex flex-wrap gap-2 rounded-xl p-1 transition-all ${fieldErrors.sizes ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}
+                    className={`flex flex-wrap items-center gap-2 rounded-xl p-1 transition-all ${fieldErrors.sizes ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}
                   >
-                    {availableSizes.length > 0 ? (
-                      availableSizes.map((s) => (
+                    {availableSizes.map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => {
+                          toggleSize(s);
+                          markTouched('sizes');
+                          clearFieldError('sizes');
+                        }}
+                        className={`flex h-10 min-w-[44px] items-center justify-center rounded-xl px-3 text-sm font-bold transition-colors ${sizes.includes(s) ? 'bg-black text-white shadow-md dark:bg-white dark:text-black' : 'bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+
+                    {/* Inline dynamic custom size addition */}
+                    {isAddingCustomSize ? (
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="text"
+                          value={customSizeInput}
+                          onChange={(e) => setCustomSizeInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddCustomSize();
+                            } else if (e.key === 'Escape') {
+                              setIsAddingCustomSize(false);
+                            }
+                          }}
+                          placeholder="e.g. UK 12"
+                          autoFocus
+                          className="h-10 w-24 rounded-xl border border-black/20 bg-white px-2.5 text-xs font-bold text-black outline-none focus:border-black dark:border-white/20 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-white"
+                        />
                         <button
-                          key={s}
+                          type="button"
+                          onClick={handleAddCustomSize}
+                          className="h-10 rounded-xl bg-black px-3 text-xs font-bold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
+                        >
+                          Add
+                        </button>
+                        <button
                           type="button"
                           onClick={() => {
-                            toggleSize(s);
-                            markTouched('sizes');
-                            clearFieldError('sizes');
+                            setIsAddingCustomSize(false);
+                            setCustomSizeInput('');
                           }}
-                          className={`flex h-10 min-w-[44px] items-center justify-center rounded-xl px-3 text-sm font-bold transition-colors ${sizes.includes(s) ? 'bg-black text-white shadow-md dark:bg-white dark:text-black' : 'bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
+                          className="h-10 rounded-xl border border-black/10 px-2.5 text-xs font-bold text-black/50 hover:bg-black/5 dark:border-white/10 dark:text-white/50 dark:hover:bg-white/5"
                         >
-                          {s}
+                          ✕
                         </button>
-                      ))
+                      </div>
                     ) : (
-                      <p className="py-2 text-xs text-black/50 dark:text-white/50">
-                        No sizes configured for this category. You can customize size labels under Catalog &gt; Categories.
-                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingCustomSize(true)}
+                        className="flex h-10 items-center justify-center rounded-xl border border-dashed border-black/20 px-3 text-xs font-bold text-black/60 transition-colors hover:border-black/40 hover:bg-black/5 dark:border-white/20 dark:text-white/60 dark:hover:border-white/40 dark:hover:bg-white/5"
+                      >
+                        + Size
+                      </button>
                     )}
                   </div>
                   <FieldErrorMessage error={fieldErrors.sizes} />
