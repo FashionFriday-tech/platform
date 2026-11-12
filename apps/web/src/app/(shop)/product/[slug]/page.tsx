@@ -104,7 +104,11 @@ export default async function Page({ params }: Props) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    image: [product.media.mainImage, ...product.media.liveImages].filter(Boolean),
+    image: [
+      product.media.mainImage,
+      product.media.promoImage,
+      ...(product.media.liveImages || []),
+    ].filter((url): url is string => Boolean(url && typeof url === 'string' && url.trim())),
     description: product.description,
     sku: product.id,
     brand: {
