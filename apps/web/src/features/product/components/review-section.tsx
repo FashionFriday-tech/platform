@@ -103,14 +103,20 @@ export default function ReviewSection({
 
     let isMounted = true;
 
-    fetcher<ReviewApiResponse>(`/reviews/product/${productId}`)
-      .then((data) => {
+    fetcher<ReviewApiResponse | ReviewItem[]>(`/reviews/product/${productId}`)
+      .then((data: any) => {
         if (!isMounted) return;
-        if (data && Array.isArray(data.reviews) && data.reviews.length > 0) {
-          setReviews(data.reviews);
-          setTotalReviews(data.totalReviews || data.reviews.length);
-          setAverageRating(data.averageRating || 4.8);
-          if (data.modelGroup) {
+        const reviewList = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.reviews)
+            ? data.reviews
+            : [];
+
+        if (reviewList.length > 0) {
+          setReviews(reviewList);
+          setTotalReviews(Number(data?.totalReviews) || reviewList.length);
+          setAverageRating(Number(data?.averageRating) || 4.8);
+          if (data?.modelGroup) {
             setGroupName(data.modelGroup);
           }
         } else {
@@ -145,16 +151,18 @@ export default function ReviewSection({
 
   // Minimum duplicated list so the marquee loop scrolls continuously
   const displayReviews = useMemo(() => {
-    if (reviews.length === 0) return [];
-    if (reviews.length === 1) return [...reviews, ...reviews, ...reviews, ...reviews];
-    if (reviews.length === 2) return [...reviews, ...reviews, ...reviews];
-    return [...reviews, ...reviews];
+    const list = Array.isArray(reviews) ? reviews : [];
+    if (list.length === 0) return [];
+    if (list.length === 1) return [...list, ...list, ...list, ...list];
+    if (list.length === 2) return [...list, ...list, ...list];
+    return [...list, ...list];
   }, [reviews]);
 
   const [cardWidth, setCardWidth] = useState(540);
   const x = useMotionValue(0);
   const GAP = 24;
-  const TOTAL_SET_WIDTH = Math.max(1, reviews.length) * (cardWidth + GAP);
+  const safeReviewsCount = Array.isArray(reviews) ? reviews.length : 0;
+  const TOTAL_SET_WIDTH = Math.max(1, safeReviewsCount) * (cardWidth + GAP);
 
   useEffect(() => {
     const updateWidth = () => {
@@ -185,11 +193,11 @@ export default function ReviewSection({
   });
 
   const nextModal = () => {
-    if (reviews.length === 0) return;
+    if (!Array.isArray(reviews) || reviews.length === 0) return;
     setSelectedReview((prev) => (prev + 1) % reviews.length);
   };
   const prevModal = () => {
-    if (reviews.length === 0) return;
+    if (!Array.isArray(reviews) || reviews.length === 0) return;
     setSelectedReview((prev) => (prev - 1 + reviews.length) % reviews.length);
   };
 
@@ -398,7 +406,7 @@ export default function ReviewSection({
             className="flex w-max cursor-grab gap-4 active:cursor-grabbing sm:gap-6"
           >
             {displayReviews.map((rev, i) => {
-              const reviewIndex = i % reviews.length;
+              const reviewIndex = Array.isArray(reviews) && reviews.length > 0 ? i % reviews.length : 0;
               return (
                 <div
                   key={`${rev.id || i}-${i}`}
@@ -916,12 +924,13 @@ function getDefaultRealisticReviews(
   productName?: string,
   mainImage?: string,
   color?: string,
-  colorVariants: ProductColorVariant[] = [],
+  colorVariants?: ProductColorVariant[] | null,
 ): ReviewItem[] {
   const fallbackImg =
     mainImage ||
     'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800';
   const defaultColorway = color || 'Original';
+  const safeVariants = Array.isArray(colorVariants) ? colorVariants : [];
 
   const mockTemplates = [
     {
@@ -960,7 +969,7 @@ function getDefaultRealisticReviews(
 
   return mockTemplates.map((item, idx) => {
     const assignedVariant =
-      colorVariants.length > 0 ? colorVariants[idx % colorVariants.length] : null;
+      safeVariants.length > 0 ? safeVariants[idx % safeVariants.length] : null;
 
     return {
       id: `default-${idx + 1}`,
