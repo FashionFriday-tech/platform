@@ -8,7 +8,8 @@ export class ReviewsController {
 
   @Get()
   async getReviews(@Param('productId') productId: string) {
-    return this.reviewsService.getReviewsByProduct(productId);
+    const result = await this.reviewsService.getReviewsByProduct(productId);
+    return Array.isArray(result) ? result : result.reviews;
   }
 
   @Post()
