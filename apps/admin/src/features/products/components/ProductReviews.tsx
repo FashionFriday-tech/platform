@@ -110,7 +110,12 @@ export function ProductReviews({
       );
       if (res.ok) {
         const data = await res.json();
-        setReviews(data);
+        const items = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.reviews)
+            ? data.reviews
+            : [];
+        setReviews(items);
       }
     } catch (err) {
       console.error('Failed to fetch reviews', err);
@@ -122,7 +127,8 @@ export function ProductReviews({
   }, [productId]);
 
   const sortedReviews = useMemo(() => {
-    return [...reviews].sort((a, b) => {
+    const list = Array.isArray(reviews) ? reviews : [];
+    return [...list].sort((a, b) => {
       switch (sortOption) {
         case 'highest':
           return b.rating - a.rating;
@@ -139,10 +145,10 @@ export function ProductReviews({
   }, [reviews, sortOption]);
 
   const averageRating = useMemo(() => {
-    if (reviews.length === 0) {
+    if (!Array.isArray(reviews) || reviews.length === 0) {
       return 0;
     }
-    const total = reviews.reduce((acc, rev) => acc + rev.rating, 0);
+    const total = reviews.reduce((acc, rev) => acc + (rev.rating || 0), 0);
     return (total / reviews.length).toFixed(1);
   }, [reviews]);
 
@@ -341,7 +347,7 @@ export function ProductReviews({
               {averageRating} out of 5
             </span>
             <span className="text-sm font-bold text-black/40 dark:text-white/40">
-              ({reviews.length} reviews)
+              ({reviews?.length ?? 0} reviews)
             </span>
           </div>
         </div>
