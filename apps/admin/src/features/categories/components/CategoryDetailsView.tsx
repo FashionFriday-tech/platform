@@ -30,7 +30,23 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [allCategories, setAllCategories] = useState<ProductCategory[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    async function loadAllCategories() {
+      try {
+        const res = await api.get<ProductCategory[] | { data?: ProductCategory[] }>(
+          '/admin/categories',
+        );
+        const list = Array.isArray(res) ? res : (res.data ?? []);
+        setAllCategories(list);
+      } catch (err) {
+        // ignore
+      }
+    }
+    void loadAllCategories();
+  }, []);
 
   useEffect(() => {
     async function loadProducts() {
@@ -445,6 +461,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         }}
         initialData={category}
         onSave={handleSaveCategory}
+        existingCategories={allCategories}
       />
 
       {/* Delete Confirmation Modal */}
