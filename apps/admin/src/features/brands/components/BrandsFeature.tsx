@@ -165,8 +165,8 @@ export default function BrandsFeature() {
                     }}
                   />
 
-                  <div className="fixed inset-x-3 bottom-3 z-50 flex max-h-[85vh] flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 shadow-2xl backdrop-blur-2xl duration-200 md:absolute md:top-full md:right-0 md:bottom-auto md:left-auto md:mt-2 md:w-[320px] dark:border-white/10 dark:bg-[#111111]/95">
-                    <div className="flex items-center justify-between border-b border-black/5 p-4 pb-3 dark:border-white/5">
+                  <div className="fixed inset-x-3 bottom-3 z-50 flex max-h-[85vh] min-h-0 flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/95 shadow-2xl backdrop-blur-2xl duration-200 md:absolute md:top-full md:right-0 md:bottom-auto md:left-auto md:mt-2 md:w-[340px] md:max-h-[min(540px,calc(100dvh-220px))] dark:border-white/10 dark:bg-[#111111]/95">
+                    <div className="flex shrink-0 items-center justify-between border-b border-black/5 p-4 pb-3 dark:border-white/5">
                       <h3 className="text-base font-bold text-black dark:text-white">
                         Detailed Filters
                       </h3>
@@ -193,7 +193,7 @@ export default function BrandsFeature() {
                       </button>
                     </div>
 
-                    <div className="scrollbar-hide flex-1 space-y-4 overflow-y-auto p-4">
+                    <div className="flex-1 min-h-0 space-y-4 overflow-y-auto overscroll-contain p-4">
                       <div>
                         <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
                           Brand Category
@@ -244,7 +244,7 @@ export default function BrandsFeature() {
                     </div>
 
                     {/* Footer Buttons */}
-                    <div className="flex items-center space-x-3 border-t border-black/10 bg-white/5 p-4 backdrop-blur-md dark:border-white/10 dark:bg-black/5">
+                    <div className="flex shrink-0 items-center space-x-3 border-t border-black/10 bg-white/5 p-4 backdrop-blur-md dark:border-white/10 dark:bg-black/5">
                       <button
                         type="button"
                         onClick={() => {
