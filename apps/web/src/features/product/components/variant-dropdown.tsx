@@ -71,6 +71,8 @@ const KNOWN_COLOR_KEYWORDS = [
  * Accurately extracts clean colorways such as "Yellow", "Grey", "Black / White", etc.
  */
 export function extractColorLabel(variant: ProductColorVariant): string {
+  if (!variant) return 'Colorway';
+
   // 1. Check variant colors array
   if (Array.isArray(variant.colors) && variant.colors.length > 0) {
     const resolvedNames: string[] = [];
@@ -132,6 +134,7 @@ export function extractColorLabel(variant: ProductColorVariant): string {
  * Extracts normalized hex color array for rendering color swatches.
  */
 export function extractColorHexes(variant: ProductColorVariant): string[] {
+  if (!variant) return [];
   const hexes: string[] = [];
 
   if (Array.isArray(variant.colors)) {
@@ -194,8 +197,10 @@ export default function VariantDropdown({
   variants = [],
   currentSlug,
 }: VariantDropdownProps) {
+  const safeVariants = Array.isArray(variants) ? variants : [];
+
   // If there are no color variants or only 1 item, don't show the tray
-  if (!variants || variants.length <= 1) {
+  if (safeVariants.length <= 1) {
     return null;
   }
 
@@ -210,7 +215,7 @@ export default function VariantDropdown({
               Available Colors
             </span>
             <span className="text-foreground/70 rounded-full bg-black/5 px-2 py-0.5 text-[9px] font-bold dark:bg-white/10">
-              {variants.length} Colors
+              {safeVariants.length} Colors
             </span>
           </div>
           <button
@@ -234,7 +239,7 @@ export default function VariantDropdown({
               className="overflow-hidden"
             >
               <div className="no-scrollbar flex gap-3 overflow-x-auto pt-3.5 pb-1">
-                {variants.map((v) => {
+                {safeVariants.map((v) => {
                   const isCurrent = v.slug === currentSlug;
                   const label = extractColorLabel(v);
                   const hexes = extractColorHexes(v);
