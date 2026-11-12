@@ -10,7 +10,7 @@ import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
 import { type CreateColorInput } from '../../colors/types';
 import { useQualities } from '../../qualities/hooks/useQualities';
-import { getCategorySizes, isFootwearCategory, isWatchCategory } from '../utils/constants';
+import { getCategorySizes, isFootwearCategory, isWatchCategory, sortSizes } from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export interface SelectedColor {
@@ -396,6 +396,31 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       );
       const isWatch = matchedCategoryName?.toLowerCase().includes('watch');
       const rawSizes = initialData.attributes?.sizes;
+      const isUnisex = initialData.gender?.toUpperCase() === 'UNISEX';
+      let defaultSizes: string[] = [];
+      if (isUnisex) {
+        const matchingCats = apiCategories.filter(
+          (c) =>
+            c.name.toLowerCase() === matchedCategoryName?.toLowerCase() ||
+            c.slug.toLowerCase() === matchedCategoryName?.toLowerCase() ||
+            c.id === (initialData as any)?.categoryId,
+        );
+        const combined = matchingCats.flatMap((c) =>
+          Array.isArray(c.sizes) ? c.sizes.filter(Boolean) : [],
+        );
+        defaultSizes =
+          combined.length > 0
+            ? sortSizes(combined)
+            : getCategorySizes(matchedCategoryName, 'unisex');
+      } else {
+        defaultSizes =
+          matchedCategoryObj &&
+          Array.isArray(matchedCategoryObj.sizes) &&
+          matchedCategoryObj.sizes.length > 0
+            ? sortSizes(matchedCategoryObj.sizes)
+            : getCategorySizes(matchedCategoryName, initialData.gender);
+      }
+
       const initialSizes =
         rawSizes && rawSizes.length > 0
           ? rawSizes.map((s) =>
@@ -403,11 +428,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
                 ? 'Free Size'
                 : s,
             )
-          : matchedCategoryObj &&
-              Array.isArray(matchedCategoryObj.sizes) &&
-              matchedCategoryObj.sizes.length > 0
-            ? matchedCategoryObj.sizes
-            : getCategorySizes(matchedCategoryName, initialData.gender);
+          : defaultSizes;
       setSizes(initialSizes);
 
       // Colors — reverse-map from hex or name to array of SelectedColor
@@ -573,18 +594,48 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     setCategory(catName);
     setIsCategoryOpen(false);
 
-    const matchedCategoryObj = apiCategories.find(
-      (c) =>
-        (catId && c.id === catId) ||
-        c.name.toLowerCase() === catName.toLowerCase() ||
-        c.slug.toLowerCase() === catName.toLowerCase(),
-    );
-    const resolvedSizes =
-      matchedCategoryObj &&
-      Array.isArray(matchedCategoryObj.sizes) &&
-      matchedCategoryObj.sizes.length > 0
-        ? matchedCategoryObj.sizes
-        : getCategorySizes(catName, gender);
+    const isUnisex = gender?.trim().toLowerCase() === 'unisex';
+    let resolvedSizes: string[] = [];
+
+    if (isUnisex) {
+      const matchingCats = apiCategories.filter(
+        (c) =>
+          c.name.toLowerCase() === catName.toLowerCase() ||
+          c.slug.toLowerCase() === catName.toLowerCase() ||
+          (catId && c.id === catId),
+      );
+      const combined = matchingCats.flatMap((c) =>
+        Array.isArray(c.sizes) ? c.sizes.filter(Boolean) : [],
+      );
+      resolvedSizes =
+        combined.length > 0 ? sortSizes(combined) : getCategorySizes(catName, 'unisex');
+    } else {
+      const targetGender =
+        gender?.trim().toUpperCase() === 'WOMAN' || gender?.trim().toUpperCase() === 'WOMEN'
+          ? 'WOMEN'
+          : 'MEN';
+      const matchedCategoryObj =
+        apiCategories.find(
+          (c) =>
+            ((catId && c.id === catId) ||
+              c.name.toLowerCase() === catName.toLowerCase() ||
+              c.slug.toLowerCase() === catName.toLowerCase()) &&
+            c.gender?.toUpperCase() === targetGender,
+        ) ||
+        apiCategories.find(
+          (c) =>
+            (catId && c.id === catId) ||
+            c.name.toLowerCase() === catName.toLowerCase() ||
+            c.slug.toLowerCase() === catName.toLowerCase(),
+        );
+
+      resolvedSizes =
+        matchedCategoryObj &&
+        Array.isArray(matchedCategoryObj.sizes) &&
+        matchedCategoryObj.sizes.length > 0
+          ? sortSizes(matchedCategoryObj.sizes)
+          : getCategorySizes(catName, gender);
+    }
 
     setSizes(resolvedSizes);
 
@@ -1120,14 +1171,56 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   }, [apiColors, colorInput]);
   const availableSizes = useMemo(() => {
     const targetCat = (category || '').trim().toLowerCase();
-    const matched = apiCategories.find(
-      (c) =>
-        c.name.toLowerCase() === targetCat ||
-        c.id === selectedCategoryId ||
-        c.slug.toLowerCase() === targetCat,
-    );
+    const isUnisex = gender?.trim().toLowerCase() === 'unisex';
+    const targetGender =
+      gender?.trim().toUpperCase() === 'WOMAN' || gender?.trim().toUpperCase() === 'WOMEN'
+        ? 'WOMEN'
+        : gender?.trim().toUpperCase() === 'MEN'
+          ? 'MEN'
+          : 'UNISEX';
+
+    if (isUnisex) {
+      // Find all categories matching targetCat regardless of gender (combines MEN and WOMEN categories)
+      const matchingCats = apiCategories.filter(
+        (c) =>
+          c.name.toLowerCase() === targetCat ||
+          c.slug.toLowerCase() === targetCat ||
+          (selectedCategoryId && c.id === selectedCategoryId),
+      );
+
+      const combinedSizes: string[] = [];
+      for (const cat of matchingCats) {
+        if (Array.isArray(cat.sizes)) {
+          for (const s of cat.sizes) {
+            if (s && s.trim()) combinedSizes.push(s.trim());
+          }
+        }
+      }
+
+      if (combinedSizes.length > 0) {
+        return sortSizes(combinedSizes);
+      }
+      return getCategorySizes(category, 'unisex');
+    }
+
+    // Single gender (Men or Woman)
+    const matched =
+      apiCategories.find(
+        (c) =>
+          (c.name.toLowerCase() === targetCat ||
+            c.id === selectedCategoryId ||
+            c.slug.toLowerCase() === targetCat) &&
+          c.gender?.toUpperCase() === targetGender,
+      ) ||
+      apiCategories.find(
+        (c) =>
+          c.name.toLowerCase() === targetCat ||
+          c.id === selectedCategoryId ||
+          c.slug.toLowerCase() === targetCat,
+      );
+
     if (matched && Array.isArray(matched.sizes) && matched.sizes.length > 0) {
-      return matched.sizes;
+      return sortSizes(matched.sizes);
     }
     return getCategorySizes(category, gender);
   }, [category, gender, apiCategories, selectedCategoryId]);
