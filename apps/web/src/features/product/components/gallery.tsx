@@ -1,9 +1,15 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
-import { ImageIcon, PauseIcon, PlayIcon } from '@ff/ui';
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ImageIcon,
+  PauseIcon,
+  PlayIcon,
+} from '@ff/ui';
 import { AnimatePresence, motion, type PanInfo } from 'motion/react';
 
 export default function MediaStage({ images, videoUrl }: { images: string[]; videoUrl?: string }) {
@@ -11,7 +17,15 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
   const [activeMode, setActiveMode] = useState<'image' | 'video'>('image');
   const [isZoomed, setIsZoomed] = useState(false);
 
+  const firstImage = images[0];
+  useEffect(() => {
+    setIndex(0);
+    setIsZoomed(false);
+    setActiveMode('image');
+  }, [firstImage]);
+
   const safeIndex = images.length > 0 ? Math.min(Math.max(0, index), images.length - 1) : 0;
+  const currentImage = images[safeIndex] || '/images/placeholder.png';
 
   const hasVideo = Boolean(
     videoUrl &&
@@ -120,7 +134,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
           <AnimatePresence mode="wait">
             {activeMode === 'image' ? (
               <motion.div
-                key={`img-wrap-${safeIndex}-${images[safeIndex]}`}
+                key={`img-wrap-${safeIndex}-${currentImage}`}
                 className="h-full w-full overflow-hidden bg-white"
                 initial={{ opacity: 0, scale: 1.1 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -146,8 +160,8 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                   transition={{ type: 'spring', stiffness: 200, damping: 30 }}
                 >
                   <motion.img
-                    key={images[safeIndex]}
-                    src={images[safeIndex]}
+                    key={currentImage}
+                    src={currentImage}
                     alt="Product Detail"
                     className="pointer-events-none h-full w-full object-cover"
                   />
@@ -184,6 +198,35 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* --- PREV / NEXT ARROWS --- */}
+          {images.length > 1 && activeMode === 'image' && !isZoomed && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+                }}
+                aria-label="Previous image"
+                className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none"
+              >
+                <ChevronLeftIcon size={20} />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+                }}
+                aria-label="Next image"
+                className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none"
+              >
+                <ChevronRightIcon size={20} />
+              </button>
+            </>
+          )}
+
           {/* --- CAPSULE SWITCHER (Floating controls) --- */}
           {(images.length > 1 || hasVideo) && (
             <div className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2">
@@ -226,6 +269,63 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
             </div>
           )}
         </div>
+
+        {/* --- MOBILE THUMBNAIL RAIL --- */}
+        {(images.length > 1 || hasVideo) && (
+          <div className="no-scrollbar mt-3 flex w-full gap-2 overflow-x-auto px-1 py-1 lg:hidden">
+            {images.map((img, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  setIndex(i);
+                  setActiveMode('image');
+                  setIsZoomed(false);
+                }}
+                className={`relative aspect-4/5 w-16 shrink-0 overflow-hidden rounded-2xl border-2 transition-all ${
+                  safeIndex === i && activeMode === 'image'
+                    ? 'scale-95 border-black shadow-md'
+                    : 'border-transparent opacity-60'
+                }`}
+              >
+                <Image
+                  src={img}
+                  alt={`Thumbnail ${i + 1}`}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
+              </button>
+            ))}
+
+            {hasVideo && (
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveMode('video');
+                  setIsZoomed(false);
+                }}
+                aria-label="View Video"
+                className={`relative flex aspect-4/5 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 bg-gray-100 transition-all ${
+                  activeMode === 'video'
+                    ? 'scale-95 border-black shadow-md'
+                    : 'border-transparent opacity-60'
+                }`}
+              >
+                <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                  <PlayIcon size={16} fill="white" className="text-white" />
+                </div>
+                <Image
+                  src={images[0] || '/images/placeholder.png'}
+                  alt="Video Preview"
+                  fill
+                  className="object-cover blur-[1px]"
+                  sizes="64px"
+                />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
