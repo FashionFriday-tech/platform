@@ -158,9 +158,11 @@ export class ReviewsService {
 
       return {
         id: r.id,
+        userName: r.userName,
         name: r.userName,
         initials: this.extractInitials(r.userName),
         comment: r.comment,
+        productImage: r.productImage || prod?.mainImage || '',
         image:
           r.productImage ||
           prod?.mainImage ||
@@ -420,9 +422,11 @@ export class ReviewsService {
 
       generated.push({
         id: `seed-review-${assignedProduct.id}-${i}`,
+        userName: template.name,
         name: template.name,
         initials: template.initials,
         comment: template.comment,
+        productImage: assignedProduct.mainImage,
         image: assignedProduct.mainImage,
         rating: template.rating,
         membership: template.membership,
