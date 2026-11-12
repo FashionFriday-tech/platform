@@ -1126,17 +1126,11 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
         c.id === selectedCategoryId ||
         c.slug.toLowerCase() === targetCat,
     );
-    const base =
-      matched && Array.isArray(matched.sizes) && matched.sizes.length > 0
-        ? matched.sizes
-        : getCategorySizes(category, gender);
-
-    // Dynamically include any custom sizes that have been set on this product
-    const customOnProduct = sizes.filter(
-      (s) => !base.some((b) => b.toLowerCase() === s.toLowerCase()),
-    );
-    return [...base, ...customOnProduct];
-  }, [category, gender, apiCategories, selectedCategoryId, sizes]);
+    if (matched && Array.isArray(matched.sizes) && matched.sizes.length > 0) {
+      return matched.sizes;
+    }
+    return getCategorySizes(category, gender);
+  }, [category, gender, apiCategories, selectedCategoryId]);
 
   const clearSizes = () => {
     setSizes([]);
