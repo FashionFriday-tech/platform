@@ -166,7 +166,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
       <div className="group relative w-full flex-1 touch-pan-y select-none">
         {/* --- MEDIA VIEWPORT --- */}
         <div
-          className="relative aspect-4/5 cursor-crosshair overflow-hidden rounded-[2.5rem] bg-white shadow-sm touch-pan-y"
+          className="relative aspect-4/5 cursor-crosshair overflow-hidden rounded-[2.5rem] bg-black shadow-sm touch-pan-y isolate [transform:translateZ(0)]"
           onClick={handleInteraction}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -176,14 +176,14 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
             {activeMode === 'image' ? (
               <motion.div
                 key={`img-wrap-${safeIndex}-${currentImage}`}
-                className="h-full w-full overflow-hidden bg-white touch-pan-y"
-                initial={{ opacity: 0, scale: 1.1 }}
+                className="h-full w-full overflow-hidden bg-black touch-pan-y"
+                initial={{ opacity: 0, scale: 1.05 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
                 transition={{ duration: 0.25 }}
               >
                 <motion.div
-                  className="flex h-full w-full items-center justify-center"
+                  className="flex h-full w-full items-center justify-center overflow-hidden"
                   drag={isZoomed}
                   dragConstraints={{
                     left: -300,
@@ -203,7 +203,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                     key={currentImage}
                     src={currentImage}
                     alt="Product Detail"
-                    className="pointer-events-none h-full w-full object-cover"
+                    className="pointer-events-none h-full w-full min-h-full min-w-full shrink-0 object-cover"
                   />
                 </motion.div>
               </motion.div>
