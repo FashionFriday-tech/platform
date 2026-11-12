@@ -16,34 +16,74 @@ interface AddCategoryModalProps {
   existingCategories?: ProductCategory[];
 }
 
-interface SizeGroup {
-  id: string;
-  label: string;
-  items: string[];
+type SizingCategoryType = 'footwear' | 'apparel' | 'bottoms' | 'accessories' | 'custom';
+
+function detectSizingCategory(catName?: string, currentSizes?: string[]): SizingCategoryType {
+  const normName = (catName || '').toLowerCase();
+  if (
+    normName.includes('shoe') ||
+    normName.includes('sneak') ||
+    normName.includes('slip') ||
+    normName.includes('slide') ||
+    normName.includes('boot') ||
+    normName.includes('croc') ||
+    normName.includes('footwear') ||
+    normName.includes('sandal') ||
+    currentSizes?.some((s) => s.toLowerCase().startsWith('uk'))
+  ) {
+    return 'footwear';
+  }
+  if (
+    normName.includes('watch') ||
+    normName.includes('accessori') ||
+    normName.includes('bag') ||
+    normName.includes('jewel') ||
+    normName.includes('cap') ||
+    normName.includes('hat') ||
+    currentSizes?.some(
+      (s) => s.toLowerCase().includes('free size') || s.toLowerCase().includes('one size'),
+    )
+  ) {
+    return 'accessories';
+  }
+  if (
+    normName.includes('pant') ||
+    normName.includes('jean') ||
+    normName.includes('trouser') ||
+    normName.includes('bottom') ||
+    normName.includes('short') ||
+    currentSizes?.some((s) => /^\d{2}$/.test(s.trim()))
+  ) {
+    return 'bottoms';
+  }
+  return 'apparel';
 }
 
-const BASE_SIZE_GROUPS: SizeGroup[] = [
-  {
-    id: 'footwear_uk',
+const CATEGORY_SIZE_OPTIONS: Record<
+  Exclude<SizingCategoryType, 'custom'>,
+  { label: string; description: string; items: string[] }
+> = {
+  footwear: {
     label: 'Footwear (UK Sizes)',
+    description: 'UK sizes for sneakers, shoes, boots, and slippers',
     items: ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11', 'UK 12'],
   },
-  {
-    id: 'apparel',
+  apparel: {
     label: 'Apparel / Tops',
+    description: 'Alpha sizes for t-shirts, shirts, jackets, hoodies, and tops',
     items: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'],
   },
-  {
-    id: 'bottoms',
-    label: 'Pants / Waist Sizes',
+  bottoms: {
+    label: 'Pants / Bottoms (Waist Sizes)',
+    description: 'Waist inch sizes for jeans, trousers, trackpants, and shorts',
     items: ['28', '30', '32', '34', '36', '38', '40', '42'],
   },
-  {
-    id: 'standard',
+  accessories: {
     label: 'Free Size & Accessories',
+    description: 'Universal / dial sizes for watches, bags, and lifestyle accessories',
     items: ['Free Size', 'One Size', '40mm', '42mm', '44mm'],
   },
-];
+};
 
 export function AddCategoryModal({
   isOpen,
@@ -60,38 +100,7 @@ export function AddCategoryModal({
   const [mounted, setMounted] = useState(false);
   const [sizes, setSizes] = useState<string[]>([]);
   const [customSizeInput, setCustomSizeInput] = useState('');
-
-  // Dynamically collect custom/extra sizes across other categories and current selection
-  const extraSizes = React.useMemo(() => {
-    const known = new Set(
-      BASE_SIZE_GROUPS.flatMap((g) => g.items.map((i) => i.toLowerCase())),
-    );
-    const extras: string[] = [];
-
-    if (existingCategories) {
-      for (const cat of existingCategories) {
-        if (Array.isArray(cat.sizes)) {
-          for (const s of cat.sizes) {
-            if (
-              !known.has(s.toLowerCase()) &&
-              !extras.some((e) => e.toLowerCase() === s.toLowerCase())
-            ) {
-              extras.push(s);
-            }
-          }
-        }
-      }
-    }
-    for (const s of sizes) {
-      if (
-        !known.has(s.toLowerCase()) &&
-        !extras.some((e) => e.toLowerCase() === s.toLowerCase())
-      ) {
-        extras.push(s);
-      }
-    }
-    return extras;
-  }, [existingCategories, sizes]);
+  const [sizingType, setSizingType] = useState<SizingCategoryType>('apparel');
 
   React.useEffect(() => {
     setMounted(true);
@@ -99,14 +108,18 @@ export function AddCategoryModal({
       setName(initialData.name);
       setGender(initialData.gender);
       setLogoUrl(initialData.image);
-      setSizes(Array.isArray(initialData.sizes) ? initialData.sizes : []);
+      const initialSizes = Array.isArray(initialData.sizes) ? initialData.sizes : [];
+      setSizes(initialSizes);
+      setSizingType(detectSizingCategory(initialData.name, initialSizes));
       setCustomSizeInput('');
       setFileToUpload(null);
     } else if (isOpen) {
       setName('');
       setGender('Men');
       setLogoUrl('');
-      setSizes([]);
+      const defaultType: SizingCategoryType = 'footwear';
+      setSizingType(defaultType);
+      setSizes([...CATEGORY_SIZE_OPTIONS.footwear.items]);
       setCustomSizeInput('');
       setFileToUpload(null);
     }
@@ -367,7 +380,7 @@ export function AddCategoryModal({
               </div>
             </div>
 
-            {/* Dynamic Category Size Labels */}
+            {/* Category Size Labels */}
             <div className="rounded-2xl border border-black/10 bg-[#f8f9fa] p-4.5 dark:border-white/10 dark:bg-[#161616]">
               <div className="flex items-center justify-between">
                 <div>
@@ -375,7 +388,7 @@ export function AddCategoryModal({
                     Category Size Labels {sizes.length > 0 ? `(${sizes.length} selected)` : ''}
                   </label>
                   <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
-                    Click items to toggle them on or off for this category
+                    Sizes for this specific category (e.g. UK sizes for footwear, Free Size for watches)
                   </p>
                 </div>
                 {sizes.length > 0 && (
@@ -389,64 +402,73 @@ export function AddCategoryModal({
                 )}
               </div>
 
-              {/* Dynamic Size Groups with Clickable Items */}
-              <div className="mt-4 space-y-3">
-                {BASE_SIZE_GROUPS.map((group) => {
-                  const allSelected = group.items.every((item) =>
-                    sizes.some((s) => s.toLowerCase() === item.toLowerCase()),
-                  );
-                  return (
-                    <div
-                      key={group.id}
-                      className="rounded-xl border border-black/5 bg-white p-3 dark:border-white/5 dark:bg-[#1a1a1a]"
-                    >
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="text-xs font-bold text-black/70 uppercase dark:text-white/70">
-                          {group.label}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => toggleGroup(group.items)}
-                          className="text-[11px] font-semibold text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white"
-                        >
-                          {allSelected ? 'Deselect All' : 'Select All'}
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {group.items.map((item) => {
-                          const isSelected = sizes.some(
-                            (s) => s.toLowerCase() === item.toLowerCase(),
-                          );
-                          return (
-                            <button
-                              key={item}
-                              type="button"
-                              onClick={() => toggleSize(item)}
-                              className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition-all ${
-                                isSelected
-                                  ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
-                                  : 'border-black/10 bg-[#f8f9fa] text-black/60 hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#222] dark:text-white/60 dark:hover:bg-white/10'
-                              }`}
-                            >
-                              {item}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
+              {/* Sizing Category Selector */}
+              <div className="mt-3.5">
+                <span className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Select Sizing Type:
+                </span>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {[
+                    { id: 'footwear', label: 'Footwear (UK)' },
+                    { id: 'apparel', label: 'Apparel / Tops' },
+                    { id: 'bottoms', label: 'Pants / Bottoms' },
+                    { id: 'accessories', label: 'Watches / Free Size' },
+                    { id: 'custom', label: 'Custom' },
+                  ].map((tab) => {
+                    const isCurrent = sizingType === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => {
+                          const newType = tab.id as SizingCategoryType;
+                          setSizingType(newType);
+                          if (newType !== 'custom') {
+                            setSizes([...CATEGORY_SIZE_OPTIONS[newType].items]);
+                          } else {
+                            setSizes([]);
+                          }
+                        }}
+                        className={`rounded-lg border px-3 py-1.5 text-xs font-bold transition-all ${
+                          isCurrent
+                            ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
+                            : 'border-black/10 bg-white text-black/70 hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#202020] dark:text-white/70 dark:hover:bg-white/10'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-                {/* Additional / Custom Sizes */}
-                {extraSizes.length > 0 && (
-                  <div className="rounded-xl border border-black/5 bg-white p-3 dark:border-white/5 dark:bg-[#1a1a1a]">
-                    <div className="mb-2 flex items-center justify-between">
-                      <span className="text-xs font-bold text-black/70 uppercase dark:text-white/70">
-                        Custom &amp; Catalog Sizes
-                      </span>
+              {/* Size List For The Selected Category ONLY */}
+              <div className="mt-3.5">
+                {sizingType !== 'custom' ? (
+                  <div className="rounded-xl border border-black/5 bg-white p-3.5 dark:border-white/5 dark:bg-[#1a1a1a]">
+                    <div className="mb-2.5 flex items-center justify-between">
+                      <div>
+                        <span className="text-xs font-bold text-black/80 uppercase dark:text-white/80">
+                          {CATEGORY_SIZE_OPTIONS[sizingType].label}
+                        </span>
+                        <p className="text-[11px] text-black/50 dark:text-white/50">
+                          {CATEGORY_SIZE_OPTIONS[sizingType].description}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleGroup(CATEGORY_SIZE_OPTIONS[sizingType].items)}
+                        className="text-[11px] font-bold text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white"
+                      >
+                        {CATEGORY_SIZE_OPTIONS[sizingType].items.every((item) =>
+                          sizes.some((s) => s.toLowerCase() === item.toLowerCase()),
+                        )
+                          ? 'Deselect All'
+                          : 'Select All'}
+                      </button>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
-                      {extraSizes.map((item) => {
+                      {CATEGORY_SIZE_OPTIONS[sizingType].items.map((item) => {
                         const isSelected = sizes.some(
                           (s) => s.toLowerCase() === item.toLowerCase(),
                         );
@@ -467,6 +489,12 @@ export function AddCategoryModal({
                       })}
                     </div>
                   </div>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-black/15 bg-white p-3 text-center dark:border-white/15 dark:bg-[#1a1a1a]">
+                    <p className="text-xs text-black/50 dark:text-white/50">
+                      Add your custom sizes using the input below.
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -482,7 +510,7 @@ export function AddCategoryModal({
                       handleAddCustomSize();
                     }
                   }}
-                  placeholder="Type new custom size (e.g. UK 13, 44mm, Small)..."
+                  placeholder="Add custom size (e.g. UK 12.5, 45mm)..."
                   className="flex-1 rounded-xl border border-black/10 bg-white px-3.5 py-2 text-xs font-medium text-black placeholder-black/30 outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#202020] dark:text-white dark:placeholder-white/30"
                 />
                 <button
@@ -494,11 +522,11 @@ export function AddCategoryModal({
                 </button>
               </div>
 
-              {/* Selected Sizes Chips Summary */}
+              {/* Selected Sizes Summary */}
               {sizes.length > 0 && (
                 <div className="mt-3 border-t border-black/5 pt-3 dark:border-white/5">
                   <span className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                    Selected for this category:
+                    Selected Sizes for this category ({sizes.length}):
                   </span>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {sizes.map((s) => (
