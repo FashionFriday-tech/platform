@@ -13,9 +13,45 @@ interface AddCategoryModalProps {
   onClose: () => void;
   onSave: (category: ProductCategory, isEdit: boolean, originalSlug?: string) => void;
   initialData?: ProductCategory | null;
+  existingCategories?: ProductCategory[];
 }
 
-export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCategoryModalProps) {
+interface SizeGroup {
+  id: string;
+  label: string;
+  items: string[];
+}
+
+const BASE_SIZE_GROUPS: SizeGroup[] = [
+  {
+    id: 'footwear_uk',
+    label: 'Footwear (UK Sizes)',
+    items: ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11', 'UK 12'],
+  },
+  {
+    id: 'apparel',
+    label: 'Apparel / Tops',
+    items: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'],
+  },
+  {
+    id: 'bottoms',
+    label: 'Pants / Waist Sizes',
+    items: ['28', '30', '32', '34', '36', '38', '40', '42'],
+  },
+  {
+    id: 'standard',
+    label: 'Free Size & Accessories',
+    items: ['Free Size', 'One Size', '40mm', '42mm', '44mm'],
+  },
+];
+
+export function AddCategoryModal({
+  isOpen,
+  onClose,
+  onSave,
+  initialData,
+  existingCategories,
+}: AddCategoryModalProps) {
   const [name, setName] = useState('');
   const [gender, setGender] = useState<'Men' | 'Women' | 'Unisex'>('Men');
   const [logoUrl, setLogoUrl] = useState('');
@@ -25,28 +61,37 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
   const [sizes, setSizes] = useState<string[]>([]);
   const [customSizeInput, setCustomSizeInput] = useState('');
 
-  const SIZE_PRESETS = [
-    {
-      name: 'Footwear (UK 3-11)',
-      sizes: ['UK 3', 'UK 4', 'UK 5', 'UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
-    },
-    {
-      name: 'Footwear Men (UK 6-11)',
-      sizes: ['UK 6', 'UK 7', 'UK 8', 'UK 9', 'UK 10', 'UK 11'],
-    },
-    {
-      name: 'Clothing (XS-3XL)',
-      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-    },
-    {
-      name: 'Pants (28-40)',
-      sizes: ['28', '30', '32', '34', '36', '38', '40'],
-    },
-    {
-      name: 'Free Size',
-      sizes: ['Free Size'],
-    },
-  ];
+  // Dynamically collect custom/extra sizes across other categories and current selection
+  const extraSizes = React.useMemo(() => {
+    const known = new Set(
+      BASE_SIZE_GROUPS.flatMap((g) => g.items.map((i) => i.toLowerCase())),
+    );
+    const extras: string[] = [];
+
+    if (existingCategories) {
+      for (const cat of existingCategories) {
+        if (Array.isArray(cat.sizes)) {
+          for (const s of cat.sizes) {
+            if (
+              !known.has(s.toLowerCase()) &&
+              !extras.some((e) => e.toLowerCase() === s.toLowerCase())
+            ) {
+              extras.push(s);
+            }
+          }
+        }
+      }
+    }
+    for (const s of sizes) {
+      if (
+        !known.has(s.toLowerCase()) &&
+        !extras.some((e) => e.toLowerCase() === s.toLowerCase())
+      ) {
+        extras.push(s);
+      }
+    }
+    return extras;
+  }, [existingCategories, sizes]);
 
   React.useEffect(() => {
     setMounted(true);
@@ -67,6 +112,35 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
     }
   }, [initialData, isOpen]);
 
+  const toggleSize = (sizeToToggle: string) => {
+    setSizes((prev) => {
+      const exists = prev.some((s) => s.toLowerCase() === sizeToToggle.toLowerCase());
+      if (exists) {
+        return prev.filter((s) => s.toLowerCase() !== sizeToToggle.toLowerCase());
+      }
+      return [...prev, sizeToToggle];
+    });
+  };
+
+  const toggleGroup = (groupItems: string[]) => {
+    setSizes((prev) => {
+      const allSelected = groupItems.every((item) =>
+        prev.some((s) => s.toLowerCase() === item.toLowerCase()),
+      );
+      if (allSelected) {
+        // Deselect all items from this group
+        return prev.filter(
+          (s) => !groupItems.some((item) => item.toLowerCase() === s.toLowerCase()),
+        );
+      }
+      // Select all items from this group
+      const newItems = groupItems.filter(
+        (item) => !prev.some((s) => s.toLowerCase() === item.toLowerCase()),
+      );
+      return [...prev, ...newItems];
+    });
+  };
+
   const handleAddCustomSize = () => {
     const clean = customSizeInput.trim();
     if (!clean) return;
@@ -77,7 +151,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
   };
 
   const handleRemoveSize = (sToRemove: string) => {
-    setSizes((prev) => prev.filter((s) => s !== sToRemove));
+    setSizes((prev) => prev.filter((s) => s.toLowerCase() !== sToRemove.toLowerCase()));
   };
 
   if (!isOpen || !mounted) {
@@ -293,15 +367,15 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
               </div>
             </div>
 
-            {/* Category Size Labels */}
+            {/* Dynamic Category Size Labels */}
             <div className="rounded-2xl border border-black/10 bg-[#f8f9fa] p-4.5 dark:border-white/10 dark:bg-[#161616]">
               <div className="flex items-center justify-between">
                 <div>
                   <label className="block text-sm font-bold text-black dark:text-white">
-                    Category Size Labels {sizes.length > 0 ? `(${sizes.length})` : ''}
+                    Category Size Labels {sizes.length > 0 ? `(${sizes.length} selected)` : ''}
                   </label>
                   <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
-                    Sizes selectable when creating products in this category (e.g. UK sizes for footwear, Free Size for watches)
+                    Click items to toggle them on or off for this category
                   </p>
                 </div>
                 {sizes.length > 0 && (
@@ -315,26 +389,88 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                 )}
               </div>
 
-              {/* Presets */}
-              <div className="mt-3">
-                <span className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                  Quick Presets:
-                </span>
-                <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {SIZE_PRESETS.map((preset) => (
-                    <button
-                      key={preset.name}
-                      type="button"
-                      onClick={() => setSizes([...preset.sizes])}
-                      className="rounded-lg border border-black/10 bg-white px-2.5 py-1 text-xs font-semibold text-black/70 transition-all hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#202020] dark:text-white/70 dark:hover:bg-white/10"
+              {/* Dynamic Size Groups with Clickable Items */}
+              <div className="mt-4 space-y-3">
+                {BASE_SIZE_GROUPS.map((group) => {
+                  const allSelected = group.items.every((item) =>
+                    sizes.some((s) => s.toLowerCase() === item.toLowerCase()),
+                  );
+                  return (
+                    <div
+                      key={group.id}
+                      className="rounded-xl border border-black/5 bg-white p-3 dark:border-white/5 dark:bg-[#1a1a1a]"
                     >
-                      {preset.name}
-                    </button>
-                  ))}
-                </div>
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-xs font-bold text-black/70 uppercase dark:text-white/70">
+                          {group.label}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => toggleGroup(group.items)}
+                          className="text-[11px] font-semibold text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white"
+                        >
+                          {allSelected ? 'Deselect All' : 'Select All'}
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {group.items.map((item) => {
+                          const isSelected = sizes.some(
+                            (s) => s.toLowerCase() === item.toLowerCase(),
+                          );
+                          return (
+                            <button
+                              key={item}
+                              type="button"
+                              onClick={() => toggleSize(item)}
+                              className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition-all ${
+                                isSelected
+                                  ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
+                                  : 'border-black/10 bg-[#f8f9fa] text-black/60 hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#222] dark:text-white/60 dark:hover:bg-white/10'
+                              }`}
+                            >
+                              {item}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Additional / Custom Sizes */}
+                {extraSizes.length > 0 && (
+                  <div className="rounded-xl border border-black/5 bg-white p-3 dark:border-white/5 dark:bg-[#1a1a1a]">
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-xs font-bold text-black/70 uppercase dark:text-white/70">
+                        Custom &amp; Catalog Sizes
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {extraSizes.map((item) => {
+                        const isSelected = sizes.some(
+                          (s) => s.toLowerCase() === item.toLowerCase(),
+                        );
+                        return (
+                          <button
+                            key={item}
+                            type="button"
+                            onClick={() => toggleSize(item)}
+                            className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition-all ${
+                              isSelected
+                                ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
+                                : 'border-black/10 bg-[#f8f9fa] text-black/60 hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#222] dark:text-white/60 dark:hover:bg-white/10'
+                            }`}
+                          >
+                            {item}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Custom Size Input */}
+              {/* Add Custom Size Input */}
               <div className="mt-3.5 flex gap-2">
                 <input
                   type="text"
@@ -346,7 +482,7 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                       handleAddCustomSize();
                     }
                   }}
-                  placeholder="Add custom size (e.g. UK 12, 42mm, One Size)..."
+                  placeholder="Type new custom size (e.g. UK 13, 44mm, Small)..."
                   className="flex-1 rounded-xl border border-black/10 bg-white px-3.5 py-2 text-xs font-medium text-black placeholder-black/30 outline-none focus:border-black/30 dark:border-white/10 dark:bg-[#202020] dark:text-white dark:placeholder-white/30"
                 />
                 <button
@@ -354,18 +490,21 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                   onClick={handleAddCustomSize}
                   className="rounded-xl bg-black px-4 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90 dark:bg-white dark:text-black"
                 >
-                  Add Size
+                  + Add Size
                 </button>
               </div>
 
-              {/* Selected Sizes Chips */}
-              <div className="mt-3 min-h-[34px]">
-                {sizes.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
+              {/* Selected Sizes Chips Summary */}
+              {sizes.length > 0 && (
+                <div className="mt-3 border-t border-black/5 pt-3 dark:border-white/5">
+                  <span className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                    Selected for this category:
+                  </span>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {sizes.map((s) => (
                       <span
                         key={s}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-black/10 bg-white px-2.5 py-1 text-xs font-bold text-black shadow-2xs dark:border-white/10 dark:bg-[#222] dark:text-white"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-black/15 bg-black/5 px-2.5 py-0.5 text-xs font-bold text-black dark:border-white/15 dark:bg-white/10 dark:text-white"
                       >
                         {s}
                         <button
@@ -378,12 +517,8 @@ export function AddCategoryModal({ isOpen, onClose, onSave, initialData }: AddCa
                       </span>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-xs italic text-black/40 dark:text-white/40">
-                    No custom sizes specified. Default sizes will be used based on category name.
-                  </p>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
