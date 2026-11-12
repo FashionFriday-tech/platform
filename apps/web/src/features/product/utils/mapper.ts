@@ -63,12 +63,31 @@ export function mapDbProductToSchema(p: any): Product {
       totalStock: Number(p.totalStock) || 0,
     },
     media: {
-      mainImage: withVersion(p.mainImage, version) || '',
-      promoImage: p.promoImage ? withVersion(p.promoImage, version) : undefined,
-      liveImages: Array.isArray(p.liveImages)
-        ? p.liveImages.map((img: string) => withVersion(img, version))
-        : [],
-      youtubeId: p.youtubeId || undefined,
+      mainImage:
+        withVersion(
+          p.mainImage || p.media?.mainImage || (Array.isArray(p.images) ? p.images[0] : ''),
+          version,
+        ) || '',
+      promoImage:
+        p.promoImage ||
+        p.media?.promoImage ||
+        (Array.isArray(p.images) && p.images.length > 1 ? p.images[1] : undefined)
+          ? withVersion(
+              p.promoImage ||
+                p.media?.promoImage ||
+                (Array.isArray(p.images) ? p.images[1] : ''),
+              version,
+            )
+          : undefined,
+      liveImages:
+        Array.isArray(p.liveImages) && p.liveImages.length > 0
+          ? p.liveImages.map((img: string) => withVersion(img, version))
+          : Array.isArray(p.media?.liveImages) && p.media.liveImages.length > 0
+            ? p.media.liveImages.map((img: string) => withVersion(img, version))
+            : Array.isArray(p.images) && p.images.length > 2
+              ? p.images.slice(2).map((img: string) => withVersion(img, version))
+              : [],
+      youtubeId: p.youtubeId || p.media?.youtubeId || undefined,
     },
     liveMatrix: {
       liveWatching: Math.max(0, Number(p.liveWatching) || 0),
