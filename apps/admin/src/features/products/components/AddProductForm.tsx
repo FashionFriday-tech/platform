@@ -1731,7 +1731,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <div ref={sizeRef}>
                   <div className="flex items-center justify-between">
                     <LabelWithTick
-                      label="Size"
+                      label={category ? `Size (${category})` : 'Size'}
                       status={
                         fieldErrors.sizes
                           ? 'error'
@@ -1770,20 +1770,26 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <div
                     className={`flex flex-wrap gap-2 rounded-xl p-1 transition-all ${fieldErrors.sizes ? 'border border-rose-500 ring-2 ring-rose-500/20' : ''}`}
                   >
-                    {availableSizes.map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => {
-                          toggleSize(s);
-                          markTouched('sizes');
-                          clearFieldError('sizes');
-                        }}
-                        className={`flex h-10 min-w-[44px] items-center justify-center rounded-xl px-3 text-sm font-bold transition-colors ${sizes.includes(s) ? 'bg-black text-white shadow-md dark:bg-white dark:text-black' : 'bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
-                      >
-                        {s}
-                      </button>
-                    ))}
+                    {availableSizes.length > 0 ? (
+                      availableSizes.map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => {
+                            toggleSize(s);
+                            markTouched('sizes');
+                            clearFieldError('sizes');
+                          }}
+                          className={`flex h-10 min-w-[44px] items-center justify-center rounded-xl px-3 text-sm font-bold transition-colors ${sizes.includes(s) ? 'bg-black text-white shadow-md dark:bg-white dark:text-black' : 'bg-black/5 text-black/60 hover:bg-black/10 dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10'}`}
+                        >
+                          {s}
+                        </button>
+                      ))
+                    ) : (
+                      <p className="py-2 text-xs text-black/50 dark:text-white/50">
+                        No sizes configured for this category. You can customize size labels under Catalog &gt; Categories.
+                      </p>
+                    )}
                   </div>
                   <FieldErrorMessage error={fieldErrors.sizes} />
                 </div>
