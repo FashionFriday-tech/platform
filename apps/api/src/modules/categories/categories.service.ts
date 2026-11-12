@@ -15,6 +15,7 @@ export class CategoriesService {
       slug: dto.slug,
       image: dto.image,
       gender: dto.gender.toUpperCase() as Gender,
+      sizes: dto.sizes ?? [],
     };
     const result = await this.categoriesRepository.create(data);
     this.triggerCategoriesRevalidation();
@@ -46,6 +47,9 @@ export class CategoriesService {
     }
     if (dto.gender) {
       data.gender = dto.gender.toUpperCase() as Gender;
+    }
+    if (dto.sizes !== undefined) {
+      data.sizes = dto.sizes;
     }
 
     const result = await this.categoriesRepository.update(id, data);
