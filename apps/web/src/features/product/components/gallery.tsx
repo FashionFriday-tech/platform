@@ -10,7 +10,7 @@ import {
   PauseIcon,
   PlayIcon,
 } from '@ff/ui';
-import { AnimatePresence, motion, type PanInfo } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 
 export default function MediaStage({ images, videoUrl }: { images: string[]; videoUrl?: string }) {
   const [index, setIndex] = useState(0);
@@ -50,23 +50,61 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
     lastTap.current = now;
   };
 
-  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (activeMode === 'video') {
-      return;
-    }
-    const swipeThreshold = 50;
-    const lastIndex = images.length - 1;
-    if (!isZoomed) {
-      if (info.offset.x < -swipeThreshold) {
-        setIndex((prev) => (prev === lastIndex ? 0 : prev + 1));
-      } else if (info.offset.x > swipeThreshold) {
-        setIndex((prev) => (prev === 0 ? lastIndex : prev - 1));
+  // Touch Swipe Gesture Tracking that preserves native vertical scrolling
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const isHorizontalSwipeRef = useRef<boolean | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (activeMode !== 'image' || isZoomed) return;
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    isHorizontalSwipeRef.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (activeMode !== 'image' || isZoomed) return;
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+
+    const diffX = e.touches[0].clientX - touchStartXRef.current;
+    const diffY = e.touches[0].clientY - touchStartYRef.current;
+
+    if (isHorizontalSwipeRef.current === null) {
+      if (Math.abs(diffX) > 8 || Math.abs(diffY) > 8) {
+        // If horizontal motion exceeds vertical, it's a gallery swipe.
+        // If vertical motion exceeds horizontal, leave false so the browser scrolls naturally.
+        isHorizontalSwipeRef.current = Math.abs(diffX) > Math.abs(diffY);
       }
     }
   };
 
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (activeMode !== 'image' || isZoomed) return;
+    if (touchStartXRef.current === null || isHorizontalSwipeRef.current !== true) {
+      touchStartXRef.current = null;
+      touchStartYRef.current = null;
+      isHorizontalSwipeRef.current = null;
+      return;
+    }
+
+    const diffX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const swipeThreshold = 40;
+    const lastIndex = images.length - 1;
+
+    if (diffX < -swipeThreshold) {
+      setIndex((prev) => (prev === lastIndex ? 0 : prev + 1));
+    } else if (diffX > swipeThreshold) {
+      setIndex((prev) => (prev === 0 ? lastIndex : prev - 1));
+    }
+
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    isHorizontalSwipeRef.current = null;
+  };
+
   return (
     <div className="flex w-full max-w-6xl flex-col gap-6 lg:flex-row">
+      {/* Desktop Left Thumbnails */}
       <div className="hidden h-[inherit] max-h-full w-50 shrink-0 flex-col gap-4 lg:flex">
         <div
           className="no-scrollbar flex flex-col gap-4 overflow-y-auto rounded-4xl"
@@ -92,7 +130,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                 fill
                 sizes="(max-width: 768px) 80px, 100px"
                 className="object-cover"
-              />{' '}
+              />
             </button>
           ))}
 
@@ -125,17 +163,20 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
       </div>
 
       {/* --- MAIN STAGE --- */}
-      <div className="group relative w-full flex-1 touch-none select-none">
+      <div className="group relative w-full flex-1 touch-pan-y select-none">
         {/* --- MEDIA VIEWPORT --- */}
         <div
-          className="relative aspect-4/5 cursor-crosshair overflow-hidden rounded-[2.5rem] bg-white shadow-sm"
-          onPointerDown={handleInteraction}
+          className="relative aspect-4/5 cursor-crosshair overflow-hidden rounded-[2.5rem] bg-white shadow-sm touch-pan-y"
+          onClick={handleInteraction}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <AnimatePresence mode="wait">
             {activeMode === 'image' ? (
               <motion.div
                 key={`img-wrap-${safeIndex}-${currentImage}`}
-                className="h-full w-full overflow-hidden bg-white"
+                className="h-full w-full overflow-hidden bg-white touch-pan-y"
                 initial={{ opacity: 0, scale: 1.1 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.1 }}
@@ -151,7 +192,6 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                     bottom: 400,
                   }}
                   dragElastic={0.1}
-                  onDragEnd={handleDragEnd}
                   animate={{
                     x: isZoomed ? undefined : 0,
                     y: isZoomed ? undefined : 0,
@@ -166,16 +206,6 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                     className="pointer-events-none h-full w-full object-cover"
                   />
                 </motion.div>
-
-                {/* Drag layer for swiping logic */}
-                {!isZoomed && (
-                  <motion.div
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    onDragEnd={handleDragEnd}
-                    className="absolute inset-0 z-10"
-                  />
-                )}
               </motion.div>
             ) : (
               <motion.div
@@ -199,9 +229,9 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
             )}
           </AnimatePresence>
 
-          {/* --- PREV / NEXT ARROWS --- */}
+          {/* --- PREV / NEXT ARROWS (Desktop only) --- */}
           {images.length > 1 && activeMode === 'image' && !isZoomed && (
-            <>
+            <div className="hidden lg:contents">
               <button
                 type="button"
                 onClick={(e) => {
@@ -209,7 +239,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                   setIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
                 }}
                 aria-label="Previous image"
-                className="absolute left-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none"
+                className="absolute left-3 top-1/2 z-20 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none lg:flex"
               >
                 <ChevronLeftIcon size={20} />
               </button>
@@ -220,11 +250,11 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                   setIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
                 }}
                 aria-label="Next image"
-                className="absolute right-3 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none"
+                className="absolute right-3 top-1/2 z-20 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none lg:flex"
               >
                 <ChevronRightIcon size={20} />
               </button>
-            </>
+            </div>
           )}
 
           {/* --- CAPSULE SWITCHER (Floating controls) --- */}
@@ -232,7 +262,8 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
             <div className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2">
               <div className="flex items-center gap-1 rounded-full border border-white/20 bg-black/20 p-1 shadow-2xl backdrop-blur-xl">
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setActiveMode('image');
                     setIsZoomed(false);
                   }}
@@ -247,7 +278,8 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
 
                 {hasVideo && (
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setActiveMode((prev) => (prev === 'video' ? 'image' : 'video'));
                       setIsZoomed(false);
                     }}
@@ -269,63 +301,6 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
             </div>
           )}
         </div>
-
-        {/* --- MOBILE THUMBNAIL RAIL --- */}
-        {(images.length > 1 || hasVideo) && (
-          <div className="no-scrollbar mt-3 flex w-full gap-2 overflow-x-auto px-1 py-1 lg:hidden">
-            {images.map((img, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => {
-                  setIndex(i);
-                  setActiveMode('image');
-                  setIsZoomed(false);
-                }}
-                className={`relative aspect-4/5 w-16 shrink-0 overflow-hidden rounded-2xl border-2 transition-all ${
-                  safeIndex === i && activeMode === 'image'
-                    ? 'scale-95 border-black shadow-md'
-                    : 'border-transparent opacity-60'
-                }`}
-              >
-                <Image
-                  src={img}
-                  alt={`Thumbnail ${i + 1}`}
-                  fill
-                  sizes="64px"
-                  className="object-cover"
-                />
-              </button>
-            ))}
-
-            {hasVideo && (
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveMode('video');
-                  setIsZoomed(false);
-                }}
-                aria-label="View Video"
-                className={`relative flex aspect-4/5 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 bg-gray-100 transition-all ${
-                  activeMode === 'video'
-                    ? 'scale-95 border-black shadow-md'
-                    : 'border-transparent opacity-60'
-                }`}
-              >
-                <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                  <PlayIcon size={16} fill="white" className="text-white" />
-                </div>
-                <Image
-                  src={images[0] || '/images/placeholder.png'}
-                  alt="Video Preview"
-                  fill
-                  className="object-cover blur-[1px]"
-                  sizes="64px"
-                />
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
