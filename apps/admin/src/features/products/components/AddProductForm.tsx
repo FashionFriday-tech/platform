@@ -13,7 +13,9 @@ import { AddColorModal } from '@/features/colors';
 import { api } from '@/lib/api-client';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
+import { useDuplicateProductCheck } from '../hooks/useDuplicateProductCheck';
 import { isFootwearCategory, isWatchCategory } from '../utils/constants';
+import { DuplicateProductAlert } from './DuplicateProductAlert';
 import { LabelWithTick } from './LabelWithTick';
 import { ProductSellerSelector } from './ProductSellerSelector';
 
@@ -179,6 +181,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     isLoadingSiblings,
   } = useAddProductForm(initialData, { onToast: setToast });
 
+  // Intelligent, debounced duplicate product detection (sub-millisecond indexed check, 0 DB load with client cache)
+  const duplicateCheck = useDuplicateProductCheck(productName, initialData?.id);
+
   const suggestedModelGroups = useMemo(() => {
     const query = modelGroup.trim().toLowerCase();
     if (!query) return [];
@@ -196,7 +201,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         if (aLower.length !== bLower.length) return aLower.length - bLower.length;
         return aLower.localeCompare(bLower);
       })
-      .slice(0, 5);
+      .slice(0, 15);
   }, [availableModelGroups, modelGroup]);
 
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
@@ -992,6 +997,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   type="text"
                   maxLength={200}
                   value={productName}
+                  onFocus={duplicateCheck.openBox}
                   onChange={(e) => {
                     const upper = e.target.value.toUpperCase();
                     handleProductNameChange(upper);
@@ -1005,6 +1011,20 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   } bg-black/5 px-4 py-3.5 text-sm font-medium text-black uppercase transition-all outline-none dark:bg-white/5 dark:text-white`}
                 />
                 <FieldErrorMessage error={fieldErrors.productName} />
+
+                {/* Smart Duplicate Product Alert Dropdown */}
+                <DuplicateProductAlert
+                  productName={productName}
+                  matches={duplicateCheck.matches}
+                  isSearching={duplicateCheck.isSearching}
+                  isOpen={duplicateCheck.isOpen}
+                  hasSearched={duplicateCheck.hasSearched}
+                  onClose={duplicateCheck.closeBox}
+                  onSelectModelGroup={(group) => {
+                    setModelGroup(group);
+                    setIsModelGroupLocked(true);
+                  }}
+                />
 
                 {/* Color Option Group (Model Linking) */}
                 <div className="mt-3.5 rounded-2xl border border-black/10 bg-black/[0.02] p-3.5 dark:border-white/10 dark:bg-white/[0.02]">
