@@ -43,6 +43,7 @@ export interface Product {
   seoSlug?: string;
   images?: string[];
   videoLink?: string;
+  modelGroup?: string | null;
   attributes?: ProductAttributes;
   rating?: { average?: number; count?: number };
   liveWatching?: number;
