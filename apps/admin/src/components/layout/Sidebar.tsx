@@ -82,15 +82,13 @@ export function Sidebar({
       )}
 
       <aside
-        className={`fixed top-[calc(0.5rem+env(safe-area-inset-top,0px))] right-2 bottom-2 left-auto z-50 flex h-[calc(100dvh-1rem-env(safe-area-inset-top,0px))] max-h-[calc(100dvh-1rem-env(safe-area-inset-top,0px))] w-[min(17rem,calc(100vw-2rem))] flex-shrink-0 flex-col overflow-hidden rounded-3xl border bg-white/90 shadow-2xl backdrop-blur-2xl transition-all duration-300 ease-in-out md:static md:top-auto md:right-auto md:bottom-auto md:left-auto md:h-[calc(100dvh-1.5rem)] md:max-h-[calc(100dvh-1.5rem)] dark:bg-[#0e0e0e]/90 ${
-          isMobileOpen
+        className={`fixed top-[calc(0.5rem+env(safe-area-inset-top,0px))] right-2 bottom-2 left-auto z-50 flex h-[calc(100dvh-1rem-env(safe-area-inset-top,0px))] max-h-[calc(100dvh-1rem-env(safe-area-inset-top,0px))] w-[min(17rem,calc(100vw-2rem))] flex-shrink-0 flex-col overflow-hidden rounded-3xl border bg-white/90 shadow-2xl backdrop-blur-2xl transition-all duration-300 ease-in-out md:static md:top-auto md:right-auto md:bottom-auto md:left-auto md:h-[calc(100dvh-1.5rem)] md:max-h-[calc(100dvh-1.5rem)] dark:bg-[#0e0e0e]/90 ${isMobileOpen
             ? 'translate-x-0 shadow-2xl'
             : 'translate-x-[calc(100%+2rem)] md:translate-x-0'
-        } ${
-          isDesktopHidden
+          } ${isDesktopHidden
             ? 'md:pointer-events-none md:my-3 md:mr-0 md:ml-0 md:w-0 md:-translate-x-4 md:border-transparent md:p-0 md:opacity-0 md:shadow-none'
             : 'border-black/5 md:pointer-events-auto md:my-3 md:mr-0 md:ml-3 md:w-64 md:translate-x-0 md:opacity-100 dark:border-white/10'
-        }`}
+          }`}
       >
         <div className="flex h-full w-[min(17rem,calc(100vw-2rem))] shrink-0 flex-col overflow-hidden md:w-64">
           <div className="flex items-center justify-between p-6 pb-0.5">
