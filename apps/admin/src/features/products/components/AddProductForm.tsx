@@ -173,6 +173,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     modelGroup,
     setModelGroup,
     availableModelGroups,
+    modelGroupImages,
     handleProductNameChange,
     regenerateModelGroup,
     isModelGroupLocked,
@@ -201,7 +202,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         if (aLower.length !== bLower.length) return aLower.length - bLower.length;
         return aLower.localeCompare(bLower);
       })
-      .slice(0, 15);
+      .slice(0, 5);
   }, [availableModelGroups, modelGroup]);
 
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
@@ -1115,6 +1116,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         {suggestedModelGroups.map((group) => {
                           const isSelected =
                             modelGroup.trim().toLowerCase() === group.toLowerCase();
+                          const groupImg = modelGroupImages[group.toLowerCase()];
                           return (
                             <button
                               key={group}
@@ -1123,13 +1125,25 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                                 setModelGroup(group);
                                 setIsModelGroupLocked(true);
                               }}
-                              className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
+                              className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
                                 isSelected
                                   ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
                                   : 'border-black/10 bg-white text-black/70 hover:border-black/30 hover:bg-black/5 dark:border-white/10 dark:bg-[#181818] dark:text-white/70 dark:hover:bg-white/5'
                               }`}
                             >
-                              {group}
+                              {groupImg && (
+                                <span className="relative h-4 w-4 shrink-0 overflow-hidden rounded">
+                                  <Image
+                                    src={groupImg}
+                                    alt={group}
+                                    fill
+                                    sizes="16px"
+                                    className="object-cover"
+                                    unoptimized={groupImg.startsWith('http')}
+                                  />
+                                </span>
+                              )}
+                              <span>{group}</span>
                             </button>
                           );
                         })}
@@ -1172,52 +1186,121 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       </div>
                     )}
 
-                  {/* Existing Group Sibling Preview */}
+                  {/* Existing Group Preview: Show representative group product image of one */}
                   {modelGroup.trim() &&
                     availableModelGroups.includes(modelGroup.trim().toLowerCase()) && (
-                      <div className="mt-3 rounded-xl border border-emerald-500/20 bg-emerald-50/40 p-2.5 dark:border-emerald-500/20 dark:bg-emerald-950/20">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
-                            {isLoadingSiblings
-                              ? 'Loading linked colors...'
-                              : `${groupSiblingProducts.length} other colorway${groupSiblingProducts.length === 1 ? '' : 's'} in this group:`}
-                          </span>
-                          <Link
-                            href="/product-groups"
-                            target="_blank"
-                            className="text-[10px] font-bold text-emerald-700 underline dark:text-emerald-400"
-                          >
-                            View Group Page ↗
-                          </Link>
-                        </div>
+                      <div className="mt-3 rounded-2xl border border-emerald-500/20 bg-emerald-50/40 p-3 dark:border-emerald-500/20 dark:bg-emerald-950/20">
+                        {/* Representative Group Product Feature Header */}
+                        <div className="flex items-center gap-3">
+                          {/* Group Product Image of One */}
+                          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-black/10 bg-white shadow-xs dark:border-white/10 dark:bg-black/20">
+                            {groupSiblingProducts[0]?.mainImage ||
+                            modelGroupImages[modelGroup.trim().toLowerCase()] ? (
+                              <Image
+                                src={
+                                  groupSiblingProducts[0]?.mainImage ||
+                                  modelGroupImages[modelGroup.trim().toLowerCase()]
+                                }
+                                alt={groupSiblingProducts[0]?.name || modelGroup}
+                                fill
+                                sizes="64px"
+                                className="object-cover"
+                                unoptimized={Boolean(
+                                  (
+                                    groupSiblingProducts[0]?.mainImage ||
+                                    modelGroupImages[modelGroup.trim().toLowerCase()]
+                                  )?.startsWith('http'),
+                                )}
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-[10px] font-bold text-black/30 dark:text-white/30">
+                                No Img
+                              </div>
+                            )}
+                          </div>
 
-                        {groupSiblingProducts.length > 0 && (
-                          <div className="scrollbar-hide mt-2 flex gap-2 overflow-x-auto pb-0.5">
-                            {groupSiblingProducts.map((p) => (
-                              <div
-                                key={p.id}
-                                className="flex w-24 shrink-0 flex-col items-center rounded-lg border border-black/5 bg-white p-1 text-center shadow-2xs dark:border-white/5 dark:bg-[#181818]"
-                              >
-                                <div className="relative aspect-square w-full overflow-hidden rounded bg-black/5 dark:bg-white/5">
-                                  {p.mainImage ? (
-                                    <Image
-                                      src={p.mainImage}
-                                      alt={p.name}
-                                      fill
-                                      sizes="96px"
-                                      className="object-cover"
-                                    />
-                                  ) : (
-                                    <div className="flex h-full w-full items-center justify-center text-[9px] font-bold text-black/30 dark:text-white/30">
-                                      No Img
-                                    </div>
-                                  )}
-                                </div>
-                                <span className="mt-1 line-clamp-1 w-full text-[10px] font-semibold text-black dark:text-white" title={p.name}>
-                                  {p.name}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-white uppercase">
+                                  Existing Color Group
+                                </span>
+                                <span className="truncate font-mono text-xs font-black text-black dark:text-white">
+                                  {modelGroup}
                                 </span>
                               </div>
-                            ))}
+                              <Link
+                                href="/product-groups"
+                                target="_blank"
+                                className="text-[10px] font-bold text-emerald-700 underline dark:text-emerald-400"
+                              >
+                                View Group Page ↗
+                              </Link>
+                            </div>
+
+                            <p className="mt-1 line-clamp-1 text-xs font-bold text-black dark:text-white">
+                              {groupSiblingProducts[0]?.name ||
+                                (isLoadingSiblings
+                                  ? 'Loading group products...'
+                                  : 'Linked to this model')}
+                            </p>
+
+                            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-black/60 dark:text-white/60">
+                              <span>
+                                {isLoadingSiblings
+                                  ? 'Loading colorways...'
+                                  : `${groupSiblingProducts.length + (initialData ? 0 : 1)} total color option${
+                                      groupSiblingProducts.length === 0 ? '' : 's'
+                                    }`}
+                              </span>
+                              {groupSiblingProducts[0]?.sellingPrice !== undefined && (
+                                <>
+                                  <span>•</span>
+                                  <span className="font-semibold text-emerald-700 dark:text-emerald-300">
+                                    ₹{Number(groupSiblingProducts[0].sellingPrice).toLocaleString()}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* All other linked colorways in this group */}
+                        {groupSiblingProducts.length > 0 && (
+                          <div className="mt-3 border-t border-emerald-500/15 pt-2.5">
+                            <span className="text-[10px] font-bold tracking-wider text-emerald-900 uppercase dark:text-emerald-300">
+                              All Linked Colorways ({groupSiblingProducts.length}):
+                            </span>
+                            <div className="scrollbar-hide mt-1.5 flex gap-2 overflow-x-auto pb-0.5">
+                              {groupSiblingProducts.map((p) => (
+                                <div
+                                  key={p.id}
+                                  className="flex w-24 shrink-0 flex-col items-center rounded-lg border border-black/5 bg-white p-1 text-center shadow-2xs dark:border-white/5 dark:bg-[#181818]"
+                                >
+                                  <div className="relative aspect-square w-full overflow-hidden rounded bg-black/5 dark:bg-white/5">
+                                    {p.mainImage ? (
+                                      <Image
+                                        src={p.mainImage}
+                                        alt={p.name}
+                                        fill
+                                        sizes="96px"
+                                        className="object-cover"
+                                      />
+                                    ) : (
+                                      <div className="flex h-full w-full items-center justify-center text-[9px] font-bold text-black/30 dark:text-white/30">
+                                        No Img
+                                      </div>
+                                    )}
+                                  </div>
+                                  <span
+                                    className="mt-1 line-clamp-1 w-full text-[10px] font-semibold text-black dark:text-white"
+                                    title={p.name}
+                                  >
+                                    {p.name}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
