@@ -160,6 +160,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     return Boolean(initialData?.modelGroup || (initialData as any)?.modelGroup);
   });
   const [availableModelGroups, setAvailableModelGroups] = useState<string[]>([]);
+  const [modelGroupImages, setModelGroupImages] = useState<Record<string, string>>({});
   const [groupSiblingProducts, setGroupSiblingProducts] = useState<any[]>([]);
   const [isLoadingSiblings, setIsLoadingSiblings] = useState(false);
 
@@ -1259,9 +1260,22 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     }
     async function loadModelGroups() {
       try {
-        const data = await api.get<string[]>('/admin/products/model-groups');
+        const data = await api.get<any[]>('/admin/products/model-groups');
         if (Array.isArray(data)) {
-          setAvailableModelGroups(data);
+          const groups: string[] = [];
+          const images: Record<string, string> = {};
+          for (const item of data) {
+            if (typeof item === 'string') {
+              groups.push(item);
+            } else if (item && typeof item.group === 'string') {
+              groups.push(item.group);
+              if (item.image) {
+                images[item.group.toLowerCase()] = item.image;
+              }
+            }
+          }
+          setAvailableModelGroups(groups);
+          setModelGroupImages(images);
         }
       } catch (err) {
         console.error('Failed to load model groups in add product form', err);
@@ -1483,6 +1497,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     modelGroup,
     setModelGroup,
     availableModelGroups,
+    modelGroupImages,
     handleProductNameChange,
     regenerateModelGroup,
     isModelGroupLocked,
