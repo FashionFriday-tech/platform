@@ -1141,7 +1141,7 @@ export class AdminProductsService {
     }
   }
 
-  async getModelGroups(search?: string): Promise<string[]> {
+  async getModelGroups(search?: string): Promise<Array<{ group: string; image: string | null }>> {
     const cleanSearch = (search || '').trim();
     const where: any = {
       modelGroup: {
@@ -1153,14 +1153,16 @@ export class AdminProductsService {
     const results = await (this.prisma.db.product.findMany as any)({
       where,
       distinct: ['modelGroup'],
-      select: { modelGroup: true },
-      take: 500,
+      select: { modelGroup: true, mainImage: true },
       orderBy: { modelGroup: 'asc' },
     });
 
     return results
-      .map((r: any) => r.modelGroup)
-      .filter((g: any): g is string => typeof g === 'string' && g.trim().length > 0);
+      .filter((r: any) => typeof r.modelGroup === 'string' && r.modelGroup.trim().length > 0)
+      .map((r: any) => ({
+        group: r.modelGroup,
+        image: r.mainImage || null,
+      }));
   }
 
   async getModelGroupsDetails(search?: string, page = 1, limit = 200) {
