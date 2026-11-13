@@ -9,7 +9,7 @@ import { LoaderIcon, LockIcon } from '@ff/ui';
 import { AdminToaster } from '@/components/ui/AdminToaster';
 import { type Role, useAuth } from '@/contexts/AuthContext';
 
-import { MobileHeader } from './Header';
+import { DesktopHeader, MobileHeader } from './Header';
 import { Sidebar } from './Sidebar';
 
 // Route prefix permission rules
@@ -36,6 +36,55 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
   const pathname = usePathname() ?? '';
   const router = useRouter();
   const [isMobileNavOpen, setIsMobileNavOpen] = React.useState(false);
+  const [isDesktopSidebarHidden, setIsDesktopSidebarHidden] = React.useState(false);
+
+  // Load saved sidebar hidden preference from localStorage
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('ff_admin_sidebar_hidden');
+      if (saved === 'true') {
+        setIsDesktopSidebarHidden(true);
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+  }, []);
+
+  const toggleDesktopSidebar = React.useCallback(() => {
+    setIsDesktopSidebarHidden((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('ff_admin_sidebar_hidden', String(next));
+      } catch {
+        // Ignore localStorage errors
+      }
+      return next;
+    });
+  }, []);
+
+  // Keyboard shortcut (Ctrl+B / Cmd+B) to toggle desktop sidebar
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+        const activeTag = document.activeElement?.tagName.toLowerCase();
+        if (
+          activeTag === 'input' ||
+          activeTag === 'textarea' ||
+          activeTag === 'select' ||
+          (document.activeElement as HTMLElement)?.isContentEditable
+        ) {
+          return;
+        }
+        e.preventDefault();
+        toggleDesktopSidebar();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [toggleDesktopSidebar]);
 
   React.useEffect(() => {
     setIsMobileNavOpen(false);
@@ -121,8 +170,14 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
             setIsMobileNavOpen((prev) => !prev);
           }}
         />
-        <Sidebar isMobileOpen={isMobileNavOpen} setIsMobileOpen={setIsMobileNavOpen} />
+        <Sidebar
+          isMobileOpen={isMobileNavOpen}
+          setIsMobileOpen={setIsMobileNavOpen}
+          isDesktopHidden={isDesktopSidebarHidden}
+          onToggleDesktopHidden={toggleDesktopSidebar}
+        />
         <main className="pt-mobile-header relative flex h-[100dvh] min-w-0 flex-1 flex-col overflow-hidden md:h-screen md:pt-0">
+          {isDesktopSidebarHidden && <DesktopHeader onToggleDesktopMenu={toggleDesktopSidebar} />}
           <div className="z-10 flex min-h-0 flex-1 flex-col items-center justify-center p-6 text-center">
             <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-red-500/20 bg-red-500/10 text-red-500 dark:border-red-500/10 dark:bg-red-950/20 dark:text-red-400">
               <LockIcon className="h-10 w-10 animate-pulse" />
@@ -164,8 +219,14 @@ export function AdminLayoutContent({ children }: { children: React.ReactNode }) 
           setIsMobileNavOpen((prev) => !prev);
         }}
       />
-      <Sidebar isMobileOpen={isMobileNavOpen} setIsMobileOpen={setIsMobileNavOpen} />
+      <Sidebar
+        isMobileOpen={isMobileNavOpen}
+        setIsMobileOpen={setIsMobileNavOpen}
+        isDesktopHidden={isDesktopSidebarHidden}
+        onToggleDesktopHidden={toggleDesktopSidebar}
+      />
       <main className="pt-mobile-header relative flex h-[100dvh] min-w-0 flex-1 flex-col overflow-hidden md:h-screen md:pt-0">
+        {isDesktopSidebarHidden && <DesktopHeader onToggleDesktopMenu={toggleDesktopSidebar} />}
         <div className="z-10 flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>
       </main>
       <AdminToaster />
