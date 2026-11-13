@@ -33,11 +33,15 @@ import { SidebarFooter } from './SidebarFooter';
 interface SidebarProps {
   isMobileOpen?: boolean;
   setIsMobileOpen?: (open: boolean) => void;
+  isDesktopHidden?: boolean;
+  onToggleDesktopHidden?: () => void;
 }
 
 export function Sidebar({
   isMobileOpen: controlledMobileOpen,
   setIsMobileOpen: setControlledMobileOpen,
+  isDesktopHidden = false,
+  onToggleDesktopHidden,
 }: SidebarProps = {}) {
   const pathname = usePathname() ?? '';
   const { user } = useAuth();
@@ -78,263 +82,297 @@ export function Sidebar({
       )}
 
       <aside
-        className={`fixed top-[calc(0.5rem+env(safe-area-inset-top,0px))] right-2 bottom-2 left-auto z-50 flex h-[calc(100dvh-1rem-env(safe-area-inset-top,0px))] max-h-[calc(100dvh-1rem-env(safe-area-inset-top,0px))] w-[min(17rem,calc(100vw-2rem))] flex-shrink-0 flex-col overflow-hidden rounded-3xl border border-black/5 bg-white/90 shadow-2xl backdrop-blur-2xl transition-transform duration-300 md:static md:top-auto md:right-auto md:bottom-auto md:left-auto md:my-3 md:mr-0 md:ml-3 md:h-[calc(100dvh-1.5rem)] md:max-h-[calc(100dvh-1.5rem)] md:w-64 md:translate-x-0 dark:border-white/10 dark:bg-[#0e0e0e]/90 ${
+        className={`fixed top-[calc(0.5rem+env(safe-area-inset-top,0px))] right-2 bottom-2 left-auto z-50 flex h-[calc(100dvh-1rem-env(safe-area-inset-top,0px))] max-h-[calc(100dvh-1rem-env(safe-area-inset-top,0px))] w-[min(17rem,calc(100vw-2rem))] flex-shrink-0 flex-col overflow-hidden rounded-3xl border bg-white/90 shadow-2xl backdrop-blur-2xl transition-all duration-300 ease-in-out md:static md:top-auto md:right-auto md:bottom-auto md:left-auto md:h-[calc(100dvh-1.5rem)] md:max-h-[calc(100dvh-1.5rem)] dark:bg-[#0e0e0e]/90 ${
           isMobileOpen
             ? 'translate-x-0 shadow-2xl'
             : 'translate-x-[calc(100%+2rem)] md:translate-x-0'
+        } ${
+          isDesktopHidden
+            ? 'md:pointer-events-none md:my-3 md:mr-0 md:ml-0 md:w-0 md:-translate-x-4 md:border-transparent md:p-0 md:opacity-0 md:shadow-none'
+            : 'border-black/5 md:pointer-events-auto md:my-3 md:mr-0 md:ml-3 md:w-64 md:translate-x-0 md:opacity-100 dark:border-white/10'
         }`}
       >
-        <div className="flex items-center space-x-2 p-6 pb-0.5">
-          <div className="flex h-8 w-8 items-center justify-center overflow-hidden">
-            <Image
-              width={500}
-              height={500}
-              src="/images/logos/ff-logo.png"
-              alt="Fashion Friday"
-              className="h-full w-full object-contain dark:invert"
-            />
-          </div>
-          <h1 className="text-lg font-black uppercase">FashionFriday</h1>
-        </div>
-
-        <nav className="scrollbar-hide min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4">
-          {/* Overview Section */}
-          {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'PRODUCT_MANAGER']) && (
-            <div>
-              <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Overview
-              </p>
-              <div className="space-y-1">
-                <Link href="/" className={getLinkClass('/')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <ActivityIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Dashboard</span>
-                </Link>
-                {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
-                  <Link href="/analytics" className={getLinkClass('/analytics')}>
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                      <TrendingUpIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                    </div>
-                    <span className="text-sm font-medium">Analytics</span>
-                  </Link>
-                )}
+        <div className="flex h-full w-[min(17rem,calc(100vw-2rem))] shrink-0 flex-col overflow-hidden md:w-64">
+          <div className="flex items-center justify-between p-6 pb-0.5">
+            <div className="flex min-w-0 items-center space-x-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden">
+                <Image
+                  width={500}
+                  height={500}
+                  src="/images/logos/ff-logo.png"
+                  alt="Fashion Friday"
+                  className="h-full w-full object-contain dark:invert"
+                />
               </div>
+              <h1 className="truncate text-lg font-black uppercase">FashionFriday</h1>
             </div>
-          )}
 
-          {/* Sales Section */}
-          {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
-            <div>
-              <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Sales
-              </p>
-              <div className="space-y-1">
-                <Link
-                  href="/orders"
-                  className={getLinkClass('/orders').replace('space-x-3', 'justify-between')}
+            {onToggleDesktopHidden && (
+              <button
+                type="button"
+                onClick={onToggleDesktopHidden}
+                className="group hidden h-8 w-8 shrink-0 items-center justify-center rounded-xl text-black/50 transition-colors hover:bg-black/5 hover:text-black md:flex dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white"
+                title="Hide side menu (Ctrl+B)"
+                aria-label="Hide side menu"
+              >
+                <svg
+                  className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <div className="flex items-center space-x-3">
+                  <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={2} />
+                  <path d="M9 3v18" strokeWidth={2} />
+                  <path
+                    d="M15 15l-3-3 3-3"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
+
+          <nav className="scrollbar-hide min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4">
+            {/* Overview Section */}
+            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'PRODUCT_MANAGER']) && (
+              <div>
+                <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Overview
+                </p>
+                <div className="space-y-1">
+                  <Link href="/" className={getLinkClass('/')}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                      <ShoppingBagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                      <ActivityIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
                     </div>
-                    <span className="text-sm font-medium">Orders</span>
-                  </div>
-                  <span className="flex aspect-square h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black/10 text-[11px] leading-none font-bold text-black transition-colors group-[.is-active]:bg-white/20 group-[.is-active]:text-white dark:bg-white/10 dark:text-white dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    {isStatsLoading ? '...' : unplacedCount}
-                  </span>
-                </Link>
-                <Link href="/customers" className={getLinkClass('/customers')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Customers</span>
-                </Link>
-                <Link href="/reviews" className={getLinkClass('/reviews')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Reviews</span>
-                </Link>
-                <Link href="/feedback" className={getLinkClass('/feedback')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <MessageSquareIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Feedback</span>
-                </Link>
-                <Link href="/searches" className={getLinkClass('/searches')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <SearchIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">User Searches</span>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* Catalog Section */}
-          {hasAccess(['SUPER_ADMIN', 'PRODUCT_MANAGER']) && (
-            <div>
-              <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Catalog
-              </p>
-              <div className="space-y-1">
-                <Link href="/products" className={getLinkClass('/products')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <PackageIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Products</span>
-                </Link>
-                <Link href="/product-groups" className={getLinkClass('/product-groups')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <LayersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Product Groups</span>
-                </Link>
-                <Link href="/categories" className={getLinkClass('/categories')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <CategoryIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Categories</span>
-                </Link>
-                <Link href="/brands" className={getLinkClass('/brands')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <StarBadgeIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Brands</span>
-                </Link>
-                <Link href="/sellers" className={getLinkClass('/sellers')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <StoreIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Sellers</span>
-                </Link>
-                <Link href="/collections" className={getLinkClass('/collections')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <LayersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Collections</span>
-                </Link>
-                <Link href="/colors" className={getLinkClass('/colors')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <svg
-                      className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-medium">Colors</span>
-                </Link>
-                <Link href="/qualities" className={getLinkClass('/qualities')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <ShieldCheckIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Quality</span>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* Marketing Section */}
-          {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
-            <div>
-              <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Marketing
-              </p>
-              <div className="space-y-1">
-                <Link href="/campaigns" className={getLinkClass('/campaigns')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <ZapIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Campaigns</span>
-                </Link>
-                <Link href="/whatsapp-reviews" className={getLinkClass('/whatsapp-reviews')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">WhatsApp Reviews</span>
-                </Link>
-                <Link href="/product-requests" className={getLinkClass('/product-requests')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <TagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Product Requests</span>
-                </Link>
-                <Link href="/faqs" className={getLinkClass('/faqs')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <LifeBuoyIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">FAQs</span>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* Administration Section */}
-          {hasAccess(['SUPER_ADMIN']) && (
-            <div>
-              <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-                Administration
-              </p>
-              <div className="space-y-1">
-                <Link href="/team" className={getLinkClass('/team')}>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                    <UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                  </div>
-                  <span className="text-sm font-medium">Team & Roles</span>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* System Section */}
-          <div>
-            <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
-              System
-            </p>
-            <div className="space-y-1">
-              {hasAccess(['SUPER_ADMIN']) && (
-                <>
-                  <Link href="/settings" className={getLinkClass('/settings')}>
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                      <SettingsIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
-                    </div>
-                    <span className="text-sm font-medium">Settings</span>
+                    <span className="text-sm font-medium">Dashboard</span>
                   </Link>
-                  <a
-                    href="#"
-                    className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+                  {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
+                    <Link href="/analytics" className={getLinkClass('/analytics')}>
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                        <TrendingUpIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                      </div>
+                      <span className="text-sm font-medium">Analytics</span>
+                    </Link>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Sales Section */}
+            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
+              <div>
+                <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Sales
+                </p>
+                <div className="space-y-1">
+                  <Link
+                    href="/orders"
+                    className={getLinkClass('/orders').replace('space-x-3', 'justify-between')}
                   >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                        <ShoppingBagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                      </div>
+                      <span className="text-sm font-medium">Orders</span>
+                    </div>
+                    <span className="flex aspect-square h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black/10 text-[11px] leading-none font-bold text-black transition-colors group-[.is-active]:bg-white/20 group-[.is-active]:text-white dark:bg-white/10 dark:text-white dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      {isStatsLoading ? '...' : unplacedCount}
+                    </span>
+                  </Link>
+                  <Link href="/customers" className={getLinkClass('/customers')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Customers</span>
+                  </Link>
+                  <Link href="/reviews" className={getLinkClass('/reviews')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Reviews</span>
+                  </Link>
+                  <Link href="/feedback" className={getLinkClass('/feedback')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <MessageSquareIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Feedback</span>
+                  </Link>
+                  <Link href="/searches" className={getLinkClass('/searches')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <SearchIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">User Searches</span>
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* Catalog Section */}
+            {hasAccess(['SUPER_ADMIN', 'PRODUCT_MANAGER']) && (
+              <div>
+                <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Catalog
+                </p>
+                <div className="space-y-1">
+                  <Link href="/products" className={getLinkClass('/products')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <PackageIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Products</span>
+                  </Link>
+                  <Link href="/product-groups" className={getLinkClass('/product-groups')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <LayersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Product Groups</span>
+                  </Link>
+                  <Link href="/categories" className={getLinkClass('/categories')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <CategoryIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Categories</span>
+                  </Link>
+                  <Link href="/brands" className={getLinkClass('/brands')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <StarBadgeIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Brands</span>
+                  </Link>
+                  <Link href="/sellers" className={getLinkClass('/sellers')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <StoreIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Sellers</span>
+                  </Link>
+                  <Link href="/collections" className={getLinkClass('/collections')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <LayersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Collections</span>
+                  </Link>
+                  <Link href="/colors" className={getLinkClass('/colors')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <svg
+                        className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                        />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium">Colors</span>
+                  </Link>
+                  <Link href="/qualities" className={getLinkClass('/qualities')}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
                       <ShieldCheckIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
                     </div>
-                    <span className="text-sm font-medium">Security</span>
-                  </a>
-                </>
-              )}
-              <a
-                href="#"
-                className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
-              >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
-                  <LifeBuoyIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    <span className="text-sm font-medium">Quality</span>
+                  </Link>
                 </div>
-                <span className="text-sm font-medium">Get Help</span>
-              </a>
-            </div>
-          </div>
-        </nav>
+              </div>
+            )}
 
-        {/* Fixed bottom box with Profile, Fullscreen, Notifications, and Theme Mode */}
-        <SidebarFooter />
+            {/* Marketing Section */}
+            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
+              <div>
+                <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Marketing
+                </p>
+                <div className="space-y-1">
+                  <Link href="/campaigns" className={getLinkClass('/campaigns')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <ZapIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Campaigns</span>
+                  </Link>
+                  <Link href="/whatsapp-reviews" className={getLinkClass('/whatsapp-reviews')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <StarIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">WhatsApp Reviews</span>
+                  </Link>
+                  <Link href="/product-requests" className={getLinkClass('/product-requests')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <TagIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Product Requests</span>
+                  </Link>
+                  <Link href="/faqs" className={getLinkClass('/faqs')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <LifeBuoyIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">FAQs</span>
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* Administration Section */}
+            {hasAccess(['SUPER_ADMIN']) && (
+              <div>
+                <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                  Administration
+                </p>
+                <div className="space-y-1">
+                  <Link href="/team" className={getLinkClass('/team')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <UsersIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Team & Roles</span>
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* System Section */}
+            <div>
+              <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                System
+              </p>
+              <div className="space-y-1">
+                {hasAccess(['SUPER_ADMIN']) && (
+                  <>
+                    <Link href="/settings" className={getLinkClass('/settings')}>
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                        <SettingsIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                      </div>
+                      <span className="text-sm font-medium">Settings</span>
+                    </Link>
+                    <a
+                      href="#"
+                      className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+                    >
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                        <ShieldCheckIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                      </div>
+                      <span className="text-sm font-medium">Security</span>
+                    </a>
+                  </>
+                )}
+                <a
+                  href="#"
+                  className="group flex items-center space-x-3 rounded-full p-1.5 pr-4 text-black/60 transition-all hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/5 dark:hover:text-white"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                    <LifeBuoyIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                  </div>
+                  <span className="text-sm font-medium">Get Help</span>
+                </a>
+              </div>
+            </div>
+          </nav>
+
+          {/* Fixed bottom box with Profile, Fullscreen, Notifications, and Theme Mode */}
+          <SidebarFooter />
+        </div>
       </aside>
     </>
   );
