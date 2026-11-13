@@ -1,4 +1,4 @@
-import { api } from '@/lib/api-client';
+import { api, type RequestOptions } from '@/lib/api-client';
 
 import { type Product } from '../types';
 
@@ -71,6 +71,7 @@ export function mapBackendProduct(p: any): Product {
     seoDesc: p.seoDescription,
     seoSlug: p.slug,
     videoLink: p.youtubeId ? `https://www.youtube.com/embed/${p.youtubeId}` : undefined,
+    modelGroup: p.modelGroup ?? null,
     liveWatching: Math.max(0, Number(p.liveWatching ?? 0)),
     liveSold: Math.max(0, Number(p.liveSold ?? 0)),
     averageRating: Number(p.averageRating ?? 4.0),
@@ -103,6 +104,7 @@ export async function fetchProductStats(): Promise<ProductStatsData> {
 
 export async function fetchProductsPaginated(
   params: FetchProductsParams = {},
+  options?: RequestOptions,
 ): Promise<PaginatedProductsResponse> {
   try {
     const query = new URLSearchParams();
@@ -171,7 +173,7 @@ export async function fetchProductsPaginated(
         page: number;
         totalPages: number;
       };
-    }>(endpoint);
+    }>(endpoint, options);
 
     const rawData = json?.data ?? [];
     const mapped = rawData.map(mapBackendProduct);
