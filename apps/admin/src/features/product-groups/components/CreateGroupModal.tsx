@@ -73,7 +73,7 @@ export function CreateGroupModal({
       if (query.trim()) {
         params.set('search', query.trim());
       }
-      params.set('take', '20');
+      params.set('take', '100');
 
       const res = await api.get<{ data?: SearchProductItem[] }>(
         `/admin/products?${params.toString()}`,
