@@ -54,7 +54,6 @@ export function useDuplicateProductCheck(productName: string, currentProductId?:
         const res = await fetchProductsPaginated(
           {
             search: trimmed,
-            limit: 5,
           },
           { signal: controller.signal },
         );
