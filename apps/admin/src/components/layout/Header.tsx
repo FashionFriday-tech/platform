@@ -1,16 +1,25 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+
+import { BellIcon } from '@ff/ui';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useNotifications } from '@/features/notifications';
 
 interface MobileHeaderProps {
   isMobileOpen?: boolean;
   onToggleMobileMenu?: () => void;
 }
 
-function getPageTitle(pathname: string): string {
+export interface DesktopHeaderProps {
+  onToggleDesktopMenu: () => void;
+}
+
+export function getPageTitle(pathname: string): string {
   if (pathname === '/') {
     return 'Dashboard';
   }
@@ -212,3 +221,118 @@ export function MobileHeader({ isMobileOpen = false, onToggleMobileMenu }: Mobil
 
 // Re-export as Header for convenience
 export { MobileHeader as Header };
+
+export function DesktopHeader({ onToggleDesktopMenu }: DesktopHeaderProps) {
+  const pathname = usePathname() ?? '';
+  const { user } = useAuth();
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { unreadCount } = useNotifications();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!user || pathname === '/login') {
+    return null;
+  }
+
+  const pageTitle = getPageTitle(pathname);
+  const isDark = mounted && (resolvedTheme ? resolvedTheme === 'dark' : theme === 'dark');
+
+  return (
+    <header className="hidden h-12 shrink-0 items-center justify-between border-b border-black/5 bg-white/80 px-4 backdrop-blur-md transition-colors md:flex dark:border-white/10 dark:bg-[#0e0e0e]/80">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onToggleDesktopMenu}
+          className="group flex items-center gap-2 rounded-xl border border-black/10 bg-white/90 px-3 py-1.5 text-xs font-bold text-black/80 shadow-xs transition-all hover:border-black hover:bg-black hover:text-white active:scale-95 dark:border-white/10 dark:bg-[#141417] dark:text-white/80 dark:hover:border-white dark:hover:bg-white dark:hover:text-black"
+          title="Show side menu (Ctrl+B)"
+          aria-label="Show side menu"
+        >
+          <svg
+            className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={2} />
+            <path d="M9 3v18" strokeWidth={2} />
+            <path d="M13 9l3 3-3 3" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span>Show Menu</span>
+          <kbd className="rounded bg-black/5 px-1 py-0.5 font-mono text-[10px] font-normal text-black/50 group-hover:bg-white/20 group-hover:text-white dark:bg-white/10 dark:text-white/50 dark:group-hover:bg-black/20 dark:group-hover:text-black">
+            Ctrl+B
+          </kbd>
+        </button>
+
+        <div className="h-4 w-px bg-black/10 dark:bg-white/10" />
+
+        <h2 className="text-sm font-bold tracking-tight text-black/80 dark:text-white/80">
+          {pageTitle}
+        </h2>
+      </div>
+
+      <div className="flex items-center gap-2">
+        {/* Notifications Page Link */}
+        <Link
+          href="/notifications"
+          className="relative flex h-8 w-8 items-center justify-center rounded-xl text-black/60 transition-colors hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          <BellIcon className="h-4 w-4" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+            </span>
+          )}
+        </Link>
+
+        {/* Theme mode toggle */}
+        <button
+          type="button"
+          onClick={() => {
+            setTheme(isDark ? 'light' : 'dark');
+          }}
+          className="flex h-8 w-8 items-center justify-center rounded-xl text-black/60 transition-colors hover:bg-black/5 hover:text-black dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white"
+          title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          aria-label="Toggle theme"
+        >
+          {isDark ? (
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+          ) : (
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </svg>
+          )}
+        </button>
+
+        {/* User Profile */}
+        <Link
+          href="/profile"
+          className="flex items-center gap-2 rounded-xl p-1 text-black/70 transition-colors hover:bg-black/5 dark:text-white/70 dark:hover:bg-white/10"
+          title="Open Profile Settings"
+        >
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black text-[11px] font-black text-white dark:bg-white dark:text-black">
+            {user.initials}
+          </div>
+          <span className="hidden text-xs font-semibold lg:inline">{user.name.split(' ')[0]}</span>
+        </Link>
+      </div>
+    </header>
+  );
+}
