@@ -5,7 +5,7 @@ import { type ModelGroupDetail, type ModelGroupProduct, type ModelGroupsResponse
 export async function fetchModelGroupsDetails(
   search?: string,
   page = 1,
-  limit = 50,
+  limit = 200,
 ): Promise<ModelGroupsResponse> {
   const query = new URLSearchParams();
   if (search?.trim()) {
@@ -20,7 +20,7 @@ export async function fetchModelGroupsDetails(
   return (
     res ?? {
       data: [],
-      meta: { total: 0, page: 1, limit: 50, totalPages: 0 },
+      meta: { total: 0, page: 1, limit: 200, totalPages: 0 },
     }
   );
 }
