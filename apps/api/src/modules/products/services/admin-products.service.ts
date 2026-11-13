@@ -1154,7 +1154,7 @@ export class AdminProductsService {
       where,
       distinct: ['modelGroup'],
       select: { modelGroup: true },
-      take: 30,
+      take: 500,
       orderBy: { modelGroup: 'asc' },
     });
 
@@ -1163,7 +1163,7 @@ export class AdminProductsService {
       .filter((g: any): g is string => typeof g === 'string' && g.trim().length > 0);
   }
 
-  async getModelGroupsDetails(search?: string, page = 1, limit = 50) {
+  async getModelGroupsDetails(search?: string, page = 1, limit = 200) {
     const cleanSearch = (search || '').trim().toLowerCase();
     const where: any = {
       modelGroup: {
