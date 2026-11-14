@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 import {
+  ArrowLeftIcon,
   BellIcon,
   CategoryIcon,
   SearchIcon,
@@ -259,30 +260,47 @@ export function Header() {
         }`}
       >
         <div className="relative flex h-14 w-full items-center justify-between px-4">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleOpenMobileMenu();
-            }}
-            className="text-foreground hover:bg-foreground/5 -ml-1 flex h-10 w-10 items-center justify-center rounded-lg transition-colors active:scale-95"
-            aria-label="Open Navigation Menu"
-          >
-            <svg
-              width="28"
-              height="24"
-              viewBox="0 0 28 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-7"
+          {pathname?.startsWith('/product/') ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push('/products');
+                }
+              }}
+              className="text-foreground hover:bg-foreground/5 -ml-1 flex h-10 w-10 items-center justify-center rounded-lg transition-colors active:scale-95"
+              aria-label="Go Back to Catalogue"
             >
-              <line x1="1.5" y1="8" x2="26.5" y2="8" />
-              <line x1="1.5" y1="16" x2="26.5" y2="16" />
-            </svg>
-          </button>
+              <ArrowLeftIcon size={22} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpenMobileMenu();
+              }}
+              className="text-foreground hover:bg-foreground/5 -ml-1 flex h-10 w-10 items-center justify-center rounded-lg transition-colors active:scale-95"
+              aria-label="Open Navigation Menu"
+            >
+              <svg
+                width="28"
+                height="24"
+                viewBox="0 0 28 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-6 w-7"
+              >
+                <line x1="1.5" y1="8" x2="26.5" y2="8" />
+                <line x1="1.5" y1="16" x2="26.5" y2="16" />
+              </svg>
+            </button>
+          )}
 
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
             <Link
