@@ -6,6 +6,16 @@ import { type Product } from '@ff/schemas';
 import { filterProducts } from '@/data/filter-engine';
 import { useSettingsStore } from '@/store/settings-store';
 
+import {
+  clearReturningFlag,
+  getCatalogueKey,
+  getCatalogueState,
+  isReturningToCatalogue,
+  markNavigatingToProduct,
+  restoreScrollPosition,
+  saveCatalogueState,
+} from '../services/catalogue-cache';
+
 interface UseCatalogueProps {
   initialProducts: Product[];
   initialFilters?: Record<string, string[]>;
@@ -31,11 +41,126 @@ export const useCatalogue = ({
     collectionSlug ? initialProducts.length >= 100 : initialProducts.length >= 24,
   );
 
-  // Sync when initialProducts change
+  const isRestoredRef = useRef(false);
+  const prevCategoryKeyRef = useRef(
+    `${categorySlug || ''}-${brandName || ''}-${collectionSlug || ''}-${isNewArrivals ? '1' : '0'}`,
+  );
+
+  // Restore previous catalogue state & scroll location if returning from a product detail page
   useEffect(() => {
-    setAllProducts(initialProducts);
-    setHasMore(collectionSlug ? initialProducts.length >= 100 : initialProducts.length >= 24);
-  }, [initialProducts, collectionSlug]);
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const key = getCatalogueKey();
+    if (isReturningToCatalogue(key)) {
+      const cached = getCatalogueState(key);
+      if (cached?.products && cached.products.length > 0) {
+        isRestoredRef.current = true;
+        setAllProducts(cached.products);
+        if (cached.activeFilters && Object.keys(cached.activeFilters).length > 0) {
+          setActiveFilters(cached.activeFilters);
+        }
+        if (cached.sortBy) {
+          setSortBy(cached.sortBy);
+        }
+        setHasMore(cached.hasMore);
+
+        const cleanup = restoreScrollPosition(cached.scrollY, cached.lastClickedProductId, () => {
+          clearReturningFlag();
+        });
+
+        return cleanup;
+      }
+    }
+  }, []);
+
+  // Sync when initialProducts or category/brand/collection props change
+  useEffect(() => {
+    const currentKey = `${categorySlug || ''}-${brandName || ''}-${collectionSlug || ''}-${isNewArrivals ? '1' : '0'}`;
+    const categoryChanged = prevCategoryKeyRef.current !== currentKey;
+    prevCategoryKeyRef.current = currentKey;
+
+    if (categoryChanged) {
+      isRestoredRef.current = false;
+      setAllProducts(initialProducts);
+      setHasMore(collectionSlug ? initialProducts.length >= 100 : initialProducts.length >= 24);
+      return;
+    }
+
+    if (!isRestoredRef.current) {
+      setAllProducts(initialProducts);
+      setHasMore(collectionSlug ? initialProducts.length >= 100 : initialProducts.length >= 24);
+    }
+  }, [initialProducts, collectionSlug, categorySlug, brandName, isNewArrivals]);
+
+  // Keep saved catalogue state synced as products or filters change
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const key = getCatalogueKey();
+    saveCatalogueState({
+      key,
+      products: allProducts,
+      activeFilters,
+      sortBy,
+      hasMore,
+    });
+  }, [allProducts, activeFilters, sortBy, hasMore]);
+
+  // Passive throttled scroll listener to keep scrollY up to date
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const key = getCatalogueKey();
+
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const handleScroll = () => {
+      if (!timeoutId) {
+        timeoutId = setTimeout(() => {
+          timeoutId = null;
+          saveCatalogueState({
+            key,
+            products: allProducts,
+            activeFilters,
+            sortBy,
+            hasMore,
+            scrollY: window.scrollY,
+          });
+        }, 150);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [allProducts, activeFilters, sortBy, hasMore]);
+
+  const handleProductClick = useCallback(
+    (productId: string) => {
+      if (typeof window === 'undefined') {
+        return;
+      }
+      const key = getCatalogueKey();
+      saveCatalogueState({
+        key,
+        products: allProducts,
+        activeFilters,
+        sortBy,
+        hasMore,
+        scrollY: window.scrollY,
+        lastClickedProductId: productId,
+      });
+      markNavigatingToProduct(key, productId, window.scrollY);
+    },
+    [allProducts, activeFilters, sortBy, hasMore],
+  );
 
   // Load more products dynamically
   const loadMore = useCallback(async () => {
@@ -303,5 +428,6 @@ export const useCatalogue = ({
     hasMore,
     isLoadingMore,
     loadMore,
+    handleProductClick,
   };
 };
