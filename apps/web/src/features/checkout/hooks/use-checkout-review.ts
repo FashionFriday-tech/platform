@@ -93,7 +93,7 @@ export function useCheckoutReview() {
         try {
           await sendOtpAction(cleanPhone);
           setShowOTPModal(true);
-          toast.success(`OTP sent to +91 ${formatPhone334(cleanPhone)} (Test OTP: 786786)`);
+          toast.success(`OTP sent to +91 ${formatPhone334(cleanPhone)} via WhatsApp`);
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : 'Failed to send verification code';
           toast.error(msg);
@@ -233,7 +233,7 @@ export function useCheckoutReview() {
     const cleanPhone = cleanPhoneDigits(targetAddress.primaryPhone);
     await sendOtpAction(cleanPhone);
     toast.success(
-      `New verification code sent to +91 ${formatPhone334(cleanPhone)} (Test OTP: 786786)`,
+      `New verification code sent to +91 ${formatPhone334(cleanPhone)} via WhatsApp`,
     );
   }, [pendingAddress, address]);
 
@@ -252,7 +252,7 @@ export function useCheckoutReview() {
       void sendOtpAction(cleanPhone)
         .then(() => {
           setShowOTPModal(true);
-          toast.success(`OTP sent to +91 ${formatPhone334(cleanPhone)} (Test OTP: 786786)`);
+          toast.success(`OTP sent to +91 ${formatPhone334(cleanPhone)} via WhatsApp`);
         })
         .catch((err: unknown) => {
           toast.error(err instanceof Error ? err.message : 'Failed to send OTP');

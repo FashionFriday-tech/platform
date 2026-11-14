@@ -106,14 +106,6 @@ export function OTPModal({
     }
   };
 
-  const fillTestOtp = () => {
-    const testDigits = ['7', '8', '6', '7', '8', '6'];
-    setOtp(testDigits);
-    setError(null);
-    inputRefs.current[5]?.focus();
-    void submitOtp('786786');
-  };
-
   const submitOtp = async (codeToVerify?: string) => {
     const code = codeToVerify || otp.join('');
     if (code.length < 6) {
@@ -195,20 +187,6 @@ export function OTPModal({
               <span className="text-foreground font-black tracking-wider">+91 {displayPhone}</span>
             </p>
 
-            {/* Test OTP Shortcut Badge */}
-            <div className="mt-3 flex justify-center">
-              <button
-                type="button"
-                onClick={fillTestOtp}
-                className="group border-border bg-foreground/[0.04] hover:border-foreground/40 flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold transition-all active:scale-95"
-              >
-                <span className="text-foreground-muted">Test OTP:</span>
-                <span className="font-black tracking-widest text-emerald-500">786786</span>
-                <span className="text-foreground-muted group-hover:text-foreground text-[10px]">
-                  (Click to fill)
-                </span>
-              </button>
-            </div>
 
             {/* 6 Digit Input Boxes */}
             <div className="my-6 flex justify-center gap-2 sm:gap-3">
