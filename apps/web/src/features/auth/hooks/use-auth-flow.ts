@@ -72,27 +72,26 @@ export function useAuthFlow() {
 
   const handlePaste = useCallback(
     (e: React.ClipboardEvent) => {
-      const pasteData = e.clipboardData.getData('text').trim();
-      if (!/^\d+$/.test(pasteData)) {
+      e.preventDefault();
+      const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+      if (!pasteData) {
         return;
       }
 
-      const digits = pasteData.slice(0, 6).split('');
-      const newOtp = [...otp];
-
-      for (const [index, char] of digits.entries()) {
-        if (index < 6) {
-          newOtp[index] = char;
+      const digits = pasteData.split('');
+      setOtp((prev) => {
+        const nextOtp = [...prev];
+        for (let i = 0; i < 6; i++) {
+          nextOtp[i] = i < digits.length ? digits[i] : '';
         }
-      }
-
-      setOtp(newOtp);
+        return nextOtp;
+      });
       clearError('otp');
 
-      const nextIndex = digits.length >= 6 ? 5 : digits.length;
+      const nextIndex = Math.min(digits.length, 5);
       inputRefs.current[nextIndex]?.focus();
     },
-    [otp, clearError],
+    [clearError],
   );
 
   const validate = useCallback(() => {
@@ -221,15 +220,39 @@ export function useAuthFlow() {
 
   const handleOtpChange = useCallback(
     (index: number, value: string) => {
-      if (isNaN(Number(value))) {
+      const cleanValue = value.replace(/\D/g, '');
+      if (!cleanValue) {
+        setOtp((prev) => {
+          const nextOtp = [...prev];
+          nextOtp[index] = '';
+          return nextOtp;
+        });
         return;
       }
+
+      // If user pasted or inserted multiple digits from keyboard clipboard/autofill (e.g. "123456")
+      if (cleanValue.length > 1) {
+        const digits = cleanValue.slice(0, 6).split('');
+        setOtp((prev) => {
+          const nextOtp = [...prev];
+          for (let i = 0; i < 6; i++) {
+            nextOtp[i] = i < digits.length ? digits[i] : '';
+          }
+          return nextOtp;
+        });
+        clearError('otp');
+        const nextIndex = Math.min(digits.length, 5);
+        inputRefs.current[nextIndex]?.focus();
+        return;
+      }
+
+      // Single digit input
       setOtp((prev) => {
         const nextOtp = [...prev];
-        nextOtp[index] = value.substring(value.length - 1);
+        nextOtp[index] = cleanValue;
         return nextOtp;
       });
-      if (value && index < 5) {
+      if (index < 5) {
         inputRefs.current[index + 1]?.focus();
       }
       clearError('otp');

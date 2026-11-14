@@ -42,12 +42,13 @@ export function OtpStep({
               <input
                 type="text"
                 inputMode="numeric"
-                maxLength={1}
+                maxLength={6}
+                autoComplete={index === 0 ? 'one-time-code' : 'off'}
                 value={digit}
                 ref={(el) => {
                   inputRefs.current[index] = el;
                 }}
-                onPaste={index === 0 ? handlePaste : undefined}
+                onPaste={handlePaste}
                 onChange={(e) => {
                   handleOtpChange(index, e.target.value);
                 }}

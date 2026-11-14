@@ -56,7 +56,34 @@ export function OTPModal({
   }, [isOpen, timer]);
 
   const handleInputChange = (index: number, value: string) => {
-    const digit = value.replace(/\D/g, '').slice(-1);
+    const cleanValue = value.replace(/\D/g, '');
+    if (!cleanValue) {
+      const newOtp = [...otp];
+      newOtp[index] = '';
+      setOtp(newOtp);
+      return;
+    }
+
+    // If pasted or inserted multiple digits from keyboard clipboard/autofill (e.g. "123456")
+    if (cleanValue.length > 1) {
+      const digits = cleanValue.slice(0, 6).split('');
+      const newOtp = [...otp];
+      for (let i = 0; i < 6; i++) {
+        newOtp[i] = i < digits.length ? digits[i] : '';
+      }
+      setOtp(newOtp);
+      setError(null);
+
+      const nextIndex = Math.min(digits.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+
+      if (digits.length === 6) {
+        void submitOtp(newOtp.join(''));
+      }
+      return;
+    }
+
+    const digit = cleanValue;
     const newOtp = [...otp];
     newOtp[index] = digit;
     setOtp(newOtp);
@@ -199,7 +226,7 @@ export function OTPModal({
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  maxLength={1}
+                  maxLength={6}
                   value={digit}
                   onChange={(e) => {
                     handleInputChange(index, e.target.value);
