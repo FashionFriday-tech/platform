@@ -5,6 +5,7 @@ import Image from 'next/image';
 
 import { toast } from 'sonner';
 
+import { LogoutConfirmModal } from '@/components/ui/LogoutConfirmModal';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProfilePage() {
@@ -13,6 +14,7 @@ export default function ProfilePage() {
   const [editName, setEditName] = useState(user?.name ?? '');
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [editPhone, setEditPhone] = useState(user?.phone?.replace(/\D/g, '').slice(-10) ?? '');
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!user) {
@@ -234,8 +236,9 @@ export default function ProfilePage() {
 
             <div className="mb-1">
               <button
+                type="button"
                 onClick={() => {
-                  logout();
+                  setShowLogoutModal(true);
                 }}
                 className="group flex items-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/5 px-6 py-3 text-xs font-black tracking-widest text-red-600 uppercase transition-all duration-300 hover:bg-red-600 hover:text-white active:scale-[0.98] dark:border-red-500/10 dark:bg-red-950/20 dark:text-red-400 dark:hover:bg-red-600 dark:hover:text-white"
               >
@@ -525,6 +528,14 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <LogoutConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => {
+          setShowLogoutModal(false);
+        }}
+        onConfirm={logout}
+      />
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
 } from '@ff/ui';
 
 import { AnimatedThemeToggler } from '@/components/ui/magicUi/animated-theme-toggler';
+import { LogoutConfirmationModal } from '@/features/auth/components/logout-confirmation-modal';
 import { usePushNotifications } from '@/features/notifications';
 
 import { useSettingsFlow } from '../hooks/use-settings-flow';
@@ -39,6 +40,9 @@ export function SettingsPage() {
     isDeleting,
     showDeleteModal,
     setShowDeleteModal,
+    showLogoutModal,
+    setShowLogoutModal,
+    isLoggingOut,
     notifications,
     scrollLevel,
     speedLabels,
@@ -193,7 +197,10 @@ export function SettingsPage() {
         {user && (
           <div className="space-y-4 pt-4">
             <button
-              onClick={handleLogout}
+              type="button"
+              onClick={() => {
+                setShowLogoutModal(true);
+              }}
               className="bg-background border-border group flex w-full items-center justify-between rounded-4xl border p-4 transition-all active:scale-[0.98]"
             >
               <div className="flex items-center gap-4 text-left">
@@ -206,6 +213,7 @@ export function SettingsPage() {
             </button>
 
             <button
+              type="button"
               onClick={() => {
                 setShowDeleteModal(true);
               }}
@@ -232,6 +240,16 @@ export function SettingsPage() {
           </Link>
         </div>
       </main>
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmationModal
+        isOpen={showLogoutModal}
+        onClose={() => {
+          setShowLogoutModal(false);
+        }}
+        onConfirm={handleLogout}
+        isLoading={isLoggingOut}
+      />
 
       {/* Account Deletion Modal */}
       <DeleteAccountModal

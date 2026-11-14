@@ -19,6 +19,8 @@ export function useSettingsFlow() {
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     syncSettings();
@@ -34,12 +36,16 @@ export function useSettingsFlow() {
 
   const handleLogout = useCallback(async () => {
     try {
+      setIsLoggingOut(true);
       await logout();
+      setShowLogoutModal(false);
       router.replace('/');
       toast.success('Logged out successfully');
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Failed to logout');
+    } finally {
+      setIsLoggingOut(false);
     }
   }, [logout, router]);
 
@@ -105,6 +111,9 @@ export function useSettingsFlow() {
     isDeleting,
     showDeleteModal,
     setShowDeleteModal,
+    showLogoutModal,
+    setShowLogoutModal,
+    isLoggingOut,
     notifications,
     scrollLevel,
     speedLabels,

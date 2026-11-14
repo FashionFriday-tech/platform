@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 
 import { BellIcon, LogOutIcon } from '@ff/ui';
 
+import { LogoutConfirmModal } from '../ui/LogoutConfirmModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/features/notifications';
 import { usePinLockStore } from '@/features/pin-lock/store/pin-lock.store';
@@ -19,6 +20,7 @@ export function SidebarFooter() {
   const { unreadCount } = useNotifications();
   const [mounted, setMounted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { isMounted: isPwaMounted, isInstalled, install } = usePwaInstall();
 
   useEffect(() => {
@@ -252,7 +254,7 @@ export function SidebarFooter() {
           <button
             type="button"
             onClick={() => {
-              logout();
+              setShowLogoutModal(true);
             }}
             className="group relative flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 text-white/80 transition-all hover:bg-red-500/20 hover:text-red-400 active:scale-95 dark:bg-black/5 dark:text-black/80 dark:hover:bg-red-500/20 dark:hover:text-red-600"
             title="Sign Out"
@@ -262,6 +264,14 @@ export function SidebarFooter() {
           </button>
         </div>
       </div>
+
+      <LogoutConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => {
+          setShowLogoutModal(false);
+        }}
+        onConfirm={logout}
+      />
     </div>
   );
 }

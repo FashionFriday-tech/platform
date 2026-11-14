@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { ExternalLinkIcon, LockIcon } from '@ff/ui';
 import { toast } from 'sonner';
 
+import { LogoutConfirmationModal } from '@/features/auth/components/logout-confirmation-modal';
 import { useAuthStore } from '@/store/auth-store';
 
 import { quickLinks } from '../data/profile';
@@ -15,15 +16,21 @@ export function QuickLinksGrid() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     try {
+      setIsLoggingOut(true);
       await logout();
+      setShowLogoutModal(false);
       router.replace('/');
       toast.success('Logged out successfully');
     } catch (error) {
       console.error('Logout error:', error);
       toast.error('Failed to logout');
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -84,7 +91,14 @@ export function QuickLinksGrid() {
 
         if (isLogoutLink) {
           return (
-            <button key={link.label} onClick={handleLogout} className={className}>
+            <button
+              key={link.label}
+              type="button"
+              onClick={() => {
+                setShowLogoutModal(true);
+              }}
+              className={className}
+            >
               {content}
             </button>
           );
@@ -96,6 +110,15 @@ export function QuickLinksGrid() {
           </Link>
         );
       })}
+
+      <LogoutConfirmationModal
+        isOpen={showLogoutModal}
+        onClose={() => {
+          setShowLogoutModal(false);
+        }}
+        onConfirm={handleLogout}
+        isLoading={isLoggingOut}
+      />
     </div>
   );
 }
