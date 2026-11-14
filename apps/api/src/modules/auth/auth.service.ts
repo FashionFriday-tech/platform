@@ -54,28 +54,84 @@ export class AuthService {
     }
   >();
 
+  // Progressive rate limiting map for OTP requests:
+  // Attempt 1 -> 60s cooldown (1 min)
+  // Attempt 2 -> 300s cooldown (5 min)
+  // Attempt 3 -> 600s cooldown (10 min)
+  // Attempt 4+ -> 3600s cooldown (60 min)
+  private otpRateLimitMap = new Map<
+    string,
+    { attempts: number; lastSentAt: Date; currentCooldown: number }
+  >();
+
+  private getProgressiveCooldown(attempt: number): number {
+    if (attempt <= 1) return 60; // 1st resend: 60s (1 min)
+    if (attempt === 2) return 5 * 60; // 2nd resend: 300s (5 min)
+    if (attempt === 3) return 10 * 60; // 3rd resend: 600s (10 min)
+    return 60 * 60; // 4th+ resend: 3600s (60 min)
+  }
+
+  private formatWaitTime(seconds: number): string {
+    if (seconds < 60) {
+      return `${seconds} second${seconds === 1 ? '' : 's'}`;
+    }
+    const mins = Math.floor(seconds / 60);
+    const remSecs = seconds % 60;
+    if (remSecs === 0) {
+      return `${mins} minute${mins === 1 ? '' : 's'}`;
+    }
+    return `${mins} min ${remSecs} sec`;
+  }
+
   async sendOtp(dto: SendOtpDto) {
     const { phone } = dto;
 
-    // 1. Rate Limiting: Prevent rapid clicks draining Meta balance (60-second cooldown)
-    let existingOtp;
-    try {
-      existingOtp = await this.prisma.db.otp.findUnique({
-        where: { phone },
-      });
-    } catch {
-      existingOtp = this.otpMap.get(phone);
-    }
+    // 1. Progressive Rate Limiting to prevent spam & protect Meta API balance:
+    // 1st request -> 60s cooldown
+    // 2nd request -> 5m cooldown
+    // 3rd request -> 10m cooldown
+    // 4th+ request -> 60m cooldown
+    const rateLimit = this.otpRateLimitMap.get(phone);
+    let attempts = 1;
 
-    if (existingOtp) {
-      const secondsSinceLastSend = (Date.now() - existingOtp.createdAt.getTime()) / 1000;
-      if (secondsSinceLastSend < 60) {
-        const waitSeconds = Math.ceil(60 - secondsSinceLastSend);
+    if (rateLimit) {
+      const elapsedSeconds = (Date.now() - rateLimit.lastSentAt.getTime()) / 1000;
+      if (elapsedSeconds < rateLimit.currentCooldown) {
+        const waitSeconds = Math.ceil(rateLimit.currentCooldown - elapsedSeconds);
         throw new BadRequestException(
-          `Please wait ${waitSeconds} seconds before requesting another OTP`,
+          `Please wait ${this.formatWaitTime(waitSeconds)} before requesting another OTP`,
         );
       }
+
+      // If user was inactive for over 1 hour after the cooldown expired, reset to stage 1
+      if (elapsedSeconds > 3600) {
+        attempts = 1;
+      } else {
+        attempts = rateLimit.attempts + 1;
+      }
+    } else {
+      // Check database fallback for initial 60s check if in-memory map was cold
+      let existingOtp;
+      try {
+        existingOtp = await this.prisma.db.otp.findUnique({
+          where: { phone },
+        });
+      } catch {
+        existingOtp = this.otpMap.get(phone);
+      }
+
+      if (existingOtp) {
+        const secondsSinceLastSend = (Date.now() - existingOtp.createdAt.getTime()) / 1000;
+        if (secondsSinceLastSend < 60) {
+          const waitSeconds = Math.ceil(60 - secondsSinceLastSend);
+          throw new BadRequestException(
+            `Please wait ${this.formatWaitTime(waitSeconds)} before requesting another OTP`,
+          );
+        }
+      }
     }
+
+    const currentCooldown = this.getProgressiveCooldown(attempts);
 
     const hasWhatsAppCreds = Boolean(
       this.configService.get<string>('WHATSAPP_ACCESS_TOKEN') ||
@@ -126,7 +182,18 @@ export class AuthService {
       );
     }
 
-    return { success: true, message: 'OTP sent successfully to your WhatsApp' };
+    this.otpRateLimitMap.set(phone, {
+      attempts,
+      lastSentAt: new Date(),
+      currentCooldown,
+    });
+
+    return {
+      success: true,
+      message: 'OTP sent successfully to your WhatsApp',
+      cooldownSeconds: currentCooldown,
+      attemptNumber: attempts,
+    };
   }
 
   async verifyOtp(dto: VerifyOtpDto) {
@@ -163,7 +230,8 @@ export class AuthService {
       );
     }
 
-    // 3. Cleanup
+    // 3. Cleanup OTP entry and rate-limit counter on successful verification
+    this.otpRateLimitMap.delete(phone);
     try {
       await this.prisma.db.otp.delete({ where: { phone } });
     } catch {

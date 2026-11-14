@@ -30,6 +30,8 @@ export function useAuthFlow() {
 
   const { login: authLogin } = useAuth();
 
+  const [resendCount, setResendCount] = useState(1);
+
   // Handle countdown interval
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -43,7 +45,11 @@ export function useAuthFlow() {
     };
   }, [timer]);
 
-  const startTimer = useCallback(() => {
+  const startTimer = useCallback((customSeconds?: number) => {
+    if (typeof customSeconds === 'number' && customSeconds > 0) {
+      setTimer(customSeconds);
+      return;
+    }
     setTimer(60);
   }, []);
 
@@ -148,8 +154,10 @@ export function useAuthFlow() {
           throw new Error(errData.message || 'Failed to send WhatsApp verification code');
         }
 
+        const data = (await res.json().catch(() => ({}))) as { cooldownSeconds?: number };
         setStep('OTP');
-        startTimer();
+        setResendCount(1);
+        startTimer(data.cooldownSeconds || 60);
         toast.success('Verification code sent to your WhatsApp!');
       } else if (step === 'OTP') {
         const enteredOtp = otp.join('');
@@ -242,8 +250,14 @@ export function useAuthFlow() {
         throw new Error(errData.message || 'Failed to resend OTP');
       }
 
+      const data = (await res.json().catch(() => ({}))) as { cooldownSeconds?: number };
       setOtp(['', '', '', '', '', '']);
-      startTimer();
+      const nextCount = resendCount + 1;
+      setResendCount(nextCount);
+      const cooldown =
+        data.cooldownSeconds ||
+        (nextCount === 1 ? 60 : nextCount === 2 ? 300 : nextCount === 3 ? 600 : 3600);
+      setTimer(cooldown);
       toast.success('Verification code resent to your WhatsApp!');
     } catch (err: unknown) {
       const e = err as Error;
@@ -251,7 +265,7 @@ export function useAuthFlow() {
     } finally {
       setLoading(false);
     }
-  }, [phoneNumber, timer, startTimer]);
+  }, [phoneNumber, timer, resendCount]);
 
   const handleOtpChange = useCallback(
     (index: number, value: string) => {

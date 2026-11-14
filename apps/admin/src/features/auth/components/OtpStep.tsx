@@ -21,6 +21,12 @@ export function OtpStep({
   handleOtpChange,
   handleResendOTP,
 }: OtpStepProps) {
+  const formatTimer = (totalSeconds: number) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins < 10 ? `0${mins}` : mins} : ${secs < 10 ? `0${secs}` : secs}`;
+  };
+
   return (
     <div className="animate-in fade-in mb-10 space-y-6 duration-300">
       <div className="flex justify-center gap-1.5 sm:gap-3 md:gap-4">
@@ -67,8 +73,7 @@ export function OtpStep({
         >
           {timer > 0 ? (
             <span>
-              00 : {timer < 10 ? `0${timer}` : timer}
-              <span className="text-[10px] ml-1">s</span>
+              {formatTimer(timer)}
             </span>
           ) : (
             'Resend via WhatsApp'

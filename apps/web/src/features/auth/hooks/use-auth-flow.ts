@@ -35,6 +35,8 @@ export function useAuthFlow() {
   const authLoading = useAuthStore((state) => state.loading);
   const authLogin = useAuthStore((state) => state.login);
 
+  const [resendCount, setResendCount] = useState(1);
+
   // Timer interval countdown
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -56,7 +58,11 @@ export function useAuthFlow() {
     }
   }, [user, authLoading, router, redirectUrl]);
 
-  const startTimer = useCallback(() => {
+  const startTimer = useCallback((customSeconds?: number) => {
+    if (typeof customSeconds === 'number' && customSeconds > 0) {
+      setTimer(customSeconds);
+      return;
+    }
     setTimer(60);
   }, []);
 
@@ -137,9 +143,10 @@ export function useAuthFlow() {
 
     try {
       if (step === 'PHONE') {
-        await sendOtpAction(phoneNumber);
+        const res = await sendOtpAction(phoneNumber);
         setStep('OTP');
-        startTimer();
+        setResendCount(1);
+        startTimer(res.cooldownSeconds || 60);
         toast.success('Verification code sent to your WhatsApp!');
       } else if (step === 'OTP') {
         const response = await verifyOtpAction(phoneNumber, otp.join(''));
@@ -205,18 +212,24 @@ export function useAuthFlow() {
     }
     setLoading(true);
     try {
-      await sendOtpAction(phoneNumber);
+      const res = await sendOtpAction(phoneNumber);
       setOtp(['', '', '', '', '', '']);
-      startTimer();
+      const nextCount = resendCount + 1;
+      setResendCount(nextCount);
+      const cooldown =
+        res.cooldownSeconds ||
+        (nextCount === 1 ? 60 : nextCount === 2 ? 300 : nextCount === 3 ? 600 : 3600);
+      setTimer(cooldown);
       toast.success('Verification code resent to your WhatsApp!');
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
-      const message = err.response?.data?.message || 'Failed to resend OTP';
+      const message =
+        err.response?.data?.message || (error instanceof Error ? error.message : 'Failed to resend OTP');
       toast.error(message);
     } finally {
       setLoading(false);
     }
-  }, [phoneNumber, timer, startTimer]);
+  }, [phoneNumber, timer, resendCount]);
 
   const handleOtpChange = useCallback(
     (index: number, value: string) => {

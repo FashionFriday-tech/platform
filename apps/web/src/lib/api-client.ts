@@ -143,6 +143,8 @@ export const api = {
 
 export interface SendOtpResponse {
   message: string;
+  cooldownSeconds?: number;
+  attemptNumber?: number;
 }
 
 export interface VerifyOtpResponse {

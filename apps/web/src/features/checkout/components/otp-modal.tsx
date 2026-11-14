@@ -26,9 +26,16 @@ export function OTPModal({
 }: OTPModalProps) {
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(60);
+  const [resendCount, setResendCount] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const formatTimer = (totalSeconds: number) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins < 10 ? `0${mins}` : mins}:${secs < 10 ? `0${secs}` : secs}`;
+  };
 
   // Reset state when opened
   useEffect(() => {
@@ -36,6 +43,7 @@ export function OTPModal({
       setOtp(['', '', '', '', '', '']);
       setError(null);
       setTimer(60);
+      setResendCount(1);
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
@@ -158,7 +166,11 @@ export function OTPModal({
       if (onResendOtp) {
         await onResendOtp();
       }
-      setTimer(60);
+      const nextCount = resendCount + 1;
+      setResendCount(nextCount);
+      const cooldown =
+        nextCount === 1 ? 60 : nextCount === 2 ? 300 : nextCount === 3 ? 600 : 3600;
+      setTimer(cooldown);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } catch (err: unknown) {
@@ -283,7 +295,7 @@ export function OTPModal({
                   'Sending...'
                 ) : timer > 0 ? (
                   <span>
-                    Resend in <span className="text-foreground font-black">{timer}s</span>
+                    Resend in <span className="text-foreground font-mono font-black">{formatTimer(timer)}</span>
                   </span>
                 ) : (
                   <span className="font-black text-emerald-500">Resend Code</span>

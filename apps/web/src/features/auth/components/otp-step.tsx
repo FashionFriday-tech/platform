@@ -21,6 +21,12 @@ export function OtpStep({
 }: OtpStepProps) {
   const hasError = Boolean(errors.otp);
 
+  const formatTimer = (totalSeconds: number) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins < 10 ? `0${mins}` : mins} : ${secs < 10 ? `0${secs}` : secs}`;
+  };
+
   return (
     <div className="space-y-3">
       {/* Increased OTP box size with Homepage Crossed Box design */}
@@ -83,7 +89,7 @@ export function OtpStep({
         >
           {timer > 0 ? (
             <span className="inline-flex items-center gap-1.5">
-              <span>00 : {timer < 10 ? `0${timer}` : timer}</span>
+              <span>{formatTimer(timer)}</span>
               <span className="font-sans text-[10px] tracking-widest text-zinc-500">
                 RESEND IN
               </span>
