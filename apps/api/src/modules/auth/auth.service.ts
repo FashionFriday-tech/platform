@@ -62,10 +62,8 @@ export class AuthService {
       this.configService.get<string>('META_WHATSAPP_ACCESS_TOKEN'),
     );
 
-    // Generate secure 6-digit random numeric OTP in production, or test OTP if credentials missing
-    const otp = hasWhatsAppCreds
-      ? Math.floor(100000 + Math.random() * 900000).toString()
-      : '786786';
+    // Generate secure 6-digit random numeric OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Hash it securely using Argon2
     const otpHash = await argon2.hash(otp);
@@ -95,10 +93,17 @@ export class AuthService {
         // Fallback to Msg91 if configured
         if (this.configService.get<string>('MSG91_AUTH_KEY')) {
           await this.msg91Service.sendOtp(phone, otp);
+        } else {
+          throw new InternalServerErrorException(
+            result.error || 'Failed to dispatch WhatsApp OTP. Please try again.',
+          );
         }
       }
     } else {
-      this.logger.log(`[AuthService] Dev/Test mode: Test OTP for ${phone} is ${otp}`);
+      this.logger.warn(`[AuthService] No WhatsApp credentials configured for ${phone}.`);
+      throw new InternalServerErrorException(
+        'WhatsApp messaging service is not configured on the server.',
+      );
     }
 
     return { success: true, message: 'OTP sent successfully to your WhatsApp' };
@@ -106,8 +111,6 @@ export class AuthService {
 
   async verifyOtp(dto: VerifyOtpDto) {
     const { phone, otp } = dto;
-
-    const isTestOtp = otp === '786786';
 
     // 1. Find OTP entry
     let otpEntry;
@@ -119,18 +122,18 @@ export class AuthService {
       otpEntry = this.otpMap.get(phone);
     }
 
-    if (!otpEntry && !isTestOtp) {
+    if (!otpEntry) {
       throw new BadRequestException('OTP not requested for this phone number');
     }
 
-    if (otpEntry && new Date() > otpEntry.expiresAt && !isTestOtp) {
+    if (new Date() > otpEntry.expiresAt) {
       this.otpMap.delete(phone);
       throw new BadRequestException('OTP has expired');
     }
 
-    // 2. Verify Argon2 hash or test OTP
-    let isValid = isTestOtp;
-    if (!isValid && otpEntry) {
+    // 2. Verify Argon2 hash
+    let isValid = false;
+    if (otpEntry) {
       isValid = await argon2.verify(otpEntry.otpHash, otp);
     }
 
@@ -395,7 +398,7 @@ export class AuthService {
       throw new BadRequestException('User or email not found');
     }
 
-    const otp = '786786';
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     const otpHash = await argon2.hash(otp);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
@@ -420,24 +423,19 @@ export class AuthService {
       throw new BadRequestException('User or email not found');
     }
 
-    const isTestOtp = otp === '786786';
-
     const otpEntry = await this.prisma.db.otp.findUnique({
       where: { email: user.email },
     });
 
-    if (!otpEntry && !isTestOtp) {
+    if (!otpEntry) {
       throw new BadRequestException('OTP not requested for this email');
     }
 
-    if (otpEntry && new Date() > otpEntry.expiresAt && !isTestOtp) {
+    if (new Date() > otpEntry.expiresAt) {
       throw new BadRequestException('OTP has expired');
     }
 
-    let isValid = isTestOtp;
-    if (!isValid && otpEntry) {
-      isValid = await argon2.verify(otpEntry.otpHash, otp);
-    }
+    const isValid = await argon2.verify(otpEntry.otpHash, otp);
     if (!isValid) {
       throw new UnauthorizedException('Invalid OTP');
     }
@@ -479,18 +477,24 @@ export class AuthService {
       this.configService.get<string>('META_WHATSAPP_ACCESS_TOKEN'),
     );
 
-    const otp = hasWhatsAppCreds
-      ? Math.floor(100000 + Math.random() * 900000).toString()
-      : '786786';
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Dispatch via WhatsApp Meta Cloud API
     if (hasWhatsAppCreds) {
       const result = await this.whatsAppService.sendOtp(user.phone, otp);
-      if (!result.success && this.configService.get<string>('MSG91_AUTH_KEY')) {
-        await this.msg91Service.sendOtp(user.phone, otp);
+      if (!result.success) {
+        if (this.configService.get<string>('MSG91_AUTH_KEY')) {
+          await this.msg91Service.sendOtp(user.phone, otp);
+        } else {
+          throw new InternalServerErrorException(
+            result.error || 'Failed to dispatch WhatsApp verification OTP',
+          );
+        }
       }
     } else if (this.configService.get<string>('MSG91_AUTH_KEY')) {
       await this.msg91Service.sendOtp(user.phone, otp);
+    } else {
+      throw new InternalServerErrorException('WhatsApp service not configured');
     }
 
     const otpHash = await argon2.hash(otp);
@@ -516,24 +520,19 @@ export class AuthService {
       throw new BadRequestException('User or phone number not found');
     }
 
-    const isTestOtp = otp === '786786';
-
     const otpEntry = await this.prisma.db.otp.findUnique({
       where: { phone: user.phone },
     });
 
-    if (!otpEntry && !isTestOtp) {
+    if (!otpEntry) {
       throw new BadRequestException('OTP not requested for this phone number');
     }
 
-    if (otpEntry && new Date() > otpEntry.expiresAt && !isTestOtp) {
+    if (new Date() > otpEntry.expiresAt) {
       throw new BadRequestException('OTP has expired');
     }
 
-    let isValid = isTestOtp;
-    if (!isValid && otpEntry) {
-      isValid = await argon2.verify(otpEntry.otpHash, otp);
-    }
+    const isValid = await argon2.verify(otpEntry.otpHash, otp);
     if (!isValid) {
       throw new UnauthorizedException('Invalid OTP');
     }
