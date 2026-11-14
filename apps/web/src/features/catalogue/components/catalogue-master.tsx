@@ -50,6 +50,7 @@ export function CatalogueClient({
     hasMore,
     isLoadingMore,
     loadMore,
+    handleProductClick,
   } = useCatalogue({
     initialProducts,
     categorySlug,
@@ -198,6 +199,7 @@ export function CatalogueClient({
             hasMore={hasMore}
             isLoadingMore={isLoadingMore}
             onLoadMore={loadMore}
+            onProductClick={handleProductClick}
           />
         </div>
       </main>
