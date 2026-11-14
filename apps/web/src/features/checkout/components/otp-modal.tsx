@@ -25,7 +25,7 @@ export function OTPModal({
   isVerifying = false,
 }: OTPModalProps) {
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(60);
   const [error, setError] = useState<string | null>(null);
   const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -35,7 +35,7 @@ export function OTPModal({
     if (isOpen) {
       setOtp(['', '', '', '', '', '']);
       setError(null);
-      setTimer(30);
+      setTimer(60);
       setTimeout(() => {
         inputRefs.current[0]?.focus();
       }, 100);
@@ -158,7 +158,7 @@ export function OTPModal({
       if (onResendOtp) {
         await onResendOtp();
       }
-      setTimer(30);
+      setTimer(60);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } catch (err: unknown) {

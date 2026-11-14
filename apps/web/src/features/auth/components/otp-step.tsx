@@ -64,35 +64,34 @@ export function OtpStep({
         })}
       </div>
 
-      <div className="min-h-6 text-center">
-        {errors.otp ? (
+      <div className="flex flex-col items-center justify-center gap-2 min-h-12 text-center">
+        {errors.otp && (
           <p className="animate-in fade-in flex items-center justify-center gap-1.5 text-[10px] font-black tracking-widest text-red-500 uppercase">
             <span>[!]</span>
             <span>{errors.otp}</span>
           </p>
-        ) : (
-          <button
-            type="button"
-            onClick={handleResendOTP}
-            disabled={timer > 0}
-            className={`font-bold tracking-[0.2em] uppercase transition-all ${
-              timer > 0
-                ? 'cursor-not-allowed font-mono text-base text-zinc-400'
-                : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-300'
-            }`}
-          >
-            {timer > 0 ? (
-              <span className="inline-flex items-center gap-1.5">
-                <span>00 : {timer < 10 ? `0${timer}` : timer}</span>
-                <span className="font-sans text-[10px] tracking-widest text-zinc-500">
-                  RESEND IN
-                </span>
-              </span>
-            ) : (
-              'Resend Code via WhatsApp'
-            )}
-          </button>
         )}
+        <button
+          type="button"
+          onClick={handleResendOTP}
+          disabled={timer > 0}
+          className={`font-bold tracking-[0.2em] uppercase transition-all ${
+            timer > 0
+              ? 'cursor-not-allowed font-mono text-base text-zinc-400'
+              : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-300'
+          }`}
+        >
+          {timer > 0 ? (
+            <span className="inline-flex items-center gap-1.5">
+              <span>00 : {timer < 10 ? `0${timer}` : timer}</span>
+              <span className="font-sans text-[10px] tracking-widest text-zinc-500">
+                RESEND IN
+              </span>
+            </span>
+          ) : (
+            'Resend Code via WhatsApp'
+          )}
+        </button>
       </div>
     </div>
   );

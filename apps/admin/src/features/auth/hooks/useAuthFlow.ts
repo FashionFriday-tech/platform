@@ -44,7 +44,7 @@ export function useAuthFlow() {
   }, [timer]);
 
   const startTimer = useCallback(() => {
-    setTimer(30);
+    setTimer(60);
   }, []);
 
   const clearError = useCallback((key: string) => {

@@ -57,7 +57,7 @@ export function useAuthFlow() {
   }, [user, authLoading, router, redirectUrl]);
 
   const startTimer = useCallback(() => {
-    setTimer(30);
+    setTimer(60);
   }, []);
 
   const clearError = useCallback((key: string) => {

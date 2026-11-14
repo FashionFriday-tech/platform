@@ -51,32 +51,31 @@ export function OtpStep({
         ))}
       </div>
 
-      <div className="h-6 text-center">
-        {errors.otp ? (
+      <div className="flex flex-col items-center justify-center gap-2 min-h-12 text-center">
+        {errors.otp && (
           <p className="animate-in fade-in text-[10px] leading-none font-bold tracking-widest text-red-500 uppercase">
             {errors.otp}
           </p>
-        ) : (
-          <button
-            type="button"
-            onClick={handleResendOTP}
-            disabled={timer > 0}
-            className={`font-bold tracking-[0.2em] uppercase transition-colors ${
-              timer > 0
-                ? 'cursor-not-allowed text-sm text-zinc-500'
-                : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-200'
-            }`}
-          >
-            {timer > 0 ? (
-              <span>
-                00 : {timer < 10 ? `0${timer}` : timer}
-                <span className="text-[10px]">s</span>
-              </span>
-            ) : (
-              'Resend via WhatsApp'
-            )}
-          </button>
         )}
+        <button
+          type="button"
+          onClick={handleResendOTP}
+          disabled={timer > 0}
+          className={`font-bold tracking-[0.2em] uppercase transition-colors ${
+            timer > 0
+              ? 'cursor-not-allowed font-mono text-sm text-zinc-500'
+              : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-200'
+          }`}
+        >
+          {timer > 0 ? (
+            <span>
+              00 : {timer < 10 ? `0${timer}` : timer}
+              <span className="text-[10px] ml-1">s</span>
+            </span>
+          ) : (
+            'Resend via WhatsApp'
+          )}
+        </button>
       </div>
     </div>
   );
