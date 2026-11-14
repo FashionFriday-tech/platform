@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 
 import { type Brand, type Product } from '@ff/schemas';
 import {
+  ArrowLeftIcon,
   BellIcon,
   EyeIcon,
   FilledStarIcon,
@@ -271,6 +272,22 @@ export default function ProductPageMaster({
     <div className="bg-background text-foreground min-h-screen pb-16 transition-colors md:pb-6">
       {/* --- MAIN PRODUCT GRID --- */}
       <section className="px-4 pt-2 md:px-8 lg:pt-26">
+        <div className="mb-4 hidden items-center lg:flex">
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 1) {
+                router.back();
+              } else {
+                router.push('/products');
+              }
+            }}
+            className="group text-foreground/50 hover:text-foreground inline-flex items-center gap-2 text-[11px] font-black tracking-widest uppercase transition-colors"
+          >
+            <ArrowLeftIcon size={14} className="transition-transform group-hover:-translate-x-1" />
+            <span>Back to Catalogue</span>
+          </button>
+        </div>
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-12">
           {/* LEFT: Gallery */}
           <div className="lg:col-span-6">
