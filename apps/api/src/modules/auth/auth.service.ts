@@ -36,7 +36,7 @@ export class AuthService {
   ) {}
 
   // In-memory fallbacks for development when DB is down
-  private otpMap = new Map<string, { otpHash: string; expiresAt: Date }>();
+  private otpMap = new Map<string, { otpHash: string; expiresAt: Date; createdAt: Date }>();
   private userMap = new Map<
     string,
     {
@@ -56,6 +56,26 @@ export class AuthService {
 
   async sendOtp(dto: SendOtpDto) {
     const { phone } = dto;
+
+    // 1. Rate Limiting: Prevent rapid clicks draining Meta balance (60-second cooldown)
+    let existingOtp;
+    try {
+      existingOtp = await this.prisma.db.otp.findUnique({
+        where: { phone },
+      });
+    } catch {
+      existingOtp = this.otpMap.get(phone);
+    }
+
+    if (existingOtp) {
+      const secondsSinceLastSend = (Date.now() - existingOtp.createdAt.getTime()) / 1000;
+      if (secondsSinceLastSend < 60) {
+        const waitSeconds = Math.ceil(60 - secondsSinceLastSend);
+        throw new BadRequestException(
+          `Please wait ${waitSeconds} seconds before requesting another OTP`,
+        );
+      }
+    }
 
     const hasWhatsAppCreds = Boolean(
       this.configService.get<string>('WHATSAPP_ACCESS_TOKEN') ||
@@ -80,7 +100,7 @@ export class AuthService {
       });
     } catch {
       // Fallback to memory for development
-      this.otpMap.set(phone, { otpHash, expiresAt });
+      this.otpMap.set(phone, { otpHash, expiresAt, createdAt: new Date() });
     }
 
     // Dispatch via WhatsApp Meta Cloud API
