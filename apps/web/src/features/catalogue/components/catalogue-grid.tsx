@@ -21,6 +21,7 @@ interface GridProps {
   hasMore?: boolean;
   isLoadingMore?: boolean;
   onLoadMore?: () => void;
+  onProductClick?: (productId: string) => void;
 }
 
 export const CatalogueGrid = ({
@@ -29,6 +30,7 @@ export const CatalogueGrid = ({
   hasMore = false,
   isLoadingMore = false,
   onLoadMore,
+  onProductClick,
 }: GridProps) => {
   const ITEMS_PER_PROMO = 6;
   const observerRef = React.useRef<HTMLDivElement | null>(null);
@@ -69,13 +71,15 @@ export const CatalogueGrid = ({
             return (
               <React.Fragment key={product.id}>
                 <motion.div
+                  id={`product-${product.id}`}
+                  data-product-id={product.id}
                   layout
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <CatalogueProductCard product={product} />
+                  <CatalogueProductCard product={product} onProductClick={onProductClick} />
                 </motion.div>
 
                 {/* PROMO BANNER: 2 product cards wide */}
