@@ -9,14 +9,16 @@ import { HeartFilledIcon, HeartIcon, StarBadgeIcon, StarsIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
 import { useBrands } from '@/features/brand';
+import { getCatalogueKey, markNavigatingToProduct } from '@/features/catalogue';
 import { useWishlist } from '@/features/wishlist';
 import { fetcher } from '@/lib/api-client';
 
 interface StoreProductCardProps {
   product: Product;
+  onProductClick?: (productId: string) => void;
 }
 
-export function CatalogueProductCard({ product }: StoreProductCardProps) {
+export function CatalogueProductCard({ product, onProductClick }: StoreProductCardProps) {
   const { brands } = useBrands();
   const { isItemWishlisted, toggleWishlist } = useWishlist();
 
@@ -56,6 +58,13 @@ export function CatalogueProductCard({ product }: StoreProductCardProps) {
       void fetcher(`/products/${productId}/track-click`, { method: 'POST' }).catch(() => {
         /* ignore */
       });
+      // Synchronously record catalogue click for scroll restoration
+      markNavigatingToProduct(
+        getCatalogueKey(),
+        productId,
+        typeof window !== 'undefined' ? window.scrollY : 0,
+      );
+      onProductClick?.(productId);
     }
   };
 
