@@ -235,9 +235,8 @@ export function OTPModal({
                     handleKeyDown(index, e);
                   }}
                   onPaste={handlePaste}
-                  className={`border-border bg-foreground/[0.03] text-foreground focus:border-foreground h-12 w-11 rounded-xl border text-center text-lg font-black transition-all outline-none sm:h-14 sm:w-12 sm:text-xl ${
-                    digit ? 'border-foreground bg-foreground/[0.08]' : ''
-                  }`}
+                  className={`border-border bg-foreground/[0.03] text-foreground focus:border-foreground h-12 w-11 rounded-xl border text-center text-lg font-black transition-all outline-none sm:h-14 sm:w-12 sm:text-xl ${digit ? 'border-foreground bg-foreground/[0.08]' : ''
+                    }`}
                   autoComplete="one-time-code"
                 />
               ))}

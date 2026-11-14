@@ -180,11 +180,11 @@ export function useAuthFlow() {
                   role: found.role || 'SALES_MANAGER',
                   initials: found.name
                     ? found.name
-                        .split(' ')
-                        .map((w: string) => w[0])
-                        .join('')
-                        .slice(0, 2)
-                        .toUpperCase()
+                      .split(' ')
+                      .map((w: string) => w[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase()
                     : 'TM',
                 };
               }

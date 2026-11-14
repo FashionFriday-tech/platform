@@ -44,9 +44,8 @@ export function OtpStep({
                 inputRefs.current[index - 1]?.focus();
               }
             }}
-            className={`h-10 w-10 rounded-full border-2 bg-transparent text-center text-lg font-bold text-white transition-all outline-none sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl ${
-              errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'
-            }`}
+            className={`h-10 w-10 rounded-full border-2 bg-transparent text-center text-lg font-bold text-white transition-all outline-none sm:h-14 sm:w-14 sm:text-xl md:h-16 md:w-16 md:text-2xl ${errors.otp ? 'border-red-500' : 'border-zinc-800 focus:border-white'
+              }`}
           />
         ))}
       </div>
@@ -61,11 +60,10 @@ export function OtpStep({
           type="button"
           onClick={handleResendOTP}
           disabled={timer > 0}
-          className={`font-bold tracking-[0.2em] uppercase transition-colors ${
-            timer > 0
+          className={`font-bold tracking-[0.2em] uppercase transition-colors ${timer > 0
               ? 'cursor-not-allowed font-mono text-sm text-zinc-500'
               : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-200'
-          }`}
+            }`}
         >
           {timer > 0 ? (
             <span>
