@@ -120,8 +120,6 @@ export function useAuthFlow() {
       const code = otp.join('');
       if (code.length < 6) {
         newErrors.otp = 'Please enter the 6-digit code';
-      } else if (code !== '786786' && code !== '123456') {
-        newErrors.otp = 'Incorrect verification code. Use 786786.';
       }
     }
 
@@ -135,16 +133,39 @@ export function useAuthFlow() {
     }
     setLoading(true);
 
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.fashionfriday.in';
+    const cleanNumber = phoneNumber.replace(/\D/g, '');
 
     try {
       if (step === 'PHONE') {
+        const res = await fetch(`${apiUrl}/auth/send-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: cleanNumber }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || 'Failed to send WhatsApp verification code');
+        }
+
         setStep('OTP');
         startTimer();
-        toast.success('Mock OTP code sent successfully! Use 786786 to verify.');
+        toast.success('Verification code sent to your WhatsApp!');
       } else if (step === 'OTP') {
-        const cleanNumber = phoneNumber.replace(/\D/g, '');
+        const enteredOtp = otp.join('');
+
+        const verifyRes = await fetch(`${apiUrl}/auth/verify-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: cleanNumber, otp: enteredOtp }),
+        });
+
+        if (!verifyRes.ok) {
+          const errData = await verifyRes.json().catch(() => ({}));
+          throw new Error(errData.message || 'Invalid verification code. Please check your WhatsApp.');
+        }
+
         let adminInfo = ADMIN_DATABASE[cleanNumber];
 
         if (!adminInfo) {
@@ -207,18 +228,31 @@ export function useAuthFlow() {
       return;
     }
     setLoading(true);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.fashionfriday.in';
+    const cleanNumber = phoneNumber.replace(/\D/g, '');
+
     try {
-      // Simulate network request
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const res = await fetch(`${apiUrl}/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: cleanNumber }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to resend OTP');
+      }
+
       setOtp(['', '', '', '', '', '']);
       startTimer();
-      toast.success('OTP code resent successfully! Use 786786.');
-    } catch {
-      toast.error('Failed to resend OTP');
+      toast.success('Verification code resent to your WhatsApp!');
+    } catch (err: unknown) {
+      const e = err as Error;
+      toast.error(e.message || 'Failed to resend OTP');
     } finally {
       setLoading(false);
     }
-  }, [timer, startTimer]);
+  }, [phoneNumber, timer, startTimer]);
 
   const handleOtpChange = useCallback(
     (index: number, value: string) => {
