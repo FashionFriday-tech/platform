@@ -16,8 +16,8 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
-import { createOrderAction } from '@/features/orders/services/orders.actions';
-import { api } from '@/lib/api-client';
+import { createOrderAction, verifyPaymentAction } from '@/features/orders/services/orders.actions';
+import { loadRazorpayScript } from '@/lib/load-razorpay';
 import { useAuthStore } from '@/store/auth-store';
 import { useCartStore } from '@/store/cart-store';
 
@@ -81,30 +81,117 @@ export function PaymentStep() {
 
     try {
       setIsPlacing(true);
-      const method = paymentMethod === 'cod' ? 'COD' : 'STRIPE';
-      let order: any;
-      try {
-        order = await createOrderAction({ paymentMethod: method });
-      } catch (actionErr: any) {
-        console.warn(
-          '[PaymentStep] Server Action failed, attempting direct API fallback:',
-          actionErr,
-        );
-        order = await api.post<any>('/orders', { paymentMethod: method });
+
+      // CASE A: Cash on Delivery (COD)
+      if (paymentMethod === 'cod') {
+        const res = await createOrderAction({ paymentMethod: 'COD' });
+        console.log('[PaymentStep] COD Order successfully created:', res);
+        await clearCart(true);
+        toast.success('Order placed successfully via Cash on Delivery!');
+        router.push('/account/orders');
+        return;
       }
-      console.log('[PaymentStep] Step 3: Order successfully created on server:', order);
 
-      // Clear local cart store and database cart
-      console.log('[PaymentStep] Step 4: Clearing cart (local and database)...');
-      await clearCart(true);
+      // CASE B: Pre-pay Online (Razorpay UPI / Cards)
+      console.log('[PaymentStep] Step 2: Initiating Razorpay order on server...');
+      const initRes = await createOrderAction({ paymentMethod: 'RAZORPAY' });
+      console.log('[PaymentStep] Step 3: Razorpay session created:', initRes);
 
-      console.log('[PaymentStep] Step 5: Redirecting customer to /account/orders...');
-      router.push('/account/orders');
+      const rzpData = initRes?.razorpay;
+      const order = initRes?.order;
+
+      if (!rzpData || !order) {
+        throw new Error('Failed to initiate online payment session from server');
+      }
+
+      // Load official Razorpay Checkout SDK
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error(
+          'Unable to load payment gateway SDK. Please check your internet connection.',
+        );
+      }
+
+      const keyId = rzpData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+      // Graceful fallback for local development when keys are not yet configured in .env
+      if (!keyId || rzpData.orderId.startsWith('order_mock_')) {
+        console.warn(
+          '[PaymentStep] Razorpay test keys not yet added. Running in mock simulation mode.',
+        );
+        toast.info('Razorpay Dev Mode: Approving test payment...');
+        await verifyPaymentAction({
+          orderId: order.id,
+          razorpayOrderId: rzpData.orderId,
+          razorpayPaymentId: `pay_mock_${Date.now()}`,
+          razorpaySignature: 'mock_signature',
+        });
+        await clearCart(true);
+        toast.success('Test payment verified! Your order has been placed.');
+        router.push('/account/orders');
+        return;
+      }
+
+      // Standard Razorpay Modal Configuration
+      const options = {
+        key: keyId,
+        amount: rzpData.amount,
+        currency: rzpData.currency || 'INR',
+        name: 'Fashion Friday',
+        description: `Order #${order.orderNumber}`,
+        order_id: rzpData.orderId,
+        prefill: {
+          name: user.name || '',
+          contact: user.phone || '',
+        },
+        theme: {
+          color: '#000000',
+        },
+        modal: {
+          ondismiss: () => {
+            setIsPlacing(false);
+            toast.info('Payment was cancelled. You can retry whenever you are ready.');
+          },
+        },
+        handler: async (response: any) => {
+          console.log('[PaymentStep] Step 4: Razorpay payment response received:', response);
+          try {
+            setIsPlacing(true);
+            // Cryptographic verification on backend
+            await verifyPaymentAction({
+              orderId: order.id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            console.log('[PaymentStep] Step 5: Verified! Clearing cart and redirecting...');
+            await clearCart(true);
+            toast.success('Payment verified! Your order has been placed.');
+            router.push('/account/orders');
+          } catch (verifyErr: any) {
+            console.error('[PaymentStep] Payment verification error:', verifyErr);
+            toast.error(
+              verifyErr.message || 'Payment verification failed. Please contact support.',
+            );
+          } finally {
+            setIsPlacing(false);
+          }
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', (resp: any) => {
+        console.error('[PaymentStep] Payment failed:', resp.error);
+        toast.error(resp.error?.description || 'Payment was unsuccessful. Please try again.');
+        setIsPlacing(false);
+      });
+
+      rzp.open();
     } catch (err: any) {
       console.error('[PaymentStep] ERROR: Order placement failed:', err);
       toast.error(err.message || 'Failed to place order. Please try again.');
-    } finally {
       setIsPlacing(false);
+    } finally {
       console.log('[PaymentStep] ---------------- ORDER PROCESS FINISHED ----------------');
     }
   };
@@ -130,7 +217,7 @@ export function PaymentStep() {
             </button>
           </div>
 
-          {/* Compact Payment Grid */}
+          {/* Payment Options Grid */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* PRE-PAY CARD */}
             <button
@@ -155,10 +242,10 @@ export function PaymentStep() {
                 </div>
                 <div>
                   <h3 className="text-sm font-black tracking-tight uppercase italic">
-                    Pre-pay Online
+                    UPI / Online Payment
                   </h3>
-                  <p className="mt-0.5 text-[9px] font-bold tracking-widest uppercase opacity-50">
-                    Instant Confirmation
+                  <p className="mt-0.5 text-[9px] font-bold tracking-widest uppercase opacity-60">
+                    GPay, PhonePe, Paytm, QR, Cards
                   </p>
                 </div>
               </div>
@@ -189,8 +276,8 @@ export function PaymentStep() {
                   <h3 className="text-sm font-black tracking-tight uppercase italic">
                     Cash on Delivery
                   </h3>
-                  <p className="mt-0.5 text-[9px] font-bold tracking-widest uppercase opacity-50">
-                    Pay at Doorstep
+                  <p className="mt-0.5 text-[9px] font-bold tracking-widest uppercase opacity-60">
+                    Pay at Doorstep (+₹200 Fee)
                   </p>
                 </div>
               </div>
@@ -217,7 +304,7 @@ export function PaymentStep() {
                   <p className="text-[10px] leading-relaxed font-bold tracking-widest text-orange-800/60 uppercase">
                     An extra fee of{' '}
                     <span className="font-black text-orange-600">₹{codServiceFee}</span> is added
-                    for logistics. Pay this advance now to confirm your order.
+                    for logistics handling. Choose UPI/Online for free delivery.
                   </p>
                 </div>
                 <span className="text-background absolute -top-4 left-5 rounded-t-4xl bg-orange-500 px-8 text-xs font-semibold tracking-wider uppercase">
@@ -244,7 +331,7 @@ export function PaymentStep() {
                     <span className="text-xs font-black text-emerald-600 italic underline underline-offset-2">
                       Free Shipping
                     </span>{' '}
-                    and priority dispatch on all pre-paid orders.
+                    and priority dispatch on all UPI & online orders.
                   </p>
                 </div>
                 <span className="text-background absolute -top-4 left-5 rounded-t-4xl bg-emerald-600 px-8 text-xs font-semibold tracking-wider uppercase">
@@ -309,7 +396,11 @@ export function PaymentStep() {
                 className="flex h-12 flex-1 -skew-x-[12deg] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl border border-zinc-800 bg-black px-6 text-white shadow-lg transition-transform outline-none active:scale-95 disabled:opacity-50 dark:border-zinc-300 dark:bg-white dark:text-black"
               >
                 <span className="flex skew-x-[12deg] items-center gap-2 text-xs font-black tracking-[0.2em] whitespace-nowrap uppercase">
-                  {isPlacing ? 'Placing Order...' : 'Place Order'}
+                  {isPlacing
+                    ? 'Processing...'
+                    : paymentMethod === 'cod'
+                      ? 'Place Order'
+                      : 'Pay via UPI'}
                   {!isPlacing && <ChevronRightIcon size={16} />}
                 </span>
               </button>
@@ -351,13 +442,13 @@ export function PaymentStep() {
               </div>
               <div className="text-foreground-muted space-y-6 text-[9px] leading-loose font-bold tracking-widest uppercase">
                 <p>
-                  <span className="font-black text-emerald-500">Pre-pay:</span> Enjoy 100% Free
-                  Shipping and priority processing.
+                  <span className="font-black text-emerald-500">UPI / Online:</span> Enjoy 100% Free
+                  Shipping and priority processing. Pay securely via Google Pay, PhonePe, Paytm, or
+                  UPI QR.
                 </p>
                 <p>
                   <span className="font-black text-orange-500">COD:</span> An extra ₹200 fee is
-                  applied to cover the higher risk and logistics cost of cash handling. This is paid
-                  upfront to verify your order.
+                  applied for courier cash-handling logistics.
                 </p>
               </div>
             </motion.div>

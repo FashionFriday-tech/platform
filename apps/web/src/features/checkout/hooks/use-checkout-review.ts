@@ -232,9 +232,7 @@ export function useCheckoutReview() {
     }
     const cleanPhone = cleanPhoneDigits(targetAddress.primaryPhone);
     await sendOtpAction(cleanPhone);
-    toast.success(
-      `New verification code sent to +91 ${formatPhone334(cleanPhone)} via WhatsApp`,
-    );
+    toast.success(`New verification code sent to +91 ${formatPhone334(cleanPhone)} via WhatsApp`);
   }, [pendingAddress, address]);
 
   /**

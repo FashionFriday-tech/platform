@@ -11,8 +11,11 @@ export function StatusBadge({ status, label }: StatusBadgeProps) {
   const getStatusColor = (s: OrderStatus) => {
     switch (s?.toLowerCase()) {
       case 'pending':
-      case 'confirmed':
+      case 'stock_check':
         return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+      case 'confirmed':
+      case 'stock_confirmed':
+        return 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20';
       case 'processing':
         return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
       case 'shipped':
@@ -34,8 +37,11 @@ export function StatusBadge({ status, label }: StatusBadgeProps) {
     switch (norm) {
       case 'pending':
         return 'Order Placed';
+      case 'stock_check':
+        return 'Checking Stock';
+      case 'stock_confirmed':
       case 'confirmed':
-        return 'Confirmed';
+        return 'Stock Confirmed';
       case 'processing':
         return 'Processing';
       case 'shipped':

@@ -168,8 +168,7 @@ export function OTPModal({
       }
       const nextCount = resendCount + 1;
       setResendCount(nextCount);
-      const cooldown =
-        nextCount === 1 ? 60 : nextCount === 2 ? 300 : nextCount === 3 ? 600 : 3600;
+      const cooldown = nextCount === 1 ? 60 : nextCount === 2 ? 300 : nextCount === 3 ? 600 : 3600;
       setTimer(cooldown);
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
@@ -226,7 +225,6 @@ export function OTPModal({
               <span className="text-foreground font-black tracking-wider">+91 {displayPhone}</span>
             </p>
 
-
             {/* 6 Digit Input Boxes */}
             <div className="my-6 flex justify-center gap-2 sm:gap-3">
               {otp.map((digit, index) => (
@@ -247,8 +245,9 @@ export function OTPModal({
                     handleKeyDown(index, e);
                   }}
                   onPaste={handlePaste}
-                  className={`border-border bg-foreground/[0.03] text-foreground focus:border-foreground h-12 w-11 rounded-xl border text-center text-lg font-black transition-all outline-none sm:h-14 sm:w-12 sm:text-xl ${digit ? 'border-foreground bg-foreground/[0.08]' : ''
-                    }`}
+                  className={`border-border bg-foreground/[0.03] text-foreground focus:border-foreground h-12 w-11 rounded-xl border text-center text-lg font-black transition-all outline-none sm:h-14 sm:w-12 sm:text-xl ${
+                    digit ? 'border-foreground bg-foreground/[0.08]' : ''
+                  }`}
                   autoComplete="one-time-code"
                 />
               ))}
@@ -295,7 +294,10 @@ export function OTPModal({
                   'Sending...'
                 ) : timer > 0 ? (
                   <span>
-                    Resend in <span className="text-foreground font-mono font-black">{formatTimer(timer)}</span>
+                    Resend in{' '}
+                    <span className="text-foreground font-mono font-black">
+                      {formatTimer(timer)}
+                    </span>
                   </span>
                 ) : (
                   <span className="font-black text-emerald-500">Resend Code</span>

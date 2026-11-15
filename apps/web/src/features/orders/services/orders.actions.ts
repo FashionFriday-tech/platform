@@ -94,6 +94,14 @@ async function fetchWithAuth(
 
 export interface CreateOrderPayload {
   paymentMethod: 'COD' | 'STRIPE' | 'RAZORPAY';
+  addressId?: string;
+}
+
+export interface VerifyPaymentPayload {
+  orderId: string;
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
 }
 
 /**
@@ -119,16 +127,42 @@ export async function createOrderAction(payload: CreateOrderPayload) {
       throw new Error(message);
     }
 
-    const order = await res.json();
-    console.log('[orders.actions] Order successfully created:', {
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      status: order.status,
-      finalAmount: order.finalAmount,
-    });
-    return order;
+    const result = await res.json();
+    console.log('[orders.actions] Order successfully created / initiated:', result);
+    return result;
   } catch (err: any) {
     console.error('[orders.actions] Exception in createOrderAction:', err);
+    throw err;
+  }
+}
+
+/**
+ * Server Action to verify online payment signature cryptographically
+ */
+export async function verifyPaymentAction(payload: VerifyPaymentPayload) {
+  console.log('[orders.actions] Executing verifyPaymentAction with payload:', payload);
+  try {
+    const res = await fetchWithAuth('/orders/verify-payment', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+
+    if (!res) {
+      throw new Error('Unable to connect to order processing server');
+    }
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      const message = errorData.message || 'Payment verification failed';
+      console.error('[orders.actions] Payment verification failed:', errorData);
+      throw new Error(message);
+    }
+
+    const result = await res.json();
+    console.log('[orders.actions] Payment verified successfully:', result);
+    return result;
+  } catch (err: any) {
+    console.error('[orders.actions] Exception in verifyPaymentAction:', err);
     throw err;
   }
 }

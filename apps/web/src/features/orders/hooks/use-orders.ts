@@ -44,7 +44,14 @@ export function useOrders() {
       .filter((o) => {
         const s = o.status?.toUpperCase();
         if (activeTab === 'shipping') {
-          return ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED'].includes(s);
+          return [
+            'PENDING',
+            'STOCK_CHECK',
+            'STOCK_CONFIRMED',
+            'CONFIRMED',
+            'PROCESSING',
+            'SHIPPED',
+          ].includes(s);
         }
         if (activeTab === 'delivered' || activeTab === 'arrived') {
           return ['DELIVERED'].includes(s);
