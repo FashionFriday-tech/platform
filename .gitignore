@@ -43,6 +43,9 @@ logs/
 !.env.example
 !**/.env.example
 
+# Temporary Scratch & Test Scripts
+scratch/
+
 # Secrets, Keys & Credentials
 *.pem
 *.key
