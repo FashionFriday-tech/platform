@@ -108,9 +108,15 @@ export class AuthService {
   }
 
   private getProgressiveCooldown(attempt: number): number {
-    if (attempt <= 1) return 60; // 1st resend: 60s (1 min)
-    if (attempt === 2) return 5 * 60; // 2nd resend: 300s (5 min)
-    if (attempt === 3) return 10 * 60; // 3rd resend: 600s (10 min)
+    if (attempt <= 1) {
+      return 60;
+    } // 1st resend: 60s (1 min)
+    if (attempt === 2) {
+      return 5 * 60;
+    } // 2nd resend: 300s (5 min)
+    if (attempt === 3) {
+      return 10 * 60;
+    } // 3rd resend: 600s (10 min)
     return 60 * 60; // 4th+ resend: 3600s (60 min)
   }
 
