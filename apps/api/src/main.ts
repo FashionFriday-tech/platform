@@ -35,8 +35,15 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ZodValidationPipe());
 
-  // Increase payload size limit
-  app.use(json({ limit: '50mb' }));
+  // Increase payload size limit & capture rawBody for webhook signature verification
+  app.use(
+    json({
+      limit: '50mb',
+      verify: (req: any, _res, buf) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
   app.use(urlencoded({ extended: true, limit: '50mb' }));
 
   // Serve the uploads directory statically
