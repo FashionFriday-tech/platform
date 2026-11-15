@@ -1,10 +1,19 @@
-import { generateBrandId, OrderStatus, PaymentStatus } from '@ff/database';
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { generateBrandId, OrderStatus, PaymentMethod, PaymentStatus } from '@ff/database';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { VerifyPaymentDto } from './dto/verify-payment.dto';
+import { RazorpayService } from './services/razorpay.service';
 
 @Injectable()
 export class OrdersService {
@@ -13,6 +22,7 @@ export class OrdersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
+    private readonly razorpayService: RazorpayService,
   ) {}
 
   async createOrder(userId: string, dto: CreateOrderDto) {
@@ -37,7 +47,7 @@ export class OrdersService {
       );
     }
 
-    // 2. Calculate totals
+    // 2. Calculate totals from verified DB prices (Never trust client prices!)
     this.logger.log(`[OrdersService] Step 2: Calculating totals and preparing order line items`);
     let totalAmount = 0;
     const itemsData = cartItems.map((item) => {
@@ -56,26 +66,36 @@ export class OrdersService {
       };
     });
 
+    const isCod = dto.paymentMethod === PaymentMethod.COD;
     const discountAmount = 0;
-    const shippingFees = dto.paymentMethod === 'COD' ? 200 : 0;
+    const shippingFees = isCod ? 200 : 0; // Free delivery for online UPI / prepay
     const finalAmount = totalAmount - discountAmount + shippingFees;
 
     this.logger.log(
       `[OrdersService] Totals calculated: subtotal=₹${totalAmount}, shipping=₹${shippingFees}, discount=₹${discountAmount}, finalAmount=₹${finalAmount}`,
     );
 
-    // 3. Fetch default address or most recent address
+    // 3. Fetch delivery address
     this.logger.log(`[OrdersService] Step 3: Fetching delivery address for user: ${userId}`);
-    let defaultAddress = await this.prisma.db.address.findFirst({
-      where: { userId },
-      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
-    });
+    let selectedAddress = null;
+    if (dto.addressId) {
+      selectedAddress = await this.prisma.db.address.findUnique({
+        where: { id: dto.addressId },
+      });
+    }
 
-    if (!defaultAddress) {
+    if (!selectedAddress) {
+      selectedAddress = await this.prisma.db.address.findFirst({
+        where: { userId },
+        orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
+      });
+    }
+
+    if (!selectedAddress) {
       this.logger.warn(
         `[OrdersService] No address found for user ${userId}, applying fallback address for checkout`,
       );
-      defaultAddress = {
+      selectedAddress = {
         id: 'fallback-address',
         userId,
         fullName: 'Customer',
@@ -92,13 +112,86 @@ export class OrdersService {
       } as any;
     } else {
       this.logger.log(
-        `[OrdersService] Using address for ${defaultAddress.fullName}, ${defaultAddress.city}`,
+        `[OrdersService] Using address for ${selectedAddress.fullName}, ${selectedAddress.city}`,
       );
     }
 
-    // 4. Create order
+    // 4. Generate order reference
     const orderNumber = generateBrandId('ORD');
-    this.logger.log(`[OrdersService] Step 4: Creating Order record ${orderNumber} in database...`);
+
+    // ----------------- CASE A: CASH ON DELIVERY -----------------
+    if (isCod) {
+      this.logger.log(`[OrdersService] Step 4 (COD): Creating Order record ${orderNumber} in DB`);
+      try {
+        const order = await this.prisma.db.order.create({
+          data: {
+            id: orderNumber,
+            userId,
+            orderNumber,
+            status: OrderStatus.STOCK_CHECK,
+            paymentStatus: PaymentStatus.PENDING,
+            paymentMethod: PaymentMethod.COD,
+            totalAmount,
+            discountAmount,
+            shippingFees,
+            finalAmount,
+            shippingAddress: JSON.parse(JSON.stringify(selectedAddress)),
+            items: {
+              create: itemsData,
+            },
+          },
+          include: {
+            items: true,
+          },
+        });
+
+        // Clear cart for COD orders
+        this.logger.log(
+          `[OrdersService] Step 5 (COD): Clearing cart items in DB for user ${userId}`,
+        );
+        await this.prisma.db.cartItem.deleteMany({
+          where: { userId },
+        });
+
+        try {
+          void this.notificationsService.notifyNewOrder(order);
+        } catch (pushErr: unknown) {
+          this.logger.warn(`[OrdersService] Push notification dispatch warning:`, pushErr);
+        }
+
+        this.logger.log(
+          `[OrdersService] ---------------- COD ORDER PLACED SUCCESSFULLY ----------------`,
+        );
+        return {
+          type: 'COD',
+          order,
+        };
+      } catch (dbError: any) {
+        this.logger.error(
+          `[OrdersService] DB Error creating COD order: ${dbError.message}`,
+          dbError.stack,
+        );
+        throw new BadRequestException(`Failed to process order in database: ${dbError.message}`);
+      }
+    }
+
+    // ----------------- CASE B: ONLINE PAYMENT (RAZORPAY) -----------------
+    this.logger.log(
+      `[OrdersService] Step 4 (ONLINE): Initializing Razorpay Gateway Order for ${orderNumber}`,
+    );
+    const amountInPaisa = Math.round(finalAmount * 100);
+    if (amountInPaisa < 100) {
+      throw new BadRequestException('Order amount must be at least ₹1 (100 paise)');
+    }
+
+    const rzpOrder = await this.razorpayService.createOrder({
+      amountInPaisa,
+      receipt: orderNumber,
+      notes: {
+        userId,
+        orderNumber,
+      },
+    });
 
     try {
       const order = await this.prisma.db.order.create({
@@ -107,14 +200,14 @@ export class OrdersService {
           userId,
           orderNumber,
           status: OrderStatus.PENDING,
-          paymentStatus:
-            dto.paymentMethod === 'COD' ? PaymentStatus.PENDING : PaymentStatus.SUCCESS,
-          paymentMethod: dto.paymentMethod,
+          paymentStatus: PaymentStatus.PENDING,
+          paymentMethod: PaymentMethod.RAZORPAY,
+          razorpayOrderId: rzpOrder.id,
           totalAmount,
           discountAmount,
           shippingFees,
           finalAmount,
-          shippingAddress: JSON.parse(JSON.stringify(defaultAddress)),
+          shippingAddress: JSON.parse(JSON.stringify(selectedAddress)),
           items: {
             create: itemsData,
           },
@@ -125,31 +218,774 @@ export class OrdersService {
       });
 
       this.logger.log(
-        `[OrdersService] Step 5: Order created successfully with ${order.items.length} items. ID: ${order.id}`,
+        `[OrdersService] Step 5 (ONLINE): DB Order created with Razorpay Order ID: ${rzpOrder.id}. Cart items retained until payment verification.`,
       );
 
-      // 5. Clear cart
-      this.logger.log(`[OrdersService] Step 6: Clearing cart items in DB for user ${userId}...`);
-      await this.prisma.db.cartItem.deleteMany({
-        where: { userId },
-      });
-
-      // Dispatch Web Push notifications to Admin & Customer in background
-      try {
-        void this.notificationsService.notifyNewOrder(order);
-      } catch (pushErr: unknown) {
-        this.logger.warn(`[OrdersService] Push notification dispatch warning:`, pushErr);
-      }
-
-      this.logger.log(`[OrdersService] ---------------- ORDER CREATION COMPLETE ----------------`);
-      return order;
+      return {
+        type: 'ONLINE',
+        order,
+        order_id: rzpOrder.id,
+        amount: rzpOrder.amount,
+        currency: rzpOrder.currency,
+        razorpay: {
+          orderId: rzpOrder.id,
+          amount: rzpOrder.amount,
+          currency: rzpOrder.currency,
+          keyId: this.razorpayService.getKeyId(),
+        },
+      };
     } catch (dbError: any) {
       this.logger.error(
-        `[OrdersService] Database error creating order: ${dbError.message}`,
+        `[OrdersService] Database error initiating online order: ${dbError.message}`,
         dbError.stack,
       );
-      throw new BadRequestException(`Failed to process order in database: ${dbError.message}`);
+      throw new BadRequestException(`Failed to initialize order: ${dbError.message}`);
     }
+  }
+
+  /**
+   * Verify Razorpay Payment Signature
+   * Validates authenticity, updates order status, and clears cart
+   */
+  async verifyPayment(userId: string, dto: VerifyPaymentDto) {
+    const orderId = (dto.orderId || dto.order_id)!;
+    const razorpayOrderId = (dto.razorpayOrderId || dto.razorpay_order_id)!;
+    const razorpayPaymentId = (dto.razorpayPaymentId || dto.razorpay_payment_id)!;
+    const razorpaySignature = (dto.razorpaySignature || dto.razorpay_signature)!;
+
+    this.logger.log(`[OrdersService] ---------------- VERIFY PAYMENT STARTED ----------------`);
+    this.logger.log(
+      `[OrdersService] Verifying payment for orderId: ${orderId}, razorpayOrderId: ${razorpayOrderId}`,
+    );
+
+    if (!orderId || !razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+      throw new BadRequestException(
+        'Missing required payment verification fields (order_id, razorpay_order_id, razorpay_payment_id, razorpay_signature)',
+      );
+    }
+
+    const order = await this.prisma.db.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      this.logger.error(`[OrdersService] Order ${orderId} not found`);
+      throw new NotFoundException('Order not found');
+    }
+
+    if (order.userId !== userId) {
+      this.logger.warn(
+        `[OrdersService] Security warning: user ${userId} tried to verify order ${order.id} owned by ${order.userId}`,
+      );
+      throw new UnauthorizedException('You are not authorized to verify this order');
+    }
+
+    // Idempotency: if already CAPTURED, return early
+    if (order.paymentStatus === PaymentStatus.CAPTURED) {
+      this.logger.log(`[OrdersService] Order ${order.id} is already marked CAPTURED. Returning.`);
+      return {
+        success: true,
+        order,
+      };
+    }
+
+    // Verify order ID match
+    if (order.razorpayOrderId && order.razorpayOrderId !== razorpayOrderId) {
+      this.logger.error(
+        `[OrdersService] Razorpay order mismatch: expected ${order.razorpayOrderId}, received ${razorpayOrderId}`,
+      );
+      throw new BadRequestException('Razorpay order reference mismatch');
+    }
+
+    // Verify cryptographic signature (HMAC-SHA256 with constant-time equality check)
+    const isValid = this.razorpayService.verifyPaymentSignature({
+      orderId: razorpayOrderId,
+      paymentId: razorpayPaymentId,
+      signature: razorpaySignature,
+    });
+
+    if (!isValid) {
+      this.logger.error(`[OrdersService] Signature verification FAILED for order ${order.id}`);
+      await this.prisma.db.order.update({
+        where: { id: order.id },
+        data: { paymentStatus: PaymentStatus.FAILED },
+      });
+      throw new BadRequestException('Invalid payment signature. Payment verification failed.');
+    }
+
+    this.logger.log(
+      `[OrdersService] Signature verified successfully! Updating order to STOCK_CHECK / AUTHORIZED (Manual Capture mode)`,
+    );
+
+    // Update order status to STOCK_CHECK & AUTHORIZED (ZERO gateway fee charged so far)
+    const updatedOrder = await this.prisma.db.order.update({
+      where: { id: order.id },
+      data: {
+        status: OrderStatus.STOCK_CHECK,
+        paymentStatus: PaymentStatus.AUTHORIZED,
+        razorpayPaymentId: razorpayPaymentId,
+        razorpaySignature: razorpaySignature,
+      },
+      include: { items: true },
+    });
+
+    // Clear user's cart in DB now that payment is confirmed
+    this.logger.log(
+      `[OrdersService] Clearing cart items for user ${userId} post-payment confirmation`,
+    );
+    await this.prisma.db.cartItem.deleteMany({
+      where: { userId },
+    });
+
+    // Dispatch notifications
+    try {
+      void this.notificationsService.notifyNewOrder(updatedOrder);
+    } catch (pushErr: unknown) {
+      this.logger.warn(`[OrdersService] Push notification dispatch warning:`, pushErr);
+    }
+
+    this.logger.log(
+      `[OrdersService] ---------------- PAYMENT VERIFIED & COMPLETED ----------------`,
+    );
+    return {
+      success: true,
+      order: updatedOrder,
+    };
+  }
+
+  /**
+   * Admin confirms physical stock exists -> captures payment from bank (2% fee charged only now)
+   * Hardened with Database Conditional Locking & Automatic Gateway Reconciliation on Timeout
+   */
+  async confirmStockAndCapture(orderId: string) {
+    this.logger.log(`[OrdersService] Confirming stock and capturing payment for order ${orderId}`);
+    const order = await this.prisma.db.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (order.status === OrderStatus.CANCELLED) {
+      throw new BadRequestException(
+        'Cannot confirm stock or capture payment for a cancelled order',
+      );
+    }
+
+    // Idempotency check: if already confirmed and captured, return safely
+    if (
+      order.status === OrderStatus.STOCK_CONFIRMED &&
+      order.paymentStatus === PaymentStatus.CAPTURED
+    ) {
+      this.logger.log(
+        `[OrdersService] Order ${order.id} is already captured and confirmed. Idempotent return.`,
+      );
+      return order;
+    }
+
+    if (order.paymentStatus === PaymentStatus.CAPTURE_PENDING) {
+      throw new ConflictException(
+        'Payment capture is currently pending gateway confirmation. Do not retry capture until status is reconciled.',
+      );
+    }
+
+    let newPaymentStatus = order.paymentStatus;
+
+    // Online payment flow: Must be in AUTHORIZED state
+    if (order.paymentMethod === PaymentMethod.RAZORPAY) {
+      if (
+        order.paymentStatus !== PaymentStatus.AUTHORIZED &&
+        order.paymentStatus !== PaymentStatus.CAPTURED
+      ) {
+        throw new BadRequestException(
+          `Cannot capture payment in current state: ${order.paymentStatus}. Must be in AUTHORIZED state.`,
+        );
+      }
+
+      if (order.paymentStatus === PaymentStatus.AUTHORIZED && order.razorpayPaymentId) {
+        // ATOMIC ROW LOCK: Atomically claim transition from STOCK_CHECK to avoid race conditions
+        const lockClaim = await this.prisma.db.order.updateMany({
+          where: {
+            id: order.id,
+            status: OrderStatus.STOCK_CHECK,
+            paymentStatus: PaymentStatus.AUTHORIZED,
+          },
+          data: {
+            status: OrderStatus.STOCK_CONFIRMED,
+          },
+        });
+
+        if (lockClaim.count === 0) {
+          // Another concurrent request or webhook already transitioned the order!
+          const current = await this.prisma.db.order.findUnique({ where: { id: order.id } });
+          if (
+            current?.paymentStatus === PaymentStatus.CAPTURED &&
+            current?.status === OrderStatus.STOCK_CONFIRMED
+          ) {
+            this.logger.log(
+              `[OrdersService] Concurrent capture won by another worker. Returning order idempotently.`,
+            );
+            return current;
+          }
+          throw new BadRequestException(
+            `Order cannot be captured: currently in state ${String(current?.status)} / ${String(current?.paymentStatus)}`,
+          );
+        }
+
+        const amountInPaisa = Math.round(Number(order.finalAmount) * 100);
+
+        try {
+          await this.razorpayService.capturePayment(order.razorpayPaymentId, amountInPaisa, 'INR');
+          newPaymentStatus = PaymentStatus.CAPTURED;
+        } catch (captureErr: any) {
+          this.logger.warn(
+            `[OrdersService] Capture API threw error: ${captureErr?.message}. Reconciling state with Razorpay before failure...`,
+          );
+
+          // FinTech Resilience: Reconcile gateway status directly before assuming failure
+          try {
+            const gatewayPayment = await this.razorpayService.fetchPayment(order.razorpayPaymentId);
+            if (gatewayPayment?.status === 'captured') {
+              this.logger.log(
+                `[OrdersService] Reconciled successfully: Razorpay confirms payment ${order.razorpayPaymentId} is CAPTURED.`,
+              );
+              newPaymentStatus = PaymentStatus.CAPTURED;
+            } else {
+              // Delayed Gateway Capture Edge Case:
+              // Capture request timed out or was delayed. An immediate fetch still returns 'authorized' or undefined.
+              // We MUST NOT roll back to STOCK_CHECK with AUTHORIZED status, as a subsequent stock confirmation
+              // could trigger a duplicate capture or void an in-flight capture!
+              // Instead, persist durable CAPTURE_PENDING state.
+              await this.prisma.db.order.update({
+                where: { id: order.id },
+                data: {
+                  status: OrderStatus.STOCK_CHECK,
+                  paymentStatus: PaymentStatus.CAPTURE_PENDING,
+                },
+              });
+              this.logger.warn(
+                `[OrdersService] Order ${order.id} marked as CAPTURE_PENDING. Gateway reported status: ${gatewayPayment?.status}`,
+              );
+              throw new ConflictException(
+                `Payment capture outcome uncertain (gateway status: ${gatewayPayment?.status}). Transitioned to CAPTURE_PENDING. Scheduled reconciliation worker will finalize state.`,
+              );
+            }
+          } catch (reconcileErr: any) {
+            if (reconcileErr instanceof ConflictException) {
+              throw reconcileErr;
+            }
+            await this.prisma.db.order.update({
+              where: { id: order.id },
+              data: {
+                status: OrderStatus.STOCK_CHECK,
+                paymentStatus: PaymentStatus.CAPTURE_PENDING,
+              },
+            });
+            this.logger.error(
+              `[OrdersService] Reconcile attempt failed for ${order.razorpayPaymentId}: ${reconcileErr.message}. Marked as CAPTURE_PENDING.`,
+            );
+            throw new ConflictException(
+              `Payment capture timed out and gateway reconciliation was unreachable. Order marked as CAPTURE_PENDING.`,
+            );
+          }
+        }
+      }
+    }
+
+    const updated = await this.prisma.db.order.update({
+      where: { id: order.id },
+      data: {
+        status: OrderStatus.STOCK_CONFIRMED,
+        paymentStatus: newPaymentStatus,
+      },
+      include: { items: true },
+    });
+
+    try {
+      void this.notificationsService.notifyOrderStatus(updated);
+    } catch (e) {
+      this.logger.warn('[OrdersService] Notification warning on stock confirmation', e);
+    }
+
+    return updated;
+  }
+
+  /**
+   * Admin marks product OUT OF STOCK -> cancels order and voids authorization (ZERO gateway fee loss!)
+   * Distinct State Tracking: Marks as VOIDED (Never labels an authorization void as a refund!)
+   */
+  async rejectStockAndVoid(orderId: string, reason = 'Item out of stock') {
+    this.logger.log(`[OrdersService] Rejecting order ${orderId} due to: ${reason}`);
+    const order = await this.prisma.db.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    // Idempotency: if already cancelled, return
+    if (order.status === OrderStatus.CANCELLED) {
+      return order;
+    }
+
+    if (order.paymentStatus === PaymentStatus.CAPTURE_PENDING) {
+      throw new ConflictException(
+        'Cannot void order while payment capture is in CAPTURE_PENDING state. Payment status must be reconciled first.',
+      );
+    }
+
+    if (order.paymentStatus === PaymentStatus.CAPTURED) {
+      throw new BadRequestException(
+        'Payment has already been captured. Please use the refund endpoint to issue a customer refund.',
+      );
+    }
+
+    let newPaymentStatus = order.paymentStatus;
+
+    // If online payment is in AUTHORIZED state, void it (0% fee charged to merchant)
+    if (order.paymentStatus === PaymentStatus.AUTHORIZED && order.razorpayPaymentId) {
+      try {
+        await this.razorpayService.voidPayment(order.razorpayPaymentId);
+        newPaymentStatus = PaymentStatus.VOIDED; // Distinct financial state: VOIDED, not REFUNDED
+      } catch (err: any) {
+        this.logger.error(
+          `[OrdersService] CRITICAL: Failed to void payment ${order.razorpayPaymentId}: ${err.message}. Marking as VOID_PENDING for admin reconciliation.`,
+        );
+        newPaymentStatus = PaymentStatus.VOID_PENDING;
+      }
+    }
+
+    const updated = await this.prisma.db.order.update({
+      where: { id: order.id },
+      data: {
+        status: OrderStatus.CANCELLED,
+        paymentStatus: newPaymentStatus,
+      },
+      include: { items: true },
+    });
+
+    try {
+      void this.notificationsService.notifyOrderStatus(updated);
+    } catch (e) {
+      this.logger.warn('[OrdersService] Notification warning on stock rejection', e);
+    }
+
+    return updated;
+  }
+
+  /**
+   * Process a refund for a previously CAPTURED payment
+   * Enforces Cumulative Refund Ceiling & Gateway Timeout Reconciliation
+   */
+  async refundCapturedOrder(orderId: string, amount?: number, reason?: string) {
+    this.logger.log(`[OrdersService] Initiating refund for captured order ${orderId}`);
+    const order = await this.prisma.db.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (
+      order.paymentStatus !== PaymentStatus.CAPTURED &&
+      order.paymentStatus !== PaymentStatus.PARTIALLY_REFUNDED
+    ) {
+      throw new BadRequestException(
+        `Cannot refund order in current payment state: ${order.paymentStatus}. Only CAPTURED or PARTIALLY_REFUNDED payments can be refunded.`,
+      );
+    }
+
+    if (!order.razorpayPaymentId) {
+      throw new BadRequestException('No Razorpay payment reference found on order.');
+    }
+
+    const maxAmount = Number(order.finalAmount);
+    const currentRefunded = Number(order.refundedAmount || 0);
+    const remainingRefundable = Math.max(0, maxAmount - currentRefunded);
+
+    if (remainingRefundable <= 0) {
+      throw new BadRequestException(
+        'This order has already been fully refunded. No refundable balance remains.',
+      );
+    }
+
+    const requestedAmount = amount !== undefined ? amount : remainingRefundable;
+    if (requestedAmount <= 0) {
+      throw new BadRequestException('Refund amount must be greater than zero.');
+    }
+
+    if (requestedAmount > remainingRefundable) {
+      throw new BadRequestException(
+        `Requested refund (₹${requestedAmount}) exceeds the remaining refundable balance (₹${remainingRefundable}).`,
+      );
+    }
+
+    const newTotalRefunded = currentRefunded + requestedAmount;
+    const isFullRefund = newTotalRefunded >= maxAmount;
+    const amountInPaisa = Math.round(requestedAmount * 100);
+
+    try {
+      await this.razorpayService.refundPayment(order.razorpayPaymentId, amountInPaisa, {
+        orderId: order.id,
+        reason: reason || 'Customer return / admin refund',
+      });
+
+      // Atomic conditional update: prevents concurrent partial refund overruns
+      const lockClaim = await this.prisma.db.order.updateMany({
+        where: {
+          id: order.id,
+          paymentStatus: { in: [PaymentStatus.CAPTURED, PaymentStatus.PARTIALLY_REFUNDED] },
+          refundedAmount: { lte: maxAmount - requestedAmount },
+        },
+        data: {
+          refundedAmount: newTotalRefunded,
+          paymentStatus: isFullRefund ? PaymentStatus.REFUNDED : PaymentStatus.PARTIALLY_REFUNDED,
+          ...(isFullRefund ? { status: OrderStatus.CANCELLED } : {}),
+        },
+      });
+
+      if (lockClaim.count === 0) {
+        this.logger.error(
+          `[OrdersService] Concurrent refund detected: remaining refundable balance is insufficient.`,
+        );
+        throw new ConflictException(
+          'Concurrent refund conflict: remaining balance is insufficient.',
+        );
+      }
+
+      const updated = {
+        ...order,
+        refundedAmount: newTotalRefunded,
+        paymentStatus: isFullRefund ? PaymentStatus.REFUNDED : PaymentStatus.PARTIALLY_REFUNDED,
+        status: isFullRefund ? OrderStatus.CANCELLED : order.status,
+      };
+
+      return {
+        success: true,
+        order: updated,
+        refundedAmount: requestedAmount,
+        totalRefunded: newTotalRefunded,
+        isPartial: !isFullRefund,
+      };
+    } catch (err: any) {
+      this.logger.warn(
+        `[OrdersService] Refund API exception: ${err.message}. Reconciling with Razorpay before failure...`,
+      );
+      // Reconcile before failing
+      try {
+        const fetched: any = await this.razorpayService.fetchPayment(order.razorpayPaymentId);
+        const gatewayRefunded = fetched?.amount_refunded
+          ? Number(fetched.amount_refunded) / 100
+          : 0;
+        if (gatewayRefunded >= newTotalRefunded) {
+          this.logger.log(
+            `[OrdersService] Reconciled: Razorpay confirms refund processed on gateway.`,
+          );
+          const updated = await this.prisma.db.order.update({
+            where: { id: order.id },
+            data: {
+              refundedAmount: gatewayRefunded,
+              paymentStatus:
+                gatewayRefunded >= maxAmount
+                  ? PaymentStatus.REFUNDED
+                  : PaymentStatus.PARTIALLY_REFUNDED,
+              status: gatewayRefunded >= maxAmount ? OrderStatus.CANCELLED : order.status,
+            },
+            include: { items: true },
+          });
+          return {
+            success: true,
+            order: updated,
+            refundedAmount: requestedAmount,
+            totalRefunded: gatewayRefunded,
+            isPartial: gatewayRefunded < maxAmount,
+          };
+        }
+      } catch (reconcileErr) {
+        this.logger.error(`[OrdersService] Could not reconcile refund:`, reconcileErr);
+      }
+
+      await this.prisma.db.order.update({
+        where: { id: order.id },
+        data: { paymentStatus: PaymentStatus.REFUND_PENDING },
+      });
+      throw new BadRequestException(`Refund gateway request failed: ${err.message}`);
+    }
+  }
+
+  /**
+   * Handle Razorpay Webhooks with Transactional PostgreSQL Inbox Pattern & Crash Recovery
+   */
+  async handleWebhook(
+    payload: any,
+    signature: string,
+    rawBody?: Buffer | string,
+    eventId?: string,
+  ) {
+    this.logger.log(
+      `[OrdersService] Incoming Razorpay Webhook Event: ${payload?.event} (ID: ${eventId || 'N/A'})`,
+    );
+
+    // Strict Webhook Security: Signature and raw body are NON-NEGOTIABLE
+    if (!signature) {
+      this.logger.error(`[OrdersService] Webhook rejected: missing x-razorpay-signature header`);
+      throw new UnauthorizedException('Missing webhook signature');
+    }
+
+    if (!rawBody) {
+      this.logger.error(`[OrdersService] Webhook rejected: missing raw request body`);
+      throw new BadRequestException(
+        'Raw request body is required for cryptographic signature verification',
+      );
+    }
+
+    const isValid = this.razorpayService.verifyWebhookSignature(rawBody, signature);
+    if (!isValid) {
+      this.logger.error(
+        `[OrdersService] Webhook rejected: cryptographic signature verification failed`,
+      );
+      throw new UnauthorizedException('Invalid webhook signature');
+    }
+
+    // Transactional Inbox Pattern: Durably store event in PostgreSQL before mutating orders
+    const resolvedEventId = eventId || payload?.event_id || payload?.id;
+    if (resolvedEventId) {
+      try {
+        await this.prisma.db.webhookEvent.create({
+          data: {
+            id: resolvedEventId,
+            event: payload?.event || 'unknown',
+            status: 'PENDING',
+            payload: payload || {},
+            attempts: 1,
+          },
+        });
+      } catch (dbErr: any) {
+        // Unique constraint violation (P2002) means this event was already delivered
+        if (dbErr?.code === 'P2002' || dbErr?.message?.includes('Unique constraint failed')) {
+          const existing = await this.prisma.db.webhookEvent.findUnique({
+            where: { id: resolvedEventId },
+          });
+          if (existing?.status === 'PROCESSED') {
+            this.logger.log(
+              `[OrdersService] PostgreSQL Inbox: Webhook event ${resolvedEventId} already PROCESSED. Skipping duplicate replay safely.`,
+            );
+            return { received: true, duplicate: true };
+          }
+          this.logger.log(
+            `[OrdersService] PostgreSQL Inbox: Resuming webhook event ${resolvedEventId} (status: ${String(existing?.status)})`,
+          );
+        } else {
+          this.logger.warn(`[OrdersService] Webhook event persistence notice: ${dbErr.message}`);
+        }
+      }
+    }
+
+    // Execute business processing
+    try {
+      if (resolvedEventId) {
+        await this.prisma.db.webhookEvent.updateMany({
+          where: { id: resolvedEventId },
+          data: { status: 'PROCESSING' },
+        });
+      }
+
+      await this.processWebhookEventLogic(payload);
+
+      if (resolvedEventId) {
+        await this.prisma.db.webhookEvent.updateMany({
+          where: { id: resolvedEventId },
+          data: { status: 'PROCESSED', processedAt: new Date() },
+        });
+      }
+
+      return { received: true };
+    } catch (processErr: any) {
+      if (resolvedEventId) {
+        await this.prisma.db.webhookEvent.updateMany({
+          where: { id: resolvedEventId },
+          data: { status: 'FAILED', lastError: processErr.message },
+        });
+      }
+      throw processErr;
+    }
+  }
+
+  /**
+   * Internal Webhook Business Logic Processor
+   */
+  public async processWebhookEventLogic(payload: any) {
+    const event = payload?.event;
+    if (event === 'payment.authorized') {
+      const paymentEntity = payload?.payload?.payment?.entity;
+      const rzpOrderId = paymentEntity?.order_id;
+      const paymentId = paymentEntity?.id;
+
+      if (rzpOrderId) {
+        const order = await this.prisma.db.order.findUnique({
+          where: { razorpayOrderId: rzpOrderId },
+        });
+
+        if (order?.paymentStatus === PaymentStatus.PENDING) {
+          this.logger.log(
+            `[OrdersService] Webhook payment.authorized: marking order ${order.id} as STOCK_CHECK / AUTHORIZED`,
+          );
+          await this.prisma.db.order.update({
+            where: { id: order.id },
+            data: {
+              status: OrderStatus.STOCK_CHECK,
+              paymentStatus: PaymentStatus.AUTHORIZED,
+              ...(paymentId ? { razorpayPaymentId: paymentId } : {}),
+            },
+          });
+
+          await this.prisma.db.cartItem.deleteMany({
+            where: { userId: order.userId },
+          });
+        }
+      }
+    } else if (event === 'order.paid' || event === 'payment.captured') {
+      const paymentEntity = payload?.payload?.payment?.entity;
+      const rzpOrderId = paymentEntity?.order_id || payload?.payload?.order?.entity?.id;
+      const paymentId = paymentEntity?.id;
+
+      if (rzpOrderId) {
+        const order = await this.prisma.db.order.findUnique({
+          where: { razorpayOrderId: rzpOrderId },
+          include: { items: true },
+        });
+
+        if (order && order.paymentStatus !== PaymentStatus.CAPTURED) {
+          this.logger.log(`[OrdersService] Webhook marking order ${order.id} as CAPTURED`);
+          const updated = await this.prisma.db.order.update({
+            where: { id: order.id },
+            data: {
+              paymentStatus: PaymentStatus.CAPTURED,
+              ...(paymentId ? { razorpayPaymentId: paymentId } : {}),
+            },
+            include: { items: true },
+          });
+
+          await this.prisma.db.cartItem.deleteMany({
+            where: { userId: order.userId },
+          });
+
+          try {
+            void this.notificationsService.notifyNewOrder(updated);
+          } catch (e) {
+            this.logger.warn('[OrdersService] Webhook notification warning', e);
+          }
+        }
+      }
+    } else if (event === 'payment.failed') {
+      const paymentEntity = payload?.payload?.payment?.entity;
+      const rzpOrderId = paymentEntity?.order_id;
+      if (rzpOrderId) {
+        await this.prisma.db.order.updateMany({
+          where: { razorpayOrderId: rzpOrderId, paymentStatus: PaymentStatus.PENDING },
+          data: { paymentStatus: PaymentStatus.FAILED },
+        });
+      }
+    } else if (event === 'refund.processed') {
+      const paymentEntity = payload?.payload?.payment?.entity;
+      const rzpOrderId = paymentEntity?.order_id;
+      if (rzpOrderId) {
+        await this.prisma.db.order.updateMany({
+          where: { razorpayOrderId: rzpOrderId },
+          data: { paymentStatus: PaymentStatus.REFUNDED },
+        });
+      }
+    }
+  }
+
+  /**
+   * Payment Reconciliation & Expiry Report
+   * Identifies gateway/database state discrepancies and expiring authorizations without executing unverified actions
+   */
+  async getReconciliationReport() {
+    const now = new Date();
+    const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    const threeDaysAgo = new Date(Date.now() - 72 * 60 * 60 * 1000);
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+
+    // 1. Authorizations nearing expiry (between 48h and 72h old)
+    const expiringAuthorizations = await this.prisma.db.order.findMany({
+      where: {
+        paymentStatus: PaymentStatus.AUTHORIZED,
+        status: OrderStatus.STOCK_CHECK,
+        createdAt: { lte: twoDaysAgo, gte: threeDaysAgo },
+      },
+      select: {
+        id: true,
+        orderNumber: true,
+        razorpayPaymentId: true,
+        createdAt: true,
+        finalAmount: true,
+      },
+    });
+
+    // 2. Expired authorizations (> 72h old)
+    const expiredAuthorizations = await this.prisma.db.order.findMany({
+      where: {
+        paymentStatus: PaymentStatus.AUTHORIZED,
+        status: OrderStatus.STOCK_CHECK,
+        createdAt: { lt: threeDaysAgo },
+      },
+      select: {
+        id: true,
+        orderNumber: true,
+        razorpayPaymentId: true,
+        createdAt: true,
+        finalAmount: true,
+      },
+    });
+
+    // 3. Pending failure states (VOID_PENDING, REFUND_PENDING)
+    const pendingInterventions = await this.prisma.db.order.findMany({
+      where: {
+        paymentStatus: { in: [PaymentStatus.VOID_PENDING, PaymentStatus.REFUND_PENDING] },
+      },
+      select: {
+        id: true,
+        orderNumber: true,
+        paymentStatus: true,
+        razorpayPaymentId: true,
+        updatedAt: true,
+      },
+    });
+
+    // 4. Stuck or failed webhook inbox records
+    const unhandledWebhooks = await this.prisma.db.webhookEvent.findMany({
+      where: {
+        OR: [
+          { status: 'FAILED' },
+          { status: { in: ['PENDING', 'PROCESSING'] }, createdAt: { lt: fiveMinutesAgo } },
+        ],
+      },
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      generatedAt: now.toISOString(),
+      summary: {
+        expiringAuthorizationsCount: expiringAuthorizations.length,
+        expiredAuthorizationsCount: expiredAuthorizations.length,
+        pendingInterventionsCount: pendingInterventions.length,
+        unhandledWebhooksCount: unhandledWebhooks.length,
+      },
+      expiringAuthorizations,
+      expiredAuthorizations,
+      pendingInterventions,
+      unhandledWebhooks,
+    };
   }
 
   async getOrderStats() {
@@ -158,7 +994,9 @@ export class OrdersService {
         this.prisma.db.order.count(),
         this.prisma.db.order.count({
           where: {
-            status: { in: [OrderStatus.PENDING, OrderStatus.CONFIRMED] },
+            status: {
+              in: [OrderStatus.PENDING, OrderStatus.STOCK_CHECK, OrderStatus.STOCK_CONFIRMED],
+            },
           },
         }),
         this.prisma.db.order.count({
