@@ -73,9 +73,7 @@ export function mapDbProductToSchema(p: any): Product {
         p.media?.promoImage ||
         (Array.isArray(p.images) && p.images.length > 1 ? p.images[1] : undefined)
           ? withVersion(
-              p.promoImage ||
-                p.media?.promoImage ||
-                (Array.isArray(p.images) ? p.images[1] : ''),
+              p.promoImage || p.media?.promoImage || (Array.isArray(p.images) ? p.images[1] : ''),
               version,
             )
           : undefined,

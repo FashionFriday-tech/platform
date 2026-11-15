@@ -71,14 +71,18 @@ const KNOWN_COLOR_KEYWORDS = [
  * Accurately extracts clean colorways such as "Yellow", "Grey", "Black / White", etc.
  */
 export function extractColorLabel(variant: ProductColorVariant): string {
-  if (!variant) return 'Colorway';
+  if (!variant) {
+    return 'Colorway';
+  }
 
   // 1. Check variant colors array
   if (Array.isArray(variant.colors) && variant.colors.length > 0) {
     const resolvedNames: string[] = [];
 
     for (const raw of variant.colors) {
-      if (!raw) continue;
+      if (!raw) {
+        continue;
+      }
       const trimmed = raw.trim();
 
       // Case A: Hex code (e.g. "#FFFF00" or "FFFF00")
@@ -134,12 +138,16 @@ export function extractColorLabel(variant: ProductColorVariant): string {
  * Extracts normalized hex color array for rendering color swatches.
  */
 export function extractColorHexes(variant: ProductColorVariant): string[] {
-  if (!variant) return [];
+  if (!variant) {
+    return [];
+  }
   const hexes: string[] = [];
 
   if (Array.isArray(variant.colors)) {
     for (const c of variant.colors) {
-      if (!c) continue;
+      if (!c) {
+        continue;
+      }
       const trimmed = c.trim();
       if (trimmed.startsWith('#')) {
         hexes.push(trimmed);
@@ -184,27 +192,35 @@ function approximateHexColorName(hex: string): string {
   const g = parseInt(hex.slice(3, 5), 16) || 0;
   const b = parseInt(hex.slice(5, 7), 16) || 0;
 
-  if (r < 35 && g < 35 && b < 35) return 'Black';
-  if (r > 220 && g > 220 && b > 220) return 'White';
-  if (Math.abs(r - g) < 20 && Math.abs(g - b) < 20) return 'Grey';
-  if (r > g && r > b) return r > 180 && g > 180 ? 'Yellow' : 'Red';
-  if (g > r && g > b) return 'Green';
-  if (b > r && b > g) return 'Blue';
+  if (r < 35 && g < 35 && b < 35) {
+    return 'Black';
+  }
+  if (r > 220 && g > 220 && b > 220) {
+    return 'White';
+  }
+  if (Math.abs(r - g) < 20 && Math.abs(g - b) < 20) {
+    return 'Grey';
+  }
+  if (r > g && r > b) {
+    return r > 180 && g > 180 ? 'Yellow' : 'Red';
+  }
+  if (g > r && g > b) {
+    return 'Green';
+  }
+  if (b > r && b > g) {
+    return 'Blue';
+  }
   return 'Colorway';
 }
 
-export default function VariantDropdown({
-  variants = [],
-  currentSlug,
-}: VariantDropdownProps) {
+export default function VariantDropdown({ variants = [], currentSlug }: VariantDropdownProps) {
   const safeVariants = Array.isArray(variants) ? variants : [];
+  const [isOpen, setIsOpen] = useState(true);
 
   // If there are no color variants or only 1 item, don't show the tray
   if (safeVariants.length <= 1) {
     return null;
   }
-
-  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="w-full">
@@ -220,7 +236,9 @@ export default function VariantDropdown({
           </div>
           <button
             type="button"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => {
+              setIsOpen(!isOpen);
+            }}
             className="text-foreground-muted hover:text-foreground flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase transition-colors"
           >
             <motion.span animate={{ rotate: isOpen ? 180 : 0 }}>
@@ -253,10 +271,11 @@ export default function VariantDropdown({
                       <Link
                         href={`/product/${v.slug}`}
                         prefetch
-                        className={`relative flex items-center justify-center rounded-xl p-0.5 transition-all duration-200 ${isCurrent
-                          ? 'scale-105 ring-2 ring-black shadow-md dark:ring-white'
-                          : 'ring-1 ring-transparent opacity-80 hover:scale-100 hover:opacity-100 hover:ring-zinc-400 dark:hover:ring-zinc-600'
-                          }`}
+                        className={`relative flex items-center justify-center rounded-xl p-0.5 transition-all duration-200 ${
+                          isCurrent
+                            ? 'scale-105 shadow-md ring-2 ring-black dark:ring-white'
+                            : 'opacity-80 ring-1 ring-transparent hover:scale-100 hover:opacity-100 hover:ring-zinc-400 dark:hover:ring-zinc-600'
+                        }`}
                         title={`${label} (${v.name})${isSoldOut ? ' - Sold Out' : ''}`}
                       >
                         <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
@@ -265,8 +284,9 @@ export default function VariantDropdown({
                               src={v.mainImage}
                               width={56}
                               height={56}
-                              className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 ${isSoldOut ? 'grayscale opacity-60' : ''
-                                }`}
+                              className={`h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 ${
+                                isSoldOut ? 'opacity-60 grayscale' : ''
+                              }`}
                               alt={label}
                             />
                           ) : (
@@ -295,10 +315,11 @@ export default function VariantDropdown({
                           />
                         )}
                         <span
-                          className={`truncate text-center text-[10px] font-bold tracking-tight uppercase transition-colors ${isCurrent
-                            ? 'text-foreground font-black'
-                            : 'text-foreground-muted group-hover:text-foreground'
-                            }`}
+                          className={`truncate text-center text-[10px] font-bold tracking-tight uppercase transition-colors ${
+                            isCurrent
+                              ? 'text-foreground font-black'
+                              : 'text-foreground-muted group-hover:text-foreground'
+                          }`}
                         >
                           {label}
                         </span>
@@ -314,4 +335,3 @@ export default function VariantDropdown({
     </div>
   );
 }
-

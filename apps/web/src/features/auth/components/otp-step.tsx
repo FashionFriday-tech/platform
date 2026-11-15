@@ -37,12 +37,13 @@ export function OtpStep({
           return (
             <div
               key={index}
-              className={`group relative -skew-x-[12deg] rounded-md border transition-all duration-200 sm:-skew-x-[14deg] sm:rounded-lg ${hasError
-                ? 'animate-shake border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
-                : isFilled
-                  ? 'border-zinc-500 bg-zinc-900/90'
-                  : 'border-zinc-800 bg-black focus-within:border-zinc-400 focus-within:ring-1 focus-within:ring-zinc-500 hover:border-zinc-700'
-                }`}
+              className={`group relative -skew-x-[12deg] rounded-md border transition-all duration-200 sm:-skew-x-[14deg] sm:rounded-lg ${
+                hasError
+                  ? 'animate-shake border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                  : isFilled
+                    ? 'border-zinc-500 bg-zinc-900/90'
+                    : 'border-zinc-800 bg-black focus-within:border-zinc-400 focus-within:ring-1 focus-within:ring-zinc-500 hover:border-zinc-700'
+              }`}
             >
               <input
                 type="text"
@@ -69,7 +70,7 @@ export function OtpStep({
         })}
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-2 min-h-12 text-center">
+      <div className="flex min-h-12 flex-col items-center justify-center gap-2 text-center">
         {errors.otp && (
           <p className="animate-in fade-in flex items-center justify-center gap-1.5 text-[10px] font-black tracking-widest text-red-500 uppercase">
             <span>[!]</span>
@@ -80,17 +81,16 @@ export function OtpStep({
           type="button"
           onClick={handleResendOTP}
           disabled={timer > 0}
-          className={`font-bold tracking-[0.2em] uppercase transition-all ${timer > 0
-            ? 'cursor-not-allowed font-mono text-base text-zinc-400'
-            : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-300'
-            }`}
+          className={`font-bold tracking-[0.2em] uppercase transition-all ${
+            timer > 0
+              ? 'cursor-not-allowed font-mono text-base text-zinc-400'
+              : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-300'
+          }`}
         >
           {timer > 0 ? (
             <span className="inline-flex items-center gap-1.5">
               <span>{formatTimer(timer)}</span>
-              <span className="font-sans text-[10px] tracking-widest text-zinc-500">
-                RESEND IN
-              </span>
+              <span className="font-sans text-[10px] tracking-widest text-zinc-500">RESEND IN</span>
             </span>
           ) : (
             'Resend Code via WhatsApp'

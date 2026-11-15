@@ -3,13 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ImageIcon,
-  PauseIcon,
-  PlayIcon,
-} from '@ff/ui';
+import { ChevronLeftIcon, ChevronRightIcon, ImageIcon, PauseIcon, PlayIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 export default function MediaStage({ images, videoUrl }: { images: string[]; videoUrl?: string }) {
@@ -56,15 +50,21 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
   const isHorizontalSwipeRef = useRef<boolean | null>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (activeMode !== 'image' || isZoomed) return;
+    if (activeMode !== 'image' || isZoomed) {
+      return;
+    }
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
     isHorizontalSwipeRef.current = null;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (activeMode !== 'image' || isZoomed) return;
-    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    if (activeMode !== 'image' || isZoomed) {
+      return;
+    }
+    if (touchStartXRef.current === null || touchStartYRef.current === null) {
+      return;
+    }
 
     const diffX = e.touches[0].clientX - touchStartXRef.current;
     const diffY = e.touches[0].clientY - touchStartYRef.current;
@@ -79,7 +79,9 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (activeMode !== 'image' || isZoomed) return;
+    if (activeMode !== 'image' || isZoomed) {
+      return;
+    }
     if (touchStartXRef.current === null || isHorizontalSwipeRef.current !== true) {
       touchStartXRef.current = null;
       touchStartYRef.current = null;
@@ -166,7 +168,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
       <div className="group relative w-full flex-1 touch-pan-y select-none">
         {/* --- MEDIA VIEWPORT --- */}
         <div
-          className="relative aspect-4/5 cursor-crosshair overflow-hidden rounded-[2.5rem] bg-black shadow-sm touch-pan-y isolate [transform:translateZ(0)]"
+          className="relative isolate aspect-4/5 [transform:translateZ(0)] cursor-crosshair touch-pan-y overflow-hidden rounded-[2.5rem] bg-black shadow-sm"
           onClick={handleInteraction}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -176,7 +178,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
             {activeMode === 'image' ? (
               <motion.div
                 key={`img-wrap-${safeIndex}-${currentImage}`}
-                className="h-full w-full overflow-hidden bg-black touch-pan-y"
+                className="h-full w-full touch-pan-y overflow-hidden bg-black"
                 initial={{ opacity: 0, scale: 1.05 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
@@ -203,7 +205,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                     key={currentImage}
                     src={currentImage}
                     alt="Product Detail"
-                    className="pointer-events-none h-full w-full min-h-full min-w-full shrink-0 object-cover"
+                    className="pointer-events-none h-full min-h-full w-full min-w-full shrink-0 object-cover"
                   />
                 </motion.div>
               </motion.div>
@@ -239,7 +241,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                   setIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
                 }}
                 aria-label="Previous image"
-                className="absolute left-3 top-1/2 z-20 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none lg:flex"
+                className="absolute top-1/2 left-3 z-20 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none lg:flex"
               >
                 <ChevronLeftIcon size={20} />
               </button>
@@ -250,7 +252,7 @@ export default function MediaStage({ images, videoUrl }: { images: string[]; vid
                   setIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
                 }}
                 aria-label="Next image"
-                className="absolute right-3 top-1/2 z-20 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none lg:flex"
+                className="absolute top-1/2 right-3 z-20 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/70 focus:outline-none lg:flex"
               >
                 <ChevronRightIcon size={20} />
               </button>

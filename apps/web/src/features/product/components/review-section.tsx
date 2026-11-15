@@ -99,13 +99,17 @@ export default function ReviewSection({
 
   // 1. Fetch Group-Aware Reviews from API
   useEffect(() => {
-    if (!productId) return;
+    if (!productId) {
+      return;
+    }
 
     let isMounted = true;
 
     fetcher<ReviewApiResponse | ReviewItem[]>(`/reviews/product/${productId}`)
       .then((data: any) => {
-        if (!isMounted) return;
+        if (!isMounted) {
+          return;
+        }
         const reviewList = Array.isArray(data)
           ? data
           : Array.isArray(data?.reviews)
@@ -121,25 +125,15 @@ export default function ReviewSection({
           }
         } else {
           setReviews(
-            getDefaultRealisticReviews(
-              productName,
-              currentMainImage,
-              currentColor,
-              colorVariants,
-            ),
+            getDefaultRealisticReviews(productName, currentMainImage, currentColor, colorVariants),
           );
         }
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.warn('[ReviewSection] Using realistic group reviews fallback:', err);
         if (isMounted) {
           setReviews(
-            getDefaultRealisticReviews(
-              productName,
-              currentMainImage,
-              currentColor,
-              colorVariants,
-            ),
+            getDefaultRealisticReviews(productName, currentMainImage, currentColor, colorVariants),
           );
         }
       });
@@ -152,9 +146,15 @@ export default function ReviewSection({
   // Minimum duplicated list so the marquee loop scrolls continuously
   const displayReviews = useMemo(() => {
     const list = Array.isArray(reviews) ? reviews : [];
-    if (list.length === 0) return [];
-    if (list.length === 1) return [...list, ...list, ...list, ...list];
-    if (list.length === 2) return [...list, ...list, ...list];
+    if (list.length === 0) {
+      return [];
+    }
+    if (list.length === 1) {
+      return [...list, ...list, ...list, ...list];
+    }
+    if (list.length === 2) {
+      return [...list, ...list, ...list];
+    }
     return [...list, ...list];
   }, [reviews]);
 
@@ -166,7 +166,9 @@ export default function ReviewSection({
 
   useEffect(() => {
     const updateWidth = () => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined') {
+        return;
+      }
       if (window.innerWidth < 640) {
         setCardWidth(300);
       } else if (window.innerWidth < 1024) {
@@ -193,11 +195,15 @@ export default function ReviewSection({
   });
 
   const nextModal = () => {
-    if (!Array.isArray(reviews) || reviews.length === 0) return;
+    if (!Array.isArray(reviews) || reviews.length === 0) {
+      return;
+    }
     setSelectedReview((prev) => (prev + 1) % reviews.length);
   };
   const prevModal = () => {
-    if (!Array.isArray(reviews) || reviews.length === 0) return;
+    if (!Array.isArray(reviews) || reviews.length === 0) {
+      return;
+    }
     setSelectedReview((prev) => (prev - 1 + reviews.length) % reviews.length);
   };
 
@@ -362,12 +368,8 @@ export default function ReviewSection({
                   );
                 })}
               </div>
-              <span className="text-foreground text-xs font-black">
-                {averageRating.toFixed(1)}
-              </span>
-              <span className="text-foreground-muted text-xs font-semibold">
-                ({totalReviews})
-              </span>
+              <span className="text-foreground text-xs font-black">{averageRating.toFixed(1)}</span>
+              <span className="text-foreground-muted text-xs font-semibold">({totalReviews})</span>
             </div>
           </div>
 
@@ -389,14 +391,22 @@ export default function ReviewSection({
         {/* Carousel / Flowing Review Stream */}
         <div
           className="relative w-full overflow-visible py-2"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
+          onMouseEnter={() => {
+            setIsPaused(true);
+          }}
+          onMouseLeave={() => {
+            setIsPaused(false);
+          }}
         >
           <motion.div
             style={{ x }}
             drag="x"
-            onDragStart={() => setIsPaused(true)}
-            onDragEnd={() => setIsPaused(false)}
+            onDragStart={() => {
+              setIsPaused(true);
+            }}
+            onDragEnd={() => {
+              setIsPaused(false);
+            }}
             onUpdate={(latest) => {
               const latestX = latest.x as number;
               if (latestX <= -TOTAL_SET_WIDTH || latestX >= 0) {
@@ -406,7 +416,8 @@ export default function ReviewSection({
             className="flex w-max cursor-grab gap-4 active:cursor-grabbing sm:gap-6"
           >
             {displayReviews.map((rev, i) => {
-              const reviewIndex = Array.isArray(reviews) && reviews.length > 0 ? i % reviews.length : 0;
+              const reviewIndex =
+                Array.isArray(reviews) && reviews.length > 0 ? i % reviews.length : 0;
               return (
                 <div
                   key={`${rev.id || i}-${i}`}
@@ -434,12 +445,13 @@ export default function ReviewSection({
                       <div className="flex w-full items-center justify-between gap-2">
                         <div className="flex items-center gap-2.5">
                           <div
-                            className={`rounded-full border border-dashed p-0.5 transition-transform duration-300 group-hover:rotate-12 ${rev.membership === 'platinum'
-                              ? 'border-amber-500'
-                              : rev.membership === 'gold'
-                                ? 'border-yellow-400'
-                                : 'border-zinc-400'
-                              }`}
+                            className={`rounded-full border border-dashed p-0.5 transition-transform duration-300 group-hover:rotate-12 ${
+                              rev.membership === 'platinum'
+                                ? 'border-amber-500'
+                                : rev.membership === 'gold'
+                                  ? 'border-yellow-400'
+                                  : 'border-zinc-400'
+                            }`}
                           >
                             <span className="bg-foreground text-background flex h-8 w-8 items-center justify-center rounded-full text-xs font-black uppercase sm:h-9 sm:w-9 sm:text-sm">
                               {rev.initials}
@@ -546,7 +558,9 @@ export default function ReviewSection({
               className="bg-background border-border relative w-full max-w-md rounded-2xl border p-6 shadow-2xl sm:rounded-3xl sm:p-8"
             >
               <button
-                onClick={() => setIsInfoOpen(false)}
+                onClick={() => {
+                  setIsInfoOpen(false);
+                }}
                 className="text-foreground-muted hover:text-foreground absolute top-5 right-5 cursor-pointer transition-colors"
                 aria-label="Close"
               >
@@ -580,8 +594,9 @@ export default function ReviewSection({
                   <div className="flex gap-3 text-left">
                     <ShoppingBagIcon className="text-foreground shrink-0" size={17} />
                     <p>
-                      <span className="text-foreground font-bold">Group-Level Reviews:</span> Reviews
-                      are shared across all colorways of this model for complete transparency.
+                      <span className="text-foreground font-bold">Group-Level Reviews:</span>{' '}
+                      Reviews are shared across all colorways of this model for complete
+                      transparency.
                     </p>
                   </div>
                   <div className="flex gap-3 text-left">
@@ -594,8 +609,8 @@ export default function ReviewSection({
                   <div className="flex gap-3 text-left">
                     <AlertTriangleIcon className="shrink-0 text-rose-500" size={17} />
                     <p>
-                      <span className="text-foreground font-bold">Authentic Insights:</span> Focus on
-                      sizing, sole comfort, leather/material quality, and styling.
+                      <span className="text-foreground font-bold">Authentic Insights:</span> Focus
+                      on sizing, sole comfort, leather/material quality, and styling.
                     </p>
                   </div>
                 </div>
@@ -613,7 +628,9 @@ export default function ReviewSection({
                         Sign In Now
                       </button>
                       <button
-                        onClick={() => setIsInfoOpen(false)}
+                        onClick={() => {
+                          setIsInfoOpen(false);
+                        }}
                         className="border-border text-foreground hover:bg-foreground/5 cursor-pointer rounded-xl border px-4 py-3 text-xs font-bold uppercase transition-colors"
                       >
                         Close
@@ -621,7 +638,9 @@ export default function ReviewSection({
                     </>
                   ) : (
                     <button
-                      onClick={() => setIsInfoOpen(false)}
+                      onClick={() => {
+                        setIsInfoOpen(false);
+                      }}
                       className="bg-foreground text-background w-full cursor-pointer rounded-xl py-3 text-xs font-black tracking-widest uppercase transition-all hover:opacity-90 active:scale-95"
                     >
                       Understood
@@ -644,7 +663,9 @@ export default function ReviewSection({
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-2xl sm:p-6"
           >
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => {
+                setIsModalOpen(false);
+              }}
               className="absolute top-6 right-6 text-white/60 transition-opacity hover:text-white"
               aria-label="Close"
             >
@@ -655,8 +676,12 @@ export default function ReviewSection({
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={(_e, info) => {
-                if (info.offset.x < -80) nextModal();
-                if (info.offset.x > 80) prevModal();
+                if (info.offset.x < -80) {
+                  nextModal();
+                }
+                if (info.offset.x > 80) {
+                  prevModal();
+                }
               }}
               className="flex w-full max-w-4xl flex-col items-center gap-6 overflow-y-auto rounded-3xl bg-zinc-950 p-6 text-left text-white shadow-2xl sm:p-8 md:flex-row md:gap-10"
             >
@@ -673,7 +698,7 @@ export default function ReviewSection({
 
               <div className="flex flex-1 flex-col space-y-4 md:w-1/2">
                 <div className="flex items-center gap-3">
-                  <span className="bg-white text-black flex h-12 w-12 items-center justify-center rounded-full text-base font-black">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-base font-black text-black">
                     {reviews[selectedReview].initials}
                   </span>
                   <div>
@@ -704,9 +729,7 @@ export default function ReviewSection({
                 {reviews[selectedReview].colorway && (
                   <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-zinc-200">
                     <span>Purchased Colorway:</span>
-                    <span className="font-bold text-white">
-                      {reviews[selectedReview].colorway}
-                    </span>
+                    <span className="font-bold text-white">{reviews[selectedReview].colorway}</span>
                   </div>
                 )}
 
@@ -747,7 +770,9 @@ export default function ReviewSection({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsFormOpen(false)}
+              onClick={() => {
+                setIsFormOpen(false);
+              }}
               className="bg-background/80 fixed inset-0 z-50 backdrop-blur-md"
             />
             <motion.div
@@ -771,7 +796,9 @@ export default function ReviewSection({
                     </h3>
                   </div>
                   <button
-                    onClick={() => setIsFormOpen(false)}
+                    onClick={() => {
+                      setIsFormOpen(false);
+                    }}
                     className="text-foreground-muted hover:text-foreground border-border flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition-colors active:scale-95"
                     aria-label="Close"
                   >
@@ -806,19 +833,26 @@ export default function ReviewSection({
                           key={starIndex}
                           whileHover={{ scale: 1.15 }}
                           whileTap={{ scale: 0.9 }}
-                          onMouseEnter={() => setHoverRating(starValue)}
-                          onMouseLeave={() => setHoverRating(0)}
-                          onClick={() => setNewRating(starValue)}
+                          onMouseEnter={() => {
+                            setHoverRating(starValue);
+                          }}
+                          onMouseLeave={() => {
+                            setHoverRating(0);
+                          }}
+                          onClick={() => {
+                            setNewRating(starValue);
+                          }}
                           type="button"
                           className="cursor-pointer p-1"
                           aria-label={`${starValue} Stars`}
                         >
                           <FilledStarIcon
                             size={28}
-                            className={`transition-colors ${isFilled
-                              ? 'fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,0.35)]'
-                              : 'fill-transparent text-zinc-300 dark:text-zinc-700'
-                              }`}
+                            className={`transition-colors ${
+                              isFilled
+                                ? 'fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,0.35)]'
+                                : 'fill-transparent text-zinc-300 dark:text-zinc-700'
+                            }`}
                           />
                         </motion.button>
                       );
@@ -841,7 +875,9 @@ export default function ReviewSection({
                     <textarea
                       value={newComment}
                       maxLength={CHARACTER_LIMIT}
-                      onChange={(e) => setNewComment(e.target.value)}
+                      onChange={(e) => {
+                        setNewComment(e.target.value);
+                      }}
                       placeholder="Comment on sizing, sole comfort, materials, or leather finish..."
                       rows={3}
                       className="text-foreground placeholder:text-foreground-muted/50 w-full resize-none bg-transparent text-sm font-medium outline-none"
@@ -859,7 +895,9 @@ export default function ReviewSection({
                           />
                           <button
                             type="button"
-                            onClick={() => setSelectedImage(null)}
+                            onClick={() => {
+                              setSelectedImage(null);
+                            }}
                             className="absolute top-1 right-1 cursor-pointer rounded-full bg-black/70 p-0.5 text-white transition-colors hover:bg-black"
                             aria-label="Remove image"
                           >
@@ -886,10 +924,11 @@ export default function ReviewSection({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className={`border-border hover:border-foreground flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-xl border px-3.5 text-xs font-bold transition-all active:scale-95 ${selectedImage
-                      ? 'border-amber-400 bg-amber-400/10 text-amber-500'
-                      : 'text-foreground'
-                      }`}
+                    className={`border-border hover:border-foreground flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-xl border px-3.5 text-xs font-bold transition-all active:scale-95 ${
+                      selectedImage
+                        ? 'border-amber-400 bg-amber-400/10 text-amber-500'
+                        : 'text-foreground'
+                    }`}
                   >
                     <CameraIcon size={16} />
                     <span>{selectedImage ? 'Change Photo' : 'Add Photo'}</span>
@@ -927,8 +966,7 @@ function getDefaultRealisticReviews(
   colorVariants?: ProductColorVariant[] | null,
 ): ReviewItem[] {
   const fallbackImg =
-    mainImage ||
-    'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800';
+    mainImage || 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800';
   const defaultColorway = color || 'Original';
   const safeVariants = Array.isArray(colorVariants) ? colorVariants : [];
 

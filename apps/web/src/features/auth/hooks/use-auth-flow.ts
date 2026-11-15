@@ -224,7 +224,8 @@ export function useAuthFlow() {
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } } };
       const message =
-        err.response?.data?.message || (error instanceof Error ? error.message : 'Failed to resend OTP');
+        err.response?.data?.message ||
+        (error instanceof Error ? error.message : 'Failed to resend OTP');
       toast.error(message);
     } finally {
       setLoading(false);

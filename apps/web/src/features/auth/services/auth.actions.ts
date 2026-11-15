@@ -120,10 +120,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
 
 export async function sendOtpAction(phone: string): Promise<SendOtpResponse> {
   const headerStore = await headers();
-  const clientIp =
-    headerStore.get('x-forwarded-for') ||
-    headerStore.get('x-real-ip') ||
-    '';
+  const clientIp = headerStore.get('x-forwarded-for') || headerStore.get('x-real-ip') || '';
 
   const res = await fetch(`${API_URL}/auth/send-otp`, {
     method: 'POST',

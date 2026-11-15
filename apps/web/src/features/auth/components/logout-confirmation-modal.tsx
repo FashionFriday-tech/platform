@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { CloseIcon, LoaderIcon, LogOutIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -60,7 +61,8 @@ export function LogoutConfirmationModal({
                 Log Out?
               </h3>
               <p className="text-foreground-muted text-xs leading-relaxed font-medium">
-                Are you sure you want to sign out? You will need to receive a WhatsApp verification code (OTP) to sign back in.
+                Are you sure you want to sign out? You will need to receive a WhatsApp verification
+                code (OTP) to sign back in.
               </p>
             </div>
 
@@ -78,7 +80,7 @@ export function LogoutConfirmationModal({
                 type="button"
                 onClick={() => void onConfirm()}
                 disabled={isLoading}
-                className="border-red-500/30 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border py-4 text-center text-xs font-black tracking-widest uppercase transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-red-500/30 bg-red-500/10 py-4 text-center text-xs font-black tracking-widest text-red-500 uppercase transition-all hover:bg-red-500 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
                   <>
@@ -96,4 +98,3 @@ export function LogoutConfirmationModal({
     </AnimatePresence>
   );
 }
-
