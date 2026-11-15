@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { CloseIcon, LogOutIcon } from '@ff/ui';
 
 interface LogoutConfirmModalProps {
@@ -9,11 +10,7 @@ interface LogoutConfirmModalProps {
   onConfirm: () => void;
 }
 
-export function LogoutConfirmModal({
-  isOpen,
-  onClose,
-  onConfirm,
-}: LogoutConfirmModalProps) {
+export function LogoutConfirmModal({ isOpen, onClose, onConfirm }: LogoutConfirmModalProps) {
   if (!isOpen) {
     return null;
   }
@@ -32,9 +29,7 @@ export function LogoutConfirmModal({
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-500/10 text-red-500 dark:bg-red-500/20">
               <LogOutIcon className="h-5 w-5" />
             </div>
-            <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
-              Sign Out?
-            </h3>
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Sign Out?</h3>
           </div>
           <button
             type="button"
@@ -48,7 +43,8 @@ export function LogoutConfirmModal({
 
         {/* Message */}
         <p className="mb-6 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
-          Are you sure you want to log out of the admin panel? You will need to receive a WhatsApp OTP verification code to sign back into your account.
+          Are you sure you want to log out of the admin panel? You will need to receive a WhatsApp
+          OTP verification code to sign back into your account.
         </p>
 
         {/* Actions */}
@@ -75,4 +71,3 @@ export function LogoutConfirmModal({
     </div>
   );
 }
-

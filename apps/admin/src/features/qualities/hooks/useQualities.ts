@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { toast } from 'sonner';
 
 import {
@@ -114,9 +115,7 @@ export function useQualities() {
 
     if (selectedCategory && selectedCategory !== 'All') {
       const target = selectedCategory.toLowerCase();
-      result = result.filter((q) =>
-        q.categories.some((c) => c.toLowerCase() === target),
-      );
+      result = result.filter((q) => q.categories.some((c) => c.toLowerCase() === target));
     }
 
     if (searchQuery.trim()) {
@@ -124,7 +123,7 @@ export function useQualities() {
       result = result.filter(
         (item) =>
           item.name.toLowerCase().includes(q) ||
-          (item.description && item.description.toLowerCase().includes(q)) ||
+          item.description?.toLowerCase().includes(q) ||
           item.categories.some((c) => c.toLowerCase().includes(q)),
       );
     }

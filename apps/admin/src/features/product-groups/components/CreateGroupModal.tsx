@@ -2,8 +2,9 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { CheckIcon, PlusIcon, SearchIcon, TrashIcon } from '@ff/ui';
-import { AnimatePresence, motion } from 'motion/react';
+
+import { CheckIcon, SearchIcon } from '@ff/ui';
+import { motion } from 'motion/react';
 import { toast } from 'sonner';
 
 import api from '@/lib/api-client';
@@ -35,7 +36,7 @@ export function CreateGroupModal({
   isOpen,
   onClose,
   initialGroupName = '',
-  existingGroups = [],
+  existingGroups,
   onSuccess,
 }: CreateGroupModalProps) {
   const [groupName, setGroupName] = useState(initialGroupName);
@@ -62,7 +63,9 @@ export function CreateGroupModal({
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
     }, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [searchQuery]);
 
   // Fetch products from catalog
@@ -148,7 +151,9 @@ export function CreateGroupModal({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const selectedCount = selectedProductMap.size;
   const isExistingGroup = existingGroups.includes(groupName.trim().toLowerCase());
@@ -174,11 +179,12 @@ export function CreateGroupModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-black/5 px-6 py-4.5 dark:border-white/5">
           <div>
-            <h3 className="text-base font-black text-black dark:text-white sm:text-lg">
+            <h3 className="text-base font-black text-black sm:text-lg dark:text-white">
               {initialGroupName ? `Add Products to "${initialGroupName}"` : 'Create Product Group'}
             </h3>
             <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
-              Link products that share the same model so customers can toggle colors on the Product Detail Page.
+              Link products that share the same model so customers can toggle colors on the Product
+              Detail Page.
             </p>
           </div>
           <button
@@ -187,7 +193,12 @@ export function CreateGroupModal({
             className="rounded-full p-2 text-black/40 hover:bg-black/5 hover:text-black dark:text-white/40 dark:hover:bg-white/5 dark:hover:text-white"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -215,14 +226,14 @@ export function CreateGroupModal({
             <input
               type="text"
               value={groupName}
-              onChange={(e) =>
+              onChange={(e) => {
                 setGroupName(
                   e.target.value
                     .toLowerCase()
                     .replace(/\s+/g, '-')
                     .replace(/[^a-z0-9_-]+/g, ''),
-                )
-              }
+                );
+              }}
               placeholder="e.g. nike-dunk-low or classic-clog-crocs"
               className="mt-1.5 w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 font-mono text-xs font-semibold text-black lowercase transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white/30"
             />
@@ -241,7 +252,9 @@ export function CreateGroupModal({
                 type="text"
                 placeholder="Search by product name, brand, or category..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }}
                 className="w-full rounded-xl border border-black/10 bg-white py-2.5 pr-4 pl-10 text-xs font-medium text-black transition-all outline-none placeholder:text-black/40 focus:border-black/30 sm:text-sm dark:border-white/10 dark:bg-[#181818] dark:text-white dark:placeholder:text-white/40 dark:focus:border-white/30"
               />
             </div>
@@ -256,7 +269,9 @@ export function CreateGroupModal({
                 </span>
                 <button
                   type="button"
-                  onClick={() => setSelectedProductMap(new Map())}
+                  onClick={() => {
+                    setSelectedProductMap(new Map());
+                  }}
                   className="text-[11px] font-bold text-rose-500 hover:text-rose-600"
                 >
                   Clear Selection
@@ -271,7 +286,9 @@ export function CreateGroupModal({
                   >
                     <button
                       type="button"
-                      onClick={() => toggleSelectProduct(p)}
+                      onClick={() => {
+                        toggleSelectProduct(p);
+                      }}
                       title="Remove from selection"
                       className="absolute -top-1 -right-1 z-10 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-xs"
                     >
@@ -279,7 +296,13 @@ export function CreateGroupModal({
                     </button>
                     <div className="relative aspect-square w-full overflow-hidden rounded bg-black/5 dark:bg-white/5">
                       {p.mainImage ? (
-                        <Image src={p.mainImage} alt={p.name} fill sizes="80px" className="object-cover" />
+                        <Image
+                          src={p.mainImage}
+                          alt={p.name}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-[8px] font-bold text-black/30">
                           IMG
@@ -319,7 +342,9 @@ export function CreateGroupModal({
                   return (
                     <div
                       key={item.id}
-                      onClick={() => toggleSelectProduct(item)}
+                      onClick={() => {
+                        toggleSelectProduct(item);
+                      }}
                       className={`flex cursor-pointer items-center justify-between rounded-xl border p-2.5 transition-all ${
                         isSelected
                           ? 'border-black bg-black/5 ring-1 ring-black dark:border-white dark:bg-white/10 dark:ring-white'
@@ -329,7 +354,13 @@ export function CreateGroupModal({
                       <div className="flex min-w-0 items-center gap-3">
                         <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-black/5 dark:bg-white/5">
                           {item.mainImage ? (
-                            <Image src={item.mainImage} alt={item.name} fill sizes="44px" className="object-cover" />
+                            <Image
+                              src={item.mainImage}
+                              alt={item.name}
+                              fill
+                              sizes="44px"
+                              className="object-cover"
+                            />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center text-[10px] font-bold text-black/30">
                               IMG
@@ -337,20 +368,26 @@ export function CreateGroupModal({
                           )}
                         </div>
                         <div className="min-w-0 pr-2">
-                          <p className="truncate text-xs font-bold text-black dark:text-white">{item.name}</p>
+                          <p className="truncate text-xs font-bold text-black dark:text-white">
+                            {item.name}
+                          </p>
                           <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[10px] text-black/50 dark:text-white/50">
-                            {item.brand && item.brand.length > 0 && <span>{item.brand.join(', ')}</span>}
+                            {item.brand && item.brand.length > 0 && (
+                              <span>{item.brand.join(', ')}</span>
+                            )}
                             {item.category?.name && <span>• {item.category.name}</span>}
                             <span>• ₹{item.sellingPrice?.toLocaleString('en-IN') || 0}</span>
                             {item.modelGroup && (
                               <span
-                                className={`rounded px-1.5 py-0.2 text-[9px] font-bold font-mono ${
+                                className={`py-0.2 rounded px-1.5 font-mono text-[9px] font-bold ${
                                   isCurrentGroup
                                     ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
                                     : 'bg-black/5 text-black/60 dark:bg-white/10 dark:text-white/60'
                                 }`}
                               >
-                                {isCurrentGroup ? 'Currently in this group' : `In: ${item.modelGroup}`}
+                                {isCurrentGroup
+                                  ? 'Currently in this group'
+                                  : `In: ${item.modelGroup}`}
                               </span>
                             )}
                           </div>

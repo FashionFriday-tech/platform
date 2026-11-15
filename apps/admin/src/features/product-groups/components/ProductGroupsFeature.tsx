@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { LayersIcon, PlusIcon, SearchIcon } from '@ff/ui';
 import { motion } from 'motion/react';
 
@@ -41,9 +42,7 @@ export function ProductGroupsFeature() {
           <p className="text-[10px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
             Total Groups
           </p>
-          <p className="mt-1 text-2xl font-black text-black dark:text-white">
-            {stats.totalGroups}
-          </p>
+          <p className="mt-1 text-2xl font-black text-black dark:text-white">{stats.totalGroups}</p>
           <span className="text-[11px] font-medium text-black/50 dark:text-white/50">
             Models with colorways
           </span>
@@ -96,14 +95,18 @@ export function ProductGroupsFeature() {
             type="text"
             placeholder="Search groups by model name..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
             className="w-full rounded-xl border border-black/10 bg-white py-2.5 pr-4 pl-10 text-xs font-medium text-black transition-all outline-none placeholder:text-black/40 focus:border-black/30 sm:text-sm dark:border-white/10 dark:bg-[#111111] dark:text-white dark:placeholder:text-white/40 dark:focus:border-white/30"
           />
         </div>
 
         <button
           type="button"
-          onClick={() => openCreateModal()}
+          onClick={() => {
+            openCreateModal();
+          }}
           className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-transform hover:opacity-90 sm:text-sm dark:bg-white dark:text-black"
         >
           <PlusIcon className="h-4 w-4" />
@@ -135,7 +138,9 @@ export function ProductGroupsFeature() {
             </p>
             <button
               type="button"
-              onClick={() => openCreateModal()}
+              onClick={() => {
+                openCreateModal();
+              }}
               className="mt-4 inline-flex items-center gap-2 rounded-full bg-black px-5 py-2 text-xs font-bold text-white shadow-md hover:opacity-90 dark:bg-white dark:text-black"
             >
               <PlusIcon className="h-3.5 w-3.5" />
@@ -159,7 +164,9 @@ export function ProductGroupsFeature() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => openCreateModal(group.modelGroup)}
+                      onClick={() => {
+                        openCreateModal(group.modelGroup);
+                      }}
                       title="Search & add more products to this group"
                       className="inline-flex items-center gap-1 rounded-md border border-emerald-600/30 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
                     >
@@ -168,7 +175,9 @@ export function ProductGroupsFeature() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => openRenameModal(group)}
+                      onClick={() => {
+                        openRenameModal(group);
+                      }}
                       title="Rename this model group across all products"
                       className="rounded-md border border-black/10 px-2 py-0.5 text-[10px] font-semibold text-black/60 hover:bg-black/5 dark:border-white/10 dark:text-white/60 dark:hover:bg-white/10"
                     >
@@ -309,4 +318,3 @@ export function ProductGroupsFeature() {
     </div>
   );
 }
-

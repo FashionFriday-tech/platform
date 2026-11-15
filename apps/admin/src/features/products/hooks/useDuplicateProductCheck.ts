@@ -78,7 +78,9 @@ export function useDuplicateProductCheck(productName: string, currentProductId?:
     };
   }, [productName, currentProductId]);
 
-  const closeBox = () => setIsOpen(false);
+  const closeBox = () => {
+    setIsOpen(false);
+  };
   const openBox = () => {
     if (productName.trim().length >= 3) {
       setIsOpen(true);

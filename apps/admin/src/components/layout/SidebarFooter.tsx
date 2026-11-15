@@ -7,11 +7,12 @@ import { useTheme } from 'next-themes';
 
 import { BellIcon, LogOutIcon } from '@ff/ui';
 
-import { LogoutConfirmModal } from '../ui/LogoutConfirmModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotifications } from '@/features/notifications';
 import { usePinLockStore } from '@/features/pin-lock/store/pin-lock.store';
 import { usePwaInstall } from '@/lib/pwa/usePwaInstall';
+
+import { LogoutConfirmModal } from '../ui/LogoutConfirmModal';
 
 export function SidebarFooter() {
   const pathname = usePathname() ?? '';

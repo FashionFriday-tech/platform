@@ -41,7 +41,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
         );
         const list = Array.isArray(res) ? res : (res.data ?? []);
         setAllCategories(list);
-      } catch (err) {
+      } catch {
         // ignore
       }
     }

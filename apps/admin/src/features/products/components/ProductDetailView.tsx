@@ -69,9 +69,7 @@ export function ProductDetailView({ productId }: Props) {
       router.back();
     } else {
       const savedQuery =
-        typeof window !== 'undefined'
-          ? sessionStorage.getItem('ff_admin_products_filter')
-          : null;
+        typeof window !== 'undefined' ? sessionStorage.getItem('ff_admin_products_filter') : null;
       if (savedQuery) {
         router.push(`/products?${savedQuery}`);
       } else {
@@ -113,9 +111,7 @@ export function ProductDetailView({ productId }: Props) {
       await deleteProductApi(product.id);
       toast.success('Product deleted successfully');
       const savedQuery =
-        typeof window !== 'undefined'
-          ? sessionStorage.getItem('ff_admin_products_filter')
-          : null;
+        typeof window !== 'undefined' ? sessionStorage.getItem('ff_admin_products_filter') : null;
       if (savedQuery) {
         router.push(`/products?${savedQuery}`);
       } else {

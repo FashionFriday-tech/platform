@@ -10,7 +10,12 @@ import { useCategories } from '../../categories/hooks/useCategories';
 import { useColors } from '../../colors/hooks/useColors';
 import { type CreateColorInput } from '../../colors/types';
 import { useQualities } from '../../qualities/hooks/useQualities';
-import { getCategorySizes, isFootwearCategory, isWatchCategory, sortSizes } from '../utils/constants';
+import {
+  getCategorySizes,
+  isFootwearCategory,
+  isWatchCategory,
+  sortSizes,
+} from '../utils/constants';
 import { autoCropImageTo3x4 } from '../utils/imageCrop';
 
 export interface SelectedColor {
@@ -23,7 +28,9 @@ export interface UseAddProductFormOptions {
 }
 
 export function generateModelGroupName(productName: string): string {
-  if (!productName || !productName.trim()) return '';
+  if (!productName?.trim()) {
+    return '';
+  }
 
   // 1. Strip everything after common delimiters: " - ", " / ", " (", " | "
   let cleaned = productName.split(/\s*[-–—/|(]\s*/)[0].trim();
@@ -1193,7 +1200,9 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       for (const cat of matchingCats) {
         if (Array.isArray(cat.sizes)) {
           for (const s of cat.sizes) {
-            if (s && s.trim()) combinedSizes.push(s.trim());
+            if (s?.trim()) {
+              combinedSizes.push(s.trim());
+            }
           }
         }
       }

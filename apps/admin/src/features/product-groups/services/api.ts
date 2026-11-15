@@ -1,6 +1,6 @@
 import api from '@/lib/api-client';
 
-import { type ModelGroupDetail, type ModelGroupProduct, type ModelGroupsResponse } from '../types';
+import { type ModelGroupProduct, type ModelGroupsResponse } from '../types';
 
 export async function fetchModelGroupsDetails(
   search?: string,
@@ -60,4 +60,3 @@ export async function removeProductFromGroup(
     `/admin/products/model-groups/products/${encodeURIComponent(productId)}`,
   );
 }
-

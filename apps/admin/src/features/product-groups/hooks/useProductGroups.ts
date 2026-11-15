@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+
 import { toast } from 'sonner';
 
 import {
@@ -31,7 +32,9 @@ export function useProductGroups() {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
     }, 300);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [searchQuery]);
 
   const loadGroups = useCallback(async () => {
@@ -73,7 +76,11 @@ export function useProductGroups() {
   };
 
   const handleRemoveProduct = async (productId: string, productName?: string) => {
-    if (!confirm(`Are you sure you want to remove "${productName || 'this product'}" from this group?`)) {
+    if (
+      !confirm(
+        `Are you sure you want to remove "${productName || 'this product'}" from this group?`,
+      )
+    ) {
       return;
     }
     try {
@@ -87,7 +94,9 @@ export function useProductGroups() {
   };
 
   const handleRenameGroup = async () => {
-    if (!groupToRename || !newGroupName.trim()) return;
+    if (!groupToRename || !newGroupName.trim()) {
+      return;
+    }
     const cleanNew = newGroupName
       .trim()
       .toLowerCase()
@@ -148,4 +157,3 @@ export function useProductGroups() {
     },
   };
 }
-

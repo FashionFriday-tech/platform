@@ -1,4 +1,3 @@
 export { ProductGroupsFeature } from './components/ProductGroupsFeature';
 export { useProductGroups } from './hooks/useProductGroups';
-export * from './types';
-
+export type * from './types';

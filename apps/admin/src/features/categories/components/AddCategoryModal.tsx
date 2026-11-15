@@ -90,7 +90,7 @@ export function AddCategoryModal({
   onClose,
   onSave,
   initialData,
-  existingCategories,
+  existingCategories: _existingCategories,
 }: AddCategoryModalProps) {
   const [name, setName] = useState('');
   const [gender, setGender] = useState<'Men' | 'Women' | 'Unisex'>('Men');
@@ -156,7 +156,9 @@ export function AddCategoryModal({
 
   const handleAddCustomSize = () => {
     const clean = customSizeInput.trim();
-    if (!clean) return;
+    if (!clean) {
+      return;
+    }
     if (!sizes.some((s) => s.toLowerCase() === clean.toLowerCase())) {
       setSizes((prev) => [...prev, clean]);
     }
@@ -388,13 +390,16 @@ export function AddCategoryModal({
                     Category Size Labels {sizes.length > 0 ? `(${sizes.length} selected)` : ''}
                   </label>
                   <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
-                    Sizes for this specific category (e.g. UK sizes for footwear, Free Size for watches)
+                    Sizes for this specific category (e.g. UK sizes for footwear, Free Size for
+                    watches)
                   </p>
                 </div>
                 {sizes.length > 0 && (
                   <button
                     type="button"
-                    onClick={() => setSizes([])}
+                    onClick={() => {
+                      setSizes([]);
+                    }}
                     className="text-xs font-bold text-rose-500 hover:text-rose-600 dark:text-rose-400"
                   >
                     Clear All
@@ -457,7 +462,9 @@ export function AddCategoryModal({
                       </div>
                       <button
                         type="button"
-                        onClick={() => toggleGroup(CATEGORY_SIZE_OPTIONS[sizingType].items)}
+                        onClick={() => {
+                          toggleGroup(CATEGORY_SIZE_OPTIONS[sizingType].items);
+                        }}
                         className="text-[11px] font-bold text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white"
                       >
                         {CATEGORY_SIZE_OPTIONS[sizingType].items.every((item) =>
@@ -476,7 +483,9 @@ export function AddCategoryModal({
                           <button
                             key={item}
                             type="button"
-                            onClick={() => toggleSize(item)}
+                            onClick={() => {
+                              toggleSize(item);
+                            }}
                             className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition-all ${
                               isSelected
                                 ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
@@ -503,7 +512,9 @@ export function AddCategoryModal({
                 <input
                   type="text"
                   value={customSizeInput}
-                  onChange={(e) => setCustomSizeInput(e.target.value)}
+                  onChange={(e) => {
+                    setCustomSizeInput(e.target.value);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -537,7 +548,9 @@ export function AddCategoryModal({
                         {s}
                         <button
                           type="button"
-                          onClick={() => handleRemoveSize(s)}
+                          onClick={() => {
+                            handleRemoveSize(s);
+                          }}
                           className="ml-0.5 text-black/40 hover:text-rose-500 dark:text-white/40 dark:hover:text-rose-400"
                         >
                           ×

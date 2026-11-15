@@ -110,11 +110,7 @@ export function ProductReviews({
       );
       if (res.ok) {
         const data = await res.json();
-        const items = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.reviews)
-            ? data.reviews
-            : [];
+        const items = Array.isArray(data) ? data : Array.isArray(data?.reviews) ? data.reviews : [];
         setReviews(items);
       }
     } catch (err) {
@@ -824,7 +820,12 @@ export function ProductReviews({
                     <div className="mt-auto flex w-full items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-[10px] font-black text-white uppercase dark:bg-white dark:text-black">
-                          {String((review as any).initials || review.userName || (review as any).name || 'VB')
+                          {String(
+                            (review as any).initials ||
+                              review.userName ||
+                              (review as any).name ||
+                              'VB',
+                          )
                             .slice(0, 2)
                             .toUpperCase()}
                         </span>
@@ -833,7 +834,9 @@ export function ProductReviews({
                         </span>
                       </div>
                       <span className="text-[10px] font-bold tracking-widest text-black/40 uppercase dark:text-white/40">
-                        {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Recent'}
+                        {review.createdAt
+                          ? new Date(review.createdAt).toLocaleDateString()
+                          : 'Recent'}
                       </span>
                     </div>
                   </div>

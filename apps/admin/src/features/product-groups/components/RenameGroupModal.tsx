@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { motion } from 'motion/react';
 
 import { type ModelGroupDetail } from '../types';
@@ -22,7 +23,9 @@ export function RenameGroupModal({
   onConfirm,
   onClose,
 }: RenameGroupModalProps) {
-  if (!group) return null;
+  if (!group) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -42,9 +45,7 @@ export function RenameGroupModal({
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-black/10 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#141417]"
       >
-        <h3 className="text-lg font-black text-black dark:text-white">
-          Rename Product Group
-        </h3>
+        <h3 className="text-lg font-black text-black dark:text-white">Rename Product Group</h3>
         <p className="mt-1.5 text-xs text-black/60 dark:text-white/60">
           This will update the group slug on all{' '}
           <strong className="text-black dark:text-white">
@@ -60,14 +61,14 @@ export function RenameGroupModal({
           <input
             type="text"
             value={newGroupName}
-            onChange={(e) =>
+            onChange={(e) => {
               setNewGroupName(
                 e.target.value
                   .toLowerCase()
                   .replace(/\s+/g, '-')
                   .replace(/[^a-z0-9_-]+/g, ''),
-              )
-            }
+              );
+            }}
             placeholder="e.g. nike-dunk-low"
             className="w-full rounded-xl border border-black/10 bg-black/5 px-4 py-3 text-sm font-semibold text-black lowercase transition-all outline-none focus:border-black/30 dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-white/30"
           />
@@ -95,4 +96,3 @@ export function RenameGroupModal({
     </div>
   );
 }
-

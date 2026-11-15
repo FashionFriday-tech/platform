@@ -115,14 +115,14 @@ function getInitialFilters(searchParams: URLSearchParams | { get: (k: string) =>
       ? Boolean(window.location.search && window.location.search.length > 1)
       : Boolean(
           searchParams.get('search') ||
-            searchParams.get('categories') ||
-            searchParams.get('category') ||
-            searchParams.get('statuses') ||
-            searchParams.get('status') ||
-            searchParams.get('view') ||
-            searchParams.get('sort') ||
-            searchParams.get('brands') ||
-            searchParams.get('qualities'),
+          searchParams.get('categories') ||
+          searchParams.get('category') ||
+          searchParams.get('statuses') ||
+          searchParams.get('status') ||
+          searchParams.get('view') ||
+          searchParams.get('sort') ||
+          searchParams.get('brands') ||
+          searchParams.get('qualities'),
         );
 
   if (hasUrlParams) {

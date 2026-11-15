@@ -117,7 +117,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     isQualityOpen,
     setIsQualityOpen,
     productName,
-    setProductName,
+    setProductName: _setProductName,
     productDesc,
     setProductDesc,
     basePrice,
@@ -176,7 +176,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     modelGroupImages,
     handleProductNameChange,
     regenerateModelGroup,
-    isModelGroupLocked,
+    isModelGroupLocked: _isModelGroupLocked,
     setIsModelGroupLocked,
     groupSiblingProducts,
     isLoadingSiblings,
@@ -187,7 +187,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
   const suggestedModelGroups = useMemo(() => {
     const query = modelGroup.trim().toLowerCase();
-    if (!query) return [];
+    if (!query) {
+      return [];
+    }
 
     return availableModelGroups
       .filter((g) => g.toLowerCase().includes(query))
@@ -197,9 +199,15 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         const aStarts = aLower.startsWith(query);
         const bStarts = bLower.startsWith(query);
 
-        if (aStarts && !bStarts) return -1;
-        if (!aStarts && bStarts) return 1;
-        if (aLower.length !== bLower.length) return aLower.length - bLower.length;
+        if (aStarts && !bStarts) {
+          return -1;
+        }
+        if (!aStarts && bStarts) {
+          return 1;
+        }
+        if (aLower.length !== bLower.length) {
+          return aLower.length - bLower.length;
+        }
         return aLower.localeCompare(bLower);
       })
       .slice(0, 5);
@@ -209,7 +217,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
 
   const handleAddCustomSize = () => {
     const clean = customSizeInput.trim().toUpperCase();
-    if (!clean) return;
+    if (!clean) {
+      return;
+    }
     if (!sizes.some((s) => s.toLowerCase() === clean.toLowerCase())) {
       setSizes((prev) => [...prev, clean]);
       markTouched('sizes');
@@ -643,7 +653,10 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         sellerIds: selectedSellerIds.filter((id) => id && id !== 'none'),
         brand: brandInput.trim() ? [brandInput.trim().toUpperCase()] : ['FASHION FRIDAY'],
         modelGroup: modelGroup?.trim()
-          ? modelGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-')
+          ? modelGroup
+              .trim()
+              .toLowerCase()
+              .replace(/[^a-z0-9_-]+/g, '-')
           : undefined,
         gender: gender.toUpperCase() === 'WOMAN' ? 'WOMEN' : gender.toUpperCase(),
         attributes: {
@@ -728,9 +741,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
       // Redirect to product list after a brief delay, preserving previous filters
       setTimeout(() => {
         const savedQuery =
-          typeof window !== 'undefined'
-            ? sessionStorage.getItem('ff_admin_products_filter')
-            : null;
+          typeof window !== 'undefined' ? sessionStorage.getItem('ff_admin_products_filter') : null;
         if (savedQuery) {
           router.push(`/products?${savedQuery}`);
         } else {
@@ -1059,7 +1070,12 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                           title="Auto-generate group name from product model name"
                           className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-bold text-black/50 hover:bg-black/5 hover:text-black dark:text-white/50 dark:hover:bg-white/5 dark:hover:text-white"
                         >
-                          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="h-3 w-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -1086,7 +1102,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   </div>
 
                   <p className="mt-1 text-[11px] text-black/50 dark:text-white/50">
-                    Products with the same group name are displayed as clickable color swatches on the Product Detail Page.
+                    Products with the same group name are displayed as clickable color swatches on
+                    the Product Detail Page.
                   </p>
 
                   <div className="mt-2.5">
@@ -1180,7 +1197,11 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                             </span>
                           </div>
                           <p className="mt-0.5 truncate text-[11px] text-black/60 dark:text-white/60">
-                            Collection: <strong className="text-black dark:text-white">{category || 'General'}</strong> • This will be the first item of this model group.
+                            Collection:{' '}
+                            <strong className="text-black dark:text-white">
+                              {category || 'General'}
+                            </strong>{' '}
+                            • This will be the first item of this model group.
                           </p>
                         </div>
                       </div>
@@ -1910,7 +1931,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                         <input
                           type="text"
                           value={customSizeInput}
-                          onChange={(e) => setCustomSizeInput(e.target.value)}
+                          onChange={(e) => {
+                            setCustomSizeInput(e.target.value);
+                          }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
@@ -1944,7 +1967,9 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => setIsAddingCustomSize(true)}
+                        onClick={() => {
+                          setIsAddingCustomSize(true);
+                        }}
                         className="flex h-10 items-center justify-center rounded-xl border border-dashed border-black/20 px-3 text-xs font-bold text-black/60 transition-colors hover:border-black/40 hover:bg-black/5 dark:border-white/20 dark:text-white/60 dark:hover:border-white/40 dark:hover:bg-white/5"
                       >
                         + Size

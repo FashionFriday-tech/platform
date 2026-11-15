@@ -33,4 +33,3 @@ export interface ModelGroupsResponse {
     totalPages: number;
   };
 }
-

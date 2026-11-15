@@ -47,13 +47,13 @@ export const FOOTWEAR_SIZES_WOMEN_UNISEX = [
 
 export function sortSizes(sizesList: string[]): string[] {
   const standardAlphaOrder: Record<string, number> = {
-    'XXS': 1,
-    'XS': 2,
-    'S': 3,
-    'M': 4,
-    'L': 5,
-    'XL': 6,
-    'XXL': 7,
+    XXS: 1,
+    XS: 2,
+    S: 3,
+    M: 4,
+    L: 5,
+    XL: 6,
+    XXL: 7,
     '2XL': 7,
     '3XL': 8,
     '4XL': 9,
@@ -69,14 +69,19 @@ export function sortSizes(sizesList: string[]): string[] {
     const upperB = cleanB.toUpperCase();
 
     // Check UK sizes (e.g. "UK 3", "UK 6.5", "UK 10")
+    // eslint-disable-next-line security/detect-unsafe-regex
     const ukRegex = /^UK\s*([0-9]+(?:\.[0-9]+)?)$/i;
-    const matchUkA = cleanA.match(ukRegex);
-    const matchUkB = cleanB.match(ukRegex);
+    const matchUkA = ukRegex.exec(cleanA);
+    const matchUkB = ukRegex.exec(cleanB);
     if (matchUkA && matchUkB) {
       return parseFloat(matchUkA[1]) - parseFloat(matchUkB[1]);
     }
-    if (matchUkA) return -1;
-    if (matchUkB) return 1;
+    if (matchUkA) {
+      return -1;
+    }
+    if (matchUkB) {
+      return 1;
+    }
 
     // Check pure numbers (e.g. waist sizes 28, 30, 32)
     const numA = Number(cleanA);
@@ -84,8 +89,12 @@ export function sortSizes(sizesList: string[]): string[] {
     if (!isNaN(numA) && !isNaN(numB)) {
       return numA - numB;
     }
-    if (!isNaN(numA)) return -1;
-    if (!isNaN(numB)) return 1;
+    if (!isNaN(numA)) {
+      return -1;
+    }
+    if (!isNaN(numB)) {
+      return 1;
+    }
 
     // Check standard alpha sizes (XS, S, M, L, XL, etc.)
     const orderA = standardAlphaOrder[upperA];
@@ -93,8 +102,12 @@ export function sortSizes(sizesList: string[]): string[] {
     if (orderA !== undefined && orderB !== undefined) {
       return orderA - orderB;
     }
-    if (orderA !== undefined) return -1;
-    if (orderB !== undefined) return 1;
+    if (orderA !== undefined) {
+      return -1;
+    }
+    if (orderB !== undefined) {
+      return 1;
+    }
 
     // Fallback natural alphanumeric
     return cleanA.localeCompare(cleanB, undefined, { numeric: true });

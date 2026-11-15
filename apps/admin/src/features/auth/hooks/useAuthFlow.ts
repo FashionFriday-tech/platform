@@ -170,7 +170,9 @@ export function useAuthFlow() {
 
         if (!verifyRes.ok) {
           const errData = await verifyRes.json().catch(() => ({}));
-          throw new Error(errData.message || 'Invalid verification code. Please check your WhatsApp.');
+          throw new Error(
+            errData.message || 'Invalid verification code. Please check your WhatsApp.',
+          );
         }
 
         let adminInfo = ADMIN_DATABASE[cleanNumber];
@@ -188,11 +190,11 @@ export function useAuthFlow() {
                   role: found.role || 'SALES_MANAGER',
                   initials: found.name
                     ? found.name
-                      .split(' ')
-                      .map((w: string) => w[0])
-                      .join('')
-                      .slice(0, 2)
-                      .toUpperCase()
+                        .split(' ')
+                        .map((w: string) => w[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase()
                     : 'TM',
                 };
               }
