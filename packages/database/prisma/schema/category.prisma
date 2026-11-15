@@ -1,18 +1,15 @@
 model Category {
-  id       String   @id @default(uuid())
-  name     String
-  slug     String   @unique
-  image    String
-  gender   Gender
-  position Int      @default(0)
-  sizes    String[] @default([])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
-  sellers  Seller[]
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  image     String
+  gender    Gender
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  position  Int       @default(0)
+  sizes     String[]  @default([])
+  products  Product[]
+  sellers   Seller[]  @relation("CategoryToSeller")
 
   @@map("categories")
 }
-

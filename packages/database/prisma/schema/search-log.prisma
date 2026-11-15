@@ -1,11 +1,9 @@
 model SearchLog {
-  id    String @id @default(uuid())
-  query String
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
+  id        String   @id @default(uuid())
+  query     String
+  userId    String?
   createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([createdAt])

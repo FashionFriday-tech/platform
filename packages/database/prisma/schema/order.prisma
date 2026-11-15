@@ -1,19 +1,102 @@
+model Order {
+  id                String        @id @default(uuid())
+  userId            String
+  orderNumber       String        @unique
+  status            OrderStatus   @default(PENDING)
+  paymentStatus     PaymentStatus @default(PENDING)
+  paymentMethod     PaymentMethod
+  totalAmount       Decimal       @db.Decimal(12, 2)
+  discountAmount    Decimal       @default(0) @db.Decimal(12, 2)
+  shippingFees      Decimal       @default(0) @db.Decimal(12, 2)
+  finalAmount       Decimal       @db.Decimal(12, 2)
+  refundedAmount    Decimal       @default(0) @db.Decimal(12, 2)
+  shippingAddress   Json
+  trackingNumber    String?
+  courierPartner    String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  razorpayOrderId   String?       @unique
+  razorpayPaymentId String?       @unique
+  razorpaySignature String?
+  items             OrderItem[]
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([orderNumber])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String
+  name      String
+  image     String
+  size      String
+  color     String
+  price     Decimal  @db.Decimal(12, 2)
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sellerId  String?
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  seller    Seller?  @relation(fields: [sellerId], references: [id])
+
+  @@index([orderId])
+  @@index([sellerId])
+  @@map("order_items")
+}
+
+model WebhookEvent {
+  id          String    @id
+  event       String
+  status      String    @default("PENDING")
+  attempts    Int       @default(0)
+  lastError   String?
+  payload     Json?
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([event])
+  @@index([status])
+  @@index([createdAt])
+  @@map("webhook_events")
+}
+
+model ClusterLock {
+  id        String   @id
+  lockedBy  String
+  lockedAt  DateTime @default(now())
+  expiresAt DateTime
+  updatedAt DateTime @updatedAt
+
+  @@map("cluster_locks")
+}
+
 enum OrderStatus {
   PENDING
-  CONFIRMED
+  STOCK_CHECK
+  STOCK_CONFIRMED
   PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
-  RETURNED
-  REFUNDED
 }
 
 enum PaymentStatus {
   PENDING
   AUTHORIZED
-  SUCCESS
+  CAPTURE_PENDING
+  CAPTURED
   FAILED
+  VOID_PENDING
+  VOIDED
+  REFUND_PENDING
+  PARTIALLY_REFUNDED
   REFUNDED
 }
 
@@ -22,61 +105,4 @@ enum PaymentMethod {
   RAZORPAY
   STRIPE
   WALLET
-}
-
-model Order {
-  id     String @id @default(uuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  orderNumber String @unique // Customer facing reference
-
-  status        OrderStatus   @default(PENDING)
-  paymentStatus PaymentStatus @default(PENDING)
-  paymentMethod PaymentMethod
-
-  // Totals
-  totalAmount    Decimal @db.Decimal(12, 2)
-  discountAmount Decimal @default(0) @db.Decimal(12, 2)
-  shippingFees   Decimal @default(0) @db.Decimal(12, 2)
-  finalAmount    Decimal @db.Decimal(12, 2)
-
-  // Shipping (Snapshot of user address at order time)
-  shippingAddress Json
-  trackingNumber  String?
-  courierPartner  String?
-
-  items OrderItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([orderNumber])
-  @@map("orders")
-}
-
-model OrderItem {
-  id      String @id @default(uuid())
-  orderId String
-  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  productId String
-  // We keep essential data even if product is deleted
-  name      String
-  image     String
-  size      String
-  color     String
-  price     Decimal @db.Decimal(12, 2)
-  quantity  Int
-
-  sellerId  String?
-  seller    Seller? @relation(fields: [sellerId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([orderId])
-  @@index([sellerId])
-  @@map("order_items")
 }

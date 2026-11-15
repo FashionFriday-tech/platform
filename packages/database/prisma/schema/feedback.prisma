@@ -1,7 +1,7 @@
 model Feedback {
   id          String   @id @default(uuid())
-  type        String   // 'issue', 'improvement', 'suggestion', 'other'
-  description String   @db.Text
+  type        String
+  description String
   email       String?
   createdAt   DateTime @default(now())
 

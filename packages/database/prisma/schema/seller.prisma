@@ -1,26 +1,24 @@
+model Seller {
+  id         String       @id @default(uuid())
+  name       String
+  storeName  String
+  email      String?
+  phone      String
+  address    String?
+  status     SellerStatus @default(ACTIVE)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  website    String?
+  instagram  String?
+  orderItems OrderItem[]
+  products   Product[]
+  categories Category[]   @relation("CategoryToSeller")
+
+  @@map("sellers")
+}
+
 enum SellerStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
-}
-
-model Seller {
-  id          String       @id @default(uuid())
-  name        String
-  storeName   String
-  email       String?
-  phone       String
-  address     String?
-  website     String?
-  instagram   String?
-  status      SellerStatus @default(ACTIVE)
-
-  categories  Category[]
-  products    Product[]
-  orderItems  OrderItem[]
-
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  @@map("sellers")
 }
