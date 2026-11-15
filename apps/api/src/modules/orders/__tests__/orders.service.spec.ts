@@ -1,0 +1,515 @@
+import { OrderStatus, PaymentMethod, PaymentStatus } from '@ff/database';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
+
+import { PrismaService } from '../../../database/prisma.service';
+import { NotificationsService } from '../../notifications/notifications.service';
+import { OrdersService } from '../orders.service';
+import { RazorpayService } from '../services/razorpay.service';
+
+describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
+  let service: OrdersService;
+  let prismaMock: any;
+  let razorpayMock: any;
+  let notificationsMock: any;
+
+  beforeEach(async () => {
+    prismaMock = {
+      db: {
+        order: {
+          findUnique: jest.fn(),
+          findMany: jest.fn(),
+          create: jest.fn(),
+          update: jest.fn(),
+          updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+          count: jest.fn(),
+        },
+        cartItem: {
+          findMany: jest.fn(),
+          deleteMany: jest.fn(),
+        },
+        address: {
+          findUnique: jest.fn(),
+          findFirst: jest.fn(),
+        },
+        product: {
+          findMany: jest.fn(),
+        },
+        webhookEvent: {
+          create: jest.fn(),
+          findUnique: jest.fn(),
+          findMany: jest.fn().mockResolvedValue([]),
+          update: jest.fn(),
+          updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+        },
+      },
+    };
+
+    razorpayMock = {
+      getKeyId: jest.fn().mockReturnValue('rzp_test_mockKeyId'),
+      createOrder: jest.fn(),
+      capturePayment: jest.fn(),
+      voidPayment: jest.fn(),
+      refundPayment: jest.fn(),
+      fetchPayment: jest.fn(),
+      verifyPaymentSignature: jest.fn(),
+      verifyWebhookSignature: jest.fn(),
+    };
+
+    notificationsMock = {
+      notifyNewOrder: jest.fn(),
+      notifyOrderStatus: jest.fn(),
+    };
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        OrdersService,
+        { provide: PrismaService, useValue: prismaMock },
+        { provide: RazorpayService, useValue: razorpayMock },
+        { provide: NotificationsService, useValue: notificationsMock },
+      ],
+    }).compile();
+
+    service = module.get<OrdersService>(OrdersService);
+  });
+
+  describe('1. Payment Authorization & Signature Verification', () => {
+    const mockOrder = {
+      id: 'ORD-12345',
+      userId: 'user-001',
+      orderNumber: 'ORD-12345',
+      status: OrderStatus.PENDING,
+      paymentStatus: PaymentStatus.PENDING,
+      paymentMethod: PaymentMethod.RAZORPAY,
+      razorpayOrderId: 'order_rzp_123',
+      finalAmount: 1500,
+      items: [],
+    };
+
+    it('should successfully verify payment signature and transition to STOCK_CHECK / AUTHORIZED', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(mockOrder);
+      razorpayMock.verifyPaymentSignature.mockReturnValue(true);
+      prismaMock.db.order.update.mockResolvedValue({
+        ...mockOrder,
+        status: OrderStatus.STOCK_CHECK,
+        paymentStatus: PaymentStatus.AUTHORIZED,
+        razorpayPaymentId: 'pay_rzp_999',
+      });
+
+      const result = await service.verifyPayment('user-001', {
+        orderId: 'ORD-12345',
+        razorpayOrderId: 'order_rzp_123',
+        razorpayPaymentId: 'pay_rzp_999',
+        razorpaySignature: 'valid_signature_hash',
+      });
+
+      expect(result.success).toBe(true);
+      expect(prismaMock.db.order.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'ORD-12345' },
+          data: expect.objectContaining({
+            status: OrderStatus.STOCK_CHECK,
+            paymentStatus: PaymentStatus.AUTHORIZED,
+            razorpayPaymentId: 'pay_rzp_999',
+          }),
+        }),
+      );
+      expect(prismaMock.db.cartItem.deleteMany).toHaveBeenCalledWith({
+        where: { userId: 'user-001' },
+      });
+    });
+
+    it('should reject invalid payment signatures and mark order paymentStatus as FAILED', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(mockOrder);
+      razorpayMock.verifyPaymentSignature.mockReturnValue(false);
+
+      await expect(
+        service.verifyPayment('user-001', {
+          orderId: 'ORD-12345',
+          razorpayOrderId: 'order_rzp_123',
+          razorpayPaymentId: 'pay_rzp_999',
+          razorpaySignature: 'forged_signature',
+        }),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(prismaMock.db.order.update).toHaveBeenCalledWith({
+        where: { id: 'ORD-12345' },
+        data: { paymentStatus: PaymentStatus.FAILED },
+      });
+      expect(prismaMock.db.cartItem.deleteMany).not.toHaveBeenCalled();
+    });
+
+    it('should prevent IDOR: user cannot verify another user’s order', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(mockOrder);
+
+      await expect(
+        service.verifyPayment('attacker-user-id', {
+          orderId: 'ORD-12345',
+          razorpayOrderId: 'order_rzp_123',
+          razorpayPaymentId: 'pay_rzp_999',
+          razorpaySignature: 'valid_signature_hash',
+        }),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('2. Payment Capture Atomicity & Gateway Reconciliation', () => {
+    const authorizedOrder = {
+      id: 'ORD-CAPTURE-1',
+      orderNumber: 'ORD-CAPTURE-1',
+      status: OrderStatus.STOCK_CHECK,
+      paymentStatus: PaymentStatus.AUTHORIZED,
+      paymentMethod: PaymentMethod.RAZORPAY,
+      razorpayPaymentId: 'pay_auth_capture_1',
+      finalAmount: 2500,
+      items: [],
+    };
+
+    it('should atomically claim lock and capture funds from Razorpay', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(authorizedOrder);
+      prismaMock.db.order.updateMany.mockResolvedValue({ count: 1 });
+      razorpayMock.capturePayment.mockResolvedValue({
+        id: 'pay_auth_capture_1',
+        status: 'captured',
+      });
+      prismaMock.db.order.update.mockResolvedValue({
+        ...authorizedOrder,
+        status: OrderStatus.STOCK_CONFIRMED,
+        paymentStatus: PaymentStatus.CAPTURED,
+      });
+
+      const result = await service.confirmStockAndCapture('ORD-CAPTURE-1');
+
+      expect(prismaMock.db.order.updateMany).toHaveBeenCalledWith({
+        where: {
+          id: 'ORD-CAPTURE-1',
+          status: OrderStatus.STOCK_CHECK,
+          paymentStatus: PaymentStatus.AUTHORIZED,
+        },
+        data: {
+          status: OrderStatus.STOCK_CONFIRMED,
+        },
+      });
+      expect(razorpayMock.capturePayment).toHaveBeenCalledWith('pay_auth_capture_1', 250000, 'INR');
+      expect(result.paymentStatus).toBe(PaymentStatus.CAPTURED);
+    });
+
+    it('should prevent double-capture race: if lock count is 0 and order was captured by peer, returns idempotently', async () => {
+      prismaMock.db.order.findUnique
+        .mockResolvedValueOnce(authorizedOrder) // Initial read
+        .mockResolvedValueOnce({
+          ...authorizedOrder,
+          status: OrderStatus.STOCK_CONFIRMED,
+          paymentStatus: PaymentStatus.CAPTURED,
+        }); // Post-collision read
+
+      // Lock claim fails (count = 0) because another concurrent request already updated it
+      prismaMock.db.order.updateMany.mockResolvedValue({ count: 0 });
+
+      const result = await service.confirmStockAndCapture('ORD-CAPTURE-1');
+
+      expect(razorpayMock.capturePayment).not.toHaveBeenCalled();
+      expect(result.status).toBe(OrderStatus.STOCK_CONFIRMED);
+      expect(result.paymentStatus).toBe(PaymentStatus.CAPTURED);
+    });
+
+    it('should reconcile gateway state if capture throws exception (Never miss a successful gateway capture)', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(authorizedOrder);
+      prismaMock.db.order.updateMany.mockResolvedValue({ count: 1 });
+      razorpayMock.capturePayment.mockRejectedValue(new Error('Gateway response timeout'));
+      razorpayMock.fetchPayment.mockResolvedValue({ id: 'pay_auth_capture_1', status: 'captured' });
+      prismaMock.db.order.update.mockResolvedValue({
+        ...authorizedOrder,
+        status: OrderStatus.STOCK_CONFIRMED,
+        paymentStatus: PaymentStatus.CAPTURED,
+      });
+
+      const result = await service.confirmStockAndCapture('ORD-CAPTURE-1');
+
+      expect(razorpayMock.fetchPayment).toHaveBeenCalledWith('pay_auth_capture_1');
+      expect(result.status).toBe(OrderStatus.STOCK_CONFIRMED);
+      expect(result.paymentStatus).toBe(PaymentStatus.CAPTURED);
+    });
+
+    it('should reject capture on cancelled orders', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue({
+        ...authorizedOrder,
+        status: OrderStatus.CANCELLED,
+      });
+
+      await expect(service.confirmStockAndCapture('ORD-CAPTURE-1')).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(razorpayMock.capturePayment).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('3. Distinct State Tracking: Authorization Void vs Refund', () => {
+    const authorizedOrder = {
+      id: 'ORD-OUT-OF-STOCK',
+      orderNumber: 'ORD-OUT-OF-STOCK',
+      status: OrderStatus.STOCK_CHECK,
+      paymentStatus: PaymentStatus.AUTHORIZED,
+      paymentMethod: PaymentMethod.RAZORPAY,
+      razorpayPaymentId: 'pay_auth_void_123',
+      finalAmount: 1200,
+      items: [],
+    };
+
+    it('should release the bank authorization at ₹0 fee and set state to VOIDED (Never label void as refund)', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(authorizedOrder);
+      razorpayMock.voidPayment.mockResolvedValue({ id: 'pay_auth_void_123', status: 'voided' });
+      prismaMock.db.order.update.mockResolvedValue({
+        ...authorizedOrder,
+        status: OrderStatus.CANCELLED,
+        paymentStatus: PaymentStatus.VOIDED,
+      });
+
+      const result = await service.rejectStockAndVoid(
+        'ORD-OUT-OF-STOCK',
+        'Out of stock at supplier',
+      );
+
+      expect(razorpayMock.voidPayment).toHaveBeenCalledWith('pay_auth_void_123');
+      expect(result.status).toBe(OrderStatus.CANCELLED);
+      expect(result.paymentStatus).toBe(PaymentStatus.VOIDED);
+    });
+
+    it('should mark VOID_PENDING if gateway void fails (never mask failure as successful void)', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(authorizedOrder);
+      razorpayMock.voidPayment.mockRejectedValue(new Error('Gateway timeout'));
+      prismaMock.db.order.update.mockResolvedValue({
+        ...authorizedOrder,
+        status: OrderStatus.CANCELLED,
+        paymentStatus: PaymentStatus.VOID_PENDING,
+      });
+
+      const result = await service.rejectStockAndVoid('ORD-OUT-OF-STOCK', 'Out of stock');
+
+      expect(prismaMock.db.order.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: OrderStatus.CANCELLED,
+            paymentStatus: PaymentStatus.VOID_PENDING,
+          }),
+        }),
+      );
+      expect(result.paymentStatus).toBe(PaymentStatus.VOID_PENDING);
+    });
+
+    it('should block void if payment was already captured (forces refund endpoint)', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue({
+        ...authorizedOrder,
+        paymentStatus: PaymentStatus.CAPTURED,
+      });
+
+      await expect(service.rejectStockAndVoid('ORD-OUT-OF-STOCK')).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(razorpayMock.voidPayment).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('4. Post-Capture Refunds (Full, Partial & Cumulative Limits)', () => {
+    const capturedOrder = {
+      id: 'ORD-CAPTURED-REFUND',
+      orderNumber: 'ORD-CAPTURED-REFUND',
+      status: OrderStatus.STOCK_CONFIRMED,
+      paymentStatus: PaymentStatus.CAPTURED,
+      paymentMethod: PaymentMethod.RAZORPAY,
+      razorpayPaymentId: 'pay_captured_777',
+      finalAmount: 3000,
+      refundedAmount: 0,
+      items: [],
+    };
+
+    it('should successfully execute a full refund and mark order REFUNDED & CANCELLED', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(capturedOrder);
+      razorpayMock.refundPayment.mockResolvedValue({ id: 'rfnd_123', status: 'processed' });
+      prismaMock.db.order.update.mockResolvedValue({
+        ...capturedOrder,
+        status: OrderStatus.CANCELLED,
+        paymentStatus: PaymentStatus.REFUNDED,
+        refundedAmount: 3000,
+      });
+
+      const result = await service.refundCapturedOrder(
+        'ORD-CAPTURED-REFUND',
+        3000,
+        'Customer return',
+      );
+
+      expect(razorpayMock.refundPayment).toHaveBeenCalledWith(
+        'pay_captured_777',
+        300000,
+        expect.objectContaining({ orderId: 'ORD-CAPTURED-REFUND' }),
+      );
+      expect(result.success).toBe(true);
+      expect(result.isPartial).toBe(false);
+      expect(result.order.paymentStatus).toBe(PaymentStatus.REFUNDED);
+    });
+
+    it('should successfully execute a partial refund and mark order PARTIALLY_REFUNDED', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue(capturedOrder);
+      razorpayMock.refundPayment.mockResolvedValue({ id: 'rfnd_part_456', status: 'processed' });
+      prismaMock.db.order.update.mockResolvedValue({
+        ...capturedOrder,
+        status: OrderStatus.STOCK_CONFIRMED,
+        paymentStatus: PaymentStatus.PARTIALLY_REFUNDED,
+        refundedAmount: 1000,
+      });
+
+      const result = await service.refundCapturedOrder(
+        'ORD-CAPTURED-REFUND',
+        1000,
+        'Partial return',
+      );
+
+      expect(razorpayMock.refundPayment).toHaveBeenCalledWith(
+        'pay_captured_777',
+        100000,
+        expect.anything(),
+      );
+      expect(result.success).toBe(true);
+      expect(result.isPartial).toBe(true);
+      expect(result.order.paymentStatus).toBe(PaymentStatus.PARTIALLY_REFUNDED);
+    });
+
+    it('should reject refund if requested amount exceeds remaining refundable balance', async () => {
+      const partiallyRefundedOrder = {
+        ...capturedOrder,
+        finalAmount: 3000,
+        refundedAmount: 2500, // Remaining balance is ₹500
+        paymentStatus: PaymentStatus.PARTIALLY_REFUNDED,
+      };
+      prismaMock.db.order.findUnique.mockResolvedValue(partiallyRefundedOrder);
+
+      // Attempting to refund ₹600 when only ₹500 is left
+      await expect(
+        service.refundCapturedOrder('ORD-CAPTURED-REFUND', 600, 'Excess refund'),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(razorpayMock.refundPayment).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('5. Persistent Webhook Inbox Pattern & Deduplication', () => {
+    const rawBodyBuffer = Buffer.from(JSON.stringify({ event: 'payment.authorized' }));
+
+    it('should reject webhooks without x-razorpay-signature with 401 Unauthorized', async () => {
+      await expect(
+        service.handleWebhook({ event: 'payment.authorized' }, '', rawBodyBuffer),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should reject webhooks with forged signature with 401 Unauthorized', async () => {
+      razorpayMock.verifyWebhookSignature.mockReturnValue(false);
+
+      await expect(
+        service.handleWebhook({ event: 'payment.authorized' }, 'invalid_sig', rawBodyBuffer),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should durably persist webhook event in PostgreSQL inbox before processing', async () => {
+      razorpayMock.verifyWebhookSignature.mockReturnValue(true);
+      prismaMock.db.webhookEvent.create.mockResolvedValue({
+        id: 'evt_unique_1',
+        status: 'PENDING',
+      });
+      prismaMock.db.order.findUnique.mockResolvedValue({
+        id: 'ORD-HOOK-1',
+        userId: 'user-hook',
+        paymentStatus: PaymentStatus.PENDING,
+      });
+
+      const payload = {
+        event: 'payment.authorized',
+        payload: {
+          payment: {
+            entity: { id: 'pay_hook_999', order_id: 'order_hook_123' },
+          },
+        },
+      };
+
+      const result = await service.handleWebhook(
+        payload,
+        'valid_sig',
+        rawBodyBuffer,
+        'evt_unique_1',
+      );
+
+      expect(result.received).toBe(true);
+      expect(prismaMock.db.webhookEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ id: 'evt_unique_1', status: 'PENDING' }),
+        }),
+      );
+      expect(prismaMock.db.webhookEvent.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'evt_unique_1' },
+          data: expect.objectContaining({ status: 'PROCESSED' }),
+        }),
+      );
+    });
+
+    it('should gracefully handle PostgreSQL P2002 unique constraint (Multi-instance webhook deduplication)', async () => {
+      razorpayMock.verifyWebhookSignature.mockReturnValue(true);
+      prismaMock.db.webhookEvent.create.mockRejectedValue({
+        code: 'P2002',
+        message: 'Unique constraint failed',
+      });
+      prismaMock.db.webhookEvent.findUnique.mockResolvedValue({
+        id: 'evt_collision_test',
+        status: 'PROCESSED',
+      });
+
+      const payload = {
+        event: 'payment.authorized',
+        payload: { payment: { entity: { id: 'pay_1', order_id: 'order_1' } } },
+      };
+
+      const result = await service.handleWebhook(
+        payload,
+        'valid_sig',
+        rawBodyBuffer,
+        'evt_collision_test',
+      );
+
+      expect(result.received).toBe(true);
+      expect(result.duplicate).toBe(true);
+      expect(prismaMock.db.order.findUnique).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('6. Reconciliation & Expiry Report', () => {
+    it('should identify expiring authorizations, expired authorizations, and pending intervention states', async () => {
+      prismaMock.db.order.findMany
+        .mockResolvedValueOnce([
+          { id: 'ORD-EXPIRING', orderNumber: 'ORD-EXPIRING', finalAmount: 1500 },
+        ])
+        .mockResolvedValueOnce([
+          { id: 'ORD-EXPIRED', orderNumber: 'ORD-EXPIRED', finalAmount: 2200 },
+        ])
+        .mockResolvedValueOnce([
+          {
+            id: 'ORD-VOID-PENDING',
+            orderNumber: 'ORD-VOID-PENDING',
+            paymentStatus: PaymentStatus.VOID_PENDING,
+          },
+        ]);
+      prismaMock.db.webhookEvent.findMany.mockResolvedValueOnce([
+        { id: 'evt_stuck', status: 'FAILED' },
+      ]);
+
+      const report = await service.getReconciliationReport();
+
+      expect(report.summary.expiringAuthorizationsCount).toBe(1);
+      expect(report.summary.expiredAuthorizationsCount).toBe(1);
+      expect(report.summary.pendingInterventionsCount).toBe(1);
+      expect(report.summary.unhandledWebhooksCount).toBe(1);
+      expect(report.expiringAuthorizations[0].id).toBe('ORD-EXPIRING');
+      expect(report.pendingInterventions[0].id).toBe('ORD-VOID-PENDING');
+      expect(report.unhandledWebhooks[0].id).toBe('evt_stuck');
+    });
+  });
+});
