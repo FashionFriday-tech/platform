@@ -20,6 +20,16 @@ export function OrderStatusBadge({ status, className, inverted = false }: OrderS
       classes:
         'bg-yellow-500/10 text-yellow-600 dark:bg-yellow-400/10 dark:text-yellow-400 border-yellow-500/20',
     },
+    stock_check: {
+      label: 'Stock Check',
+      classes:
+        'bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400 border-amber-500/20',
+    },
+    stock_confirmed: {
+      label: 'Stock Confirmed',
+      classes:
+        'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400 border-emerald-500/20',
+    },
     processing: {
       label: 'Placed with Seller',
       classes:
@@ -61,6 +71,16 @@ export function OrderStatusBadge({ status, className, inverted = false }: OrderS
       label: 'Order Placed',
       classes:
         'bg-yellow-400/15 text-yellow-300 border-yellow-400/30 dark:bg-yellow-50 dark:text-yellow-700 dark:border-yellow-600/20',
+    },
+    stock_check: {
+      label: 'Stock Check',
+      classes:
+        'bg-amber-400/15 text-amber-300 border-amber-400/30 dark:bg-amber-50 dark:text-amber-700 dark:border-amber-600/20',
+    },
+    stock_confirmed: {
+      label: 'Stock Confirmed',
+      classes:
+        'bg-emerald-400/15 text-emerald-300 border-emerald-400/30 dark:bg-emerald-50 dark:text-emerald-700 dark:border-emerald-600/20',
     },
     processing: {
       label: 'Placed with Seller',

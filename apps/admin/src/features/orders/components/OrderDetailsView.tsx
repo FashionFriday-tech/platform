@@ -23,7 +23,8 @@ interface StepConfig {
 
 const REAL_STEPS: StepConfig[] = [
   { key: 'pending', label: 'Order Placed' },
-  { key: 'confirmed', label: 'Confirmed' },
+  { key: 'stock_check', label: 'Stock Check' },
+  { key: 'stock_confirmed', label: 'Stock Confirmed' },
   { key: 'processing', label: 'Placed with Seller' },
   { key: 'shipped', label: 'Shipped' },
   { key: 'delivered', label: 'Delivered' },
@@ -309,6 +310,40 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     }, 3000);
   };
 
+  const handleConfirmStock = async () => {
+    try {
+      setIsUpdatingStatus(true);
+      await api.post(`/orders/${order.id}/confirm-stock`, {});
+      setOrderStatus('stock_confirmed');
+      alert('Stock confirmed! Payment captured successfully on Razorpay.');
+    } catch (err: any) {
+      console.error('Failed to confirm stock:', err);
+      alert(err.message || 'Failed to confirm stock and capture payment');
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleRejectStock = async () => {
+    if (
+      window.confirm(
+        'Are you sure this product is OUT OF STOCK? Payment authorization will be released back to customer with ZERO gateway fees.',
+      )
+    ) {
+      try {
+        setIsUpdatingStatus(true);
+        await api.post(`/orders/${order.id}/reject-stock`, { reason: 'Out of stock' });
+        setOrderStatus('cancelled');
+        alert('Order cancelled! Authorized funds released at ₹0 fee.');
+      } catch (err: any) {
+        console.error('Failed to reject stock:', err);
+        alert(err.message || 'Failed to cancel order');
+      } finally {
+        setIsUpdatingStatus(false);
+      }
+    }
+  };
+
   const getOrderSummaryText = () => {
     const itemsText = order.items
       .map(
@@ -479,7 +514,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {normalizedStatus === 'pending' && (
+            {(normalizedStatus === 'pending' || normalizedStatus === 'stock_check') && (
               <>
                 <button
                   onClick={handleInquiryWhatsApp}
@@ -490,15 +525,22 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                 </button>
                 <button
                   disabled={isUpdatingStatus}
-                  onClick={() => updateOrderOnBackend({ status: 'confirmed' })}
+                  onClick={handleConfirmStock}
                   className="flex items-center gap-1.5 rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
                 >
-                  ✅ Stock Available
+                  ✅ Stock Available (Capture Payment)
+                </button>
+                <button
+                  disabled={isUpdatingStatus}
+                  onClick={handleRejectStock}
+                  className="flex items-center gap-1.5 rounded-xl bg-red-600/10 px-4 py-2 text-xs font-bold text-red-600 transition-all hover:bg-red-600/20 active:scale-95 disabled:opacity-50 dark:bg-red-500/15 dark:text-red-400"
+                >
+                  ❌ Out of Stock (Void ₹0)
                 </button>
               </>
             )}
 
-            {normalizedStatus === 'confirmed' && (
+            {(normalizedStatus === 'confirmed' || normalizedStatus === 'stock_confirmed') && (
               <>
                 <button
                   onClick={handleWhatsApp}
@@ -1075,20 +1117,22 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                   </label>
                   <CustomSelect
                     options={[
-                      { label: 'Order Placed', value: 'pending' },
-                      { label: 'Confirmed', value: 'confirmed' },
-                      { label: 'Placed with Seller', value: 'processing' },
+                      { label: 'Order Placed (Pending)', value: 'pending' },
+                      { label: 'Stock Check', value: 'stock_check' },
+                      { label: 'Stock Confirmed', value: 'stock_confirmed' },
+                      { label: 'Placed with Seller (Processing)', value: 'processing' },
                       { label: 'Shipped', value: 'shipped' },
                       { label: 'Delivered', value: 'delivered' },
                       { label: 'Cancelled', value: 'cancelled' },
-                      { label: 'Refunded', value: 'refunded' },
                     ]}
                     value={pendingStatus}
                     onChange={setPendingStatus}
                   />
                 </div>
 
-                {pendingStatus === 'confirmed' && (
+                {(pendingStatus === 'confirmed' ||
+                  pendingStatus === 'stock_confirmed' ||
+                  pendingStatus === 'processing') && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}

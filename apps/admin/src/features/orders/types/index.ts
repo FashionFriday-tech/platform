@@ -1,14 +1,28 @@
 export type OrderStatus =
   | 'pending'
-  | 'confirmed'
+  | 'stock_check'
+  | 'stock_confirmed'
   | 'processing'
   | 'shipped'
   | 'delivered'
   | 'cancelled'
+  | 'confirmed'
   | 'returned'
   | 'refunded';
 
-export type PaymentStatus = 'paid' | 'unpaid' | 'refunded';
+export type PaymentStatus =
+  | 'pending'
+  | 'authorized'
+  | 'capture_pending'
+  | 'captured'
+  | 'failed'
+  | 'void_pending'
+  | 'voided'
+  | 'refund_pending'
+  | 'partially_refunded'
+  | 'refunded'
+  | 'paid'
+  | 'unpaid';
 
 export interface Customer {
   id: string;

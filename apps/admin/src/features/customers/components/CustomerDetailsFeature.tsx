@@ -1358,11 +1358,13 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                       </span>
                       <span
                         className={`flex h-6 items-center rounded-full px-2.5 text-[10px] font-bold tracking-wider uppercase ${
-                          order.paymentStatus === 'SUCCESS'
+                          order.paymentStatus === 'CAPTURED' || order.paymentStatus === 'SUCCESS'
                             ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                            : order.paymentStatus === 'FAILED'
-                              ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                            : order.paymentStatus === 'AUTHORIZED'
+                              ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                              : order.paymentStatus === 'FAILED'
+                                ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
                         }`}
                       >
                         {order.paymentStatus}
