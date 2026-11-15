@@ -37,13 +37,12 @@ export function OtpStep({
           return (
             <div
               key={index}
-              className={`group relative -skew-x-[12deg] rounded-md border transition-all duration-200 sm:-skew-x-[14deg] sm:rounded-lg ${
-                hasError
-                  ? 'animate-shake border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
-                  : isFilled
-                    ? 'border-zinc-500 bg-zinc-900/90'
-                    : 'border-zinc-800 bg-black focus-within:border-zinc-400 focus-within:ring-1 focus-within:ring-zinc-500 hover:border-zinc-700'
-              }`}
+              className={`group relative -skew-x-[12deg] rounded-md border transition-all duration-200 sm:-skew-x-[14deg] sm:rounded-lg ${hasError
+                ? 'animate-shake border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                : isFilled
+                  ? 'border-zinc-500 bg-zinc-900/90'
+                  : 'border-zinc-800 bg-black focus-within:border-zinc-400 focus-within:ring-1 focus-within:ring-zinc-500 hover:border-zinc-700'
+                }`}
             >
               <input
                 type="text"
@@ -81,11 +80,10 @@ export function OtpStep({
           type="button"
           onClick={handleResendOTP}
           disabled={timer > 0}
-          className={`font-bold tracking-[0.2em] uppercase transition-all ${
-            timer > 0
-              ? 'cursor-not-allowed font-mono text-base text-zinc-400'
-              : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-300'
-          }`}
+          className={`font-bold tracking-[0.2em] uppercase transition-all ${timer > 0
+            ? 'cursor-not-allowed font-mono text-base text-zinc-400'
+            : 'text-[10px] text-white underline underline-offset-4 hover:text-zinc-300'
+            }`}
         >
           {timer > 0 ? (
             <span className="inline-flex items-center gap-1.5">

@@ -1,6 +1,6 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 import type { UpdateUserBaseInput } from '@ff/schemas';
 
@@ -119,9 +119,18 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
 }
 
 export async function sendOtpAction(phone: string): Promise<SendOtpResponse> {
+  const headerStore = await headers();
+  const clientIp =
+    headerStore.get('x-forwarded-for') ||
+    headerStore.get('x-real-ip') ||
+    '';
+
   const res = await fetch(`${API_URL}/auth/send-otp`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(clientIp ? { 'x-forwarded-for': clientIp } : {}),
+    },
     body: JSON.stringify({ phone }),
   });
 

@@ -39,8 +39,11 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('send-otp')
   @HttpCode(HttpStatus.OK)
-  async sendOtp(@Body() dto: SendOtpDto) {
-    return this.authService.sendOtp(dto);
+  async sendOtp(@Body() dto: SendOtpDto, @Req() req: Request) {
+    const forwarded = req.headers['x-forwarded-for'];
+    const clientIp =
+      (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : req.ip) || '127.0.0.1';
+    return this.authService.sendOtp(dto, clientIp);
   }
 
   @UseGuards(ThrottlerGuard)

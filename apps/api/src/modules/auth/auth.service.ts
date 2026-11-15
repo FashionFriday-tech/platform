@@ -64,6 +64,49 @@ export class AuthService {
     { attempts: number; lastSentAt: Date; currentCooldown: number }
   >();
 
+  // IP-level rate limiting map for OTP requests:
+  // Tracks client IP -> { count: number, windowStart: number }
+  // Rule: Max 5 OTP requests per IP per 15-minute window (blocks multi-number cycling attacks)
+  private otpIpRateLimitMap = new Map<string, { count: number; windowStart: number }>();
+
+  private checkIpRateLimit(ip?: string) {
+    if (!ip || ip === '127.0.0.1' || ip === '::1' || ip === 'localhost') {
+      return;
+    }
+
+    const now = Date.now();
+    const windowMs = 15 * 60 * 1000; // 15 minutes
+    const maxRequestsPerWindow = 5;
+
+    const record = this.otpIpRateLimitMap.get(ip);
+    if (record) {
+      const elapsed = now - record.windowStart;
+      if (elapsed < windowMs) {
+        if (record.count >= maxRequestsPerWindow) {
+          const waitSeconds = Math.ceil((windowMs - elapsed) / 1000);
+          throw new BadRequestException(
+            `Too many OTP requests from your network. Please wait ${this.formatWaitTime(waitSeconds)} before trying again.`,
+          );
+        }
+        record.count += 1;
+      } else {
+        // Window expired, start fresh window
+        this.otpIpRateLimitMap.set(ip, { count: 1, windowStart: now });
+      }
+    } else {
+      this.otpIpRateLimitMap.set(ip, { count: 1, windowStart: now });
+    }
+
+    // Garbage collect stale IPs if map grows large (> 5000 items)
+    if (this.otpIpRateLimitMap.size > 5000) {
+      for (const [trackedIp, data] of this.otpIpRateLimitMap.entries()) {
+        if (now - data.windowStart > windowMs) {
+          this.otpIpRateLimitMap.delete(trackedIp);
+        }
+      }
+    }
+  }
+
   private getProgressiveCooldown(attempt: number): number {
     if (attempt <= 1) return 60; // 1st resend: 60s (1 min)
     if (attempt === 2) return 5 * 60; // 2nd resend: 300s (5 min)
@@ -83,10 +126,19 @@ export class AuthService {
     return `${mins} min ${remSecs} sec`;
   }
 
-  async sendOtp(dto: SendOtpDto) {
+  async sendOtp(dto: SendOtpDto, clientIp?: string) {
     const { phone } = dto;
 
-    // 1. Progressive Rate Limiting to prevent spam & protect Meta API balance:
+    // 1. IP-level Rate Limiting: Prevent a single IP from cycling through many different numbers
+    this.checkIpRateLimit(clientIp);
+
+    // 2. Strict Indian mobile number validation (prevents sending to invalid/fake prefixes)
+    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
+    if (cleanDigits.length !== 10 || !/^[6-9]\d{9}$/.test(cleanDigits)) {
+      throw new BadRequestException('Please enter a valid 10-digit Indian mobile number');
+    }
+
+    // 3. Progressive Rate Limiting per phone number to prevent spam & protect Meta API balance:
     // 1st request -> 60s cooldown
     // 2nd request -> 5m cooldown
     // 3rd request -> 10m cooldown

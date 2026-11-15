@@ -9,6 +9,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // Enable trust proxy so Express extracts the real client IP from reverse proxies (Render / Cloudflare)
+  app.set('trust proxy', 1);
   app.enableCors({
     origin: (origin, callback) => {
       if (
