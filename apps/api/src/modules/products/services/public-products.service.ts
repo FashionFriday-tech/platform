@@ -498,7 +498,7 @@ export class PublicProductsService {
     }[] = [];
 
     // 1. Primary path: Explicit modelGroup with B-Tree index scan (sub-millisecond, low storage & CPU)
-    if (modelGroup && modelGroup.trim()) {
+    if (modelGroup?.trim()) {
       rawVariants = await (this.prisma.db.product.findMany as any)({
         where: {
           modelGroup: modelGroup.trim(),
@@ -561,7 +561,9 @@ export class PublicProductsService {
   }
 
   private extractBaseModelName(name: string): string | null {
-    if (!name) return null;
+    if (!name) {
+      return null;
+    }
     const cleaned = name.split(/\s*[-–—/]\s*|\s*\(|\s*'/)[0]?.trim();
     return cleaned && cleaned.length >= 4 ? cleaned : null;
   }

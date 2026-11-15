@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import { MAJOR_COLORS } from '@ff/schemas';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
 import { UploadService } from '../upload/upload.service';
@@ -10,10 +10,34 @@ for (const c of MAJOR_COLORS) {
 }
 
 const COMMON_COLOR_WORDS = [
-  'Yellow', 'Grey', 'Gray', 'Black', 'White', 'Red', 'Blue',
-  'Green', 'Pink', 'Beige', 'Navy', 'Purple', 'Orange', 'Brown',
-  'Gold', 'Silver', 'Olive', 'Cream', 'Tan', 'Mint', 'Maroon',
-  'Teal', 'Sage', 'Coral', 'Lilac', 'Lavender', 'Burgundy', 'Khaki',
+  'Yellow',
+  'Grey',
+  'Gray',
+  'Black',
+  'White',
+  'Red',
+  'Blue',
+  'Green',
+  'Pink',
+  'Beige',
+  'Navy',
+  'Purple',
+  'Orange',
+  'Brown',
+  'Gold',
+  'Silver',
+  'Olive',
+  'Cream',
+  'Tan',
+  'Mint',
+  'Maroon',
+  'Teal',
+  'Sage',
+  'Coral',
+  'Lilac',
+  'Lavender',
+  'Burgundy',
+  'Khaki',
 ];
 
 @Injectable()
@@ -29,14 +53,14 @@ export class ReviewsService {
    * Also ensures high-quality realistic reviews are available when catalog items are newly created.
    */
   async getReviewsByProduct(productIdOrSlugOrGroup: string) {
-    let siblingProducts: Array<{
+    let siblingProducts: {
       id: string;
       name: string;
       slug: string;
       modelGroup: string | null;
       mainImage: string;
       colors: string[];
-    }> = [];
+    }[] = [];
 
     let targetModelGroup: string | null = null;
     let baseModelName: string | null = null;
@@ -152,9 +176,7 @@ export class ReviewsService {
 
     const formattedReviews = dbReviews.map((r) => {
       const prod = r.product || productMap.get(r.productId);
-      const colorLabel = prod
-        ? this.resolveColorwayLabel(prod.name, prod.colors)
-        : 'Original';
+      const colorLabel = prod ? this.resolveColorwayLabel(prod.name, prod.colors) : 'Original';
 
       return {
         id: r.id,
@@ -168,11 +190,7 @@ export class ReviewsService {
           prod?.mainImage ||
           'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800',
         rating: r.rating,
-        membership: (r.rating >= 5
-          ? 'platinum'
-          : r.rating === 4
-            ? 'gold'
-            : 'silver') as 'silver' | 'gold' | 'platinum',
+        membership: r.rating >= 5 ? 'platinum' : r.rating === 4 ? 'gold' : 'silver',
         colorway: colorLabel,
         colorHex: prod?.colors?.[0] || '#000000',
         productName: prod?.name || '',
@@ -185,10 +203,7 @@ export class ReviewsService {
     // 4. Augment with realistic reviews if database currently has fewer than 4 reviews
     if (formattedReviews.length < 4 && siblingProducts.length > 0) {
       const needed = 4 - formattedReviews.length;
-      const realisticSeedReviews = this.generateRealisticReviews(
-        siblingProducts,
-        needed,
-      );
+      const realisticSeedReviews = this.generateRealisticReviews(siblingProducts, needed);
       formattedReviews.push(...realisticSeedReviews);
     }
 
@@ -196,10 +211,7 @@ export class ReviewsService {
     const averageRating =
       totalReviews > 0
         ? Number(
-            (
-              formattedReviews.reduce((acc, cur) => acc + cur.rating, 0) /
-              totalReviews
-            ).toFixed(1),
+            (formattedReviews.reduce((acc, cur) => acc + cur.rating, 0) / totalReviews).toFixed(1),
           )
         : 5.0;
 
@@ -298,13 +310,17 @@ export class ReviewsService {
   // --- Helper Methods ---
 
   private extractBaseModelName(name: string): string | null {
-    if (!name) return null;
+    if (!name) {
+      return null;
+    }
     const cleaned = name.split(/\s*[-–—/]\s*|\s*\(|\s*'/)[0]?.trim();
     return cleaned && cleaned.length >= 4 ? cleaned : null;
   }
 
   private extractInitials(name: string): string {
-    if (!name) return 'VB';
+    if (!name) {
+      return 'VB';
+    }
     const parts = name.trim().split(/\s+/);
     if (parts.length > 1) {
       return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
@@ -316,7 +332,9 @@ export class ReviewsService {
     if (Array.isArray(colors) && colors.length > 0) {
       const resolvedNames: string[] = [];
       for (const raw of colors) {
-        if (!raw) continue;
+        if (!raw) {
+          continue;
+        }
         const trimmed = raw.trim();
         if (trimmed.startsWith('#') || /^[0-9A-Fa-f]{6}$/.test(trimmed)) {
           const hex = (trimmed.startsWith('#') ? trimmed : `#${trimmed}`).toUpperCase();
@@ -338,12 +356,17 @@ export class ReviewsService {
       const parts = name.split(/\s*[-–—/]\s*/);
       if (parts.length > 1) {
         const last = parts[parts.length - 1]?.trim();
-        if (last && last.length <= 24) return last;
+        if (last && last.length <= 24) {
+          return last;
+        }
       }
 
       for (const kw of COMMON_COLOR_WORDS) {
+        // eslint-disable-next-line security/detect-non-literal-regexp
         const regex = new RegExp(`\\b${kw}\\b`, 'i');
-        if (regex.test(name)) return kw;
+        if (regex.test(name)) {
+          return kw;
+        }
       }
     }
 
@@ -351,13 +374,13 @@ export class ReviewsService {
   }
 
   private generateRealisticReviews(
-    siblingProducts: Array<{
+    siblingProducts: {
       id: string;
       name: string;
       slug: string;
       mainImage: string;
       colors: string[];
-    }>,
+    }[],
     count: number,
   ) {
     const templates = [
@@ -415,10 +438,7 @@ export class ReviewsService {
     for (let i = 0; i < count; i++) {
       const template = templates[i % templates.length];
       const assignedProduct = siblingProducts[i % siblingProducts.length];
-      const colorLabel = this.resolveColorwayLabel(
-        assignedProduct.name,
-        assignedProduct.colors,
-      );
+      const colorLabel = this.resolveColorwayLabel(assignedProduct.name, assignedProduct.colors);
 
       generated.push({
         id: `seed-review-${assignedProduct.id}-${i}`,
@@ -442,4 +462,3 @@ export class ReviewsService {
     return generated;
   }
 }
-

@@ -274,8 +274,12 @@ export class CustomersService {
           id: orderNumber,
           userId: customerId,
           orderNumber,
-          status: OrderStatus.CONFIRMED,
-          paymentStatus: PaymentStatus[details.paymentStatus],
+          status: OrderStatus.STOCK_CONFIRMED,
+          paymentStatus:
+            (details.paymentStatus as string) === 'SUCCESS'
+              ? PaymentStatus.CAPTURED
+              : (PaymentStatus[details.paymentStatus as keyof typeof PaymentStatus] ??
+                PaymentStatus.PENDING),
           paymentMethod: PaymentMethod[details.paymentMethod],
           totalAmount: lineTotal,
           finalAmount: lineTotal,
@@ -578,7 +582,7 @@ export class CustomersService {
           id: orderNumber,
           userId: id,
           orderNumber,
-          status: OrderStatus.CONFIRMED,
+          status: OrderStatus.STOCK_CONFIRMED,
           paymentStatus: PaymentStatus.PENDING,
           paymentMethod: PaymentMethod.COD,
           totalAmount,

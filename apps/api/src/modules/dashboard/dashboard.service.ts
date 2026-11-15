@@ -52,7 +52,7 @@ export class DashboardService {
         // Pending / need fulfillment orders
         this.prisma.db.order.count({
           where: {
-            status: { in: ['PENDING', 'CONFIRMED', 'PROCESSING'] },
+            status: { in: ['PENDING', 'STOCK_CHECK', 'STOCK_CONFIRMED', 'PROCESSING'] },
           },
         }),
 
@@ -69,7 +69,7 @@ export class DashboardService {
         // Total sales revenue
         this.prisma.db.order.aggregate({
           where: {
-            status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] },
+            status: { notIn: ['CANCELLED'] },
           },
           _sum: { finalAmount: true },
         }),
@@ -83,7 +83,7 @@ export class DashboardService {
         this.prisma.db.order.aggregate({
           where: {
             createdAt: { gte: todayStart },
-            status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] },
+            status: { notIn: ['CANCELLED'] },
           },
           _sum: { finalAmount: true },
         }),
@@ -92,7 +92,7 @@ export class DashboardService {
         this.prisma.db.order.aggregate({
           where: {
             createdAt: { gte: sevenDaysAgo },
-            status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] },
+            status: { notIn: ['CANCELLED'] },
           },
           _sum: { finalAmount: true },
         }),
@@ -101,7 +101,7 @@ export class DashboardService {
         this.prisma.db.order.aggregate({
           where: {
             createdAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo },
-            status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] },
+            status: { notIn: ['CANCELLED'] },
           },
           _sum: { finalAmount: true },
         }),
@@ -134,10 +134,10 @@ export class DashboardService {
         this.prisma.db.review.count().catch(() => 0),
       ]);
 
-      const totalSales = Number(allRevenueAgg._sum.finalAmount || 0);
-      const todaySales = Number(todayRevenueAgg._sum.finalAmount || 0);
-      const recentWeekSales = Number(recentWeekRevenueAgg._sum.finalAmount || 0);
-      const prevWeekSales = Number(previousWeekRevenueAgg._sum.finalAmount || 0);
+      const totalSales = Number(allRevenueAgg._sum?.finalAmount || 0);
+      const todaySales = Number(todayRevenueAgg._sum?.finalAmount || 0);
+      const recentWeekSales = Number(recentWeekRevenueAgg._sum?.finalAmount || 0);
+      const prevWeekSales = Number(previousWeekRevenueAgg._sum?.finalAmount || 0);
 
       let salesGrowthPercentage = 0;
       if (prevWeekSales > 0) {

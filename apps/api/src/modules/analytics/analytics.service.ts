@@ -246,14 +246,14 @@ export class AnalyticsService {
     ] = await Promise.all([
       // 1. Total valid revenue
       this.prisma.db.order.aggregate({
-        where: { status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] } },
+        where: { status: { notIn: ['CANCELLED'] } },
         _sum: { finalAmount: true },
       }),
       // 2. Last 7 days revenue
       this.prisma.db.order.aggregate({
         where: {
           createdAt: { gte: sevenDaysAgo },
-          status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] },
+          status: { notIn: ['CANCELLED'] },
         },
         _sum: { finalAmount: true },
       }),
@@ -261,7 +261,7 @@ export class AnalyticsService {
       this.prisma.db.order.aggregate({
         where: {
           createdAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo },
-          status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] },
+          status: { notIn: ['CANCELLED'] },
         },
         _sum: { finalAmount: true },
       }),
@@ -321,7 +321,7 @@ export class AnalyticsService {
       this.prisma.db.order.findMany({
         where: {
           createdAt: { gte: ninetyDaysAgo },
-          status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] },
+          status: { notIn: ['CANCELLED'] },
         },
         select: {
           id: true,
@@ -340,7 +340,7 @@ export class AnalyticsService {
       }),
       // 18. All orders with shipping addresses for state aggregation
       this.prisma.db.order.findMany({
-        where: { status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] } },
+        where: { status: { notIn: ['CANCELLED'] } },
         select: {
           shippingAddress: true,
           finalAmount: true,
@@ -348,7 +348,7 @@ export class AnalyticsService {
       }),
     ]);
 
-    const totalRevenue = Number(revenueAgg._sum.finalAmount || 0);
+    const totalRevenue = Number(revenueAgg._sum?.finalAmount || 0);
     const totalOrders = totalOrdersCount;
     const unitsSold = unitsSoldAgg._sum.quantity ?? 0;
     const siteVisits = searchLogsCount + customersCount + totalOrders;
@@ -370,8 +370,8 @@ export class AnalyticsService {
     };
 
     const revTrendInfo = calcTrend(
-      Number(recentWeekRevAgg._sum.finalAmount || 0),
-      Number(prevWeekRevAgg._sum.finalAmount || 0),
+      Number(recentWeekRevAgg._sum?.finalAmount || 0),
+      Number(prevWeekRevAgg._sum?.finalAmount || 0),
     );
     const ordTrendInfo = calcTrend(recentWeekOrdersCount, prevWeekOrdersCount);
     const unitTrendInfo = calcTrend(
@@ -381,12 +381,9 @@ export class AnalyticsService {
     const visitTrendInfo = calcTrend(recentWeekSearchesCount, prevWeekSearchesCount);
 
     // Compute actual 7-day sparklines from actual orders
-    const getSparklinePoints = (
-      days: number,
-      valueGetter: (ord: (typeof ordersWithItems)[0]) => number,
-    ) => {
+    const getSparklinePoints = (days: number, valueGetter: (ord: any) => number) => {
       const points: number[] = Array.from({ length: days }, () => 0);
-      ordersWithItems.forEach((ord) => {
+      ordersWithItems.forEach((ord: any) => {
         const diffDays = Math.floor(
           (now.getTime() - ord.createdAt.getTime()) / (24 * 60 * 60 * 1000),
         );
@@ -400,7 +397,9 @@ export class AnalyticsService {
 
     const revenueSpark = getSparklinePoints(7, (o) => Number(o.finalAmount || 0));
     const ordersSpark = getSparklinePoints(7, () => 1);
-    const unitsSpark = getSparklinePoints(7, (o) => o.items.reduce((s, it) => s + it.quantity, 0));
+    const unitsSpark = getSparklinePoints(7, (o) =>
+      (o.items || []).reduce((s: number, it: any) => s + Number(it.quantity || 0), 0),
+    );
     const visitsSpark = ordersSpark.map((ordCount) => ordCount * 3 + (searchLogsCount > 0 ? 1 : 0));
 
     // Dynamic daily trend grouped strictly from actual order records
@@ -494,15 +493,15 @@ export class AnalyticsService {
 
     // Real Top Products Ranking calculated directly from OrderItems
     const productSalesMap = new Map<string, { name: string; sales: number; revenue: number }>();
-    ordersWithItems.forEach((ord) => {
-      ord.items.forEach((item) => {
+    ordersWithItems.forEach((ord: any) => {
+      (ord.items || []).forEach((item: any) => {
         const current = productSalesMap.get(item.name) ?? {
           name: item.name,
           sales: 0,
           revenue: 0,
         };
-        current.sales += item.quantity;
-        current.revenue += Number(item.price || 0) * item.quantity;
+        current.sales += Number(item.quantity || 0);
+        current.revenue += Number(item.price || 0) * Number(item.quantity || 0);
         productSalesMap.set(item.name, current);
       });
     });
@@ -572,7 +571,7 @@ export class AnalyticsService {
     const aov = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
     const prevAov =
       prevWeekOrdersCount > 0
-        ? Math.round(Number(prevWeekRevAgg._sum.finalAmount || 0) / prevWeekOrdersCount)
+        ? Math.round(Number(prevWeekRevAgg._sum?.finalAmount || 0) / prevWeekOrdersCount)
         : aov;
     const aovDelta = prevAov > 0 ? `${(((aov - prevAov) / prevAov) * 100).toFixed(1)}%` : '0%';
 

@@ -53,10 +53,7 @@ export class AdminProductsController {
   }
 
   @Put('model-groups/:group')
-  async renameModelGroup(
-    @Param('group') group: string,
-    @Body('newGroup') newGroup: string,
-  ) {
+  async renameModelGroup(@Param('group') group: string, @Body('newGroup') newGroup: string) {
     return this.productsService.renameModelGroup(group, newGroup);
   }
 

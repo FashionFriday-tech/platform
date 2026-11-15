@@ -101,7 +101,10 @@ export class AdminProductsService {
     const rawModelGroup = (dto as any).modelGroup;
     const modelGroup =
       typeof rawModelGroup === 'string' && rawModelGroup.trim()
-        ? rawModelGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-')
+        ? rawModelGroup
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9_-]+/g, '-')
         : null;
 
     const data = {
@@ -164,7 +167,7 @@ export class AdminProductsService {
     };
 
     try {
-      const result = await this.productsRepository.create(data as Prisma.ProductCreateInput);
+      const result = await this.productsRepository.create(data);
       this.triggerProductAndCategoryRevalidation(result);
       return result;
     } catch (error) {
@@ -405,12 +408,10 @@ export class AdminProductsService {
       where: {
         productId,
         order: {
-          status: { notIn: ['CANCELLED', 'RETURNED', 'REFUNDED'] },
+          status: { notIn: ['CANCELLED'] },
         },
       },
-      select: {
-        quantity: true,
-        createdAt: true,
+      include: {
         order: {
           select: {
             createdAt: true,
@@ -645,7 +646,10 @@ export class AdminProductsService {
     if (d.modelGroup !== undefined) {
       data.modelGroup =
         typeof d.modelGroup === 'string' && d.modelGroup.trim()
-          ? d.modelGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-')
+          ? d.modelGroup
+              .trim()
+              .toLowerCase()
+              .replace(/[^a-z0-9_-]+/g, '-')
           : null;
     }
 
@@ -806,7 +810,7 @@ export class AdminProductsService {
       }
     }
 
-    const result = await this.productsRepository.update(id, data as Prisma.ProductUpdateInput);
+    const result = await this.productsRepository.update(id, data);
     try {
       this.triggerProductAndCategoryRevalidation(result);
       if (existingProduct?.slug && existingProduct.slug !== result.slug) {
@@ -1141,7 +1145,7 @@ export class AdminProductsService {
     }
   }
 
-  async getModelGroups(search?: string): Promise<Array<{ group: string; image: string | null }>> {
+  async getModelGroups(search?: string): Promise<{ group: string; image: string | null }[]> {
     const cleanSearch = (search || '').trim();
     const where: any = {
       modelGroup: {
@@ -1199,7 +1203,9 @@ export class AdminProductsService {
     const groupMap = new Map<string, any>();
     for (const p of products) {
       const g = p.modelGroup;
-      if (!g) continue;
+      if (!g) {
+        continue;
+      }
       if (!groupMap.has(g)) {
         groupMap.set(g, {
           modelGroup: g,
@@ -1212,10 +1218,12 @@ export class AdminProductsService {
         });
       }
       const entry = groupMap.get(g);
-      entry.count += 1;
-      entry.totalStock += p.totalStock || 0;
-      if (entry.products.length < 12) {
-        entry.products.push(p);
+      if (entry) {
+        entry.count = Number(entry.count || 0) + 1;
+        entry.totalStock = Number(entry.totalStock || 0) + Number(p.totalStock || 0);
+        if (entry.products.length < 12) {
+          entry.products.push(p);
+        }
       }
     }
 
@@ -1235,8 +1243,11 @@ export class AdminProductsService {
   }
 
   async getModelGroupProducts(group: string) {
-    const cleanGroup = group.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
-    return (this.prisma.db.product.findMany as any)({
+    const cleanGroup = group
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, '-');
+    return await (this.prisma.db.product.findMany as any)({
       where: {
         modelGroup: cleanGroup,
       },
@@ -1257,8 +1268,14 @@ export class AdminProductsService {
   }
 
   async renameModelGroup(oldGroup: string, newGroup: string) {
-    const cleanOld = oldGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
-    const cleanNew = newGroup.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    const cleanOld = oldGroup
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, '-');
+    const cleanNew = newGroup
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, '-');
 
     if (!cleanNew) {
       throw new BadRequestException('New group name is required');
@@ -1278,7 +1295,10 @@ export class AdminProductsService {
   }
 
   async addProductsToGroup(group: string, productIds: string[]) {
-    const cleanGroup = group.trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    const cleanGroup = group
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, '-');
     if (!cleanGroup) {
       throw new BadRequestException('Valid group name is required');
     }
