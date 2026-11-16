@@ -396,12 +396,10 @@ export function PaymentStep() {
                     COD Policy: ₹200 Advance Deposit Required
                   </p>
                   <p className="text-[10px] leading-relaxed font-bold tracking-widest text-orange-800/60 uppercase">
-                    A <span className="font-black text-orange-600">₹{payableAmount} deposit</span> is collected
-                    online via UPI/Card to confirm your COD order. The balance of{' '}
-                    <span className="font-black text-orange-600">
-                      ₹{balanceDue}
-                    </span>{' '}
-                    is collected in cash upon doorstep delivery.
+                    A <span className="font-black text-orange-600">₹{payableAmount} deposit</span>{' '}
+                    is collected online via UPI/Card to confirm your COD order. The balance of{' '}
+                    <span className="font-black text-orange-600">₹{balanceDue}</span> is collected
+                    in cash upon doorstep delivery.
                   </p>
                 </div>
                 <span className="text-background absolute -top-4 left-5 rounded-t-4xl bg-orange-500 px-8 text-xs font-semibold tracking-wider uppercase">
