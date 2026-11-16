@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
 import { fetcher } from '@/lib/api-client';
+import { formatColorLabel, resolveItemColorAndQuality } from '@/lib/format-color';
 
 import { CreateCustomerOrderModal } from './CreateCustomerOrderModal';
 
@@ -988,11 +989,23 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                                 Size: {firstItem.size}
                               </span>
                             )}
-                            {firstItem?.color && (
-                              <span className="rounded-md bg-black/5 px-1.5 py-0.5 text-[9px] font-semibold text-black/60 dark:bg-white/10 dark:text-white/70">
-                                {firstItem.color}
-                              </span>
-                            )}
+                            {(() => {
+                              const { color: cName, quality: qName } = resolveItemColorAndQuality(firstItem);
+                              return (
+                                <>
+                                  {cName && (
+                                    <span className="rounded-md bg-black/5 px-1.5 py-0.5 text-[9px] font-semibold text-black/60 dark:bg-white/10 dark:text-white/70">
+                                      Color: {cName}
+                                    </span>
+                                  )}
+                                  {qName && (
+                                    <span className="rounded-md bg-indigo-500/10 px-1.5 py-0.5 text-[9px] font-bold text-indigo-600 dark:bg-indigo-400/15 dark:text-indigo-400">
+                                      {qName}
+                                    </span>
+                                  )}
+                                </>
+                              );
+                            })()}
                             <span className="rounded-md bg-black/5 px-1.5 py-0.5 text-[9px] font-semibold text-black/60 dark:bg-white/10 dark:text-white/70">
                               Qty: {totalQty}
                             </span>
@@ -1096,7 +1109,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       <div className="flex flex-col">
                         <span className="font-bold text-black dark:text-white">{item.name}</span>
                         <span className="mt-1 text-xs text-black/60 dark:text-white/60">
-                          Size: {item.size} • Color: {item.color}
+                          Size: {item.size} • Color: {formatColorLabel(item.color) || item.color}
                         </span>
                       </div>
                       <div className="mt-3 flex items-center justify-between">
