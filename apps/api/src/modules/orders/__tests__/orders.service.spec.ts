@@ -16,6 +16,7 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
   beforeEach(async () => {
     prismaMock = {
       db: {
+        $transaction: jest.fn((cb) => cb(prismaMock.db)),
         order: {
           findUnique: jest.fn(),
           findMany: jest.fn(),
@@ -24,6 +25,15 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
           updateMany: jest.fn().mockResolvedValue({ count: 1 }),
           count: jest.fn(),
         },
+        orderItem: {
+          create: jest.fn(),
+          update: jest.fn(),
+          deleteMany: jest.fn(),
+          updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+        },
+        user: {
+          update: jest.fn(),
+        },
         cartItem: {
           findMany: jest.fn(),
           deleteMany: jest.fn(),
@@ -31,9 +41,11 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
         address: {
           findUnique: jest.fn(),
           findFirst: jest.fn(),
+          create: jest.fn(),
+          count: jest.fn(),
         },
         product: {
-          findMany: jest.fn(),
+          findMany: jest.fn().mockResolvedValue([]),
         },
         webhookEvent: {
           create: jest.fn(),
@@ -510,6 +522,271 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
       expect(report.expiringAuthorizations[0].id).toBe('ORD-EXPIRING');
       expect(report.pendingInterventions[0].id).toBe('ORD-VOID-PENDING');
       expect(report.unhandledWebhooks[0].id).toBe('evt_stuck');
+    });
+  });
+
+  describe('7. Complete Order Modification by Admin (Super Admin & Sales Admin)', () => {
+    it('should completely update order items, customer, address, pricing, and fulfillment', async () => {
+      const existingOrder = {
+        id: 'ORD-EDIT-1',
+        orderNumber: 'ORD-EDIT-1',
+        userId: 'USER-1',
+        status: OrderStatus.PENDING,
+        paymentStatus: PaymentStatus.PENDING,
+        paymentMethod: PaymentMethod.COD,
+        totalAmount: 1000,
+        discountAmount: 0,
+        shippingFees: 200,
+        finalAmount: 1200,
+        shippingAddress: {
+          fullName: 'Old Customer',
+          phoneNumber: '9876543210',
+          street: 'Old Street',
+          city: 'Old City',
+          state: 'Old State',
+          pincode: '400001',
+        },
+        items: [
+          {
+            id: 'ITEM-1',
+            orderId: 'ORD-EDIT-1',
+            productId: 'PROD-1',
+            name: 'Original Dress',
+            image: 'https://example.com/dress.jpg',
+            size: 'M',
+            color: 'Red',
+            price: 1000,
+            quantity: 1,
+            sellerId: null,
+          },
+        ],
+        user: { name: 'Old Customer', phone: '9876543210' },
+      };
+
+      // Mock finding the order
+      prismaMock.db.order.findUnique
+        .mockResolvedValueOnce(existingOrder) // for updateOrder
+        .mockResolvedValueOnce({
+          ...existingOrder,
+          status: OrderStatus.PROCESSING,
+          courierPartner: 'Delhivery',
+          trackingNumber: 'DEL-999',
+          totalAmount: 1800,
+          discountAmount: 100,
+          shippingFees: 0,
+          finalAmount: 1700,
+          shippingAddress: {
+            fullName: 'New Customer',
+            phoneNumber: '9123456789',
+            street: 'New Street 42',
+            city: 'New City',
+            state: 'New State',
+            pincode: '560001',
+          },
+          items: [
+            {
+              id: 'ITEM-1',
+              productId: 'PROD-1',
+              name: 'Updated Dress',
+              image: 'https://example.com/dress.jpg',
+              size: 'L',
+              color: 'Blue',
+              price: 1200,
+              quantity: 1,
+              sellerId: 'SELLER-1',
+            },
+            {
+              id: 'ITEM-2',
+              productId: 'PROD-2',
+              name: 'New Scarf',
+              image: 'https://example.com/scarf.jpg',
+              size: 'Free Size',
+              color: 'Gold',
+              price: 600,
+              quantity: 1,
+              sellerId: 'SELLER-1',
+            },
+          ],
+        }); // for findOne after update
+
+      const updatePayload: any = {
+        status: OrderStatus.PROCESSING,
+        courierPartner: 'Delhivery',
+        trackingNumber: 'DEL-999',
+        sellerId: 'SELLER-1',
+        customer: {
+          name: 'New Customer',
+          phone: '9123456789',
+        },
+        shippingAddress: {
+          fullName: 'New Customer',
+          phoneNumber: '9123456789',
+          street: 'New Street 42',
+          city: 'New City',
+          state: 'New State',
+          pincode: '560001',
+        },
+        discountAmount: 100,
+        shippingFees: 0,
+        items: [
+          {
+            id: 'ITEM-1',
+            productId: 'PROD-1',
+            name: 'Updated Dress',
+            image: 'https://example.com/dress.jpg',
+            size: 'L',
+            color: 'Blue',
+            price: 1200,
+            quantity: 1,
+            sellerId: 'SELLER-1',
+          },
+          {
+            name: 'New Scarf',
+            image: 'https://example.com/scarf.jpg',
+            size: 'Free Size',
+            color: 'Gold',
+            price: 600,
+            quantity: 1,
+            sellerId: 'SELLER-1',
+          },
+        ],
+      };
+
+      const result = await service.updateOrder('ORD-EDIT-1', updatePayload);
+
+      expect(prismaMock.db.orderItem.deleteMany).toHaveBeenCalled();
+      expect(prismaMock.db.orderItem.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'ITEM-1' },
+          data: expect.objectContaining({
+            name: 'Updated Dress',
+            size: 'L',
+            color: 'Blue',
+            price: 1200,
+          }),
+        }),
+      );
+      expect(prismaMock.db.orderItem.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            name: 'New Scarf',
+            price: 600,
+            quantity: 1,
+          }),
+        }),
+      );
+      expect(prismaMock.db.order.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'ORD-EDIT-1' },
+          data: expect.objectContaining({
+            status: OrderStatus.PROCESSING,
+            courierPartner: 'Delhivery',
+            trackingNumber: 'DEL-999',
+            totalAmount: 1800,
+            discountAmount: 100,
+            shippingFees: 0,
+            finalAmount: 1700,
+          }),
+        }),
+      );
+      expect(result.finalAmount).toBe(1700);
+      expect(result.items.length).toBe(2);
+    });
+  });
+
+  describe('8. Address Resolution & Persistence in createOrder', () => {
+    const mockCartItem = {
+      id: 'cart-1',
+      userId: 'user-addr-1',
+      productId: 'prod-1',
+      quantity: 1,
+      size: 'M',
+      color: 'Black',
+      product: {
+        id: 'prod-1',
+        name: 'Classic Shirt',
+        sellingPrice: 999,
+        mainImage: '/img.jpg',
+      },
+    };
+
+    it('should save shippingAddress into user address database and use it on the order', async () => {
+      prismaMock.db.cartItem.findMany.mockResolvedValue([mockCartItem]);
+      prismaMock.db.address.findFirst.mockResolvedValue(null);
+      prismaMock.db.address.count.mockResolvedValue(0);
+      prismaMock.db.address.create.mockResolvedValue({
+        id: 'addr-created-1',
+        userId: 'user-addr-1',
+        fullName: 'Rahul Sharma',
+        phoneNumber: '9876543210',
+        altPhoneNumber: null,
+        building: 'Flat 402',
+        street: 'MG Road',
+        city: 'Bengaluru',
+        district: 'Bengaluru Urban',
+        state: 'Karnataka',
+        pincode: '560001',
+        landmark: 'Metro Station',
+        label: 'Home',
+        isDefault: true,
+      });
+
+      prismaMock.db.order.create.mockImplementation((args: any) => ({
+        ...args.data,
+        id: 'ORD-ADDR-TEST',
+      }));
+
+      const res = await service.createOrder('user-addr-1', {
+        paymentMethod: PaymentMethod.COD,
+        shippingAddress: {
+          fullName: 'Rahul Sharma',
+          phoneNumber: '9876543210',
+          street: 'MG Road',
+          city: 'Bengaluru',
+          district: 'Bengaluru Urban',
+          state: 'Karnataka',
+          pincode: '560001',
+          building: 'Flat 402',
+          landmark: 'Metro Station',
+        },
+      });
+
+      expect(prismaMock.db.address.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            userId: 'user-addr-1',
+            fullName: 'Rahul Sharma',
+            district: 'Bengaluru Urban',
+            state: 'Karnataka',
+            pincode: '560001',
+          }),
+        }),
+      );
+
+      expect(prismaMock.db.order.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            shippingAddress: expect.objectContaining({
+              fullName: 'Rahul Sharma',
+              district: 'Bengaluru Urban',
+              state: 'Karnataka',
+              pincode: '560001',
+            }),
+          }),
+        }),
+      );
+      expect(res.type).toBe('COD');
+    });
+
+    it('should reject order creation if no address is provided and none exists in DB', async () => {
+      prismaMock.db.cartItem.findMany.mockResolvedValue([mockCartItem]);
+      prismaMock.db.address.findFirst.mockResolvedValue(null);
+
+      await expect(
+        service.createOrder('user-addr-2', {
+          paymentMethod: PaymentMethod.COD,
+        }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 });
