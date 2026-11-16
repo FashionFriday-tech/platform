@@ -54,7 +54,7 @@ export const useSearchHistory = (storageLimit = 10) => {
   }, []);
 
   const saveSearch = useCallback(
-    (query: string) => {
+    (query: string, options?: { resultsCount?: number; hasResults?: boolean }) => {
       const trimmed = query.trim();
       if (!trimmed) {
         return;
@@ -92,7 +92,11 @@ export const useSearchHistory = (storageLimit = 10) => {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ query: trimmed }),
+        body: JSON.stringify({
+          query: trimmed,
+          resultsCount: options?.resultsCount,
+          hasResults: options?.hasResults,
+        }),
       }).catch(() => {
         // Silent — logging should never break the UI
       });
