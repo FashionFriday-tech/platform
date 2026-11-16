@@ -16,14 +16,17 @@ async function refreshAccessToken(): Promise<string | null> {
     return null;
   }
   const refreshToken = localStorage.getItem('adminRefreshToken');
+  if (!refreshToken) {
+    return null;
+  }
 
   try {
-    const res = await fetch(`${BASE_URL}/admin/auth/refresh`, {
+    const res = await fetch(`${BASE_URL}/auth/refresh`, {
       method: 'POST',
       credentials: 'include', // Industry standard: Send HttpOnly cookies automatically
       headers: {
         'Content-Type': 'application/json',
-        ...(refreshToken ? { Authorization: `Bearer ${refreshToken}` } : {}),
+        Authorization: `Bearer ${refreshToken}`,
       },
     });
 
@@ -42,8 +45,8 @@ async function refreshAccessToken(): Promise<string | null> {
   } catch {
     localStorage.removeItem('adminAccessToken');
     localStorage.removeItem('adminRefreshToken');
-    localStorage.removeItem('ff_admin_user');
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+      localStorage.removeItem('ff_admin_user');
       window.location.href = '/login';
     }
     return null;
