@@ -10,11 +10,11 @@ export const orderShippingAddressSchema = z.object({
   building: z.string().optional().nullable(),
   street: z.string().min(1, 'Street/Area is required'),
   city: z.string().min(1, 'City is required'),
-  district: z.string().optional().nullable().default(''),
-  state: z.string().optional().nullable().default(''),
+  district: z.string().optional().nullable(),
+  state: z.string().optional().nullable(),
   pincode: z.string().min(1, 'Pincode is required'),
   landmark: z.string().optional().nullable(),
-  label: z.string().optional().default('Home'),
+  label: z.string().optional(),
 });
 
 const createOrderSchema = z.object({
