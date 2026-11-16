@@ -8,17 +8,6 @@ import { type Role, useAuth, type User } from '@/contexts/AuthContext';
 
 export type AuthStep = 'PHONE' | 'OTP';
 
-export const SUPER_ADMIN_PHONE = '7558969093';
-
-// Predefined registered administrator database
-const ADMIN_DATABASE: Record<string, Omit<User, 'phone'>> = {
-  '7558969093': {
-    name: 'Super Admin',
-    role: 'SUPER_ADMIN',
-    initials: 'SA',
-  },
-};
-
 export function useAuthFlow() {
   const [step, setStep] = useState<AuthStep>('PHONE');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -91,35 +80,9 @@ export function useAuthFlow() {
     const newErrors: Record<string, string> = {};
 
     if (step === 'PHONE') {
-      const cleanNumber = phoneNumber.replace(/\D/g, '');
-      let hasAccess = cleanNumber === SUPER_ADMIN_PHONE || Boolean(ADMIN_DATABASE[cleanNumber]);
-      if (!hasAccess && typeof window !== 'undefined') {
-        try {
-          const storedInvited = localStorage.getItem('ff_admin_invited_team');
-          if (storedInvited) {
-            const list = JSON.parse(storedInvited) as { phone?: string }[];
-            if (list.some((m) => m.phone?.replace(/\D/g, '').endsWith(cleanNumber))) {
-              hasAccess = true;
-            }
-          }
-          if (!hasAccess) {
-            const teamStored = localStorage.getItem('ff_admin_team_members');
-            if (teamStored) {
-              const teamList = JSON.parse(teamStored) as { phone?: string }[];
-              if (teamList.some((m) => m.phone?.replace(/\D/g, '').endsWith(cleanNumber))) {
-                hasAccess = true;
-              }
-            }
-          }
-        } catch {
-          // ignore
-        }
-      }
-
+      const cleanNumber = phoneNumber.replace(/\D/g, '').slice(-10);
       if (!/^[6-9]\d{9}$/.test(cleanNumber)) {
         newErrors.phone = 'Enter a valid 10-digit phone number';
-      } else if (!hasAccess) {
-        newErrors.phone = 'This phone number is not registered as an administrator.';
       }
     } else if (step === 'OTP') {
       const code = otp.join('');
@@ -145,19 +108,22 @@ export function useAuthFlow() {
       window.location.hostname !== '127.0.0.1'
         ? 'https://api.fashionfriday.in'
         : 'http://localhost:3002');
-    const cleanNumber = phoneNumber.replace(/\D/g, '');
+    const cleanNumber = phoneNumber.replace(/\D/g, '').slice(-10);
 
     try {
       if (step === 'PHONE') {
-        const res = await fetch(`${apiUrl}/auth/send-otp`, {
+        const res = await fetch(`${apiUrl}/auth/admin/send-otp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone: cleanNumber }),
         });
 
         if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.message || 'Failed to send WhatsApp verification code');
+          const errData = (await res.json().catch(() => ({}))) as { message?: string };
+          const errorMsg = errData.message || 'Failed to send WhatsApp verification code';
+          setErrors({ phone: errorMsg });
+          toast.error(errorMsg);
+          return;
         }
 
         const data = (await res.json().catch(() => ({}))) as { cooldownSeconds?: number };
@@ -168,7 +134,7 @@ export function useAuthFlow() {
       } else if (step === 'OTP') {
         const enteredOtp = otp.join('');
 
-        const verifyRes = await fetch(`${apiUrl}/auth/verify-otp`, {
+        const verifyRes = await fetch(`${apiUrl}/auth/admin/verify-otp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone: cleanNumber, otp: enteredOtp }),
@@ -176,9 +142,11 @@ export function useAuthFlow() {
 
         if (!verifyRes.ok) {
           const errData = (await verifyRes.json().catch(() => ({}))) as { message?: string };
-          throw new Error(
-            errData.message || 'Invalid verification code. Please check your WhatsApp.',
-          );
+          const errorMsg =
+            errData.message || 'Invalid verification code. Please check your WhatsApp.';
+          setErrors({ otp: errorMsg });
+          toast.error(errorMsg);
+          return;
         }
 
         const authData = (await verifyRes.json().catch(() => ({}))) as {
@@ -187,8 +155,14 @@ export function useAuthFlow() {
           user?: {
             id?: string;
             name?: string;
+            email?: string;
             role?: string;
+            position?: string;
             phone?: string;
+            avatar?: string;
+            adminMeta?: {
+              position?: string;
+            };
           };
         };
 
@@ -203,76 +177,43 @@ export function useAuthFlow() {
           sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
         }
 
-        let adminInfo = ADMIN_DATABASE[cleanNumber];
-
-        if (!adminInfo && authData.user) {
-          const userRole = authData.user.role;
-          if (
-            userRole === 'SUPER_ADMIN' ||
-            userRole === 'STAFF_ADMIN' ||
-            userRole === 'SALES_MANAGER' ||
-            userRole === 'PRODUCT_MANAGER' ||
-            userRole === 'SALES_ADMIN'
-          ) {
-            const mappedRole: Role = userRole === 'STAFF_ADMIN' ? 'SALES_MANAGER' : userRole;
-            adminInfo = {
-              name: authData.user.name || 'Admin',
-              role: mappedRole,
-              initials: (authData.user.name || 'AD')
-                .split(' ')
-                .map((w: string) => w[0])
-                .join('')
-                .slice(0, 2)
-                .toUpperCase(),
-            };
-          }
+        const authUser = authData.user;
+        if (!authUser) {
+          throw new Error('No user data returned from authentication service');
         }
 
-        if (!adminInfo) {
-          // Check dynamic invited team members stored via admin panel
-          try {
-            const storedInvited = localStorage.getItem('ff_admin_invited_team');
-            if (storedInvited) {
-              const list = JSON.parse(storedInvited) as any[];
-              const found = list.find((m) => m.phone?.replace(/\D/g, '').endsWith(cleanNumber));
-              if (found) {
-                adminInfo = {
-                  name: found.name || 'Team Member',
-                  role: found.role || 'SALES_MANAGER',
-                  initials: found.name
-                    ? found.name
-                        .split(' ')
-                        .map((w: string) => w[0])
-                        .join('')
-                        .slice(0, 2)
-                        .toUpperCase()
-                    : 'TM',
-                };
-              }
-            }
-          } catch {
-            // ignore
-          }
-        }
+        const candidateRole =
+          authUser.position || authUser.adminMeta?.position || authUser.role;
 
-        // If phone number matches current super admin phone, always assign SUPER_ADMIN
-        if (!adminInfo && cleanNumber === SUPER_ADMIN_PHONE) {
-          adminInfo = {
-            name: 'Super Admin',
-            role: 'SUPER_ADMIN',
-            initials: 'SA',
-          };
-        }
+        const mappedRole: Role =
+          candidateRole === 'SUPER_ADMIN' ||
+          candidateRole === 'PRODUCT_MANAGER' ||
+          candidateRole === 'SALES_MANAGER' ||
+          candidateRole === 'SALES_ADMIN'
+            ? candidateRole
+            : authUser.role === 'SUPER_ADMIN'
+              ? 'SUPER_ADMIN'
+              : 'SALES_MANAGER';
 
-        if (adminInfo) {
-          authLogin({
-            ...adminInfo,
-            phone: `+91 ${cleanNumber}`,
-          });
-          toast.success(`Welcome back, ${adminInfo.name}!`);
-        } else {
-          toast.error('Registered administrator or invited team phone number not found.');
-        }
+        const initials = (authUser.name || 'Admin')
+          .split(' ')
+          .filter(Boolean)
+          .map((w: string) => w[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase();
+
+        const adminInfo: User = {
+          name: authUser.name || 'Admin',
+          role: mappedRole,
+          initials: initials || 'AD',
+          phone: `+91 ${cleanNumber}`,
+          email: authUser.email,
+          avatar: authUser.avatar,
+        };
+
+        authLogin(adminInfo);
+        toast.success(`Welcome back, ${adminInfo.name}!`);
       }
     } catch (error: unknown) {
       console.error('Auth Error:', error);
@@ -295,10 +236,10 @@ export function useAuthFlow() {
       window.location.hostname !== '127.0.0.1'
         ? 'https://api.fashionfriday.in'
         : 'http://localhost:3002');
-    const cleanNumber = phoneNumber.replace(/\D/g, '');
+    const cleanNumber = phoneNumber.replace(/\D/g, '').slice(-10);
 
     try {
-      const res = await fetch(`${apiUrl}/auth/send-otp`, {
+      const res = await fetch(`${apiUrl}/auth/admin/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: cleanNumber }),
