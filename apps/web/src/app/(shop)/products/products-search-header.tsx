@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { SearchBox } from '@/components/ui/search-box';
@@ -14,10 +14,36 @@ interface ProductsSearchHeaderProps {
 
 export function ProductsSearchHeader({
   initialQuery = '',
+  total,
   didYouMean,
   isFallback = false,
 }: ProductsSearchHeaderProps) {
   const router = useRouter();
+
+  useEffect(() => {
+    if (!initialQuery) {
+      return;
+    }
+    const trimmed = initialQuery.trim();
+    if (trimmed.length < 2) {
+      return;
+    }
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    const actualResults = isFallback ? 0 : (total ?? 0);
+    fetch(`${API_URL}/search-logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        query: trimmed,
+        resultsCount: actualResults,
+        hasResults: actualResults > 0,
+      }),
+    }).catch(() => {});
+  }, [initialQuery, total, isFallback]);
 
   const handleSearch = (searchTerm: string) => {
     const trimmed = searchTerm.trim();
