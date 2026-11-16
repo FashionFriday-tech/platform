@@ -19,6 +19,7 @@ const ROLE_NOTIFICATION_INFO: Record<Role, string> = {
   PRODUCT_MANAGER:
     'Receives ONLY product & inventory notifications (low stock & catalogue updates).',
   SALES_MANAGER: 'Receives ONLY sales & order notifications (new orders & order updates).',
+  SALES_ADMIN: 'Receives ONLY sales & order notifications (new orders & order updates).',
 };
 
 export function InviteMemberModal({ onClose, onInvite }: InviteMemberModalProps) {
