@@ -9,6 +9,7 @@ import {
   CloseIcon,
   CreditCardIcon,
   InfoIcon,
+  MapPinIcon,
   ShieldCheckIcon,
   TruckIcon,
   ZapIcon,
@@ -32,6 +33,7 @@ export function PaymentStep() {
     setIsExpanded,
     showInfo,
     setShowInfo,
+    shippingAddress,
     baseTotal,
     codServiceFee,
     totalAmount,
@@ -79,14 +81,44 @@ export function PaymentStep() {
       return;
     }
 
+    if (!shippingAddress) {
+      console.warn('[PaymentStep] Blocked: No delivery address found.');
+      toast.error('Please add or confirm your delivery address before placing an order.');
+      router.push('/checkout/review');
+      return;
+    }
+
     try {
       setIsPlacing(true);
 
+      const shippingPayload = {
+        id: shippingAddress.id,
+        fullName: shippingAddress.recipientName.trim(),
+        phoneNumber: shippingAddress.primaryPhone.replace(/\D/g, '').slice(-10),
+        altPhoneNumber: shippingAddress.altPhone
+          ? shippingAddress.altPhone.replace(/\D/g, '').slice(-10)
+          : null,
+        building: shippingAddress.building?.trim() || null,
+        street: shippingAddress.area.trim(),
+        city: shippingAddress.city.trim(),
+        district: shippingAddress.district?.trim() || '',
+        state: shippingAddress.state?.trim() || '',
+        pincode: shippingAddress.pincode.replace(/\D/g, '').slice(0, 6),
+        landmark: shippingAddress.landmark?.trim() || null,
+      };
+
       // CASE A: Cash on Delivery (COD)
       if (paymentMethod === 'cod') {
-        const res = await createOrderAction({ paymentMethod: 'COD' });
+        const res = await createOrderAction({
+          paymentMethod: 'COD',
+          addressId: shippingAddress.id,
+          shippingAddress: shippingPayload,
+        });
         console.log('[PaymentStep] COD Order successfully created:', res);
         await clearCart(true);
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('checkout_shipping_address');
+        }
         toast.success('Order placed successfully via Cash on Delivery!');
         router.push('/account/orders');
         return;
@@ -94,7 +126,11 @@ export function PaymentStep() {
 
       // CASE B: Pre-pay Online (Razorpay UPI / Cards)
       console.log('[PaymentStep] Step 2: Initiating Razorpay order on server...');
-      const initRes = await createOrderAction({ paymentMethod: 'RAZORPAY' });
+      const initRes = await createOrderAction({
+        paymentMethod: 'RAZORPAY',
+        addressId: shippingAddress.id,
+        shippingAddress: shippingPayload,
+      });
       console.log('[PaymentStep] Step 3: Razorpay session created:', initRes);
 
       const rzpData = initRes?.razorpay;
@@ -127,6 +163,9 @@ export function PaymentStep() {
           razorpaySignature: 'mock_signature',
         });
         await clearCart(true);
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('checkout_shipping_address');
+        }
         toast.success('Test payment verified! Your order has been placed.');
         router.push('/account/orders');
         return;
@@ -166,6 +205,9 @@ export function PaymentStep() {
             });
             console.log('[PaymentStep] Step 5: Verified! Clearing cart and redirecting...');
             await clearCart(true);
+            if (typeof window !== 'undefined') {
+              sessionStorage.removeItem('checkout_shipping_address');
+            }
             toast.success('Payment verified! Your order has been placed.');
             router.push('/account/orders');
           } catch (verifyErr: any) {
@@ -202,6 +244,48 @@ export function PaymentStep() {
 
       <main className="mx-auto max-w-4xl pt-0 sm:pt-1">
         <div className="space-y-10">
+          {/* Delivery Destination Card */}
+          {shippingAddress && (
+            <div className="border-border bg-background shadow-foreground/5 flex items-start justify-between rounded-3xl border p-5 shadow-sm transition-all">
+              <div className="flex gap-4">
+                <div className="bg-foreground text-background flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+                  <MapPinIcon size={18} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-foreground-subtle text-[10px] font-black tracking-widest uppercase">
+                      Delivering To
+                    </span>
+                    <span className="text-xs font-black uppercase text-foreground">
+                      {shippingAddress.recipientName}
+                    </span>
+                  </div>
+                  <p className="text-foreground-muted mt-1 text-xs font-semibold uppercase">
+                    {shippingAddress.building ? `${shippingAddress.building}, ` : ''}
+                    {shippingAddress.area}
+                  </p>
+                  <p className="text-foreground-muted text-xs font-semibold uppercase">
+                    {shippingAddress.city}
+                    {shippingAddress.district ? `, ${shippingAddress.district}` : ''}
+                    {shippingAddress.state ? `, ${shippingAddress.state}` : ''} - {shippingAddress.pincode}
+                  </p>
+                  <p className="text-foreground-muted mt-1 text-[11px] font-semibold">
+                    Phone: +91 {shippingAddress.primaryPhone}
+                    {shippingAddress.altPhone ? ` | Alt: +91 ${shippingAddress.altPhone}` : ''}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => router.push('/checkout/review')}
+                className="border-border text-foreground hover:border-foreground cursor-pointer rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all active:scale-95 shrink-0"
+              >
+                Change
+              </button>
+            </div>
+          )}
+
           {/* Header Section */}
           <div className="flex items-center justify-between px-2">
             <h2 className="text-foreground-subtle text-[9px] font-black tracking-[0.3em] uppercase">
