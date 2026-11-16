@@ -9,8 +9,8 @@ export const AddressCoreSchema = z.object({
   building: z.string().optional().nullable(),
   street: z.string().min(1, 'Street/Area is required'),
   city: z.string().min(1, 'City is required'),
-  district: z.string().default('Malappuram'),
-  state: z.string().default('Kerala'),
+  district: z.string().optional().nullable().default(''),
+  state: z.string().optional().nullable().default(''),
   pincode: z.string().min(1, 'Pincode is required'),
   landmark: z.string().optional().nullable(),
 });
