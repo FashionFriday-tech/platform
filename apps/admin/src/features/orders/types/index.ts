@@ -42,7 +42,14 @@ export interface OrderItem {
   price: number;
   size?: string;
   color?: string;
+  quality?: string | null;
+  colors?: string[];
+  product?: any;
   sku?: string;
+  sellerId?: string | null;
+  productSellerId?: string | null;
+  categoryId?: string | null;
+  categoryName?: string | null;
   seller?: {
     id: string;
     name: string;
@@ -50,6 +57,19 @@ export interface OrderItem {
     phone?: string;
     email?: string;
   } | null;
+}
+
+export interface ShippingAddress {
+  fullName?: string;
+  phoneNumber?: string;
+  altPhoneNumber?: string;
+  street: string;
+  building?: string;
+  landmark?: string;
+  city: string;
+  district?: string;
+  state: string;
+  pincode: string;
 }
 
 export interface Order {
@@ -60,18 +80,16 @@ export interface Order {
   paymentStatus: PaymentStatus;
   paymentMethod: string;
   paymentType: 'cod' | 'prepaid';
+  totalAmount?: number;
+  discountAmount?: number;
+  shippingFees?: number;
+  finalAmount?: number;
   tracking?: {
     trackingId: string;
     courierService: string;
   };
   customer: Customer;
-  shippingAddress: {
-    street: string;
-    city: string;
-    district?: string;
-    state: string;
-    pincode: string;
-  };
+  shippingAddress: ShippingAddress;
   items: OrderItem[];
   total: number;
 }
