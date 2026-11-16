@@ -2,7 +2,10 @@
 
 import React, { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 
-export type Role = 'SUPER_ADMIN' | 'PRODUCT_MANAGER' | 'SALES_MANAGER';
+export type Role = 'SUPER_ADMIN' | 'PRODUCT_MANAGER' | 'SALES_MANAGER' | 'SALES_ADMIN';
+
+export const canManageOrders = (role?: string | null): boolean =>
+  role === 'SUPER_ADMIN' || role === 'SALES_MANAGER' || role === 'SALES_ADMIN';
 
 export interface User {
   name: string;
