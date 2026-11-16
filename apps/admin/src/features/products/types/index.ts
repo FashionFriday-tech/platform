@@ -36,6 +36,7 @@ export interface Product {
   quality?: string;
   brand?: string;
   color?: string;
+  colors?: string[];
   gender?: string;
   tags?: string[];
   seoTitle?: string;
