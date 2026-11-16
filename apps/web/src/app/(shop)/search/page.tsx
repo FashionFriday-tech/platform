@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { motion } from 'motion/react';
@@ -48,16 +48,10 @@ export default function SearchPage() {
   };
 
   // Format discovery items from matching brands and categories
-  const discoveryItems: DiscoveryItem[] = useMemo(() => {
-    const list: DiscoveryItem[] = [];
-    brands.forEach((b) => {
-      list.push({ label: b.name, type: 'brand' });
-    });
-    categories.forEach((c) => {
-      list.push({ label: c.name, type: 'category' });
-    });
-    return list;
-  }, [brands, categories]);
+  const discoveryItems: DiscoveryItem[] = [
+    ...brands.map((b) => ({ label: b.name, type: 'brand' as const })),
+    ...categories.map((c) => ({ label: c.name, type: 'category' as const })),
+  ];
 
   const hasResults = products.length > 0 || discoveryItems.length > 0;
 
