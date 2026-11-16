@@ -32,13 +32,18 @@ export default function SearchPage() {
     if (!trimmed) {
       return;
     }
-    saveSearch(trimmed);
+    const matchingProductsCount = products.length;
+    const hasAnyResults = matchingProductsCount > 0 || discoveryItems.length > 0;
+    saveSearch(trimmed, {
+      resultsCount: matchingProductsCount,
+      hasResults: hasAnyResults,
+    });
     router.push(`/products?q=${encodeURIComponent(trimmed)}`);
   };
 
   // Direct product navigation
   const handleSelectProduct = (slug: string, name: string) => {
-    saveSearch(name);
+    saveSearch(name, { resultsCount: 1, hasResults: true });
     router.push(`/product/${slug}`);
   };
 
