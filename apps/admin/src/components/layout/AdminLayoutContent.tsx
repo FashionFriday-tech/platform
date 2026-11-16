@@ -14,20 +14,20 @@ import { Sidebar } from './Sidebar';
 
 // Route prefix permission rules
 const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
-  { prefix: '/analytics', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
-  { prefix: '/orders', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
-  { prefix: '/customers', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
-  { prefix: '/reviews', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
-  { prefix: '/feedback', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
-  { prefix: '/searches', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
-  { prefix: '/product-requests', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
+  { prefix: '/analytics', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
+  { prefix: '/orders', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
+  { prefix: '/customers', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
+  { prefix: '/reviews', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
+  { prefix: '/feedback', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
+  { prefix: '/searches', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
+  { prefix: '/product-requests', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
   { prefix: '/products', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
   { prefix: '/categories', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
   { prefix: '/brands', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
   { prefix: '/collections', roles: ['SUPER_ADMIN', 'PRODUCT_MANAGER'] },
-  { prefix: '/campaigns', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
-  { prefix: '/whatsapp-reviews', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
-  { prefix: '/faqs', roles: ['SUPER_ADMIN', 'SALES_MANAGER'] },
+  { prefix: '/campaigns', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
+  { prefix: '/whatsapp-reviews', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
+  { prefix: '/faqs', roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN'] },
   { prefix: '/team', roles: ['SUPER_ADMIN'] },
 ];
 
