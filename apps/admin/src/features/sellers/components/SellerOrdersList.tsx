@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 
 import { ShoppingBagIcon } from '@ff/ui';
+
 import { formatColorLabel } from '@/lib/format-color';
 
 import { type SellerOrder, type SellerOrderItem } from '../types';
