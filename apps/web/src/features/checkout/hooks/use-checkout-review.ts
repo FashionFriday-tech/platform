@@ -282,7 +282,7 @@ export function useCheckoutReview() {
         }
 
         if (savedAddressRecord) {
-          setSavedAddresses((prev) => [savedAddressRecord!, ...prev]);
+          setSavedAddresses((prev) => [savedAddressRecord, ...prev]);
         }
 
         const finalAddress: AddressDetails = {
