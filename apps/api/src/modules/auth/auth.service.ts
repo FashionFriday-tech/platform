@@ -132,19 +132,8 @@ export class AuthService {
     return `${mins} min ${remSecs} sec`;
   }
 
-  async sendOtp(dto: SendOtpDto, clientIp?: string) {
-    const { phone } = dto;
-
-    // 1. IP-level Rate Limiting: Prevent a single IP from cycling through many different numbers
-    this.checkIpRateLimit(clientIp);
-
-    // 2. Strict Indian mobile number validation (prevents sending to invalid/fake prefixes)
-    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
-    if (cleanDigits.length !== 10 || !/^[6-9]\d{9}$/.test(cleanDigits)) {
-      throw new BadRequestException('Please enter a valid 10-digit Indian mobile number');
-    }
-
-    // 3. Progressive Rate Limiting per phone number to prevent spam & protect Meta API balance:
+  private async generateAndDispatchOtp(phone: string) {
+    // Progressive Rate Limiting per phone number to prevent spam & protect Meta API balance:
     // 1st request -> 60s cooldown
     // 2nd request -> 5m cooldown
     // 3rd request -> 10m cooldown
@@ -254,17 +243,77 @@ export class AuthService {
     };
   }
 
+  async sendOtp(dto: SendOtpDto, clientIp?: string) {
+    const { phone } = dto;
+
+    // 1. IP-level Rate Limiting: Prevent a single IP from cycling through many different numbers
+    this.checkIpRateLimit(clientIp);
+
+    // 2. Strict Indian mobile number validation (prevents sending to invalid/fake prefixes)
+    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
+    if (cleanDigits.length !== 10 || !/^[6-9]\d{9}$/.test(cleanDigits)) {
+      throw new BadRequestException('Please enter a valid 10-digit Indian mobile number');
+    }
+
+    return this.generateAndDispatchOtp(cleanDigits);
+  }
+
+  async sendAdminOtp(dto: SendOtpDto, clientIp?: string) {
+    const { phone } = dto;
+
+    // 1. IP-level Rate Limiting
+    this.checkIpRateLimit(clientIp);
+
+    // 2. Strict Indian mobile number validation
+    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
+    if (cleanDigits.length !== 10 || !/^[6-9]\d{9}$/.test(cleanDigits)) {
+      throw new BadRequestException('Please enter a valid 10-digit Indian mobile number');
+    }
+
+    // 3. Database lookup - Verify user is a registered active administrator/staff
+    const user = await this.prisma.db.user.findFirst({
+      where: {
+        OR: [
+          { phone: cleanDigits },
+          { phone: `+91 ${cleanDigits}` },
+          { phone: `+91${cleanDigits}` },
+          { phone },
+        ],
+      },
+    });
+
+    if (!user || (user.role !== 'SUPER_ADMIN' && user.role !== 'STAFF_ADMIN')) {
+      throw new UnauthorizedException('This phone number is not registered as an administrator.');
+    }
+
+    if (user.accountStatus !== 'ACTIVE') {
+      throw new BadRequestException(
+        'Your administrator account is suspended or inactive. Please contact the Super Admin.',
+      );
+    }
+
+    return this.generateAndDispatchOtp(cleanDigits);
+  }
+
   async verifyOtp(dto: VerifyOtpDto) {
     const { phone, otp } = dto;
+    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
 
     // 1. Find OTP entry
     let otpEntry;
     try {
-      otpEntry = await this.prisma.db.otp.findUnique({
-        where: { phone },
+      otpEntry = await this.prisma.db.otp.findFirst({
+        where: {
+          OR: [
+            { phone: cleanDigits },
+            { phone: `+91 ${cleanDigits}` },
+            { phone: `+91${cleanDigits}` },
+            { phone },
+          ],
+        },
       });
     } catch {
-      otpEntry = this.otpMap.get(phone);
+      otpEntry = this.otpMap.get(cleanDigits) || this.otpMap.get(phone);
     }
 
     if (!otpEntry) {
@@ -272,6 +321,7 @@ export class AuthService {
     }
 
     if (new Date() > otpEntry.expiresAt) {
+      this.otpMap.delete(cleanDigits);
       this.otpMap.delete(phone);
       throw new BadRequestException('OTP has expired');
     }
@@ -289,15 +339,25 @@ export class AuthService {
     }
 
     // 3. Cleanup OTP entry and rate-limit counter on successful verification
+    this.otpRateLimitMap.delete(cleanDigits);
     this.otpRateLimitMap.delete(phone);
     try {
-      await this.prisma.db.otp.delete({ where: { phone } });
+      await this.prisma.db.otp.deleteMany({
+        where: {
+          OR: [
+            { phone: cleanDigits },
+            { phone: `+91 ${cleanDigits}` },
+            { phone: `+91${cleanDigits}` },
+            { phone },
+          ],
+        },
+      });
     } catch {
+      this.otpMap.delete(cleanDigits);
       this.otpMap.delete(phone);
     }
 
     // 4. Check if user exists
-    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
     let user;
     try {
       user = await this.prisma.db.user.findFirst({
@@ -320,10 +380,26 @@ export class AuthService {
     }
 
     if (user) {
+      const adminMeta = ((user as any).adminMeta as Record<string, unknown>) || {};
+      const position =
+        (adminMeta.position as string) ||
+        (user.role === 'SUPER_ADMIN'
+          ? 'SUPER_ADMIN'
+          : user.role === 'STAFF_ADMIN'
+            ? 'SALES_MANAGER'
+            : user.role);
+
       // User exists -> Generate JWT tokens
       const tokens = await this.getTokens(user.id, user.role);
       await this.updateRefreshToken(user.id, tokens.refreshToken);
-      return { isNewUser: false, ...tokens, user };
+      return {
+        isNewUser: false,
+        ...tokens,
+        user: {
+          ...user,
+          position,
+        },
+      };
     } else {
       // User does NOT exist -> Generate temporary token for sign up
       const tempToken = this.jwtService.sign({ phone }, { expiresIn: '15m' });
@@ -333,6 +409,117 @@ export class AuthService {
         otpToken: tempToken,
       };
     }
+  }
+
+  async verifyAdminOtp(dto: VerifyOtpDto) {
+    const { phone, otp } = dto;
+    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
+
+    // 1. Find OTP entry
+    let otpEntry;
+    try {
+      otpEntry = await this.prisma.db.otp.findFirst({
+        where: {
+          OR: [
+            { phone: cleanDigits },
+            { phone: `+91 ${cleanDigits}` },
+            { phone: `+91${cleanDigits}` },
+            { phone },
+          ],
+        },
+      });
+    } catch {
+      otpEntry = this.otpMap.get(cleanDigits) || this.otpMap.get(phone);
+    }
+
+    if (!otpEntry) {
+      throw new BadRequestException('OTP not requested for this phone number');
+    }
+
+    if (new Date() > otpEntry.expiresAt) {
+      this.otpMap.delete(cleanDigits);
+      this.otpMap.delete(phone);
+      throw new BadRequestException('OTP has expired');
+    }
+
+    // 2. Verify Argon2 hash
+    let isValid = false;
+    if (otpEntry) {
+      isValid = await argon2.verify(otpEntry.otpHash, otp);
+    }
+
+    if (!isValid) {
+      throw new UnauthorizedException(
+        'Invalid OTP. Please check your WhatsApp and enter the 6-digit code.',
+      );
+    }
+
+    // 3. Cleanup OTP entry and rate-limit counter on successful verification
+    this.otpRateLimitMap.delete(cleanDigits);
+    this.otpRateLimitMap.delete(phone);
+    try {
+      await this.prisma.db.otp.deleteMany({
+        where: {
+          OR: [
+            { phone: cleanDigits },
+            { phone: `+91 ${cleanDigits}` },
+            { phone: `+91${cleanDigits}` },
+            { phone },
+          ],
+        },
+      });
+    } catch {
+      this.otpMap.delete(cleanDigits);
+      this.otpMap.delete(phone);
+    }
+
+    // 4. Query administrator from DB
+    const user = await this.prisma.db.user.findFirst({
+      where: {
+        OR: [
+          { phone: cleanDigits },
+          { phone: `+91 ${cleanDigits}` },
+          { phone: `+91${cleanDigits}` },
+          { phone },
+        ],
+      },
+    });
+
+    if (!user || (user.role !== 'SUPER_ADMIN' && user.role !== 'STAFF_ADMIN')) {
+      throw new UnauthorizedException('This phone number is not registered as an administrator.');
+    }
+
+    if (user.accountStatus !== 'ACTIVE') {
+      throw new BadRequestException(
+        'Your administrator account is suspended or inactive. Please contact the Super Admin.',
+      );
+    }
+
+    // 5. Extract designated position/role
+    const adminMeta = (user.adminMeta as Record<string, unknown>) || {};
+    const position =
+      (adminMeta.position as string) ||
+      (user.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : 'SALES_MANAGER');
+
+    // 6. Generate JWT tokens
+    const tokens = await this.getTokens(user.id, user.role);
+    await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+    return {
+      isNewUser: false,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: cleanDigits,
+        role: position,
+        dbRole: user.role,
+        accountStatus: user.accountStatus,
+        adminMeta: user.adminMeta,
+      },
+    };
   }
 
   async signup(dto: SignupDto) {

@@ -37,20 +37,28 @@ export class AuthController {
 
   @UseGuards(ThrottlerGuard)
   @Throttle({ default: { limit: 5, ttl: 60000 } })
-  @Post('send-otp')
+  @Post(['send-otp', 'admin/send-otp'])
   @HttpCode(HttpStatus.OK)
   async sendOtp(@Body() dto: SendOtpDto, @Req() req: Request) {
     const forwarded = req.headers['x-forwarded-for'];
     const clientIp =
       (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : req.ip) || '127.0.0.1';
+    const isAdminEndpoint = req.path.includes('admin');
+    if (isAdminEndpoint) {
+      return this.authService.sendAdminOtp(dto, clientIp);
+    }
     return this.authService.sendOtp(dto, clientIp);
   }
 
   @UseGuards(ThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60000 } })
-  @Post('verify-otp')
+  @Post(['verify-otp', 'admin/verify-otp'])
   @HttpCode(HttpStatus.OK)
-  async verifyOtp(@Body() dto: VerifyOtpDto) {
+  async verifyOtp(@Body() dto: VerifyOtpDto, @Req() req: Request) {
+    const isAdminEndpoint = req.path.includes('admin');
+    if (isAdminEndpoint) {
+      return this.authService.verifyAdminOtp(dto);
+    }
     return this.authService.verifyOtp(dto);
   }
 
