@@ -990,7 +990,8 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                               </span>
                             )}
                             {(() => {
-                              const { color: cName, quality: qName } = resolveItemColorAndQuality(firstItem);
+                              const { color: cName, quality: qName } =
+                                resolveItemColorAndQuality(firstItem);
                               return (
                                 <>
                                   {cName && (
