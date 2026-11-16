@@ -201,12 +201,10 @@ export function CreateCustomerOrderModal({
 
     // Pick first color name from product.colors if available, otherwise 'Standard'
     const productColors =
-      (product.colors && product.colors.length > 0)
+      product.colors && product.colors.length > 0
         ? product.colors
         : (product as any).attributes?.colors || [];
-    const firstCol = productColors[0]
-      ? formatColorLabel(productColors[0]) || productColors[0]
-      : '';
+    const firstCol = productColors[0] ? formatColorLabel(productColors[0]) || productColors[0] : '';
     setSelectedColor(firstCol || 'Standard');
     setQuantity(1);
     setCurrentStep('configure');
@@ -1166,19 +1164,21 @@ export function CreateCustomerOrderModal({
                         Size: <strong className="text-black dark:text-white">{selectedSize}</strong>
                         {selectedColor && selectedColor !== 'Standard' && (
                           <>
-                            {' '}| Color:{' '}
+                            {' '}
+                            | Color:{' '}
                             <strong className="text-black dark:text-white">{selectedColor}</strong>
                           </>
                         )}
                         {selectedProduct.quality && (
                           <>
-                            {' '}| Quality:{' '}
+                            {' '}
+                            | Quality:{' '}
                             <strong className="text-indigo-600 dark:text-indigo-400">
                               {selectedProduct.quality}
                             </strong>
                           </>
-                        )}
-                        {' '}| Qty: <strong className="text-black dark:text-white">{quantity}</strong>
+                        )}{' '}
+                        | Qty: <strong className="text-black dark:text-white">{quantity}</strong>
                       </p>
                       <p className="mt-1 text-xs font-extrabold text-black dark:text-white">
                         ₹{unitPrice.toLocaleString('en-IN')} × {quantity} = ₹
