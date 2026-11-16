@@ -20,16 +20,38 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
           return;
         }
 
+        const address =
+          typeof data.shippingAddress === 'string'
+            ? JSON.parse(data.shippingAddress)
+            : data.shippingAddress || {};
+
         // map data to match admin shape
         const mapped = {
           ...data,
           status: data.status?.toLowerCase() || 'pending',
           customer: {
             id: data.userId,
-            name: data.user?.name || 'Unknown',
-            phone: data.user?.phone || '',
-            altPhone: data.user?.altPhone,
+            name: address?.fullName || data.user?.name || 'Unknown',
+            phone: address?.phoneNumber || data.user?.phone || '',
+            altPhone: address?.altPhoneNumber || data.user?.altPhone,
+            email: data.user?.email,
           },
+          shippingAddress: {
+            fullName: address?.fullName || data.user?.name || '',
+            phoneNumber: address?.phoneNumber || data.user?.phone || '',
+            altPhoneNumber: address?.altPhoneNumber || data.user?.altPhone || '',
+            street: address?.street || '',
+            building: address?.building || '',
+            landmark: address?.landmark || '',
+            city: address?.city || '',
+            district: address?.district || '',
+            state: address?.state || '',
+            pincode: address?.pincode || '',
+          },
+          totalAmount: Number(data.totalAmount ?? 0),
+          discountAmount: Number(data.discountAmount ?? 0),
+          shippingFees: Number(data.shippingFees ?? 0),
+          finalAmount: Number(data.finalAmount ?? data.totalAmount ?? 0),
           total: Number(data.finalAmount || data.totalAmount || 0),
           paymentType: data.paymentMethod?.toLowerCase() === 'cod' ? 'cod' : 'prepaid',
           tracking: {
@@ -52,10 +74,14 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
               productName: item.name,
               size: item.size,
               color: item.color,
+              quality: item.quality || item.product?.quality || null,
+              colors: item.colors || item.product?.colors || [],
+              product: item.product || null,
               quantity: item.quantity,
               price: Number(item.price ?? 0),
               sku:
                 item.sku ||
+                item.product?.sku ||
                 (item.productId ? `SKU-${String(item.productId).slice(-6).toUpperCase()}` : 'N/A'),
               productImage:
                 (item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
