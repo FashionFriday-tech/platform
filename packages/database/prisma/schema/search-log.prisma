@@ -1,9 +1,11 @@
 model SearchLog {
-  id        String   @id @default(uuid())
-  query     String
-  userId    String?
-  createdAt DateTime @default(now())
-  user      User?    @relation(fields: [userId], references: [id])
+  id           String   @id @default(uuid())
+  query        String
+  userId       String?
+  hasResults   Boolean  @default(true)
+  resultsCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  user         User?    @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([createdAt])
