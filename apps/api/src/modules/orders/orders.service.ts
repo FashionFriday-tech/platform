@@ -190,70 +190,21 @@ export class OrdersService {
     // 4. Generate order reference
     const orderNumber = generateBrandId('ORD');
 
-    // ----------------- CASE A: CASH ON DELIVERY -----------------
-    if (isCod) {
-      this.logger.log(`[OrdersService] Step 4 (COD): Creating Order record ${orderNumber} in DB`);
-      try {
-        const order = await this.prisma.db.order.create({
-          data: {
-            id: orderNumber,
-            userId,
-            orderNumber,
-            status: OrderStatus.STOCK_CHECK,
-            paymentStatus: PaymentStatus.PENDING,
-            paymentMethod: PaymentMethod.COD,
-            totalAmount,
-            discountAmount,
-            shippingFees,
-            finalAmount,
-            shippingAddress: shippingAddressSnapshot,
-            items: {
-              create: itemsData,
-            },
-          },
-          include: {
-            items: true,
-          },
-        });
+    // ----------------- UNIFIED SECURE CHECKOUT (NO UNVERIFIED ORDERS IN ADMIN) -----------------
+    // For COD: Collect ₹200 advance deposit via Razorpay. Remaining balance is due on delivery.
+    // For PREPAY: Collect 100% of finalAmount via Razorpay.
+    const COD_ADVANCE_AMOUNT = 200;
+    const advanceAmount = isCod ? Math.min(COD_ADVANCE_AMOUNT, finalAmount) : finalAmount;
+    const payableOnlineAmount = advanceAmount;
+    const amountInPaisa = Math.round(payableOnlineAmount * 100);
 
-        // Clear cart for COD orders
-        this.logger.log(
-          `[OrdersService] Step 5 (COD): Clearing cart items in DB for user ${userId}`,
-        );
-        await this.prisma.db.cartItem.deleteMany({
-          where: { userId },
-        });
-
-        try {
-          void this.notificationsService.notifyNewOrder(order);
-        } catch (pushErr: unknown) {
-          this.logger.warn(`[OrdersService] Push notification dispatch warning:`, pushErr);
-        }
-
-        this.logger.log(
-          `[OrdersService] ---------------- COD ORDER PLACED SUCCESSFULLY ----------------`,
-        );
-        return {
-          type: 'COD',
-          order,
-        };
-      } catch (dbError: any) {
-        this.logger.error(
-          `[OrdersService] DB Error creating COD order: ${dbError.message}`,
-          dbError.stack,
-        );
-        throw new BadRequestException(`Failed to process order in database: ${dbError.message}`);
-      }
-    }
-
-    // ----------------- CASE B: ONLINE PAYMENT (RAZORPAY) -----------------
-    this.logger.log(
-      `[OrdersService] Step 4 (ONLINE): Initializing Razorpay Gateway Order for ${orderNumber}`,
-    );
-    const amountInPaisa = Math.round(finalAmount * 100);
     if (amountInPaisa < 100) {
-      throw new BadRequestException('Order amount must be at least ₹1 (100 paise)');
+      throw new BadRequestException('Payable amount must be at least ₹1 (100 paise)');
     }
+
+    this.logger.log(
+      `[OrdersService] Step 4: Initializing Razorpay Gateway Order for ${orderNumber} (${isCod ? `COD Advance ₹${String(advanceAmount)}` : `Full Online ₹${String(finalAmount)}`})`,
+    );
 
     const rzpOrder = await this.razorpayService.createOrder({
       amountInPaisa,
@@ -261,6 +212,9 @@ export class OrdersService {
       notes: {
         userId,
         orderNumber,
+        paymentType: isCod ? 'COD_ADVANCE' : 'PREPAID',
+        advanceAmount: String(advanceAmount),
+        balanceDue: String(Math.max(0, finalAmount - advanceAmount)),
       },
     });
 
@@ -272,12 +226,13 @@ export class OrdersService {
           orderNumber,
           status: OrderStatus.PENDING,
           paymentStatus: PaymentStatus.PENDING,
-          paymentMethod: PaymentMethod.RAZORPAY,
+          paymentMethod: isCod ? PaymentMethod.COD : PaymentMethod.RAZORPAY,
           razorpayOrderId: rzpOrder.id,
           totalAmount,
           discountAmount,
           shippingFees,
           finalAmount,
+          advanceAmount,
           shippingAddress: shippingAddressSnapshot,
           items: {
             create: itemsData,
@@ -289,15 +244,17 @@ export class OrdersService {
       });
 
       this.logger.log(
-        `[OrdersService] Step 5 (ONLINE): DB Order created with Razorpay Order ID: ${rzpOrder.id}. Cart items retained until payment verification.`,
+        `[OrdersService] Step 5: DB Order created with Razorpay Order ID: ${rzpOrder.id}. Cart items retained until payment verification.`,
       );
 
       return {
-        type: 'ONLINE',
+        type: isCod ? 'COD' : 'ONLINE',
         order,
         order_id: rzpOrder.id,
         amount: rzpOrder.amount,
         currency: rzpOrder.currency,
+        advanceAmount,
+        balanceDue: Math.max(0, finalAmount - advanceAmount),
         razorpay: {
           orderId: rzpOrder.id,
           amount: rzpOrder.amount,
@@ -307,7 +264,7 @@ export class OrdersService {
       };
     } catch (dbError: any) {
       this.logger.error(
-        `[OrdersService] Database error initiating online order: ${dbError.message}`,
+        `[OrdersService] Database error initiating order: ${dbError.message}`,
         dbError.stack,
       );
       throw new BadRequestException(`Failed to initialize order: ${dbError.message}`);
@@ -1060,28 +1017,38 @@ export class OrdersService {
   }
 
   async getOrderStats() {
+    const confirmedCondition = {
+      NOT: {
+        AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+      },
+    };
+
     const [totalOrders, unplacedOnSellersCount, processingCount, shippedCount, deliveredCount] =
       await Promise.all([
-        this.prisma.db.order.count(),
+        this.prisma.db.order.count({ where: confirmedCondition }),
         this.prisma.db.order.count({
           where: {
+            ...confirmedCondition,
             status: {
-              in: [OrderStatus.PENDING, OrderStatus.STOCK_CHECK, OrderStatus.STOCK_CONFIRMED],
+              in: [OrderStatus.STOCK_CHECK, OrderStatus.STOCK_CONFIRMED],
             },
           },
         }),
         this.prisma.db.order.count({
           where: {
+            ...confirmedCondition,
             status: OrderStatus.PROCESSING,
           },
         }),
         this.prisma.db.order.count({
           where: {
+            ...confirmedCondition,
             status: OrderStatus.SHIPPED,
           },
         }),
         this.prisma.db.order.count({
           where: {
+            ...confirmedCondition,
             status: OrderStatus.DELIVERED,
           },
         }),
@@ -1098,7 +1065,13 @@ export class OrdersService {
   }
 
   async findAll() {
+    // Only return confirmed orders to Admin panel (hide abandoned/unpaid checkout attempts)
     const orders = await this.prisma.db.order.findMany({
+      where: {
+        NOT: {
+          AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+        },
+      },
       orderBy: { createdAt: 'desc' },
       include: {
         items: true,
@@ -1159,7 +1132,12 @@ export class OrdersService {
 
   async findUserOrders(userId: string) {
     return this.prisma.db.order.findMany({
-      where: { userId },
+      where: {
+        userId,
+        NOT: {
+          AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+        },
+      },
       orderBy: { createdAt: 'desc' },
       include: { items: true },
     });

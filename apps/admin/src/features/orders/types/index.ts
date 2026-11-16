@@ -84,6 +84,7 @@ export interface Order {
   discountAmount?: number;
   shippingFees?: number;
   finalAmount?: number;
+  advanceAmount?: number;
   tracking?: {
     trackingId: string;
     courierService: string;

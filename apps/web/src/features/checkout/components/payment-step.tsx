@@ -107,37 +107,24 @@ export function PaymentStep() {
         landmark: shippingAddress.landmark?.trim() || null,
       };
 
-      // CASE A: Cash on Delivery (COD)
-      if (paymentMethod === 'cod') {
-        const res = await createOrderAction({
-          paymentMethod: 'COD',
-          addressId: shippingAddress.id,
-          shippingAddress: shippingPayload,
-        });
-        console.log('[PaymentStep] COD Order successfully created:', res);
-        await clearCart(true);
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('checkout_shipping_address');
-        }
-        toast.success('Order placed successfully via Cash on Delivery!');
-        router.push('/account/orders');
-        return;
-      }
-
-      // CASE B: Pre-pay Online (Razorpay UPI / Cards)
-      console.log('[PaymentStep] Step 2: Initiating Razorpay order on server...');
+      // Initiate order on server (Both COD and PREPAY initiate via Razorpay)
+      // COD collects ₹200 advance deposit online; Prepay collects 100% online
+      console.log(
+        `[PaymentStep] Step 2: Initiating ${paymentMethod.toUpperCase()} order on server...`,
+      );
+      const isCod = paymentMethod === 'cod';
       const initRes = await createOrderAction({
-        paymentMethod: 'RAZORPAY',
+        paymentMethod: isCod ? 'COD' : 'RAZORPAY',
         addressId: shippingAddress.id,
         shippingAddress: shippingPayload,
       });
-      console.log('[PaymentStep] Step 3: Razorpay session created:', initRes);
+      console.log('[PaymentStep] Step 3: Server session created:', initRes);
 
       const rzpData = initRes?.razorpay;
       const order = initRes?.order;
 
       if (!rzpData || !order) {
-        throw new Error('Failed to initiate online payment session from server');
+        throw new Error('Failed to initiate payment session from server');
       }
 
       // Load official Razorpay Checkout SDK
@@ -150,34 +137,23 @@ export function PaymentStep() {
 
       const keyId = rzpData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
-      // Graceful fallback for local development when keys are not yet configured in .env
-      if (!keyId || rzpData.orderId.startsWith('order_mock_')) {
-        console.warn(
-          '[PaymentStep] Razorpay test keys not yet added. Running in mock simulation mode.',
-        );
-        toast.info('Razorpay Dev Mode: Approving test payment...');
-        await verifyPaymentAction({
-          orderId: order.id,
-          razorpayOrderId: rzpData.orderId,
-          razorpayPaymentId: `pay_mock_${Date.now()}`,
-          razorpaySignature: 'mock_signature',
-        });
-        await clearCart(true);
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('checkout_shipping_address');
-        }
-        toast.success('Test payment verified! Your order has been placed.');
-        router.push('/account/orders');
-        return;
+      if (!keyId) {
+        throw new Error('Payment gateway key is not configured. Please contact support.');
       }
 
       // Standard Razorpay Modal Configuration
+      const advancePaid = initRes?.advanceAmount || (isCod ? 200 : order.finalAmount);
+      const balanceDue =
+        initRes?.balanceDue ?? Math.max(0, Number(order.finalAmount) - Number(advancePaid));
+
       const options = {
         key: keyId,
         amount: rzpData.amount,
         currency: rzpData.currency || 'INR',
         name: 'Fashion Friday',
-        description: `Order #${order.orderNumber}`,
+        description: isCod
+          ? `COD Advance Deposit (₹${advancePaid}) - Order #${order.orderNumber}`
+          : `Order #${order.orderNumber}`,
         order_id: rzpData.orderId,
         prefill: {
           name: user.name || '',
@@ -189,7 +165,9 @@ export function PaymentStep() {
         modal: {
           ondismiss: () => {
             setIsPlacing(false);
-            toast.info('Payment was cancelled. You can retry whenever you are ready.');
+            toast.info(
+              'Payment was cancelled. Your order has not been placed and your cart is saved.',
+            );
           },
         },
         handler: async (response: any) => {
@@ -208,7 +186,13 @@ export function PaymentStep() {
             if (typeof window !== 'undefined') {
               sessionStorage.removeItem('checkout_shipping_address');
             }
-            toast.success('Payment verified! Your order has been placed.');
+            if (isCod) {
+              toast.success(
+                `₹${advancePaid} Advance Paid! COD Order placed successfully. Balance of ₹${balanceDue} payable on delivery.`,
+              );
+            } else {
+              toast.success('Payment verified! Your order has been placed.');
+            }
             router.push('/account/orders');
           } catch (verifyErr: any) {
             console.error('[PaymentStep] Payment verification error:', verifyErr);
@@ -364,7 +348,7 @@ export function PaymentStep() {
                     Cash on Delivery
                   </h3>
                   <p className="mt-0.5 text-[9px] font-bold tracking-widest uppercase opacity-60">
-                    Pay at Doorstep (+₹200 Fee)
+                    Pay ₹200 Advance Online + Balance on Delivery
                   </p>
                 </div>
               </div>
@@ -386,12 +370,15 @@ export function PaymentStep() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-[10px] font-black tracking-widest text-orange-600 uppercase">
-                    COD Policy Applied
+                    COD Policy: ₹200 Advance Deposit Required
                   </p>
                   <p className="text-[10px] leading-relaxed font-bold tracking-widest text-orange-800/60 uppercase">
-                    An extra fee of{' '}
-                    <span className="font-black text-orange-600">₹{codServiceFee}</span> is added
-                    for logistics handling. Choose UPI/Online for free delivery.
+                    A <span className="font-black text-orange-600">₹200 deposit</span> is collected
+                    online via UPI/Card to confirm your COD order. The balance of{' '}
+                    <span className="font-black text-orange-600">
+                      ₹{Math.max(0, totalAmount - 200)}
+                    </span>{' '}
+                    is collected in cash upon doorstep delivery.
                   </p>
                 </div>
                 <span className="text-background absolute -top-4 left-5 rounded-t-4xl bg-orange-500 px-8 text-xs font-semibold tracking-wider uppercase">
@@ -486,8 +473,8 @@ export function PaymentStep() {
                   {isPlacing
                     ? 'Processing...'
                     : paymentMethod === 'cod'
-                      ? 'Place Order'
-                      : 'Pay via UPI'}
+                      ? 'Pay ₹200 Advance (COD)'
+                      : `Pay ₹${totalAmount} via UPI`}
                   {!isPlacing && <ChevronRightIcon size={16} />}
                 </span>
               </button>
@@ -534,8 +521,9 @@ export function PaymentStep() {
                   UPI QR.
                 </p>
                 <p>
-                  <span className="font-black text-orange-500">COD:</span> An extra ₹200 fee is
-                  applied for courier cash-handling logistics.
+                  <span className="font-black text-orange-500">COD (Cash on Delivery):</span>{' '}
+                  Requires a ₹200 advance deposit online to confirm the order. The remaining balance
+                  is payable in cash upon doorstep delivery.
                 </p>
               </div>
             </motion.div>

@@ -956,6 +956,30 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                   )}
                 </span>
               </div>
+              {(currentOrder.paymentType === 'cod' || currentOrder.paymentMethod === 'COD') && (
+                <>
+                  <div className="flex justify-between text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span>Advance Paid (Razorpay)</span>
+                    <span>
+                      ₹
+                      {(Number(currentOrder.advanceAmount) || 200).toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs font-bold text-orange-600 dark:text-orange-400">
+                    <span>Balance Due on Delivery</span>
+                    <span>
+                      ₹
+                      {Math.max(
+                        0,
+                        (Number(currentOrder.finalAmount ?? currentOrder.total) || 0) -
+                          (Number(currentOrder.advanceAmount) || 200),
+                      ).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 bg-zinc-50 px-6 py-4 dark:bg-zinc-900/60">
               <div className="flex items-center gap-2">

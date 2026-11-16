@@ -8,8 +8,9 @@ ALTER TYPE "PaymentStatus" ADD VALUE IF NOT EXISTS 'VOIDED';
 ALTER TYPE "PaymentStatus" ADD VALUE IF NOT EXISTS 'REFUND_PENDING';
 ALTER TYPE "PaymentStatus" ADD VALUE IF NOT EXISTS 'PARTIALLY_REFUNDED';
 
--- 2. Add cumulative refund tracking to orders table
+-- 2. Add cumulative refund and advance tracking to orders table
 ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "refundedAmount" DECIMAL(12, 2) NOT NULL DEFAULT 0;
+ALTER TABLE "orders" ADD COLUMN IF NOT EXISTS "advanceAmount" DECIMAL(12, 2) NOT NULL DEFAULT 0;
 
 -- 3. Create transactional webhook inbox table for durable event deduplication and crash recovery
 CREATE TABLE IF NOT EXISTS "webhook_events" (

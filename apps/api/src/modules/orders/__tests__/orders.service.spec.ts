@@ -59,7 +59,11 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
 
     razorpayMock = {
       getKeyId: jest.fn().mockReturnValue('rzp_test_mockKeyId'),
-      createOrder: jest.fn(),
+      createOrder: jest.fn().mockResolvedValue({
+        id: 'order_rzp_mock123',
+        amount: 20000,
+        currency: 'INR',
+      }),
       capturePayment: jest.fn(),
       voidPayment: jest.fn(),
       refundPayment: jest.fn(),
@@ -788,6 +792,121 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
           paymentMethod: PaymentMethod.COD,
         }),
       ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('9. Cash on Delivery (COD) Advance Deposit & Unconfirmed Order Isolation', () => {
+    const codCartItem = {
+      id: 'cart-cod-1',
+      userId: 'user-cod-1',
+      productId: 'prod-1',
+      quantity: 1,
+      size: 'M',
+      color: 'Black',
+      product: {
+        id: 'prod-1',
+        name: 'Classic Shirt',
+        sellingPrice: 999,
+        mainImage: '/img.jpg',
+      },
+    };
+
+    it('should create Razorpay order for ₹200 advance deposit on COD checkout and retain cart', async () => {
+      prismaMock.db.cartItem.findMany.mockResolvedValue([codCartItem]);
+      prismaMock.db.address.findFirst.mockResolvedValue({
+        id: 'addr-cod-1',
+        userId: 'user-cod-1',
+        fullName: 'Aman Verma',
+        phoneNumber: '9876543210',
+        street: 'Brigade Road',
+        city: 'Bengaluru',
+        pincode: '560025',
+      });
+
+      prismaMock.db.order.create.mockImplementation((args: any) => ({
+        ...args.data,
+        id: 'ORD-COD-ADVANCE',
+      }));
+
+      const res = await service.createOrder('user-cod-1', {
+        paymentMethod: PaymentMethod.COD,
+        addressId: 'addr-cod-1',
+      });
+
+      // Verify Razorpay order was initiated for ₹200 (20,000 paise)
+      expect(razorpayMock.createOrder).toHaveBeenCalledWith(
+        expect.objectContaining({
+          amountInPaisa: 20000,
+          notes: expect.objectContaining({
+            paymentType: 'COD_ADVANCE',
+            advanceAmount: '200',
+          }),
+        }),
+      );
+
+      // Verify DB Order created with PENDING / PENDING and advanceAmount = 200
+      expect(prismaMock.db.order.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: OrderStatus.PENDING,
+            paymentStatus: PaymentStatus.PENDING,
+            paymentMethod: PaymentMethod.COD,
+            advanceAmount: 200,
+          }),
+        }),
+      );
+
+      // Verify cart was NOT cleared before payment verification
+      expect(prismaMock.db.cartItem.deleteMany).not.toHaveBeenCalled();
+
+      expect(res.type).toBe('COD');
+      expect(res.advanceAmount).toBe(200);
+      expect(res.razorpay).toBeDefined();
+    });
+
+    it('should isolate and exclude unconfirmed (PENDING / PENDING) checkouts from Admin panel', async () => {
+      prismaMock.db.order.findMany.mockResolvedValue([]);
+
+      await service.findAll();
+
+      expect(prismaMock.db.order.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            NOT: {
+              AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+            },
+          },
+        }),
+      );
+    });
+
+    it('should isolate and exclude unconfirmed (PENDING / PENDING) checkouts from user orders and stats', async () => {
+      prismaMock.db.order.count.mockResolvedValue(0);
+      prismaMock.db.order.findMany.mockResolvedValue([]);
+
+      await service.getOrderStats();
+      await service.findUserOrders('user-test-1');
+
+      expect(prismaMock.db.order.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            NOT: {
+              AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+            },
+          }),
+        }),
+      );
+
+      expect(prismaMock.db.order.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            userId: 'user-test-1',
+            NOT: {
+              AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+            },
+          }),
+        }),
+      );
     });
   });
 });
