@@ -6,12 +6,7 @@ import { PrismaService } from '../../database/prisma.service';
 export class SearchLogsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async logSearch(
-    query: string,
-    userId?: string,
-    resultsCount?: number,
-    hasResults?: boolean,
-  ) {
+  async logSearch(query: string, userId?: string, resultsCount?: number, hasResults?: boolean) {
     const trimmed = query.trim();
     if (!trimmed || trimmed.length < 2) {
       return null;
