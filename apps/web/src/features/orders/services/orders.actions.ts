@@ -131,22 +131,37 @@ export async function createOrderAction(payload: CreateOrderPayload) {
 
     if (!res) {
       console.error('[orders.actions] No response received from orders API');
-      throw new Error('Unable to connect to order processing server');
+      return {
+        success: false,
+        error: 'Unable to connect to order processing server. Please check your network.',
+      };
     }
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      const message = errorData.message || `Failed to create order (HTTP ${res.status})`;
+      const message =
+        errorData.message ||
+        (Array.isArray(errorData.errors) ? errorData.errors.join(', ') : null) ||
+        `Failed to create order (HTTP ${res.status})`;
       console.error('[orders.actions] Order creation failed with response:', errorData);
-      throw new Error(message);
+      return {
+        success: false,
+        error: message,
+      };
     }
 
     const result = await res.json();
     console.log('[orders.actions] Order successfully created / initiated:', result);
-    return result;
+    return {
+      success: true,
+      ...result,
+    };
   } catch (err: any) {
     console.error('[orders.actions] Exception in createOrderAction:', err);
-    throw err;
+    return {
+      success: false,
+      error: err.message || 'An unexpected error occurred while creating order.',
+    };
   }
 }
 
@@ -162,22 +177,34 @@ export async function verifyPaymentAction(payload: VerifyPaymentPayload) {
     });
 
     if (!res) {
-      throw new Error('Unable to connect to order processing server');
+      return {
+        success: false,
+        error: 'Unable to connect to payment verification server.',
+      };
     }
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
       const message = errorData.message || 'Payment verification failed';
       console.error('[orders.actions] Payment verification failed:', errorData);
-      throw new Error(message);
+      return {
+        success: false,
+        error: message,
+      };
     }
 
     const result = await res.json();
     console.log('[orders.actions] Payment verified successfully:', result);
-    return result;
+    return {
+      success: true,
+      ...result,
+    };
   } catch (err: any) {
     console.error('[orders.actions] Exception in verifyPaymentAction:', err);
-    throw err;
+    return {
+      success: false,
+      error: err.message || 'Payment verification encountered an unexpected error.',
+    };
   }
 }
 

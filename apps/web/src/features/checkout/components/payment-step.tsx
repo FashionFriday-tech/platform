@@ -137,6 +137,10 @@ export function PaymentStep() {
       });
       console.log('[PaymentStep] Step 3: Server session created:', initRes);
 
+      if (!initRes || initRes.success === false || initRes.error) {
+        throw new Error(initRes?.error || 'Failed to initiate payment session from server');
+      }
+
       const rzpData = initRes?.razorpay;
       const order = initRes?.order;
 
@@ -169,12 +173,16 @@ export function PaymentStep() {
           return;
         }
 
-        await verifyPaymentAction({
+        const verifyRes = await verifyPaymentAction({
           orderId: order.id,
           razorpayOrderId: rzpData.orderId,
           razorpayPaymentId: `pay_mock_${Date.now()}`,
           razorpaySignature: 'mock_signature',
         });
+
+        if (!verifyRes || verifyRes.success === false || verifyRes.error) {
+          throw new Error(verifyRes?.error || 'Payment verification failed');
+        }
 
         await clearCart(true);
         if (typeof window !== 'undefined') {
@@ -228,12 +236,16 @@ export function PaymentStep() {
           try {
             setIsPlacing(true);
             // Cryptographic verification on backend
-            await verifyPaymentAction({
+            const verifyRes = await verifyPaymentAction({
               orderId: order.id,
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
             });
+
+            if (!verifyRes || verifyRes.success === false || verifyRes.error) {
+              throw new Error(verifyRes?.error || 'Payment verification failed');
+            }
             console.log('[PaymentStep] Step 5: Verified! Clearing cart and redirecting...');
             await clearCart(true);
             if (typeof window !== 'undefined') {

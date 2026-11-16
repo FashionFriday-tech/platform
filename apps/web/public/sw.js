@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ff-offline-v2';
+const CACHE_NAME = 'ff-offline-v3';
 const ASSETS_TO_CACHE = [
   '/offline.html',
   '/apple-touch-icon.png',
@@ -58,29 +58,38 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // 3. Bypass service worker for Next.js internal requests, API routes, Server Actions, RSC, and HMR
+  // 3. Bypass service worker for Next.js internal requests, API routes, Server Actions, RSC, Checkout, Account & Admin
   if (
     url.pathname.startsWith('/_next/') ||
     url.pathname.startsWith('/api/') ||
     url.pathname.startsWith('/__nextjs') ||
+    url.pathname.startsWith('/checkout') ||
+    url.pathname.startsWith('/account') ||
+    url.pathname.startsWith('/admin') ||
+    url.searchParams.has('_rsc') ||
     event.request.headers.get('next-action') ||
     event.request.headers.get('rsc')
   ) {
     return;
   }
 
-  // 3. For page navigation: Network First, fallback to offline.html
+  // 4. For page navigation: Network First, fallback to offline.html
   if (event.request.mode === 'navigate') {
-    event.respondWith(fetch(event.request).catch(() => caches.match('/offline.html')));
+    event.respondWith(
+      fetch(event.request).catch(async () => {
+        const offlinePage = await caches.match('/offline.html');
+        return offlinePage || new Response('Offline', { status: 503, statusText: 'Offline' });
+      }),
+    );
     return;
   }
 
-  // 4. For images & assets: Network First with Cache Fallback
-  // Always fetches fresh live content and updates cache in background so changes reflect immediately in PWA
+  // 5. For images & assets: Network First with Cache Fallback
+  // Always returns a valid Response object (never undefined, preventing TypeError)
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        if (networkResponse.ok && event.request.destination === 'image') {
+        if (networkResponse && networkResponse.ok && event.request.destination === 'image') {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseClone);
@@ -88,8 +97,16 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       })
-      .catch(() => {
-        return caches.match(event.request);
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) {
+          return cached;
+        }
+        return new Response('Asset unavailable offline', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: { 'Content-Type': 'text/plain' },
+        });
       }),
   );
 });
