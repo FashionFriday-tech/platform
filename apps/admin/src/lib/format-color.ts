@@ -67,9 +67,7 @@ export function colorDistance(c1: RgbColor, c2: RgbColor): number {
   const dr = c1.r - c2.r;
   const dg = c1.g - c2.g;
   const db = c1.b - c2.b;
-  return Math.sqrt(
-    (2 + rmean / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rmean) / 256) * db * db,
-  );
+  return Math.sqrt((2 + rmean / 256) * dr * dr + 4 * dg * dg + (2 + (255 - rmean) / 256) * db * db);
 }
 
 /**
@@ -134,9 +132,7 @@ export function formatColorLabel(color?: string | null): string {
   if (/#[0-9a-fA-F]{3,6}/.test(trimmed)) {
     const cleaned = trimmed.replace(/\s*\([#0-9a-fA-F]+\)|\s*#[0-9a-fA-F]+/g, '').trim();
     if (cleaned.length > 0) {
-      const cleanedMatch = MAJOR_COLORS.find(
-        (c) => c.name.toLowerCase() === cleaned.toLowerCase(),
-      );
+      const cleanedMatch = MAJOR_COLORS.find((c) => c.name.toLowerCase() === cleaned.toLowerCase());
       return cleanedMatch ? cleanedMatch.name : cleaned;
     }
     const hexMatch = /#[0-9a-fA-F]{3,6}/.exec(trimmed);
@@ -169,7 +165,10 @@ export function resolveItemColorAndQuality(item: {
   let finalColor = '';
 
   // If rawColor matches known quality (e.g. "7AA") or matches product quality
-  if (isQualityValue(rawColor) || (productQuality && rawColor.toUpperCase() === productQuality.toUpperCase())) {
+  if (
+    isQualityValue(rawColor) ||
+    (productQuality && rawColor.toUpperCase() === productQuality.toUpperCase())
+  ) {
     finalQuality = rawColor || productQuality;
     finalColor = '';
   } else {
