@@ -47,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
+      sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
     }
   }, []);
 
