@@ -91,19 +91,37 @@ export function PaymentStep() {
     try {
       setIsPlacing(true);
 
+      const recipientName = (
+        shippingAddress.recipientName ||
+        (shippingAddress as any).fullName ||
+        user.name ||
+        'Valued Customer'
+      ).trim();
+      const rawPhone =
+        shippingAddress.primaryPhone || (shippingAddress as any).phoneNumber || user.phone || '';
+      const primaryPhone = rawPhone.replace(/\D/g, '').slice(-10);
+      const rawAlt = shippingAddress.altPhone || (shippingAddress as any).altPhoneNumber || '';
+      const altPhone = rawAlt ? String(rawAlt).replace(/\D/g, '').slice(-10) : null;
+      const street = (
+        shippingAddress.area ||
+        (shippingAddress as any).street ||
+        shippingAddress.building ||
+        'Address'
+      ).trim();
+      const city = (shippingAddress.city || '').trim();
+      const pincode = (shippingAddress.pincode || '').replace(/\D/g, '').slice(0, 6);
+
       const shippingPayload = {
         id: shippingAddress.id,
-        fullName: shippingAddress.recipientName.trim(),
-        phoneNumber: shippingAddress.primaryPhone.replace(/\D/g, '').slice(-10),
-        altPhoneNumber: shippingAddress.altPhone
-          ? shippingAddress.altPhone.replace(/\D/g, '').slice(-10)
-          : null,
+        fullName: recipientName,
+        phoneNumber: primaryPhone,
+        altPhoneNumber: altPhone,
         building: shippingAddress.building?.trim() || null,
-        street: shippingAddress.area.trim(),
-        city: shippingAddress.city.trim(),
+        street,
+        city,
         district: shippingAddress.district?.trim() || '',
         state: shippingAddress.state?.trim() || '',
-        pincode: shippingAddress.pincode.replace(/\D/g, '').slice(0, 6),
+        pincode,
         landmark: shippingAddress.landmark?.trim() || null,
       };
 
@@ -127,6 +145,53 @@ export function PaymentStep() {
         throw new Error('Failed to initiate payment session from server');
       }
 
+      const advancePaid = initRes?.advanceAmount || (isCod ? 200 : order.finalAmount);
+      const balanceDue =
+        initRes?.balanceDue ?? Math.max(0, Number(order.finalAmount) - Number(advancePaid));
+
+      const keyId = rzpData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+      // Development / Staging fallback if live Razorpay keys are not yet configured
+      if (!keyId || rzpData.orderId.startsWith('order_mock_')) {
+        console.warn(
+          '[PaymentStep] Razorpay live keys not yet added. Prompting user for test confirmation.',
+        );
+        const confirmed = window.confirm(
+          isCod
+            ? `[TEST SIMULATION]\n\nConfirm payment of ₹${advancePaid} Advance Deposit for COD Order #${order.orderNumber}?\n\n(Click OK to verify test payment, or Cancel to abort)`
+            : `[TEST SIMULATION]\n\nConfirm online payment of ₹${order.finalAmount} for Order #${order.orderNumber}?\n\n(Click OK to verify test payment, or Cancel to abort)`,
+        );
+
+        if (!confirmed) {
+          setIsPlacing(false);
+          toast.info(
+            'Payment was cancelled. Your order has not been placed and your cart is saved.',
+          );
+          return;
+        }
+
+        await verifyPaymentAction({
+          orderId: order.id,
+          razorpayOrderId: rzpData.orderId,
+          razorpayPaymentId: `pay_mock_${Date.now()}`,
+          razorpaySignature: 'mock_signature',
+        });
+
+        await clearCart(true);
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('checkout_shipping_address');
+        }
+        if (isCod) {
+          toast.success(
+            `₹${advancePaid} Advance Paid! COD Order placed successfully. Balance of ₹${balanceDue} payable on delivery.`,
+          );
+        } else {
+          toast.success('Payment verified! Your order has been placed.');
+        }
+        router.push('/account/orders');
+        return;
+      }
+
       // Load official Razorpay Checkout SDK
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
@@ -134,17 +199,6 @@ export function PaymentStep() {
           'Unable to load payment gateway SDK. Please check your internet connection.',
         );
       }
-
-      const keyId = rzpData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-
-      if (!keyId) {
-        throw new Error('Payment gateway key is not configured. Please contact support.');
-      }
-
-      // Standard Razorpay Modal Configuration
-      const advancePaid = initRes?.advanceAmount || (isCod ? 200 : order.finalAmount);
-      const balanceDue =
-        initRes?.balanceDue ?? Math.max(0, Number(order.finalAmount) - Number(advancePaid));
 
       const options = {
         key: keyId,
@@ -473,8 +527,8 @@ export function PaymentStep() {
                   {isPlacing
                     ? 'Processing...'
                     : paymentMethod === 'cod'
-                      ? 'Pay ₹200 Advance (COD)'
-                      : `Pay ₹${totalAmount} via UPI`}
+                      ? 'Place Order'
+                      : 'Pay Now'}
                   {!isPlacing && <ChevronRightIcon size={16} />}
                 </span>
               </button>

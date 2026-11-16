@@ -232,7 +232,7 @@ export class OrdersService {
           discountAmount,
           shippingFees,
           finalAmount,
-          advanceAmount,
+          advanceAmount: advanceAmount as any,
           shippingAddress: shippingAddressSnapshot,
           items: {
             create: itemsData,
