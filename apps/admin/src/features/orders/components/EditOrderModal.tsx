@@ -8,7 +8,7 @@ import { CloseIcon, LoaderIcon, ShoppingBagIcon } from '@ff/ui';
 
 import { api } from '@/lib/api-client';
 
-import { type Order, type OrderItem } from '../types';
+import { type Order } from '../types';
 import { COURIER_SERVICES } from '../utils/courier';
 
 export type EditOrderTab = 'items' | 'customer' | 'pricing' | 'fulfillment';
@@ -189,7 +189,10 @@ export function EditOrderModal({
 
   // Calculate live subtotal & final amount
   const calculatedSubtotal = useMemo(() => {
-    return items.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
+    return items.reduce(
+      (sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1),
+      0,
+    );
   }, [items]);
 
   const calculatedFinalAmount = useMemo(() => {
@@ -208,7 +211,9 @@ export function EditOrderModal({
     const timer = setTimeout(async () => {
       try {
         setIsSearchingProduct(true);
-        const res: any = await api.get(`/admin/products?search=${encodeURIComponent(productSearchQuery.trim())}&limit=6`);
+        const res: any = await api.get(
+          `/admin/products?search=${encodeURIComponent(productSearchQuery.trim())}&limit=6`,
+        );
         const list = res?.products || res?.items || (Array.isArray(res) ? res : []);
         setSearchResults(list);
       } catch (e) {
@@ -405,7 +410,11 @@ export function EditOrderModal({
           color: item.color,
           quantity: item.quantity,
           price: Number(item.price ?? 0),
-          sku: item.sku || `SKU-${String(item.productId || 'GEN').slice(-6).toUpperCase()}`,
+          sku:
+            item.sku ||
+            `SKU-${String(item.productId || 'GEN')
+              .slice(-6)
+              .toUpperCase()}`,
           productImage: item.image || item.product?.mainImage || '',
         })),
       };
@@ -432,7 +441,7 @@ export function EditOrderModal({
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-2 sm:p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-2 backdrop-blur-sm sm:p-4">
       <div className="flex h-full max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-[#141414]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-100 p-4 sm:p-6 dark:border-zinc-800">
@@ -446,7 +455,8 @@ export function EditOrderModal({
               </h2>
             </div>
             <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Complete order modification: change items, customer details, address, pricing, payment and fulfillment
+              Complete order modification: change items, customer details, address, pricing, payment
+              and fulfillment
             </p>
           </div>
           <button
@@ -478,7 +488,7 @@ export function EditOrderModal({
                   <span>{tab.label}</span>
                   {tab.key === 'items' && (
                     <span
-                      className={`ml-1 rounded-full px-1.5 py-0.2 text-[10px] font-black ${
+                      className={`py-0.2 ml-1 rounded-full px-1.5 text-[10px] font-black ${
                         isActive
                           ? 'bg-white/20 text-white dark:bg-black/20 dark:text-black'
                           : 'bg-zinc-200 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
@@ -515,7 +525,9 @@ export function EditOrderModal({
               <div className="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h3 className="text-sm font-bold text-black dark:text-white">Add Products to Order</h3>
+                    <h3 className="text-sm font-bold text-black dark:text-white">
+                      Add Products to Order
+                    </h3>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">
                       Search catalog to add existing products, or add a custom custom product line
                     </p>
@@ -568,7 +580,9 @@ export function EditOrderModal({
                               )}
                             </div>
                             <div>
-                              <div className="text-xs font-bold text-black dark:text-white">{prod.name}</div>
+                              <div className="text-xs font-bold text-black dark:text-white">
+                                {prod.name}
+                              </div>
                               <div className="text-[11px] text-zinc-400">
                                 Price: ₹{prod.sellingPrice ?? prod.price ?? 0}
                               </div>
@@ -590,9 +604,12 @@ export function EditOrderModal({
               {/* Items List */}
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-black dark:text-white">Order Items ({items.length})</h3>
+                  <h3 className="text-sm font-bold text-black dark:text-white">
+                    Order Items ({items.length})
+                  </h3>
                   <span className="text-xs font-semibold text-zinc-500">
-                    Subtotal: ₹{calculatedSubtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    Subtotal: ₹
+                    {calculatedSubtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
 
@@ -622,8 +639,12 @@ export function EditOrderModal({
                           )}
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Product #{idx + 1}</div>
-                          <div className="text-sm font-bold text-black dark:text-white">{item.name}</div>
+                          <div className="text-xs font-bold tracking-wider text-zinc-400 uppercase">
+                            Product #{idx + 1}
+                          </div>
+                          <div className="text-sm font-bold text-black dark:text-white">
+                            {item.name}
+                          </div>
                         </div>
                       </div>
 
@@ -634,8 +655,18 @@ export function EditOrderModal({
                         title="Remove item from order"
                         className="rounded-lg p-1.5 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-30 dark:hover:bg-red-950/40 dark:hover:text-red-400"
                       >
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -643,7 +674,9 @@ export function EditOrderModal({
                     {/* Editable Item Fields Grid */}
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
                       <div className="lg:col-span-2">
-                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">Product Name</label>
+                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">
+                          Product Name
+                        </label>
                         <input
                           type="text"
                           value={item.name}
@@ -653,7 +686,9 @@ export function EditOrderModal({
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">Size</label>
+                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">
+                          Size
+                        </label>
                         <input
                           type="text"
                           list={`size-options-${idx}`}
@@ -670,7 +705,9 @@ export function EditOrderModal({
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">Color</label>
+                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">
+                          Color
+                        </label>
                         <input
                           type="text"
                           value={item.color}
@@ -681,24 +718,36 @@ export function EditOrderModal({
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">Qty</label>
+                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">
+                          Qty
+                        </label>
                         <input
                           type="number"
                           min={1}
                           value={item.quantity}
-                          onChange={(e) => handleUpdateItem(idx, { quantity: Math.max(1, parseInt(e.target.value) || 1) })}
+                          onChange={(e) =>
+                            handleUpdateItem(idx, {
+                              quantity: Math.max(1, parseInt(e.target.value) || 1),
+                            })
+                          }
                           className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-black outline-none focus:border-black dark:border-zinc-800 dark:bg-zinc-800 dark:text-white dark:focus:border-white"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">Price (₹)</label>
+                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">
+                          Price (₹)
+                        </label>
                         <input
                           type="number"
                           min={0}
                           step="0.01"
                           value={item.price}
-                          onChange={(e) => handleUpdateItem(idx, { price: Math.max(0, parseFloat(e.target.value) || 0) })}
+                          onChange={(e) =>
+                            handleUpdateItem(idx, {
+                              price: Math.max(0, parseFloat(e.target.value) || 0),
+                            })
+                          }
                           className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-black outline-none focus:border-black dark:border-zinc-800 dark:bg-zinc-800 dark:text-white dark:focus:border-white"
                         />
                       </div>
@@ -706,10 +755,14 @@ export function EditOrderModal({
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
-                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">Assigned Seller</label>
+                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">
+                          Assigned Seller
+                        </label>
                         <select
                           value={item.sellerId || ''}
-                          onChange={(e) => handleUpdateItem(idx, { sellerId: e.target.value || null })}
+                          onChange={(e) =>
+                            handleUpdateItem(idx, { sellerId: e.target.value || null })
+                          }
                           className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-black outline-none focus:border-black dark:border-zinc-800 dark:bg-zinc-800 dark:text-white dark:focus:border-white"
                         >
                           <option value="">Unassigned</option>
@@ -722,7 +775,9 @@ export function EditOrderModal({
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">Image URL</label>
+                        <label className="mb-1 block text-[11px] font-bold text-zinc-400">
+                          Image URL
+                        </label>
                         <input
                           type="text"
                           value={item.image}
@@ -734,7 +789,11 @@ export function EditOrderModal({
                     </div>
 
                     <div className="flex justify-end pt-1 text-xs font-bold text-zinc-600 dark:text-zinc-400">
-                      Line Total: ₹{((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      Line Total: ₹
+                      {((Number(item.price) || 0) * (Number(item.quantity) || 1)).toLocaleString(
+                        'en-IN',
+                        { minimumFractionDigits: 2 },
+                      )}
                     </div>
                   </div>
                 ))}
@@ -746,10 +805,14 @@ export function EditOrderModal({
           {activeTab === 'customer' && (
             <div className="flex flex-col gap-6">
               <div className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/30">
-                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">Customer Contact Details</h3>
+                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">
+                  Customer Contact Details
+                </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Customer Full Name *</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Customer Full Name *
+                    </label>
                     <input
                       type="text"
                       value={customerName}
@@ -760,7 +823,9 @@ export function EditOrderModal({
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Primary Mobile Number *</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Primary Mobile Number *
+                    </label>
                     <input
                       type="tel"
                       value={customerPhone}
@@ -771,7 +836,9 @@ export function EditOrderModal({
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Alternate Phone Number</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Alternate Phone Number
+                    </label>
                     <input
                       type="tel"
                       value={customerAltPhone}
@@ -782,7 +849,9 @@ export function EditOrderModal({
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Email Address</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Email Address
+                    </label>
                     <input
                       type="email"
                       value={customerEmail}
@@ -795,10 +864,14 @@ export function EditOrderModal({
               </div>
 
               <div className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/30">
-                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">Delivery / Shipping Address</h3>
+                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">
+                  Delivery / Shipping Address
+                </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Street / Area / Colony *</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Street / Area / Colony *
+                    </label>
                     <input
                       type="text"
                       value={street}
@@ -809,7 +882,9 @@ export function EditOrderModal({
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Building / Flat Number</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Building / Flat Number
+                    </label>
                     <input
                       type="text"
                       value={building}
@@ -831,7 +906,9 @@ export function EditOrderModal({
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">City / Town *</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      City / Town *
+                    </label>
                     <input
                       type="text"
                       value={city}
@@ -882,10 +959,14 @@ export function EditOrderModal({
           {activeTab === 'pricing' && (
             <div className="flex flex-col gap-6">
               <div className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/30">
-                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">Payment Configuration</h3>
+                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">
+                  Payment Configuration
+                </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Payment Method</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Payment Method
+                    </label>
                     <select
                       value={paymentMethod}
                       onChange={(e) => setPaymentMethod(e.target.value)}
@@ -900,7 +981,9 @@ export function EditOrderModal({
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Payment Status</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Payment Status
+                    </label>
                     <select
                       value={paymentStatus}
                       onChange={(e) => setPaymentStatus(e.target.value)}
@@ -917,11 +1000,15 @@ export function EditOrderModal({
               </div>
 
               <div className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/30">
-                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">Pricing Breakdown & Charges</h3>
+                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">
+                  Pricing Breakdown & Charges
+                </h3>
                 <div className="flex flex-col gap-3.5">
                   <div className="flex items-center justify-between border-b border-zinc-200 pb-2 dark:border-zinc-800">
                     <div>
-                      <span className="text-xs font-semibold text-zinc-500">Subtotal ({items.length} items)</span>
+                      <span className="text-xs font-semibold text-zinc-500">
+                        Subtotal ({items.length} items)
+                      </span>
                       <p className="text-[10px] text-zinc-400">Sum of item prices × quantities</p>
                     </div>
                     <span className="text-sm font-bold text-black dark:text-white">
@@ -931,25 +1018,33 @@ export function EditOrderModal({
 
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-1 block text-xs font-bold text-zinc-500">Discount Amount (₹)</label>
+                      <label className="mb-1 block text-xs font-bold text-zinc-500">
+                        Discount Amount (₹)
+                      </label>
                       <input
                         type="number"
                         min={0}
                         step="0.01"
                         value={discountAmount}
-                        onChange={(e) => setDiscountAmount(Math.max(0, parseFloat(e.target.value) || 0))}
+                        onChange={(e) =>
+                          setDiscountAmount(Math.max(0, parseFloat(e.target.value) || 0))
+                        }
                         className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-black outline-none focus:border-black dark:border-zinc-800 dark:bg-zinc-800 dark:text-white dark:focus:border-white"
                       />
                     </div>
 
                     <div>
-                      <label className="mb-1 block text-xs font-bold text-zinc-500">Shipping Fees (₹)</label>
+                      <label className="mb-1 block text-xs font-bold text-zinc-500">
+                        Shipping Fees (₹)
+                      </label>
                       <input
                         type="number"
                         min={0}
                         step="0.01"
                         value={shippingFees}
-                        onChange={(e) => setShippingFees(Math.max(0, parseFloat(e.target.value) || 0))}
+                        onChange={(e) =>
+                          setShippingFees(Math.max(0, parseFloat(e.target.value) || 0))
+                        }
                         className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-black outline-none focus:border-black dark:border-zinc-800 dark:bg-zinc-800 dark:text-white dark:focus:border-white"
                       />
                     </div>
@@ -957,7 +1052,9 @@ export function EditOrderModal({
 
                   <div className="mt-2 flex items-center justify-between rounded-xl bg-zinc-100 p-4 dark:bg-zinc-800">
                     <div>
-                      <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Final Order Total</span>
+                      <span className="text-xs font-bold tracking-wider text-zinc-500 uppercase">
+                        Final Order Total
+                      </span>
                       <p className="text-[10px] text-zinc-400">Total payable by customer</p>
                     </div>
                     <span className="text-2xl font-black text-black dark:text-white">
@@ -973,9 +1070,13 @@ export function EditOrderModal({
           {activeTab === 'fulfillment' && (
             <div className="flex flex-col gap-6">
               <div className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/30">
-                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">Order Status Lifecycle</h3>
+                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">
+                  Order Status Lifecycle
+                </h3>
                 <div>
-                  <label className="mb-1 block text-xs font-bold text-zinc-500">Current Order Status</label>
+                  <label className="mb-1 block text-xs font-bold text-zinc-500">
+                    Current Order Status
+                  </label>
                   <select
                     value={orderStatus}
                     onChange={(e) => setOrderStatus(e.target.value)}
@@ -991,10 +1092,14 @@ export function EditOrderModal({
               </div>
 
               <div className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/30">
-                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">Courier & Live Tracking</h3>
+                <h3 className="mb-3 text-sm font-bold text-black dark:text-white">
+                  Courier & Live Tracking
+                </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Courier Partner</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Courier Partner
+                    </label>
                     <select
                       value={courierPartner}
                       onChange={(e) => setCourierPartner(e.target.value)}
@@ -1009,7 +1114,9 @@ export function EditOrderModal({
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-bold text-zinc-500">Tracking Number / AWB</label>
+                    <label className="mb-1 block text-xs font-bold text-zinc-500">
+                      Tracking Number / AWB
+                    </label>
                     <input
                       type="text"
                       value={trackingNumber}
@@ -1022,8 +1129,12 @@ export function EditOrderModal({
               </div>
 
               <div className="rounded-2xl border border-zinc-100 bg-zinc-50/70 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/30">
-                <h3 className="mb-1 text-sm font-bold text-black dark:text-white">Bulk Assign Seller to All Items</h3>
-                <p className="mb-3 text-xs text-zinc-500">Apply a chosen seller across every item in this order</p>
+                <h3 className="mb-1 text-sm font-bold text-black dark:text-white">
+                  Bulk Assign Seller to All Items
+                </h3>
+                <p className="mb-3 text-xs text-zinc-500">
+                  Apply a chosen seller across every item in this order
+                </p>
                 <div>
                   <select
                     value={bulkSellerId}
@@ -1048,7 +1159,9 @@ export function EditOrderModal({
           <div className="flex items-center gap-4 text-xs font-semibold text-zinc-500">
             <span>Items: {items.length}</span>
             <span>•</span>
-            <span>Total: ₹{calculatedFinalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+            <span>
+              Total: ₹{calculatedFinalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            </span>
           </div>
 
           <div className="flex items-center justify-end gap-2.5">
