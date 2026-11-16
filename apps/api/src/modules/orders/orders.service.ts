@@ -219,25 +219,27 @@ export class OrdersService {
     });
 
     try {
-      const order = await this.prisma.db.order.create({
-        data: {
-          id: orderNumber,
-          userId,
-          orderNumber,
-          status: OrderStatus.PENDING,
-          paymentStatus: PaymentStatus.PENDING,
-          paymentMethod: isCod ? PaymentMethod.COD : PaymentMethod.RAZORPAY,
-          razorpayOrderId: rzpOrder.id,
-          totalAmount,
-          discountAmount,
-          shippingFees,
-          finalAmount,
-          advanceAmount: advanceAmount as any,
-          shippingAddress: shippingAddressSnapshot,
-          items: {
-            create: itemsData,
-          },
+      const orderData: any = {
+        id: orderNumber,
+        userId,
+        orderNumber,
+        status: OrderStatus.PENDING,
+        paymentStatus: PaymentStatus.PENDING,
+        paymentMethod: isCod ? PaymentMethod.COD : PaymentMethod.RAZORPAY,
+        razorpayOrderId: rzpOrder.id,
+        totalAmount,
+        discountAmount,
+        shippingFees,
+        finalAmount,
+        advanceAmount,
+        shippingAddress: shippingAddressSnapshot,
+        items: {
+          create: itemsData,
         },
+      };
+
+      const order = await this.prisma.db.order.create({
+        data: orderData,
         include: {
           items: true,
         },

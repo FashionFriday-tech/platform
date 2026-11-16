@@ -9,7 +9,6 @@ import {
   CloseIcon,
   CreditCardIcon,
   InfoIcon,
-  MapPinIcon,
   ShieldCheckIcon,
   TruckIcon,
   ZapIcon,
@@ -282,51 +281,6 @@ export function PaymentStep() {
 
       <main className="mx-auto max-w-4xl pt-0 sm:pt-1">
         <div className="space-y-10">
-          {/* Delivery Destination Card */}
-          {shippingAddress && (
-            <div className="border-border bg-background shadow-foreground/5 flex items-start justify-between rounded-3xl border p-5 shadow-sm transition-all">
-              <div className="flex gap-4">
-                <div className="bg-foreground text-background flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-                  <MapPinIcon size={18} />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-foreground-subtle text-[10px] font-black tracking-widest uppercase">
-                      Delivering To
-                    </span>
-                    <span className="text-foreground text-xs font-black uppercase">
-                      {shippingAddress.recipientName}
-                    </span>
-                  </div>
-                  <p className="text-foreground-muted mt-1 text-xs font-semibold uppercase">
-                    {shippingAddress.building ? `${shippingAddress.building}, ` : ''}
-                    {shippingAddress.area}
-                  </p>
-                  <p className="text-foreground-muted text-xs font-semibold uppercase">
-                    {shippingAddress.city}
-                    {shippingAddress.district ? `, ${shippingAddress.district}` : ''}
-                    {shippingAddress.state ? `, ${shippingAddress.state}` : ''} -{' '}
-                    {shippingAddress.pincode}
-                  </p>
-                  <p className="text-foreground-muted mt-1 text-[11px] font-semibold">
-                    Phone: +91 {shippingAddress.primaryPhone}
-                    {shippingAddress.altPhone ? ` | Alt: +91 ${shippingAddress.altPhone}` : ''}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => {
-                  router.push('/checkout/review');
-                }}
-                className="border-border text-foreground hover:border-foreground shrink-0 cursor-pointer rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all active:scale-95"
-              >
-                Change
-              </button>
-            </div>
-          )}
-
           {/* Header Section */}
           <div className="flex items-center justify-between px-2">
             <h2 className="text-foreground-subtle text-[9px] font-black tracking-[0.3em] uppercase">
