@@ -76,10 +76,13 @@ export function OrderReviewStep() {
                           {address.area}
                         </p>
                         <p className="text-foreground-muted text-xs font-semibold uppercase">
-                          {address.city} - {address.pincode}
+                          {address.city}
+                          {address.district ? `, ${address.district}` : ''}
+                          {address.state ? `, ${address.state}` : ''} - {address.pincode}
                         </p>
                         <p className="text-foreground-muted mt-3 text-xs font-semibold">
                           Phone: {address.primaryPhone}
+                          {address.altPhone ? ` | Alt: ${address.altPhone}` : ''}
                         </p>
                       </div>
                     </div>
