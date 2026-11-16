@@ -75,46 +75,115 @@ export class OrdersService {
       `[OrdersService] Totals calculated: subtotal=₹${totalAmount}, shipping=₹${shippingFees}, discount=₹${discountAmount}, finalAmount=₹${finalAmount}`,
     );
 
-    // 3. Fetch delivery address
-    this.logger.log(`[OrdersService] Step 3: Fetching delivery address for user: ${userId}`);
-    let selectedAddress = null;
+    // 3. Resolve delivery address
+    this.logger.log(`[OrdersService] Step 3: Resolving delivery address for user: ${userId}`);
+    let selectedAddress: any = null;
+
+    // A. If addressId explicitly passed, verify ownership & fetch
     if (dto.addressId) {
-      selectedAddress = await this.prisma.db.address.findUnique({
-        where: { id: dto.addressId },
+      selectedAddress = await this.prisma.db.address.findFirst({
+        where: { id: dto.addressId, userId },
       });
+      if (selectedAddress) {
+        this.logger.log(`[OrdersService] Found address by addressId: ${dto.addressId}`);
+      }
     }
 
+    // B. If full shippingAddress provided in DTO, persist if new & resolve
+    if (dto.shippingAddress) {
+      const addrDto = dto.shippingAddress;
+      const cleanPhone = addrDto.phoneNumber.replace(/\D/g, '').slice(-10);
+      const cleanAltPhone = addrDto.altPhoneNumber
+        ? addrDto.altPhoneNumber.replace(/\D/g, '').slice(-10)
+        : null;
+      const cleanPincode = addrDto.pincode.replace(/\D/g, '').slice(0, 6);
+
+      // Check if this address already exists for user
+      let matchedAddress = null;
+      if (addrDto.id) {
+        matchedAddress = await this.prisma.db.address.findFirst({
+          where: { id: addrDto.id, userId },
+        });
+      }
+
+      if (!matchedAddress) {
+        matchedAddress = await this.prisma.db.address.findFirst({
+          where: {
+            userId,
+            pincode: cleanPincode,
+            street: addrDto.street.trim(),
+            city: addrDto.city.trim(),
+          },
+        });
+      }
+
+      if (!matchedAddress) {
+        const addressCount = await this.prisma.db.address.count({ where: { userId } });
+        matchedAddress = await this.prisma.db.address.create({
+          data: {
+            userId,
+            fullName: addrDto.fullName.trim(),
+            phoneNumber: cleanPhone,
+            altPhoneNumber: cleanAltPhone,
+            building: addrDto.building?.trim() || null,
+            street: addrDto.street.trim(),
+            city: addrDto.city.trim(),
+            district: addrDto.district?.trim() || '',
+            state: addrDto.state?.trim() || '',
+            pincode: cleanPincode,
+            landmark: addrDto.landmark?.trim() || null,
+            label: addrDto.label?.trim() || 'Home',
+            isDefault: addressCount === 0,
+          },
+        });
+        this.logger.log(
+          `[OrdersService] Saved shipping address into user addresses database (id: ${matchedAddress.id})`,
+        );
+      }
+
+      if (!selectedAddress) {
+        selectedAddress = matchedAddress;
+      }
+    }
+
+    // C. Fallback: Find user's default / latest saved address from DB
     if (!selectedAddress) {
       selectedAddress = await this.prisma.db.address.findFirst({
         where: { userId },
         orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
       });
+      if (selectedAddress) {
+        this.logger.log(
+          `[OrdersService] Using default saved address from DB (id: ${selectedAddress.id})`,
+        );
+      }
     }
 
+    // D. If STILL no address, fail gracefully — DO NOT attach fake fallback dummy address!
     if (!selectedAddress) {
-      this.logger.warn(
-        `[OrdersService] No address found for user ${userId}, applying fallback address for checkout`,
-      );
-      selectedAddress = {
-        id: 'fallback-address',
-        userId,
-        fullName: 'Customer',
-        phoneNumber: '9999999999',
-        street: 'Main Street',
-        city: 'Malappuram',
-        district: 'Malappuram',
-        state: 'Kerala',
-        pincode: '676505',
-        isDefault: true,
-        label: 'Home',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      } as any;
-    } else {
-      this.logger.log(
-        `[OrdersService] Using address for ${selectedAddress.fullName}, ${selectedAddress.city}`,
+      this.logger.error(`[OrdersService] No delivery address found or provided for user: ${userId}`);
+      throw new BadRequestException(
+        'A valid delivery address is required to place an order. Please add a shipping address.',
       );
     }
+
+    this.logger.log(
+      `[OrdersService] Delivery address resolved for ${selectedAddress.fullName}, ${selectedAddress.city}, ${selectedAddress.pincode}`,
+    );
+
+    const shippingAddressSnapshot = {
+      id: selectedAddress.id,
+      fullName: selectedAddress.fullName,
+      phoneNumber: selectedAddress.phoneNumber,
+      altPhoneNumber: selectedAddress.altPhoneNumber || null,
+      building: selectedAddress.building || null,
+      street: selectedAddress.street,
+      city: selectedAddress.city,
+      district: selectedAddress.district || '',
+      state: selectedAddress.state || '',
+      pincode: selectedAddress.pincode,
+      landmark: selectedAddress.landmark || null,
+    };
 
     // 4. Generate order reference
     const orderNumber = generateBrandId('ORD');
@@ -135,7 +204,7 @@ export class OrdersService {
             discountAmount,
             shippingFees,
             finalAmount,
-            shippingAddress: JSON.parse(JSON.stringify(selectedAddress)),
+            shippingAddress: shippingAddressSnapshot,
             items: {
               create: itemsData,
             },
@@ -207,7 +276,7 @@ export class OrdersService {
           discountAmount,
           shippingFees,
           finalAmount,
-          shippingAddress: JSON.parse(JSON.stringify(selectedAddress)),
+          shippingAddress: shippingAddressSnapshot,
           items: {
             create: itemsData,
           },
@@ -1058,6 +1127,8 @@ export class OrdersService {
               mainImage: true,
               promoImage: true,
               liveImages: true,
+              quality: true,
+              colors: true,
             },
           })
         : [];
@@ -1077,6 +1148,8 @@ export class OrdersService {
         return {
           ...item,
           image: resolvedImage,
+          quality: prod?.quality ?? null,
+          colors: prod?.colors ?? [],
         };
       }),
     }));
@@ -1138,6 +1211,8 @@ export class OrdersService {
               categoryId: true,
               category: { select: { id: true, name: true, slug: true } },
               seller: { select: { id: true, name: true, storeName: true } },
+              quality: true,
+              colors: true,
             },
           })
         : [];
@@ -1159,6 +1234,8 @@ export class OrdersService {
         productSellerId: prod?.sellerId ?? item.sellerId ?? null,
         categoryId: prod?.categoryId ?? null,
         categoryName: prod?.category?.name ?? null,
+        quality: prod?.quality ?? null,
+        colors: prod?.colors ?? [],
         product: prod ? { ...prod, image: resolvedImage } : null,
       };
     });
@@ -1172,40 +1249,161 @@ export class OrdersService {
   async updateOrder(id: string, dto: UpdateOrderDto) {
     this.logger.log(`[OrdersService] Updating order ${id} with: ${JSON.stringify(dto)}`);
     const existing =
-      (await this.prisma.db.order.findUnique({ where: { id } })) ||
-      (await this.prisma.db.order.findUnique({ where: { orderNumber: id } }));
+      (await this.prisma.db.order.findUnique({
+        where: { id },
+        include: { items: true, user: true },
+      })) ||
+      (await this.prisma.db.order.findUnique({
+        where: { orderNumber: id },
+        include: { items: true, user: true },
+      }));
 
     if (!existing) {
       throw new NotFoundException('Order not found');
     }
 
-    if ((dto as any).sellerId !== undefined) {
-      const targetSellerId = (dto as any).sellerId || null;
-      await this.prisma.db.orderItem.updateMany({
-        where: { orderId: existing.id },
-        data: { sellerId: targetSellerId },
-      });
-    }
+    const orderId = existing.id;
 
-    const updated = await this.prisma.db.order.update({
-      where: { id: existing.id },
-      data: {
-        ...(dto.status ? { status: dto.status } : {}),
-        ...(dto.trackingNumber !== undefined ? { trackingNumber: dto.trackingNumber } : {}),
-        ...(dto.courierPartner !== undefined ? { courierPartner: dto.courierPartner } : {}),
-      },
-      include: {
-        items: {
-          include: {
-            seller: true,
+    await this.prisma.db.$transaction(async (tx) => {
+      // 1. Update items if provided
+      let calculatedSubtotal = Number(existing.totalAmount);
+      if (dto.items && Array.isArray(dto.items)) {
+        const incomingIds = dto.items.filter((i) => i.id).map((i) => i.id as string);
+
+        // Delete items that are no longer in the list
+        await tx.orderItem.deleteMany({
+          where: {
+            orderId,
+            id: { notIn: incomingIds },
           },
+        });
+
+        calculatedSubtotal = 0;
+        for (const item of dto.items) {
+          const itemPrice = Number(item.price) || 0;
+          const itemQty = Number(item.quantity) || 1;
+          calculatedSubtotal += itemPrice * itemQty;
+
+          const itemSellerId =
+            item.sellerId !== undefined ? item.sellerId : (dto.sellerId ?? null);
+
+          if (item.id && existing.items.some((ei) => ei.id === item.id)) {
+            // Update existing item
+            await tx.orderItem.update({
+              where: { id: item.id },
+              data: {
+                name: item.name,
+                image: item.image ?? '',
+                size: item.size ?? '',
+                color: item.color ?? '',
+                price: itemPrice,
+                quantity: itemQty,
+                sellerId: itemSellerId,
+                ...(item.productId ? { productId: item.productId } : {}),
+              },
+            });
+          } else {
+            // Create new item
+            await tx.orderItem.create({
+              data: {
+                orderId,
+                productId:
+                  item.productId ||
+                  `prod-manual-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                name: item.name,
+                image: item.image ?? '',
+                size: item.size ?? '',
+                color: item.color ?? '',
+                price: itemPrice,
+                quantity: itemQty,
+                sellerId: itemSellerId,
+              },
+            });
+          }
+        }
+      } else if (dto.sellerId !== undefined) {
+        // If items list was not passed, but sellerId was updated
+        const targetSellerId = dto.sellerId || null;
+        await tx.orderItem.updateMany({
+          where: { orderId },
+          data: { sellerId: targetSellerId },
+        });
+      }
+
+      // 2. Shipping Address & Customer snapshot
+      let currentAddress = (existing.shippingAddress as Record<string, any>) || {};
+      if (typeof currentAddress === 'string') {
+        try {
+          currentAddress = JSON.parse(currentAddress);
+        } catch {
+          currentAddress = {};
+        }
+      }
+
+      const updatedAddress = {
+        ...currentAddress,
+        ...(dto.shippingAddress || {}),
+      };
+
+      if (dto.customer) {
+        if (dto.customer.name) {
+          updatedAddress.fullName = dto.customer.name;
+        }
+        if (dto.customer.phone) {
+          updatedAddress.phoneNumber = dto.customer.phone;
+        }
+        if (dto.customer.altPhone !== undefined) {
+          updatedAddress.altPhoneNumber = dto.customer.altPhone;
+        }
+      }
+
+      // 3. Totals
+      const totalAmount = dto.totalAmount !== undefined ? dto.totalAmount : calculatedSubtotal;
+      const discountAmount =
+        dto.discountAmount !== undefined ? dto.discountAmount : Number(existing.discountAmount);
+      const shippingFees =
+        dto.shippingFees !== undefined ? dto.shippingFees : Number(existing.shippingFees);
+      const finalAmount =
+        dto.finalAmount !== undefined
+          ? dto.finalAmount
+          : Math.max(0, totalAmount - discountAmount + shippingFees);
+
+      // 4. Update Order record
+      await tx.order.update({
+        where: { id: orderId },
+        data: {
+          ...(dto.status ? { status: dto.status } : {}),
+          ...(dto.paymentStatus ? { paymentStatus: dto.paymentStatus } : {}),
+          ...(dto.paymentMethod ? { paymentMethod: dto.paymentMethod } : {}),
+          ...(dto.trackingNumber !== undefined ? { trackingNumber: dto.trackingNumber } : {}),
+          ...(dto.courierPartner !== undefined ? { courierPartner: dto.courierPartner } : {}),
+          totalAmount,
+          discountAmount,
+          shippingFees,
+          finalAmount,
+          shippingAddress: updatedAddress,
         },
-        user: { select: { name: true, phone: true } },
-      },
+      });
+
+      // 5. Update linked User record if customer name provided
+      if (dto.customer?.name && existing.userId) {
+        try {
+          await tx.user.update({
+            where: { id: existing.userId },
+            data: {
+              name: dto.customer.name,
+            },
+          });
+        } catch (e) {
+          this.logger.warn(`Could not update user name for user ${existing.userId}: ${e}`);
+        }
+      }
     });
 
+    const updated = await this.findOne(orderId);
+
     this.logger.log(
-      `[OrdersService] Order ${existing.id} updated. New status: ${updated.status}, tracking: ${updated.trackingNumber ?? 'none'}`,
+      `[OrdersService] Order ${orderId} updated completely. New status: ${updated.status}, items: ${updated.items?.length}, total: ${updated.finalAmount}`,
     );
 
     if (dto.status && existing.status !== dto.status) {
