@@ -14,13 +14,18 @@ export interface SearchLog {
   query: string;
   userId: string | null;
   user: SearchLogUser | null;
+  hasResults?: boolean;
+  resultsCount?: number;
   createdAt: string;
 }
+
+export type SearchLogFilterType = 'all' | 'results' | 'no_results' | 'members' | 'guests';
 
 export function useSearchLogs() {
   const [logs, setLogs] = useState<SearchLog[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<SearchLogFilterType>('all');
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
 
@@ -50,22 +55,40 @@ export function useSearchLogs() {
   }, []);
 
   const filteredLogs = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return logs;
+    let result = logs;
+
+    // Filter by category/status
+    if (activeFilter === 'results') {
+      result = result.filter((log) => log.hasResults !== false && (log.resultsCount ?? 1) > 0);
+    } else if (activeFilter === 'no_results') {
+      result = result.filter((log) => log.hasResults === false || log.resultsCount === 0);
+    } else if (activeFilter === 'members') {
+      result = result.filter((log) => log.userId !== null);
+    } else if (activeFilter === 'guests') {
+      result = result.filter((log) => log.userId === null);
     }
+
+    if (!searchQuery.trim()) {
+      return result;
+    }
+
     const q = searchQuery.toLowerCase();
-    return logs.filter(
+    return result.filter(
       (log) =>
         log.query.toLowerCase().includes(q) ||
         log.user?.name?.toLowerCase().includes(q) ||
         log.user?.email?.toLowerCase().includes(q),
     );
-  }, [logs, searchQuery]);
+  }, [logs, activeFilter, searchQuery]);
 
   // Derived stats
   const totalCount = logs.length;
   const loggedInCount = logs.filter((l) => l.userId !== null).length;
   const guestCount = logs.filter((l) => l.userId === null).length;
+  const hasResultsCount = logs.filter(
+    (l) => l.hasResults !== false && (l.resultsCount ?? 1) > 0,
+  ).length;
+  const noResultsCount = logs.filter((l) => l.hasResults === false || l.resultsCount === 0).length;
   const todayCount = logs.filter((l) => {
     const d = new Date(l.createdAt);
     const now = new Date();
@@ -82,7 +105,16 @@ export function useSearchLogs() {
     isLoading,
     searchQuery,
     setSearchQuery,
+    activeFilter,
+    setActiveFilter,
     refreshLogs: fetchLogs,
-    stats: { totalCount, loggedInCount, guestCount, todayCount },
+    stats: {
+      totalCount,
+      loggedInCount,
+      guestCount,
+      hasResultsCount,
+      noResultsCount,
+      todayCount,
+    },
   };
 }
