@@ -1,8 +1,18 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
-import { CalendarIcon, InfoIcon, MailIcon, SearchIcon, UserIcon } from '@ff/ui';
+import {
+  AlertCircleIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  ExternalLinkIcon,
+  InfoIcon,
+  MailIcon,
+  SearchIcon,
+  UserIcon,
+} from '@ff/ui';
 
 import type { SearchLog } from '../hooks/useSearchLogs';
 
@@ -24,12 +34,15 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-slate-50/50 p-2.5 shadow-xs dark:border-white/10 dark:bg-black/20">
       <div className="scrollbar-hide flex-1 overflow-x-auto overflow-y-auto">
-        <div className="flex min-w-[850px] flex-col gap-2.5 pb-2">
+        <div className="flex min-w-[950px] flex-col gap-2.5 pb-2">
           {/* Sticky Header */}
           <div className="sticky top-0 z-20 pb-0.5">
-            <div className="grid grid-cols-[minmax(220px,2.5fr)_minmax(220px,2fr)_minmax(160px,1.5fr)_minmax(120px,1fr)] items-center rounded-xl border border-black/10 bg-black px-6 py-3.5 text-white shadow-md dark:border-white/10 dark:bg-white dark:text-black">
+            <div className="grid grid-cols-[minmax(200px,2fr)_minmax(130px,1.2fr)_minmax(200px,1.8fr)_minmax(160px,1.4fr)_minmax(130px,1.2fr)_minmax(90px,0.8fr)] items-center rounded-xl border border-black/10 bg-black px-6 py-3.5 text-white shadow-md dark:border-white/10 dark:bg-white dark:text-black">
               <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
                 Search Query
+              </div>
+              <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                Results
               </div>
               <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
                 User
@@ -37,8 +50,11 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
               <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
                 Email
               </div>
-              <div className="text-right text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+              <div className="text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
                 Date &amp; Time
+              </div>
+              <div className="text-right text-xs font-semibold tracking-wider text-white/60 uppercase select-none dark:text-black/60">
+                Action
               </div>
             </div>
           </div>
@@ -65,7 +81,7 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
             logs.map((log) => (
               <div
                 key={log.id}
-                className="group grid grid-cols-[minmax(220px,2.5fr)_minmax(220px,2fr)_minmax(160px,1.5fr)_minmax(120px,1fr)] items-center rounded-xl border border-black/5 bg-white px-6 py-3.5 text-black shadow-xs transition-all duration-200 hover:border-black/15 hover:shadow-md dark:border-white/10 dark:bg-[#141417] dark:text-white dark:hover:border-white/20"
+                className="group grid grid-cols-[minmax(200px,2fr)_minmax(130px,1.2fr)_minmax(200px,1.8fr)_minmax(160px,1.4fr)_minmax(130px,1.2fr)_minmax(90px,0.8fr)] items-center rounded-xl border border-black/5 bg-white px-6 py-3.5 text-black shadow-xs transition-all duration-200 hover:border-black/15 hover:shadow-md dark:border-white/10 dark:bg-[#141417] dark:text-white dark:hover:border-white/20"
               >
                 {/* Query */}
                 <div className="flex items-center gap-2.5 pr-4">
@@ -77,17 +93,41 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
                   </span>
                 </div>
 
-                {/* User */}
+                {/* Result Status: Know if user got results or not */}
+                <div className="flex items-center pr-4">
+                  {log.hasResults === false || log.resultsCount === 0 ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-400">
+                      <AlertCircleIcon className="h-3 w-3 shrink-0" />
+                      <span>No Results</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400">
+                      <CheckCircleIcon className="h-3 w-3 shrink-0" />
+                      <span>
+                        {typeof log.resultsCount === 'number' && log.resultsCount > 0
+                          ? `${log.resultsCount} item${log.resultsCount === 1 ? '' : 's'}`
+                          : 'Results Found'}
+                      </span>
+                    </span>
+                  )}
+                </div>
+
+                {/* User: Navigable if logged in */}
                 <div className="flex items-center gap-2.5 pr-4">
                   {log.user ? (
-                    <>
+                    <Link
+                      href={`/customers/${log.user.id}`}
+                      className="group/user flex min-w-0 items-center gap-2.5 transition-opacity hover:opacity-85"
+                      title={`View customer profile: ${log.user.name}`}
+                    >
                       {/* Avatar initial */}
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black text-[11px] font-black text-white dark:bg-white dark:text-black">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black text-[11px] font-black text-white transition-transform group-hover/user:scale-105 dark:bg-white dark:text-black">
                         {log.user.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate text-xs font-semibold text-black dark:text-white">
-                          {log.user.name}
+                        <p className="flex items-center gap-1 truncate text-xs font-semibold text-black group-hover/user:text-violet-600 group-hover/user:underline dark:text-white dark:group-hover/user:text-violet-400">
+                          <span className="truncate">{log.user.name}</span>
+                          <ExternalLinkIcon className="h-3 w-3 shrink-0 opacity-60 transition-opacity group-hover/user:opacity-100" />
                         </p>
                         {log.user.phone && (
                           <p className="truncate text-[10px] text-black/40 dark:text-white/40">
@@ -95,7 +135,7 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
                           </p>
                         )}
                       </div>
-                    </>
+                    </Link>
                   ) : (
                     <>
                       <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-black/5 dark:bg-white/10">
@@ -111,23 +151,42 @@ export function SearchLogsTable({ logs, isLoading }: SearchLogsTableProps) {
                 {/* Email */}
                 <div className="flex items-center gap-1.5 truncate pr-4">
                   {log.user?.email ? (
-                    <>
+                    <Link
+                      href={`/customers/${log.user.id}`}
+                      className="flex items-center gap-1.5 truncate hover:underline"
+                    >
                       <MailIcon className="h-3.5 w-3.5 shrink-0 text-black/30 dark:text-white/30" />
                       <span className="truncate text-xs text-black/60 dark:text-white/60">
                         {log.user.email}
                       </span>
-                    </>
+                    </Link>
                   ) : (
                     <span className="text-xs text-black/25 italic dark:text-white/25">—</span>
                   )}
                 </div>
 
                 {/* Date */}
-                <div className="flex items-center justify-end gap-1.5">
+                <div className="flex items-center gap-1.5">
                   <CalendarIcon className="h-3.5 w-3.5 shrink-0 text-black/30 dark:text-white/30" />
                   <span className="text-xs text-black/50 dark:text-white/50">
                     {formatDate(log.createdAt)}
                   </span>
+                </div>
+
+                {/* Action: Quick Profile Link for Logged In User */}
+                <div className="flex items-center justify-end">
+                  {log.user ? (
+                    <Link
+                      href={`/customers/${log.user.id}`}
+                      className="inline-flex items-center gap-1 rounded-lg border border-black/10 bg-black/5 px-2.5 py-1 text-xs font-medium text-black transition-all hover:bg-black hover:text-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white dark:hover:text-black"
+                      title={`Open ${log.user.name}'s Profile`}
+                    >
+                      <span>Profile</span>
+                      <ExternalLinkIcon className="h-3 w-3" />
+                    </Link>
+                  ) : (
+                    <span className="text-xs text-black/20 italic dark:text-white/20">—</span>
+                  )}
                 </div>
               </div>
             ))
