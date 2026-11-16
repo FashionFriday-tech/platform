@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { fetchProducts } from '@/features/products/services/api';
 import { type Product } from '@/features/products/types';
 import { fetcher } from '@/lib/api-client';
+import { formatColorLabel } from '@/lib/format-color';
 
 export interface CustomerAddress {
   id: string;
@@ -196,8 +197,17 @@ export function CreateCustomerOrderModal({
     // Auto-select first available size or default
     const availableSizes =
       product.variants && product.variants.length > 0 ? product.variants : STANDARD_SIZES;
-    setSelectedSize(availableSizes[0] || 'M');
-    setSelectedColor(product.quality || 'Standard');
+    setSelectedSize(availableSizes[0] || 'Free Size');
+
+    // Pick first color name from product.colors if available, otherwise 'Standard'
+    const productColors =
+      (product.colors && product.colors.length > 0)
+        ? product.colors
+        : (product as any).attributes?.colors || [];
+    const firstCol = productColors[0]
+      ? formatColorLabel(productColors[0]) || productColors[0]
+      : '';
+    setSelectedColor(firstCol || 'Standard');
     setQuantity(1);
     setCurrentStep('configure');
   };
@@ -631,6 +641,11 @@ export function CreateCustomerOrderModal({
                         {selectedProduct.category}
                       </span>
                     )}
+                    {selectedProduct.quality && (
+                      <span className="rounded-full bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold text-indigo-600 dark:bg-indigo-400/15 dark:text-indigo-400">
+                        Quality: {selectedProduct.quality}
+                      </span>
+                    )}
                   </div>
                 </div>
                 <button
@@ -670,6 +685,65 @@ export function CreateCustomerOrderModal({
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Color Selection */}
+              <div>
+                <label className="mb-2 block text-xs font-bold tracking-wider text-black/60 uppercase dark:text-white/60">
+                  Select Color
+                </label>
+                {(() => {
+                  const productColors =
+                    selectedProduct.colors && selectedProduct.colors.length > 0
+                      ? selectedProduct.colors
+                      : (selectedProduct as any).attributes?.colors || [];
+
+                  if (productColors.length > 0) {
+                    return (
+                      <div className="flex flex-wrap gap-2">
+                        {productColors.map((col: string) => {
+                          const colName = formatColorLabel(col) || col;
+                          const isHex = col.startsWith('#');
+                          const isSelected = selectedColor === colName || selectedColor === col;
+                          return (
+                            <button
+                              key={col}
+                              type="button"
+                              onClick={() => {
+                                setSelectedColor(colName);
+                              }}
+                              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+                                isSelected
+                                  ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
+                                  : 'border border-black/10 bg-[#f8f9fa] text-black hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:border-white/30'
+                              }`}
+                            >
+                              {isHex && (
+                                <span
+                                  className="h-3.5 w-3.5 rounded-full border border-black/20 shadow-xs"
+                                  style={{ backgroundColor: col }}
+                                />
+                              )}
+                              <span>{colName}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Color (e.g. Black, Silver, Navy)"
+                        value={selectedColor === 'Standard' ? '' : selectedColor}
+                        onChange={(e) => setSelectedColor(e.target.value)}
+                        className="w-full max-w-xs rounded-xl border border-black/10 bg-[#f8f9fa] px-4 py-2 text-xs font-bold text-black outline-none focus:border-black dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-white"
+                      />
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Quantity Picker */}
@@ -1089,8 +1163,22 @@ export function CreateCustomerOrderModal({
                         {selectedProduct.name}
                       </h5>
                       <p className="mt-0.5 text-[11px] text-black/60 dark:text-white/60">
-                        Size: <strong className="text-black dark:text-white">{selectedSize}</strong>{' '}
-                        | Qty: <strong className="text-black dark:text-white">{quantity}</strong>
+                        Size: <strong className="text-black dark:text-white">{selectedSize}</strong>
+                        {selectedColor && selectedColor !== 'Standard' && (
+                          <>
+                            {' '}| Color:{' '}
+                            <strong className="text-black dark:text-white">{selectedColor}</strong>
+                          </>
+                        )}
+                        {selectedProduct.quality && (
+                          <>
+                            {' '}| Quality:{' '}
+                            <strong className="text-indigo-600 dark:text-indigo-400">
+                              {selectedProduct.quality}
+                            </strong>
+                          </>
+                        )}
+                        {' '}| Qty: <strong className="text-black dark:text-white">{quantity}</strong>
                       </p>
                       <p className="mt-1 text-xs font-extrabold text-black dark:text-white">
                         ₹{unitPrice.toLocaleString('en-IN')} × {quantity} = ₹
