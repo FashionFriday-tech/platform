@@ -748,6 +748,7 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
           pincode: '560001',
           building: 'Flat 402',
           landmark: 'Metro Station',
+          label: 'Home',
         },
       });
 
