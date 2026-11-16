@@ -248,18 +248,20 @@ export function AddressFormDrawer({
                           onClick={() => {
                             onSelectAddress?.(addr);
                           }}
-                          className={`flex cursor-pointer flex-col gap-3 rounded-2xl border p-5 transition-all duration-200 ${isSelected
+                          className={`flex cursor-pointer flex-col gap-3 rounded-2xl border p-5 transition-all duration-200 ${
+                            isSelected
                               ? 'border-foreground bg-foreground/[0.03] ring-foreground/20 shadow-md ring-1'
                               : 'border-border bg-background hover:border-foreground/40 hover:bg-foreground/[0.01]'
-                            }`}
+                          }`}
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex flex-wrap items-center gap-2">
                               <div
-                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors ${isSelected
+                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors ${
+                                  isSelected
                                     ? 'border-foreground bg-foreground text-background'
                                     : 'border-border bg-background'
-                                  }`}
+                                }`}
                               >
                                 {isSelected && <CheckIcon size={12} />}
                               </div>
@@ -531,8 +533,9 @@ function InputBox({
           tabIndex={readOnly ? -1 : undefined}
           onChange={(e) => onChange?.(e.target.value)}
           placeholder={placeholder}
-          className={`border-border/80 bg-foreground/[0.03] text-foreground focus:border-foreground placeholder:text-foreground-muted/60 h-12 w-full rounded-xl border text-sm font-semibold transition-all outline-none ${prefix ? 'pr-4 pl-14' : 'px-4'
-            } ${readOnly ? 'focus:border-border cursor-default opacity-80 select-none' : ''}`}
+          className={`border-border/80 bg-foreground/[0.03] text-foreground focus:border-foreground placeholder:text-foreground-muted/60 h-12 w-full rounded-xl border text-sm font-semibold transition-all outline-none ${
+            prefix ? 'pr-4 pl-14' : 'px-4'
+          } ${readOnly ? 'focus:border-border cursor-default opacity-80 select-none' : ''}`}
         />
       </div>
     </div>
