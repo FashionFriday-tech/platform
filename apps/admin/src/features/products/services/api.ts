@@ -65,6 +65,7 @@ export function mapBackendProduct(p: any): Product {
     ),
     description: p.description,
     quality: p.quality,
+    colors: Array.isArray(p.colors) ? p.colors : p.color ? [p.color] : [],
     brand: p.brand ? p.brand[0] : undefined,
     gender: p.gender,
     seoTitle: p.seoTitle,
