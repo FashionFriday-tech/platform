@@ -52,16 +52,23 @@ export function useCheckoutReview() {
         const savedAddresses = await fetchUserAddressesAction();
         if (savedAddresses.length > 0) {
           const defaultOrFirst = savedAddresses.find((a) => a.isDefault) || savedAddresses[0];
-          setAddress({
+          const loadedAddress: AddressDetails = {
+            id: defaultOrFirst.id,
             pincode: defaultOrFirst.pincode,
             city: defaultOrFirst.city,
             area: defaultOrFirst.addressLine2,
+            district: defaultOrFirst.district || '',
+            state: defaultOrFirst.state || '',
             landmark: defaultOrFirst.landmark || '',
             building: defaultOrFirst.addressLine1 || '',
             recipientName: defaultOrFirst.name,
             primaryPhone: defaultOrFirst.phone,
             altPhone: defaultOrFirst.altPhone || '',
-          });
+          };
+          setAddress(loadedAddress);
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('checkout_shipping_address', JSON.stringify(loadedAddress));
+          }
         }
       } catch (err) {
         console.error('Failed to load user address in checkout:', err);
@@ -105,7 +112,7 @@ export function useCheckoutReview() {
       // User is already authenticated: persist directly to backend
       setIsSavingAddress(true);
       try {
-        await createAddressAction({
+        const saved = await createAddressAction({
           name: data.recipientName.trim(),
           phone: cleanPhone,
           altPhone: data.altPhone ? cleanPhoneDigits(data.altPhone) : undefined,
@@ -114,18 +121,31 @@ export function useCheckoutReview() {
           addressLine2: data.area.trim(),
           landmark: data.landmark?.trim() || undefined,
           city: data.city.trim(),
-          district: 'Malappuram',
-          state: 'Kerala',
+          district: data.district?.trim() || '',
+          state: data.state?.trim() || '',
           type: 'Home',
           isDefault: true,
         });
 
-        setAddress(data);
+        const finalAddress: AddressDetails = {
+          ...data,
+          id: saved?.id || data.id,
+          district: saved?.district || data.district || '',
+          state: saved?.state || data.state || '',
+        };
+
+        setAddress(finalAddress);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('checkout_shipping_address', JSON.stringify(finalAddress));
+        }
         setShowAddressForm(false);
         toast.success('Shipping address saved!');
       } catch (err) {
         console.error('Failed to persist checkout address:', err);
         setAddress(data);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('checkout_shipping_address', JSON.stringify(data));
+        }
         setShowAddressForm(false);
       } finally {
         setIsSavingAddress(false);
@@ -188,8 +208,9 @@ export function useCheckoutReview() {
         }
 
         // Persist the address to user's database address table
+        let savedId: string | undefined;
         try {
-          await createAddressAction({
+          const saved = await createAddressAction({
             name: targetAddress.recipientName.trim(),
             phone: cleanPhone,
             altPhone: targetAddress.altPhone ? cleanPhoneDigits(targetAddress.altPhone) : undefined,
@@ -198,16 +219,24 @@ export function useCheckoutReview() {
             addressLine2: targetAddress.area.trim(),
             landmark: targetAddress.landmark?.trim() || undefined,
             city: targetAddress.city.trim(),
-            district: 'Malappuram',
-            state: 'Kerala',
+            district: targetAddress.district?.trim() || '',
+            state: targetAddress.state?.trim() || '',
             type: 'Home',
             isDefault: true,
           });
+          savedId = saved?.id;
         } catch (saveErr) {
           console.error('Failed to save address after checkout verification:', saveErr);
         }
 
-        setAddress(targetAddress);
+        const finalAddress: AddressDetails = {
+          ...targetAddress,
+          id: savedId || targetAddress.id,
+        };
+        setAddress(finalAddress);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('checkout_shipping_address', JSON.stringify(finalAddress));
+        }
         setPendingAddress(null);
         setShowOTPModal(false);
         setIsLoggedIn(true);
@@ -256,7 +285,11 @@ export function useCheckoutReview() {
           toast.error(err instanceof Error ? err.message : 'Failed to send OTP');
         });
     } else {
-      router.push('/checkout/payment');
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('checkout_shipping_address', JSON.stringify(address));
+      }
+      const queryParam = address.id ? `?addressId=${encodeURIComponent(address.id)}` : '';
+      router.push(`/checkout/payment${queryParam}`);
     }
   }, [address, user, router]);
 
