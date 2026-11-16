@@ -152,23 +152,47 @@ export function useOrders() {
       setLoading(true);
       const data = await api.get<any[]>('/orders/admin', { cache: 'no-store' });
       // map data to match admin shape
-      const mapped = (data || []).map((o: any) => ({
-        ...o,
-        status: o.status?.toLowerCase() || 'pending',
-        customer: { id: o.userId, name: o.user?.name || 'Unknown', phone: o.user?.phone || '' },
-        total: Number(o.finalAmount || o.totalAmount || 0),
-        paymentType: o.paymentMethod?.toLowerCase() === 'cod' ? 'cod' : 'prepaid',
-        items:
-          o.items?.map((item: any) => ({
-            ...item,
-            productName: item.name,
-            productImage:
-              item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
-                ? item.image
-                : item.product?.mainImage || '',
-            price: Number(item.price || 0),
-          })) || [],
-      }));
+      const mapped = (data || []).map((o: any) => {
+        const address =
+          typeof o.shippingAddress === 'string'
+            ? JSON.parse(o.shippingAddress)
+            : o.shippingAddress || {};
+        return {
+          ...o,
+          status: o.status?.toLowerCase() || 'pending',
+          customer: {
+            id: o.userId,
+            name: address?.fullName || o.user?.name || 'Unknown',
+            phone: address?.phoneNumber || o.user?.phone || '',
+            altPhone: address?.altPhoneNumber || o.user?.altPhone,
+            email: o.user?.email,
+          },
+          shippingAddress: {
+            fullName: address?.fullName || o.user?.name || '',
+            phoneNumber: address?.phoneNumber || o.user?.phone || '',
+            altPhoneNumber: address?.altPhoneNumber || o.user?.altPhone || '',
+            street: address?.street || address?.addressLine || '',
+            building: address?.building || '',
+            landmark: address?.landmark || '',
+            city: address?.city || '',
+            district: address?.district || '',
+            state: address?.state || '',
+            pincode: address?.pincode || address?.pinCode || '',
+          },
+          total: Number(o.finalAmount || o.totalAmount || 0),
+          paymentType: o.paymentMethod?.toLowerCase() === 'cod' ? 'cod' : 'prepaid',
+          items:
+            o.items?.map((item: any) => ({
+              ...item,
+              productName: item.name,
+              productImage:
+                item.image && !item.image.includes('photo-1523381210434-271e8be1f52b')
+                  ? item.image
+                  : item.product?.mainImage || '',
+              price: Number(item.price || 0),
+            })) || [],
+        };
+      });
       setOrders(mapped);
       setLoading(false);
     } catch (err) {
