@@ -256,7 +256,7 @@ export function PaymentStep() {
                     <span className="text-foreground-subtle text-[10px] font-black tracking-widest uppercase">
                       Delivering To
                     </span>
-                    <span className="text-xs font-black uppercase text-foreground">
+                    <span className="text-foreground text-xs font-black uppercase">
                       {shippingAddress.recipientName}
                     </span>
                   </div>
@@ -267,7 +267,8 @@ export function PaymentStep() {
                   <p className="text-foreground-muted text-xs font-semibold uppercase">
                     {shippingAddress.city}
                     {shippingAddress.district ? `, ${shippingAddress.district}` : ''}
-                    {shippingAddress.state ? `, ${shippingAddress.state}` : ''} - {shippingAddress.pincode}
+                    {shippingAddress.state ? `, ${shippingAddress.state}` : ''} -{' '}
+                    {shippingAddress.pincode}
                   </p>
                   <p className="text-foreground-muted mt-1 text-[11px] font-semibold">
                     Phone: +91 {shippingAddress.primaryPhone}
@@ -278,8 +279,10 @@ export function PaymentStep() {
 
               <button
                 type="button"
-                onClick={() => router.push('/checkout/review')}
-                className="border-border text-foreground hover:border-foreground cursor-pointer rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all active:scale-95 shrink-0"
+                onClick={() => {
+                  router.push('/checkout/review');
+                }}
+                className="border-border text-foreground hover:border-foreground shrink-0 cursor-pointer rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all active:scale-95"
               >
                 Change
               </button>
