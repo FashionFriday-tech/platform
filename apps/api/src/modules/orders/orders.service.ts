@@ -161,7 +161,9 @@ export class OrdersService {
 
     // D. If STILL no address, fail gracefully — DO NOT attach fake fallback dummy address!
     if (!selectedAddress) {
-      this.logger.error(`[OrdersService] No delivery address found or provided for user: ${userId}`);
+      this.logger.error(
+        `[OrdersService] No delivery address found or provided for user: ${userId}`,
+      );
       throw new BadRequestException(
         'A valid delivery address is required to place an order. Please add a shipping address.',
       );
@@ -1268,7 +1270,7 @@ export class OrdersService {
       // 1. Update items if provided
       let calculatedSubtotal = Number(existing.totalAmount);
       if (dto.items && Array.isArray(dto.items)) {
-        const incomingIds = dto.items.filter((i) => i.id).map((i) => i.id as string);
+        const incomingIds = dto.items.filter((i) => i.id).map((i) => i.id!);
 
         // Delete items that are no longer in the list
         await tx.orderItem.deleteMany({
@@ -1280,12 +1282,11 @@ export class OrdersService {
 
         calculatedSubtotal = 0;
         for (const item of dto.items) {
-          const itemPrice = Number(item.price) || 0;
-          const itemQty = Number(item.quantity) || 1;
+          const itemPrice = item.price || 0;
+          const itemQty = item.quantity || 1;
           calculatedSubtotal += itemPrice * itemQty;
 
-          const itemSellerId =
-            item.sellerId !== undefined ? item.sellerId : (dto.sellerId ?? null);
+          const itemSellerId = item.sellerId !== undefined ? item.sellerId : (dto.sellerId ?? null);
 
           if (item.id && existing.items.some((ei) => ei.id === item.id)) {
             // Update existing item
@@ -1395,7 +1396,7 @@ export class OrdersService {
             },
           });
         } catch (e) {
-          this.logger.warn(`Could not update user name for user ${existing.userId}: ${e}`);
+          this.logger.warn(`Could not update user name for user ${existing.userId}: ${String(e)}`);
         }
       }
     });
@@ -1403,7 +1404,7 @@ export class OrdersService {
     const updated = await this.findOne(orderId);
 
     this.logger.log(
-      `[OrdersService] Order ${orderId} updated completely. New status: ${updated.status}, items: ${updated.items?.length}, total: ${updated.finalAmount}`,
+      `[OrdersService] Order ${orderId} updated completely. New status: ${updated.status}, items: ${updated.items?.length}, total: ${String(updated.finalAmount)}`,
     );
 
     if (dto.status && existing.status !== dto.status) {
