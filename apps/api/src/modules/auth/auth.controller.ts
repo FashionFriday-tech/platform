@@ -86,7 +86,7 @@ export class AuthController {
 
   @UseGuards(RefreshTokenGuard, ThrottlerGuard)
   @Throttle({ default: { limit: 20, ttl: 60000 } })
-  @Post('refresh')
+  @Post(['refresh', 'admin/refresh'])
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: AuthRequest) {
     const sub = req.user.sub;
