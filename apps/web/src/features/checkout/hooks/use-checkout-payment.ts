@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { fetchUserAddressesAction } from '@/features/addresses/services/addresses.actions';
@@ -84,18 +84,23 @@ export function useCheckoutPayment() {
 
   // Dynamic pricing based on active cart
   const baseTotal = totals.total > 0 ? totals.total : totals.subtotal;
-  const codServiceFee = 200;
-  const totalAmount = useMemo(() => {
-    const finalVal = paymentMethod === 'cod' ? baseTotal + codServiceFee : baseTotal;
+  const codAdvanceAmount = 200;
+  // For COD, the amount to collect online right now is ₹200 (or baseTotal if under ₹200 for testing)
+  const codPayableNow = Math.min(codAdvanceAmount, baseTotal > 0 ? baseTotal : codAdvanceAmount);
+  const payableAmount = paymentMethod === 'cod' ? codPayableNow : baseTotal;
+  const balanceDue = paymentMethod === 'cod' ? Math.max(0, baseTotal - codPayableNow) : 0;
+  const totalAmount = baseTotal;
+
+  useEffect(() => {
     console.log('[useCheckoutPayment] Calculated pricing:', {
       itemCount: cartItems.length,
       baseTotal,
       paymentMethod,
-      codServiceFee: paymentMethod === 'cod' ? codServiceFee : 0,
-      totalAmount: finalVal,
+      payableAmount,
+      balanceDue,
+      totalAmount,
     });
-    return finalVal;
-  }, [paymentMethod, baseTotal, cartItems.length]);
+  }, [cartItems.length, baseTotal, paymentMethod, payableAmount, balanceDue, totalAmount]);
 
   return {
     paymentMethod,
@@ -108,7 +113,11 @@ export function useCheckoutPayment() {
     setShippingAddress,
     isLoadingAddress,
     baseTotal,
-    codServiceFee,
+    codServiceFee: 0,
+    codAdvanceAmount,
+    codPayableNow,
+    payableAmount,
+    balanceDue,
     totalAmount,
     cartItems,
   };

@@ -10,6 +10,7 @@ import {
   createAddressAction,
   fetchUserAddressesAction,
 } from '@/features/addresses/services/addresses.actions';
+import { type Address } from '@/features/addresses/types';
 import {
   sendOtpAction,
   signupAction,
@@ -22,10 +23,41 @@ import { useWishlistStore } from '@/store/wishlist-store';
 
 import { type AddressDetails } from '../types';
 
+export function addressToDetails(addr: Address): AddressDetails {
+  return {
+    id: addr.id,
+    recipientName: addr.name,
+    primaryPhone: addr.phone,
+    altPhone: addr.altPhone || '',
+    pincode: addr.pincode,
+    building: addr.addressLine1 || '',
+    area: addr.addressLine2 || '',
+    landmark: addr.landmark || '',
+    city: addr.city || '',
+    district: addr.district || '',
+    state: addr.state || '',
+  };
+}
+
 export function useCheckoutReview() {
-  const [address, setAddress] = useState<AddressDetails | null>(null);
+  const [address, setAddress] = useState<AddressDetails | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem('checkout_shipping_address');
+        if (stored) {
+          return JSON.parse(stored) as AddressDetails;
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return null;
+  });
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+  const [isLoadingAddresses, setIsLoadingAddresses] = useState(false);
+  const [showAddressDrawer, setShowAddressDrawer] = useState(false);
+  const [addressDrawerMode, setAddressDrawerMode] = useState<'list' | 'add'>('add');
   const [pendingAddress, setPendingAddress] = useState<AddressDetails | null>(null);
-  const [showAddressForm, setShowAddressForm] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
@@ -42,40 +74,57 @@ export function useCheckoutReview() {
     setIsLoggedIn(!!user);
   }, [user]);
 
-  // Load default address for authenticated users if not already set
+  // Load saved addresses for authenticated users and set default/active
   useEffect(() => {
-    async function loadDefaultAddress() {
+    async function loadUserAddresses() {
       if (!user) {
+        setSavedAddresses([]);
         return;
       }
+      setIsLoadingAddresses(true);
       try {
-        const savedAddresses = await fetchUserAddressesAction();
-        if (savedAddresses.length > 0) {
-          const defaultOrFirst = savedAddresses.find((a) => a.isDefault) || savedAddresses[0];
-          const loadedAddress: AddressDetails = {
-            id: defaultOrFirst.id,
-            pincode: defaultOrFirst.pincode,
-            city: defaultOrFirst.city,
-            area: defaultOrFirst.addressLine2,
-            district: defaultOrFirst.district || '',
-            state: defaultOrFirst.state || '',
-            landmark: defaultOrFirst.landmark || '',
-            building: defaultOrFirst.addressLine1 || '',
-            recipientName: defaultOrFirst.name,
-            primaryPhone: defaultOrFirst.phone,
-            altPhone: defaultOrFirst.altPhone || '',
-          };
-          setAddress(loadedAddress);
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem('checkout_shipping_address', JSON.stringify(loadedAddress));
-          }
+        const fetched = await fetchUserAddressesAction();
+        setSavedAddresses(fetched);
+        if (fetched.length > 0) {
+          setAddress((current) => {
+            if (current?.id && fetched.some((a) => a.id === current.id)) {
+              return current;
+            }
+            const defaultOrFirst = fetched.find((a) => a.isDefault) || fetched[0];
+            const loaded = addressToDetails(defaultOrFirst);
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('checkout_shipping_address', JSON.stringify(loaded));
+            }
+            return loaded;
+          });
         }
       } catch (err) {
-        console.error('Failed to load user address in checkout:', err);
+        console.error('Failed to load user addresses in checkout:', err);
+      } finally {
+        setIsLoadingAddresses(false);
       }
     }
-    void loadDefaultAddress();
+    void loadUserAddresses();
   }, [user]);
+
+  const handleOpenAddressSelection = useCallback(() => {
+    if (savedAddresses.length > 0) {
+      setAddressDrawerMode('list');
+    } else {
+      setAddressDrawerMode('add');
+    }
+    setShowAddressDrawer(true);
+  }, [savedAddresses.length]);
+
+  const handleSelectSavedAddress = useCallback((addr: Address) => {
+    const selected = addressToDetails(addr);
+    setAddress(selected);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('checkout_shipping_address', JSON.stringify(selected));
+    }
+    setShowAddressDrawer(false);
+    toast.success(`Delivering to ${selected.recipientName}`);
+  }, []);
 
   const pricing = {
     subtotal: totals.subtotal,
@@ -96,7 +145,7 @@ export function useCheckoutReview() {
       if (!user) {
         // Hold address in pending state, trigger OTP, and open verification modal
         setPendingAddress(data);
-        setShowAddressForm(false);
+        setShowAddressDrawer(false);
         try {
           await sendOtpAction(cleanPhone);
           setShowOTPModal(true);
@@ -104,7 +153,7 @@ export function useCheckoutReview() {
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : 'Failed to send verification code';
           toast.error(msg);
-          setShowAddressForm(true);
+          setShowAddressDrawer(true);
         }
         return;
       }
@@ -124,8 +173,12 @@ export function useCheckoutReview() {
           district: data.district?.trim() || '',
           state: data.state?.trim() || '',
           type: 'Home',
-          isDefault: true,
+          isDefault: savedAddresses.length === 0,
         });
+
+        if (saved) {
+          setSavedAddresses((prev) => [saved, ...prev.filter((a) => a.id !== saved.id)]);
+        }
 
         const finalAddress: AddressDetails = {
           ...data,
@@ -138,7 +191,7 @@ export function useCheckoutReview() {
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('checkout_shipping_address', JSON.stringify(finalAddress));
         }
-        setShowAddressForm(false);
+        setShowAddressDrawer(false);
         toast.success('Shipping address saved!');
       } catch (err) {
         console.error('Failed to persist checkout address:', err);
@@ -146,12 +199,12 @@ export function useCheckoutReview() {
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('checkout_shipping_address', JSON.stringify(data));
         }
-        setShowAddressForm(false);
+        setShowAddressDrawer(false);
       } finally {
         setIsSavingAddress(false);
       }
     },
-    [user],
+    [user, savedAddresses.length],
   );
 
   /**
@@ -208,9 +261,9 @@ export function useCheckoutReview() {
         }
 
         // Persist the address to user's database address table
-        let savedId: string | undefined;
+        let savedAddressRecord: Address | null = null;
         try {
-          const saved = await createAddressAction({
+          savedAddressRecord = await createAddressAction({
             name: targetAddress.recipientName.trim(),
             phone: cleanPhone,
             altPhone: targetAddress.altPhone ? cleanPhoneDigits(targetAddress.altPhone) : undefined,
@@ -224,14 +277,17 @@ export function useCheckoutReview() {
             type: 'Home',
             isDefault: true,
           });
-          savedId = saved?.id;
         } catch (saveErr) {
           console.error('Failed to save address after checkout verification:', saveErr);
         }
 
+        if (savedAddressRecord) {
+          setSavedAddresses((prev) => [savedAddressRecord!, ...prev]);
+        }
+
         const finalAddress: AddressDetails = {
           ...targetAddress,
-          id: savedId || targetAddress.id,
+          id: savedAddressRecord?.id || targetAddress.id,
         };
         setAddress(finalAddress);
         if (typeof window !== 'undefined') {
@@ -272,7 +328,7 @@ export function useCheckoutReview() {
    */
   const handleContinue = useCallback(() => {
     if (!address) {
-      setShowAddressForm(true);
+      handleOpenAddressSelection();
     } else if (!user) {
       const cleanPhone = cleanPhoneDigits(address.primaryPhone);
       setPendingAddress(address);
@@ -291,15 +347,23 @@ export function useCheckoutReview() {
       const queryParam = address.id ? `?addressId=${encodeURIComponent(address.id)}` : '';
       router.push(`/checkout/payment${queryParam}`);
     }
-  }, [address, user, router]);
+  }, [address, user, router, handleOpenAddressSelection]);
 
   return {
     address,
     setAddress,
+    savedAddresses,
+    isLoadingAddresses,
+    handleSelectSavedAddress,
+    handleOpenAddressSelection,
+    addressDrawerMode,
+    setAddressDrawerMode,
+    showAddressDrawer,
+    setShowAddressDrawer,
+    showAddressForm: showAddressDrawer,
+    setShowAddressForm: setShowAddressDrawer,
     pendingAddress,
     handleSaveAddress,
-    showAddressForm,
-    setShowAddressForm,
     isExpanded,
     setIsExpanded,
     isLoggedIn,
@@ -315,4 +379,5 @@ export function useCheckoutReview() {
     isVerifyingOtp,
     isSavingAddress,
   };
+}
 }

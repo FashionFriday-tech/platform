@@ -34,7 +34,8 @@ export function PaymentStep() {
     setShowInfo,
     shippingAddress,
     baseTotal,
-    codServiceFee,
+    payableAmount,
+    balanceDue,
     totalAmount,
     cartItems,
   } = useCheckoutPayment();
@@ -60,9 +61,11 @@ export function PaymentStep() {
     console.log(
       '[PaymentStep] Step 1: Base Total:',
       baseTotal,
-      'COD Fee:',
-      codServiceFee,
-      'Payable:',
+      'Payable Now:',
+      payableAmount,
+      'Balance Due:',
+      balanceDue,
+      'Total Order:',
       totalAmount,
     );
 
@@ -393,10 +396,10 @@ export function PaymentStep() {
                     COD Policy: ₹200 Advance Deposit Required
                   </p>
                   <p className="text-[10px] leading-relaxed font-bold tracking-widest text-orange-800/60 uppercase">
-                    A <span className="font-black text-orange-600">₹200 deposit</span> is collected
+                    A <span className="font-black text-orange-600">₹{payableAmount} deposit</span> is collected
                     online via UPI/Card to confirm your COD order. The balance of{' '}
                     <span className="font-black text-orange-600">
-                      ₹{Math.max(0, totalAmount - 200)}
+                      ₹{balanceDue}
                     </span>{' '}
                     is collected in cash upon doorstep delivery.
                   </p>
@@ -450,13 +453,24 @@ export function PaymentStep() {
                   className="text-foreground-subtle space-y-3 p-4 text-[10px] font-bold tracking-widest uppercase"
                 >
                   <div className="flex justify-between">
-                    <span>Product Subtotal</span>
+                    <span>Product Total</span>
                     <span className="text-foreground font-black">₹{baseTotal}</span>
                   </div>
-                  {paymentMethod === 'cod' && (
-                    <div className="flex justify-between text-orange-500">
-                      <span>COD Service Fee</span>
-                      <span>+₹{codServiceFee}</span>
+                  {paymentMethod === 'cod' ? (
+                    <>
+                      <div className="flex justify-between text-orange-500">
+                        <span>Online Advance Deposit</span>
+                        <span>₹{payableAmount}</span>
+                      </div>
+                      <div className="flex justify-between text-zinc-400">
+                        <span>Balance Due on Delivery</span>
+                        <span>₹{balanceDue}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-between text-emerald-500">
+                      <span>Shipping</span>
+                      <span>FREE</span>
                     </div>
                   )}
                   <div className="bg-border h-px w-full" />
@@ -472,7 +486,7 @@ export function PaymentStep() {
                 }}
               >
                 <p className="text-foreground-muted mb-0.5 flex items-center gap-1.5 text-[8.5px] font-black tracking-widest text-nowrap uppercase">
-                  Final Payable{' '}
+                  {paymentMethod === 'cod' ? 'COD Advance (Pay Online)' : 'Final Payable'}{' '}
                   <span
                     className={`inline-block transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
                   >
@@ -480,7 +494,7 @@ export function PaymentStep() {
                   </span>
                 </p>
                 <p className="text-foreground text-2xl leading-tight font-black italic">
-                  ₹{totalAmount}
+                  ₹{payableAmount}
                 </p>
               </div>
               <button
