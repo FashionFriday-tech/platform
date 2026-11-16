@@ -45,6 +45,9 @@ export default [
       'react/no-unescaped-entities': 'off',
       'security/detect-object-injection': 'off',
       'security/detect-non-literal-regexp': 'off',
+      '@typescript-eslint/no-confusing-void-expression': 'off',
+      'curly': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
     },
   },
 ];
