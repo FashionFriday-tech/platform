@@ -177,7 +177,7 @@ export default function SearchLogsFeature() {
                   >
                     <span>{tab.label}</span>
                     <span
-                      className={`rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
+                      className={`py-0.2 rounded-full px-1.5 text-[10px] font-bold ${
                         isActive
                           ? 'bg-white/20 text-white dark:bg-black/20 dark:text-black'
                           : 'bg-black/10 text-black/60 dark:bg-white/10 dark:text-white/60'
