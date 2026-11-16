@@ -297,14 +297,26 @@ export class AuthService {
     }
 
     // 4. Check if user exists
+    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
     let user;
     try {
-      user = await this.prisma.db.user.findUnique({
-        where: { phone },
+      user = await this.prisma.db.user.findFirst({
+        where: {
+          OR: [
+            { phone },
+            { phone: cleanDigits },
+            { phone: `+91${cleanDigits}` },
+            { phone: `+91 ${cleanDigits}` },
+          ],
+        },
       });
     } catch {
       this.logger.error(`Database error during user lookup for ${phone}. Checking memory.`);
-      user = Array.from(this.userMap.values()).find((u) => u.phone === phone) || null;
+      user =
+        Array.from(this.userMap.values()).find((u) => {
+          const uClean = u.phone?.replace(/\D/g, '').slice(-10);
+          return u.phone === phone || (cleanDigits && uClean === cleanDigits);
+        }) || null;
     }
 
     if (user) {
