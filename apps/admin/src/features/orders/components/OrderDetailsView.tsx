@@ -9,9 +9,9 @@ import { ShoppingBagIcon } from '@ff/ui';
 import { PhoneIcon, WhatsAppIcon } from '@ff/ui/icons';
 import { motion } from 'motion/react';
 
+import { canManageOrders, useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api-client';
 import { resolveItemColorAndQuality } from '@/lib/format-color';
-import { canManageOrders, useAuth } from '@/contexts/AuthContext';
 
 import { CustomSelect, type SelectOption } from '../../../components/ui/CustomSelect';
 import { type Order } from '../types';
@@ -196,7 +196,9 @@ export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProp
             (currentOrder.items || []).map((i: any) => i.categoryId).filter(Boolean),
           );
           const orderCategoryNames = new Set(
-            (currentOrder.items || []).map((i: any) => i.categoryName?.toLowerCase()).filter(Boolean),
+            (currentOrder.items || [])
+              .map((i: any) => i.categoryName?.toLowerCase())
+              .filter(Boolean),
           );
 
           // 2. Classify into 3 tiers:
@@ -397,8 +399,12 @@ export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProp
       })
       .join('\n\n');
 
-    const bld = currentOrder.shippingAddress.building ? `${currentOrder.shippingAddress.building}, ` : '';
-    const lmk = currentOrder.shippingAddress.landmark ? ` (Landmark: ${currentOrder.shippingAddress.landmark})` : '';
+    const bld = currentOrder.shippingAddress.building
+      ? `${currentOrder.shippingAddress.building}, `
+      : '';
+    const lmk = currentOrder.shippingAddress.landmark
+      ? ` (Landmark: ${currentOrder.shippingAddress.landmark})`
+      : '';
 
     return `📝 Order Details Form
 
@@ -697,7 +703,9 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                     Edit Items
                   </button>
                 )}
-                <span className="text-xs font-semibold text-zinc-400">#{currentOrder.orderNumber}</span>
+                <span className="text-xs font-semibold text-zinc-400">
+                  #{currentOrder.orderNumber}
+                </span>
               </div>
             </div>
 
@@ -910,12 +918,21 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 <span>Subtotal ({currentOrder.items.length} items)</span>
                 <span className="font-semibold text-zinc-900 dark:text-zinc-100">
                   ₹
-                  {(Number(currentOrder.totalAmount ?? currentOrder.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  {(Number(currentOrder.totalAmount ?? currentOrder.total) || 0).toLocaleString(
+                    'en-IN',
+                    { minimumFractionDigits: 2 },
+                  )}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Discount</span>
-                <span className={Number(currentOrder.discountAmount) > 0 ? 'font-bold text-emerald-600 dark:text-emerald-400' : ''}>
+                <span
+                  className={
+                    Number(currentOrder.discountAmount) > 0
+                      ? 'font-bold text-emerald-600 dark:text-emerald-400'
+                      : ''
+                  }
+                >
                   {Number(currentOrder.discountAmount) > 0
                     ? `-₹${Number(currentOrder.discountAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
                     : '₹0.00'}
@@ -933,7 +950,10 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 <span>Total Amount</span>
                 <span>
                   ₹
-                  {(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  {(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLocaleString(
+                    'en-IN',
+                    { minimumFractionDigits: 2 },
+                  )}
                 </span>
               </div>
             </div>
@@ -945,7 +965,8 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 <span
                   className={`rounded-lg px-2.5 py-1 text-xs font-bold uppercase ${currentOrder.paymentType === 'cod' ? 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'}`}
                 >
-                  {currentOrder.paymentMethod || (currentOrder.paymentType === 'cod' ? 'Cash on Delivery' : 'Prepaid')}
+                  {currentOrder.paymentMethod ||
+                    (currentOrder.paymentType === 'cod' ? 'Cash on Delivery' : 'Prepaid')}
                 </span>
               </div>
               {currentOrder.paymentStatus && (
@@ -953,7 +974,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                   <span className="text-xs font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
                     Status:
                   </span>
-                  <span className="rounded-lg bg-zinc-200/80 px-2.5 py-1 text-xs font-bold uppercase text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                  <span className="rounded-lg bg-zinc-200/80 px-2.5 py-1 text-xs font-bold text-zinc-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
                     {currentOrder.paymentStatus}
                   </span>
                 </div>
@@ -986,12 +1007,16 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
               <div className="flex flex-col gap-3 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Full Name</span>
-                  <span className="font-bold text-black dark:text-white">{currentOrder.customer.name}</span>
+                  <span className="font-bold text-black dark:text-white">
+                    {currentOrder.customer.name}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Address</span>
                   <span className="max-w-[200px] truncate text-right">
-                    {currentOrder.shippingAddress.building ? `${currentOrder.shippingAddress.building}, ` : ''}
+                    {currentOrder.shippingAddress.building
+                      ? `${currentOrder.shippingAddress.building}, `
+                      : ''}
                     {currentOrder.shippingAddress.street}
                   </span>
                 </div>
