@@ -47,7 +47,9 @@ export function useCheckoutPayment() {
         const addresses = await fetchUserAddressesAction();
         if (addresses.length > 0) {
           const matched = targetId
-            ? addresses.find((a) => a.id === targetId) || addresses.find((a) => a.isDefault) || addresses[0]
+            ? addresses.find((a) => a.id === targetId) ||
+              addresses.find((a) => a.isDefault) ||
+              addresses[0]
             : addresses.find((a) => a.isDefault) || addresses[0];
 
           if (matched) {
