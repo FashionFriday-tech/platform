@@ -25,9 +25,14 @@ export function OrderReviewStep() {
   const {
     address,
     pendingAddress,
+    savedAddresses,
+    handleSelectSavedAddress,
+    handleOpenAddressSelection,
+    addressDrawerMode,
+    setAddressDrawerMode,
+    showAddressDrawer,
+    setShowAddressDrawer,
     handleSaveAddress,
-    showAddressForm,
-    setShowAddressForm,
     isExpanded,
     setIsExpanded,
     isLoggedIn,
@@ -88,9 +93,7 @@ export function OrderReviewStep() {
                     </div>
 
                     <button
-                      onClick={() => {
-                        setShowAddressForm(true);
-                      }}
+                      onClick={handleOpenAddressSelection}
                       className="border-border text-foreground hover:border-foreground cursor-pointer rounded-lg border px-4 py-1.5 text-[10px] font-black tracking-widest uppercase transition-all active:scale-95"
                     >
                       Change
@@ -100,9 +103,7 @@ export function OrderReviewStep() {
                   <motion.button
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    onClick={() => {
-                      setShowAddressForm(true);
-                    }}
+                    onClick={handleOpenAddressSelection}
                     className="border-border hover:border-foreground/50 flex w-full cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed py-8 transition-colors active:scale-98"
                   >
                     <div className="bg-foreground/5 border-border flex h-8 w-8 items-center justify-center rounded-lg border">
@@ -373,12 +374,17 @@ export function OrderReviewStep() {
       </div>
 
       <AddressFormDrawer
-        isOpen={showAddressForm}
+        isOpen={showAddressDrawer}
         onClose={() => {
-          setShowAddressForm(false);
+          setShowAddressDrawer(false);
         }}
         onSave={handleSaveAddress}
         initialData={address}
+        savedAddresses={savedAddresses}
+        selectedAddressId={address?.id}
+        onSelectAddress={handleSelectSavedAddress}
+        mode={addressDrawerMode}
+        onModeChange={setAddressDrawerMode}
       />
 
       <OTPModal
@@ -386,7 +392,7 @@ export function OrderReviewStep() {
         phoneNumber={pendingAddress?.primaryPhone || address?.primaryPhone || ''}
         onClose={() => {
           setShowOTPModal(false);
-          setShowAddressForm(true);
+          setShowAddressDrawer(true);
         }}
         onVerifyOtp={handleVerifyCheckoutOtp}
         onResendOtp={handleResendOtp}
