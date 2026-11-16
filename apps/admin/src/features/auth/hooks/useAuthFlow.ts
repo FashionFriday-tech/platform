@@ -182,8 +182,7 @@ export function useAuthFlow() {
           throw new Error('No user data returned from authentication service');
         }
 
-        const candidateRole =
-          authUser.position || authUser.adminMeta?.position || authUser.role;
+        const candidateRole = authUser.position || authUser.adminMeta?.position || authUser.role;
 
         const mappedRole: Role =
           candidateRole === 'SUPER_ADMIN' ||

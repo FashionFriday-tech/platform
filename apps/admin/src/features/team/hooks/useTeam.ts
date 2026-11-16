@@ -6,11 +6,10 @@ import { toast } from 'sonner';
 
 import { type Role, useAuth } from '@/contexts/AuthContext';
 
-import { type EditMemberUpdates, MOCK_TEAM, type SortField, type TeamMember } from '../types';
+import { type EditMemberUpdates, type SortField, type TeamMember } from '../types';
 
 const STORAGE_TEAM_KEY = 'ff_admin_team_members';
 const STORAGE_INVITED_KEY = 'ff_admin_invited_team';
-const STORAGE_CLEAN_KEY = 'ff_admin_team_v5_single_admin';
 
 export interface InvitePayload {
   name: string;
@@ -150,9 +149,7 @@ export function useTeam() {
         }
         const created = await res.json();
         if (created?.id) {
-          setTeam((prev) =>
-            prev.map((m) => (m.id === newMember.id ? { ...m, ...created } : m)),
-          );
+          setTeam((prev) => prev.map((m) => (m.id === newMember.id ? { ...m, ...created } : m)));
           toast.success(`${created.name} added to team successfully!`);
         }
       })
