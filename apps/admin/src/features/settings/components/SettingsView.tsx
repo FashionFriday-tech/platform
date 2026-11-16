@@ -434,7 +434,7 @@ export function SettingsView() {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-mono text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                            +91 {member.phone || '7558969093'}
+                            +91 {member.phone || '—'}
                           </span>
                           <span
                             className={`rounded-full px-2 py-0.5 font-mono text-[9px] font-bold tracking-wider uppercase ${

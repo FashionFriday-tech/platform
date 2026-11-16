@@ -270,7 +270,7 @@ export default function ProfilePage() {
                     Email Address
                   </label>
                   <p className="text-lg font-medium text-black dark:text-white">
-                    {user.name.split(' ')[0].toLowerCase()}@fashionfriday.com
+                    {user.email || `${user.name.split(' ')[0].toLowerCase()}@fashionfriday.com`}
                   </p>
                 </div>
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/10" />
@@ -370,7 +370,7 @@ export default function ProfilePage() {
                     </div>
                   ) : (
                     <p className="font-mono text-lg font-medium text-black dark:text-white">
-                      +91 {user.phone ? user.phone.replace(/\D/g, '').slice(-10) : '7558969093'}
+                      {user.phone ? `+91 ${user.phone.replace(/\D/g, '').slice(-10)}` : '—'}
                     </p>
                   )}
                 </div>

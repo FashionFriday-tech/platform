@@ -34,16 +34,4 @@ export const ROLE_DESCRIPTIONS: Record<Role, string> = {
 
 export type SortField = 'name' | 'role' | 'status' | 'joinedAt' | 'updatedAt';
 
-export const MOCK_TEAM: TeamMember[] = [
-  {
-    id: '1',
-    name: 'Super Admin',
-    email: 'admin@fashionfriday.com',
-    phone: '7558969093',
-    role: 'SUPER_ADMIN',
-    status: 'ACTIVE',
-    joinedAt: '2025-01-15T00:00:00Z',
-    updatedAt: '2026-05-01T10:30:00Z',
-    avatarUrl: 'https://i.pravatar.cc/150?u=superadmin',
-  },
-];
+export const MOCK_TEAM: TeamMember[] = [];

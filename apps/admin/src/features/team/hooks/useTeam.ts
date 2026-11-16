@@ -24,14 +24,6 @@ export function useTeam() {
   const [team, setTeam] = useState<TeamMember[]>(() => {
     if (typeof window !== 'undefined') {
       try {
-        // Enforce cleanup of legacy mock team members in old PWA installs
-        if (!localStorage.getItem(STORAGE_CLEAN_KEY)) {
-          localStorage.removeItem(STORAGE_TEAM_KEY);
-          localStorage.removeItem(STORAGE_INVITED_KEY);
-          localStorage.setItem(STORAGE_CLEAN_KEY, 'true');
-          return MOCK_TEAM;
-        }
-
         const stored = localStorage.getItem(STORAGE_TEAM_KEY);
         if (stored) {
           const parsed = JSON.parse(stored) as TeamMember[];
@@ -43,7 +35,7 @@ export function useTeam() {
         // ignore
       }
     }
-    return MOCK_TEAM;
+    return [];
   });
 
   // Fetch live team members from database API on mount
@@ -149,15 +141,25 @@ export function useTeam() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, phone, email, role }),
     })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((created) => {
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          toast.error(err.message || 'Failed to add team member');
+          setTeam((prev) => prev.filter((m) => m.id !== newMember.id));
+          return;
+        }
+        const created = await res.json();
         if (created?.id) {
           setTeam((prev) =>
-            prev.map((m) => (m.id === newMember.id ? { ...m, id: created.id } : m)),
+            prev.map((m) => (m.id === newMember.id ? { ...m, ...created } : m)),
           );
+          toast.success(`${created.name} added to team successfully!`);
         }
       })
-      .catch(() => null);
+      .catch(() => {
+        toast.error('Network error adding team member');
+        setTeam((prev) => prev.filter((m) => m.id !== newMember.id));
+      });
   };
 
   const handleDeleteMember = (id: string) => {
@@ -172,7 +174,24 @@ export function useTeam() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
     fetch(`${apiUrl}/admin/team/${id}`, {
       method: 'DELETE',
-    }).catch(() => null);
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          toast.error(err.message || 'Failed to delete member');
+          if (member) {
+            setTeam((prev) => [...prev, member]);
+          }
+          return;
+        }
+        toast.success('Team member removed successfully');
+      })
+      .catch(() => {
+        toast.error('Network error removing team member');
+        if (member) {
+          setTeam((prev) => [...prev, member]);
+        }
+      });
   };
 
   const handleEditSave = (id: string, updates: EditMemberUpdates) => {
