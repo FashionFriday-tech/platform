@@ -40,6 +40,8 @@ export function AddressFormDrawer({
       pincode: '',
       city: '',
       area: '',
+      district: '',
+      state: '',
       landmark: '',
       building: '',
       recipientName: user?.name ?? '',
@@ -85,18 +87,22 @@ export function AddressFormDrawer({
           const items = data as PincodeItem[];
           if (items?.[0]?.Status === 'Success' && items[0].PostOffice?.[0]) {
             const po = items[0].PostOffice[0];
-            const region = `${po.District ?? ''}, ${po.State ?? ''}`.toUpperCase();
+            const district = po.District ?? '';
+            const state = po.State ?? '';
+            const region = `${district}, ${state}`.toUpperCase();
             setDetectedRegion(region);
             setFormData((prev) => ({
               ...prev,
-              city: prev.city || po.District || po.Block || '',
+              city: prev.city || district || po.Block || '',
+              district: district || prev.district || '',
+              state: state || prev.state || '',
             }));
           } else {
             setDetectedRegion('UNKNOWN PINCODE');
           }
         })
         .catch(() => {
-          setDetectedRegion('KERALA, MALAPPURAM');
+          setDetectedRegion('');
         })
         .finally(() => {
           setIsLoadingRegion(false);
