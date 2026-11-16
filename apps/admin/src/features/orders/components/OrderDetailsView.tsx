@@ -10,10 +10,13 @@ import { PhoneIcon, WhatsAppIcon } from '@ff/ui/icons';
 import { motion } from 'motion/react';
 
 import { api } from '@/lib/api-client';
+import { resolveItemColorAndQuality } from '@/lib/format-color';
+import { canManageOrders, useAuth } from '@/contexts/AuthContext';
 
 import { CustomSelect, type SelectOption } from '../../../components/ui/CustomSelect';
 import { type Order } from '../types';
 import { COURIER_SERVICES, getTrackingUrl } from '../utils/courier';
+import { EditOrderModal, type EditOrderTab } from './EditOrderModal';
 import { OrderStatusBadge } from './OrderStatusBadge';
 
 interface StepConfig {
@@ -108,10 +111,22 @@ function OrderStatusTracker({ status }: { status: string }) {
 
 interface OrderDetailsViewProps {
   order: Order;
+  onOrderUpdated?: (order: Order) => void;
 }
 
-export function OrderDetailsView({ order }: OrderDetailsViewProps) {
+export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProps) {
   const router = useRouter();
+  const { user } = useAuth();
+  const canEdit = canManageOrders(user?.role);
+
+  const [currentOrder, setCurrentOrder] = useState<Order>(order);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editModalTab, setEditModalTab] = useState<EditOrderTab>('items');
+
+  useEffect(() => {
+    setCurrentOrder(order);
+  }, [order]);
+
   const [trackingId, setTrackingId] = useState(order.tracking?.trackingId ?? '');
   const initialSeller =
     (order as any).seller?.storeName ||
@@ -142,6 +157,24 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     { label: 'Unassigned', value: '' },
   ]);
 
+  const handleOrderUpdated = (updated: Order) => {
+    setCurrentOrder(updated);
+    setOrderStatus(updated.status);
+    setPendingStatus(updated.status);
+    setCourierService(updated.tracking?.courierService || 'Delhivery');
+    setTrackingId(updated.tracking?.trackingId || '');
+    const updatedSeller =
+      (updated as any).seller?.storeName ||
+      (updated as any).seller?.name ||
+      updated.items?.find((i: any) => i.seller)?.seller?.storeName ||
+      updated.items?.find((i: any) => i.seller)?.seller?.name ||
+      '';
+    setAssignedSeller(updatedSeller);
+    if (onOrderUpdated) {
+      onOrderUpdated(updated);
+    }
+  };
+
   useEffect(() => {
     async function loadSellers() {
       try {
@@ -152,18 +185,18 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
         if (list.length > 0) {
           // 1. Gather all product IDs, product seller IDs, and category IDs/names from order items
           const orderProductIds = new Set(
-            (order.items || []).map((i: any) => i.productId).filter(Boolean),
+            (currentOrder.items || []).map((i: any) => i.productId).filter(Boolean),
           );
           const orderProductSellerIds = new Set(
-            (order.items || [])
+            (currentOrder.items || [])
               .map((i: any) => i.productSellerId || i.sellerId || i.seller?.id)
               .filter(Boolean),
           );
           const orderCategoryIds = new Set(
-            (order.items || []).map((i: any) => i.categoryId).filter(Boolean),
+            (currentOrder.items || []).map((i: any) => i.categoryId).filter(Boolean),
           );
           const orderCategoryNames = new Set(
-            (order.items || []).map((i: any) => i.categoryName?.toLowerCase()).filter(Boolean),
+            (currentOrder.items || []).map((i: any) => i.categoryName?.toLowerCase()).filter(Boolean),
           );
 
           // 2. Classify into 3 tiers:
@@ -226,7 +259,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
       }
     }
     void loadSellers();
-  }, [order]);
+  }, [currentOrder, initialSeller]);
 
   const updateOrderOnBackend = async (patchData: {
     status?: string;
@@ -237,7 +270,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     try {
       setIsUpdatingStatus(true);
       const upperStatus = patchData.status ? patchData.status.toUpperCase() : undefined;
-      await api.patch(`/orders/${order.id}`, {
+      const updatedData: any = await api.patch(`/orders/${currentOrder.id}`, {
         ...(upperStatus ? { status: upperStatus } : {}),
         courierPartner: patchData.courierPartner,
         trackingNumber: patchData.trackingNumber,
@@ -255,6 +288,14 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
         setTrackingId(patchData.trackingNumber);
       }
 
+      if (updatedData) {
+        handleOrderUpdated({
+          ...currentOrder,
+          ...updatedData,
+          status: (updatedData.status || currentOrder.status).toLowerCase(),
+        });
+      }
+
       setIsUpdateModalOpen(false);
     } catch (err: any) {
       console.error('Failed to update order:', err);
@@ -265,20 +306,20 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   };
 
   const handleSendTrackingToCustomer = () => {
-    const rawPhone = order.customer?.phone || '';
+    const rawPhone = currentOrder.customer?.phone || '';
     const cleanPhone = rawPhone.replace(/\D/g, '');
     const currentTrackUrl = getTrackingUrl(courierService, trackingId);
     const message = encodeURIComponent(
-      `Hello ${order.customer?.name || 'Customer'}! 👋\n\nGreat news! Your Fashion Friday order *#${order.orderNumber}* has been shipped via *${courierService}*!\n\n📦 *Tracking Number:* ${trackingId || 'N/A'}\n🔗 *Live Tracking Link:* ${currentTrackUrl}\n\nThank you for shopping with us! ✨`,
+      `Hello ${currentOrder.customer?.name || 'Customer'}! 👋\n\nGreat news! Your Fashion Friday order *#${currentOrder.orderNumber}* has been shipped via *${courierService}*!\n\n📦 *Tracking Number:* ${trackingId || 'N/A'}\n🔗 *Live Tracking Link:* ${currentTrackUrl}\n\nThank you for shopping with us! ✨`,
     );
     window.open(`https://wa.me/${cleanPhone}?text=${message}`, '_blank');
   };
 
   const handleContactClick = (mode: 'call' | 'whatsapp') => {
-    if (order.customer.altPhone) {
+    if (currentOrder.customer.altPhone) {
       setContactMode(mode);
     } else {
-      executeContact(mode, order.customer.phone);
+      executeContact(mode, currentOrder.customer.phone);
     }
   };
 
@@ -313,7 +354,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   const handleConfirmStock = async () => {
     try {
       setIsUpdatingStatus(true);
-      await api.post(`/orders/${order.id}/confirm-stock`, {});
+      await api.post(`/orders/${currentOrder.id}/confirm-stock`, {});
       setOrderStatus('stock_confirmed');
       alert('Stock confirmed! Payment captured successfully on Razorpay.');
     } catch (err: any) {
@@ -332,7 +373,7 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
     ) {
       try {
         setIsUpdatingStatus(true);
-        await api.post(`/orders/${order.id}/reject-stock`, { reason: 'Out of stock' });
+        await api.post(`/orders/${currentOrder.id}/reject-stock`, { reason: 'Out of stock' });
         setOrderStatus('cancelled');
         alert('Order cancelled! Authorized funds released at ₹0 fee.');
       } catch (err: any) {
@@ -345,27 +386,34 @@ export function OrderDetailsView({ order }: OrderDetailsViewProps) {
   };
 
   const getOrderSummaryText = () => {
-    const itemsText = order.items
-      .map(
-        (item) =>
-          `Product Name: ${item.productName}\nSize: ${item.size ?? 'N/A'}\nColor: ${item.color ?? 'N/A'}\nQty: ${item.quantity}`,
-      )
+    const itemsText = currentOrder.items
+      .map((item) => {
+        const { color: cName, quality: qName } = resolveItemColorAndQuality(item);
+        const parts = [`Product Name: ${item.productName}`, `Size: ${item.size ?? 'N/A'}`];
+        if (cName) parts.push(`Color: ${cName}`);
+        if (qName) parts.push(`Quality: ${qName}`);
+        parts.push(`Qty: ${item.quantity}`);
+        return parts.join('\n');
+      })
       .join('\n\n');
+
+    const bld = currentOrder.shippingAddress.building ? `${currentOrder.shippingAddress.building}, ` : '';
+    const lmk = currentOrder.shippingAddress.landmark ? ` (Landmark: ${currentOrder.shippingAddress.landmark})` : '';
 
     return `📝 Order Details Form
 
-Full Name : ${order.customer.name}
-Address : ${order.shippingAddress.street}
-City : ${order.shippingAddress.city}
-District : ${order.shippingAddress.district ?? 'N/A'}
-State : ${order.shippingAddress.state}
-Pincode: ${order.shippingAddress.pincode}
-Mobile Number : ${order.customer.phone}
-Alt Number : ${order.customer.altPhone ?? 'N/A'}
+Full Name : ${currentOrder.customer.name}
+Address : ${bld}${currentOrder.shippingAddress.street}${lmk}
+City : ${currentOrder.shippingAddress.city}
+District : ${currentOrder.shippingAddress.district ?? 'N/A'}
+State : ${currentOrder.shippingAddress.state}
+Pincode: ${currentOrder.shippingAddress.pincode}
+Mobile Number : ${currentOrder.customer.phone}
+Alt Number : ${currentOrder.customer.altPhone ?? 'N/A'}
 
 ${itemsText}
 
-Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (${order.paymentType.toUpperCase()})
+Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })} (${currentOrder.paymentType.toUpperCase()})
 `;
   };
 
@@ -414,21 +462,29 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
     const text = encodeURIComponent(getOrderSummaryText());
 
     // Automatically copy the first product's image to clipboard so the user can just hit Paste in WhatsApp
-    if (order.items.length > 0 && order.items[0].productImage) {
-      await copyImageToClipboard(order.items[0].productImage);
+    if (currentOrder.items.length > 0 && currentOrder.items[0].productImage) {
+      await copyImageToClipboard(currentOrder.items[0].productImage);
     }
 
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
   };
 
   const handleInquiryWhatsApp = async () => {
-    if (order.items.length === 0) {
+    if (currentOrder.items.length === 0) {
       return;
     }
-    const item = order.items[0];
-    const text = encodeURIComponent(
-      `*Product Name:* ${item.productName}\n\n*Quantity:* ${item.quantity}\n\n*Size:* ${item.size ?? 'N/A'}\n*Color:* ${item.color ?? 'N/A'} \n\n*Order ID:* ${order.orderNumber}`,
-    );
+    const item = currentOrder.items[0];
+    const { color: cName, quality: qName } = resolveItemColorAndQuality(item);
+    const textLines = [
+      `*Product Name:* ${item.productName}`,
+      `*Quantity:* ${item.quantity}`,
+      `*Size:* ${item.size ?? 'N/A'}`,
+    ];
+    if (cName) textLines.push(`*Color:* ${cName}`);
+    if (qName) textLines.push(`*Quality:* ${qName}`);
+    textLines.push(`*Order ID:* ${currentOrder.orderNumber}`);
+
+    const text = encodeURIComponent(textLines.join('\n\n'));
 
     if (item.productImage) {
       await copyImageToClipboard(item.productImage);
@@ -447,17 +503,30 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-black tracking-tight text-black dark:text-white">
-              Order #{order.orderNumber}
+              Order #{currentOrder.orderNumber}
             </h1>
             <OrderStatusBadge status={orderStatus as any} />
           </div>
 
           <div className="flex shrink-0 items-center gap-2.5">
+            {canEdit && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditModalTab('items');
+                  setIsEditModalOpen(true);
+                }}
+                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-bold text-zinc-900 shadow-sm transition-all hover:bg-zinc-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+              >
+                <span>✏️</span>
+                <span>Edit Order</span>
+              </button>
+            )}
             <button
               onClick={async () => {
                 if (window.confirm('Are you sure you want to delete this order?')) {
                   try {
-                    await api.delete(`/orders/${order.id}`);
+                    await api.delete(`/orders/${currentOrder.id}`);
                     router.push('/orders');
                   } catch (err) {
                     console.error('Failed to delete order', err);
@@ -609,12 +678,31 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
           {/* Items Card */}
           <div className="overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-[#141414]">
             <div className="flex items-center justify-between px-6 py-5">
-              <h2 className="text-base font-bold text-black dark:text-white">Order Items</h2>
-              <span className="text-xs font-semibold text-zinc-400">#{order.orderNumber}</span>
+              <div className="flex items-center gap-2.5">
+                <h2 className="text-base font-bold text-black dark:text-white">Order Items</h2>
+                <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-bold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                  {currentOrder.items.length}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditModalTab('items');
+                      setIsEditModalOpen(true);
+                    }}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
+                    Edit Items
+                  </button>
+                )}
+                <span className="text-xs font-semibold text-zinc-400">#{currentOrder.orderNumber}</span>
+              </div>
             </div>
 
             <div className="flex flex-col gap-4 p-6 pt-0">
-              {order.items.map((item, idx) => (
+              {currentOrder.items.map((item, idx) => (
                 <div
                   key={idx}
                   className="group relative flex flex-col gap-6 rounded-2xl bg-zinc-50/80 p-4 transition-all hover:bg-zinc-100/80 sm:flex-row sm:items-start sm:pr-32 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70"
@@ -689,7 +777,7 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       <p className="mt-1 text-sm font-semibold text-zinc-400 dark:text-zinc-500">
                         SKU: {item.sku ?? 'N/A'}
                       </p>
-                      <div className="mt-4 flex flex-wrap gap-3">
+                      <div className="mt-4 flex flex-wrap items-center gap-3">
                         {item.size && (
                           <div className="flex items-center gap-1.5">
                             <span className="text-[10px] font-bold text-zinc-400 uppercase">
@@ -700,16 +788,33 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                             </span>
                           </div>
                         )}
-                        {item.color && (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[10px] font-bold text-zinc-400 uppercase">
-                              Color:
-                            </span>
-                            <span className="text-sm font-bold text-black dark:text-white">
-                              {item.color}
-                            </span>
-                          </div>
-                        )}
+                        {(() => {
+                          const { color: cName, quality: qName } = resolveItemColorAndQuality(item);
+                          return (
+                            <>
+                              {cName && (
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[10px] font-bold text-zinc-400 uppercase">
+                                    Color:
+                                  </span>
+                                  <span className="text-sm font-bold text-black dark:text-white">
+                                    {cName}
+                                  </span>
+                                </div>
+                              )}
+                              {qName && (
+                                <div className="flex items-center gap-1.5 rounded-lg bg-black/5 px-2 py-0.5 dark:bg-white/10">
+                                  <span className="text-[10px] font-bold text-zinc-400 uppercase">
+                                    Quality:
+                                  </span>
+                                  <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                                    {qName}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                     <div className="mt-4 flex flex-col gap-4 pt-4 sm:mt-0">
@@ -785,44 +890,74 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
 
           {/* Payment Summary Card */}
           <div className="overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-[#141414]">
-            <div className="px-6 py-5">
+            <div className="flex items-center justify-between px-6 py-5">
               <h2 className="text-base font-bold text-black dark:text-white">Payment Summary</h2>
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditModalTab('pricing');
+                    setIsEditModalOpen(true);
+                  }}
+                  className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Edit Pricing
+                </button>
+              )}
             </div>
             <div className="flex flex-col gap-3.5 px-6 pb-6 text-sm font-medium text-zinc-600 dark:text-zinc-400">
               <div className="flex justify-between">
-                <span>Subtotal ({order.items.length} items)</span>
+                <span>Subtotal ({currentOrder.items.length} items)</span>
                 <span className="font-semibold text-zinc-900 dark:text-zinc-100">
                   ₹
-                  {(Number(order.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  {(Number(currentOrder.totalAmount ?? currentOrder.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span>Shipping</span>
-                <span>₹0.00</span>
+                <span>Discount</span>
+                <span className={Number(currentOrder.discountAmount) > 0 ? 'font-bold text-emerald-600 dark:text-emerald-400' : ''}>
+                  {Number(currentOrder.discountAmount) > 0
+                    ? `-₹${Number(currentOrder.discountAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                    : '₹0.00'}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span>Tax</span>
-                <span>₹0.00</span>
+                <span>Shipping Fees</span>
+                <span>
+                  {Number(currentOrder.shippingFees) > 0
+                    ? `₹${Number(currentOrder.shippingFees).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                    : 'Free (₹0.00)'}
+                </span>
               </div>
               <div className="mt-2 flex justify-between border-t border-zinc-100 pt-4 text-base font-black text-black dark:border-zinc-800 dark:text-white">
-                <span>Total</span>
+                <span>Total Amount</span>
                 <span>
                   ₹
-                  {(Number(order.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  {(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>
-            <div className="bg-zinc-50 px-6 py-4 dark:bg-zinc-900/60">
-              <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-zinc-50 px-6 py-4 dark:bg-zinc-900/60">
+              <div className="flex items-center gap-2">
                 <span className="text-xs font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-                  Payment Mode
+                  Mode:
                 </span>
                 <span
-                  className={`rounded-lg px-3 py-1 text-xs font-bold uppercase ${order.paymentType === 'cod' ? 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'}`}
+                  className={`rounded-lg px-2.5 py-1 text-xs font-bold uppercase ${currentOrder.paymentType === 'cod' ? 'bg-orange-500/10 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400' : 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400'}`}
                 >
-                  {order.paymentType === 'cod' ? 'Cash on Delivery' : 'Prepaid'}
+                  {currentOrder.paymentMethod || (currentOrder.paymentType === 'cod' ? 'Cash on Delivery' : 'Prepaid')}
                 </span>
               </div>
+              {currentOrder.paymentStatus && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
+                    Status:
+                  </span>
+                  <span className="rounded-lg bg-zinc-200/80 px-2.5 py-1 text-xs font-bold uppercase text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                    {currentOrder.paymentStatus}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -832,44 +967,65 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
           <div className="sticky top-6 flex flex-col gap-6">
             {/* Customer & Address Card */}
             <div className="overflow-hidden rounded-3xl bg-white p-6 shadow-sm dark:bg-[#141414]">
-              <div className="mb-4">
+              <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-base font-bold text-black dark:text-white">Shipping Details</h2>
+                {canEdit && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditModalTab('customer');
+                      setIsEditModalOpen(true);
+                    }}
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
+                    Edit Details
+                  </button>
+                )}
               </div>
 
               <div className="flex flex-col gap-3 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Full Name</span>
-                  <span>{order.customer.name}</span>
+                  <span className="font-bold text-black dark:text-white">{currentOrder.customer.name}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Address</span>
-                  <span className="max-w-[180px] truncate text-right">
-                    {order.shippingAddress.street}
+                  <span className="max-w-[200px] truncate text-right">
+                    {currentOrder.shippingAddress.building ? `${currentOrder.shippingAddress.building}, ` : ''}
+                    {currentOrder.shippingAddress.street}
                   </span>
                 </div>
+                {currentOrder.shippingAddress.landmark && (
+                  <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                    <span className="text-xs font-medium text-zinc-400">Landmark</span>
+                    <span className="max-w-[200px] truncate text-right text-xs">
+                      {currentOrder.shippingAddress.landmark}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">City</span>
-                  <span>{order.shippingAddress.city}</span>
+                  <span>{currentOrder.shippingAddress.city}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">District</span>
-                  <span>{order.shippingAddress.district ?? 'N/A'}</span>
+                  <span>{currentOrder.shippingAddress.district ?? 'N/A'}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">State</span>
-                  <span>{order.shippingAddress.state}</span>
+                  <span>{currentOrder.shippingAddress.state}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Pincode</span>
-                  <span>{order.shippingAddress.pincode}</span>
+                  <span>{currentOrder.shippingAddress.pincode}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Mobile Number</span>
-                  <span>{order.customer.phone}</span>
+                  <span>{currentOrder.customer.phone}</span>
                 </div>
                 <div className="flex items-center justify-between py-1">
                   <span className="text-xs font-medium text-zinc-400">Alt Number</span>
-                  <span>{order.customer.altPhone ?? 'N/A'}</span>
+                  <span>{currentOrder.customer.altPhone ?? 'N/A'}</span>
                 </div>
 
                 <div className="mt-4 flex flex-col gap-3 pt-2">
@@ -940,22 +1096,22 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
                       </div>
                       <button
                         onClick={() => {
-                          executeContact(contactMode, order.customer.phone);
+                          executeContact(contactMode, currentOrder.customer.phone);
                         }}
                         className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-zinc-100 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
                       >
                         <span>Primary</span>
-                        <span>{order.customer.phone}</span>
+                        <span>{currentOrder.customer.phone}</span>
                       </button>
-                      {order.customer.altPhone && (
+                      {currentOrder.customer.altPhone && (
                         <button
                           onClick={() => {
-                            executeContact(contactMode, order.customer.altPhone!);
+                            executeContact(contactMode, currentOrder.customer.altPhone!);
                           }}
                           className="flex items-center justify-between rounded-lg bg-white px-3 py-2 text-sm font-bold text-black transition-colors hover:bg-zinc-100 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
                         >
                           <span>Alternate</span>
-                          <span>{order.customer.altPhone}</span>
+                          <span>{currentOrder.customer.altPhone}</span>
                         </button>
                       )}
                     </div>
@@ -968,32 +1124,46 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
             <div className="overflow-hidden rounded-3xl bg-white p-6 shadow-sm dark:bg-[#141414]">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-base font-bold text-black dark:text-white">Order Meta</h2>
-                {!isEditingMeta ? (
-                  <button
-                    onClick={() => {
-                      setIsEditingMeta(true);
-                    }}
-                    className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                  >
-                    Edit
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setIsEditingMeta(false);
-                    }}
-                    className="text-xs font-bold text-zinc-400 hover:text-black dark:hover:text-white"
-                  >
-                    Cancel
-                  </button>
-                )}
+                <div className="flex items-center gap-2">
+                  {canEdit && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditModalTab('fulfillment');
+                        setIsEditModalOpen(true);
+                      }}
+                      className="text-xs font-bold text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+                    >
+                      Full Edit
+                    </button>
+                  )}
+                  {!isEditingMeta ? (
+                    <button
+                      onClick={() => {
+                        setIsEditingMeta(true);
+                      }}
+                      className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      Quick Edit
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsEditingMeta(false);
+                      }}
+                      className="text-xs font-bold text-zinc-400 hover:text-black dark:hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Order Date</span>
                   <span className="text-sm font-bold text-black dark:text-white">
-                    {new Date(order.createdAt).toLocaleString('en-IN', {
+                    {new Date(currentOrder.createdAt).toLocaleString('en-IN', {
                       dateStyle: 'medium',
                       timeStyle: 'short',
                     })}
@@ -1214,6 +1384,16 @@ Total: ₹${order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })} (
           </div>,
           document.body,
         )}
+
+      {/* Full Order Edit Modal */}
+      <EditOrderModal
+        order={currentOrder}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onOrderUpdated={handleOrderUpdated}
+        initialTab={editModalTab}
+        rawSellers={rawSellers}
+      />
     </div>
   );
 }
