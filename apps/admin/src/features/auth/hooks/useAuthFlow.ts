@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { toast } from 'sonner';
 
-import { useAuth, type User } from '@/contexts/AuthContext';
+import { type Role, useAuth, type User } from '@/contexts/AuthContext';
 
 export type AuthStep = 'PHONE' | 'OTP';
 
@@ -138,7 +138,13 @@ export function useAuthFlow() {
     }
     setLoading(true);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.fashionfriday.in';
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      (typeof window !== 'undefined' &&
+      window.location.hostname !== 'localhost' &&
+      window.location.hostname !== '127.0.0.1'
+        ? 'https://api.fashionfriday.in'
+        : 'http://localhost:3002');
     const cleanNumber = phoneNumber.replace(/\D/g, '');
 
     try {
@@ -169,13 +175,58 @@ export function useAuthFlow() {
         });
 
         if (!verifyRes.ok) {
-          const errData = await verifyRes.json().catch(() => ({}));
+          const errData = (await verifyRes.json().catch(() => ({}))) as { message?: string };
           throw new Error(
             errData.message || 'Invalid verification code. Please check your WhatsApp.',
           );
         }
 
+        const authData = (await verifyRes.json().catch(() => ({}))) as {
+          accessToken?: string;
+          refreshToken?: string;
+          user?: {
+            id?: string;
+            name?: string;
+            role?: string;
+            phone?: string;
+          };
+        };
+
+        if (typeof window !== 'undefined') {
+          if (authData.accessToken) {
+            localStorage.setItem('adminAccessToken', authData.accessToken);
+            localStorage.setItem('accessToken', authData.accessToken);
+          }
+          if (authData.refreshToken) {
+            localStorage.setItem('adminRefreshToken', authData.refreshToken);
+          }
+          sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
+        }
+
         let adminInfo = ADMIN_DATABASE[cleanNumber];
+
+        if (!adminInfo && authData.user) {
+          const userRole = authData.user.role;
+          if (
+            userRole === 'SUPER_ADMIN' ||
+            userRole === 'STAFF_ADMIN' ||
+            userRole === 'SALES_MANAGER' ||
+            userRole === 'PRODUCT_MANAGER' ||
+            userRole === 'SALES_ADMIN'
+          ) {
+            const mappedRole: Role = userRole === 'STAFF_ADMIN' ? 'SALES_MANAGER' : userRole;
+            adminInfo = {
+              name: authData.user.name || 'Admin',
+              role: mappedRole,
+              initials: (authData.user.name || 'AD')
+                .split(' ')
+                .map((w: string) => w[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase(),
+            };
+          }
+        }
 
         if (!adminInfo) {
           // Check dynamic invited team members stored via admin panel
@@ -237,7 +288,13 @@ export function useAuthFlow() {
       return;
     }
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.fashionfriday.in';
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      (typeof window !== 'undefined' &&
+      window.location.hostname !== 'localhost' &&
+      window.location.hostname !== '127.0.0.1'
+        ? 'https://api.fashionfriday.in'
+        : 'http://localhost:3002');
     const cleanNumber = phoneNumber.replace(/\D/g, '');
 
     try {
