@@ -95,6 +95,20 @@ async function fetchWithAuth(
 export interface CreateOrderPayload {
   paymentMethod: 'COD' | 'STRIPE' | 'RAZORPAY';
   addressId?: string;
+  shippingAddress?: {
+    id?: string;
+    fullName: string;
+    phoneNumber: string;
+    altPhoneNumber?: string | null;
+    building?: string | null;
+    street: string;
+    city: string;
+    district?: string;
+    state?: string;
+    pincode: string;
+    landmark?: string | null;
+    label?: string;
+  };
 }
 
 export interface VerifyPaymentPayload {
