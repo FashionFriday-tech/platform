@@ -42,7 +42,9 @@ export function ProductsSearchHeader({
         resultsCount: actualResults,
         hasResults: actualResults > 0,
       }),
-    }).catch(() => {});
+    }).catch(() => {
+      // Ignore background analytics logging errors
+    });
   }, [initialQuery, total, isFallback]);
 
   const handleSearch = (searchTerm: string) => {
