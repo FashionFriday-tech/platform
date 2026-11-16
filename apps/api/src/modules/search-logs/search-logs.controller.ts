@@ -15,12 +15,17 @@ export class SearchLogsController {
   // Public endpoint with optional auth — logs what the user searched
   @Post()
   @UseGuards(OptionalJwtAuthGuard)
-  async logSearch(@Body('query') query: string, @Req() req: AuthRequest) {
+  async logSearch(
+    @Body('query') query: string,
+    @Body('resultsCount') resultsCount: number | undefined,
+    @Body('hasResults') hasResults: boolean | undefined,
+    @Req() req: AuthRequest,
+  ) {
     if (!query?.trim()) {
       return { success: false };
     }
     const userId = req.user?.id ?? req.user?.sub ?? undefined;
-    await this.service.logSearch(query, userId);
+    await this.service.logSearch(query, userId, resultsCount, hasResults);
     return { success: true };
   }
 
