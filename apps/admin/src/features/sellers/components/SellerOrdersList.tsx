@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 
 import { ShoppingBagIcon } from '@ff/ui';
+import { formatColorLabel } from '@/lib/format-color';
 
 import { type SellerOrder, type SellerOrderItem } from '../types';
 
@@ -182,8 +183,8 @@ export function SellerOrdersList({ orders, isLoading, sellerStoreName }: SellerO
                           {item.size && item.size !== 'Standard' && (
                             <> &middot; Size: {item.size}</>
                           )}
-                          {item.color && item.color !== 'Standard' && (
-                            <> &middot; Color: {item.color}</>
+                          {item.color && formatColorLabel(item.color) && (
+                            <> &middot; Color: {formatColorLabel(item.color)}</>
                           )}
                         </p>
                       </div>
