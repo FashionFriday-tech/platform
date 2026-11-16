@@ -136,7 +136,7 @@ export function Sidebar({
 
           <nav className="scrollbar-hide min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4">
             {/* Overview Section */}
-            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'PRODUCT_MANAGER']) && (
+            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN', 'PRODUCT_MANAGER']) && (
               <div>
                 <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                   Overview
@@ -148,7 +148,7 @@ export function Sidebar({
                     </div>
                     <span className="text-sm font-medium">Dashboard</span>
                   </Link>
-                  {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
+                  {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN']) && (
                     <Link href="/analytics" className={getLinkClass('/analytics')}>
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
                         <TrendingUpIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
@@ -161,7 +161,7 @@ export function Sidebar({
             )}
 
             {/* Sales Section */}
-            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
+            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN']) && (
               <div>
                 <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                   Sales
@@ -281,7 +281,7 @@ export function Sidebar({
             )}
 
             {/* Marketing Section */}
-            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER']) && (
+            {hasAccess(['SUPER_ADMIN', 'SALES_MANAGER', 'SALES_ADMIN']) && (
               <div>
                 <p className="mb-2 px-3 text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                   Marketing
