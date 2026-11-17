@@ -51,10 +51,21 @@ export const PLACEMENT_ASPECT_RATIOS: Record<BannerPlacement, string> = {
   'marquee-blue': 'aspect-auto',
   'home-carousel': 'aspect-[2/3]',
   'home-categories': 'aspect-square',
-  'products-list': 'aspect-[21/9]',
+  'products-list': 'aspect-[8/5]',
   'trending-products': 'aspect-[3/4]',
   'content-partners': 'aspect-[3/5]',
   'whatsapp-reviews': 'aspect-[9/16]',
+};
+
+export const PLACEMENT_NUMERIC_ASPECTS: Record<BannerPlacement, number | undefined> = {
+  'marquee-red': undefined,
+  'marquee-blue': undefined,
+  'home-carousel': 2 / 3,
+  'home-categories': 1 / 1,
+  'products-list': 8 / 5, // 1.6 (Matches Web App Catalogue Card Size)
+  'trending-products': 3 / 4,
+  'content-partners': 3 / 5,
+  'whatsapp-reviews': 9 / 16,
 };
 
 export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {

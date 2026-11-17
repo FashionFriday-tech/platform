@@ -5,11 +5,14 @@ import Image from 'next/image';
 
 import { CloseIcon, ImageIcon, PlayIcon, PlusIcon, TrashIcon } from '@ff/ui';
 
+import { ImageCropModal } from '@/components/ui/ImageCropModal';
+
 import {
   type BannerPlacement,
   type CampaignBanner,
   type MediaType,
   PLACEMENT_LABELS,
+  PLACEMENT_NUMERIC_ASPECTS,
 } from '../types';
 
 interface BannerEditorModalProps {
@@ -37,6 +40,8 @@ export function BannerEditorModal({
   const [isActive, setIsActive] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
+  const [isCropping, setIsCropping] = useState(false);
+  const [rawFileForCrop, setRawFileForCrop] = useState<File | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,6 +54,8 @@ export function BannerEditorModal({
       setPlacement(initialData.placement);
       setIsActive(initialData.isActive ?? true);
       setFileToUpload(null);
+      setRawFileForCrop(null);
+      setIsCropping(false);
     } else {
       setTitle('');
       setMediaUrl('');
@@ -57,6 +64,8 @@ export function BannerEditorModal({
       setPlacement(fixedPlacement ?? 'home-carousel');
       setIsActive(true);
       setFileToUpload(null);
+      setRawFileForCrop(null);
+      setIsCropping(false);
     }
   }, [initialData, isOpen, fixedPlacement]);
 
@@ -109,11 +118,30 @@ export function BannerEditorModal({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFileToUpload(file);
-      const url = URL.createObjectURL(file);
-      setMediaUrl(url);
-      setMediaType(file.type.startsWith('video') ? 'video' : 'image');
+      if (file.type.startsWith('video')) {
+        setFileToUpload(file);
+        const url = URL.createObjectURL(file);
+        setMediaUrl(url);
+        setMediaType('video');
+        setRawFileForCrop(null);
+      } else {
+        setRawFileForCrop(file);
+        setMediaType('image');
+        const url = URL.createObjectURL(file);
+        setMediaUrl(url);
+        setIsCropping(true);
+      }
     }
+    e.target.value = '';
+  };
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    const fileName = rawFileForCrop?.name || `banner-${Date.now()}.webp`;
+    const croppedFile = new File([croppedBlob], fileName, { type: 'image/webp' });
+    setFileToUpload(croppedFile);
+    const url = URL.createObjectURL(croppedFile);
+    setMediaUrl(url);
+    setIsCropping(false);
   };
 
   const isMarquee = placement === 'marquee-red' || placement === 'marquee-blue';
@@ -124,7 +152,7 @@ export function BannerEditorModal({
       case 'marquee-blue':
         return 'w-full h-24';
       case 'products-list':
-        return 'w-full aspect-[21/9] max-h-[160px] md:max-h-none';
+        return 'w-full aspect-[8/5] max-h-[220px] md:max-h-none';
       case 'home-carousel':
         return 'h-[180px] sm:h-[220px] md:h-[350px] w-auto aspect-[2/3]';
       case 'home-categories':
@@ -209,6 +237,34 @@ export function BannerEditorModal({
                 accept="image/*,video/*"
                 className="hidden"
               />
+            </div>
+          )}
+
+          {/* Quick Action Toolbar for Image Cropping & Media Changing */}
+          {!isMarquee && mediaUrl && mediaType === 'image' && (
+            <div className="mt-3 flex w-full flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsCropping(true)}
+                className="flex items-center gap-1.5 rounded-xl border border-black/10 bg-white px-3.5 py-1.5 text-xs font-bold text-black shadow-sm transition-all hover:bg-black hover:text-white dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:bg-white dark:hover:text-black"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 2v14a2 2 0 002 2h14M18 22V8a2 2 0 00-2-2H2"
+                  />
+                </svg>
+                <span>Crop / Lock Frame</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-1.5 rounded-xl border border-black/10 bg-black/5 px-3.5 py-1.5 text-xs font-semibold text-black/70 transition-all hover:bg-black/10 dark:border-white/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10"
+              >
+                <span>Change Image</span>
+              </button>
             </div>
           )}
         </div>
@@ -352,6 +408,20 @@ export function BannerEditorModal({
           </form>
         </div>
       </div>
+
+      {/* Frame-Locked Cropper Modal */}
+      {isCropping && (rawFileForCrop || mediaUrl) && (
+        <ImageCropModal
+          file={rawFileForCrop || mediaUrl}
+          aspectRatio={PLACEMENT_NUMERIC_ASPECTS[placement]}
+          aspectRatioLabel={
+            placement === 'products-list' ? 'Catalogue Card (8:5)' : PLACEMENT_LABELS[placement]
+          }
+          title={`Crop Banner • ${PLACEMENT_LABELS[placement]}`}
+          onCropComplete={handleCropComplete}
+          onCancel={() => setIsCropping(false)}
+        />
+      )}
     </div>
   );
 }

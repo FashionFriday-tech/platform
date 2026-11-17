@@ -31,7 +31,7 @@ export function CampaignsFeature() {
 
     let cardWidthClass = 'w-[300px]';
     if (placement === 'products-list') {
-      cardWidthClass = 'w-[450px] md:w-[600px]';
+      cardWidthClass = 'w-[360px] md:w-[460px]';
     } else if (placement === 'home-carousel' || placement === 'trending-products') {
       cardWidthClass = 'w-[220px] md:w-[260px]';
     } else if (placement === 'home-categories') {
