@@ -7,6 +7,10 @@ import { ArrowUpDownIcon, PlayIcon, SlidersIcon, StopIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { useCatalogue } from '../hooks/use-catalogue';
+import {
+  type CatalogueCampaignBanner,
+  useCatalogueCampaigns,
+} from '../hooks/use-catalogue-campaigns';
 import { CatalogueGrid } from './catalogue-grid';
 import { CatalogueSidebar } from './catalogue-sidebar';
 
@@ -27,6 +31,7 @@ interface CatalogueClientProps {
   brandName?: string;
   collectionSlug?: string;
   isNewArrivals?: boolean;
+  initialCampaigns?: CatalogueCampaignBanner[];
 }
 
 export function CatalogueClient({
@@ -35,7 +40,9 @@ export function CatalogueClient({
   brandName,
   collectionSlug,
   isNewArrivals,
+  initialCampaigns,
 }: CatalogueClientProps) {
+  const { campaigns } = useCatalogueCampaigns(initialCampaigns);
   const {
     products,
     activeFilters,
@@ -190,6 +197,7 @@ export function CatalogueClient({
         <div className="w-full lg:pl-80">
           <CatalogueGrid
             products={products}
+            campaigns={campaigns}
             activeFilters={activeFilters}
             onRemoveFilter={removeFilterValue}
             onClearFilters={clearFilters}

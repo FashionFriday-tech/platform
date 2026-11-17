@@ -86,6 +86,14 @@ export function POST(request: NextRequest) {
         revalidatePath('/', 'page');
         revalidatePath('/', 'layout');
       }
+
+      if (tag === 'catalogue-campaigns' || tag.startsWith('catalogue-')) {
+        revalidatePath('/products', 'page');
+        revalidatePath('/products', 'layout');
+        revalidatePath('/new-arrivals', 'page');
+        revalidatePath('/sale', 'page');
+        revalidatePath('/snkrs', 'page');
+      }
     }
 
     if (path) {

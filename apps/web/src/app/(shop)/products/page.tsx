@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { getNewArrivalsProducts, getSearchResults } from '@/data/filter-engine';
-import { CatalogueClient } from '@/features/catalogue';
+import { CatalogueClient, getCatalogueCampaigns } from '@/features/catalogue';
 
 import { ProductsSearchHeader } from './products-search-header';
 
@@ -52,8 +52,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   let didYouMean: string | undefined;
   let isFallback = false;
 
+  const [campaigns, initialData] = await Promise.all([
+    getCatalogueCampaigns(),
+    rawQuery ? getSearchResults(rawQuery, 100) : getNewArrivalsProducts(24, 0),
+  ]);
+
   if (rawQuery) {
-    const searchData = await getSearchResults(rawQuery, 100);
+    const searchData = initialData as Awaited<ReturnType<typeof getSearchResults>>;
     products = searchData.products;
     total = searchData.total;
     didYouMean = searchData.didYouMean;
@@ -65,7 +70,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       isFallback = true;
     }
   } else {
-    products = await getNewArrivalsProducts(24, 0);
+    products = initialData as Awaited<ReturnType<typeof getNewArrivalsProducts>>;
     total = products.length;
   }
 
@@ -87,7 +92,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
       {/* Catalogue Grid or Zero State */}
       {products.length > 0 ? (
-        <CatalogueClient categorySlug={contextCategory} initialProducts={products} />
+        <CatalogueClient
+          categorySlug={contextCategory}
+          initialProducts={products}
+          initialCampaigns={campaigns}
+        />
       ) : (
         <div className="w-full max-w-none px-4 py-16 sm:py-24 md:px-8 xl:px-10 2xl:px-14">
           <div className="flex w-full flex-col items-center justify-center text-center lg:pl-80">

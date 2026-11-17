@@ -7,17 +7,27 @@ import { useInView } from 'motion/react';
 
 interface PromoVideoProps {
   src: string;
+  mediaType?: string;
+  title?: string;
 }
 
-export function PromoVideo({ src }: PromoVideoProps) {
+export function PromoVideo({ src, mediaType, title = 'Special Promotion' }: PromoVideoProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const isInView = useInView(containerRef, { once: false, amount: 0.1 });
 
-  const isGif = src.toLowerCase().endsWith('.gif');
+  const cleanSrc = src.split('?')[0].toLowerCase();
+  const isVideo =
+    mediaType === 'video' ||
+    cleanSrc.endsWith('.mp4') ||
+    cleanSrc.endsWith('.webm') ||
+    cleanSrc.endsWith('.ogg') ||
+    cleanSrc.endsWith('.mov');
+
+  const isGif = cleanSrc.endsWith('.gif');
 
   useEffect(() => {
-    if (!isGif && videoRef.current) {
+    if (isVideo && videoRef.current) {
       if (isInView) {
         videoRef.current.play().catch(() => {
           // Ignore autoplay errors
@@ -26,22 +36,11 @@ export function PromoVideo({ src }: PromoVideoProps) {
         videoRef.current.pause();
       }
     }
-  }, [isInView, isGif]);
+  }, [isInView, isVideo]);
 
   return (
     <div ref={containerRef} className="bg-background-muted relative h-full w-full">
-      {isGif ? (
-        isInView && (
-          <Image
-            src={src}
-            alt="Promotion"
-            fill
-            className="object-cover transition-transform duration-700 hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            unoptimized
-          />
-        )
-      ) : (
+      {isVideo ? (
         <video
           ref={videoRef}
           src={src}
@@ -50,6 +49,17 @@ export function PromoVideo({ src }: PromoVideoProps) {
           muted
           playsInline
         />
+      ) : (
+        isInView && (
+          <Image
+            src={src}
+            alt={title}
+            fill
+            className="object-cover transition-transform duration-700 hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            unoptimized={isGif}
+          />
+        )
       )}
     </div>
   );

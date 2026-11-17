@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
 import { type Product } from '@ff/schemas';
 import { motion } from 'motion/react';
@@ -8,10 +9,12 @@ import { motion } from 'motion/react';
 import { CatalogueProductCard } from '@/components/ui/cards/catlogue-product-card';
 import Request from '@/components/ui/sections/Request';
 
+import { type CatalogueCampaignBanner } from '../hooks/use-catalogue-campaigns';
 import { PromoVideo } from './promo-video';
 
 interface GridProps {
   products: Product[];
+  campaigns?: CatalogueCampaignBanner[];
   activeFilters?: Record<string, string[]>;
   onRemoveFilter?: (key: string, value: string) => void;
   onClearFilters?: () => void;
@@ -22,17 +25,20 @@ interface GridProps {
   isLoadingMore?: boolean;
   onLoadMore?: () => void;
   onProductClick?: (productId: string) => void;
+  itemsPerPromo?: number;
 }
 
 export const CatalogueGrid = ({
   products,
+  campaigns = [],
   onClearFilters,
   hasMore = false,
   isLoadingMore = false,
   onLoadMore,
   onProductClick,
+  itemsPerPromo = 12,
 }: GridProps) => {
-  const ITEMS_PER_PROMO = 6;
+  const ITEMS_PER_PROMO = itemsPerPromo;
   const observerRef = React.useRef<HTMLDivElement | null>(null);
 
   // Infinite Scroll Trigger
@@ -67,6 +73,9 @@ export const CatalogueGrid = ({
         <div className="4xl:grid-cols-5 grid grid-cols-2 gap-4 gap-y-8 pt-2 sm:pt-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product, index) => {
             const isPromoPosition = (index + 1) % ITEMS_PER_PROMO === 0;
+            const promoIndex = Math.floor((index + 1) / ITEMS_PER_PROMO) - 1;
+            const currentCampaign =
+              campaigns.length > 0 ? campaigns[promoIndex % campaigns.length] : null;
 
             return (
               <React.Fragment key={product.id}>
@@ -90,7 +99,28 @@ export const CatalogueGrid = ({
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-background-muted relative col-span-2 aspect-[8/5] w-full overflow-hidden rounded-4xl sm:aspect-auto sm:h-full lg:rounded-[2.5rem]"
                   >
-                    <PromoVideo src="/gif/ad.gif" />
+                    {currentCampaign?.linkUrl && currentCampaign.linkUrl !== '#' ? (
+                      <Link
+                        href={currentCampaign.linkUrl}
+                        className="group relative block h-full w-full"
+                        {...(currentCampaign.linkUrl.startsWith('http://') ||
+                        currentCampaign.linkUrl.startsWith('https://')
+                          ? { target: '_blank', rel: 'noopener noreferrer' }
+                          : {})}
+                      >
+                        <PromoVideo
+                          src={currentCampaign.mediaUrl}
+                          mediaType={currentCampaign.mediaType}
+                          title={currentCampaign.title}
+                        />
+                      </Link>
+                    ) : (
+                      <PromoVideo
+                        src={currentCampaign?.mediaUrl ?? '/gif/ad.gif'}
+                        mediaType={currentCampaign?.mediaType}
+                        title={currentCampaign?.title ?? 'Special Promotion'}
+                      />
+                    )}
                   </motion.div>
                 )}
               </React.Fragment>
