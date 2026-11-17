@@ -115,6 +115,10 @@ export class CampaignsService {
 
   private triggerCampaignRevalidations() {
     void triggerRevalidation('home-campaigns', '/');
+    void triggerRevalidation('catalogue-campaigns', '/products');
+    void triggerRevalidation('catalogue-campaigns', '/new-arrivals');
+    void triggerRevalidation('catalogue-campaigns', '/sale');
+    void triggerRevalidation('catalogue-campaigns', '/snkrs');
     void triggerRevalidation('home-categories', '/categories');
     void triggerRevalidation('home-categories', '/category/men');
     void triggerRevalidation('home-categories', '/category/women');
