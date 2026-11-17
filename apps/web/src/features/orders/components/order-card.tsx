@@ -10,11 +10,13 @@ import {
   CopyIcon,
   MapPinIcon,
   PackageIcon,
+  RefreshCcwIcon,
   TruckIcon,
 } from '@ff/ui';
 import { toast } from 'sonner';
 
 import { type Order, type OrderItem } from '../types';
+import { RefundTimelineModal } from './refund-timeline-modal';
 import { StatusBadge } from './status-badge';
 import { TrackingModal } from './tracking-modal';
 
@@ -75,6 +77,7 @@ function getUniversalTrackingUrl(trackingId: string): string {
 
 export function OrderCard({ order, item }: OrderCardProps) {
   const [isTrackingModalOpen, setIsTrackingModalOpen] = React.useState(false);
+  const [isRefundModalOpen, setIsRefundModalOpen] = React.useState(false);
 
   const hasTracking = Boolean(order.trackingNumber);
   const officialTrackUrl = hasTracking
@@ -83,6 +86,10 @@ export function OrderCard({ order, item }: OrderCardProps) {
   const universalTrackUrl = hasTracking ? getUniversalTrackingUrl(order.trackingNumber || '') : '';
 
   const normalizedStatus = (order.status || '').toUpperCase();
+  const normalizedPaymentStatus = (order.paymentStatus || '').toUpperCase();
+  const isRefunded =
+    ['REFUNDED', 'PARTIALLY_REFUNDED', 'REFUND_PENDING'].includes(normalizedPaymentStatus) ||
+    Number(order.refundedAmount || 0) > 0;
   const isShipped = normalizedStatus === 'SHIPPED';
   const isDelivered = normalizedStatus === 'DELIVERED';
   const isCancelled = normalizedStatus === 'CANCELLED' || normalizedStatus === 'CANCELED';
@@ -200,7 +207,22 @@ export function OrderCard({ order, item }: OrderCardProps) {
       );
     }
 
-    // 5. Cancelled
+    // 5. Refunded / Refund in progress -> Show "Refund Timeline" button
+    if (isRefunded) {
+      return (
+        <button
+          type="button"
+          onClick={() => setIsRefundModalOpen(true)}
+          className="flex cursor-pointer items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-5 py-2 text-xs font-bold text-emerald-600 transition-all hover:bg-emerald-500/20 active:scale-95 dark:text-emerald-400"
+        >
+          <RefreshCcwIcon size={13} />
+          <span>Refund Timeline</span>
+          <ChevronRightIcon size={14} className="opacity-60" />
+        </button>
+      );
+    }
+
+    // 6. Cancelled
     if (isCancelled) {
       return (
         <button
@@ -250,8 +272,49 @@ export function OrderCard({ order, item }: OrderCardProps) {
             </span>
           </div>
         </div>
-        <StatusBadge status={order.status.toLowerCase()} label={order.status} />
+        <div className="flex items-center gap-2">
+          {isRefunded && (
+            <button
+              type="button"
+              onClick={() => setIsRefundModalOpen(true)}
+              className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400"
+            >
+              <RefreshCcwIcon size={11} />
+              <span>Refund Details</span>
+            </button>
+          )}
+          <StatusBadge status={order.status.toLowerCase()} label={order.status} />
+        </div>
       </div>
+
+      {/* Refund Banner */}
+      {isRefunded && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-3.5 sm:p-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+              <RefreshCcwIcon size={15} />
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-xs font-black tracking-tight text-emerald-700 dark:text-emerald-400">
+                Refund Initiated • ₹{Number(order.refundedAmount || order.finalAmount).toFixed(2)}
+              </p>
+              <p className="text-foreground-muted truncate text-[11px] font-medium">
+                {order.paymentStatus === 'REFUNDED'
+                  ? 'Processed to original source account'
+                  : 'In transit with banking network'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsRefundModalOpen(true)}
+            className="flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:text-black dark:hover:bg-emerald-400"
+          >
+            <span>Track Refund</span>
+            <ChevronRightIcon size={13} />
+          </button>
+        </div>
+      )}
 
       {/* Tracking Visualization */}
       <div className="bg-background-muted relative mb-6 overflow-hidden rounded-3xl p-4">
@@ -372,6 +435,17 @@ export function OrderCard({ order, item }: OrderCardProps) {
           item={item}
           officialTrackUrl={officialTrackUrl}
           universalTrackUrl={universalTrackUrl}
+        />
+      )}
+
+      {/* Refund Timeline Modal */}
+      {isRefunded && (
+        <RefundTimelineModal
+          isOpen={isRefundModalOpen}
+          onClose={() => {
+            setIsRefundModalOpen(false);
+          }}
+          order={order}
         />
       )}
     </article>

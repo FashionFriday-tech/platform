@@ -236,3 +236,49 @@ export async function fetchUserOrdersAction() {
     return [];
   }
 }
+
+export interface RefundTimelineItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+  timestamp: string | null;
+  status: 'COMPLETED' | 'IN_PROGRESS' | 'PENDING';
+  bankRrn?: string | null;
+  expectedBy?: string | null;
+}
+
+export interface RefundTimelineResponse {
+  success: boolean;
+  orderId: string;
+  orderNumber: string;
+  paymentId: string | null;
+  refundId: string | null;
+  refundAmount: number;
+  refundStatus: string;
+  bankRrn: string | null;
+  paymentMethod: string;
+  paymentAccount: string | null;
+  timeline: RefundTimelineItem[];
+  estimatedSla: string;
+  issuedAt: string;
+  error?: string;
+}
+
+/**
+ * Server Action to fetch refund timeline and bank RRN details
+ */
+export async function fetchOrderRefundTimelineAction(
+  orderId: string,
+): Promise<RefundTimelineResponse | null> {
+  try {
+    const res = await fetchWithAuth(`/orders/${orderId}/refund-timeline`);
+    if (!res || !res.ok) {
+      return null;
+    }
+    return (await res.json()) as RefundTimelineResponse;
+  } catch (err) {
+    console.error('[orders.actions] fetchOrderRefundTimelineAction error:', err);
+    return null;
+  }
+}

@@ -21,6 +21,14 @@ export interface Order {
   orderNumber: string;
   status: OrderStatus;
   statusLabel?: string;
+  paymentStatus?: string;
+  paymentMethod?: string;
+  finalAmount?: number | string;
+  totalAmount?: number | string;
+  refundedAmount?: number | string;
+  advanceAmount?: number | string;
+  razorpayOrderId?: string | null;
+  razorpayPaymentId?: string | null;
   createdAt: string | Date;
   date?: string;
   origin?: string;
