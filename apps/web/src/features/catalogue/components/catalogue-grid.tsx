@@ -36,7 +36,7 @@ export const CatalogueGrid = ({
   isLoadingMore = false,
   onLoadMore,
   onProductClick,
-  itemsPerPromo = 12,
+  itemsPerPromo = 16,
 }: GridProps) => {
   const ITEMS_PER_PROMO = itemsPerPromo;
   const observerRef = React.useRef<HTMLDivElement | null>(null);
@@ -70,7 +70,7 @@ export const CatalogueGrid = ({
     <div className="w-full">
       {/* --- PRODUCT GRID --- */}
       {products.length > 0 && (
-        <div className="4xl:grid-cols-5 grid grid-cols-2 gap-4 gap-y-8 pt-2 sm:pt-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-flow-row-dense grid-cols-2 gap-4 gap-y-8 pt-2 sm:pt-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 4xl:grid-cols-5">
           {products.map((product, index) => {
             const isPromoPosition = (index + 1) % ITEMS_PER_PROMO === 0;
             const promoIndex = Math.floor((index + 1) / ITEMS_PER_PROMO) - 1;
@@ -97,14 +97,14 @@ export const CatalogueGrid = ({
                     layout
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-background-muted relative col-span-2 aspect-[8/5] w-full overflow-hidden rounded-4xl sm:aspect-auto sm:h-full lg:rounded-[2.5rem]"
+                    className="bg-background-muted relative col-span-2 aspect-[8/5] w-full overflow-hidden rounded-4xl sm:h-full lg:rounded-[2.5rem]"
                   >
                     {currentCampaign?.linkUrl && currentCampaign.linkUrl !== '#' ? (
                       <Link
                         href={currentCampaign.linkUrl}
                         className="group relative block h-full w-full"
                         {...(currentCampaign.linkUrl.startsWith('http://') ||
-                        currentCampaign.linkUrl.startsWith('https://')
+                          currentCampaign.linkUrl.startsWith('https://')
                           ? { target: '_blank', rel: 'noopener noreferrer' }
                           : {})}
                       >
@@ -154,7 +154,7 @@ export const CatalogueGrid = ({
         <div className="mt-10 flex flex-col items-center justify-center space-y-4">
           {/* Skeleton Loaders when loading next page */}
           {isLoadingMore && (
-            <div className="4xl:grid-cols-5 grid w-full grid-cols-2 gap-4 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid w-full grid-cols-2 gap-4 gap-y-8 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 4xl:grid-cols-5">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
@@ -206,9 +206,8 @@ export const CatalogueGrid = ({
 
       {/* Sourcing Request Section */}
       <div
-        className={`border-border border-t ${
-          products.length > 0 ? 'mt-12 pt-8 sm:mt-16 sm:pt-12' : 'mt-3 pt-3 sm:mt-6 sm:pt-6'
-        }`}
+        className={`border-border border-t ${products.length > 0 ? 'mt-12 pt-8 sm:mt-16 sm:pt-12' : 'mt-3 pt-3 sm:mt-6 sm:pt-6'
+          }`}
       >
         <Request />
       </div>
