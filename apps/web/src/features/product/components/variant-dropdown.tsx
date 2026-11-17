@@ -175,6 +175,17 @@ export function extractColorHexes(variant: ProductColorVariant): string[] {
     }
   }
 
+  // Fallback: Check if label matches any known color
+  if (hexes.length === 0) {
+    const label = extractColorLabel(variant).toLowerCase();
+    for (const [name, hex] of NAME_TO_HEX.entries()) {
+      if (label.includes(name)) {
+        hexes.push(hex);
+        break;
+      }
+    }
+  }
+
   return hexes.slice(0, 2);
 }
 
@@ -230,8 +241,8 @@ export default function VariantDropdown({ variants = [], currentSlug }: VariantD
             <span className="text-foreground text-[10px] font-black tracking-[0.2em] uppercase">
               Available Colors
             </span>
-            <span className="text-foreground/70 rounded-full bg-black/5 px-2 py-0.5 text-[9px] font-bold dark:bg-white/10">
-              {safeVariants.length} Colors
+            <span className="text-foreground/70 -skew-x-[12deg] rounded-xs bg-black/5 px-2 py-0.5 text-[9px] font-bold dark:bg-white/10">
+              <span className="inline-block skew-x-[12deg]">{safeVariants.length} Colors</span>
             </span>
           </div>
           <button
@@ -264,19 +275,19 @@ export default function VariantDropdown({ variants = [], currentSlug }: VariantD
                   const isSoldOut = (v.totalStock ?? 1) <= 0;
 
                   return (
-                    <div
+                    <Link
                       key={v.id || v.slug}
-                      className="group flex shrink-0 flex-col items-center gap-1.5"
+                      href={`/product/${v.slug}`}
+                      prefetch
+                      className="group flex shrink-0 flex-col items-center gap-1.5 focus:outline-hidden"
+                      title={`${label} (${v.name})${isSoldOut ? ' - Sold Out' : ''}`}
                     >
-                      <Link
-                        href={`/product/${v.slug}`}
-                        prefetch
+                      <div
                         className={`relative flex items-center justify-center rounded-xl p-0.5 transition-all duration-200 ${
                           isCurrent
                             ? 'scale-105 shadow-md ring-2 ring-black dark:ring-white'
                             : 'opacity-80 ring-1 ring-transparent hover:scale-100 hover:opacity-100 hover:ring-zinc-400 dark:hover:ring-zinc-600'
                         }`}
-                        title={`${label} (${v.name})${isSoldOut ? ' - Sold Out' : ''}`}
                       >
                         <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
                           {v.mainImage ? (
@@ -299,32 +310,32 @@ export default function VariantDropdown({ variants = [], currentSlug }: VariantD
                             </span>
                           )}
                         </div>
-                      </Link>
+                      </div>
 
-                      {/* Clean color label with visual swatch dot */}
-                      <div className="flex max-w-[85px] items-center justify-center gap-1 px-0.5">
-                        {hexes.length > 0 && (
-                          <span
-                            className="h-2 w-2 shrink-0 rounded-full border border-black/15 shadow-xs dark:border-white/20"
-                            style={{
-                              background:
-                                hexes.length > 1
-                                  ? `linear-gradient(135deg, ${hexes[0]} 50%, ${hexes[1]} 50%)`
-                                  : hexes[0],
-                            }}
-                          />
-                        )}
+                      {/* Crossed Design Color Box */}
+                      <div className="flex items-center justify-center py-0.5">
                         <span
-                          className={`truncate text-center text-[10px] font-bold tracking-tight uppercase transition-colors ${
+                          aria-label={label}
+                          className={`relative block h-3 w-7 shrink-0 -skew-x-[12deg] rounded-[3px] border shadow-xs transition-all duration-200 ${
                             isCurrent
-                              ? 'text-foreground font-black'
-                              : 'text-foreground-muted group-hover:text-foreground'
+                              ? 'scale-105 border-black ring-1.5 ring-black dark:border-white dark:ring-white'
+                              : 'border-black/20 opacity-75 group-hover:scale-105 group-hover:opacity-100 group-hover:border-black/50 dark:border-white/30 dark:group-hover:border-white/70'
                           }`}
+                          style={{
+                            background:
+                              hexes.length > 1
+                                ? `linear-gradient(135deg, ${hexes[0]} 50%, ${hexes[1]} 50%)`
+                                : hexes[0] || '#71717a',
+                          }}
                         >
-                          {label}
+                          {isSoldOut && (
+                            <span className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                              <span className="h-0.5 w-full -rotate-45 bg-rose-500/90" />
+                            </span>
+                          )}
                         </span>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
