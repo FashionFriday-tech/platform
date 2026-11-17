@@ -162,6 +162,7 @@ export class AdminProductsService {
       // Marketing
       collections,
       isFeatured: dto.marketing?.isFeatured ?? false,
+      isCodAvailable: Boolean(dto.isCodAvailable ?? (rawDto as any).isCodAvailable ?? false),
       seoTitle,
       seoDescription,
     };
@@ -751,6 +752,10 @@ export class AdminProductsService {
             ),
           )
         : [];
+    }
+
+    if (d.isCodAvailable !== undefined) {
+      data.isCodAvailable = Boolean(d.isCodAvailable);
     }
 
     if (d.marketing) {

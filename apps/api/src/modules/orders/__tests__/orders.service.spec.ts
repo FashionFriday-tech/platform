@@ -711,6 +711,7 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
         name: 'Classic Shirt',
         sellingPrice: 999,
         mainImage: '/img.jpg',
+        isCodAvailable: true,
       },
     };
 
@@ -808,6 +809,7 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
         name: 'Classic Shirt',
         sellingPrice: 999,
         mainImage: '/img.jpg',
+        isCodAvailable: true,
       },
     };
 
@@ -862,6 +864,40 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
       expect(res.type).toBe('COD');
       expect(res.advanceAmount).toBe(200);
       expect(res.razorpay).toBeDefined();
+    });
+
+    it('should block COD checkout if any product does not support COD', async () => {
+      prismaMock.db.cartItem.findMany.mockResolvedValue([
+        {
+          id: 'cart-item-prepaid-only',
+          userId: 'user-cod-1',
+          productId: 'prod-prepaid',
+          quantity: 1,
+          size: 'L',
+          color: 'Blue',
+          product: {
+            id: 'prod-prepaid',
+            name: 'Prepaid Exclusive Tee',
+            sellingPrice: 1999,
+            isCodAvailable: false,
+          },
+        },
+      ]);
+
+      await expect(
+        service.createOrder('user-cod-1', {
+          paymentMethod: PaymentMethod.COD,
+          shippingAddress: {
+            fullName: 'Amit Kumar',
+            phoneNumber: '9876543210',
+            street: 'MG Road',
+            city: 'Bengaluru',
+            district: 'Bengaluru',
+            state: 'Karnataka',
+            pincode: '560001',
+          },
+        }),
+      ).rejects.toThrow('Cash on Delivery is not available for "Prepaid Exclusive Tee"');
     });
 
     it('should isolate and exclude unconfirmed (PENDING / PENDING) checkouts from Admin panel', async () => {

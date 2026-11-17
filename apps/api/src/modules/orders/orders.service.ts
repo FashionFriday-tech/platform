@@ -44,6 +44,7 @@ export class OrdersService {
       sellerId: string | null;
     }[] = [];
     let totalAmount = 0;
+    let orderedProducts: any[] = [];
 
     if (dto.items && dto.items.length > 0) {
       this.logger.log(
@@ -53,6 +54,7 @@ export class OrdersService {
       const dbProducts = await this.prisma.db.product.findMany({
         where: { id: { in: productIds } },
       });
+      orderedProducts = dbProducts;
       const productMap = new Map(dbProducts.map((p) => [p.id, p]));
 
       for (const itemDto of dto.items) {
@@ -90,6 +92,8 @@ export class OrdersService {
         );
       }
 
+      orderedProducts = cartItems.map((c) => c.product).filter(Boolean);
+
       // 2. Calculate totals from verified DB prices (Never trust client prices!)
       this.logger.log(`[OrdersService] Step 2: Calculating totals and preparing order line items`);
       itemsData = cartItems.map((item) => {
@@ -110,6 +114,18 @@ export class OrdersService {
     }
 
     const isCod = dto.paymentMethod === PaymentMethod.COD;
+    if (isCod) {
+      // Validate that every product in the order has COD enabled
+      const nonCodProduct = orderedProducts.find((p) => !p.isCodAvailable);
+      if (nonCodProduct) {
+        this.logger.warn(
+          `[OrdersService] Blocked COD checkout: product "${nonCodProduct.name}" has isCodAvailable=false`,
+        );
+        throw new BadRequestException(
+          `Cash on Delivery is not available for "${nonCodProduct.name}". Please choose UPI / Online Payment.`,
+        );
+      }
+    }
     const discountAmount = 0;
     const shippingFees = isCod ? 200 : 0; // Free delivery for online UPI / prepay
     const finalAmount = totalAmount - discountAmount + shippingFees;
