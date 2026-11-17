@@ -128,6 +128,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
     setStock,
     gettingPrice,
     setGettingPrice,
+    isCodAvailable,
+    setIsCodAvailable,
     seoTitle,
     setSeoTitle,
     seoSlug,
@@ -706,6 +708,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
         liveSold: Math.max(0, Number(liveSold) || 0),
         averageRating: averageRating ? Math.min(5, Math.max(0, Number(averageRating))) : 4.5,
         totalReviews: Math.max(0, Number(totalReviews) || 0),
+        isCodAvailable: Boolean(isCodAvailable),
         slug: computedSlug,
       };
 
@@ -2173,6 +2176,49 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                   <span>Product count max 100</span>
                 </div>
                 <FieldErrorMessage error={fieldErrors.stock} />
+              </div>
+            </div>
+
+            {/* Cash on Delivery (COD) Settings */}
+            <div className="mt-6 border-t border-black/5 pt-5 dark:border-white/5">
+              <div className="flex flex-col justify-between gap-3 rounded-2xl border border-black/5 bg-black/[0.02] p-4 transition-all sm:flex-row sm:items-center dark:border-white/5 dark:bg-white/[0.02]">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-black dark:text-white">
+                      Cash on Delivery (COD)
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${
+                        isCodAvailable
+                          ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                          : 'bg-black/10 text-black/60 dark:bg-white/10 dark:text-white/60'
+                      }`}
+                    >
+                      {isCodAvailable ? 'COD Enabled' : 'Prepaid Only'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-black/50 dark:text-white/50">
+                    {isCodAvailable
+                      ? 'Customers can pay via Cash on Delivery (₹200 advance deposit required).'
+                      : 'Cash on delivery is disabled. Customers must pay 100% online (UPI / Cards / Netbanking).'}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsCodAvailable((prev) => !prev)}
+                  className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    isCodAvailable ? 'bg-black dark:bg-white' : 'bg-black/20 dark:bg-white/20'
+                  }`}
+                  role="switch"
+                  aria-checked={isCodAvailable}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out dark:bg-black ${
+                      isCodAvailable ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
               </div>
             </div>
           </div>

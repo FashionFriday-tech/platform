@@ -314,6 +314,22 @@ export function ProductDetailView({ productId }: Props) {
             <span>{product.status}</span>
           </button>
 
+          {/* COD Status Badge */}
+          <span
+            className={`flex items-center space-x-1.5 rounded-full border px-3.5 py-1.5 text-xs font-bold ${
+              product.isCodAvailable
+                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:border-emerald-500/40 dark:bg-emerald-500/20 dark:text-emerald-400'
+                : 'border-zinc-500/20 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400'
+            }`}
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${
+                product.isCodAvailable ? 'bg-emerald-500' : 'bg-zinc-400'
+              }`}
+            />
+            <span>{product.isCodAvailable ? 'COD Available' : 'Prepaid Only'}</span>
+          </span>
+
           {/* Sold Out Toggle Button */}
           <button
             type="button"

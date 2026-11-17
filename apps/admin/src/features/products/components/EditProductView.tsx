@@ -90,6 +90,7 @@ export function EditProductView({ productId }: EditProductViewProps) {
             seoTitle: p.seoTitle ?? '',
             seoDescription: p.seoDescription ?? '',
           },
+          isCodAvailable: Boolean(p.isCodAvailable),
           rating: {
             averageRating: Number(p.averageRating) || 4,
             totalReviews: Number(p.totalReviews) || 0,

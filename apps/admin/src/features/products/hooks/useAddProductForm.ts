@@ -260,6 +260,9 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [ogPrice, setOgPrice] = useState('');
   const [stock, setStock] = useState('');
   const [gettingPrice, setGettingPrice] = useState('');
+  const [isCodAvailable, setIsCodAvailable] = useState<boolean>(() =>
+    Boolean(initialData?.isCodAvailable ?? (initialData as any)?.isCodAvailable ?? false),
+  );
 
   // Social Proof & Metric Counts (never negative)
   // Randomized on creation: liveWatching (1000 - 10000), liveSold (0 - 100), averageRating defaults to 4.5
@@ -366,6 +369,9 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
       setOgPrice(initialData.price?.ogPrice?.toString() ?? '');
       setStock(initialData.inventory?.totalStock?.toString() ?? '');
       setGettingPrice(initialData.price?.gettingPrice?.toString() ?? '');
+      setIsCodAvailable(
+        Boolean(initialData.isCodAvailable ?? (initialData as any)?.isCodAvailable ?? false),
+      );
 
       // Engagement & Live Metrics
       setLiveWatching(
@@ -1454,6 +1460,8 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
     setStock,
     gettingPrice,
     setGettingPrice,
+    isCodAvailable,
+    setIsCodAvailable,
     seoTitle,
     setSeoTitle,
     seoSlug,

@@ -45,6 +45,7 @@ export interface Product {
   images?: string[];
   videoLink?: string;
   modelGroup?: string | null;
+  isCodAvailable?: boolean;
   attributes?: ProductAttributes;
   rating?: { average?: number; count?: number };
   liveWatching?: number;
