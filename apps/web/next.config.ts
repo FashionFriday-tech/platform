@@ -97,6 +97,10 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@ff/ui'],
 
   experimental: {
+    staleTimes: {
+      dynamic: 180,
+      static: 300,
+    },
     serverActions: {
       allowedOrigins: [
         'localhost:3000',
