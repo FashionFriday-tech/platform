@@ -74,10 +74,10 @@ export const CatalogueGrid = ({
                   id={`product-${product.id}`}
                   data-product-id={product.id}
                   layout
-                  initial={{ opacity: 0 }}
+                  initial={false}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <CatalogueProductCard product={product} onProductClick={onProductClick} />
                 </motion.div>

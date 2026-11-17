@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 import { type Product } from '@ff/schemas';
 import { HeartFilledIcon, HeartIcon, StarBadgeIcon, StarsIcon } from '@ff/ui';
-import { motion } from 'motion/react';
 
 import { useBrands } from '@/features/brand';
 import { getCatalogueKey, markNavigatingToProduct } from '@/features/catalogue';
@@ -69,13 +68,7 @@ export function CatalogueProductCard({ product, onProductClick }: StoreProductCa
   };
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="group relative cursor-pointer"
-    >
+    <div className="group relative cursor-pointer">
       <Link
         href={`/product/${product.slug}`}
         onClick={handleCardClick}
@@ -159,6 +152,6 @@ export function CatalogueProductCard({ product, onProductClick }: StoreProductCa
           </div>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }
