@@ -40,34 +40,8 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders'>('overview');
-  const [updatingCodId, setUpdatingCodId] = useState<string | null>(null);
 
-  const { orders, products, setProducts, isLoadingOrders, isLoadingProducts } =
-    useSellerDetails(sellerId);
-
-  const handleToggleCod = async (productId: string, currentCod: boolean) => {
-    const nextCod = !currentCod;
-    setUpdatingCodId(productId);
-
-    // Optimistically update products list
-    setProducts((prev) =>
-      prev.map((item) => (item.id === productId ? { ...item, isCodAvailable: nextCod } : item)),
-    );
-
-    try {
-      await api.patch(`/admin/products/${productId}`, { isCodAvailable: nextCod });
-      toast.success(nextCod ? 'COD enabled for product' : 'COD disabled for product');
-    } catch (err) {
-      console.error('Failed to update COD availability:', err);
-      // Revert optimistic update
-      setProducts((prev) =>
-        prev.map((item) => (item.id === productId ? { ...item, isCodAvailable: currentCod } : item)),
-      );
-      toast.error('Failed to update COD availability');
-    } finally {
-      setUpdatingCodId(null);
-    }
-  };
+  const { orders, products, isLoadingOrders, isLoadingProducts } = useSellerDetails(sellerId);
 
   const fetchSeller = useCallback(async () => {
     try {
@@ -734,52 +708,15 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                         </span>
                       )}
                     </div>
-                    <div className="flex shrink-0 flex-col items-end gap-2">
-                      <span
-                        className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${
-                          p.status === 'PUBLISHED'
-                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
-                            : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
-                        }`}
-                      >
-                        {p.status}
-                      </span>
-
-                      {/* COD Toggle Button */}
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={Boolean(p.isCodAvailable)}
-                        title={
-                          p.isCodAvailable
-                            ? 'COD is enabled (Click to disable)'
-                            : 'COD is disabled (Click to enable)'
-                        }
-                        disabled={updatingCodId === p.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void handleToggleCod(p.id, Boolean(p.isCodAvailable));
-                        }}
-                        className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[10px] font-bold transition-all active:scale-95 disabled:opacity-50 ${
-                          p.isCodAvailable
-                            ? 'border-emerald-500/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-100/70 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400 dark:hover:bg-emerald-500/25'
-                            : 'border-black/10 bg-black/5 text-black/50 hover:bg-black/10 hover:text-black dark:border-white/10 dark:bg-white/5 dark:text-white/50 dark:hover:bg-white/10 dark:hover:text-white'
-                        }`}
-                      >
-                        <span>COD</span>
-                        <div
-                          className={`relative inline-flex h-3.5 w-6 shrink-0 items-center rounded-full transition-colors duration-200 ${
-                            p.isCodAvailable ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600'
-                          }`}
-                        >
-                          <span
-                            className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white shadow-xs transition-transform duration-200 ${
-                              p.isCodAvailable ? 'translate-x-3' : 'translate-x-0.5'
-                            }`}
-                          />
-                        </div>
-                      </button>
-                    </div>
+                    <span
+                      className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${
+                        p.status === 'PUBLISHED'
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
+                          : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+                      }`}
+                    >
+                      {p.status}
+                    </span>
                   </div>
                 ))}
               </div>

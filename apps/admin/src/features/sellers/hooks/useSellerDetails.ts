@@ -63,7 +63,6 @@ export function useSellerDetails(sellerId?: string | null) {
   return {
     orders,
     products,
-    setProducts,
     isLoadingOrders,
     isLoadingProducts,
     refetchOrders: fetchOrders,
