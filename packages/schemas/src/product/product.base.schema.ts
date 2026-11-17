@@ -37,6 +37,8 @@ export const ProductBaseSchema = z.object({
     sizes: z.array(z.string()).default([]),
   }),
 
+  isCodAvailable: z.boolean().default(false),
+
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

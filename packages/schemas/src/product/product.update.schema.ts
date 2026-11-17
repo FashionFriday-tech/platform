@@ -15,6 +15,7 @@ export const UpdateProductSchema = z.object({
     z.string().optional().nullable(),
   ),
   status: z.enum(['PENDING', 'DRAFT', 'PUBLISHED', 'REJECTED', 'ARCHIVED']).optional(),
+  isCodAvailable: z.boolean().optional(),
   collections: z.array(z.string()).optional(),
   price: z
     .object({

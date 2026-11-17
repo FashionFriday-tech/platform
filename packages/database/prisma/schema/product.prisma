@@ -22,6 +22,7 @@ model Product {
   liveSold       Int                   @default(0)
   collections    String[]
   isFeatured     Boolean               @default(false)
+  isCodAvailable Boolean               @default(false)
   seoTitle       String?
   seoDescription String?
   averageRating  Float                 @default(4.0)
