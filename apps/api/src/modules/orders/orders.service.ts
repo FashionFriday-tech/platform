@@ -31,40 +31,82 @@ export class OrdersService {
       `[OrdersService] Processing order for userId: ${userId}, paymentMethod: ${dto.paymentMethod}`,
     );
 
-    // 1. Fetch user's cart
-    this.logger.log(`[OrdersService] Step 1: Fetching cart items from DB for user: ${userId}`);
-    const cartItems = await this.prisma.db.cartItem.findMany({
-      where: { userId },
-      include: { product: true },
-    });
-
-    this.logger.log(`[OrdersService] Found ${cartItems.length} items in user's DB cart`);
-
-    if (cartItems.length === 0) {
-      this.logger.warn(`[OrdersService] User ${userId} cart is empty in database`);
-      throw new BadRequestException(
-        'Your cart is empty. Please add items to cart before placing an order.',
-      );
-    }
-
-    // 2. Calculate totals from verified DB prices (Never trust client prices!)
-    this.logger.log(`[OrdersService] Step 2: Calculating totals and preparing order line items`);
+    // 1. Fetch items for order (either specific items e.g. Buy Now, or all items in DB cart)
+    let itemsData: {
+      productId: string;
+      name: string;
+      image: string;
+      size: string;
+      color: string;
+      price: number;
+      quantity: number;
+      sellerId: string | null;
+    }[] = [];
     let totalAmount = 0;
-    const itemsData = cartItems.map((item) => {
-      const price = Number(item.product?.sellingPrice ?? 0);
-      const itemTotal = price * item.quantity;
-      totalAmount += itemTotal;
-      return {
-        productId: item.productId,
-        name: item.product?.name || 'Fashion Product',
-        image: item.product?.mainImage || '',
-        size: item.size || 'Standard',
-        color: item.color || 'Standard',
-        price: price,
-        quantity: item.quantity,
-        sellerId: item.product?.sellerId || null,
-      };
-    });
+
+    if (dto.items && dto.items.length > 0) {
+      this.logger.log(
+        `[OrdersService] Step 1: Processing specific items for order (${dto.items.length} items, e.g. Buy Now)`,
+      );
+      const productIds = dto.items.map((i) => i.productId);
+      const dbProducts = await this.prisma.db.product.findMany({
+        where: { id: { in: productIds } },
+      });
+      const productMap = new Map(dbProducts.map((p) => [p.id, p]));
+
+      for (const itemDto of dto.items) {
+        const prod = productMap.get(itemDto.productId);
+        if (!prod) {
+          throw new NotFoundException(`Product ${itemDto.productId} not found`);
+        }
+        const price = Number(prod.sellingPrice ?? 0);
+        const qty = itemDto.quantity || 1;
+        totalAmount += price * qty;
+        itemsData.push({
+          productId: prod.id,
+          name: prod.name || 'Fashion Product',
+          image: prod.mainImage || '',
+          size: itemDto.size || 'Standard',
+          color: itemDto.color || 'Standard',
+          price: price,
+          quantity: qty,
+          sellerId: prod.sellerId || null,
+        });
+      }
+    } else {
+      this.logger.log(`[OrdersService] Step 1: Fetching cart items from DB for user: ${userId}`);
+      const cartItems = await this.prisma.db.cartItem.findMany({
+        where: { userId },
+        include: { product: true },
+      });
+
+      this.logger.log(`[OrdersService] Found ${cartItems.length} items in user's DB cart`);
+
+      if (cartItems.length === 0) {
+        this.logger.warn(`[OrdersService] User ${userId} cart is empty in database`);
+        throw new BadRequestException(
+          'Your cart is empty. Please add items to cart before placing an order.',
+        );
+      }
+
+      // 2. Calculate totals from verified DB prices (Never trust client prices!)
+      this.logger.log(`[OrdersService] Step 2: Calculating totals and preparing order line items`);
+      itemsData = cartItems.map((item) => {
+        const price = Number(item.product?.sellingPrice ?? 0);
+        const itemTotal = price * item.quantity;
+        totalAmount += itemTotal;
+        return {
+          productId: item.productId,
+          name: item.product?.name || 'Fashion Product',
+          image: item.product?.mainImage || '',
+          size: item.size || 'Standard',
+          color: item.color || 'Standard',
+          price: price,
+          quantity: item.quantity,
+          sellerId: item.product?.sellerId || null,
+        };
+      });
+    }
 
     const isCod = dto.paymentMethod === PaymentMethod.COD;
     const discountAmount = 0;
@@ -360,13 +402,23 @@ export class OrdersService {
       include: { items: true },
     });
 
-    // Clear user's cart in DB now that payment is confirmed
+    // Clear user's ordered items in DB now that payment is confirmed
     this.logger.log(
-      `[OrdersService] Clearing cart items for user ${userId} post-payment confirmation`,
+      `[OrdersService] Clearing ordered cart items for user ${userId} post-payment confirmation`,
     );
-    await this.prisma.db.cartItem.deleteMany({
-      where: { userId },
-    });
+    const orderedProductIds = updatedOrder.items?.map((i) => i.productId) || [];
+    if (orderedProductIds.length > 0) {
+      await this.prisma.db.cartItem.deleteMany({
+        where: {
+          userId,
+          productId: { in: orderedProductIds },
+        },
+      });
+    } else {
+      await this.prisma.db.cartItem.deleteMany({
+        where: { userId },
+      });
+    }
 
     // Dispatch notifications
     try {
@@ -861,6 +913,7 @@ export class OrdersService {
       if (rzpOrderId) {
         const order = await this.prisma.db.order.findUnique({
           where: { razorpayOrderId: rzpOrderId },
+          include: { items: true },
         });
 
         if (order?.paymentStatus === PaymentStatus.PENDING) {
@@ -876,9 +929,16 @@ export class OrdersService {
             },
           });
 
-          await this.prisma.db.cartItem.deleteMany({
-            where: { userId: order.userId },
-          });
+          const orderedProductIds = order.items?.map((i) => i.productId) || [];
+          if (orderedProductIds.length > 0) {
+            await this.prisma.db.cartItem.deleteMany({
+              where: { userId: order.userId, productId: { in: orderedProductIds } },
+            });
+          } else {
+            await this.prisma.db.cartItem.deleteMany({
+              where: { userId: order.userId },
+            });
+          }
         }
       }
     } else if (event === 'order.paid' || event === 'payment.captured') {
@@ -903,9 +963,16 @@ export class OrdersService {
             include: { items: true },
           });
 
-          await this.prisma.db.cartItem.deleteMany({
-            where: { userId: order.userId },
-          });
+          const orderedProductIds = order.items?.map((i) => i.productId) || [];
+          if (orderedProductIds.length > 0) {
+            await this.prisma.db.cartItem.deleteMany({
+              where: { userId: order.userId, productId: { in: orderedProductIds } },
+            });
+          } else {
+            await this.prisma.db.cartItem.deleteMany({
+              where: { userId: order.userId },
+            });
+          }
 
           try {
             void this.notificationsService.notifyNewOrder(updated);

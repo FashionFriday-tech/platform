@@ -17,10 +17,18 @@ export const orderShippingAddressSchema = z.object({
   label: z.string().optional(),
 });
 
+export const orderItemInputSchema = z.object({
+  productId: z.string().min(1, 'Product ID is required'),
+  size: z.string().optional(),
+  color: z.string().optional(),
+  quantity: z.number().int().min(1).default(1),
+});
+
 const createOrderSchema = z.object({
   paymentMethod: z.nativeEnum(PaymentMethod),
   addressId: z.string().optional(),
   shippingAddress: orderShippingAddressSchema.optional(),
+  items: z.array(orderItemInputSchema).optional(),
 });
 
 export class CreateOrderDto extends createZodDto(createOrderSchema) {}
