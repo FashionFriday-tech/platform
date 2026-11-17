@@ -38,11 +38,15 @@ export function PaymentStep() {
     balanceDue,
     totalAmount,
     cartItems,
+    isBuyNowMode,
+    buyNowItem,
   } = useCheckoutPayment();
   const router = useRouter();
   const [isPlacing, setIsPlacing] = React.useState(false);
 
   const clearCart = useCartStore((state) => state.clearCart);
+  const removeItemByProduct = useCartStore((state) => state.removeItemByProduct);
+  const setBuyNowItem = useCartStore((state) => state.setBuyNowItem);
   const user = useAuthStore((state) => state.user);
 
   const handlePlaceOrder = async (e?: React.MouseEvent) => {
@@ -137,6 +141,17 @@ export function PaymentStep() {
         paymentMethod: isCod ? 'COD' : 'RAZORPAY',
         addressId: shippingAddress.id,
         shippingAddress: shippingPayload,
+        items:
+          isBuyNowMode && buyNowItem
+            ? [
+                {
+                  productId: buyNowItem.productId,
+                  size: buyNowItem.size,
+                  color: buyNowItem.color,
+                  quantity: buyNowItem.quantity || 1,
+                },
+              ]
+            : undefined,
       });
       console.log('[PaymentStep] Step 3: Server session created:', initRes);
 
@@ -187,7 +202,15 @@ export function PaymentStep() {
           throw new Error(verifyRes?.error || 'Payment verification failed');
         }
 
-        await clearCart(true);
+        if (isBuyNowMode && buyNowItem) {
+          await removeItemByProduct(buyNowItem.productId, buyNowItem.size, true);
+          setBuyNowItem(null);
+          if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('ff_buy_now_item');
+          }
+        } else {
+          await clearCart(true);
+        }
         if (typeof window !== 'undefined') {
           sessionStorage.removeItem('checkout_shipping_address');
         }
@@ -250,7 +273,15 @@ export function PaymentStep() {
               throw new Error(verifyRes?.error || 'Payment verification failed');
             }
             console.log('[PaymentStep] Step 5: Verified! Clearing cart and redirecting...');
-            await clearCart(true);
+            if (isBuyNowMode && buyNowItem) {
+              await removeItemByProduct(buyNowItem.productId, buyNowItem.size, true);
+              setBuyNowItem(null);
+              if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('ff_buy_now_item');
+              }
+            } else {
+              await clearCart(true);
+            }
             if (typeof window !== 'undefined') {
               sessionStorage.removeItem('checkout_shipping_address');
             }

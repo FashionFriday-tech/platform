@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { toast } from 'sonner';
 
@@ -16,7 +16,7 @@ import {
   signupAction,
   verifyOtpAction,
 } from '@/features/auth/services/auth.actions';
-import { useCart } from '@/features/cart';
+import { type CartItem, useCart } from '@/features/cart';
 import { useAuthStore } from '@/store/auth-store';
 import { useCartStore } from '@/store/cart-store';
 import { useWishlistStore } from '@/store/wishlist-store';
@@ -69,6 +69,36 @@ export function useCheckoutReview() {
 
   const { cartItems, totals, isMounted } = useCart();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isBuyNowMode = searchParams?.get('mode') === 'buy_now';
+  const storeBuyNowItem = useCartStore((state) => state.buyNowItem);
+
+  const buyNowItem = useMemo<CartItem | null>(() => {
+    if (!isBuyNowMode) {
+      return null;
+    }
+    if (storeBuyNowItem) {
+      return storeBuyNowItem;
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem('ff_buy_now_item');
+        if (stored) {
+          return JSON.parse(stored) as CartItem;
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return null;
+  }, [isBuyNowMode, storeBuyNowItem]);
+
+  const activeCartItems = useMemo(() => {
+    if (isBuyNowMode && buyNowItem) {
+      return [buyNowItem];
+    }
+    return cartItems;
+  }, [isBuyNowMode, buyNowItem, cartItems]);
 
   useEffect(() => {
     setIsLoggedIn(!!user);
@@ -126,12 +156,28 @@ export function useCheckoutReview() {
     toast.success(`Delivering to ${selected.recipientName}`);
   }, []);
 
-  const pricing = {
-    subtotal: totals.subtotal,
-    discount: totals.discount,
-    total: totals.total,
-    itemCount: totals.itemCount,
-  };
+  const pricing = useMemo(() => {
+    if (isBuyNowMode && buyNowItem) {
+      const price = buyNowItem.product?.sellingPrice ?? 0;
+      const ogPrice = buyNowItem.product?.ogPrice ?? price;
+      const qty = buyNowItem.quantity || 1;
+      const subtotal = price * qty;
+      const originalSubtotal = ogPrice * qty;
+      const discount = Math.max(0, originalSubtotal - subtotal);
+      return {
+        subtotal,
+        discount,
+        total: subtotal,
+        itemCount: 1,
+      };
+    }
+    return {
+      subtotal: totals.subtotal,
+      discount: totals.discount,
+      total: totals.total,
+      itemCount: totals.itemCount,
+    };
+  }, [isBuyNowMode, buyNowItem, totals]);
 
   /**
    * Save address from drawer:
@@ -344,10 +390,14 @@ export function useCheckoutReview() {
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('checkout_shipping_address', JSON.stringify(address));
       }
-      const queryParam = address.id ? `?addressId=${encodeURIComponent(address.id)}` : '';
-      router.push(`/checkout/payment${queryParam}`);
+      const queryParts = [
+        address.id ? `addressId=${encodeURIComponent(address.id)}` : '',
+        isBuyNowMode ? 'mode=buy_now' : '',
+      ].filter(Boolean);
+      const queryString = queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
+      router.push(`/checkout/payment${queryString}`);
     }
-  }, [address, user, router, handleOpenAddressSelection]);
+  }, [address, user, router, handleOpenAddressSelection, isBuyNowMode]);
 
   return {
     address,
@@ -371,7 +421,9 @@ export function useCheckoutReview() {
     showOTPModal,
     setShowOTPModal,
     pricing,
-    cartItems,
+    cartItems: activeCartItems,
+    isBuyNowMode,
+    buyNowItem,
     isMounted,
     handleContinue,
     handleVerifyCheckoutOtp,
