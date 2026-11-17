@@ -17,7 +17,12 @@ export class AdminGuard implements CanActivate {
     }
 
     const role = user.role;
-    if (role === 'SUPER_ADMIN' || role === 'STAFF_ADMIN') {
+    if (
+      role === 'SUPER_ADMIN' ||
+      role === 'STAFF_ADMIN' ||
+      role === 'SALES_MANAGER' ||
+      role === 'SALES_ADMIN'
+    ) {
       return true;
     }
 
