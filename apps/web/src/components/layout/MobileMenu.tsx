@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 
 import {
+  BellIcon,
   ChevronLeftIcon,
   FacebookIcon,
   InstagramIcon,
@@ -26,6 +27,7 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenSearch?: () => void;
+  unreadCount?: number;
 }
 
 const MAIN_NAV_ITEMS = [
@@ -45,7 +47,7 @@ const ACCOUNT_LINKS = [
   { label: 'Customer Care & FAQ', href: '/help' },
 ];
 
-export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+export function MobileMenu({ isOpen, onClose, unreadCount = 0 }: MobileMenuProps) {
   const pathname = usePathname();
   const user = useAuthStore((state) => state.user);
   const { setTheme, resolvedTheme } = useTheme();
@@ -212,54 +214,70 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 <AnimatedLogo className="text-center text-xl font-black tracking-tighter uppercase" />
               </Link>
 
-              {/* Fixed Top-Right Theme Toggle */}
-              {mounted && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    toggleTheme();
-                  }}
-                  className="text-foreground/80 hover:text-foreground absolute top-1/2 right-4 flex h-9 w-9 -translate-y-1/2 items-center justify-center transition-all active:scale-90"
-                  aria-label={
-                    resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'
-                  }
-                  title={resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              {/* Top-Right: Notification & Theme Toggle */}
+              <div className="absolute top-1/2 right-4 flex -translate-y-1/2 items-center gap-1">
+                <Link
+                  href="/account/notifications"
+                  onClick={onClose}
+                  className="text-foreground/80 hover:text-foreground relative flex h-9 w-9 items-center justify-center transition-all active:scale-90"
+                  aria-label="Notifications"
                 >
-                  {resolvedTheme === 'dark' ? (
-                    <svg
-                      className="h-4.5 w-4.5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="5" />
-                      <line x1="12" y1="1" x2="12" y2="3" />
-                      <line x1="12" y1="21" x2="12" y2="23" />
-                      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                      <line x1="1" y1="12" x2="3" y2="12" />
-                      <line x1="21" y1="12" x2="23" y2="12" />
-                      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="h-4.5 w-4.5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                    </svg>
+                  <BellIcon className="text-xl" />
+                  {unreadCount > 0 && (
+                    <span className="bg-destructive absolute top-1.5 right-1.5 h-2 w-2 rounded-full" />
                   )}
-                </button>
-              )}
+                </Link>
+
+                {mounted && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toggleTheme();
+                    }}
+                    className="text-foreground/80 hover:text-foreground flex h-9 w-9 items-center justify-center transition-all active:scale-90"
+                    aria-label={
+                      resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'
+                    }
+                    title={
+                      resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'
+                    }
+                  >
+                    {resolvedTheme === 'dark' ? (
+                      <svg
+                        className="h-4.5 w-4.5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="h-4.5 w-4.5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                      </svg>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Scrollable Content */}

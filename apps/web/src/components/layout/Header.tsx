@@ -7,7 +7,6 @@ import { usePathname, useRouter } from 'next/navigation';
 
 import {
   ArrowLeftIcon,
-  BellIcon,
   CategoryIcon,
   SearchIcon,
   SearchListIcon,
@@ -312,14 +311,16 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/account/notifications" className="relative">
-              <BellIcon className="text-xl" />
-              {isMounted && unreadCount > 0 && (
-                <span className="bg-destructive absolute top-0 right-0 h-2 w-2 rounded-full" />
-              )}
-            </Link>
-            <Link href="/account/wishlist">
+            <Link href="/account/wishlist" aria-label="Wishlist">
               <WishlistIcon className="text-xl" />
+            </Link>
+            <Link href="/checkout/cart" className="relative" aria-label="Cart">
+              <ShoppingBagIcon className="text-2xl" />
+              {isMounted && itemCount > 0 && (
+                <span className="bg-brand text-brand-foreground absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-black">
+                  {itemCount}
+                </span>
+              )}
             </Link>
           </div>
         </div>
@@ -394,6 +395,7 @@ export function Header() {
         isOpen={isMobileMenuOpen}
         onClose={handleCloseMobileMenu}
         onOpenSearch={handleOpenSearch}
+        unreadCount={unreadCount}
       />
     </>
   );
