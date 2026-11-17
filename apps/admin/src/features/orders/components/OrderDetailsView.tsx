@@ -18,6 +18,7 @@ import { type Order } from '../types';
 import { COURIER_SERVICES, getTrackingUrl } from '../utils/courier';
 import { EditOrderModal, type EditOrderTab } from './EditOrderModal';
 import { OrderStatusBadge } from './OrderStatusBadge';
+import { RefundTimelineModal } from './RefundTimelineModal';
 
 interface StepConfig {
   key: string;
@@ -121,6 +122,7 @@ export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProp
 
   const [currentOrder, setCurrentOrder] = useState<Order>(order);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
   const [editModalTab, setEditModalTab] = useState<EditOrderTab>('items');
 
   useEffect(() => {
@@ -515,6 +517,15 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
           </div>
 
           <div className="flex shrink-0 items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setIsRefundModalOpen(true)}
+              className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-xs font-bold text-emerald-700 shadow-xs transition-all hover:bg-emerald-500/20 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400"
+              title="View live Razorpay refund timeline, settlement stages and Bank RRN"
+            >
+              <span>↺</span>
+              <span>Refund Timeline</span>
+            </button>
             {canEdit && (
               <button
                 type="button"
@@ -673,6 +684,17 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                   🎉 Mark Delivered
                 </button>
               </>
+            )}
+
+            {['cancelled', 'refunding', 'refunded'].includes(normalizedStatus) && (
+              <button
+                type="button"
+                onClick={() => setIsRefundModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+              >
+                <span>↺</span>
+                <span>View Refund Timeline & Bank RRN</span>
+              </button>
             )}
           </div>
         </div>
@@ -993,16 +1015,27 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                     (currentOrder.paymentType === 'cod' ? 'Cash on Delivery' : 'Prepaid')}
                 </span>
               </div>
-              {currentOrder.paymentStatus && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
-                    Status:
-                  </span>
-                  <span className="rounded-lg bg-zinc-200/80 px-2.5 py-1 text-xs font-bold text-zinc-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
-                    {currentOrder.paymentStatus}
-                  </span>
-                </div>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {currentOrder.paymentStatus && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
+                      Status:
+                    </span>
+                    <span className="rounded-lg bg-zinc-200/80 px-2.5 py-1 text-xs font-bold text-zinc-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
+                      {currentOrder.paymentStatus}
+                    </span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsRefundModalOpen(true)}
+                  className="flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-500/20 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400"
+                  title="View live Razorpay refund timeline & Bank RRN"
+                >
+                  <span>↺</span>
+                  <span>Refund Timeline</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1442,6 +1475,13 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
         onOrderUpdated={handleOrderUpdated}
         initialTab={editModalTab}
         rawSellers={rawSellers}
+      />
+
+      {/* Razorpay Refund Timeline Modal */}
+      <RefundTimelineModal
+        order={currentOrder}
+        isOpen={isRefundModalOpen}
+        onClose={() => setIsRefundModalOpen(false)}
       />
     </div>
   );

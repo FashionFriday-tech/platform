@@ -10,6 +10,7 @@ import { type SortField } from '../hooks/useOrders';
 import { type Order } from '../types';
 import { getTrackingUrl } from '../utils/courier';
 import { OrderStatusBadge } from './OrderStatusBadge';
+import { RefundTimelineModal } from './RefundTimelineModal';
 
 interface OrdersTableProps {
   orders: Order[];
@@ -89,6 +90,7 @@ function SortHeader({
 
 export function OrdersTable({ orders, sortField, sortDirection, onSort }: OrdersTableProps) {
   const router = useRouter();
+  const [selectedRefundOrder, setSelectedRefundOrder] = React.useState<Order | null>(null);
 
   if (orders.length === 0) {
     return (
@@ -216,7 +218,7 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                 <OrderStatusBadge status={order.status} />
               </div>
 
-              {/* Tracking */}
+              {/* Tracking / Refund Actions */}
               <div>
                 {(() => {
                   if (order.status === 'shipped') {
@@ -251,6 +253,29 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
                       </a>
                     );
                   }
+
+                  if (
+                    ['refunded', 'cancelled'].includes(order.status) ||
+                    ['refunded', 'refund_pending', 'partially_refunded'].includes(
+                      order.paymentStatus,
+                    )
+                  ) {
+                    return (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRefundOrder(order);
+                        }}
+                        className="inline-flex w-24 items-center justify-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2 py-1.5 text-xs font-bold text-emerald-700 transition-all hover:bg-emerald-500/20 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400"
+                        title="View live Razorpay refund timeline & Bank RRN"
+                      >
+                        <span>↺</span>
+                        <span>Refund</span>
+                      </button>
+                    );
+                  }
+
                   return (
                     <span className="flex w-24 justify-center text-xs font-bold text-black/30 dark:text-white/30">
                       —
@@ -262,6 +287,14 @@ export function OrdersTable({ orders, sortField, sortDirection, onSort }: Orders
           ))}
         </div>
       </div>
+
+      {selectedRefundOrder && (
+        <RefundTimelineModal
+          order={selectedRefundOrder}
+          isOpen={Boolean(selectedRefundOrder)}
+          onClose={() => setSelectedRefundOrder(null)}
+        />
+      )}
     </div>
   );
 }

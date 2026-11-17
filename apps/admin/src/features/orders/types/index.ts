@@ -85,6 +85,8 @@ export interface Order {
   shippingFees?: number;
   finalAmount?: number;
   advanceAmount?: number;
+  refundedAmount?: number;
+  razorpayPaymentId?: string;
   tracking?: {
     trackingId: string;
     courierService: string;
@@ -93,4 +95,28 @@ export interface Order {
   shippingAddress: ShippingAddress;
   items: OrderItem[];
   total: number;
+}
+
+export interface RefundTimelineItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  timestamp: string | Date;
+  status: 'COMPLETED' | 'IN_PROGRESS' | 'FAILED' | 'PENDING';
+}
+
+export interface RefundTimelineResponse {
+  orderId: string;
+  orderNumber: string;
+  paymentId?: string;
+  refundId?: string;
+  refundStatus: string;
+  refundAmount: number;
+  paymentMethod: string;
+  paymentAccount: string;
+  bankRrn?: string;
+  estimatedSla: string;
+  createdAt: string | Date;
+  timeline: RefundTimelineItem[];
 }
