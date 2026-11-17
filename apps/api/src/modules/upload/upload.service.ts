@@ -113,8 +113,8 @@ export class UploadService {
             width = 800;
             height = 1200; // 2:3
           } else if (folder === 'campaigns/products-list') {
-            width = 2100;
-            height = 900; // 21:9
+            width = 1600;
+            height = 1000; // 8:5 (Matches web app catalogue card size)
           } else if (folder === 'campaigns/trending-products') {
             width = 900;
             height = 1200; // 3:4
