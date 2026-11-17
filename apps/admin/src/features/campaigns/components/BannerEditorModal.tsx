@@ -5,7 +5,12 @@ import Image from 'next/image';
 
 import { CloseIcon, ImageIcon, PlayIcon, PlusIcon, TrashIcon } from '@ff/ui';
 
-import { type BannerPlacement, type CampaignBanner, type MediaType } from '../types';
+import {
+  type BannerPlacement,
+  type CampaignBanner,
+  type MediaType,
+  PLACEMENT_LABELS,
+} from '../types';
 
 interface BannerEditorModalProps {
   isOpen: boolean;
@@ -224,6 +229,30 @@ export function BannerEditorModal({
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 p-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-semibold text-black dark:text-white">
+                Placement / Campaign Section
+              </label>
+              <select
+                value={placement}
+                disabled={fixedPlacement === 'home-categories'}
+                onChange={(e) => {
+                  setPlacement(e.target.value as BannerPlacement);
+                }}
+                className="w-full rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm text-black outline-none focus:border-black/30 disabled:opacity-60 dark:border-white/10 dark:bg-[#18181b] dark:text-white dark:focus:border-white/30"
+              >
+                {Object.entries(PLACEMENT_LABELS).map(([key, label]) => (
+                  <option
+                    key={key}
+                    value={key}
+                    className="bg-white text-black dark:bg-[#18181b] dark:text-white"
+                  >
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-black dark:text-white">
                 {isMarquee ? 'Announcement Marquee Text' : 'Banner Title'}

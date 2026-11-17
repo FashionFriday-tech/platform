@@ -62,7 +62,7 @@ export const PLACEMENT_LABELS: Record<BannerPlacement, string> = {
   'marquee-blue': 'Announcement Marquee (Electric Blue Bar)',
   'home-carousel': 'Home Carousel',
   'home-categories': 'Category Cards (Men & Women)',
-  'products-list': 'Products List Banner',
+  'products-list': 'Catalogue Ad Banners (Product Grid)',
   'trending-products': 'Trending Products Banner',
   'content-partners': 'Content Partners (Influencer Carousel)',
   'whatsapp-reviews': 'WhatsApp Reviews',
