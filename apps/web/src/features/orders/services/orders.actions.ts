@@ -109,6 +109,12 @@ export interface CreateOrderPayload {
     landmark?: string | null;
     label?: string;
   };
+  items?: {
+    productId: string;
+    size?: string;
+    color?: string;
+    quantity: number;
+  }[];
 }
 
 export interface VerifyPaymentPayload {

@@ -53,6 +53,7 @@ export function consolidateCartItems(items: CartItem[]): CartItem[] {
 
 interface CartState {
   items: CartItem[];
+  buyNowItem: CartItem | null;
   loading: boolean;
   isInitialized: boolean;
 
@@ -60,7 +61,13 @@ interface CartState {
   addItem: (input: AddToCartInput, isAuthenticated?: boolean) => Promise<void>;
   updateQuantity: (itemId: string, quantity: number, isAuthenticated?: boolean) => Promise<void>;
   removeItem: (itemId: string, isAuthenticated?: boolean) => Promise<void>;
+  removeItemByProduct: (
+    productId: string,
+    size?: string,
+    isAuthenticated?: boolean,
+  ) => Promise<void>;
   clearCart: (isAuthenticated?: boolean) => Promise<void>;
+  setBuyNowItem: (item: CartItem | null) => void;
   syncWithServer: (isAuthenticated?: boolean) => Promise<void>;
 }
 
@@ -68,8 +75,24 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      buyNowItem: null,
       loading: false,
       isInitialized: false,
+
+      setBuyNowItem: (item: CartItem | null) => {
+        set({ buyNowItem: item });
+        if (typeof window !== 'undefined') {
+          try {
+            if (item) {
+              sessionStorage.setItem('ff_buy_now_item', JSON.stringify(item));
+            } else {
+              sessionStorage.removeItem('ff_buy_now_item');
+            }
+          } catch {
+            // ignore
+          }
+        }
+      },
 
       addItem: async (input: AddToCartInput, isAuthenticated = false) => {
         const currentItems = consolidateCartItems(get().items);
@@ -199,6 +222,19 @@ export const useCartStore = create<CartState>()(
           } catch (error) {
             console.error('Failed to remove cart item on server:', error);
           }
+        }
+      },
+
+      removeItemByProduct: async (productId: string, size?: string, isAuthenticated = false) => {
+        const currentItems = consolidateCartItems(get().items);
+        const normSize = size ? size.trim().toLowerCase() : null;
+        const target = currentItems.find(
+          (item) =>
+            item.productId === productId &&
+            (!normSize || (item.size || 'Standard').trim().toLowerCase() === normSize),
+        );
+        if (target) {
+          await get().removeItem(target.id, isAuthenticated);
         }
       },
 
