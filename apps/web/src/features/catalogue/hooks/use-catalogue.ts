@@ -33,15 +33,39 @@ export const useCatalogue = ({
   collectionSlug,
   isNewArrivals,
 }: UseCatalogueProps) => {
-  const [allProducts, setAllProducts] = useState<Product[]>(initialProducts);
-  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(initialFilters);
-  const [sortBy, setSortBy] = useState<string>('newest');
+  const initialCached = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    const key = getCatalogueKey();
+    if (isReturningToCatalogue(key)) {
+      const cached = getCatalogueState(key);
+      if (cached?.products && cached.products.length > 0) {
+        return cached;
+      }
+    }
+    return null;
+  }, []);
+
+  const [allProducts, setAllProducts] = useState<Product[]>(
+    () => initialCached?.products ?? initialProducts,
+  );
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>(() =>
+    initialCached?.activeFilters && Object.keys(initialCached.activeFilters).length > 0
+      ? initialCached.activeFilters
+      : initialFilters,
+  );
+  const [sortBy, setSortBy] = useState<string>(() => initialCached?.sortBy || 'newest');
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(
-    collectionSlug ? initialProducts.length >= 100 : initialProducts.length >= 24,
+  const [hasMore, setHasMore] = useState(() =>
+    initialCached
+      ? initialCached.hasMore
+      : collectionSlug
+        ? initialProducts.length >= 100
+        : initialProducts.length >= 24,
   );
 
-  const isRestoredRef = useRef(false);
+  const isRestoredRef = useRef(Boolean(initialCached));
   const prevCategoryKeyRef = useRef(
     `${categorySlug || ''}-${brandName || ''}-${collectionSlug || ''}-${isNewArrivals ? '1' : '0'}`,
   );
@@ -54,17 +78,19 @@ export const useCatalogue = ({
 
     const key = getCatalogueKey();
     if (isReturningToCatalogue(key)) {
-      const cached = getCatalogueState(key);
+      const cached = initialCached || getCatalogueState(key);
       if (cached?.products && cached.products.length > 0) {
         isRestoredRef.current = true;
-        setAllProducts(cached.products);
-        if (cached.activeFilters && Object.keys(cached.activeFilters).length > 0) {
-          setActiveFilters(cached.activeFilters);
+        if (!initialCached) {
+          setAllProducts(cached.products);
+          if (cached.activeFilters && Object.keys(cached.activeFilters).length > 0) {
+            setActiveFilters(cached.activeFilters);
+          }
+          if (cached.sortBy) {
+            setSortBy(cached.sortBy);
+          }
+          setHasMore(cached.hasMore);
         }
-        if (cached.sortBy) {
-          setSortBy(cached.sortBy);
-        }
-        setHasMore(cached.hasMore);
 
         const cleanup = restoreScrollPosition(cached.scrollY, cached.lastClickedProductId, () => {
           clearReturningFlag();
@@ -73,7 +99,7 @@ export const useCatalogue = ({
         return cleanup;
       }
     }
-  }, []);
+  }, [initialCached]);
 
   // Sync when initialProducts or category/brand/collection props change
   useEffect(() => {
