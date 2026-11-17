@@ -24,10 +24,11 @@ import {
 import { toast } from 'sonner';
 
 import { useBrands } from '@/features/brand';
-import { useCart } from '@/features/cart';
+import { type CartItem, type CartProduct, useCart } from '@/features/cart';
 import { useWishlist } from '@/features/wishlist';
 import { fetcher } from '@/lib/api-client';
 import { getBrandLogo } from '@/lib/brand-logo';
+import { useCartStore } from '@/store/cart-store';
 
 import { useLiveProductMetric } from '../hooks/use-live-product-metric';
 import CTAStickyButtons from './cta-sticky-buttons';
@@ -82,7 +83,8 @@ export default function ProductPageMaster({
   }, []);
 
   const { isItemWishlisted, toggleWishlist } = useWishlist();
-  const { addItem } = useCart();
+  const { cartItems, addItem } = useCart();
+  const setBuyNowItem = useCartStore((state) => state.setBuyNowItem);
   const { brands } = useBrands(initialBrands);
   const productId = product.id;
   const isWishlisted = isItemWishlisted(productId);
@@ -205,10 +207,62 @@ export default function ProductPageMaster({
   };
 
   const handleBuyNow = () => {
-    const added = handleAddToCart();
-    if (added) {
-      router.push('/checkout/cart');
+    const totalStock = product.inventory?.totalStock ?? 10;
+    if (totalStock <= 0) {
+      toast.error('This product is currently out of stock');
+      return;
     }
+    const chosenSize =
+      selectedSize || (displaySizes && displaySizes.length > 0 ? displaySizes[0] : 'Standard');
+    if (!selectedSize && displaySizes && displaySizes.length > 0) {
+      setSelectedSize(displaySizes[0]);
+    }
+    const chosenColor = product.attributes?.colors?.[0] || 'Standard';
+
+    const cartProduct: CartProduct = {
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      brand: Array.isArray(product.brand) ? product.brand : [product.brand || 'Fashion Friday'],
+      ogPrice: product.price?.ogPrice ?? 0,
+      sellingPrice: product.price?.sellingPrice ?? 0,
+      mainImage: product.media?.mainImage ?? '',
+      totalStock,
+      sizes: product.attributes?.sizes ?? [],
+      colors: product.attributes?.colors ?? [],
+    };
+
+    const singleItem: CartItem = {
+      id: `buynow_${product.id}_${chosenSize}`,
+      productId: product.id,
+      size: chosenSize,
+      color: chosenColor,
+      quantity: 1,
+      product: cartProduct,
+    };
+
+    // Check if item is already added in the cart
+    const normSize = chosenSize.trim().toLowerCase();
+    const isAlreadyInCart = cartItems.some(
+      (item) =>
+        item.productId === product.id &&
+        (item.size || 'Standard').trim().toLowerCase() === normSize,
+    );
+
+    // If item is not in cart yet, add it so if buy now is not confirmed, it stays in the cart
+    if (!isAlreadyInCart) {
+      void addItem({
+        productId: product.id,
+        size: chosenSize,
+        color: chosenColor,
+        quantity: 1,
+        product: cartProduct,
+      });
+    }
+
+    // Set Buy Now item and go directly to review stage (bypassing bag stage)
+    setBuyNowItem(singleItem);
+    router.push('/checkout/review?mode=buy_now');
   };
   const cols = Math.ceil(displaySizes.length < 6 ? displaySizes.length : displaySizes.length / 2);
 
