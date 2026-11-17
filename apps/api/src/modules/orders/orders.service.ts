@@ -2,6 +2,7 @@ import { generateBrandId, OrderStatus, PaymentMethod, PaymentStatus } from '@ff/
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -800,6 +801,157 @@ export class OrdersService {
       });
       throw new BadRequestException(`Refund gateway request failed: ${err.message}`);
     }
+  }
+
+  /**
+   * Get Refund Timeline and Details for a Customer or Admin
+   */
+  async getRefundTimeline(orderId: string, userId: string, isAdmin = false) {
+    this.logger.log(`[OrdersService] Fetching refund timeline for order ${orderId}`);
+    const order =
+      (await this.prisma.db.order.findUnique({
+        where: { id: orderId },
+        include: { user: { select: { name: true, phone: true } } },
+      })) ||
+      (await this.prisma.db.order.findUnique({
+        where: { orderNumber: orderId },
+        include: { user: { select: { name: true, phone: true } } },
+      }));
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    if (!isAdmin && order.userId !== userId) {
+      throw new ForbiddenException('You do not have permission to view this order refund');
+    }
+
+    let paymentData: any = null;
+    let refundsData: any = null;
+
+    if (order.razorpayPaymentId) {
+      try {
+        paymentData = await this.razorpayService.fetchPayment(order.razorpayPaymentId);
+      } catch (err: any) {
+        this.logger.warn(`Could not fetch Razorpay payment: ${err.message}`);
+      }
+
+      try {
+        refundsData = await this.razorpayService.fetchPaymentRefunds(order.razorpayPaymentId);
+      } catch (err: any) {
+        this.logger.warn(`Could not fetch Razorpay refunds: ${err.message}`);
+      }
+    }
+
+    const latestRefund = refundsData?.items?.[0] || null;
+    const refundAmount = latestRefund?.amount
+      ? Number(latestRefund.amount) / 100
+      : Number(order.refundedAmount || order.finalAmount || 0);
+
+    const isProcessed =
+      latestRefund?.status === 'processed' ||
+      order.paymentStatus === PaymentStatus.REFUNDED ||
+      (paymentData?.amount_refunded && Number(paymentData.amount_refunded) / 100 >= refundAmount);
+
+    const refundStatus = isProcessed
+      ? 'processed'
+      : latestRefund?.status ||
+        (order.paymentStatus === PaymentStatus.REFUND_PENDING ? 'processing' : 'initiated');
+
+    const bankRrn =
+      latestRefund?.acquirer_data?.rrn ||
+      latestRefund?.acquirer_data?.arn ||
+      paymentData?.acquirer_data?.rrn ||
+      paymentData?.acquirer_data?.bank_transaction_id ||
+      null;
+
+    const paymentMethodRaw =
+      paymentData?.method || (order.paymentMethod === 'COD' ? 'cod' : 'razorpay');
+    const paymentMethod = paymentMethodRaw.toUpperCase();
+    const vpa = paymentData?.vpa || null;
+    const paymentAccount =
+      vpa ||
+      (paymentData?.bank ? `Bank: ${paymentData.bank}` : null) ||
+      (paymentData?.card
+        ? `${paymentData.card.network || 'Card'} ending ${paymentData.card.last4 || '****'}`
+        : null) ||
+      (order.paymentMethod === 'COD'
+        ? 'Original COD Advance (UPI / Card)'
+        : 'Original Payment Source');
+
+    const paymentCreatedAt = paymentData?.created_at
+      ? new Date(paymentData.created_at * 1000)
+      : order.createdAt;
+
+    const refundCreatedAt = latestRefund?.created_at
+      ? new Date(latestRefund.created_at * 1000)
+      : order.updatedAt;
+
+    // SLA estimation
+    const isUpi = paymentMethod === 'UPI' || Boolean(vpa);
+    const estimatedSla = isUpi
+      ? 'Usually 2 to 24 hours for UPI transfers'
+      : 'Usually 3 to 5 business days for Cards & Netbanking';
+
+    const timeline = [
+      {
+        id: 'payment_captured',
+        title: 'Payment Captured',
+        subtitle: `Amount: ₹${Number(order.finalAmount).toFixed(2)}`,
+        description: `Successfully captured via ${paymentAccount}`,
+        timestamp: paymentCreatedAt,
+        status: 'COMPLETED',
+      },
+      {
+        id: 'refund_initiated',
+        title: 'Refund Initiated',
+        subtitle: `Amount: ₹${refundAmount.toFixed(2)}`,
+        description: `Refund initiated back to ${paymentAccount}`,
+        timestamp: refundCreatedAt,
+        status: 'COMPLETED',
+      },
+      {
+        id: 'refund_processing',
+        title: isProcessed ? 'Transferred to Bank / UPI' : 'Processing with Bank',
+        subtitle: bankRrn ? `Bank RRN: ${bankRrn}` : 'Dispatched to customer network',
+        description: bankRrn
+          ? `Dispatched by payment gateway. Reference (RRN): ${bankRrn}`
+          : 'Dispatched to your banking network for final settlement.',
+        timestamp: refundCreatedAt,
+        bankRrn,
+        status: isProcessed ? 'COMPLETED' : 'IN_PROGRESS',
+      },
+      {
+        id: 'refund_credited',
+        title: isProcessed ? 'Refund Processed' : 'Expected Settlement',
+        subtitle: isProcessed ? 'Funds Dispatched' : 'Pending Bank Credit',
+        description: isProcessed
+          ? `Amount ₹${refundAmount.toFixed(2)} credited back to ${paymentAccount}.`
+          : estimatedSla,
+        timestamp: isProcessed
+          ? latestRefund?.created_at
+            ? new Date(latestRefund.created_at * 1000)
+            : order.updatedAt
+          : null,
+        status: isProcessed ? 'COMPLETED' : 'PENDING',
+      },
+    ];
+
+    return {
+      success: true,
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      paymentId: order.razorpayPaymentId || paymentData?.id || null,
+      refundId: latestRefund?.id || null,
+      refundAmount,
+      refundStatus,
+      bankRrn,
+      paymentMethod,
+      paymentAccount,
+      timeline,
+      estimatedSla,
+      issuedAt: refundCreatedAt,
+    };
   }
 
   /**

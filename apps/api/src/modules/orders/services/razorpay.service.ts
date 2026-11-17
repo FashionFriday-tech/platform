@@ -202,6 +202,38 @@ export class RazorpayService {
   }
 
   /**
+   * Fetch all refunds associated with a Razorpay payment
+   */
+  async fetchPaymentRefunds(paymentId: string) {
+    if (!this.instance) {
+      this.logger.log(`[RazorpayService] Mock fetch refunds for payment ${paymentId}`);
+      return {
+        count: 1,
+        items: [
+          {
+            id: `rfnd_mock_${Date.now()}`,
+            amount: 100,
+            status: 'processed',
+            created_at: Math.floor(Date.now() / 1000) - 3600,
+            acquirer_data: { rrn: '668616601255' },
+          },
+        ],
+      };
+    }
+
+    try {
+      this.logger.log(`[RazorpayService] Fetching refunds for payment ${paymentId}`);
+      const refunds = await (this.instance.payments as any).fetchMultipleRefund(paymentId);
+      return refunds;
+    } catch (err: any) {
+      this.logger.error(
+        `[RazorpayService] Error fetching refunds for payment ${paymentId}: ${err?.error?.description || err.message}`,
+      );
+      return null;
+    }
+  }
+
+  /**
    * Verify Payment Signature using HMAC-SHA256 with Constant-Time Comparison
    * Prevents timing attacks
    */

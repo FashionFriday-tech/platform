@@ -156,6 +156,18 @@ export class OrdersController {
     return this.ordersService.getReconciliationReport();
   }
 
+  @Get(':id/refund-timeline')
+  @UseGuards(JwtAuthGuard)
+  async getRefundTimeline(@Param('id') id: string, @Req() req: AuthRequest) {
+    const userId = req.user.id || req.user.sub;
+    const role = req.user.role;
+    const isAdmin = role === 'SUPER_ADMIN' || role === 'STAFF_ADMIN';
+    if (!userId) {
+      throw new UnauthorizedException('Authentication required');
+    }
+    return this.ordersService.getRefundTimeline(id, userId, isAdmin);
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   async getOrder(@Param('id') id: string, @Req() req: AuthRequest) {
