@@ -93,6 +93,7 @@ export interface SellerProduct {
   sellingPrice: number | string;
   totalStock: number;
   status: string;
+  isCodAvailable?: boolean;
   category?: {
     id: string;
     name: string;
