@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import {
   ActivityIcon,
   CategoryIcon,
+  CreditCardIcon,
   LayersIcon,
   LifeBuoyIcon,
   MessageSquareIcon,
@@ -180,6 +181,12 @@ export function Sidebar({
                     <span className="flex aspect-square h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black/10 text-[11px] leading-none font-bold text-black transition-colors group-[.is-active]:bg-white/20 group-[.is-active]:text-white dark:bg-white/10 dark:text-white dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
                       {isStatsLoading ? '...' : unplacedCount}
                     </span>
+                  </Link>
+                  <Link href="/payments" className={getLinkClass('/payments')}>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
+                      <CreditCardIcon className="h-4 w-4 opacity-70 transition-all group-[.is-active]:opacity-100" />
+                    </div>
+                    <span className="text-sm font-medium">Payments</span>
                   </Link>
                   <Link href="/customers" className={getLinkClass('/customers')}>
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/5 transition-all group-[.is-active]:bg-white/20 dark:bg-white/5 dark:group-[.is-active]:bg-black dark:group-[.is-active]:text-white">
