@@ -37,6 +37,7 @@ export function PaymentStep() {
     payableAmount,
     balanceDue,
     totalAmount,
+    isCodEligible,
     cartItems,
     isBuyNowMode,
     buyNowItem,
@@ -378,19 +379,30 @@ export function PaymentStep() {
 
             {/* COD CARD */}
             <button
+              type="button"
+              disabled={!isCodEligible}
               onClick={() => {
+                if (!isCodEligible) {
+                  toast.info('Cash on Delivery unavailable', {
+                    description:
+                      'One or more items in your cart require online payment (Prepaid Only).',
+                  });
+                  return;
+                }
                 setPaymentMethod('cod');
               }}
               className={`group flex items-center justify-between rounded-3xl border p-6 transition-all duration-300 ${
-                paymentMethod === 'cod'
-                  ? 'border-foreground bg-foreground text-background shadow-xl'
-                  : 'border-border bg-background hover:bg-background-muted'
+                !isCodEligible
+                  ? 'cursor-not-allowed border-dashed border-border/60 bg-background-muted/40 opacity-60'
+                  : paymentMethod === 'cod'
+                    ? 'border-foreground bg-foreground text-background shadow-xl'
+                    : 'border-border bg-background hover:bg-background-muted'
               }`}
             >
               <div className="flex items-center gap-4 text-left">
                 <div
                   className={`rounded-xl p-3 ${
-                    paymentMethod === 'cod'
+                    paymentMethod === 'cod' && isCodEligible
                       ? 'bg-background text-foreground'
                       : 'bg-background-muted'
                   }`}
@@ -398,16 +410,37 @@ export function PaymentStep() {
                   <TruckIcon size={20} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black tracking-tight uppercase italic">
-                    Cash on Delivery
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-black tracking-tight uppercase italic">
+                      Cash on Delivery
+                    </h3>
+                    {!isCodEligible && (
+                      <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[9px] font-black uppercase text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                        Prepaid Only
+                      </span>
+                    )}
+                  </div>
                   <p className="mt-0.5 text-[9px] font-bold tracking-widest uppercase opacity-60">
-                    Pay ₹200 Advance Online + Balance on Delivery
+                    {!isCodEligible
+                      ? 'Not eligible for items in your cart'
+                      : 'Pay ₹200 Advance Online + Balance on Delivery'}
                   </p>
                 </div>
               </div>
             </button>
           </div>
+
+          {/* Non-COD items notification banner */}
+          {!isCodEligible && (
+            <div className="flex items-center gap-3 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 text-xs font-medium text-amber-800 dark:text-amber-300">
+              <span className="flex h-2 w-2 shrink-0 rounded-full bg-amber-500" />
+              <p className="text-[11px] leading-relaxed">
+                <strong className="font-bold">Notice:</strong> Cash on Delivery is disabled because
+                one or more products in your order are marked as <strong>Prepaid Only</strong>.
+                Please pay online via UPI, Cards, or Netbanking.
+              </p>
+            </div>
+          )}
 
           {/* Contextual Banners */}
           <AnimatePresence mode="wait">

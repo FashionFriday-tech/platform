@@ -611,6 +611,30 @@ export default function ProductPageMaster({
                 </div>
               ))}
             </div>
+
+            {/* Payment & Delivery Policy Notice */}
+            <div className="mt-3 flex items-center gap-2.5 rounded-xl border border-zinc-200/80 bg-zinc-50/60 px-3.5 py-2.5 text-xs dark:border-zinc-800/80 dark:bg-zinc-900/40">
+              <span
+                className={`flex h-2 w-2 shrink-0 rounded-full ${
+                  product.isCodAvailable ? 'bg-emerald-500' : 'bg-blue-500'
+                }`}
+              />
+              <p className="text-[11px] font-medium text-foreground-muted">
+                {product.isCodAvailable ? (
+                  <>
+                    <strong className="font-bold text-foreground">
+                      Cash on Delivery Available:
+                    </strong>{' '}
+                    ₹200 advance deposit required at checkout.
+                  </>
+                ) : (
+                  <>
+                    <strong className="font-bold text-foreground">Prepaid Order Only:</strong> COD
+                    is not available for this item. Pay online for free shipping & priority dispatch.
+                  </>
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </section>

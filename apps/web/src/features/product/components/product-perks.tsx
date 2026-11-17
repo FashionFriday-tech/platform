@@ -1,10 +1,12 @@
 import { CreditCardIcon, RefreshCcwIcon, ShieldCheckIcon, TruckIcon } from '@ff/ui';
 
-export default function ProductPerks() {
+export default function ProductPerks({ isCodAvailable = false }: { isCodAvailable?: boolean }) {
   const perks = [
     { icon: <TruckIcon size={18} />, title: 'Express Delivery', desc: 'Arrives in 2-3 days' },
     { icon: <RefreshCcwIcon size={18} />, title: 'Easy Returns', desc: '7-day window' },
-    { icon: <CreditCardIcon size={18} />, title: 'COD Available', desc: 'Cash on delivery' },
+    isCodAvailable
+      ? { icon: <CreditCardIcon size={18} />, title: 'COD Available', desc: '₹200 advance deposit' }
+      : { icon: <CreditCardIcon size={18} />, title: 'Prepaid Only', desc: 'UPI & Cards only' },
     { icon: <ShieldCheckIcon size={18} />, title: 'Original Product', desc: '100% Authentic' },
   ];
 

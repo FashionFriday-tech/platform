@@ -129,6 +129,21 @@ export function useCheckoutPayment() {
   // Dynamic pricing based on active cart
   const baseTotal = totals.total > 0 ? totals.total : totals.subtotal;
   const codAdvanceAmount = 200;
+
+  // COD is only eligible if EVERY product in the cart has isCodAvailable === true
+  const isCodEligible = useMemo(() => {
+    if (cartItems.length === 0) {
+      return false;
+    }
+    return cartItems.every((item) => Boolean((item.product as any)?.isCodAvailable));
+  }, [cartItems]);
+
+  useEffect(() => {
+    if (!isCodEligible && paymentMethod === 'cod') {
+      setPaymentMethod('prepay');
+    }
+  }, [isCodEligible, paymentMethod]);
+
   // For COD, the amount to collect online right now is ₹200 (or baseTotal if under ₹200 for testing)
   const codPayableNow = Math.min(codAdvanceAmount, baseTotal > 0 ? baseTotal : codAdvanceAmount);
   const payableAmount = paymentMethod === 'cod' ? codPayableNow : baseTotal;
@@ -163,6 +178,7 @@ export function useCheckoutPayment() {
     payableAmount,
     balanceDue,
     totalAmount,
+    isCodEligible,
     cartItems,
     isBuyNowMode,
     buyNowItem,

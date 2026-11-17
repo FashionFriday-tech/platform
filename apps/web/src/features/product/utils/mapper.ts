@@ -104,6 +104,7 @@ export function mapDbProductToSchema(p: any): Product {
           : 4,
       totalReviews: Math.max(0, Number(p.totalReviews) || 0),
     },
+    isCodAvailable: Boolean(p.isCodAvailable),
     createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
     updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),
     attributes: p.attributes || {
