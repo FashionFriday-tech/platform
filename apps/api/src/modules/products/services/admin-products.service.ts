@@ -1,7 +1,8 @@
 import { Gender, generateBrandId, Prisma, ProductStatus } from '@ff/database';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Optional } from '@nestjs/common';
 
 import { PrismaService } from '../../../database/prisma.service';
+import { MetricsCacheService } from '../../metrics-cache/metrics-cache.service';
 import { triggerRevalidation } from '../../revalidate-helper';
 import { UploadService } from '../../upload/upload.service';
 import { CreateProductDto, UpdateProductDto } from '../dto';
@@ -13,6 +14,7 @@ export class AdminProductsService {
     private readonly productsRepository: ProductsRepository,
     private readonly uploadService: UploadService,
     private readonly prisma: PrismaService,
+    @Optional() private readonly metricsCache?: MetricsCacheService,
   ) {}
 
   async createProduct(dto: CreateProductDto) {
@@ -861,6 +863,8 @@ export class AdminProductsService {
   }
 
   private triggerProductAndCategoryRevalidation(product: any) {
+    this.metricsCache?.invalidateProducts();
+
     const slug = product.slug;
     const categorySlug = product.categoryId ? product.categoryId.toLowerCase() : null;
     const gender = product.gender ? product.gender.toLowerCase() : null;
