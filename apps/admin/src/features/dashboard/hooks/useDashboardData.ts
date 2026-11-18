@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
+import { api } from '@/lib/api-client';
+
 export interface DashboardStats {
   totalSales: number;
   todaySales: number;
@@ -94,16 +96,20 @@ export function useDashboardData() {
       setIsRefreshing(true);
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-
     try {
-      const [statsRes, activityRes] = await Promise.all([
-        fetch(`${apiUrl}/admin/dashboard/stats`, { cache: 'no-store', credentials: 'include' }),
-        fetch(`${apiUrl}/admin/dashboard/activity`, { cache: 'no-store', credentials: 'include' }),
+      const queryParams = isManual ? { fresh: 'true' } : undefined;
+      const [statsData, activityData] = await Promise.all([
+        api.get<DashboardStats>('/admin/dashboard/stats', {
+          cache: 'no-store',
+          params: queryParams,
+        }),
+        api.get<DashboardActivity[]>('/admin/dashboard/activity', {
+          cache: 'no-store',
+          params: queryParams,
+        }),
       ]);
 
-      if (statsRes.ok) {
-        const statsData = (await statsRes.json()) as DashboardStats;
+      if (statsData) {
         setStats(statsData);
         try {
           localStorage.setItem(STATS_STORAGE_KEY, JSON.stringify(statsData));
@@ -112,8 +118,7 @@ export function useDashboardData() {
         }
       }
 
-      if (activityRes.ok) {
-        const activityData = (await activityRes.json()) as DashboardActivity[];
+      if (activityData && Array.isArray(activityData)) {
         setActivities(activityData);
         try {
           localStorage.setItem(ACTIVITY_STORAGE_KEY, JSON.stringify(activityData));
@@ -134,13 +139,33 @@ export function useDashboardData() {
   useEffect(() => {
     void fetchDashboardData();
 
-    // Poll every 30 seconds for live operational stats
+    // Poll every 15 seconds for live operational stats
     const interval = setInterval(() => {
-      void fetchDashboardData();
-    }, 30000);
+      void fetchDashboardData(false);
+    }, 15000);
+
+    // Cross-component and cross-tab reactive synchronization
+    const handleOrdersUpdated = () => {
+      void fetchDashboardData(true);
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'ff_order_mutation_ts') {
+        void fetchDashboardData(true);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('ff-orders-updated', handleOrdersUpdated);
+      window.addEventListener('storage', handleStorageChange);
+    }
 
     return () => {
       clearInterval(interval);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('ff-orders-updated', handleOrdersUpdated);
+        window.removeEventListener('storage', handleStorageChange);
+      }
     };
   }, [fetchDashboardData]);
 
