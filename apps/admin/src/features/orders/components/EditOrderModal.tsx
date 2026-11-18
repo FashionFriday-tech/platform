@@ -420,6 +420,17 @@ export function EditOrderModal({
         })),
       };
 
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('ff_order_mutation_ts', Date.now().toString());
+          window.dispatchEvent(
+            new CustomEvent('ff-orders-updated', { detail: { orderId: order.id, type: 'update' } }),
+          );
+        } catch {
+          // ignore
+        }
+      }
+
       onOrderUpdated(mappedUpdated);
       onClose();
     } catch (err: any) {
