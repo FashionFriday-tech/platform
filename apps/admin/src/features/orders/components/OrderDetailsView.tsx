@@ -49,8 +49,8 @@ function OrderStatusTracker({ status }: { status: string }) {
   const progressPercent = steps.length > 1 ? (currentStepIndex / (steps.length - 1)) * 100 : 100;
 
   return (
-    <div className="relative flex w-full flex-col overflow-x-auto pb-2 scrollbar-hide">
-      <div className="relative flex min-w-[560px] sm:min-w-full items-center justify-between px-4 sm:px-6">
+    <div className="scrollbar-hide relative flex w-full flex-col overflow-x-auto pb-2">
+      <div className="relative flex min-w-[560px] items-center justify-between px-4 sm:min-w-full sm:px-6">
         {/* Connecting Line background */}
         <div className="absolute top-4 right-6 left-6 h-0.5 -translate-y-1/2 bg-zinc-200 dark:bg-zinc-800" />
 
@@ -69,12 +69,13 @@ function OrderStatusTracker({ status }: { status: string }) {
           return (
             <div key={step.key} className="relative z-10 flex flex-col items-center">
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 ${isCompleted
-                  ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
-                  : isActive
-                    ? 'bg-black text-white ring-4 ring-black/10 dark:bg-white dark:text-black dark:ring-white/20'
-                    : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600'
-                  }`}
+                className={`flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 ${
+                  isCompleted
+                    ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
+                    : isActive
+                      ? 'bg-black text-white ring-4 ring-black/10 dark:bg-white dark:text-black dark:ring-white/20'
+                      : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600'
+                }`}
               >
                 {isCompleted ? (
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,12 +93,13 @@ function OrderStatusTracker({ status }: { status: string }) {
                 )}
               </div>
               <span
-                className={`mt-2.5 text-center text-[11px] whitespace-nowrap transition-colors ${isActive
-                  ? 'rounded-full bg-black/5 px-2.5 py-0.5 font-extrabold text-black dark:bg-white/10 dark:text-white'
-                  : isCompleted
-                    ? 'font-bold text-emerald-600 dark:text-emerald-400'
-                    : 'font-medium text-zinc-400 dark:text-zinc-500'
-                  }`}
+                className={`mt-2.5 text-center text-[11px] whitespace-nowrap transition-colors ${
+                  isActive
+                    ? 'rounded-full bg-black/5 px-2.5 py-0.5 font-extrabold text-black dark:bg-white/10 dark:text-white'
+                    : isCompleted
+                      ? 'font-bold text-emerald-600 dark:text-emerald-400'
+                      : 'font-medium text-zinc-400 dark:text-zinc-500'
+                }`}
               >
                 {step.label}
               </span>
@@ -504,13 +506,13 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
   const courierOptions = COURIER_SERVICES.map((c) => ({ label: c, value: c }));
 
   return (
-    <div className="scrollbar-hide mx-auto flex h-full w-full max-w-6xl flex-col gap-4 sm:gap-6 overflow-y-auto p-3 sm:p-6 md:p-8">
+    <div className="scrollbar-hide mx-auto flex h-full w-full max-w-6xl flex-col gap-4 overflow-y-auto p-3 sm:gap-6 sm:p-6 md:p-8">
       {/* Top Section: Unified Order Command Card */}
-      <div className="flex flex-col gap-5 sm:gap-6 rounded-2xl sm:rounded-3xl bg-white p-4 shadow-sm sm:p-8 dark:bg-[#141414]">
+      <div className="flex flex-col gap-5 rounded-2xl bg-white p-4 shadow-sm sm:gap-6 sm:rounded-3xl sm:p-8 dark:bg-[#141414]">
         {/* Header row: Order ID, Status Badge & Actions */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            <h1 className="text-lg sm:text-xl font-black tracking-tight text-black dark:text-white">
+            <h1 className="text-lg font-black tracking-tight text-black sm:text-xl dark:text-white">
               Order #{currentOrder.orderNumber}
             </h1>
             <OrderStatusBadge status={orderStatus as any} />
@@ -520,7 +522,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
             <button
               type="button"
               onClick={() => setIsRefundModalOpen(true)}
-              className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-emerald-700 shadow-xs transition-all hover:bg-emerald-500/20 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400"
+              className="flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-700 shadow-xs transition-all hover:bg-emerald-500/20 active:scale-95 sm:px-4 sm:py-2.5 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400"
               title="View live Razorpay refund timeline, settlement stages and Bank RRN"
             >
               <span>↺</span>
@@ -533,7 +535,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                   setEditModalTab('items');
                   setIsEditModalOpen(true);
                 }}
-                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-zinc-900 shadow-sm transition-all hover:bg-zinc-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+                className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 py-2 text-xs font-bold text-zinc-900 shadow-sm transition-all hover:bg-zinc-50 active:scale-95 sm:px-4 sm:py-2.5 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
               >
                 <span>✏️</span>
                 <span className="whitespace-nowrap">Edit Order</span>
@@ -551,7 +553,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                   }
                 }
               }}
-              className="rounded-xl bg-red-500/10 px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs font-bold text-red-600 transition-all hover:bg-red-500/20 active:scale-95 dark:bg-red-500/15 dark:text-red-400"
+              className="rounded-xl bg-red-500/10 px-3.5 py-2 text-xs font-bold text-red-600 transition-all hover:bg-red-500/20 active:scale-95 sm:px-4 sm:py-2.5 dark:bg-red-500/15 dark:text-red-400"
             >
               Delete
             </button>
@@ -559,7 +561,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
               onClick={() => {
                 setIsUpdateModalOpen(true);
               }}
-              className="rounded-xl bg-black px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+              className="rounded-xl bg-black px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 sm:px-5 sm:py-2.5 dark:bg-white dark:text-black dark:hover:bg-white/80"
             >
               Update Status
             </button>
@@ -572,7 +574,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
         </div>
 
         {/* Dynamic Action Sub-bar */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-zinc-50 p-3.5 sm:p-4 sm:flex-row sm:items-center sm:justify-between dark:bg-zinc-900/60">
+        <div className="flex flex-col gap-4 rounded-2xl bg-zinc-50 p-3.5 sm:flex-row sm:items-center sm:justify-between sm:p-4 dark:bg-zinc-900/60">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-lg shadow-sm dark:bg-zinc-800">
               {normalizedStatus === 'pending' && '🔍'}
@@ -586,7 +588,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
               <div className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
                 Next Recommended Step
               </div>
-              <div className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+              <div className="text-xs font-bold text-zinc-900 sm:text-sm dark:text-zinc-100">
                 {normalizedStatus === 'pending' && 'Check stock with seller'}
                 {normalizedStatus === 'confirmed' && 'Stock confirmed — place order with seller'}
                 {normalizedStatus === 'processing' && 'Placed with seller — awaiting tracking ID'}
@@ -599,27 +601,27 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
             {(normalizedStatus === 'pending' || normalizedStatus === 'stock_check') && (
               <>
                 <button
                   onClick={handleInquiryWhatsApp}
                   title="Send product image and details to seller WhatsApp to check stock availability"
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 sm:flex-initial sm:px-4"
                 >
                   📲 Inquire Stock (WhatsApp)
                 </button>
                 <button
                   disabled={isUpdatingStatus}
                   onClick={handleConfirmStock}
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-black px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-black px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 sm:flex-initial sm:px-4 dark:bg-white dark:text-black dark:hover:bg-white/80"
                 >
                   ✅ Stock Available (Capture Payment)
                 </button>
                 <button
                   disabled={isUpdatingStatus}
                   onClick={handleRejectStock}
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-red-600/10 px-3.5 sm:px-4 py-2 text-xs font-bold text-red-600 transition-all hover:bg-red-600/20 active:scale-95 disabled:opacity-50 dark:bg-red-500/15 dark:text-red-400"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-red-600/10 px-3.5 py-2 text-xs font-bold text-red-600 transition-all hover:bg-red-600/20 active:scale-95 disabled:opacity-50 sm:flex-initial sm:px-4 dark:bg-red-500/15 dark:text-red-400"
                 >
                   ❌ Out of Stock (Void ₹0)
                 </button>
@@ -631,14 +633,14 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 <button
                   onClick={handleWhatsApp}
                   title="Send complete order details and image to supplier via WhatsApp"
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 sm:flex-initial sm:px-4"
                 >
                   📲 Send Details to Seller
                 </button>
                 <button
                   disabled={isUpdatingStatus}
                   onClick={() => updateOrderOnBackend({ status: 'processing' })}
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-black px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-black px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 sm:flex-initial sm:px-4 dark:bg-white dark:text-black dark:hover:bg-white/80"
                 >
                   🛒 Placed with Seller
                 </button>
@@ -651,7 +653,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                   setPendingStatus('shipped');
                   setIsUpdateModalOpen(true);
                 }}
-                className="flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
+                className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95 sm:w-auto"
               >
                 📦 Add Tracking ID & Ship
               </button>
@@ -662,7 +664,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 <button
                   onClick={handleSendTrackingToCustomer}
                   title="Send WhatsApp message to customer with tracking ID and live tracking link"
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 sm:flex-initial sm:px-4"
                 >
                   💬 Send Tracking to Customer
                 </button>
@@ -671,7 +673,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                     href={sanitizeHref(trackingUrl)}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95 sm:flex-initial sm:px-4"
                   >
                     🚚 Track Parcel
                   </a>
@@ -679,7 +681,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 <button
                   disabled={isUpdatingStatus}
                   onClick={() => updateOrderOnBackend({ status: 'delivered' })}
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-black px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-black px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-black/80 active:scale-95 disabled:opacity-50 sm:flex-initial sm:px-4 dark:bg-white dark:text-black dark:hover:bg-white/80"
                 >
                   🎉 Mark Delivered
                 </button>
@@ -690,7 +692,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
               <button
                 type="button"
                 onClick={() => setIsRefundModalOpen(true)}
-                className="flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 sm:w-auto"
               >
                 <span>↺</span>
                 <span>View Refund Timeline & Bank RRN</span>
@@ -731,11 +733,11 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 p-4 sm:p-6 pt-0">
+            <div className="flex flex-col gap-4 p-4 pt-0 sm:p-6">
               {currentOrder.items.map((item, idx) => (
                 <div
                   key={idx}
-                  className="group relative flex flex-col gap-4 sm:gap-6 rounded-2xl bg-zinc-50/80 p-3.5 sm:p-4 transition-all hover:bg-zinc-100/80 sm:flex-row sm:items-start sm:pr-28 md:sm:pr-32 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70"
+                  className="group relative flex flex-col gap-4 rounded-2xl bg-zinc-50/80 p-3.5 transition-all hover:bg-zinc-100/80 sm:flex-row sm:items-start sm:gap-6 sm:p-4 sm:pr-28 md:sm:pr-32 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70"
                 >
                   {/* Sticky Track Button on Right Side */}
                   <div className="absolute top-4 right-4 hidden sm:block">
@@ -746,7 +748,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                             href={sanitizeHref(trackingUrl)}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
+                            className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95 sm:px-4"
                           >
                             <svg
                               className="h-3 w-3"
@@ -785,7 +787,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
 
                   <div className="relative h-44 w-full shrink-0 overflow-hidden rounded-xl bg-black/5 shadow-sm sm:h-36 sm:w-36 md:h-40 md:w-40 dark:bg-white/5">
                     {item.productImage &&
-                      !item.productImage.includes('photo-1523381210434-271e8be1f52b') ? (
+                    !item.productImage.includes('photo-1523381210434-271e8be1f52b') ? (
                       <Image
                         width={500}
                         height={500}
@@ -801,19 +803,19 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                   </div>
                   <div className="flex w-full flex-col justify-between sm:min-h-36 md:sm:min-h-40">
                     <div>
-                      <h3 className="text-base sm:text-xl font-bold text-black dark:text-white break-words">
+                      <h3 className="text-base font-bold break-words text-black sm:text-xl dark:text-white">
                         {item.productName}
                       </h3>
-                      <p className="mt-1 text-xs sm:text-sm font-semibold text-zinc-400 dark:text-zinc-500">
+                      <p className="mt-1 text-xs font-semibold text-zinc-400 sm:text-sm dark:text-zinc-500">
                         SKU: {item.sku ?? 'N/A'}
                       </p>
-                      <div className="mt-3 sm:mt-4 flex flex-wrap items-center gap-2 sm:gap-3">
+                      <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-4 sm:gap-3">
                         {item.size && (
                           <div className="flex items-center gap-1.5">
                             <span className="text-[10px] font-bold text-zinc-400 uppercase">
                               Size:
                             </span>
-                            <span className="text-xs sm:text-sm font-bold text-black dark:text-white">
+                            <span className="text-xs font-bold text-black sm:text-sm dark:text-white">
                               {item.size}
                             </span>
                           </div>
@@ -827,7 +829,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                                   <span className="text-[10px] font-bold text-zinc-400 uppercase">
                                     Color:
                                   </span>
-                                  <span className="text-xs sm:text-sm font-bold text-black dark:text-white">
+                                  <span className="text-xs font-bold text-black sm:text-sm dark:text-white">
                                     {cName}
                                   </span>
                                 </div>
@@ -837,7 +839,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                                   <span className="text-[10px] font-bold text-zinc-400 uppercase">
                                     Quality:
                                   </span>
-                                  <span className="text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                                  <span className="text-xs font-bold text-indigo-600 sm:text-sm dark:text-indigo-400">
                                     {qName}
                                   </span>
                                 </div>
@@ -847,15 +849,15 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                         })()}
                       </div>
                     </div>
-                    <div className="mt-3 sm:mt-0 flex flex-col gap-3 pt-3 sm:pt-0">
+                    <div className="mt-3 flex flex-col gap-3 pt-3 sm:mt-0 sm:pt-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs sm:text-sm font-bold text-zinc-400 dark:text-zinc-500">
+                        <span className="text-xs font-bold text-zinc-400 sm:text-sm dark:text-zinc-500">
                           {item.quantity} × ₹
                           {(Number(item.price) || 0).toLocaleString('en-IN', {
                             minimumFractionDigits: 2,
                           })}
                         </span>
-                        <span className="text-lg sm:text-xl md:text-2xl font-black text-black dark:text-white">
+                        <span className="text-lg font-black text-black sm:text-xl md:text-2xl dark:text-white">
                           ₹
                           {((Number(item.price) || 0) * (item.quantity || 1)).toLocaleString(
                             'en-IN',
@@ -996,7 +998,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                       {Math.max(
                         0,
                         (Number(currentOrder.finalAmount ?? currentOrder.total) || 0) -
-                        (Number(currentOrder.advanceAmount) || 200),
+                          (Number(currentOrder.advanceAmount) || 200),
                       ).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
@@ -1064,13 +1066,13 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
               <div className="flex flex-col gap-3 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">Full Name</span>
-                  <span className="font-bold text-black dark:text-white text-right">
+                  <span className="text-right font-bold text-black dark:text-white">
                     {currentOrder.customer.name}
                   </span>
                 </div>
-                <div className="flex items-start justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60 gap-3">
-                  <span className="text-xs font-medium text-zinc-400 shrink-0">Address</span>
-                  <span className="text-right text-xs sm:text-sm font-semibold break-words max-w-[70%]">
+                <div className="flex items-start justify-between gap-3 border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                  <span className="shrink-0 text-xs font-medium text-zinc-400">Address</span>
+                  <span className="max-w-[70%] text-right text-xs font-semibold break-words sm:text-sm">
                     {currentOrder.shippingAddress.building
                       ? `${currentOrder.shippingAddress.building}, `
                       : ''}
@@ -1078,9 +1080,9 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                   </span>
                 </div>
                 {currentOrder.shippingAddress.landmark && (
-                  <div className="flex items-start justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60 gap-3">
-                    <span className="text-xs font-medium text-zinc-400 shrink-0">Landmark</span>
-                    <span className="text-right text-xs font-semibold break-words max-w-[70%]">
+                  <div className="flex items-start justify-between gap-3 border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
+                    <span className="shrink-0 text-xs font-medium text-zinc-400">Landmark</span>
+                    <span className="max-w-[70%] text-right text-xs font-semibold break-words">
                       {currentOrder.shippingAddress.landmark}
                     </span>
                   </div>
@@ -1091,7 +1093,9 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">District</span>
-                  <span className="text-right">{currentOrder.shippingAddress.district ?? 'N/A'}</span>
+                  <span className="text-right">
+                    {currentOrder.shippingAddress.district ?? 'N/A'}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5 dark:border-zinc-800/60">
                   <span className="text-xs font-medium text-zinc-400">State</span>
@@ -1339,8 +1343,8 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
       {isUpdateModalOpen &&
         typeof document !== 'undefined' &&
         createPortal(
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-3 sm:p-4 backdrop-blur-sm">
-            <div className="w-full max-w-md max-h-[92vh] overflow-y-auto rounded-2xl border border-black/10 bg-white p-5 sm:p-6 shadow-xl dark:border-white/10 dark:bg-[#111]">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-4">
+            <div className="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl border border-black/10 bg-white p-5 shadow-xl sm:p-6 dark:border-white/10 dark:bg-[#111]">
               <div className="mb-6 flex items-center justify-between">
                 <h3 className="text-lg font-bold text-black dark:text-white">
                   Update Order Status
@@ -1385,23 +1389,23 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 {(pendingStatus === 'confirmed' ||
                   pendingStatus === 'stock_confirmed' ||
                   pendingStatus === 'processing') && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="mt-2 flex flex-col gap-4 rounded-xl border border-black/5 bg-black/5 p-4 dark:border-white/5 dark:bg-white/5"
-                    >
-                      <div>
-                        <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
-                          Assign Seller
-                        </label>
-                        <CustomSelect
-                          options={sellerOptions}
-                          value={tempSeller}
-                          onChange={setTempSeller}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mt-2 flex flex-col gap-4 rounded-xl border border-black/5 bg-black/5 p-4 dark:border-white/5 dark:bg-white/5"
+                  >
+                    <div>
+                      <label className="mb-2 block text-xs font-bold tracking-wider text-black/50 uppercase dark:text-white/50">
+                        Assign Seller
+                      </label>
+                      <CustomSelect
+                        options={sellerOptions}
+                        value={tempSeller}
+                        onChange={setTempSeller}
+                      />
+                    </div>
+                  </motion.div>
+                )}
 
                 {pendingStatus === 'shipped' && (
                   <motion.div

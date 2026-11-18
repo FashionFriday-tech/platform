@@ -541,10 +541,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
             {/* Cover Background */}
             <div className="h-32 w-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 dark:from-emerald-500/5 dark:via-teal-500/5 dark:to-cyan-500/5" />
 
-            <div className="px-4 sm:px-8 pb-6 sm:pb-8">
-              <div className="-mt-12 sm:-mt-16 flex flex-col gap-5 sm:gap-6 md:flex-row md:items-end md:justify-between">
-                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6 text-center sm:text-left">
-                  <div className="relative h-24 w-24 sm:h-32 sm:w-32 shrink-0 overflow-hidden rounded-2xl sm:rounded-3xl border-4 border-white bg-black dark:border-[#111111]">
+            <div className="px-4 pb-6 sm:px-8 sm:pb-8">
+              <div className="-mt-12 flex flex-col gap-5 sm:-mt-16 sm:gap-6 md:flex-row md:items-end md:justify-between">
+                <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-end sm:gap-6 sm:text-left">
+                  <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-4 border-white bg-black sm:h-32 sm:w-32 sm:rounded-3xl dark:border-[#111111]">
                     <Image
                       src={
                         customer.avatar ||
@@ -557,15 +557,15 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   </div>
 
                   <div className="flex flex-col pb-1 sm:pb-2">
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
-                      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-black dark:text-white">
+                    <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start sm:gap-3">
+                      <h1 className="text-2xl font-extrabold tracking-tight text-black sm:text-3xl dark:text-white">
                         {customer.name}
                       </h1>
                       <span className="flex h-6 items-center rounded-full bg-emerald-500/10 px-2.5 text-[10px] font-bold tracking-wider text-emerald-600 uppercase dark:bg-emerald-500/20 dark:text-emerald-400">
                         {customer.status}
                       </span>
                     </div>
-                    <div className="mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3 sm:gap-4 text-xs sm:text-sm font-semibold text-black/60 dark:text-white/60">
+                    <div className="mt-2 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-black/60 sm:justify-start sm:gap-4 sm:text-sm dark:text-white/60">
                       {mailUrl ? (
                         <a
                           href={mailUrl}
@@ -601,13 +601,13 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 sm:gap-2.5 pb-2">
+                <div className="flex flex-wrap items-center justify-center gap-2 pb-2 sm:gap-2.5 md:justify-end">
                   {waUrl && (
                     <a
                       href={waUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex h-9 sm:h-10 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white active:scale-95 dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
+                      className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3.5 text-xs font-semibold text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white active:scale-95 sm:h-10 sm:gap-2 sm:px-4 sm:text-sm dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
                       title={`Chat with ${customer.name} on WhatsApp`}
                     >
                       <WhatsAppIcon className="h-4 w-4 shrink-0" />
@@ -618,7 +618,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   {telUrl && (
                     <a
                       href={telUrl}
-                      className="flex h-9 sm:h-10 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-blue-600 transition-all hover:bg-blue-500 hover:text-white active:scale-95 dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                      className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-blue-500/20 bg-blue-500/10 px-3.5 text-xs font-semibold text-blue-600 transition-all hover:bg-blue-500 hover:text-white active:scale-95 sm:h-10 sm:gap-2 sm:px-4 sm:text-sm dark:bg-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500 dark:hover:text-white"
                       title={`Call ${customer.phone}`}
                     >
                       <PhoneIcon className="h-4 w-4 shrink-0" />
@@ -629,7 +629,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   {mailUrl && (
                     <a
                       href={mailUrl}
-                      className="flex h-9 sm:h-10 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-purple-500/20 bg-purple-500/10 px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-purple-600 transition-all hover:bg-purple-500 hover:text-white active:scale-95 dark:bg-purple-500/20 dark:text-purple-400 dark:hover:bg-purple-500 dark:hover:text-white"
+                      className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-purple-500/20 bg-purple-500/10 px-3.5 text-xs font-semibold text-purple-600 transition-all hover:bg-purple-500 hover:text-white active:scale-95 sm:h-10 sm:gap-2 sm:px-4 sm:text-sm dark:bg-purple-500/20 dark:text-purple-400 dark:hover:bg-purple-500 dark:hover:text-white"
                       title={`Email ${customer.email}`}
                     >
                       <MailIcon className="h-4 w-4 shrink-0" />
@@ -644,51 +644,51 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       setEditErrors({});
                       setIsEditModalOpen(true);
                     }}
-                    className="flex h-9 sm:h-10 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border border-black/10 bg-transparent px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-black transition-colors hover:bg-black/5 active:scale-95 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+                    className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-transparent px-3.5 text-xs font-semibold text-black transition-colors hover:bg-black/5 active:scale-95 sm:h-10 sm:gap-2 sm:px-4 sm:text-sm dark:border-white/10 dark:text-white dark:hover:bg-white/5"
                   >
                     Edit Profile
                   </button>
                 </div>
               </div>
 
-              <div className="scrollbar-hide mt-6 sm:mt-8 flex gap-3 sm:gap-4 overflow-x-auto pb-1 md:grid md:grid-cols-5 md:overflow-visible md:pb-0">
-                <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
-                  <span className="text-[11px] sm:text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+              <div className="scrollbar-hide mt-6 flex gap-3 overflow-x-auto pb-1 sm:mt-8 sm:gap-4 md:grid md:grid-cols-5 md:overflow-visible md:pb-0">
+                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+                  <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Total Orders
                   </span>
-                  <span className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-black text-black dark:text-white">
+                  <span className="mt-1.5 text-2xl font-black text-black sm:mt-2 sm:text-3xl dark:text-white">
                     {customer.ordersCount}
                   </span>
                 </div>
-                <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
-                  <span className="text-[11px] sm:text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+                  <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Total Spent
                   </span>
-                  <span className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-black text-black dark:text-white">
+                  <span className="mt-1.5 text-2xl font-black text-black sm:mt-2 sm:text-3xl dark:text-white">
                     ₹{customer.totalSpent.toLocaleString('en-IN')}
                   </span>
                 </div>
-                <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
-                  <span className="text-[11px] sm:text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+                  <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Favorites
                   </span>
-                  <span className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-black text-black dark:text-white">
+                  <span className="mt-1.5 text-2xl font-black text-black sm:mt-2 sm:text-3xl dark:text-white">
                     {customer._count?.wishlist || 0}
                   </span>
                 </div>
-                <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
-                  <span className="text-[11px] sm:text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+                  <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Cart Items
                   </span>
-                  <span className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-black text-black dark:text-white">
+                  <span className="mt-1.5 text-2xl font-black text-black sm:mt-2 sm:text-3xl dark:text-white">
                     {customer._count?.cart || 0}
                   </span>
                 </div>
-                <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
-                  <span className="text-[11px] sm:text-xs font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
+                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+                  <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Addresses
                   </span>
-                  <span className="mt-1.5 sm:mt-2 text-2xl sm:text-3xl font-black text-black dark:text-white">
+                  <span className="mt-1.5 text-2xl font-black text-black sm:mt-2 sm:text-3xl dark:text-white">
                     {customer._count?.addresses || 0}
                   </span>
                 </div>
@@ -700,15 +700,15 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
       {/* Tabs and Content Section */}
       <div className="flex flex-col gap-6">
-        <div className="sticky top-0 sm:top-2 z-40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-2 bg-[#f9fafb]/80 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none dark:bg-black/80 dark:sm:bg-transparent">
+        <div className="sticky top-0 z-40 flex flex-col justify-between gap-3 bg-[#f9fafb]/80 py-2 backdrop-blur-md sm:top-2 sm:flex-row sm:items-center sm:bg-transparent sm:backdrop-blur-none dark:bg-black/80 dark:sm:bg-transparent">
           {/* Tabs & Toggle (Left) */}
           <div className="scrollbar-hide flex overflow-x-auto pb-1 sm:pb-0">
-            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 rounded-2xl border border-black/5 bg-[#f8f9fa] p-1 dark:border-white/5 dark:bg-[#111111]">
+            <div className="flex shrink-0 items-center gap-1.5 rounded-2xl border border-black/5 bg-[#f8f9fa] p-1 sm:gap-2 dark:border-white/5 dark:bg-[#111111]">
               <button
                 onClick={() => {
                   setIsProfileBoxOpen(!isProfileBoxOpen);
                 }}
-                className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm transition-all hover:scale-105 active:scale-95 dark:bg-[#222]"
+                className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-sm transition-all hover:scale-105 active:scale-95 sm:h-9 sm:w-9 dark:bg-[#222]"
                 title={isProfileBoxOpen ? 'Collapse Profile' : 'Expand Profile'}
               >
                 <AnimatePresence mode="wait">
@@ -748,50 +748,55 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
               <button
                 onClick={() => fetchTabContent('orders')}
-                className={`flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${activeTab === 'orders'
-                  ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                  : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
-                  }`}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
+                  activeTab === 'orders'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+                }`}
               >
                 <ShoppingBagIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Orders
               </button>
               <button
                 onClick={() => fetchTabContent('favorites')}
-                className={`flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${activeTab === 'favorites'
-                  ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                  : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
-                  }`}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
+                  activeTab === 'favorites'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+                }`}
               >
                 <HeartIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Favorites
               </button>
               <button
                 onClick={() => fetchTabContent('cart')}
-                className={`flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${activeTab === 'cart'
-                  ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                  : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
-                  }`}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
+                  activeTab === 'cart'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+                }`}
               >
                 <ShoppingCartIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Cart
               </button>
               <button
                 onClick={() => fetchTabContent('addresses')}
-                className={`flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${activeTab === 'addresses'
-                  ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                  : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
-                  }`}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
+                  activeTab === 'addresses'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+                }`}
               >
                 <MapPinIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Addresses
               </button>
               <button
                 onClick={() => fetchTabContent('payments')}
-                className={`flex items-center gap-1.5 sm:gap-2 rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${activeTab === 'payments'
-                  ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
-                  : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
-                  }`}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
+                  activeTab === 'payments'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+                }`}
               >
                 <CreditCardIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Payments
@@ -800,7 +805,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
           </div>
 
           {/* Action Buttons (Right) */}
-          <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
+          <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
             {!isProfileBoxOpen && (
               <div className="mr-1 hidden items-center gap-1.5 sm:flex">
                 {waUrl && (
@@ -839,7 +844,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 onClick={() => {
                   setIsOrderModalOpen(true);
                 }}
-                className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-xs font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 sm:flex-initial sm:text-sm dark:bg-white dark:text-black dark:hover:bg-white/80"
               >
                 <PlusIcon className="h-4 w-4" />
                 Create Order
@@ -860,7 +865,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                   setAddrLandmark('');
                   setIsAddressModalOpen(true);
                 }}
-                className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-xs font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 sm:flex-initial sm:text-sm dark:bg-white dark:text-black dark:hover:bg-white/80"
               >
                 <PlusIcon className="h-4 w-4" />
                 Add Address
@@ -871,7 +876,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
               <button
                 onClick={() => handleCartCheckout()}
                 disabled={isCheckingOut}
-                className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/80"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-xs font-semibold whitespace-nowrap text-white transition-all hover:scale-105 hover:bg-black/80 active:scale-95 disabled:opacity-50 sm:flex-initial sm:text-sm dark:bg-white dark:text-black dark:hover:bg-white/80"
               >
                 {isCheckingOut ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white dark:border-black/20 dark:border-t-black" />
@@ -900,7 +905,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     order.items?.reduce((acc, it) => acc + (it.quantity || 1), 0) || 1;
                   const itemImage =
                     firstItem?.image &&
-                      !firstItem.image.includes('photo-1523381210434-271e8be1f52b')
+                    !firstItem.image.includes('photo-1523381210434-271e8be1f52b')
                       ? firstItem.image
                       : null;
 
@@ -935,15 +940,16 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
                         {/* Status Badge */}
                         <span
-                          className={`absolute top-2 right-2 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider uppercase shadow-sm backdrop-blur-md ${order.status?.toLowerCase() === 'delivered'
-                            ? 'bg-emerald-500 text-white'
-                            : order.status?.toLowerCase() === 'cancelled'
-                              ? 'bg-red-500 text-white'
-                              : order.status?.toLowerCase() === 'shipped' ||
-                                order.status?.toLowerCase() === 'confirmed'
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-amber-400 text-amber-950'
-                            }`}
+                          className={`absolute top-2 right-2 rounded-full px-2.5 py-0.5 text-[10px] font-extrabold tracking-wider uppercase shadow-sm backdrop-blur-md ${
+                            order.status?.toLowerCase() === 'delivered'
+                              ? 'bg-emerald-500 text-white'
+                              : order.status?.toLowerCase() === 'cancelled'
+                                ? 'bg-red-500 text-white'
+                                : order.status?.toLowerCase() === 'shipped' ||
+                                    order.status?.toLowerCase() === 'confirmed'
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-amber-400 text-amber-950'
+                          }`}
                         >
                           {order.status}
                         </span>
@@ -1201,9 +1207,9 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                       )}
                     </div>
 
-                    <div className="mt-2 flex flex-col gap-2 text-xs sm:text-sm text-black/80 dark:text-white/80">
+                    <div className="mt-2 flex flex-col gap-2 text-xs text-black/80 sm:text-sm dark:text-white/80">
                       <div className="flex items-start gap-2">
-                        <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                        <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                           Name :
                         </span>
                         <span className="font-medium text-black dark:text-white">
@@ -1211,14 +1217,14 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         </span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                        <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                           Address :
                         </span>
-                        <span className="leading-relaxed text-black dark:text-white break-words">
+                        <span className="leading-relaxed break-words text-black dark:text-white">
                           {[
                             address.building,
                             address.street +
-                            (address.landmark ? ` (near ${address.landmark})` : ''),
+                              (address.landmark ? ` (near ${address.landmark})` : ''),
                             address.city,
                             address.district,
                             address.state,
@@ -1229,39 +1235,39 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         </span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                        <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                           City :
                         </span>
                         <span>{address.city}</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                        <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                           District :
                         </span>
                         <span>{address.district}</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                        <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                           State :
                         </span>
                         <span>{address.state}</span>
                       </div>
                       <div className="flex items-start gap-2">
-                        <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                        <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                           Pincode :
                         </span>
                         <span>{address.pincode}</span>
                       </div>
                       {address.landmark && (
                         <div className="flex items-start gap-2">
-                          <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                             Landmark :
                           </span>
                           <span>{address.landmark}</span>
                         </div>
                       )}
                       <div className="flex items-center gap-2">
-                        <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                        <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                           Mobile :
                         </span>
                         <span className="font-medium text-black dark:text-white">
@@ -1294,7 +1300,7 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                       </div>
                       {address.altPhoneNumber && (
                         <div className="flex items-center gap-2">
-                          <span className="w-20 sm:w-28 shrink-0 font-semibold text-black/50 dark:text-white/50">
+                          <span className="w-20 shrink-0 font-semibold text-black/50 sm:w-28 dark:text-white/50">
                             Alt Number :
                           </span>
                           <span className="font-medium text-black dark:text-white">
@@ -1366,14 +1372,15 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                         ₹{order.total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                       </span>
                       <span
-                        className={`flex h-6 items-center rounded-full px-2.5 text-[10px] font-bold tracking-wider uppercase ${order.paymentStatus === 'CAPTURED' || order.paymentStatus === 'SUCCESS'
-                          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                          : order.paymentStatus === 'AUTHORIZED'
-                            ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                            : order.paymentStatus === 'FAILED'
-                              ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                          }`}
+                        className={`flex h-6 items-center rounded-full px-2.5 text-[10px] font-bold tracking-wider uppercase ${
+                          order.paymentStatus === 'CAPTURED' || order.paymentStatus === 'SUCCESS'
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                            : order.paymentStatus === 'AUTHORIZED'
+                              ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                              : order.paymentStatus === 'FAILED'
+                                ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                        }`}
                       >
                         {order.paymentStatus}
                       </span>

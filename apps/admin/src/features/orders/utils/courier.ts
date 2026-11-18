@@ -17,7 +17,7 @@ export function getTrackingUrl(
   }
 
   const cleanId = trackingId.trim();
-  if (!cleanId || !/^[a-zA-Z0-9_\-\.]+$/.test(cleanId)) {
+  if (!cleanId || !/^[a-zA-Z0-9_.-]+$/.test(cleanId)) {
     return '#';
   }
 

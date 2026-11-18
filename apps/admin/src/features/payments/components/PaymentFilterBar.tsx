@@ -65,7 +65,7 @@ export function PaymentFilterBar({
             placeholder="Search by Order #, Payment ID (pay_...), Customer, Phone, Email, Bank RRN..."
             className="w-full rounded-2xl border border-black/10 bg-white/80 py-2.5 pr-28 pl-11 text-xs font-semibold text-black placeholder:text-black/40 focus:border-black/30 focus:outline-hidden dark:border-white/10 dark:bg-[#121212]/80 dark:text-white dark:placeholder:text-white/40 dark:focus:border-white/30"
           />
-          <div className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center gap-1.5">
+          <div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1.5">
             {searchQuery && (
               <button
                 type="button"

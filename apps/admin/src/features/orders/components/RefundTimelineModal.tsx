@@ -3,14 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import {
-  CheckIcon,
-  ClockIcon,
-  CloseIcon,
-  CopyIcon,
-  RefreshCcwIcon,
-  ShieldCheckIcon,
-} from '@ff/ui';
+import { CheckIcon, ClockIcon, CloseIcon, CopyIcon, RefreshCcwIcon, ShieldCheckIcon } from '@ff/ui';
 import { WhatsAppIcon } from '@ff/ui/icons';
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
@@ -49,7 +42,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
           setHasError(true);
         }
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('Failed to load refund timeline for admin:', err);
         setHasError(true);
       })
@@ -99,7 +92,11 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
   const handleShareWhatsApp = () => {
     const phone = order.customer?.phone || order.shippingAddress?.phoneNumber || '';
     const cleanPhone = phone.replace(/\D/g, '');
-    const recipient = cleanPhone ? (cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`) : '';
+    const recipient = cleanPhone
+      ? cleanPhone.startsWith('91')
+        ? cleanPhone
+        : `91${cleanPhone}`
+      : '';
 
     const lines = [
       `*Fashion Friday Refund Update*`,
@@ -165,7 +162,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
             </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-4 dark:border-zinc-800 sm:px-6">
+            <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-4 sm:px-6 dark:border-zinc-800">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                   <RefreshCcwIcon size={20} />
@@ -180,7 +177,8 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                     </span>
                   </div>
                   <p className="font-mono text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                    Order #{order.orderNumber || order.id} • Customer: {order.customer?.name || 'Guest'}
+                    Order #{order.orderNumber || order.id} • Customer:{' '}
+                    {order.customer?.name || 'Guest'}
                   </p>
                 </div>
               </div>
@@ -231,7 +229,8 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                     Could not fetch Razorpay refund details
                   </h4>
                   <p className="mt-1 max-w-xs text-xs text-zinc-500 dark:text-zinc-400">
-                    Failed to query gateway records for this order. Make sure Razorpay keys are configured and the payment exists.
+                    Failed to query gateway records for this order. Make sure Razorpay keys are
+                    configured and the payment exists.
                   </p>
                   <button
                     type="button"
@@ -314,7 +313,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                           </button>
                         )}
                       </div>
-                      <p className="mt-1 font-mono text-sm font-black tracking-wider text-emerald-600 dark:text-emerald-400 sm:text-base">
+                      <p className="mt-1 font-mono text-sm font-black tracking-wider text-emerald-600 sm:text-base dark:text-emerald-400">
                         {bankRrn || 'Awaiting RRN generation'}
                       </p>
                       <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
@@ -348,11 +347,14 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                           </button>
                         )}
                       </div>
-                      <p className="mt-1 truncate font-mono text-xs font-bold text-zinc-900 dark:text-white sm:text-sm">
+                      <p className="mt-1 truncate font-mono text-xs font-bold text-zinc-900 sm:text-sm dark:text-white">
                         {data?.refundId || 'N/A'}
                       </p>
                       <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
-                        Status: <span className="font-semibold uppercase">{data?.refundStatus || 'Processing'}</span>
+                        Status:{' '}
+                        <span className="font-semibold uppercase">
+                          {data?.refundStatus || 'Processing'}
+                        </span>
                       </p>
                     </div>
 
@@ -382,11 +384,14 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                           </button>
                         )}
                       </div>
-                      <p className="mt-1 truncate font-mono text-xs font-bold text-zinc-900 dark:text-white sm:text-sm">
+                      <p className="mt-1 truncate font-mono text-xs font-bold text-zinc-900 sm:text-sm dark:text-white">
                         {data?.paymentId || order.razorpayPaymentId || 'N/A'}
                       </p>
                       <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
-                        Method: <span className="font-semibold uppercase">{data?.paymentMethod || order.paymentMethod || 'Online'}</span>
+                        Method:{' '}
+                        <span className="font-semibold uppercase">
+                          {data?.paymentMethod || order.paymentMethod || 'Online'}
+                        </span>
                       </p>
                     </div>
 
@@ -395,7 +400,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                       <span className="text-[10px] font-black tracking-wider text-zinc-500 uppercase dark:text-zinc-400">
                         Refund Destination Account
                       </span>
-                      <p className="mt-1 truncate text-xs font-bold text-zinc-900 dark:text-white sm:text-sm">
+                      <p className="mt-1 truncate text-xs font-bold text-zinc-900 sm:text-sm dark:text-white">
                         {data?.paymentAccount || 'Original Source Account'}
                       </p>
                       <p className="mt-1 text-[10px] text-zinc-500 dark:text-zinc-400">
@@ -411,7 +416,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                     </h4>
                     <div className="relative pl-7 sm:pl-8">
                       {/* Vertical Spine Bar */}
-                      <div className="absolute top-4 bottom-4 left-3 w-0.5 -translate-x-1/2 bg-zinc-200 dark:bg-zinc-800 sm:left-3.5" />
+                      <div className="absolute top-4 bottom-4 left-3 w-0.5 -translate-x-1/2 bg-zinc-200 sm:left-3.5 dark:bg-zinc-800" />
 
                       <div className="space-y-6 sm:space-y-7">
                         {data?.timeline?.map((step, idx) => {
@@ -479,9 +484,13 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
 
                   {/* Trust Footer Notice */}
                   <div className="flex items-center gap-3 rounded-2xl border border-zinc-200/80 bg-zinc-50 p-3.5 text-xs text-zinc-600 dark:border-zinc-800/80 dark:bg-zinc-900/40 dark:text-zinc-400">
-                    <ShieldCheckIcon size={18} className="shrink-0 text-emerald-600 dark:text-emerald-400" />
+                    <ShieldCheckIcon
+                      size={18}
+                      className="shrink-0 text-emerald-600 dark:text-emerald-400"
+                    />
                     <span>
-                      Live gateway sync powered directly by Razorpay Payments API. All reference numbers and RRNs are official bank settlement records.
+                      Live gateway sync powered directly by Razorpay Payments API. All reference
+                      numbers and RRNs are official bank settlement records.
                     </span>
                   </div>
                 </>
@@ -489,7 +498,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
             </div>
 
             {/* Footer Close Bar */}
-            <div className="flex items-center justify-end border-t border-zinc-200 bg-zinc-50 px-5 py-3.5 dark:border-zinc-800 dark:bg-zinc-900/60 sm:px-6">
+            <div className="flex items-center justify-end border-t border-zinc-200 bg-zinc-50 px-5 py-3.5 sm:px-6 dark:border-zinc-800 dark:bg-zinc-900/60">
               <button
                 type="button"
                 onClick={onClose}

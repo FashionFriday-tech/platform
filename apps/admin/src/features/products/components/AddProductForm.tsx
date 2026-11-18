@@ -2189,7 +2189,7 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                       Cash on Delivery (COD)
                     </span>
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-black tracking-wider uppercase ${
                         isCodAvailable
                           ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
                           : 'bg-black/10 text-black/60 dark:bg-white/10 dark:text-white/60'
