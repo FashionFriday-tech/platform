@@ -40,7 +40,6 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders'>('overview');
-
   const { orders, products, isLoadingOrders, isLoadingProducts } = useSellerDetails(sellerId);
 
   const fetchSeller = useCallback(async () => {
@@ -200,29 +199,28 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
         {/* Cover Gradient Background */}
         <div className="h-32 w-full bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 dark:from-emerald-500/10 dark:via-teal-500/5 dark:to-indigo-500/10" />
 
-        <div className="px-8 pb-8">
-          <div className="-mt-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="px-4 sm:px-8 pb-6 sm:pb-8">
+          <div className="-mt-12 sm:-mt-16 flex flex-col gap-5 sm:gap-6 md:flex-row md:items-end md:justify-between">
             {/* Store Avatar & Basic Info */}
-            <div className="flex items-end gap-6">
-              <div className="relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-3xl border-4 border-white bg-black shadow-md dark:border-[#111111] dark:bg-white">
-                <span className="text-3xl font-black text-white dark:text-black">
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-6 text-center sm:text-left">
+              <div className="relative flex h-24 w-24 sm:h-28 sm:w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border-4 border-white bg-black shadow-md dark:border-[#111111] dark:bg-white">
+                <span className="text-2xl sm:text-3xl font-black text-white dark:text-black">
                   {seller.storeName.charAt(0).toUpperCase()}
                 </span>
               </div>
 
               <div className="flex flex-col pb-1">
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 sm:gap-3">
                   <h1 className="text-2xl font-black tracking-tight text-black md:text-3xl dark:text-white">
                     {seller.storeName}
                   </h1>
                   <span
-                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase ${
-                      seller.status === 'ACTIVE'
-                        ? 'border-emerald-500/20 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
-                        : seller.status === 'INACTIVE'
-                          ? 'border-zinc-300 bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
-                          : 'border-amber-500/20 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'
-                    }`}
+                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase ${seller.status === 'ACTIVE'
+                      ? 'border-emerald-500/20 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
+                      : seller.status === 'INACTIVE'
+                        ? 'border-zinc-300 bg-zinc-100 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400'
+                        : 'border-amber-500/20 bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'
+                      }`}
                   >
                     {seller.status}
                   </span>
@@ -231,7 +229,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                   Contact Person:{' '}
                   <span className="font-bold text-black dark:text-white">{seller.name}</span>
                 </p>
-                <div className="mt-2.5 flex flex-wrap items-center gap-4 text-xs font-semibold text-black/60 dark:text-white/60">
+                <div className="mt-2.5 flex flex-wrap items-center justify-center sm:justify-start gap-3 sm:gap-4 text-xs font-semibold text-black/60 dark:text-white/60">
                   <span className="flex items-center gap-1.5">
                     <PhoneIcon className="h-3.5 w-3.5 text-black/40 dark:text-white/40" />
                     {seller.phone}
@@ -255,7 +253,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                     <a
                       href={
                         seller.website.startsWith('http://') ||
-                        seller.website.startsWith('https://')
+                          seller.website.startsWith('https://')
                           ? seller.website
                           : `https://${seller.website}`
                       }
@@ -274,7 +272,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                     <a
                       href={
                         seller.instagram.startsWith('http://') ||
-                        seller.instagram.startsWith('https://')
+                          seller.instagram.startsWith('https://')
                           ? seller.instagram
                           : `https://instagram.com/${seller.instagram.replace(/^@/, '')}`
                       }
@@ -296,7 +294,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
             </div>
 
             {/* Action Buttons Under Detail Page */}
-            <div className="flex flex-wrap items-center gap-2 pb-1">
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 pb-1">
               {/* Call */}
               <a
                 href={`tel:${seller.phone}`}
@@ -309,11 +307,10 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
 
               {/* WhatsApp */}
               <a
-                href={`https://wa.me/${
-                  seller.phone.replace(/\D/g, '').length === 10
-                    ? '91' + seller.phone.replace(/\D/g, '')
-                    : seller.phone.replace(/\D/g, '')
-                }`}
+                href={`https://wa.me/${seller.phone.replace(/\D/g, '').length === 10
+                  ? '91' + seller.phone.replace(/\D/g, '')
+                  : seller.phone.replace(/\D/g, '')
+                  }`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3.5 text-xs font-bold text-emerald-600 shadow-xs transition-colors hover:bg-emerald-500/20 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500/30"
@@ -340,7 +337,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                 <a
                   href={
                     seller.instagram.startsWith('http://') ||
-                    seller.instagram.startsWith('https://')
+                      seller.instagram.startsWith('https://')
                       ? seller.instagram
                       : `https://instagram.com/${seller.instagram.replace(/^@/, '')}`
                   }
@@ -389,54 +386,53 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="scrollbar-hide mt-8 flex gap-3.5 overflow-x-auto pb-1 md:grid md:grid-cols-5 md:overflow-visible md:pb-0">
-            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
+          <div className="scrollbar-hide mt-6 sm:mt-8 flex gap-3 sm:gap-3.5 overflow-x-auto pb-1 md:grid md:grid-cols-5 md:overflow-visible md:pb-0">
+            <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-3.5 sm:p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Total Products
               </span>
-              <span className="mt-1.5 text-2xl font-black text-black dark:text-white">
+              <span className="mt-1.5 text-xl sm:text-2xl font-black text-black dark:text-white">
                 {products.length}
               </span>
             </div>
 
-            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
+            <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-3.5 sm:p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Total Orders
               </span>
-              <span className="mt-1.5 text-2xl font-black text-black dark:text-white">
+              <span className="mt-1.5 text-xl sm:text-2xl font-black text-black dark:text-white">
                 {orders.length}
               </span>
             </div>
 
-            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
+            <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-3.5 sm:p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Complaints
               </span>
               <span
-                className={`mt-1.5 text-2xl font-black ${
-                  complaintsCount > 0
-                    ? 'text-rose-600 dark:text-rose-400'
-                    : 'text-black dark:text-white'
-                }`}
+                className={`mt-1.5 text-xl sm:text-2xl font-black ${complaintsCount > 0
+                  ? 'text-rose-600 dark:text-rose-400'
+                  : 'text-black dark:text-white'
+                  }`}
               >
                 {complaintsCount}
               </span>
             </div>
 
-            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
+            <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-3.5 sm:p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Items Sold
               </span>
-              <span className="mt-1.5 text-2xl font-black text-black dark:text-white">
+              <span className="mt-1.5 text-xl sm:text-2xl font-black text-black dark:text-white">
                 {totalItemsSold}
               </span>
             </div>
 
-            <div className="flex min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
+            <div className="flex min-w-[140px] sm:min-w-[170px] shrink-0 flex-col rounded-2xl border border-black/5 bg-[#f8f9fa] p-3.5 sm:p-4.5 md:min-w-0 md:shrink dark:border-white/5 dark:bg-[#1a1a1a]">
               <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase dark:text-white/40">
                 Total Revenue
               </span>
-              <span className="mt-1.5 text-2xl font-black text-emerald-600 dark:text-emerald-400">
+              <span className="mt-1.5 text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
                 ₹{totalRevenue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </span>
             </div>
@@ -511,11 +507,10 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                 onClick={() => {
                   void handleToggleStatus(st);
                 }}
-                className={`rounded-xl border px-3 py-1 text-xs font-bold uppercase transition-all ${
-                  seller.status === st
-                    ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                    : 'border-black/10 bg-white text-black/60 hover:bg-black/5 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/60 dark:hover:bg-white/5'
-                }`}
+                className={`rounded-xl border px-3 py-1 text-xs font-bold uppercase transition-all ${seller.status === st
+                  ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                  : 'border-black/10 bg-white text-black/60 hover:bg-black/5 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/60 dark:hover:bg-white/5'
+                  }`}
               >
                 {st}
               </button>
@@ -536,11 +531,10 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
             onClick={() => {
               setActiveTab(tab.id as 'overview' | 'products' | 'orders');
             }}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-              activeTab === tab.id
-                ? 'bg-black text-white shadow-xs dark:bg-white dark:text-black'
-                : 'bg-black/5 text-black/60 hover:bg-black/10 hover:text-black dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white'
-            }`}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${activeTab === tab.id
+              ? 'bg-black text-white shadow-xs dark:bg-white dark:text-black'
+              : 'bg-black/5 text-black/60 hover:bg-black/10 hover:text-black dark:bg-white/5 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white'
+              }`}
           >
             <tab.icon className="h-3.5 w-3.5" />
             <span>{tab.label}</span>
@@ -587,7 +581,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                     <a
                       href={
                         seller.website.startsWith('http://') ||
-                        seller.website.startsWith('https://')
+                          seller.website.startsWith('https://')
                           ? seller.website
                           : `https://${seller.website}`
                       }
@@ -607,7 +601,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                     <a
                       href={
                         seller.instagram.startsWith('http://') ||
-                        seller.instagram.startsWith('https://')
+                          seller.instagram.startsWith('https://')
                           ? seller.instagram
                           : `https://instagram.com/${seller.instagram.replace(/^@/, '')}`
                       }
@@ -626,10 +620,10 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
                   <span className="font-bold text-black dark:text-white">
                     {seller.createdAt
                       ? new Date(seller.createdAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })
                       : 'N/A'}
                   </span>
                 </div>
