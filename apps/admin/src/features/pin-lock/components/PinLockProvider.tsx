@@ -12,7 +12,7 @@ interface PinLockProviderProps {
   children: React.ReactNode;
 }
 
-const INACTIVITY_TIMEOUT_MS = 12 * 60 * 60 * 1000; // 12 hours of zero interaction
+const INACTIVITY_TIMEOUT_MS = 30 * 24 * 60 * 60 * 1000; // 30 days of inactivity timeout for seamless admin experience
 
 export function PinLockProvider({ children }: PinLockProviderProps) {
   const { user } = useAuth();
@@ -32,7 +32,28 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
       if (typeof window !== 'undefined') {
         const sessionUnlocked = sessionStorage.getItem('ff_admin_pin_unlocked') === 'true';
         const unlockUntil = Number(localStorage.getItem('ff_admin_pin_unlocked_until') || 0);
-        isUnlockedInSession = sessionUnlocked || unlockUntil > Date.now();
+
+        if (sessionUnlocked || unlockUntil > Date.now()) {
+          isUnlockedInSession = true;
+          // Refresh unlock expiration to 180 days on active session usage
+          if (unlockUntil <= Date.now() + 30 * 24 * 60 * 60 * 1000) {
+            localStorage.setItem(
+              'ff_admin_pin_unlocked_until',
+              String(Date.now() + 180 * 24 * 60 * 60 * 1000),
+            );
+          }
+        } else if (
+          localStorage.getItem('adminAccessToken') ||
+          localStorage.getItem('ff_admin_user')
+        ) {
+          // Device has existing valid authenticated admin credentials: keep unlocked
+          isUnlockedInSession = true;
+          sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
+          localStorage.setItem(
+            'ff_admin_pin_unlocked_until',
+            String(Date.now() + 180 * 24 * 60 * 60 * 1000),
+          );
+        }
       }
     } catch {
       // sessionStorage restricted or partitioned in Safari

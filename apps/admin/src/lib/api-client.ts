@@ -31,7 +31,15 @@ async function refreshAccessToken(): Promise<string | null> {
     });
 
     if (!res.ok) {
-      throw new Error('Refresh failed');
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem('adminAccessToken');
+        localStorage.removeItem('adminRefreshToken');
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          localStorage.removeItem('ff_admin_user');
+          window.location.href = '/login';
+        }
+      }
+      return null;
     }
 
     const data = (await res.json()) as { accessToken?: string; refreshToken?: string };
@@ -42,13 +50,8 @@ async function refreshAccessToken(): Promise<string | null> {
       localStorage.setItem('adminRefreshToken', data.refreshToken);
     }
     return data.accessToken ?? 'cookie-refreshed';
-  } catch {
-    localStorage.removeItem('adminAccessToken');
-    localStorage.removeItem('adminRefreshToken');
-    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-      localStorage.removeItem('ff_admin_user');
-      window.location.href = '/login';
-    }
+  } catch (err) {
+    console.warn('[Admin API Client] Token refresh network error, retaining session:', err);
     return null;
   }
 }

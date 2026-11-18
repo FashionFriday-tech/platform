@@ -173,7 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Heartbeat check every 5 minutes (reduced from aggressive 15-second spam)
+    // Heartbeat check every 15 minutes to verify active user status
     const interval = setInterval(
       async () => {
         const isValid = await verifySessionWithServer(user);
@@ -181,21 +181,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           logout();
         }
       },
-      5 * 60 * 1000,
+      15 * 60 * 1000,
     );
-
-    const handleFocus = async () => {
-      const isValid = await verifySessionWithServer(user);
-      if (!isValid) {
-        logout();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener('focus', handleFocus);
     };
   }, [user, verifySessionWithServer, logout]);
 
