@@ -9,25 +9,31 @@ function levenshteinDistance(s1: string, s2: string): number {
     return 0;
   }
 
-  // Prevent loop bound injection: strictly guard maximum length before loop execution
+  // Constrain string lengths using Math.min to prevent loop bound injection (DoS)
   const MAX_SEARCH_LEN = 32;
-  if (s1.length > MAX_SEARCH_LEN || s2.length > MAX_SEARCH_LEN) {
-    return MAX_SEARCH_LEN;
+  const len1 = Math.min(s1.length, MAX_SEARCH_LEN);
+  const len2 = Math.min(s2.length, MAX_SEARCH_LEN);
+
+  if (len1 === 0) {
+    return len2;
+  }
+  if (len2 === 0) {
+    return len1;
   }
 
-  const a = s1.toLowerCase();
-  const b = s2.toLowerCase();
+  const a = s1.slice(0, len1).toLowerCase();
+  const b = s2.slice(0, len2).toLowerCase();
   const matrix: number[][] = [];
 
-  for (let i = 0; i <= b.length; i++) {
+  for (let i = 0; i <= len2; i++) {
     matrix[i] = [i];
   }
-  for (let j = 0; j <= a.length; j++) {
+  for (let j = 0; j <= len1; j++) {
     matrix[0][j] = j;
   }
 
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
+  for (let i = 1; i <= len2; i++) {
+    for (let j = 1; j <= len1; j++) {
       if (b.charAt(i - 1) === a.charAt(j - 1)) {
         matrix[i][j] = matrix[i - 1][j - 1];
       } else {
@@ -40,7 +46,7 @@ function levenshteinDistance(s1: string, s2: string): number {
     }
   }
 
-  return matrix[b.length][a.length];
+  return matrix[len2][len1];
 }
 
 const SYNONYM_MAP: Record<string, string[]> = {

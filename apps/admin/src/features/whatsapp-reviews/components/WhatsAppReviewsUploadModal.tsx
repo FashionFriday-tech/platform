@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 
-import { AlertCircleIcon, CheckCircleIcon, CloseIcon } from '@ff/ui';
+import { AlertCircleIcon, CheckCircleIcon, CloseIcon, ImageIcon } from '@ff/ui';
 
 export interface UploadItemProgress {
   id: string;
@@ -147,15 +146,9 @@ export function WhatsAppReviewsUploadModal({
               }`}
             >
               <div className="flex min-w-0 items-center gap-3">
-                {/* Thumbnail Preview */}
-                <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded-xl border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
-                  <Image
-                    src={item.previewUrl}
-                    alt={item.fileName}
-                    fill
-                    unoptimized
-                    className="h-full w-full object-cover"
-                  />
+                {/* Thumbnail Icon */}
+                <div className="flex h-12 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
+                  <ImageIcon className="h-5 w-5 text-black/40 dark:text-white/40" />
                 </div>
 
                 {/* File Details */}

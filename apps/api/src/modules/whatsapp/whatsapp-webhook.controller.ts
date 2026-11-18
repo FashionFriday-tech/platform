@@ -1,5 +1,14 @@
-import { Body, Controller, Get, HttpStatus, Logger, Post, Query, Res } from '@nestjs/common';
-import type { Response } from 'express';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Header,
+  Logger,
+  Post,
+  Query,
+} from '@nestjs/common';
 
 import { WhatsAppService } from './whatsapp.service';
 
@@ -15,31 +24,29 @@ export class WhatsAppWebhookController {
    * If token matches, we must respond with HTTP 200 and the hub.challenge value as the response body.
    */
   @Get()
+  @Header('Content-Type', 'text/plain; charset=utf-8')
+  @Header('X-Content-Type-Options', 'nosniff')
   verifyWebhook(
     @Query('hub.mode') mode: string,
     @Query('hub.verify_token') token: string,
     @Query('hub.challenge') challenge: string,
-    @Res() res: Response,
-  ) {
+  ): string {
     const expectedToken = this.whatsAppService.getWebhookVerifyToken();
 
     if (mode === 'subscribe' && token === expectedToken) {
-      // Validate challenge strictly conforms to alphanumeric format expected from Meta to prevent reflected XSS
-      const isAlphanumeric = typeof challenge === 'string' && /^[a-zA-Z0-9_-]+$/.test(challenge);
-      if (!isAlphanumeric) {
-        this.logger.warn('WhatsApp webhook verification rejected: Invalid challenge format.');
-        return res.status(HttpStatus.BAD_REQUEST).type('text/plain').send('Invalid challenge');
+      if (typeof challenge === 'string' && /^[a-zA-Z0-9_-]{1,128}$/.test(challenge)) {
+        this.logger.log('WhatsApp webhook verified successfully.');
+        return challenge;
       }
 
-      this.logger.log('WhatsApp webhook verified successfully.');
-      const sanitizedChallenge = encodeURIComponent(challenge);
-      return res.status(HttpStatus.OK).type('text/plain').send(sanitizedChallenge);
+      this.logger.warn('WhatsApp webhook verification rejected: Invalid challenge format.');
+      throw new BadRequestException('Invalid challenge');
     }
 
     this.logger.warn(
       `WhatsApp webhook verification failed. Received mode: "${mode}", token: "${token}". Expected token: "${expectedToken}"`,
     );
-    return res.status(HttpStatus.FORBIDDEN).send('Verification token mismatch');
+    throw new ForbiddenException('Verification token mismatch');
   }
 
   /**
@@ -47,8 +54,9 @@ export class WhatsAppWebhookController {
    * Must always respond with HTTP 200 to acknowledge receipt.
    */
   @Post()
-  handleWebhook(@Body() body: Record<string, unknown>, @Res() res: Response) {
+  @Header('Content-Type', 'text/plain; charset=utf-8')
+  handleWebhook(@Body() body: Record<string, unknown>): string {
     this.whatsAppService.handleIncomingWebhook(body);
-    return res.status(HttpStatus.OK).send('EVENT_RECEIVED');
+    return 'EVENT_RECEIVED';
   }
 }

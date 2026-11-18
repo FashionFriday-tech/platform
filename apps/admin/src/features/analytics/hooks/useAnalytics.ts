@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { api } from '@/lib/api-client';
+
 import { type AnalyticsPayload } from '../types';
 
 const STORAGE_KEY = 'ff_admin_analytics_cache_v1';

@@ -251,6 +251,30 @@ export function usePayments() {
     }
   }, []);
 
+  // Listen for order updates across admin and other tabs to reactively refresh payments
+  useEffect(() => {
+    const handleSync = () => {
+      void fetchPayments();
+      void fetchStats();
+      if (selectedPaymentId) {
+        void fetchPaymentDetails(selectedPaymentId);
+      }
+    };
+
+    window.addEventListener('ff-orders-updated', handleSync);
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'ff_order_mutation_ts') {
+        handleSync();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener('ff-orders-updated', handleSync);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [fetchPayments, fetchStats, fetchPaymentDetails, selectedPaymentId]);
+
   // Action: Live Sync with Gateway
   const handleSyncGateway = async (id: string) => {
     try {

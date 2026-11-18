@@ -23,38 +23,96 @@ export function ImageCropModal({
   title = 'Crop & Frame Image',
 }: ImageCropModalProps) {
   const defaultAspect = aspectRatio ?? 3 / 4;
-  const [imgSrc, setImgSrc] = useState('');
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isLocked, setIsLocked] = useState(true);
   const [selectedAspect, setSelectedAspect] = useState<number | undefined>(defaultAspect);
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Set up image source from File or URL string
+  // Set up canvas from File or URL string
   useEffect(() => {
-    if (typeof file !== 'string') {
-      const objectUrl = URL.createObjectURL(file);
-      setImgSrc(objectUrl);
-      return () => {
-        URL.revokeObjectURL(objectUrl);
-      };
-    }
+    let active = true;
+    setIsLoaded(false);
 
-    if (
-      (file.startsWith('https://') || file.startsWith('http://') || file.startsWith('blob:')) &&
-      !file.includes('javascript:')
-    ) {
-      setImgSrc(encodeURI(file));
-    }
+    const loadCanvas = async () => {
+      try {
+        let bitmap: ImageBitmap;
+        if (typeof file === 'string') {
+          const safeUrl =
+            file.startsWith('https://') ||
+            file.startsWith('http://') ||
+            (file.startsWith('/') && !file.startsWith('//'))
+              ? file
+              : null;
+          if (!safeUrl) return;
+          const resp = await fetch(safeUrl);
+          const blob = await resp.blob();
+          bitmap = await createImageBitmap(blob);
+        } else {
+          bitmap = await createImageBitmap(file);
+        }
+
+        if (!active) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(bitmap, 0, 0);
+        }
+
+        setIsLoaded(true);
+
+        const width = canvas.clientWidth || bitmap.width;
+        const height = canvas.clientHeight || bitmap.height;
+        const initialCrop =
+          isLocked && selectedAspect
+            ? centerCrop(
+                makeAspectCrop(
+                  {
+                    unit: '%',
+                    width: 90,
+                  },
+                  selectedAspect,
+                  width,
+                  height,
+                ),
+                width,
+                height,
+              )
+            : {
+                unit: '%' as const,
+                width: 90,
+                height: 90,
+                x: 5,
+                y: 5,
+              };
+
+        setCrop(initialCrop);
+        setCompletedCrop(initialCrop);
+      } catch (e) {
+        console.error('Failed to load image for cropping:', e);
+      }
+    };
+
+    void loadCanvas();
+
+    return () => {
+      active = false;
+    };
   }, [file]);
 
   const applyCropWithAspect = (targetAspect: number | undefined, locked: boolean) => {
-    const image = imgRef.current;
-    if (!image) {
+    const canvas = canvasRef.current;
+    if (!canvas) {
       return;
     }
 
-    const { width, height } = image;
+    const width = canvas.clientWidth || canvas.width;
+    const height = canvas.clientHeight || canvas.height;
     let newCrop: Crop;
 
     if (locked && targetAspect) {
@@ -85,36 +143,6 @@ export function ImageCropModal({
     setCompletedCrop(newCrop);
   };
 
-  const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const { width, height } = e.currentTarget;
-
-    const initialCrop =
-      isLocked && selectedAspect
-        ? centerCrop(
-            makeAspectCrop(
-              {
-                unit: '%',
-                width: 90,
-              },
-              selectedAspect,
-              width,
-              height,
-            ),
-            width,
-            height,
-          )
-        : {
-            unit: '%' as const,
-            width: 90,
-            height: 90,
-            x: 5,
-            y: 5,
-          };
-
-    setCrop(initialCrop);
-    setCompletedCrop(initialCrop);
-  };
-
   const handleSelectAspect = (ratio: number | undefined) => {
     if (ratio === undefined) {
       setIsLocked(false);
@@ -143,23 +171,22 @@ export function ImageCropModal({
   };
 
   const handleCropSave = () => {
-    const image = imgRef.current;
-    if (!image || !completedCrop) {
+    const canvas = canvasRef.current;
+    if (!canvas || !completedCrop) {
       return;
     }
 
-    // Use HTML5 Canvas to perform the crop in the client browser
-    const canvas = document.createElement('canvas');
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
+    const scaleX = canvas.width / (canvas.clientWidth || canvas.width);
+    const scaleY = canvas.height / (canvas.clientHeight || canvas.height);
 
     const targetWidth = Math.max(1, Math.round(completedCrop.width * scaleX));
     const targetHeight = Math.max(1, Math.round(completedCrop.height * scaleY));
 
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
+    const outCanvas = document.createElement('canvas');
+    outCanvas.width = targetWidth;
+    outCanvas.height = targetHeight;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = outCanvas.getContext('2d');
     if (!ctx) {
       return;
     }
@@ -168,7 +195,7 @@ export function ImageCropModal({
     ctx.imageSmoothingQuality = 'high';
 
     ctx.drawImage(
-      image,
+      canvas,
       completedCrop.x * scaleX,
       completedCrop.y * scaleY,
       completedCrop.width * scaleX,
@@ -180,7 +207,7 @@ export function ImageCropModal({
     );
 
     // Convert canvas to Blob (webp format with 90% quality)
-    canvas.toBlob(
+    outCanvas.toBlob(
       (blob) => {
         if (blob) {
           onCropComplete(blob);
@@ -339,32 +366,23 @@ export function ImageCropModal({
 
         {/* Crop Area */}
         <div className="flex max-h-[60vh] min-h-[340px] items-center justify-center overflow-auto bg-black/5 p-6 dark:bg-white/5">
-          {imgSrc &&
-          (imgSrc.startsWith('https://') ||
-            imgSrc.startsWith('http://') ||
-            imgSrc.startsWith('blob:')) &&
-          !imgSrc.includes('javascript:') ? (
-            <ReactCrop
-              crop={crop}
-              onChange={(c) => {
-                setCrop(c);
-              }}
-              onComplete={(c) => {
-                setCompletedCrop(c);
-              }}
-              aspect={isLocked ? selectedAspect : undefined}
-              className="max-h-full"
-            >
-              <img
-                ref={imgRef}
-                alt="Crop me"
-                src={encodeURI(imgSrc)}
-                onLoad={onImageLoad}
-                crossOrigin="anonymous"
-                style={{ maxHeight: '52vh', maxWidth: '100%', objectFit: 'contain' }}
-              />
-            </ReactCrop>
-          ) : (
+          <ReactCrop
+            crop={crop}
+            onChange={(c) => {
+              setCrop(c);
+            }}
+            onComplete={(c) => {
+              setCompletedCrop(c);
+            }}
+            aspect={isLocked ? selectedAspect : undefined}
+            className={`max-h-full ${!isLoaded ? 'hidden' : ''}`}
+          >
+            <canvas
+              ref={canvasRef}
+              style={{ maxHeight: '52vh', maxWidth: '100%', objectFit: 'contain' }}
+            />
+          </ReactCrop>
+          {!isLoaded && (
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-black/10 border-t-black dark:border-white/10 dark:border-t-white" />
           )}
         </div>

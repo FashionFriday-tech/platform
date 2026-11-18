@@ -44,6 +44,32 @@ export function BannerEditorModal({
   const [rawFileForCrop, setRawFileForCrop] = useState<File | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (!fileToUpload || mediaType !== 'image') return;
+    let active = true;
+    void createImageBitmap(fileToUpload).then((bmp) => {
+      if (!active) return;
+      const canvas = previewCanvasRef.current;
+      if (!canvas) return;
+      canvas.width = bmp.width;
+      canvas.height = bmp.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(bmp, 0, 0);
+    });
+    return () => {
+      active = false;
+    };
+  }, [fileToUpload, mediaType]);
+
+  const safeMediaUrl =
+    typeof mediaUrl === 'string' &&
+    (mediaUrl.startsWith('https://') ||
+      mediaUrl.startsWith('http://') ||
+      (mediaUrl.startsWith('/') && !mediaUrl.startsWith('//')))
+      ? mediaUrl
+      : null;
 
   useEffect(() => {
     if (initialData) {
@@ -120,15 +146,11 @@ export function BannerEditorModal({
     if (file) {
       if (file.type.startsWith('video')) {
         setFileToUpload(file);
-        const url = URL.createObjectURL(file);
-        setMediaUrl(url);
         setMediaType('video');
         setRawFileForCrop(null);
       } else {
         setRawFileForCrop(file);
         setMediaType('image');
-        const url = URL.createObjectURL(file);
-        setMediaUrl(url);
         setIsCropping(true);
       }
     }
@@ -139,8 +161,6 @@ export function BannerEditorModal({
     const fileName = rawFileForCrop?.name || `banner-${Date.now()}.webp`;
     const croppedFile = new File([croppedBlob], fileName, { type: 'image/webp' });
     setFileToUpload(croppedFile);
-    const url = URL.createObjectURL(croppedFile);
-    setMediaUrl(url);
     setIsCropping(false);
   };
 
@@ -196,24 +216,48 @@ export function BannerEditorModal({
               onClick={() => fileInputRef.current?.click()}
               className={`group relative flex cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-black/20 bg-white transition-all hover:border-black/50 dark:border-white/20 dark:bg-[#111111] dark:hover:border-white/50 ${responsiveClass}`}
             >
-              {mediaUrl ? (
+              {fileToUpload ? (
                 <>
                   {mediaType === 'image' ? (
-                    <Image src={mediaUrl} alt="Preview" fill className="object-cover" />
-                  ) : typeof mediaUrl === 'string' &&
-                    (mediaUrl.startsWith('https://') ||
-                      mediaUrl.startsWith('http://') ||
-                      mediaUrl.startsWith('blob:')) &&
-                    !mediaUrl.includes('javascript:') ? (
+                    <canvas ref={previewCanvasRef} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-2 p-6 text-center">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-black/10 dark:bg-white/10">
+                        <PlayIcon className="h-7 w-7 text-black dark:text-white" />
+                      </div>
+                      <span className="line-clamp-1 text-xs font-bold text-black dark:text-white">
+                        {fileToUpload.name}
+                      </span>
+                    </div>
+                  )}
+                  <div className="absolute top-3 left-3 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-xs font-semibold text-white backdrop-blur-md">
+                    {mediaType === 'image' ? (
+                      <ImageIcon className="h-4 w-4" />
+                    ) : (
+                      <PlayIcon className="h-4 w-4" />
+                    )}
+                    {mediaType.toUpperCase()}
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="rounded-lg bg-white px-4 py-2 text-sm font-bold text-black">
+                      Change Media
+                    </span>
+                  </div>
+                </>
+              ) : safeMediaUrl ? (
+                <>
+                  {mediaType === 'image' ? (
+                    <Image src={safeMediaUrl} alt="Preview" fill className="object-cover" />
+                  ) : (
                     <video
-                      src={encodeURI(mediaUrl)}
+                      src={safeMediaUrl}
                       className="h-full w-full object-cover"
                       muted
                       loop
                       playsInline
                       autoPlay
                     />
-                  ) : null}
+                  )}
                   <div className="absolute top-3 left-3 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-xs font-semibold text-white backdrop-blur-md">
                     {mediaType === 'image' ? (
                       <ImageIcon className="h-4 w-4" />
@@ -245,7 +289,7 @@ export function BannerEditorModal({
           )}
 
           {/* Quick Action Toolbar for Image Cropping & Media Changing */}
-          {!isMarquee && mediaUrl && mediaType === 'image' && (
+          {!isMarquee && (fileToUpload || mediaUrl) && mediaType === 'image' && (
             <div className="mt-3 flex w-full flex-wrap items-center justify-center gap-2">
               <button
                 type="button"
@@ -403,7 +447,7 @@ export function BannerEditorModal({
               </button>
               <button
                 type="submit"
-                disabled={!mediaUrl || isUploading}
+                disabled={(!mediaUrl && !fileToUpload) || isUploading}
                 className="flex-1 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-black/90 active:scale-98 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-white/90"
               >
                 {isUploading ? 'Saving...' : initialData ? 'Save Changes' : 'Create Banner'}

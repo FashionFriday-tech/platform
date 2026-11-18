@@ -30,6 +30,32 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
   const [isUploading, setIsUploading] = useState(false);
   const [categories, setCategories] = useState<BrandCategory[]>([]);
   const [isActive, setIsActive] = useState(true);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+
+  React.useEffect(() => {
+    if (!fileToUpload) return;
+    let active = true;
+    void createImageBitmap(fileToUpload).then((bmp) => {
+      if (!active) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      canvas.width = bmp.width;
+      canvas.height = bmp.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(bmp, 0, 0);
+    });
+    return () => {
+      active = false;
+    };
+  }, [fileToUpload]);
+
+  const safeLogoUrl =
+    typeof logoUrl === 'string' &&
+    (logoUrl.startsWith('https://') ||
+      logoUrl.startsWith('http://') ||
+      (logoUrl.startsWith('/') && !logoUrl.startsWith('//')))
+      ? logoUrl
+      : null;
 
   React.useEffect(() => {
     if (initialData && isOpen) {
@@ -274,7 +300,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                       if (e.target.files?.[0]) {
                         const file = e.target.files[0];
                         setFileToUpload(file);
-                        setLogoUrl(URL.createObjectURL(file));
+                        setLogoUrl('');
                       }
                     }}
                     className="hidden"
@@ -293,10 +319,28 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                           : 'bg-[#f8f9fa] dark:bg-[#1a1a1a]'
                     }`}
                   >
-                    {logoUrl ? (
+                    {fileToUpload ? (
+                      <div className="relative h-full w-full">
+                        <canvas
+                          ref={canvasRef}
+                          className={`h-full w-full object-contain p-3 sm:p-4 ${
+                            isBlackColor(color)
+                              ? 'brightness-0 invert dark:invert-0'
+                              : color
+                                ? 'brightness-0 drop-shadow-sm invert'
+                                : 'dark:invert'
+                          }`}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+                          <span className="text-xs font-bold text-white sm:text-sm">
+                            Change Image
+                          </span>
+                        </div>
+                      </div>
+                    ) : safeLogoUrl ? (
                       <div className="relative h-full w-full">
                         <Image
-                          src={logoUrl}
+                          src={safeLogoUrl}
                           alt="Logo preview"
                           fill
                           unoptimized
@@ -397,7 +441,12 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
             </button>
             <button
               onClick={handleSave}
-              disabled={!name.trim() || !logoUrl || categories.length === 0 || isUploading}
+              disabled={
+                !name.trim() ||
+                (!logoUrl && !fileToUpload) ||
+                categories.length === 0 ||
+                isUploading
+              }
               className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-black px-4 py-2 text-xs font-semibold text-white transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 sm:flex-initial sm:px-6 sm:py-2.5 sm:text-sm dark:bg-white dark:text-black"
             >
               {isUploading && (
