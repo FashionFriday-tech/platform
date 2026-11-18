@@ -175,10 +175,6 @@ export function useAuthFlow() {
             localStorage.setItem('adminRefreshToken', authData.refreshToken);
           }
           sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
-          localStorage.setItem(
-            'ff_admin_pin_unlocked_until',
-            String(Date.now() + 180 * 24 * 60 * 60 * 1000),
-          );
         }
 
         const authUser = authData.user;

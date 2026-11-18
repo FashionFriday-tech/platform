@@ -24,7 +24,6 @@ export const usePinLockStore = create<PinLockState>((set, get) => ({
   lock: () => {
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('ff_admin_pin_unlocked');
-      localStorage.removeItem('ff_admin_pin_unlocked_until');
     }
     // If rate-limited, ensure still locked
     const now = Date.now();
@@ -39,10 +38,6 @@ export const usePinLockStore = create<PinLockState>((set, get) => ({
   unlock: () => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
-      localStorage.setItem(
-        'ff_admin_pin_unlocked_until',
-        String(Date.now() + 180 * 24 * 60 * 60 * 1000),
-      );
     }
     set({ isLocked: false, failedAttempts: 0, lockedUntil: null });
   },

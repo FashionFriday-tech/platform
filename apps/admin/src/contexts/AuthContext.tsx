@@ -41,7 +41,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('adminRefreshToken');
       localStorage.removeItem('accessToken');
       sessionStorage.removeItem('ff_admin_pin_unlocked');
-      localStorage.removeItem('ff_admin_pin_unlocked_until');
     }
   }, []);
 
@@ -50,10 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
       sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
-      localStorage.setItem(
-        'ff_admin_pin_unlocked_until',
-        String(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      );
     }
   }, []);
 
@@ -144,9 +139,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (storedUser) {
           try {
             const parsed = JSON.parse(storedUser) as User;
+            setUser(parsed);
             const isValid = await verifySessionWithServer(parsed);
-            if (isValid) {
-              setUser(parsed);
+            if (!isValid) {
+              logout();
             }
           } catch (e) {
             console.error('Error parsing stored user:', e);
