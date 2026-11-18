@@ -273,7 +273,7 @@ export async function fetchOrderRefundTimelineAction(
 ): Promise<RefundTimelineResponse | null> {
   try {
     const res = await fetchWithAuth(`/orders/${orderId}/refund-timeline`);
-    if (!res || !res.ok) {
+    if (!res?.ok) {
       return null;
     }
     return (await res.json()) as RefundTimelineResponse;

@@ -1,10 +1,5 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
 import { OrderStatus, PaymentMethod, PaymentStatus } from '@ff/database';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
 import { OrdersService } from '../orders/orders.service';
@@ -123,7 +118,7 @@ export class PaymentsService {
     }
 
     // Search query
-    if (query.search && query.search.trim()) {
+    if (query.search?.trim()) {
       const term = query.search.trim();
       where.OR = [
         { orderNumber: { contains: term, mode: 'insensitive' } },
@@ -178,9 +173,7 @@ export class PaymentsService {
       const advanceAmount = Number(order.advanceAmount || 0);
       const refundedAmount = Number(order.refundedAmount || 0);
       const balanceAmount =
-        order.paymentMethod === PaymentMethod.COD
-          ? Math.max(0, finalAmount - advanceAmount)
-          : 0;
+        order.paymentMethod === PaymentMethod.COD ? Math.max(0, finalAmount - advanceAmount) : 0;
 
       const orderCreatedTime = new Date(order.createdAt).getTime();
       const hoursSinceAuthorized =
@@ -188,8 +181,7 @@ export class PaymentsService {
           ? Math.floor((now - orderCreatedTime) / (3600 * 1000))
           : null;
       const isExpiringSoon =
-        order.paymentStatus === PaymentStatus.AUTHORIZED &&
-        (hoursSinceAuthorized ?? 0) >= 48;
+        order.paymentStatus === PaymentStatus.AUTHORIZED && (hoursSinceAuthorized ?? 0) >= 48;
 
       let address: any = {};
       if (typeof order.shippingAddress === 'string') {
@@ -294,7 +286,7 @@ export class PaymentsService {
     let codAdvanceVolume = 0;
     let codPendingVolume = 0;
 
-    let totalTransactions = orders.length;
+    const totalTransactions = orders.length;
     let capturedCount = 0;
     let authorizedCount = 0;
     let refundedCount = 0;
@@ -311,7 +303,10 @@ export class PaymentsService {
     let expiringAuthorizationsCount = 0;
 
     // Daily volume trend map (past 7 days or date window)
-    const dailyVolumeMap: Record<string, { date: string; volume: number; count: number; captured: number }> = {};
+    const dailyVolumeMap: Record<
+      string,
+      { date: string; volume: number; count: number; captured: number }
+    > = {};
     for (let i = 6; i >= 0; i--) {
       const d = new Date(now - i * 24 * 60 * 60 * 1000);
       const dateKey = d.toISOString().split('T')[0];
@@ -381,12 +376,9 @@ export class PaymentsService {
     }
 
     const successDenominator = totalTransactions || 1;
-    const successRate = Math.round(
-      ((capturedCount + authorizedCount) / successDenominator) * 100,
-    );
-    const refundRate = capturedVolume > 0
-      ? Number(((refundedVolume / capturedVolume) * 100).toFixed(1))
-      : 0;
+    const successRate = Math.round(((capturedCount + authorizedCount) / successDenominator) * 100);
+    const refundRate =
+      capturedVolume > 0 ? Number(((refundedVolume / capturedVolume) * 100).toFixed(1)) : 0;
 
     return {
       summary: {
@@ -449,9 +441,7 @@ export class PaymentsService {
       }
 
       try {
-        liveRefundsData = await this.razorpayService.fetchPaymentRefunds(
-          order.razorpayPaymentId,
-        );
+        liveRefundsData = await this.razorpayService.fetchPaymentRefunds(order.razorpayPaymentId);
       } catch (err: any) {
         this.logger.warn(`Could not fetch live Razorpay refunds: ${err.message}`);
       }
@@ -471,9 +461,10 @@ export class PaymentsService {
     const amount = Number(order.finalAmount || 0);
     const advance = Number(order.advanceAmount || 0);
     const refunded = Number(order.refundedAmount || 0);
-    const mdrFeeEstimated = order.paymentMethod === PaymentMethod.RAZORPAY
-      ? Number((amount * 0.02).toFixed(2)) // 2% Razorpay standard fee
-      : 0;
+    const mdrFeeEstimated =
+      order.paymentMethod === PaymentMethod.RAZORPAY
+        ? Number((amount * 0.02).toFixed(2)) // 2% Razorpay standard fee
+        : 0;
     const gstOnMdrEstimated = Number((mdrFeeEstimated * 0.18).toFixed(2)); // 18% GST on MDR fee
     const netPayoutEstimated = Math.max(0, amount - mdrFeeEstimated - gstOnMdrEstimated);
 
@@ -490,8 +481,7 @@ export class PaymentsService {
         finalAmount: amount,
         advanceAmount: advance,
         refundedAmount: refunded,
-        balanceDue:
-          order.paymentMethod === PaymentMethod.COD ? Math.max(0, amount - advance) : 0,
+        balanceDue: order.paymentMethod === PaymentMethod.COD ? Math.max(0, amount - advance) : 0,
         currency: 'INR',
         razorpayOrderId: order.razorpayOrderId,
         razorpayPaymentId: order.razorpayPaymentId,
@@ -570,16 +560,10 @@ export class PaymentsService {
           orderStatus = OrderStatus.STOCK_CONFIRMED;
         }
         stateChanged = true;
-      } else if (
-        gatewayStatus === 'refunded' &&
-        order.paymentStatus !== PaymentStatus.REFUNDED
-      ) {
+      } else if (gatewayStatus === 'refunded' && order.paymentStatus !== PaymentStatus.REFUNDED) {
         updatedStatus = PaymentStatus.REFUNDED;
         stateChanged = true;
-      } else if (
-        gatewayStatus === 'failed' &&
-        order.paymentStatus !== PaymentStatus.FAILED
-      ) {
+      } else if (gatewayStatus === 'failed' && order.paymentStatus !== PaymentStatus.FAILED) {
         updatedStatus = PaymentStatus.FAILED;
         stateChanged = true;
       }

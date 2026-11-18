@@ -619,18 +619,19 @@ export default function ProductPageMaster({
                   product.isCodAvailable ? 'bg-emerald-500' : 'bg-blue-500'
                 }`}
               />
-              <p className="text-[11px] font-medium text-foreground-muted">
+              <p className="text-foreground-muted text-[11px] font-medium">
                 {product.isCodAvailable ? (
                   <>
-                    <strong className="font-bold text-foreground">
+                    <strong className="text-foreground font-bold">
                       Cash on Delivery Available:
                     </strong>{' '}
                     ₹200 advance deposit required at checkout.
                   </>
                 ) : (
                   <>
-                    <strong className="font-bold text-foreground">Prepaid Order Only:</strong> COD
-                    is not available for this item. Pay online for free shipping & priority dispatch.
+                    <strong className="text-foreground font-bold">Prepaid Order Only:</strong> COD
+                    is not available for this item. Pay online for free shipping & priority
+                    dispatch.
                   </>
                 )}
               </p>

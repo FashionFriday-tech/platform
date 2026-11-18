@@ -162,7 +162,7 @@ export class AdminProductsService {
       // Marketing
       collections,
       isFeatured: dto.marketing?.isFeatured ?? false,
-      isCodAvailable: Boolean(dto.isCodAvailable ?? (rawDto as any).isCodAvailable ?? false),
+      isCodAvailable: dto.isCodAvailable ?? Boolean(rawDto.isCodAvailable),
       seoTitle,
       seoDescription,
     };

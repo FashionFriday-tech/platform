@@ -393,7 +393,7 @@ export function PaymentStep() {
               }}
               className={`group flex items-center justify-between rounded-3xl border p-6 transition-all duration-300 ${
                 !isCodEligible
-                  ? 'cursor-not-allowed border-dashed border-border/60 bg-background-muted/40 opacity-60'
+                  ? 'border-border/60 bg-background-muted/40 cursor-not-allowed border-dashed opacity-60'
                   : paymentMethod === 'cod'
                     ? 'border-foreground bg-foreground text-background shadow-xl'
                     : 'border-border bg-background hover:bg-background-muted'
@@ -415,7 +415,7 @@ export function PaymentStep() {
                       Cash on Delivery
                     </h3>
                     {!isCodEligible && (
-                      <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[9px] font-black uppercase text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+                      <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[9px] font-black text-amber-600 uppercase dark:bg-amber-500/20 dark:text-amber-400">
                         Prepaid Only
                       </span>
                     )}

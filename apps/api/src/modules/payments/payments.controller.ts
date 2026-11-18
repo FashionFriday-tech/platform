@@ -1,21 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Logger,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query, UseGuards } from '@nestjs/common';
 
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import {
-  PaymentQueryDto,
-  RefundPaymentDto,
-  VoidPaymentDto,
-} from './dto/payment-query.dto';
+import { PaymentQueryDto, RefundPaymentDto, VoidPaymentDto } from './dto/payment-query.dto';
 import { PaymentsService } from './payments.service';
 
 @Controller('payments')
@@ -36,7 +23,9 @@ export class PaymentsController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    this.logger.log(`[PaymentsController] GET /payments/stats start=${startDate} end=${endDate}`);
+    this.logger.log(
+      `[PaymentsController] GET /payments/stats start=${startDate ?? 'all'} end=${endDate ?? 'all'}`,
+    );
     return this.paymentsService.getPaymentStats(startDate, endDate);
   }
 
@@ -67,7 +56,7 @@ export class PaymentsController {
   @Post(':id/refund')
   async refundPayment(@Param('id') id: string, @Body() body?: RefundPaymentDto) {
     this.logger.log(
-      `[PaymentsController] POST /payments/${id}/refund amount=${body?.amount} reason=${body?.reason}`,
+      `[PaymentsController] POST /payments/${id}/refund amount=${body?.amount ?? 0} reason=${body?.reason ?? 'none'}`,
     );
     return this.paymentsService.refundPayment(id, body?.amount, body?.reason);
   }

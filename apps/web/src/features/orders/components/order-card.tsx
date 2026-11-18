@@ -212,7 +212,9 @@ export function OrderCard({ order, item }: OrderCardProps) {
       return (
         <button
           type="button"
-          onClick={() => setIsRefundModalOpen(true)}
+          onClick={() => {
+            setIsRefundModalOpen(true);
+          }}
           className="flex cursor-pointer items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-5 py-2 text-xs font-bold text-emerald-600 transition-all hover:bg-emerald-500/20 active:scale-95 dark:text-emerald-400"
         >
           <RefreshCcwIcon size={13} />
@@ -276,7 +278,9 @@ export function OrderCard({ order, item }: OrderCardProps) {
           {isRefunded && (
             <button
               type="button"
-              onClick={() => setIsRefundModalOpen(true)}
+              onClick={() => {
+                setIsRefundModalOpen(true);
+              }}
               className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400"
             >
               <RefreshCcwIcon size={11} />
@@ -307,7 +311,9 @@ export function OrderCard({ order, item }: OrderCardProps) {
           </div>
           <button
             type="button"
-            onClick={() => setIsRefundModalOpen(true)}
+            onClick={() => {
+              setIsRefundModalOpen(true);
+            }}
             className="flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:text-black dark:hover:bg-emerald-400"
           >
             <span>Track Refund</span>

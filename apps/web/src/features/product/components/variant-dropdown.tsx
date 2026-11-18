@@ -318,8 +318,8 @@ export default function VariantDropdown({ variants = [], currentSlug }: VariantD
                           aria-label={label}
                           className={`relative block h-3 w-7 shrink-0 -skew-x-[12deg] rounded-[3px] border shadow-xs transition-all duration-200 ${
                             isCurrent
-                              ? 'scale-105 border-black ring-1.5 ring-black dark:border-white dark:ring-white'
-                              : 'border-black/20 opacity-75 group-hover:scale-105 group-hover:opacity-100 group-hover:border-black/50 dark:border-white/30 dark:group-hover:border-white/70'
+                              ? 'ring-1.5 scale-105 border-black ring-black dark:border-white dark:ring-white'
+                              : 'border-black/20 opacity-75 group-hover:scale-105 group-hover:border-black/50 group-hover:opacity-100 dark:border-white/30 dark:group-hover:border-white/70'
                           }`}
                           style={{
                             background:

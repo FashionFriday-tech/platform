@@ -2,14 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-import {
-  CheckIcon,
-  ClockIcon,
-  CloseIcon,
-  CopyIcon,
-  RefreshCcwIcon,
-  ShieldCheckIcon,
-} from '@ff/ui';
+import { CheckIcon, ClockIcon, CloseIcon, CopyIcon, RefreshCcwIcon, ShieldCheckIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
@@ -43,7 +36,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
           setHasError(true);
         }
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error('Failed to load refund timeline:', err);
         setHasError(true);
       })
@@ -79,8 +72,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
       });
   };
 
-  const refundAmount =
-    data?.refundAmount ?? Number(order.refundedAmount || order.finalAmount || 0);
+  const refundAmount = data?.refundAmount ?? Number(order.refundedAmount || order.finalAmount || 0);
   const isProcessed = data?.refundStatus?.toLowerCase() === 'processed';
   const bankRrn = data?.bankRrn || null;
 
@@ -117,7 +109,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                   <RefreshCcwIcon size={20} />
                 </div>
                 <div>
-                  <h3 className="text-base font-black tracking-tight text-foreground sm:text-lg">
+                  <h3 className="text-foreground text-base font-black tracking-tight sm:text-lg">
                     Refund Timeline
                   </h3>
                   <p className="text-foreground-muted font-mono text-[11px] font-semibold">
@@ -165,7 +157,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                   <button
                     type="button"
                     onClick={loadData}
-                    className="mt-4 rounded-full bg-foreground px-5 py-2 text-xs font-bold text-background transition-opacity hover:opacity-90"
+                    className="bg-foreground text-background mt-4 rounded-full px-5 py-2 text-xs font-bold transition-opacity hover:opacity-90"
                   >
                     Retry
                   </button>
@@ -177,18 +169,20 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                       <div>
                         <div className="flex flex-wrap items-center gap-2.5">
-                          <span className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
+                          <span className="text-foreground text-2xl font-black tracking-tight sm:text-3xl">
                             ₹{refundAmount.toFixed(2)}
                           </span>
                           <span
-                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase ${isProcessed
-                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                              : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
-                              }`}
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase ${
+                              isProcessed
+                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                                : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                            }`}
                           >
                             <span
-                              className={`h-1.5 w-1.5 rounded-full ${isProcessed ? 'bg-emerald-500' : 'animate-ping bg-amber-500'
-                                }`}
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                isProcessed ? 'bg-emerald-500' : 'animate-ping bg-amber-500'
+                              }`}
                             />
                             {isProcessed ? 'Refund Processed' : 'Refund in Progress'}
                           </span>
@@ -223,11 +217,13 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                         {bankRrn && (
                           <button
                             type="button"
-                            onClick={() => handleCopy(bankRrn, 'Bank RRN')}
+                            onClick={() => {
+                              handleCopy(bankRrn, 'Bank RRN');
+                            }}
                             className="text-foreground-muted hover:text-foreground flex items-center gap-1 text-[11px] font-semibold transition-colors"
                           >
                             {copiedKey === 'Bank RRN' ? (
-                              <span className="flex items-center gap-1 text-emerald-600 font-bold">
+                              <span className="flex items-center gap-1 font-bold text-emerald-600">
                                 <CheckIcon size={12} /> Copied
                               </span>
                             ) : (
@@ -238,7 +234,7 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                           </button>
                         )}
                       </div>
-                      <p className="mt-1 font-mono text-sm font-black tracking-wider text-emerald-600 dark:text-emerald-400 sm:text-base">
+                      <p className="mt-1 font-mono text-sm font-black tracking-wider text-emerald-600 sm:text-base dark:text-emerald-400">
                         {bankRrn || 'Generated upon bank dispatch'}
                       </p>
                       <p className="text-foreground-muted mt-1 text-[10px]">
@@ -255,11 +251,13 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                         {data?.paymentId && (
                           <button
                             type="button"
-                            onClick={() => handleCopy(data.paymentId!, 'Payment ID')}
+                            onClick={() => {
+                              handleCopy(data.paymentId!, 'Payment ID');
+                            }}
                             className="text-foreground-muted hover:text-foreground flex items-center gap-1 text-[11px] font-semibold transition-colors"
                           >
                             {copiedKey === 'Payment ID' ? (
-                              <span className="flex items-center gap-1 text-emerald-600 font-bold">
+                              <span className="flex items-center gap-1 font-bold text-emerald-600">
                                 <CheckIcon size={12} /> Copied
                               </span>
                             ) : (
@@ -297,12 +295,13 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                             <div key={step.id || idx} className="relative flex items-start gap-4">
                               {/* Step Node Icon */}
                               <div
-                                className={`relative z-10 -ml-7 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-xs sm:-ml-8 sm:h-7 sm:w-7 ${isDone
-                                  ? 'bg-emerald-500 text-white'
-                                  : isInProgress
-                                    ? 'bg-amber-500 text-white ring-4 ring-amber-500/20'
-                                    : 'bg-background-muted text-foreground-muted border-border border'
-                                  }`}
+                                className={`relative z-10 -ml-7 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-xs sm:-ml-8 sm:h-7 sm:w-7 ${
+                                  isDone
+                                    ? 'bg-emerald-500 text-white'
+                                    : isInProgress
+                                      ? 'bg-amber-500 text-white ring-4 ring-amber-500/20'
+                                      : 'bg-background-muted text-foreground-muted border-border border'
+                                }`}
                               >
                                 {isDone ? (
                                   <CheckIcon size={13} strokeWidth={3} />
@@ -317,12 +316,13 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                               <div className="min-w-0 flex-1 pt-0.5">
                                 <div className="flex flex-wrap items-baseline justify-between gap-1">
                                   <h5
-                                    className={`text-xs font-black tracking-wide uppercase sm:text-sm ${isDone
-                                      ? 'text-foreground'
-                                      : isInProgress
-                                        ? 'text-amber-600 dark:text-amber-400'
-                                        : 'text-foreground-muted'
-                                      }`}
+                                    className={`text-xs font-black tracking-wide uppercase sm:text-sm ${
+                                      isDone
+                                        ? 'text-foreground'
+                                        : isInProgress
+                                          ? 'text-amber-600 dark:text-amber-400'
+                                          : 'text-foreground-muted'
+                                    }`}
                                   >
                                     {step.title}
                                   </h5>
