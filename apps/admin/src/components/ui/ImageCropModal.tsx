@@ -86,28 +86,27 @@ export function ImageCropModal({
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
 
-    const initialCrop =
-      isLocked && selectedAspect
-        ? centerCrop(
-            makeAspectCrop(
-              {
-                unit: '%',
-                width: 90,
-              },
-              selectedAspect,
-              width,
-              height,
-            ),
-            width,
-            height,
-          )
-        : {
-            unit: '%' as const,
+    const initialCrop = isLocked && selectedAspect
+      ? centerCrop(
+        makeAspectCrop(
+          {
+            unit: '%',
             width: 90,
-            height: 90,
-            x: 5,
-            y: 5,
-          };
+          },
+          selectedAspect,
+          width,
+          height,
+        ),
+        width,
+        height,
+      )
+      : {
+        unit: '%' as const,
+        width: 90,
+        height: 90,
+        x: 5,
+        y: 5,
+      };
 
     setCrop(initialCrop);
     setCompletedCrop(initialCrop);
@@ -192,11 +191,11 @@ export function ImageCropModal({
   const presets = [
     ...(aspectRatio
       ? [
-          {
-            label: aspectRatioLabel ?? `${Math.round(aspectRatio * 100) / 100}:1 Frame`,
-            value: aspectRatio,
-          },
-        ]
+        {
+          label: aspectRatioLabel ?? `${Math.round(aspectRatio * 100) / 100}:1 Frame`,
+          value: aspectRatio,
+        },
+      ]
       : [{ label: '3:4 Frame', value: 3 / 4 }]),
     { label: '8:5 (Catalogue)', value: 8 / 5 },
     { label: '16:9 (Landscape)', value: 16 / 9 },
@@ -255,11 +254,10 @@ export function ImageCropModal({
             <button
               type="button"
               onClick={handleToggleLock}
-              className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all ${
-                isLocked
-                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                  : 'border-zinc-500/20 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400'
-              }`}
+              className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all ${isLocked
+                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                : 'border-zinc-500/20 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400'
+                }`}
             >
               {isLocked ? (
                 <>
@@ -312,11 +310,10 @@ export function ImageCropModal({
                     onClick={() => {
                       handleSelectAspect(preset.value);
                     }}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                      isActive || isFreeActive
-                        ? 'bg-black text-white dark:bg-white dark:text-black'
-                        : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
-                    }`}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${isActive || isFreeActive
+                      ? 'bg-black text-white dark:bg-white dark:text-black'
+                      : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
+                      }`}
                   >
                     {preset.label}
                   </button>

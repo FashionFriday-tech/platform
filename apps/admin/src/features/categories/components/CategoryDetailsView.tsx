@@ -305,7 +305,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
 
         {/* Right: Details & Toolbar */}
         <div className="flex flex-1 flex-col justify-between">
-          <div className="flex w-full items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-black text-black md:text-4xl dark:text-white">
                 {category.name}
@@ -331,15 +331,15 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
               )}
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="inline-flex items-center rounded-lg bg-black/5 px-4 py-2 text-sm font-semibold tracking-widest text-black/60 uppercase dark:bg-white/5 dark:text-white/60">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <div className="inline-flex items-center rounded-lg bg-black/5 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold tracking-widest text-black/60 uppercase dark:bg-white/5 dark:text-white/60">
                 {category.gender}
               </div>
               <button
                 onClick={() => {
                   setIsEditModalOpen(true);
                 }}
-                className="flex items-center gap-2 rounded-xl bg-black/5 px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                className="flex items-center gap-2 rounded-xl bg-black/5 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-black transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
               >
                 <EditIcon className="h-4 w-4" />
                 Edit
@@ -348,7 +348,7 @@ export function CategoryDetailsView({ initialCategory }: CategoryDetailsViewProp
                 onClick={() => {
                   setIsDeleteModalOpen(true);
                 }}
-                className="flex items-center gap-2 rounded-xl bg-[#FF0000]/10 px-4 py-2 text-sm font-semibold text-[#FF0000] transition-colors hover:bg-[#FF0000]/20"
+                className="flex items-center gap-2 rounded-xl bg-[#FF0000]/10 px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-[#FF0000] transition-colors hover:bg-[#FF0000]/20"
               >
                 <TrashIcon className="h-4 w-4" />
                 Delete

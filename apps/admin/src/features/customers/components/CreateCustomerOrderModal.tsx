@@ -335,16 +335,16 @@ export function CreateCustomerOrderModal({
               ? item.image
               : chosenImage,
         })) || [
-          {
-            id: `item-${Date.now()}`,
-            name: selectedProduct.name,
-            price: selectedProduct.sellingPrice,
-            quantity,
-            size: selectedSize || 'Free Size',
-            color: selectedColor || 'Standard',
-            image: chosenImage,
-          },
-        ],
+            {
+              id: `item-${Date.now()}`,
+              name: selectedProduct.name,
+              price: selectedProduct.sellingPrice,
+              quantity,
+              size: selectedSize || 'Free Size',
+              color: selectedColor || 'Standard',
+              image: chosenImage,
+            },
+          ],
       };
 
       toast.success(`Order #${enrichedOrder.orderNumber || 'created'} successfully!`);
@@ -367,7 +367,7 @@ export function CreateCustomerOrderModal({
   const totalPrice = unitPrice * quantity;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5 md:pl-[280px]">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-5">
       {/* Backdrop */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -387,13 +387,13 @@ export function CreateCustomerOrderModal({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 12 }}
         transition={{ duration: 0.2 }}
-        className="relative z-10 flex h-[90vh] max-h-[820px] w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-[#121212]"
+        className="relative z-10 flex h-[92vh] sm:h-[90vh] max-h-[820px] w-full max-w-4xl flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-[#121212]"
       >
         {/* Header with Step Tracker */}
-        <div className="shrink-0 border-b border-black/5 bg-[#fafafa] px-6 py-5 dark:border-white/5 dark:bg-[#161616]">
+        <div className="shrink-0 border-b border-black/5 bg-[#fafafa] px-4 sm:px-6 py-4 sm:py-5 dark:border-white/5 dark:bg-[#161616]">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-black dark:text-white">
+              <h2 className="text-base sm:text-lg font-bold text-black dark:text-white">
                 Create Order for Customer
               </h2>
               <p className="text-xs text-black/50 dark:text-white/50">
@@ -415,12 +415,12 @@ export function CreateCustomerOrderModal({
           </div>
 
           {/* Stepper Wizard Bar */}
-          <div className="mt-4 grid grid-cols-4 gap-2 text-xs font-semibold">
+          <div className="mt-3 sm:mt-4 grid grid-cols-4 gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-semibold">
             {[
-              { id: 'product', label: '1. Select Product' },
-              { id: 'configure', label: '2. Size & Quantity' },
-              { id: 'address', label: '3. Delivery Address' },
-              { id: 'payment', label: '4. Payment & Review' },
+              { id: 'product', label: '1. Select Product', short: '1. Product' },
+              { id: 'configure', label: '2. Size & Quantity', short: '2. Item' },
+              { id: 'address', label: '3. Delivery Address', short: '3. Address' },
+              { id: 'payment', label: '4. Payment & Review', short: '4. Pay' },
             ].map((step, idx) => {
               const stepIndex = ['product', 'configure', 'address', 'payment'].indexOf(currentStep);
               const isPassed = stepIndex > idx;
@@ -429,15 +429,15 @@ export function CreateCustomerOrderModal({
               return (
                 <div
                   key={step.id}
-                  className={`flex items-center justify-center rounded-xl px-2 py-2 text-center transition-all ${
-                    isCurrent
-                      ? 'bg-black text-white shadow-xs dark:bg-white dark:text-black'
-                      : isPassed
-                        ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                        : 'bg-black/5 text-black/40 dark:bg-white/5 dark:text-white/40'
-                  }`}
+                  className={`flex items-center justify-center rounded-xl px-1.5 sm:px-2 py-1.5 sm:py-2 text-center transition-all ${isCurrent
+                    ? 'bg-black text-white shadow-xs dark:bg-white dark:text-black'
+                    : isPassed
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                      : 'bg-black/5 text-black/40 dark:bg-white/5 dark:text-white/40'
+                    }`}
                 >
-                  <span className="truncate">{step.label}</span>
+                  <span className="sm:hidden">{step.short}</span>
+                  <span className="hidden sm:inline truncate">{step.label}</span>
                 </div>
               );
             })}
@@ -445,7 +445,7 @@ export function CreateCustomerOrderModal({
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="scrollbar-hide flex-1 overflow-y-auto p-6">
+        <div className="scrollbar-hide flex-1 overflow-y-auto p-4 sm:p-6">
           {/* STEP 1: Search & Pick Product */}
           {currentStep === 'product' && (
             <div className="space-y-5">
@@ -518,11 +518,10 @@ export function CreateCustomerOrderModal({
                           onClick={() => {
                             handleSelectProduct(product);
                           }}
-                          className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-3 transition-colors ${
-                            isSelected
-                              ? 'border-black bg-black/5 dark:border-white dark:bg-white/10'
-                              : 'border-black/10 bg-white hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/30'
-                          }`}
+                          className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border p-3 transition-colors ${isSelected
+                            ? 'border-black bg-black/5 dark:border-white dark:bg-white/10'
+                            : 'border-black/10 bg-white hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/30'
+                            }`}
                         >
                           {/* Product Image */}
                           <div className="relative mb-3 h-36 w-full overflow-hidden rounded-xl bg-black/5 dark:bg-white/5">
@@ -673,11 +672,10 @@ export function CreateCustomerOrderModal({
                       onClick={() => {
                         setSelectedSize(s);
                       }}
-                      className={`min-w-[48px] rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${
-                        selectedSize === s
-                          ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
-                          : 'border border-black/10 bg-[#f8f9fa] text-black hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:border-white/30'
-                      }`}
+                      className={`min-w-[48px] rounded-xl px-4 py-2.5 text-xs font-bold transition-all ${selectedSize === s
+                        ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
+                        : 'border border-black/10 bg-[#f8f9fa] text-black hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:border-white/30'
+                        }`}
                     >
                       {s}
                     </button>
@@ -710,11 +708,10 @@ export function CreateCustomerOrderModal({
                               onClick={() => {
                                 setSelectedColor(colName);
                               }}
-                              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-                                isSelected
-                                  ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
-                                  : 'border border-black/10 bg-[#f8f9fa] text-black hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:border-white/30'
-                              }`}
+                              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${isSelected
+                                ? 'bg-black text-white shadow-md dark:bg-white dark:text-black'
+                                : 'border border-black/10 bg-[#f8f9fa] text-black hover:border-black/30 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white dark:hover:border-white/30'
+                                }`}
                             >
                               {isHex && (
                                 <span
@@ -1050,11 +1047,10 @@ export function CreateCustomerOrderModal({
                         onClick={() => {
                           setSelectedAddressId(addr.id);
                         }}
-                        className={`group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all ${
-                          isSelected
-                            ? 'border-black bg-black/5 shadow-md dark:border-white dark:bg-white/10'
-                            : 'border-black/10 bg-white hover:border-black/20 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/20'
-                        }`}
+                        className={`group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all ${isSelected
+                          ? 'border-black bg-black/5 shadow-md dark:border-white dark:bg-white/10'
+                          : 'border-black/10 bg-white hover:border-black/20 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/20'
+                          }`}
                       >
                         <div>
                           <div className="flex items-center justify-between">
@@ -1081,11 +1077,10 @@ export function CreateCustomerOrderModal({
 
                         <div className="mt-4 flex items-center gap-2">
                           <div
-                            className={`flex h-4 w-4 items-center justify-center rounded-full border transition-all ${
-                              isSelected
-                                ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
-                                : 'border-black/30 dark:border-white/30'
-                            }`}
+                            className={`flex h-4 w-4 items-center justify-center rounded-full border transition-all ${isSelected
+                              ? 'border-black bg-black text-white dark:border-white dark:bg-white dark:text-black'
+                              : 'border-black/30 dark:border-white/30'
+                              }`}
                           >
                             {isSelected && <CheckIcon className="h-3 w-3" />}
                           </div>
@@ -1248,11 +1243,10 @@ export function CreateCustomerOrderModal({
                             setPaymentStatus('SUCCESS');
                           }
                         }}
-                        className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${
-                          paymentMethod === m.id
-                            ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
-                            : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
-                        }`}
+                        className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${paymentMethod === m.id
+                          ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
+                          : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
+                          }`}
                       >
                         {m.label}
                       </button>
@@ -1275,11 +1269,10 @@ export function CreateCustomerOrderModal({
                         onClick={() => {
                           setPaymentStatus(s.id as any);
                         }}
-                        className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${
-                          paymentStatus === s.id
-                            ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
-                            : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
-                        }`}
+                        className={`rounded-xl border p-2.5 text-left text-xs font-bold transition-all ${paymentStatus === s.id
+                          ? 'border-black bg-black text-white shadow-xs dark:border-white dark:bg-white dark:text-black'
+                          : 'border-black/10 bg-[#f8f9fa] text-black/80 hover:border-black/25 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white/80 dark:hover:border-white/25'
+                          }`}
                       >
                         {s.label}
                       </button>

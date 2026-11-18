@@ -325,7 +325,7 @@ export function CollectionDetailsView({ initialCollection }: CollectionDetailsVi
 
         {/* Right: Details & Toolbar */}
         <div className="flex flex-1 flex-col justify-between">
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
               {isEditingName ? (
                 <div className="flex items-center gap-2">

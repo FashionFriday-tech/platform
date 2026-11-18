@@ -181,16 +181,14 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                             ₹{refundAmount.toFixed(2)}
                           </span>
                           <span
-                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase ${
-                              isProcessed
-                                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                                : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
-                            }`}
+                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase ${isProcessed
+                              ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                              : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                              }`}
                           >
                             <span
-                              className={`h-1.5 w-1.5 rounded-full ${
-                                isProcessed ? 'bg-emerald-500' : 'animate-ping bg-amber-500'
-                              }`}
+                              className={`h-1.5 w-1.5 rounded-full ${isProcessed ? 'bg-emerald-500' : 'animate-ping bg-amber-500'
+                                }`}
                             />
                             {isProcessed ? 'Refund Processed' : 'Refund in Progress'}
                           </span>
@@ -299,13 +297,12 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                             <div key={step.id || idx} className="relative flex items-start gap-4">
                               {/* Step Node Icon */}
                               <div
-                                className={`relative z-10 -ml-7 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-xs sm:-ml-8 sm:h-7 sm:w-7 ${
-                                  isDone
-                                    ? 'bg-emerald-500 text-white'
-                                    : isInProgress
-                                      ? 'bg-amber-500 text-white ring-4 ring-amber-500/20'
-                                      : 'bg-background-muted text-foreground-muted border-border border'
-                                }`}
+                                className={`relative z-10 -ml-7 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-xs sm:-ml-8 sm:h-7 sm:w-7 ${isDone
+                                  ? 'bg-emerald-500 text-white'
+                                  : isInProgress
+                                    ? 'bg-amber-500 text-white ring-4 ring-amber-500/20'
+                                    : 'bg-background-muted text-foreground-muted border-border border'
+                                  }`}
                               >
                                 {isDone ? (
                                   <CheckIcon size={13} strokeWidth={3} />
@@ -320,13 +317,12 @@ export function RefundTimelineModal({ isOpen, onClose, order }: RefundTimelineMo
                               <div className="min-w-0 flex-1 pt-0.5">
                                 <div className="flex flex-wrap items-baseline justify-between gap-1">
                                   <h5
-                                    className={`text-xs font-black tracking-wide uppercase sm:text-sm ${
-                                      isDone
-                                        ? 'text-foreground'
-                                        : isInProgress
-                                          ? 'text-amber-600 dark:text-amber-400'
-                                          : 'text-foreground-muted'
-                                    }`}
+                                    className={`text-xs font-black tracking-wide uppercase sm:text-sm ${isDone
+                                      ? 'text-foreground'
+                                      : isInProgress
+                                        ? 'text-amber-600 dark:text-amber-400'
+                                        : 'text-foreground-muted'
+                                      }`}
                                   >
                                     {step.title}
                                   </h5>
