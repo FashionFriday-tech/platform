@@ -183,7 +183,8 @@ export class UploadService {
     const fileName = `${baseName}.${fileExtension}`;
 
     // Construct the final key with an optional folder prefix (e.g. whatsapp-reviews/...)
-    const fullPath = folder ? `${folder.replace(/^\/+|\/+$/g, '')}/${fileName}` : fileName;
+    const cleanFolder = folder ? folder.split('/').filter(Boolean).join('/') : '';
+    const fullPath = cleanFolder ? `${cleanFolder}/${fileName}` : fileName;
 
     // Upload directly to Cloudflare R2. Strictly NO fallback to local disk storage.
     const { client, bucketName, publicUrl } = this.getR2Client();
@@ -241,11 +242,13 @@ export class UploadService {
         try {
           const parsed = new URL(fileUrl);
           const publicUrlHost = publicUrl ? new URL(publicUrl).hostname : '';
-          if (
-            (publicUrlHost && parsed.hostname === publicUrlHost) ||
-            parsed.hostname.includes('r2.dev') ||
-            parsed.hostname.includes('cloudflarestorage.com')
-          ) {
+          const isR2Host =
+            parsed.hostname === 'r2.dev' ||
+            parsed.hostname.endsWith('.r2.dev') ||
+            parsed.hostname === 'cloudflarestorage.com' ||
+            parsed.hostname.endsWith('.cloudflarestorage.com');
+
+          if ((publicUrlHost && parsed.hostname === publicUrlHost) || isR2Host) {
             key = parsed.pathname.replace(/^\/+/, '');
           }
         } catch {
@@ -267,7 +270,7 @@ export class UploadService {
 
       return false;
     } catch (error) {
-      console.error(`Failed to delete file (${fileUrl}):`, error);
+      console.error('Failed to delete file:', fileUrl, error);
       return false; // We just return false rather than throwing, so we don't block DB operations
     }
   }

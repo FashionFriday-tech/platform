@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { CloseIcon, LoaderIcon, ShoppingBagIcon } from '@ff/ui';
 
 import { api } from '@/lib/api-client';
+import { getSecureRandomId } from '@/lib/security/random';
 
 import { type Order } from '../types';
 import { COURIER_SERVICES } from '../utils/courier';
@@ -401,7 +402,7 @@ export function EditOrderModal({
           courierService: payload.courierPartner || 'Delhivery',
         },
         items: (updatedData?.items || payload.items).map((item: any) => ({
-          id: item.id || Math.random().toString(),
+          id: item.id || getSecureRandomId(8),
           productId: item.productId,
           sellerId: item.sellerId,
           seller: item.seller || sellersList.find((s) => s.id === item.sellerId) || null,

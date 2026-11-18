@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { CloseIcon, ImageIcon, PlayIcon, PlusIcon, TrashIcon } from '@ff/ui';
 
 import { ImageCropModal } from '@/components/ui/ImageCropModal';
+import { sanitizeMediaSrc } from '@/lib/security/url';
 import {
   type BannerPlacement,
   type CampaignBanner,
@@ -197,10 +198,10 @@ export function BannerEditorModal({
               {mediaUrl ? (
                 <>
                   {mediaType === 'image' ? (
-                    <Image src={mediaUrl} alt="Preview" fill className="object-cover" />
+                    <Image src={sanitizeMediaSrc(mediaUrl)} alt="Preview" fill className="object-cover" />
                   ) : (
                     <video
-                      src={mediaUrl}
+                      src={sanitizeMediaSrc(mediaUrl)}
                       className="h-full w-full object-cover"
                       muted
                       loop

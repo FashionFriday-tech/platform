@@ -86,7 +86,7 @@ async function fetchWithAuth(
 
     return response;
   } catch (error) {
-    console.error(`[Cart Service Network Error] ${endpoint}:`, error);
+    console.error('[Cart Service Network Error]', endpoint, error);
     return null;
   }
 }

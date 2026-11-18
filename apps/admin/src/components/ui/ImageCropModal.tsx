@@ -5,6 +5,8 @@ import ReactCrop, { centerCrop, type Crop, makeAspectCrop } from 'react-image-cr
 
 import 'react-image-crop/dist/ReactCrop.css';
 
+import { sanitizeMediaSrc } from '@/lib/security/url';
+
 interface ImageCropModalProps {
   file: File | string;
   onCropComplete: (croppedBlob: Blob) => void;
@@ -33,14 +35,14 @@ export function ImageCropModal({
   // Set up image source from File or URL string
   useEffect(() => {
     if (typeof file === 'string') {
-      setImgSrc(file);
+      setImgSrc(sanitizeMediaSrc(file));
       return;
     }
 
     const reader = new FileReader();
     reader.addEventListener('load', () => {
       if (typeof reader.result === 'string') {
-        setImgSrc(reader.result);
+        setImgSrc(sanitizeMediaSrc(reader.result));
       }
     });
     reader.readAsDataURL(file);
@@ -349,7 +351,7 @@ export function ImageCropModal({
               <img
                 ref={imgRef}
                 alt="Crop me"
-                src={imgSrc}
+                src={sanitizeMediaSrc(imgSrc)}
                 onLoad={onImageLoad}
                 crossOrigin="anonymous"
                 style={{ maxHeight: '52vh', maxWidth: '100%', objectFit: 'contain' }}

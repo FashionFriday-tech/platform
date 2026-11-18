@@ -87,7 +87,7 @@ async function fetchWithAuth(
 
     return response;
   } catch (error) {
-    console.error(`[Address Service Network Error] ${endpoint}:`, error);
+    console.error('[Address Service Network Error]', endpoint, error);
     return null;
   }
 }

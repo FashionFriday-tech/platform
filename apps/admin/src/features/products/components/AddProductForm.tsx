@@ -11,6 +11,7 @@ import { ImageCropModal } from '@/components/ui/ImageCropModal';
 import { Toast } from '@/components/ui/Toast';
 import { AddColorModal } from '@/features/colors';
 import { api } from '@/lib/api-client';
+import { getSecureRandomInt } from '@/lib/security/random';
 
 import { useAddProductForm } from '../hooks/useAddProductForm';
 import { useDuplicateProductCheck } from '../hooks/useDuplicateProductCheck';
@@ -2337,8 +2338,8 @@ export function AddProductForm({ initialData }: AddProductFormProps) {
                 <button
                   type="button"
                   onClick={() => {
-                    const randomWatching = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000;
-                    const randomSold = Math.floor(Math.random() * 101);
+                    const randomWatching = getSecureRandomInt(1000, 10000);
+                    const randomSold = getSecureRandomInt(0, 100);
                     setLiveWatching(randomWatching.toString());
                     setLiveSold(randomSold.toString());
                   }}

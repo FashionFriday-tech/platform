@@ -24,8 +24,15 @@ export class WhatsAppWebhookController {
     const expectedToken = this.whatsAppService.getWebhookVerifyToken();
 
     if (mode === 'subscribe' && token === expectedToken) {
-      this.logger.log(`WhatsApp webhook verified successfully. Challenge: ${challenge}`);
-      return res.status(HttpStatus.OK).send(challenge);
+      // Validate challenge strictly conforms to alphanumeric format expected from Meta to prevent reflected XSS
+      const isAlphanumeric = typeof challenge === 'string' && /^[a-zA-Z0-9_\-]+$/.test(challenge);
+      if (!isAlphanumeric) {
+        this.logger.warn('WhatsApp webhook verification rejected: Invalid challenge format.');
+        return res.status(HttpStatus.BAD_REQUEST).type('text/plain').send('Invalid challenge');
+      }
+
+      this.logger.log('WhatsApp webhook verified successfully.');
+      return res.status(HttpStatus.OK).type('text/plain').send(challenge);
     }
 
     this.logger.warn(

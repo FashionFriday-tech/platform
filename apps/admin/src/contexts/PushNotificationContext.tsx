@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 
 import { useNotifications } from '@/features/notifications';
 import { api } from '@/lib/api-client';
+import { getSecureRandomId } from '@/lib/security/random';
 
 import { useAuth } from './AuthContext';
 
@@ -324,7 +325,7 @@ export function PushNotificationProvider({ children }: { children: ReactNode }) 
 
       // Add to in-app notification center
       addNotification({
-        id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        id: `notif-${Date.now()}-${getSecureRandomId(6)}`,
         title,
         description: options.body,
         category: options.category || 'orders',

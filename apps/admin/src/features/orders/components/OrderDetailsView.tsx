@@ -12,6 +12,7 @@ import { motion } from 'motion/react';
 import { canManageOrders, useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api-client';
 import { resolveItemColorAndQuality } from '@/lib/format-color';
+import { sanitizeHref } from '@/lib/security/url';
 
 import { CustomSelect, type SelectOption } from '../../../components/ui/CustomSelect';
 import { type Order } from '../types';
@@ -336,7 +337,8 @@ export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProp
     setContactMode('none');
   };
 
-  const trackingUrl = getTrackingUrl(courierService, trackingId);
+  const rawTrackingUrl = getTrackingUrl(courierService, trackingId);
+  const trackingUrl = rawTrackingUrl.startsWith('https://') ? sanitizeHref(rawTrackingUrl) : null;
 
   const handleSaveTracking = async () => {
     const matchedSeller = rawSellers.find(
@@ -666,7 +668,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 </button>
                 {trackingUrl && (
                   <a
-                    href={trackingUrl}
+                    href={sanitizeHref(trackingUrl)}
                     target="_blank"
                     rel="noreferrer"
                     className="flex flex-1 sm:flex-initial items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
@@ -741,7 +743,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                       if (normalizedStatus === 'shipped') {
                         return (
                           <a
-                            href={trackingUrl ?? '#'}
+                            href={sanitizeHref(trackingUrl)}
                             target="_blank"
                             rel="noreferrer"
                             className="flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
@@ -870,7 +872,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                           if (normalizedStatus === 'shipped') {
                             return (
                               <a
-                                href={trackingUrl ?? '#'}
+                                href={sanitizeHref(trackingUrl)}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95"
@@ -1271,7 +1273,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                     </div>
                     {trackingId && (
                       <a
-                        href={trackingUrl}
+                        href={sanitizeHref(trackingUrl)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-100 px-4 py-3 text-xs font-bold text-zinc-900 transition-all hover:bg-zinc-200 active:scale-95 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"

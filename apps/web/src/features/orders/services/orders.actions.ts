@@ -87,7 +87,7 @@ async function fetchWithAuth(
 
     return response;
   } catch (error) {
-    console.error(`[orders.actions] Fetch error for ${endpoint}:`, error);
+    console.error('[orders.actions] Fetch error for endpoint:', endpoint, error);
     return null;
   }
 }

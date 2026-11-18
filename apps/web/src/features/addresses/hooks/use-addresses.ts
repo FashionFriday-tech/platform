@@ -10,31 +10,6 @@ import {
 } from '../services/addresses.actions';
 import { type Address } from '../types';
 
-const LOCAL_STORAGE_KEY = 'ff_local_addresses';
-
-function getLocalAddresses(): Address[] {
-  if (typeof window === 'undefined') {
-    return [];
-  }
-  try {
-    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Address[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function setLocalAddresses(addresses: Address[]) {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(addresses));
-  } catch (err) {
-    console.error('Failed to write local addresses:', err);
-  }
-}
-
 export function useAddresses() {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,15 +22,9 @@ export function useAddresses() {
       const serverAddresses = await fetchUserAddressesAction();
       if (serverAddresses && serverAddresses.length > 0) {
         setAddresses(serverAddresses);
-        setLocalAddresses(serverAddresses);
-      } else {
-        const cached = getLocalAddresses();
-        setAddresses(cached);
       }
     } catch (error) {
       console.error('Failed to load user addresses:', error);
-      const cached = getLocalAddresses();
-      setAddresses(cached);
     } finally {
       setIsLoading(false);
     }
@@ -93,27 +62,18 @@ export function useAddresses() {
     }
 
     setAddresses(updated);
-    setLocalAddresses(updated);
 
     try {
       if (isExisting) {
         const saved = await updateAddressAction(data.id, data);
         if (saved) {
-          setAddresses((prev) => {
-            const next = prev.map((a) => (a.id === data.id ? saved : a));
-            setLocalAddresses(next);
-            return next;
-          });
+          setAddresses((prev) => prev.map((a) => (a.id === data.id ? saved : a)));
         }
       } else {
         const { id: _tempId, ...createData } = data;
         const saved = await createAddressAction(createData);
         if (saved) {
-          setAddresses((prev) => {
-            const next = prev.map((a) => (a.id === data.id ? saved : a));
-            setLocalAddresses(next);
-            return next;
-          });
+          setAddresses((prev) => prev.map((a) => (a.id === data.id ? saved : a)));
         }
       }
     } catch (error) {
@@ -125,7 +85,6 @@ export function useAddresses() {
     // Optimistic update
     const next = addresses.map((a) => ({ ...a, isDefault: a.id === id }));
     setAddresses(next);
-    setLocalAddresses(next);
 
     try {
       await setDefaultAddressAction(id);
@@ -141,7 +100,6 @@ export function useAddresses() {
       remaining[0] = { ...remaining[0], isDefault: true };
     }
     setAddresses(remaining);
-    setLocalAddresses(remaining);
 
     try {
       await deleteAddressAction(id);

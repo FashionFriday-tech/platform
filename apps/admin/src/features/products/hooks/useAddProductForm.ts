@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { type Product } from '@ff/schemas';
 
 import api from '@/lib/api-client';
+import { getSecureRandomId, getSecureRandomInt } from '@/lib/security/random';
 
 import { useBrands } from '../../brands/hooks/useBrands';
 import { useCategories } from '../../categories/hooks/useCategories';
@@ -269,12 +270,12 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
   const [liveWatching, setLiveWatching] = useState(() =>
     initialData?.liveMatrix?.liveWatching !== undefined
       ? initialData.liveMatrix.liveWatching.toString()
-      : (Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000).toString(),
+      : getSecureRandomInt(1000, 10000).toString(),
   );
   const [liveSold, setLiveSold] = useState(() =>
     initialData?.liveMatrix?.liveSold !== undefined
       ? initialData.liveMatrix.liveSold.toString()
-      : Math.floor(Math.random() * 101).toString(),
+      : getSecureRandomInt(0, 100).toString(),
   );
   const [averageRating, setAverageRating] = useState(() =>
     initialData?.rating?.averageRating !== undefined
@@ -379,14 +380,14 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
           ? initialData.liveMatrix.liveWatching.toString()
           : (initialData as any).liveWatching !== undefined
             ? (initialData as any).liveWatching.toString()
-            : (Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000).toString(),
+            : getSecureRandomInt(1000, 10000).toString(),
       );
       setLiveSold(
         initialData.liveMatrix?.liveSold !== undefined
           ? initialData.liveMatrix.liveSold.toString()
           : (initialData as any).liveSold !== undefined
             ? (initialData as any).liveSold.toString()
-            : Math.floor(Math.random() * 101).toString(),
+            : getSecureRandomInt(0, 100).toString(),
       );
       setAverageRating(
         initialData.rating?.averageRating !== undefined
@@ -480,7 +481,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
 
       // Images — load ALL images (mainImage + promoImage + liveImages) into form state
       setImagesToDelete([]);
-      const uniquePrefix = Math.random().toString(36).substring(7);
+      const uniquePrefix = getSecureRandomId(6);
       const allImages: { id: string; url: string }[] = [];
 
       const media = initialData.media as
@@ -793,7 +794,7 @@ export function useAddProductForm(initialData?: Product, options?: UseAddProduct
         // Generate a local preview URL
         const localUrl = URL.createObjectURL(croppedFile);
 
-        const newId = Math.random().toString(36).substring(7);
+        const newId = getSecureRandomId(6);
         newImages.push({ id: newId, url: localUrl, file: croppedFile, isNew: true });
 
         // Store original file so it can be re-cropped later

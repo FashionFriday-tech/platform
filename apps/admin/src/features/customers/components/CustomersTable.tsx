@@ -8,6 +8,22 @@ import { twMerge } from 'tailwind-merge';
 
 import { type Customer, type SortDirection, type SortField } from '../types';
 
+function getCustomerAvatarSrc(avatar: string): string {
+  try {
+    const parsed = new URL(avatar);
+    const isDicebear =
+      parsed.hostname === 'api.dicebear.com' || parsed.hostname.endsWith('.dicebear.com');
+    if (isDicebear && !parsed.searchParams.has('backgroundColor')) {
+      parsed.searchParams.set('backgroundColor', '000000');
+      parsed.searchParams.set('textColor', 'ffffff');
+      return parsed.toString();
+    }
+  } catch {
+    // Fallback if not an absolute URL
+  }
+  return avatar;
+}
+
 interface CustomersTableProps {
   customers: Customer[];
   sortField: SortField;
@@ -161,12 +177,7 @@ export function CustomersTable({
                     <Image
                       width={40}
                       height={40}
-                      src={
-                        customer.avatar.includes('dicebear.com') &&
-                        !customer.avatar.includes('backgroundColor=')
-                          ? `${customer.avatar}&backgroundColor=000000&textColor=ffffff`
-                          : customer.avatar
-                      }
+                      src={getCustomerAvatarSrc(customer.avatar)}
                       alt={customer.name}
                       className="h-full w-full object-cover"
                     />

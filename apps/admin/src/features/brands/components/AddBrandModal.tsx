@@ -4,6 +4,8 @@ import { type Brand, type BrandCategory } from '@ff/schemas';
 import { ImageIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
 
+import { sanitizeMediaSrc } from '@/lib/security/url';
+
 interface AddBrandModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -295,7 +297,7 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                     {logoUrl ? (
                       <div className="relative h-full w-full">
                         <img
-                          src={logoUrl}
+                          src={sanitizeMediaSrc(logoUrl)}
                           alt="Logo preview"
                           className={`h-full w-full object-contain p-3 sm:p-4 ${
                             isBlackColor(color)

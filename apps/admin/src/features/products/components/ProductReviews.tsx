@@ -5,6 +5,8 @@ import Image from 'next/image';
 
 import type { Review } from '@ff/schemas';
 import { toast } from 'sonner';
+
+import { getSecureRandomId } from '@/lib/security/random';
 interface Props {
   productId: string;
   productCategory?: string;
@@ -151,7 +153,7 @@ export function ProductReviews({
   const uploadImage = async (file: File, _reviewerName: string): Promise<string | null> => {
     const formData = new FormData();
     formData.append('folder', `reviews/${productCategory}`);
-    const uniqueId = Math.random().toString(36).substring(2, 6);
+    const uniqueId = getSecureRandomId(6);
 
     // Sanitize strings for SEO (lowercase, only alphanumeric, hyphens instead of spaces)
     const sanitizeForSeo = (str: string) =>

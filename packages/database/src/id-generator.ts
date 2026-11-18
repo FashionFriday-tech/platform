@@ -1,4 +1,4 @@
-import { randomBytes } from 'crypto';
+import { randomInt } from 'crypto';
 
 /**
  * Crockford Base32 Alphabet:
@@ -13,10 +13,9 @@ const CROCKFORD_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
  * e.g. "8K4-M2P"
  */
 export function generateShortCode(): string {
-  const bytes = randomBytes(6);
   let code = '';
   for (let i = 0; i < 6; i++) {
-    code += CROCKFORD_ALPHABET[bytes[i] % CROCKFORD_ALPHABET.length];
+    code += CROCKFORD_ALPHABET[randomInt(0, CROCKFORD_ALPHABET.length)];
   }
   return `${code.slice(0, 3)}-${code.slice(3, 6)}`;
 }

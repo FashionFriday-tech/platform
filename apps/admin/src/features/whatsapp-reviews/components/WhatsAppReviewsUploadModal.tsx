@@ -4,6 +4,8 @@ import React from 'react';
 
 import { AlertCircleIcon, CheckCircleIcon, CloseIcon } from '@ff/ui';
 
+import { sanitizeMediaSrc } from '@/lib/security/url';
+
 export interface UploadItemProgress {
   id: string;
   file: File;
@@ -150,7 +152,7 @@ export function WhatsAppReviewsUploadModal({
                 <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded-xl border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
                   {}
                   <img
-                    src={item.previewUrl}
+                    src={sanitizeMediaSrc(item.previewUrl)}
                     alt={item.fileName}
                     className="h-full w-full object-cover"
                   />
