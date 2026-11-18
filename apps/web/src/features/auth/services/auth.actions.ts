@@ -11,22 +11,22 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
 async function setAuthCookies(accessToken: string, refreshToken: string) {
   const cookieStore = await cookies();
 
-  // Set access token cookie
+  // Set access token cookie (30 days for continuous seamless session)
   cookieStore.set('accessToken', accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge: 15 * 60, // 15 minutes
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   });
 
-  // Set refresh token cookie
+  // Set refresh token cookie (180 days)
   cookieStore.set('refreshToken', refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge: 90 * 24 * 60 * 60, // 90 days
+    maxAge: 180 * 24 * 60 * 60, // 180 days
   });
 }
 

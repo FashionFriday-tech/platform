@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('adminRefreshToken');
       localStorage.removeItem('accessToken');
       sessionStorage.removeItem('ff_admin_pin_unlocked');
+      localStorage.removeItem('ff_admin_pin_unlocked_until');
     }
   }, []);
 
@@ -49,6 +50,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
       sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
+      localStorage.setItem(
+        'ff_admin_pin_unlocked_until',
+        String(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      );
     }
   }, []);
 
@@ -108,11 +113,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             name?: string;
           }[];
           if (Array.isArray(team)) {
-            const matched = team.find(
-              (m) => m.phone?.replace(/\D/g, '').slice(-10) === cleanPhone && m.status === 'ACTIVE',
-            );
-            if (!matched) {
-              // User was explicitly deleted/deactivated from database: log out immediately
+            const member = team.find((m) => m.phone?.replace(/\D/g, '').slice(-10) === cleanPhone);
+            // Explicitly log out ONLY if the account was deactivated or suspended by super admin
+            if (
+              member &&
+              (member.status === 'INACTIVE' ||
+                member.status === 'DEACTIVATED' ||
+                member.status === 'SUSPENDED')
+            ) {
               logout();
               return false;
             }
@@ -165,12 +173,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const interval = setInterval(async () => {
-      const isValid = await verifySessionWithServer(user);
-      if (!isValid) {
-        logout();
-      }
-    }, 15000);
+    // Heartbeat check every 5 minutes (reduced from aggressive 15-second spam)
+    const interval = setInterval(
+      async () => {
+        const isValid = await verifySessionWithServer(user);
+        if (!isValid) {
+          logout();
+        }
+      },
+      5 * 60 * 1000,
+    );
 
     const handleFocus = async () => {
       const isValid = await verifySessionWithServer(user);

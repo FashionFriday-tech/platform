@@ -11,7 +11,7 @@ async function setAuthCookies(accessToken: string, refreshToken: string) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge: 15 * 60,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   });
 
   cookieStore.set('refreshToken', refreshToken, {
@@ -19,7 +19,7 @@ async function setAuthCookies(accessToken: string, refreshToken: string) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: 180 * 24 * 60 * 60, // 180 days
   });
 }
 

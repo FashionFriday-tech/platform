@@ -635,14 +635,14 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_SECRET'),
         expiresIn: this.configService.get<string>(
           'JWT_ACCESS_EXPIRES_IN',
-          '15m',
+          '30d',
         ) as unknown as number,
       }),
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
         expiresIn: this.configService.get<string>(
           'JWT_REFRESH_EXPIRES_IN',
-          '90d',
+          '180d',
         ) as unknown as number,
       }),
     ]);
@@ -686,7 +686,28 @@ export class AuthService {
     return userWithoutToken;
   }
 
+  // In-memory cache for concurrent refresh requests (60-second grace window to prevent race condition logouts)
+  private recentRefreshCache = new Map<
+    string,
+    { tokens: { accessToken: string; refreshToken: string }; expiresAt: number }
+  >();
+
   async refreshTokens(userId: string, refreshToken: string) {
+    const now = Date.now();
+
+    // 1. Garbage collect expired cache entries
+    for (const [key, item] of this.recentRefreshCache.entries()) {
+      if (item.expiresAt < now) {
+        this.recentRefreshCache.delete(key);
+      }
+    }
+
+    // 2. Return cached tokens if this refreshToken was already rotated in the last 60 seconds
+    const cached = this.recentRefreshCache.get(refreshToken);
+    if (cached && cached.expiresAt >= now) {
+      return cached.tokens;
+    }
+
     const user = await this.prisma.db.user.findUnique({
       where: { id: userId },
     });
@@ -703,6 +724,14 @@ export class AuthService {
 
     const tokens = await this.getTokens(user.id, user.role);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+    // Cache the new tokens under the old refresh token for 60 seconds
+    // to absorb parallel in-flight requests from multiple tabs/services without failing them
+    this.recentRefreshCache.set(refreshToken, {
+      tokens,
+      expiresAt: now + 60 * 1000,
+    });
+
     return tokens;
   }
 

@@ -12,7 +12,7 @@ interface PinLockProviderProps {
   children: React.ReactNode;
 }
 
-const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes of zero interaction
+const INACTIVITY_TIMEOUT_MS = 12 * 60 * 60 * 1000; // 12 hours of zero interaction
 
 export function PinLockProvider({ children }: PinLockProviderProps) {
   const { user } = useAuth();
@@ -29,8 +29,11 @@ export function PinLockProvider({ children }: PinLockProviderProps) {
 
     let isUnlockedInSession = false;
     try {
-      isUnlockedInSession =
-        typeof window !== 'undefined' && sessionStorage.getItem('ff_admin_pin_unlocked') === 'true';
+      if (typeof window !== 'undefined') {
+        const sessionUnlocked = sessionStorage.getItem('ff_admin_pin_unlocked') === 'true';
+        const unlockUntil = Number(localStorage.getItem('ff_admin_pin_unlocked_until') || 0);
+        isUnlockedInSession = sessionUnlocked || unlockUntil > Date.now();
+      }
     } catch {
       // sessionStorage restricted or partitioned in Safari
     }

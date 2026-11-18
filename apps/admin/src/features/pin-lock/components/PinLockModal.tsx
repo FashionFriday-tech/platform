@@ -67,6 +67,13 @@ export function PinLockModal() {
         const isValid = await PinStorage.verifyPin(nextPin, user?.phone);
         if (isValid) {
           setEnteredPin('');
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('ff_admin_pin_unlocked', 'true');
+            localStorage.setItem(
+              'ff_admin_pin_unlocked_until',
+              String(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            );
+          }
           unlock();
         } else {
           recordFailedAttempt();

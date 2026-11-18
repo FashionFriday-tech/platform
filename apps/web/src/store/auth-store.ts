@@ -46,10 +46,18 @@ export const useAuthStore = create<AuthState>()(
       refreshUser: async () => {
         try {
           const data = await getMeAction();
-          set({ user: data });
+          if (data) {
+            set({ user: data });
+          } else if (typeof window !== 'undefined') {
+            const hasLocalToken = Boolean(
+              localStorage.getItem('accessToken') || localStorage.getItem('refreshToken'),
+            );
+            if (!hasLocalToken) {
+              set({ user: null });
+            }
+          }
         } catch (error) {
           console.error('Failed to fetch user:', error);
-          set({ user: null });
         } finally {
           set({ loading: false });
         }
