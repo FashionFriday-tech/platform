@@ -1,9 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { OrderStatus, PaymentStatus } from '@ff/database';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
+import { MetricsCacheService } from '../metrics-cache/metrics-cache.service';
 
 interface CachedEntry<T> {
   data: T;
+  cachedAt: number;
   expiresAt: number;
 }
 
@@ -189,15 +192,28 @@ export class AnalyticsService {
   private cache: CachedEntry<AnalyticsPayload> | null = null;
   private readonly CACHE_TTL_MS = 60000; // 60s in-memory cache to guarantee low CPU and high performance
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly metricsCache?: MetricsCacheService,
+  ) {}
 
   public clearCache(): void {
     this.cache = null;
+    this.logger.log('[AnalyticsService] In-memory analytics cache cleared');
   }
 
   async getAnalytics(forceFresh = false): Promise<AnalyticsPayload> {
     const now = Date.now();
-    if (!forceFresh && this.cache && this.cache.expiresAt > now) {
+    const ordersEpoch = this.metricsCache?.getOrdersEpoch() ?? 0;
+    const productsEpoch = this.metricsCache?.getProductsEpoch() ?? 0;
+
+    if (
+      !forceFresh &&
+      this.cache &&
+      this.cache.cachedAt >= ordersEpoch &&
+      this.cache.cachedAt >= productsEpoch &&
+      this.cache.expiresAt > now
+    ) {
       return { ...this.cache.data, cached: true };
     }
 
@@ -205,6 +221,7 @@ export class AnalyticsService {
       const freshData = await this.computeAnalytics();
       this.cache = {
         data: freshData,
+        cachedAt: now,
         expiresAt: now + this.CACHE_TTL_MS,
       };
       return { ...freshData, cached: false };
@@ -223,6 +240,20 @@ export class AnalyticsService {
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
     const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+
+    // Common filter excluding unpaid/abandoned checkout sessions
+    const confirmedCondition = {
+      NOT: {
+        AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+      },
+    };
+
+    // Valid order condition for real revenue & active orders
+    const validOrderCondition = {
+      status: { notIn: [OrderStatus.CANCELLED] },
+      paymentStatus: { notIn: [PaymentStatus.FAILED] },
+      ...confirmedCondition,
+    };
 
     const [
       revenueAgg,
@@ -244,47 +275,66 @@ export class AnalyticsService {
       ordersWithItems,
       allOrdersWithAddress,
     ] = await Promise.all([
-      // 1. Total valid revenue
+      // 1. Total valid revenue: net of refunds
       this.prisma.db.order.aggregate({
-        where: { status: { notIn: ['CANCELLED'] } },
-        _sum: { finalAmount: true },
+        where: validOrderCondition,
+        _sum: { finalAmount: true, refundedAmount: true },
       }),
-      // 2. Last 7 days revenue
+      // 2. Last 7 days revenue: net of refunds
       this.prisma.db.order.aggregate({
         where: {
           createdAt: { gte: sevenDaysAgo },
-          status: { notIn: ['CANCELLED'] },
+          ...validOrderCondition,
         },
-        _sum: { finalAmount: true },
+        _sum: { finalAmount: true, refundedAmount: true },
       }),
-      // 3. Prior 7 days revenue
+      // 3. Prior 7 days revenue: net of refunds
       this.prisma.db.order.aggregate({
         where: {
           createdAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo },
-          status: { notIn: ['CANCELLED'] },
+          ...validOrderCondition,
         },
-        _sum: { finalAmount: true },
+        _sum: { finalAmount: true, refundedAmount: true },
       }),
-      // 4. Total orders
-      this.prisma.db.order.count(),
+      // 4. Total valid customer orders (matches active placed orders)
+      this.prisma.db.order.count({
+        where: validOrderCondition,
+      }),
       // 5. Orders last 7d
-      this.prisma.db.order.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+      this.prisma.db.order.count({
+        where: {
+          createdAt: { gte: sevenDaysAgo },
+          ...validOrderCondition,
+        },
+      }),
       // 6. Orders prior 7d
       this.prisma.db.order.count({
-        where: { createdAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo } },
+        where: {
+          createdAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo },
+          ...validOrderCondition,
+        },
       }),
-      // 7. Total units sold
+      // 7. Total units sold (strictly from valid, non-cancelled orders)
       this.prisma.db.orderItem.aggregate({
+        where: {
+          order: validOrderCondition,
+        },
         _sum: { quantity: true },
       }),
       // 8. Units sold last 7d
       this.prisma.db.orderItem.aggregate({
-        where: { createdAt: { gte: sevenDaysAgo } },
+        where: {
+          createdAt: { gte: sevenDaysAgo },
+          order: validOrderCondition,
+        },
         _sum: { quantity: true },
       }),
       // 9. Units sold prior 7d
       this.prisma.db.orderItem.aggregate({
-        where: { createdAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo } },
+        where: {
+          createdAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo },
+          order: validOrderCondition,
+        },
         _sum: { quantity: true },
       }),
       // 10. Customer users
@@ -301,8 +351,9 @@ export class AnalyticsService {
       this.prisma.db.user.count({
         where: { role: 'CUSTOMER', createdAt: { gte: todayStart } },
       }),
-      // 15. Recent live orders for ticker
+      // 15. Recent live orders for ticker (confirmed orders)
       this.prisma.db.order.findMany({
+        where: confirmedCondition,
         take: 10,
         orderBy: { createdAt: 'desc' },
         include: {
@@ -321,16 +372,18 @@ export class AnalyticsService {
       this.prisma.db.order.findMany({
         where: {
           createdAt: { gte: ninetyDaysAgo },
-          status: { notIn: ['CANCELLED'] },
+          ...validOrderCondition,
         },
         select: {
           id: true,
           finalAmount: true,
+          refundedAmount: true,
           createdAt: true,
           items: {
             select: {
               productId: true,
               name: true,
+              image: true,
               quantity: true,
               price: true,
             },
@@ -340,15 +393,19 @@ export class AnalyticsService {
       }),
       // 18. All orders with shipping addresses for state aggregation
       this.prisma.db.order.findMany({
-        where: { status: { notIn: ['CANCELLED'] } },
+        where: validOrderCondition,
         select: {
           shippingAddress: true,
           finalAmount: true,
+          refundedAmount: true,
         },
       }),
     ]);
 
-    const totalRevenue = Number(revenueAgg._sum?.finalAmount || 0);
+    const totalRevenue = Math.max(
+      0,
+      Number(revenueAgg._sum?.finalAmount || 0) - Number(revenueAgg._sum?.refundedAmount || 0),
+    );
     const totalOrders = totalOrdersCount;
     const unitsSold = unitsSoldAgg._sum.quantity ?? 0;
     const siteVisits = searchLogsCount + customersCount + totalOrders;
@@ -369,10 +426,18 @@ export class AnalyticsService {
       return { trend: '0%', trendUp: true };
     };
 
-    const revTrendInfo = calcTrend(
-      Number(recentWeekRevAgg._sum?.finalAmount || 0),
-      Number(prevWeekRevAgg._sum?.finalAmount || 0),
+    const recentWeekRevenue = Math.max(
+      0,
+      Number(recentWeekRevAgg._sum?.finalAmount || 0) -
+        Number(recentWeekRevAgg._sum?.refundedAmount || 0),
     );
+    const prevWeekRevenue = Math.max(
+      0,
+      Number(prevWeekRevAgg._sum?.finalAmount || 0) -
+        Number(prevWeekRevAgg._sum?.refundedAmount || 0),
+    );
+
+    const revTrendInfo = calcTrend(recentWeekRevenue, prevWeekRevenue);
     const ordTrendInfo = calcTrend(recentWeekOrdersCount, prevWeekOrdersCount);
     const unitTrendInfo = calcTrend(
       recentWeekUnitsAgg._sum.quantity ?? 0,
@@ -395,7 +460,9 @@ export class AnalyticsService {
       return points;
     };
 
-    const revenueSpark = getSparklinePoints(7, (o) => Number(o.finalAmount || 0));
+    const revenueSpark = getSparklinePoints(7, (o) =>
+      Math.max(0, Number(o.finalAmount || 0) - Number(o.refundedAmount || 0)),
+    );
     const ordersSpark = getSparklinePoints(7, () => 1);
     const unitsSpark = getSparklinePoints(7, (o) =>
       (o.items || []).reduce((s: number, it: any) => s + Number(it.quantity || 0), 0),
@@ -417,7 +484,10 @@ export class AnalyticsService {
           const key = ord.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
           const entry = dailyMap.get(key);
           if (entry) {
-            entry.revenue += Number(ord.finalAmount || 0);
+            entry.revenue += Math.max(
+              0,
+              Number(ord.finalAmount || 0) - Number(ord.refundedAmount || 0),
+            );
             entry.orders += 1;
           }
         }
@@ -458,16 +528,21 @@ export class AnalyticsService {
           }
         }
 
+        const netRevenue = Math.max(
+          0,
+          Number(ord.finalAmount || 0) - Number(ord.refundedAmount || 0),
+        );
+
         if (match) {
           match.orders += 1;
-          match.revenue += Number(ord.finalAmount || 0);
+          match.revenue += netRevenue;
         } else {
           // If state is not in canonical list (e.g. customized territory)
           const canonicalName = addr.state.trim();
           stateMap.set(rawState, {
             state: canonicalName,
             orders: 1,
-            revenue: Number(ord.finalAmount || 0),
+            revenue: netRevenue,
           });
         }
       }
@@ -491,18 +566,26 @@ export class AnalyticsService {
       };
     });
 
-    // Real Top Products Ranking calculated directly from OrderItems
-    const productSalesMap = new Map<string, { name: string; sales: number; revenue: number }>();
+    // Real Top Products Ranking calculated directly from OrderItems of valid orders
+    const productSalesMap = new Map<
+      string,
+      { name: string; sales: number; revenue: number; image?: string }
+    >();
     ordersWithItems.forEach((ord: any) => {
       (ord.items || []).forEach((item: any) => {
-        const current = productSalesMap.get(item.name) ?? {
+        const key = item.productId || item.name;
+        const current = productSalesMap.get(key) ?? {
           name: item.name,
           sales: 0,
           revenue: 0,
+          image: item.image || undefined,
         };
         current.sales += Number(item.quantity || 0);
         current.revenue += Number(item.price || 0) * Number(item.quantity || 0);
-        productSalesMap.set(item.name, current);
+        if (!current.image && item.image) {
+          current.image = item.image;
+        }
+        productSalesMap.set(key, current);
       });
     });
 
@@ -570,9 +653,7 @@ export class AnalyticsService {
     // Dynamic AOV
     const aov = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
     const prevAov =
-      prevWeekOrdersCount > 0
-        ? Math.round(Number(prevWeekRevAgg._sum?.finalAmount || 0) / prevWeekOrdersCount)
-        : aov;
+      prevWeekOrdersCount > 0 ? Math.round(prevWeekRevenue / prevWeekOrdersCount) : aov;
     const aovDelta = prevAov > 0 ? `${(((aov - prevAov) / prevAov) * 100).toFixed(1)}%` : '0%';
 
     const aovData = [
