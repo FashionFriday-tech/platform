@@ -1,9 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { OrderStatus, PaymentStatus } from '@ff/database';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
+import { MetricsCacheService } from '../metrics-cache/metrics-cache.service';
 
 interface CachedEntry<T> {
   data: T;
+  cachedAt: number;
   expiresAt: number;
 }
 
@@ -14,11 +17,29 @@ export class DashboardService {
   private activityCache: CachedEntry<any> | null = null;
   private readonly CACHE_TTL_MS = 15000; // 15 seconds cache for high performance & cost efficiency
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly metricsCache?: MetricsCacheService,
+  ) {}
 
-  async getDashboardStats() {
+  public clearCache(): void {
+    this.statsCache = null;
+    this.activityCache = null;
+    this.logger.log('[DashboardService] In-memory dashboard caches cleared');
+  }
+
+  async getDashboardStats(forceFresh = false) {
     const now = Date.now();
-    if (this.statsCache && this.statsCache.expiresAt > now) {
+    const ordersEpoch = this.metricsCache?.getOrdersEpoch() ?? 0;
+    const productsEpoch = this.metricsCache?.getProductsEpoch() ?? 0;
+
+    if (
+      !forceFresh &&
+      this.statsCache &&
+      this.statsCache.cachedAt >= ordersEpoch &&
+      this.statsCache.cachedAt >= productsEpoch &&
+      this.statsCache.expiresAt > now
+    ) {
       return this.statsCache.data;
     }
 
@@ -28,6 +49,22 @@ export class DashboardService {
 
       const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
       const fourteenDaysAgo = new Date(now - 14 * 24 * 60 * 60 * 1000);
+
+      // Common condition to exclude abandoned/unpaid checkouts
+      const confirmedOrderCondition = {
+        NOT: {
+          AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+        },
+      };
+
+      // Valid revenue condition: not cancelled, not failed payment, and confirmed (not abandoned cart)
+      const validRevenueCondition = {
+        status: { notIn: [OrderStatus.CANCELLED] },
+        paymentStatus: { notIn: [PaymentStatus.FAILED] },
+        NOT: {
+          AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+        },
+      };
 
       const [
         totalOrdersCount,
@@ -46,64 +83,75 @@ export class DashboardService {
         totalSellersCount,
         totalReviewsCount,
       ] = await Promise.all([
-        // Total orders
-        this.prisma.db.order.count(),
+        // Confirmed orders (excluding abandoned checkouts)
+        this.prisma.db.order.count({
+          where: confirmedOrderCondition,
+        }),
 
-        // Pending / need fulfillment orders
+        // Pending / need fulfillment orders (Stock check, stock confirmed, processing)
         this.prisma.db.order.count({
           where: {
-            status: { in: ['PENDING', 'STOCK_CHECK', 'STOCK_CONFIRMED', 'PROCESSING'] },
+            status: {
+              in: [
+                OrderStatus.PENDING,
+                OrderStatus.STOCK_CHECK,
+                OrderStatus.STOCK_CONFIRMED,
+                OrderStatus.PROCESSING,
+              ],
+            },
+            ...confirmedOrderCondition,
           },
         }),
 
         // Shipped orders
         this.prisma.db.order.count({
-          where: { status: 'SHIPPED' },
+          where: { status: OrderStatus.SHIPPED },
         }),
 
         // Delivered orders
         this.prisma.db.order.count({
-          where: { status: 'DELIVERED' },
+          where: { status: OrderStatus.DELIVERED },
         }),
 
-        // Total sales revenue
+        // Total sales revenue: Net revenue = finalAmount - refundedAmount
         this.prisma.db.order.aggregate({
-          where: {
-            status: { notIn: ['CANCELLED'] },
-          },
-          _sum: { finalAmount: true },
+          where: validRevenueCondition,
+          _sum: { finalAmount: true, refundedAmount: true },
         }),
 
         // Orders placed today
         this.prisma.db.order.count({
-          where: { createdAt: { gte: todayStart } },
+          where: {
+            createdAt: { gte: todayStart },
+            ...confirmedOrderCondition,
+          },
         }),
 
-        // Revenue today
+        // Revenue today (Net of refunds)
         this.prisma.db.order.aggregate({
           where: {
             createdAt: { gte: todayStart },
-            status: { notIn: ['CANCELLED'] },
+            ...validRevenueCondition,
           },
-          _sum: { finalAmount: true },
+          _sum: { finalAmount: true, refundedAmount: true },
         }),
 
         // Revenue in last 7 days
         this.prisma.db.order.aggregate({
           where: {
             createdAt: { gte: sevenDaysAgo },
-            status: { notIn: ['CANCELLED'] },
+            ...validRevenueCondition,
           },
-          _sum: { finalAmount: true },
+          _sum: { finalAmount: true, refundedAmount: true },
         }),
 
         // Revenue in prior 7-day window (7 to 14 days ago)
         this.prisma.db.order.aggregate({
           where: {
             createdAt: { gte: fourteenDaysAgo, lt: sevenDaysAgo },
-            status: { notIn: ['CANCELLED'] },
+            ...validRevenueCondition,
           },
-          _sum: { finalAmount: true },
+          _sum: { finalAmount: true, refundedAmount: true },
         }),
 
         // Total products
@@ -134,10 +182,26 @@ export class DashboardService {
         this.prisma.db.review.count().catch(() => 0),
       ]);
 
-      const totalSales = Number(allRevenueAgg._sum?.finalAmount || 0);
-      const todaySales = Number(todayRevenueAgg._sum?.finalAmount || 0);
-      const recentWeekSales = Number(recentWeekRevenueAgg._sum?.finalAmount || 0);
-      const prevWeekSales = Number(previousWeekRevenueAgg._sum?.finalAmount || 0);
+      const totalSales = Math.max(
+        0,
+        Number(allRevenueAgg._sum?.finalAmount || 0) -
+          Number(allRevenueAgg._sum?.refundedAmount || 0),
+      );
+      const todaySales = Math.max(
+        0,
+        Number(todayRevenueAgg._sum?.finalAmount || 0) -
+          Number(todayRevenueAgg._sum?.refundedAmount || 0),
+      );
+      const recentWeekSales = Math.max(
+        0,
+        Number(recentWeekRevenueAgg._sum?.finalAmount || 0) -
+          Number(recentWeekRevenueAgg._sum?.refundedAmount || 0),
+      );
+      const prevWeekSales = Math.max(
+        0,
+        Number(previousWeekRevenueAgg._sum?.finalAmount || 0) -
+          Number(previousWeekRevenueAgg._sum?.refundedAmount || 0),
+      );
 
       let salesGrowthPercentage = 0;
       if (prevWeekSales > 0) {
@@ -168,6 +232,7 @@ export class DashboardService {
 
       this.statsCache = {
         data: result,
+        cachedAt: now,
         expiresAt: now + this.CACHE_TTL_MS,
       };
 
@@ -178,16 +243,30 @@ export class DashboardService {
     }
   }
 
-  async getDashboardActivity(limit = 10) {
+  async getDashboardActivity(limit = 10, forceFresh = false) {
     const now = Date.now();
-    if (this.activityCache && this.activityCache.expiresAt > now) {
+    const ordersEpoch = this.metricsCache?.getOrdersEpoch() ?? 0;
+    const productsEpoch = this.metricsCache?.getProductsEpoch() ?? 0;
+
+    if (
+      !forceFresh &&
+      this.activityCache &&
+      this.activityCache.cachedAt >= ordersEpoch &&
+      this.activityCache.cachedAt >= productsEpoch &&
+      this.activityCache.expiresAt > now
+    ) {
       return this.activityCache.data;
     }
 
     try {
       const [recentOrders, recentProducts, recentCustomers] = await Promise.all([
-        // 1. Recent orders
+        // 1. Recent confirmed orders
         this.prisma.db.order.findMany({
+          where: {
+            NOT: {
+              AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+            },
+          },
           take: 6,
           orderBy: { createdAt: 'desc' },
           select: {
@@ -243,13 +322,17 @@ export class DashboardService {
         const customerName = order.user?.name || 'Customer';
         const formattedAmount = Number(order.finalAmount).toLocaleString('en-IN');
         const statusText =
-          order.status === 'DELIVERED'
+          order.status === OrderStatus.DELIVERED
             ? 'delivered'
-            : order.status === 'SHIPPED'
+            : order.status === OrderStatus.SHIPPED
               ? 'shipped'
-              : order.status === 'PROCESSING'
+              : order.status === OrderStatus.PROCESSING
                 ? 'in fulfillment'
-                : 'placed';
+                : order.status === OrderStatus.STOCK_CONFIRMED
+                  ? 'confirmed'
+                  : order.status === OrderStatus.CANCELLED
+                    ? 'cancelled'
+                    : 'placed';
 
         activities.push({
           id: `act-order-${order.id}`,
@@ -307,6 +390,7 @@ export class DashboardService {
 
       this.activityCache = {
         data: finalActivities,
+        cachedAt: now,
         expiresAt: now + this.CACHE_TTL_MS,
       };
 
