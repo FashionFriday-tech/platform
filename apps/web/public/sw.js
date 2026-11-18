@@ -18,7 +18,11 @@ self.addEventListener('install', (event) => {
       );
     }),
   );
-  self.skipWaiting();
+  // On first install, skip waiting so offline works immediately.
+  // On updates, wait until user clicks 'Update Now' in the UI or relaunches the app.
+  if (!self.registration.active) {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('message', (event) => {
