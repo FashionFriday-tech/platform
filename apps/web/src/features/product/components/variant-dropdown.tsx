@@ -279,7 +279,7 @@ export default function VariantDropdown({ variants = [], currentSlug }: VariantD
                       key={v.id || v.slug}
                       href={`/product/${v.slug}`}
                       prefetch
-                      className="group flex shrink-0 flex-col items-center gap-1.5 focus:outline-hidden"
+                      className="group flex w-14 shrink-0 flex-col items-center gap-1.5 focus:outline-hidden"
                       title={`${label} (${v.name})${isSoldOut ? ' - Sold Out' : ''}`}
                     >
                       <div
@@ -313,10 +313,10 @@ export default function VariantDropdown({ variants = [], currentSlug }: VariantD
                       </div>
 
                       {/* Crossed Design Color Box */}
-                      <div className="flex items-center justify-center py-0.5">
+                      <div className="flex w-full items-center justify-center py-0.5">
                         <span
                           aria-label={label}
-                          className={`relative block h-3 w-7 shrink-0 -skew-x-[12deg] rounded-[3px] border shadow-xs transition-all duration-200 ${
+                          className={`relative block h-2 w-full shrink-0 -skew-x-[12deg] rounded-[2px] border shadow-xs transition-all duration-200 ${
                             isCurrent
                               ? 'ring-1.5 scale-105 border-black ring-black dark:border-white dark:ring-white'
                               : 'border-black/20 opacity-75 group-hover:scale-105 group-hover:border-black/50 group-hover:opacity-100 dark:border-white/30 dark:group-hover:border-white/70'
