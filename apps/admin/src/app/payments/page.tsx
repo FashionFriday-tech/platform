@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { type Metadata } from 'next';
 
-import { PaymentsFeature } from '@/features/payments/components/PaymentsFeature';
+import { PaymentsFeature } from '@/features/payments';
 
 export const metadata: Metadata = {
   title: 'Payments & Financial Ledger | Admin Panel',
