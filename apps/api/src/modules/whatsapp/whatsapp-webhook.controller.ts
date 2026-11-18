@@ -32,7 +32,8 @@ export class WhatsAppWebhookController {
       }
 
       this.logger.log('WhatsApp webhook verified successfully.');
-      return res.status(HttpStatus.OK).type('text/plain').send(challenge);
+      const sanitizedChallenge = encodeURIComponent(challenge);
+      return res.status(HttpStatus.OK).type('text/plain').send(sanitizedChallenge);
     }
 
     this.logger.warn(

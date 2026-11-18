@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { CloseIcon, ImageIcon, PlayIcon, PlusIcon, TrashIcon } from '@ff/ui';
 
 import { ImageCropModal } from '@/components/ui/ImageCropModal';
-import { sanitizeMediaSrc } from '@/lib/security/url';
+
 import {
   type BannerPlacement,
   type CampaignBanner,
@@ -175,8 +175,9 @@ export function BannerEditorModal({
         <div className="flex w-full flex-col items-center justify-center border-b border-black/5 bg-black/5 p-4 sm:p-6 md:w-1/2 md:border-r md:border-b-0 md:p-8 dark:border-white/5 dark:bg-white/5">
           {isMarquee ? (
             <div
-              className={`flex w-full flex-col items-center justify-center rounded-2xl p-6 text-center text-white shadow-inner ${placement === 'marquee-red' ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
-                }`}
+              className={`flex w-full flex-col items-center justify-center rounded-2xl p-6 text-center text-white shadow-inner ${
+                placement === 'marquee-red' ? 'bg-[#FF0000]' : 'bg-[#0052FF]'
+              }`}
             >
               <div className="mb-2 flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-white" />
@@ -198,17 +199,21 @@ export function BannerEditorModal({
               {mediaUrl ? (
                 <>
                   {mediaType === 'image' ? (
-                    <Image src={sanitizeMediaSrc(mediaUrl)} alt="Preview" fill className="object-cover" />
-                  ) : (
+                    <Image src={mediaUrl} alt="Preview" fill className="object-cover" />
+                  ) : typeof mediaUrl === 'string' &&
+                    (mediaUrl.startsWith('https://') ||
+                      mediaUrl.startsWith('http://') ||
+                      mediaUrl.startsWith('blob:')) &&
+                    !mediaUrl.includes('javascript:') ? (
                     <video
-                      src={sanitizeMediaSrc(mediaUrl)}
+                      src={encodeURI(mediaUrl)}
                       className="h-full w-full object-cover"
                       muted
                       loop
                       playsInline
                       autoPlay
                     />
-                  )}
+                  ) : null}
                   <div className="absolute top-3 left-3 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-xs font-semibold text-white backdrop-blur-md">
                     {mediaType === 'image' ? (
                       <ImageIcon className="h-4 w-4" />
@@ -360,12 +365,14 @@ export function BannerEditorModal({
                     setIsActive((prev) => !prev);
                   }}
                   title={isActive ? 'Deactivate' : 'Activate'}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors ${isActive ? 'bg-black dark:bg-white' : 'bg-black/20 dark:bg-white/20'
-                    }`}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors ${
+                    isActive ? 'bg-black dark:bg-white' : 'bg-black/20 dark:bg-white/20'
+                  }`}
                 >
                   <span
-                    className={`inline-block h-5 w-5 transform rounded-full transition-transform ${isActive ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-1 bg-white'
-                      }`}
+                    className={`inline-block h-5 w-5 transform rounded-full transition-transform ${
+                      isActive ? 'translate-x-5 bg-white dark:bg-black' : 'translate-x-1 bg-white'
+                    }`}
                   />
                 </button>
               </div>
@@ -412,9 +419,7 @@ export function BannerEditorModal({
           file={rawFileForCrop || mediaUrl}
           aspectRatio={PLACEMENT_NUMERIC_ASPECTS[placement]}
           aspectRatioLabel={
-            placement === 'products-list'
-              ? 'Catalogue Card (8:5)'
-              : PLACEMENT_LABELS[placement]
+            placement === 'products-list' ? 'Catalogue Card (8:5)' : PLACEMENT_LABELS[placement]
           }
           title={`Crop Banner • ${PLACEMENT_LABELS[placement]}`}
           onCropComplete={handleCropComplete}

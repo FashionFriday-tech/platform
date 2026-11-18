@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 import { type Brand, type BrandCategory } from '@ff/schemas';
 import { ImageIcon } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
-
-import { sanitizeMediaSrc } from '@/lib/security/url';
 
 interface AddBrandModalProps {
   isOpen: boolean;
@@ -296,9 +295,11 @@ export function AddBrandModal({ isOpen, onClose, onSave, initialData }: AddBrand
                   >
                     {logoUrl ? (
                       <div className="relative h-full w-full">
-                        <img
-                          src={sanitizeMediaSrc(logoUrl)}
+                        <Image
+                          src={logoUrl}
                           alt="Logo preview"
+                          fill
+                          unoptimized
                           className={`h-full w-full object-contain p-3 sm:p-4 ${
                             isBlackColor(color)
                               ? 'brightness-0 invert dark:invert-0'

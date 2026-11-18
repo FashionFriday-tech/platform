@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 import { AlertCircleIcon, CheckCircleIcon, CloseIcon } from '@ff/ui';
-
-import { sanitizeMediaSrc } from '@/lib/security/url';
 
 export interface UploadItemProgress {
   id: string;
@@ -150,10 +149,11 @@ export function WhatsAppReviewsUploadModal({
               <div className="flex min-w-0 items-center gap-3">
                 {/* Thumbnail Preview */}
                 <div className="relative h-12 w-10 flex-shrink-0 overflow-hidden rounded-xl border border-black/10 bg-black/5 dark:border-white/10 dark:bg-white/5">
-                  {}
-                  <img
-                    src={sanitizeMediaSrc(item.previewUrl)}
+                  <Image
+                    src={item.previewUrl}
                     alt={item.fileName}
+                    fill
+                    unoptimized
                     className="h-full w-full object-cover"
                   />
                 </div>

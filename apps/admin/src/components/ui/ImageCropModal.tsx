@@ -5,8 +5,6 @@ import ReactCrop, { centerCrop, type Crop, makeAspectCrop } from 'react-image-cr
 
 import 'react-image-crop/dist/ReactCrop.css';
 
-import { sanitizeMediaSrc } from '@/lib/security/url';
-
 interface ImageCropModalProps {
   file: File | string;
   onCropComplete: (croppedBlob: Blob) => void;
@@ -34,18 +32,20 @@ export function ImageCropModal({
 
   // Set up image source from File or URL string
   useEffect(() => {
-    if (typeof file === 'string') {
-      setImgSrc(sanitizeMediaSrc(file));
-      return;
+    if (typeof file !== 'string') {
+      const objectUrl = URL.createObjectURL(file);
+      setImgSrc(objectUrl);
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
     }
 
-    const reader = new FileReader();
-    reader.addEventListener('load', () => {
-      if (typeof reader.result === 'string') {
-        setImgSrc(sanitizeMediaSrc(reader.result));
-      }
-    });
-    reader.readAsDataURL(file);
+    if (
+      (file.startsWith('https://') || file.startsWith('http://') || file.startsWith('blob:')) &&
+      !file.includes('javascript:')
+    ) {
+      setImgSrc(encodeURI(file));
+    }
   }, [file]);
 
   const applyCropWithAspect = (targetAspect: number | undefined, locked: boolean) => {
@@ -88,27 +88,28 @@ export function ImageCropModal({
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
 
-    const initialCrop = isLocked && selectedAspect
-      ? centerCrop(
-        makeAspectCrop(
-          {
-            unit: '%',
+    const initialCrop =
+      isLocked && selectedAspect
+        ? centerCrop(
+            makeAspectCrop(
+              {
+                unit: '%',
+                width: 90,
+              },
+              selectedAspect,
+              width,
+              height,
+            ),
+            width,
+            height,
+          )
+        : {
+            unit: '%' as const,
             width: 90,
-          },
-          selectedAspect,
-          width,
-          height,
-        ),
-        width,
-        height,
-      )
-      : {
-        unit: '%' as const,
-        width: 90,
-        height: 90,
-        x: 5,
-        y: 5,
-      };
+            height: 90,
+            x: 5,
+            y: 5,
+          };
 
     setCrop(initialCrop);
     setCompletedCrop(initialCrop);
@@ -193,11 +194,11 @@ export function ImageCropModal({
   const presets = [
     ...(aspectRatio
       ? [
-        {
-          label: aspectRatioLabel ?? `${Math.round(aspectRatio * 100) / 100}:1 Frame`,
-          value: aspectRatio,
-        },
-      ]
+          {
+            label: aspectRatioLabel ?? `${Math.round(aspectRatio * 100) / 100}:1 Frame`,
+            value: aspectRatio,
+          },
+        ]
       : [{ label: '3:4 Frame', value: 3 / 4 }]),
     { label: '8:5 (Catalogue)', value: 8 / 5 },
     { label: '16:9 (Landscape)', value: 16 / 9 },
@@ -256,10 +257,11 @@ export function ImageCropModal({
             <button
               type="button"
               onClick={handleToggleLock}
-              className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all ${isLocked
-                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
-                : 'border-zinc-500/20 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400'
-                }`}
+              className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-bold transition-all ${
+                isLocked
+                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                  : 'border-zinc-500/20 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400'
+              }`}
             >
               {isLocked ? (
                 <>
@@ -312,10 +314,11 @@ export function ImageCropModal({
                     onClick={() => {
                       handleSelectAspect(preset.value);
                     }}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${isActive || isFreeActive
-                      ? 'bg-black text-white dark:bg-white dark:text-black'
-                      : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
-                      }`}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                      isActive || isFreeActive
+                        ? 'bg-black text-white dark:bg-white dark:text-black'
+                        : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/5 dark:text-white/70 dark:hover:bg-white/10'
+                    }`}
                   >
                     {preset.label}
                   </button>
@@ -336,7 +339,11 @@ export function ImageCropModal({
 
         {/* Crop Area */}
         <div className="flex max-h-[60vh] min-h-[340px] items-center justify-center overflow-auto bg-black/5 p-6 dark:bg-white/5">
-          {imgSrc ? (
+          {imgSrc &&
+          (imgSrc.startsWith('https://') ||
+            imgSrc.startsWith('http://') ||
+            imgSrc.startsWith('blob:')) &&
+          !imgSrc.includes('javascript:') ? (
             <ReactCrop
               crop={crop}
               onChange={(c) => {
@@ -351,7 +358,7 @@ export function ImageCropModal({
               <img
                 ref={imgRef}
                 alt="Crop me"
-                src={sanitizeMediaSrc(imgSrc)}
+                src={encodeURI(imgSrc)}
                 onLoad={onImageLoad}
                 crossOrigin="anonymous"
                 style={{ maxHeight: '52vh', maxWidth: '100%', objectFit: 'contain' }}

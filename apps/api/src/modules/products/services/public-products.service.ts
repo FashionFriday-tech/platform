@@ -5,10 +5,18 @@ import { PrismaService } from '../../../database/prisma.service';
 import { ProductsRepository } from '../products.repository';
 
 function levenshteinDistance(s1: string, s2: string): number {
-  // Constrain string lengths to prevent quadratic loop bound injection (DoS)
-  const MAX_STR_LEN = 32;
-  const a = s1.slice(0, MAX_STR_LEN).toLowerCase();
-  const b = s2.slice(0, MAX_STR_LEN).toLowerCase();
+  if (typeof s1 !== 'string' || typeof s2 !== 'string') {
+    return 0;
+  }
+
+  // Prevent loop bound injection: strictly guard maximum length before loop execution
+  const MAX_SEARCH_LEN = 32;
+  if (s1.length > MAX_SEARCH_LEN || s2.length > MAX_SEARCH_LEN) {
+    return MAX_SEARCH_LEN;
+  }
+
+  const a = s1.toLowerCase();
+  const b = s2.toLowerCase();
   const matrix: number[][] = [];
 
   for (let i = 0; i <= b.length; i++) {
