@@ -6,10 +6,12 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Optional,
   UnauthorizedException,
 } from '@nestjs/common';
 
 import { PrismaService } from '../../database/prisma.service';
+import { MetricsCacheService } from '../metrics-cache/metrics-cache.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -24,6 +26,7 @@ export class OrdersService {
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
     private readonly razorpayService: RazorpayService,
+    @Optional() private readonly metricsCache?: MetricsCacheService,
   ) {}
 
   async createOrder(userId: string, dto: CreateOrderDto) {
@@ -307,6 +310,7 @@ export class OrdersService {
       this.logger.log(
         `[OrdersService] Step 5: DB Order created with Razorpay Order ID: ${rzpOrder.id}. Cart items retained until payment verification.`,
       );
+      this.metricsCache?.invalidateOrders();
 
       return {
         type: isCod ? 'COD' : 'ONLINE',
@@ -418,6 +422,7 @@ export class OrdersService {
       },
       include: { items: true },
     });
+    this.metricsCache?.invalidateOrders();
 
     // Clear user's ordered items in DB now that payment is confirmed
     this.logger.log(
@@ -602,6 +607,7 @@ export class OrdersService {
       },
       include: { items: true },
     });
+    this.metricsCache?.invalidateOrders();
 
     try {
       void this.notificationsService.notifyOrderStatus(updated);
@@ -667,6 +673,7 @@ export class OrdersService {
       },
       include: { items: true },
     });
+    this.metricsCache?.invalidateOrders();
 
     try {
       void this.notificationsService.notifyOrderStatus(updated);
@@ -758,6 +765,7 @@ export class OrdersService {
           'Concurrent refund conflict: remaining balance is insufficient.',
         );
       }
+      this.metricsCache?.invalidateOrders();
 
       const updated = {
         ...order,
@@ -799,6 +807,7 @@ export class OrdersService {
             },
             include: { items: true },
           });
+          this.metricsCache?.invalidateOrders();
           return {
             success: true,
             order: updated,
@@ -1168,6 +1177,7 @@ export class OrdersService {
         });
       }
     }
+    this.metricsCache?.invalidateOrders();
   }
 
   /**
@@ -1618,6 +1628,9 @@ export class OrdersService {
 
     const updated = await this.findOne(orderId);
 
+    this.metricsCache?.invalidateOrders();
+    this.metricsCache?.invalidateProducts();
+
     this.logger.log(
       `[OrdersService] Order ${orderId} updated completely. New status: ${updated.status}, items: ${updated.items?.length}, total: ${String(updated.finalAmount)}`,
     );
@@ -1641,8 +1654,13 @@ export class OrdersService {
     if (!existing) {
       throw new NotFoundException('Order not found');
     }
-    return this.prisma.db.order.delete({
+    const result = await this.prisma.db.order.delete({
       where: { id: existing.id },
     });
+
+    this.metricsCache?.invalidateOrders();
+    this.metricsCache?.invalidateProducts();
+
+    return result;
   }
 }
