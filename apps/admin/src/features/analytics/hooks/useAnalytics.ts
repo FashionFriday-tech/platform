@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { api } from '@/lib/api-client';
 import { type AnalyticsPayload } from '../types';
 
 const STORAGE_KEY = 'ff_admin_analytics_cache_v1';
@@ -35,17 +36,13 @@ export function useAnalytics() {
       setIsRefreshing(true);
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-    const query = forceFresh ? '?fresh=true' : '';
-
     try {
-      const res = await fetch(`${apiUrl}/admin/analytics${query}`, {
+      const json = await api.get<AnalyticsPayload>('/admin/analytics', {
         cache: 'no-store',
-        credentials: 'include',
+        params: forceFresh ? { fresh: 'true' } : undefined,
       });
 
-      if (res.ok) {
-        const json = (await res.json()) as AnalyticsPayload;
+      if (json) {
         setData(json);
         const fetchTime = new Date();
         setLastFetched(fetchTime);
@@ -103,7 +100,7 @@ export function useAnalytics() {
     };
   }, [fetchAnalytics]);
 
-  // Periodic polling interval (low power, scalable)
+  // Periodic polling interval (low power, scalable) + Cross-tab/Cross-component listener
   useEffect(() => {
     void fetchAnalytics(false);
 
@@ -113,8 +110,28 @@ export function useAnalytics() {
       }
     }, POLL_INTERVAL_MS);
 
+    // Cross-component and cross-tab reactive synchronization
+    const handleOrdersUpdated = () => {
+      void fetchAnalytics(true);
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'ff_order_mutation_ts') {
+        void fetchAnalytics(true);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('ff-orders-updated', handleOrdersUpdated);
+      window.addEventListener('storage', handleStorageChange);
+    }
+
     return () => {
       clearInterval(interval);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('ff-orders-updated', handleOrdersUpdated);
+        window.removeEventListener('storage', handleStorageChange);
+      }
     };
   }, [fetchAnalytics]);
 
