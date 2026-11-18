@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Fashion Friday | Streetwear & Sneakers',
-    short_name: 'Fashion Friday',
+    name: 'FASHION FRIDAY',
+    short_name: 'FASHION FRIDAY',
     description:
       'Shop India’s freshest streetwear, hype sneakers, oversized hoodies & luxury clogs. Pan-India Cash on Delivery (COD) & express dispatch.',
     start_url: '/',

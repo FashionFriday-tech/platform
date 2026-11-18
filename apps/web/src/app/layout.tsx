@@ -74,7 +74,7 @@ export const metadata: Metadata = {
         url: '/images/logos/ff-app-icon.png',
         width: 1200,
         height: 1200,
-        alt: 'Fashion Friday - Premium Streetwear & Sneakers India',
+        alt: 'FASHION FRIDAY',
       },
     ],
   },
