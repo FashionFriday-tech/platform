@@ -266,6 +266,19 @@ export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProp
     void loadSellers();
   }, [currentOrder, initialSeller]);
 
+  const triggerGlobalOrderSync = (type = 'update') => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('ff_order_mutation_ts', Date.now().toString());
+        window.dispatchEvent(
+          new CustomEvent('ff-orders-updated', { detail: { orderId: currentOrder.id, type } }),
+        );
+      } catch {
+        // ignore
+      }
+    }
+  };
+
   const updateOrderOnBackend = async (patchData: {
     status?: string;
     courierPartner?: string;
@@ -301,6 +314,7 @@ export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProp
         });
       }
 
+      triggerGlobalOrderSync('update');
       setIsUpdateModalOpen(false);
     } catch (err: any) {
       console.error('Failed to update order:', err);
@@ -362,6 +376,7 @@ export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProp
       setIsUpdatingStatus(true);
       await api.post(`/orders/${currentOrder.id}/confirm-stock`, {});
       setOrderStatus('stock_confirmed');
+      triggerGlobalOrderSync('confirm_stock');
       alert('Stock confirmed! Payment captured successfully on Razorpay.');
     } catch (err: any) {
       console.error('Failed to confirm stock:', err);
@@ -381,6 +396,7 @@ export function OrderDetailsView({ order, onOrderUpdated }: OrderDetailsViewProp
         setIsUpdatingStatus(true);
         await api.post(`/orders/${currentOrder.id}/reject-stock`, { reason: 'Out of stock' });
         setOrderStatus('cancelled');
+        triggerGlobalOrderSync('cancel');
         alert('Order cancelled! Authorized funds released at ₹0 fee.');
       } catch (err: any) {
         console.error('Failed to reject stock:', err);
@@ -546,6 +562,7 @@ Total: ₹${(Number(currentOrder.finalAmount ?? currentOrder.total) || 0).toLoca
                 if (window.confirm('Are you sure you want to delete this order?')) {
                   try {
                     await api.delete(`/orders/${currentOrder.id}`);
+                    triggerGlobalOrderSync('delete');
                     router.push('/orders');
                   } catch (err) {
                     console.error('Failed to delete order', err);
