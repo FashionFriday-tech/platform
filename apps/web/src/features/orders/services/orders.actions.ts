@@ -215,6 +215,25 @@ export async function verifyPaymentAction(payload: VerifyPaymentPayload) {
 }
 
 /**
+ * Server Action to cancel/clean up an unconfirmed pending checkout session
+ */
+export async function cancelPendingOrderAction(orderId: string) {
+  console.log('[orders.actions] Cancelling unconfirmed pending order:', orderId);
+  try {
+    const res = await fetchWithAuth(`/orders/${orderId}/cancel-pending`, {
+      method: 'POST',
+    });
+    if (!res?.ok) {
+      console.warn('[orders.actions] cancelPendingOrder returned non-ok:', res?.status);
+    }
+    return { success: true };
+  } catch (err: any) {
+    console.warn('[orders.actions] Exception in cancelPendingOrderAction:', err);
+    return { success: false };
+  }
+}
+
+/**
  * Server Action to fetch current user's orders
  */
 export async function fetchUserOrdersAction() {
