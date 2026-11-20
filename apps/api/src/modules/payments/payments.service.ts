@@ -57,13 +57,9 @@ export class PaymentsService {
     const skip = (page - 1) * limit;
 
     const where: any = {
-      // Exclude abandoned checkout attempts without gateway orders
+      // Exclude unconfirmed checkout attempts
       NOT: {
-        AND: [
-          { status: OrderStatus.PENDING },
-          { paymentStatus: PaymentStatus.PENDING },
-          { razorpayOrderId: null },
-        ],
+        AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
       },
     };
 
@@ -103,6 +99,7 @@ export class PaymentsService {
 
     if (query.riskFilter === 'EXPIRING') {
       where.paymentStatus = PaymentStatus.AUTHORIZED;
+      where.status = { not: OrderStatus.CANCELLED };
       where.createdAt = { lte: twoDaysAgo, gte: threeDaysAgo };
     } else if (query.riskFilter === 'NEEDS_CAPTURE') {
       where.paymentStatus = PaymentStatus.AUTHORIZED;
@@ -246,11 +243,7 @@ export class PaymentsService {
   async getPaymentStats(startDate?: string, endDate?: string) {
     const where: any = {
       NOT: {
-        AND: [
-          { status: OrderStatus.PENDING },
-          { paymentStatus: PaymentStatus.PENDING },
-          { razorpayOrderId: null },
-        ],
+        AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
       },
     };
 
@@ -273,6 +266,7 @@ export class PaymentsService {
         advanceAmount: true,
         refundedAmount: true,
         paymentStatus: true,
+        status: true,
         paymentMethod: true,
         createdAt: true,
       },
@@ -324,13 +318,24 @@ export class PaymentsService {
       const refunded = Number(order.refundedAmount || 0);
       const createdDateKey = order.createdAt.toISOString().split('T')[0];
 
-      totalGrossVolume += amount;
+      // Exclude cancelled / voided / failed from active gross volumes
+      const isFailedOrVoided =
+        order.status === OrderStatus.CANCELLED ||
+        order.paymentStatus === PaymentStatus.FAILED ||
+        order.paymentStatus === PaymentStatus.VOIDED ||
+        order.paymentStatus === PaymentStatus.VOID_PENDING;
+
+      if (!isFailedOrVoided) {
+        totalGrossVolume += amount;
+      }
 
       // Method breakdown
       if (order.paymentMethod === PaymentMethod.COD) {
         methodBreakdown.cod++;
-        codAdvanceVolume += advance;
-        codPendingVolume += Math.max(0, amount - advance);
+        if (!isFailedOrVoided) {
+          codAdvanceVolume += advance;
+          codPendingVolume += Math.max(0, amount - advance);
+        }
       } else if (order.paymentMethod === PaymentMethod.RAZORPAY) {
         methodBreakdown.razorpay++;
       } else if (order.paymentMethod === PaymentMethod.WALLET) {
@@ -340,7 +345,10 @@ export class PaymentsService {
       }
 
       // Status aggregation
-      if (order.paymentStatus === PaymentStatus.CAPTURED) {
+      if (isFailedOrVoided) {
+        failedVolume += amount;
+        failedCount++;
+      } else if (order.paymentStatus === PaymentStatus.CAPTURED) {
         capturedVolume += amount;
         capturedCount++;
       } else if (order.paymentStatus === PaymentStatus.AUTHORIZED) {
@@ -355,20 +363,16 @@ export class PaymentsService {
         order.paymentStatus === PaymentStatus.PARTIALLY_REFUNDED
       ) {
         refundedCount++;
-      } else if (
-        order.paymentStatus === PaymentStatus.FAILED ||
-        order.paymentStatus === PaymentStatus.VOIDED
-      ) {
-        failedVolume += amount;
-        failedCount++;
       }
 
       refundedVolume += refunded;
 
       // Daily chart aggregation
       if (dailyVolumeMap[createdDateKey]) {
-        dailyVolumeMap[createdDateKey].volume += amount;
-        dailyVolumeMap[createdDateKey].count += 1;
+        if (!isFailedOrVoided) {
+          dailyVolumeMap[createdDateKey].volume += amount;
+          dailyVolumeMap[createdDateKey].count += 1;
+        }
         if (order.paymentStatus === PaymentStatus.CAPTURED) {
           dailyVolumeMap[createdDateKey].captured += amount;
         }
