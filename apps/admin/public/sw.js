@@ -64,6 +64,7 @@ self.addEventListener('fetch', (event) => {
     url.pathname.startsWith('/__nextjs') ||
     url.pathname.includes('/admin/team') ||
     url.pathname.includes('/orders') ||
+    url.pathname.includes('/payments') ||
     url.pathname.includes('/maintenance') ||
     event.request.headers.get('next-action') ||
     event.request.headers.get('rsc')
