@@ -268,6 +268,21 @@ export class OrdersService {
       `[OrdersService] Step 4: Initializing Razorpay Gateway Order for ${orderNumber} (${isCod ? `COD Advance ₹${String(advanceAmount)}` : `Full Online ₹${String(finalAmount)}`})`,
     );
 
+    // Clean up any stale unconfirmed checkouts for this user before creating a new checkout attempt
+    try {
+      await this.prisma.db.order.deleteMany({
+        where: {
+          userId,
+          status: OrderStatus.PENDING,
+          paymentStatus: PaymentStatus.PENDING,
+        },
+      });
+    } catch (cleanupErr: any) {
+      this.logger.warn(
+        `[OrdersService] Stale pending orders cleanup notice: ${cleanupErr.message}`,
+      );
+    }
+
     const rzpOrder = await this.razorpayService.createOrder({
       amountInPaisa,
       receipt: orderNumber,
@@ -456,6 +471,36 @@ export class OrdersService {
       success: true,
       order: updatedOrder,
     };
+  }
+
+  /**
+   * Cancel/delete an unconfirmed checkout attempt if user dismisses or aborts payment
+   */
+  async cancelPendingOrder(orderId: string, userId: string) {
+    this.logger.log(
+      `[OrdersService] Cancelling unconfirmed pending order: ${orderId} for user: ${userId}`,
+    );
+    const order = await this.prisma.db.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      return { success: true };
+    }
+
+    if (order.userId !== userId) {
+      throw new ForbiddenException('You are not authorized to cancel this order');
+    }
+
+    if (order.status === OrderStatus.PENDING && order.paymentStatus === PaymentStatus.PENDING) {
+      await this.prisma.db.order.delete({
+        where: { id: order.id },
+      });
+      this.metricsCache?.invalidateOrders();
+      this.logger.log(`[OrdersService] Successfully deleted pending unconfirmed order ${order.id}`);
+    }
+
+    return { success: true };
   }
 
   /**
@@ -663,6 +708,8 @@ export class OrdersService {
         );
         newPaymentStatus = PaymentStatus.VOID_PENDING;
       }
+    } else if (order.paymentStatus === PaymentStatus.PENDING) {
+      newPaymentStatus = PaymentStatus.VOIDED;
     }
 
     const updated = await this.prisma.db.order.update({
@@ -1594,12 +1641,38 @@ export class OrdersService {
           ? dto.finalAmount
           : Math.max(0, totalAmount - discountAmount + shippingFees);
 
-      // 4. Update Order record
+      // 4. Handle auto-voiding / refund status synchronization if cancelling order
+      let resolvedPaymentStatus = dto.paymentStatus;
+      if (dto.status === OrderStatus.CANCELLED && existing.status !== OrderStatus.CANCELLED) {
+        if (!resolvedPaymentStatus) {
+          if (existing.paymentStatus === PaymentStatus.AUTHORIZED) {
+            if (existing.razorpayPaymentId) {
+              try {
+                await this.razorpayService.voidPayment(existing.razorpayPaymentId);
+                this.logger.log(
+                  `[OrdersService] Auto-voided authorized payment ${existing.razorpayPaymentId} upon order cancellation`,
+                );
+              } catch (err: any) {
+                this.logger.error(
+                  `[OrdersService] Error voiding payment on order cancellation: ${err.message}`,
+                );
+              }
+            }
+            resolvedPaymentStatus = PaymentStatus.VOIDED;
+          } else if (existing.paymentStatus === PaymentStatus.PENDING) {
+            resolvedPaymentStatus = PaymentStatus.VOIDED;
+          } else if (existing.paymentStatus === PaymentStatus.CAPTURED) {
+            resolvedPaymentStatus = PaymentStatus.REFUND_PENDING;
+          }
+        }
+      }
+
+      // 5. Update Order record
       await tx.order.update({
         where: { id: orderId },
         data: {
           ...(dto.status ? { status: dto.status } : {}),
-          ...(dto.paymentStatus ? { paymentStatus: dto.paymentStatus } : {}),
+          ...(resolvedPaymentStatus ? { paymentStatus: resolvedPaymentStatus } : {}),
           ...(dto.paymentMethod ? { paymentMethod: dto.paymentMethod } : {}),
           ...(dto.trackingNumber !== undefined ? { trackingNumber: dto.trackingNumber } : {}),
           ...(dto.courierPartner !== undefined ? { courierPartner: dto.courierPartner } : {}),
@@ -1611,7 +1684,7 @@ export class OrdersService {
         },
       });
 
-      // 5. Update linked User record if customer name provided
+      // 6. Update linked User record if customer name provided
       if (dto.customer?.name && existing.userId) {
         try {
           await tx.user.update({
@@ -1654,6 +1727,19 @@ export class OrdersService {
     if (!existing) {
       throw new NotFoundException('Order not found');
     }
+
+    // FinTech Safety: If payment was in AUTHORIZED state, void authorization before deleting order
+    if (existing.paymentStatus === PaymentStatus.AUTHORIZED && existing.razorpayPaymentId) {
+      try {
+        await this.razorpayService.voidPayment(existing.razorpayPaymentId);
+        this.logger.log(
+          `[OrdersService] Voided payment ${existing.razorpayPaymentId} prior to deleting order ${existing.id}`,
+        );
+      } catch (err: any) {
+        this.logger.warn(`[OrdersService] Notice: void payment on delete: ${err.message}`);
+      }
+    }
+
     const result = await this.prisma.db.order.delete({
       where: { id: existing.id },
     });
