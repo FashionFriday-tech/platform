@@ -63,15 +63,10 @@ export class RazorpayService {
     params: CreateRazorpayOrderParams,
   ): Promise<{ id: string; amount: number; currency: string }> {
     if (!this.instance) {
-      this.logger.warn(
-        `[RazorpayService] Mocking Razorpay order creation because keys are not configured yet`,
+      this.logger.error(
+        `[RazorpayService] Cannot create Razorpay order: Razorpay credentials are not configured`,
       );
-      // Fallback/Mock mode for local development before keys are added
-      return {
-        id: `order_mock_${Date.now()}`,
-        amount: params.amountInPaisa,
-        currency: 'INR',
-      };
+      throw new Error('Payment gateway is not configured. Please check server credentials.');
     }
 
     try {
@@ -243,14 +238,8 @@ export class RazorpayService {
     signature: string;
   }): boolean {
     if (!this.keySecret) {
-      if (process.env.NODE_ENV === 'production') {
-        this.logger.error(`[RazorpayService] FATAL: RAZORPAY_KEY_SECRET missing in production!`);
-        return false;
-      }
-      this.logger.warn(
-        `[RazorpayService] RAZORPAY_KEY_SECRET not set. Bypassing signature verification (Mock Mode).`,
-      );
-      return true;
+      this.logger.error(`[RazorpayService] RAZORPAY_KEY_SECRET missing. Cannot verify signature.`);
+      return false;
     }
 
     try {
