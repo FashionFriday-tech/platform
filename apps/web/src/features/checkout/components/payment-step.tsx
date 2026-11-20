@@ -21,6 +21,7 @@ import {
   createOrderAction,
   verifyPaymentAction,
 } from '@/features/orders/services/orders.actions';
+import { api } from '@/lib/api-client';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
 import { useAuthStore } from '@/store/auth-store';
 import { useCartStore } from '@/store/cart-store';
@@ -142,8 +143,10 @@ export function PaymentStep() {
         `[PaymentStep] Step 2: Initiating ${paymentMethod.toUpperCase()} order on server...`,
       );
       const isCod = paymentMethod === 'cod';
-      const initRes = await createOrderAction({
-        paymentMethod: isCod ? 'COD' : 'RAZORPAY',
+      const localToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
+      const orderPayload = {
+        paymentMethod: isCod ? ('COD' as const) : ('RAZORPAY' as const),
         addressId: shippingAddress.id,
         shippingAddress: shippingPayload,
         items:
@@ -157,10 +160,50 @@ export function PaymentStep() {
                 },
               ]
             : undefined,
-      });
+      };
+
+      let initRes: any;
+      try {
+        initRes = await createOrderAction({
+          ...orderPayload,
+          token: localToken || undefined,
+        });
+      } catch (actionErr: any) {
+        console.warn(
+          '[PaymentStep] Server action createOrderAction failed, attempting client fallback:',
+          actionErr,
+        );
+      }
+
+      // If Server Action was rejected or unauthorized, attempt resilient client-side api.post with auto-refresh
+      if (!initRes?.success) {
+        console.log('[PaymentStep] Attempting order creation via client api.post fallback...');
+        try {
+          const clientResult = await api.post<any>('/orders', orderPayload);
+          initRes = {
+            success: true,
+            ...clientResult,
+          };
+        } catch (clientErr: any) {
+          console.error('[PaymentStep] Both createOrderAction and api.post failed:', clientErr);
+          const errorMsg =
+            clientErr?.message || initRes?.error || 'Failed to initiate payment session';
+          if (
+            errorMsg.toLowerCase().includes('unauthorized') ||
+            errorMsg.includes('401') ||
+            errorMsg.toLowerCase().includes('authentication required')
+          ) {
+            toast.error('Your session has expired. Please sign in to complete your order.');
+            router.push('/login?redirect=/checkout/payment');
+            return;
+          }
+          throw new Error(errorMsg);
+        }
+      }
+
       console.log('[PaymentStep] Step 3: Server session created:', initRes);
 
-      if (!initRes || initRes.success === false || initRes.error) {
+      if (!initRes?.success || initRes.error) {
         throw new Error(initRes?.error || 'Failed to initiate payment session from server');
       }
 
@@ -214,7 +257,9 @@ export function PaymentStep() {
               'Payment was cancelled. Your order has not been placed and your items remain in your cart.',
             );
             try {
-              await cancelPendingOrderAction(order.id);
+              const activeToken =
+                typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+              await cancelPendingOrderAction(order.id, activeToken || undefined);
             } catch (dismissErr) {
               console.warn('[PaymentStep] Cancel pending order notice:', dismissErr);
             }
@@ -224,15 +269,35 @@ export function PaymentStep() {
           console.log('[PaymentStep] Step 4: Razorpay payment response received:', response);
           try {
             setIsPlacing(true);
-            // Cryptographic verification on backend
-            const verifyRes = await verifyPaymentAction({
+            const activeToken =
+              typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
+            const verifyPayload = {
               orderId: order.id,
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
-            });
+            };
 
-            if (!verifyRes || verifyRes.success === false || verifyRes.error) {
+            let verifyRes: any;
+            try {
+              verifyRes = await verifyPaymentAction({
+                ...verifyPayload,
+                token: activeToken || undefined,
+              });
+            } catch (vErr) {
+              console.warn(
+                '[PaymentStep] Server verifyPaymentAction failed, trying api.post fallback:',
+                vErr,
+              );
+            }
+
+            if (!verifyRes?.success) {
+              const clientVerify = await api.post<any>('/orders/verify-payment', verifyPayload);
+              verifyRes = { success: true, ...clientVerify };
+            }
+
+            if (!verifyRes?.success || verifyRes.error) {
               throw new Error(verifyRes?.error || 'Payment verification failed');
             }
             console.log('[PaymentStep] Step 5: Verified! Clearing cart and redirecting...');
@@ -273,7 +338,9 @@ export function PaymentStep() {
         toast.error(resp.error?.description || 'Payment was unsuccessful. Please try again.');
         setIsPlacing(false);
         try {
-          await cancelPendingOrderAction(order.id);
+          const activeToken =
+            typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+          await cancelPendingOrderAction(order.id, activeToken || undefined);
         } catch (failErr) {
           console.warn('[PaymentStep] Cancel pending order notice:', failErr);
         }
