@@ -157,6 +157,7 @@ export function usePayments() {
       if (riskFilter !== 'ALL') params.riskFilter = riskFilter;
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
+      params._t = Date.now();
 
       const res = await api.get<{
         items: PaymentItem[];
@@ -195,9 +196,10 @@ export function usePayments() {
     try {
       setIsStatsLoading(true);
       const { startDate, endDate } = getDateBounds();
-      const params: Record<string, string | undefined> = {};
+      const params: Record<string, string | number | undefined> = {};
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
+      params._t = Date.now();
 
       const res = await api.get<PaymentStatsResponse>('/payments/stats', {
         cache: 'no-store',
@@ -262,6 +264,15 @@ export function usePayments() {
     };
 
     window.addEventListener('ff-orders-updated', handleSync);
+    window.addEventListener('focus', handleSync);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        handleSync();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'ff_order_mutation_ts') {
         handleSync();
@@ -271,6 +282,8 @@ export function usePayments() {
 
     return () => {
       window.removeEventListener('ff-orders-updated', handleSync);
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('storage', handleStorage);
     };
   }, [fetchPayments, fetchStats, fetchPaymentDetails, selectedPaymentId]);
