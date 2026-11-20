@@ -22,7 +22,8 @@ async function bootstrap() {
         origin.startsWith('http://172.') ||
         origin.endsWith('.fashionfriday.in') ||
         origin === 'https://fashionfriday.in' ||
-        origin.endsWith('.vercel.app')
+        origin.endsWith('.vercel.app') ||
+        origin.includes('razorpay.com')
       ) {
         callback(null, true);
         return;
@@ -31,7 +32,23 @@ async function bootstrap() {
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'x-rtb-fingerprint-id',
+      'request-id',
+      'x-request-id',
+      'x-razorpay-signature',
+    ],
+    exposedHeaders: [
+      'x-rtb-fingerprint-id',
+      'request-id',
+      'x-request-id',
+      'x-razorpay-signature',
+      'content-length',
+      'content-type',
+    ],
   });
   app.useGlobalPipes(new ZodValidationPipe());
 
