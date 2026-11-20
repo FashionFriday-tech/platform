@@ -42,6 +42,10 @@ export function useOrders() {
   const flattenedOrders = useMemo(() => {
     return orders
       .filter((o) => {
+        // Exclude unconfirmed checkout attempts
+        if (o.status === 'PENDING' && o.paymentStatus === 'PENDING') {
+          return false;
+        }
         const s = o.status?.toUpperCase();
         if (activeTab === 'shipping') {
           return [
