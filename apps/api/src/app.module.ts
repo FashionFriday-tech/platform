@@ -35,7 +35,10 @@ import { WishlistModule } from './modules/wishlist/wishlist.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env', 'apps/api/.env', 'apps/api/.env.local', '../../.env'],
+    }),
     PrismaModule,
     AuthModule,
     AddressesModule,
