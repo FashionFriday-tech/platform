@@ -86,6 +86,21 @@ export class OrdersController {
     return this.ordersService.verifyPayment(userId, dto);
   }
 
+  @Post(':id/cancel-pending')
+  @UseGuards(JwtAuthGuard)
+  async cancelPendingOrder(@Param('id') id: string, @Req() req: AuthRequest) {
+    const userId = req.user.id || req.user.sub;
+    this.logger.log(
+      `[OrdersController] Incoming POST /orders/${id}/cancel-pending for user: ${String(userId)}`,
+    );
+
+    if (!userId) {
+      throw new UnauthorizedException('Authentication required');
+    }
+
+    return this.ordersService.cancelPendingOrder(id, userId);
+  }
+
   @Post('webhook')
   async handleWebhook(
     @Headers('x-razorpay-signature') signature: string,
