@@ -19,6 +19,11 @@ export class CustomersService {
       where: { role: UserRole.CUSTOMER },
       include: {
         orders: {
+          where: {
+            NOT: {
+              AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+            },
+          },
           orderBy: { createdAt: 'desc' },
           select: {
             createdAt: true,
@@ -58,6 +63,11 @@ export class CustomersService {
       where: { id },
       include: {
         orders: {
+          where: {
+            NOT: {
+              AND: [{ status: OrderStatus.PENDING }, { paymentStatus: PaymentStatus.PENDING }],
+            },
+          },
           orderBy: { createdAt: 'desc' },
           include: {
             items: true,
