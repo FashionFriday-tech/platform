@@ -16,7 +16,11 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
 
-import { createOrderAction, verifyPaymentAction } from '@/features/orders/services/orders.actions';
+import {
+  cancelPendingOrderAction,
+  createOrderAction,
+  verifyPaymentAction,
+} from '@/features/orders/services/orders.actions';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
 import { useAuthStore } from '@/store/auth-store';
 import { useCartStore } from '@/store/cart-store';
@@ -173,62 +177,15 @@ export function PaymentStep() {
 
       const keyId = rzpData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
-      // Development / Staging fallback if live Razorpay keys are not yet configured
-      if (!keyId || rzpData.orderId.startsWith('order_mock_')) {
-        console.warn(
-          '[PaymentStep] Razorpay live keys not yet added. Prompting user for test confirmation.',
-        );
-        const confirmed = window.confirm(
-          isCod
-            ? `[TEST SIMULATION]\n\nConfirm payment of ₹${advancePaid} Advance Deposit for COD Order #${order.orderNumber}?\n\n(Click OK to verify test payment, or Cancel to abort)`
-            : `[TEST SIMULATION]\n\nConfirm online payment of ₹${order.finalAmount} for Order #${order.orderNumber}?\n\n(Click OK to verify test payment, or Cancel to abort)`,
-        );
-
-        if (!confirmed) {
-          setIsPlacing(false);
-          toast.info(
-            'Payment was cancelled. Your order has not been placed and your cart is saved.',
-          );
-          return;
-        }
-
-        const verifyRes = await verifyPaymentAction({
-          orderId: order.id,
-          razorpayOrderId: rzpData.orderId,
-          razorpayPaymentId: `pay_mock_${Date.now()}`,
-          razorpaySignature: 'mock_signature',
-        });
-
-        if (!verifyRes || verifyRes.success === false || verifyRes.error) {
-          throw new Error(verifyRes?.error || 'Payment verification failed');
-        }
-
-        if (isBuyNowMode && buyNowItem) {
-          await removeItemByProduct(buyNowItem.productId, buyNowItem.size, true);
-          setBuyNowItem(null);
-          if (typeof window !== 'undefined') {
-            sessionStorage.removeItem('ff_buy_now_item');
-          }
-        } else {
-          await clearCart(true);
-        }
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('checkout_shipping_address');
-        }
-        if (isCod) {
-          toast.success(
-            `₹${advancePaid} Advance Paid! COD Order placed successfully. Balance of ₹${balanceDue} payable on delivery.`,
-          );
-        } else {
-          toast.success('Payment verified! Your order has been placed.');
-        }
-        router.push('/account/orders');
-        return;
+      if (!keyId) {
+        setIsPlacing(false);
+        throw new Error('Online payment gateway configuration is missing. Please contact support.');
       }
 
       // Load official Razorpay Checkout SDK
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
+        setIsPlacing(false);
         throw new Error(
           'Unable to load payment gateway SDK. Please check your internet connection.',
         );
@@ -251,11 +208,16 @@ export function PaymentStep() {
           color: '#000000',
         },
         modal: {
-          ondismiss: () => {
+          ondismiss: async () => {
             setIsPlacing(false);
             toast.info(
-              'Payment was cancelled. Your order has not been placed and your cart is saved.',
+              'Payment was cancelled. Your order has not been placed and your items remain in your cart.',
             );
+            try {
+              await cancelPendingOrderAction(order.id);
+            } catch (dismissErr) {
+              console.warn('[PaymentStep] Cancel pending order notice:', dismissErr);
+            }
           },
         },
         handler: async (response: any) => {
@@ -306,10 +268,15 @@ export function PaymentStep() {
       };
 
       const rzp = new (window as any).Razorpay(options);
-      rzp.on('payment.failed', (resp: any) => {
+      rzp.on('payment.failed', async (resp: any) => {
         console.error('[PaymentStep] Payment failed:', resp.error);
         toast.error(resp.error?.description || 'Payment was unsuccessful. Please try again.');
         setIsPlacing(false);
+        try {
+          await cancelPendingOrderAction(order.id);
+        } catch (failErr) {
+          console.warn('[PaymentStep] Cancel pending order notice:', failErr);
+        }
       });
 
       rzp.open();
