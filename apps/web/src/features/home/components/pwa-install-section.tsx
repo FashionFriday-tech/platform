@@ -113,8 +113,10 @@ function usePWAInstall() {
     }
 
     const beforeInstallHandler = (e: Event) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
+      // Prevent the mini-infobar from appearing on mobile if not already prevented
+      if (!e.defaultPrevented) {
+        e.preventDefault();
+      }
       // Stash the event so it can be triggered later.
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
