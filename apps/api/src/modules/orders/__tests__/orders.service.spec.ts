@@ -23,6 +23,8 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
           create: jest.fn(),
           update: jest.fn(),
           updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+          delete: jest.fn(),
+          deleteMany: jest.fn().mockResolvedValue({ count: 1 }),
           count: jest.fn(),
         },
         orderItem: {
@@ -696,6 +698,66 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
       expect(result.finalAmount).toBe(1700);
       expect(result.items.length).toBe(2);
     });
+
+    it('should auto-void authorization and update paymentStatus to VOIDED when order status is updated to CANCELLED', async () => {
+      const existingOrder = {
+        id: 'ORD-CANCEL-1',
+        orderNumber: 'ORD-CANCEL-1',
+        status: OrderStatus.STOCK_CHECK,
+        paymentStatus: PaymentStatus.AUTHORIZED,
+        razorpayPaymentId: 'pay_auth_cancel_1',
+        totalAmount: 1000,
+        discountAmount: 0,
+        shippingFees: 0,
+        finalAmount: 1000,
+        shippingAddress: { fullName: 'Test User' },
+        items: [],
+      };
+
+      prismaMock.db.order.findUnique.mockResolvedValue(existingOrder as any);
+      prismaMock.db.$transaction.mockImplementation(async (cb: any) =>
+        cb({
+          order: prismaMock.db.order,
+          orderItem: prismaMock.db.orderItem,
+          user: prismaMock.db.user,
+        }),
+      );
+
+      await service.updateOrder('ORD-CANCEL-1', {
+        status: OrderStatus.CANCELLED,
+      });
+
+      expect(razorpayMock.voidPayment).toHaveBeenCalledWith('pay_auth_cancel_1');
+      expect(prismaMock.db.order.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'ORD-CANCEL-1' },
+          data: expect.objectContaining({
+            status: OrderStatus.CANCELLED,
+            paymentStatus: PaymentStatus.VOIDED,
+          }),
+        }),
+      );
+    });
+
+    it('should void payment authorization before deleting order in remove', async () => {
+      const existingOrder = {
+        id: 'ORD-DEL-1',
+        orderNumber: 'ORD-DEL-1',
+        status: OrderStatus.STOCK_CHECK,
+        paymentStatus: PaymentStatus.AUTHORIZED,
+        razorpayPaymentId: 'pay_auth_del_1',
+      };
+
+      prismaMock.db.order.findUnique.mockResolvedValue(existingOrder as any);
+      prismaMock.db.order.delete.mockResolvedValue(existingOrder as any);
+
+      await service.remove('ORD-DEL-1');
+
+      expect(razorpayMock.voidPayment).toHaveBeenCalledWith('pay_auth_del_1');
+      expect(prismaMock.db.order.delete).toHaveBeenCalledWith({
+        where: { id: 'ORD-DEL-1' },
+      });
+    });
   });
 
   describe('8. Address Resolution & Persistence in createOrder', () => {
@@ -943,6 +1005,56 @@ describe('OrdersService - Comprehensive Final Payment & Security Tests', () => {
           }),
         }),
       );
+    });
+
+    it('should delete unconfirmed pending order when cancelPendingOrder is called', async () => {
+      prismaMock.db.order.findUnique.mockResolvedValue({
+        id: 'ord-pending-1',
+        userId: 'user-test-1',
+        status: OrderStatus.PENDING,
+        paymentStatus: PaymentStatus.PENDING,
+      } as any);
+      prismaMock.db.order.delete.mockResolvedValue({} as any);
+
+      const res = await service.cancelPendingOrder('ord-pending-1', 'user-test-1');
+
+      expect(res.success).toBe(true);
+      expect(prismaMock.db.order.delete).toHaveBeenCalledWith({
+        where: { id: 'ord-pending-1' },
+      });
+    });
+
+    it('should clean up stale unconfirmed pending orders for user when createOrder is initiated', async () => {
+      prismaMock.db.cartItem.findMany.mockResolvedValue([codCartItem]);
+      prismaMock.db.address.findFirst.mockResolvedValue({
+        id: 'addr-cod-1',
+        userId: 'user-cod-1',
+        fullName: 'Aman Verma',
+        phoneNumber: '9876543210',
+        street: 'Brigade Road',
+        city: 'Bengaluru',
+        pincode: '560025',
+      });
+      prismaMock.db.order.deleteMany.mockResolvedValue({ count: 1 } as any);
+      prismaMock.db.order.create.mockResolvedValue({
+        id: 'ORD-NEW-1',
+        orderNumber: 'ORD-NEW-1',
+        finalAmount: 999,
+        items: [],
+      } as any);
+
+      await service.createOrder('user-cod-1', {
+        paymentMethod: PaymentMethod.COD,
+        addressId: 'addr-cod-1',
+      });
+
+      expect(prismaMock.db.order.deleteMany).toHaveBeenCalledWith({
+        where: {
+          userId: 'user-cod-1',
+          status: OrderStatus.PENDING,
+          paymentStatus: PaymentStatus.PENDING,
+        },
+      });
     });
   });
 });
