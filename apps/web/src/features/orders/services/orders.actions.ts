@@ -23,7 +23,10 @@ async function setAuthCookies(accessToken: string, refreshToken: string) {
   });
 }
 
-async function getAuthHeaders(): Promise<Record<string, string>> {
+async function getAuthHeaders(explicitToken?: string): Promise<Record<string, string>> {
+  if (explicitToken) {
+    return { Authorization: `Bearer ${explicitToken}` };
+  }
   const cookieStore = await cookies();
   const token = cookieStore.get('accessToken')?.value;
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -32,8 +35,9 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
 async function fetchWithAuth(
   endpoint: string,
   options: RequestInit = {},
+  explicitToken?: string,
 ): Promise<Response | null> {
-  let authHeaders = await getAuthHeaders();
+  let authHeaders = await getAuthHeaders(explicitToken);
 
   const buildHeaders = (baseAuthHeaders: Record<string, string>) => {
     const h = new Headers(options.headers);
@@ -83,6 +87,19 @@ async function fetchWithAuth(
           console.error('[orders.actions] Token refresh error:', refreshErr);
         }
       }
+    } else if (response.ok && explicitToken) {
+      try {
+        const cookieStore = await cookies();
+        cookieStore.set('accessToken', explicitToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 30 * 24 * 60 * 60,
+        });
+      } catch {
+        // Safe to ignore in immutable cookie contexts
+      }
     }
 
     return response;
@@ -95,6 +112,7 @@ async function fetchWithAuth(
 export interface CreateOrderPayload {
   paymentMethod: 'COD' | 'STRIPE' | 'RAZORPAY';
   addressId?: string;
+  token?: string;
   shippingAddress?: {
     id?: string;
     fullName: string;
@@ -122,6 +140,7 @@ export interface VerifyPaymentPayload {
   razorpayOrderId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
+  token?: string;
 }
 
 /**
@@ -130,10 +149,15 @@ export interface VerifyPaymentPayload {
 export async function createOrderAction(payload: CreateOrderPayload) {
   console.log('[orders.actions] Executing createOrderAction with payload:', payload);
   try {
-    const res = await fetchWithAuth('/orders', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
+    const { token, ...bodyPayload } = payload;
+    const res = await fetchWithAuth(
+      '/orders',
+      {
+        method: 'POST',
+        body: JSON.stringify(bodyPayload),
+      },
+      token,
+    );
 
     if (!res) {
       console.error('[orders.actions] No response received from orders API');
@@ -177,10 +201,15 @@ export async function createOrderAction(payload: CreateOrderPayload) {
 export async function verifyPaymentAction(payload: VerifyPaymentPayload) {
   console.log('[orders.actions] Executing verifyPaymentAction with payload:', payload);
   try {
-    const res = await fetchWithAuth('/orders/verify-payment', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
+    const { token, ...bodyPayload } = payload;
+    const res = await fetchWithAuth(
+      '/orders/verify-payment',
+      {
+        method: 'POST',
+        body: JSON.stringify(bodyPayload),
+      },
+      token,
+    );
 
     if (!res) {
       return {
@@ -217,12 +246,16 @@ export async function verifyPaymentAction(payload: VerifyPaymentPayload) {
 /**
  * Server Action to cancel/clean up an unconfirmed pending checkout session
  */
-export async function cancelPendingOrderAction(orderId: string) {
+export async function cancelPendingOrderAction(orderId: string, token?: string) {
   console.log('[orders.actions] Cancelling unconfirmed pending order:', orderId);
   try {
-    const res = await fetchWithAuth(`/orders/${orderId}/cancel-pending`, {
-      method: 'POST',
-    });
+    const res = await fetchWithAuth(
+      `/orders/${orderId}/cancel-pending`,
+      {
+        method: 'POST',
+      },
+      token,
+    );
     if (!res?.ok) {
       console.warn('[orders.actions] cancelPendingOrder returned non-ok:', res?.status);
     }
@@ -236,10 +269,10 @@ export async function cancelPendingOrderAction(orderId: string) {
 /**
  * Server Action to fetch current user's orders
  */
-export async function fetchUserOrdersAction() {
+export async function fetchUserOrdersAction(token?: string) {
   console.log('[orders.actions] Fetching user orders...');
   try {
-    const res = await fetchWithAuth('/orders/me');
+    const res = await fetchWithAuth('/orders/me', {}, token);
     if (!res?.ok) {
       const errorText = res ? await res.text().catch(() => '') : 'No response';
       console.error('[orders.actions] Failed to fetch orders:', res?.status, errorText);
@@ -289,9 +322,10 @@ export interface RefundTimelineResponse {
  */
 export async function fetchOrderRefundTimelineAction(
   orderId: string,
+  token?: string,
 ): Promise<RefundTimelineResponse | null> {
   try {
-    const res = await fetchWithAuth(`/orders/${orderId}/refund-timeline`);
+    const res = await fetchWithAuth(`/orders/${orderId}/refund-timeline`, {}, token);
     if (!res?.ok) {
       return null;
     }
