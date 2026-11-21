@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { type SellerOrder, type SellerProduct } from '../types';
+import { api } from '@/lib/api-client';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
+import { type SellerOrder, type SellerProduct } from '../types';
 
 export function useSellerDetails(sellerId?: string | null) {
   const [orders, setOrders] = useState<SellerOrder[]>([]);
@@ -12,44 +12,59 @@ export function useSellerDetails(sellerId?: string | null) {
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
-  const fetchOrders = useCallback(async () => {
-    if (!sellerId) {
-      setOrders([]);
-      return;
-    }
-    try {
-      setIsLoadingOrders(true);
-      const res = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}/orders`);
-      if (res.ok) {
-        const data = await res.json();
+  const fetchOrders = useCallback(
+    async (silent = false) => {
+      if (!sellerId) {
+        setOrders([]);
+        return;
+      }
+      try {
+        if (!silent) {
+          setIsLoadingOrders(true);
+        }
+        const data = await api.get<SellerOrder[]>(`/admin/sellers/${sellerId}/orders`, {
+          cache: 'no-store',
+          params: { _t: Date.now() },
+        });
         setOrders(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Failed to fetch seller orders:', err);
+      } finally {
+        if (!silent) {
+          setIsLoadingOrders(false);
+        }
       }
-    } catch (err) {
-      console.error('Failed to fetch seller orders:', err);
-    } finally {
-      setIsLoadingOrders(false);
-    }
-  }, [sellerId]);
+    },
+    [sellerId],
+  );
 
-  const fetchProducts = useCallback(async () => {
-    if (!sellerId) {
-      setProducts([]);
-      return;
-    }
-    try {
-      setIsLoadingProducts(true);
-      const res = await fetch(`${API_BASE_URL}/admin/sellers/${sellerId}/products`);
-      if (res.ok) {
-        const data = await res.json();
+  const fetchProducts = useCallback(
+    async (silent = false) => {
+      if (!sellerId) {
+        setProducts([]);
+        return;
+      }
+      try {
+        if (!silent) {
+          setIsLoadingProducts(true);
+        }
+        const data = await api.get<SellerProduct[]>(`/admin/sellers/${sellerId}/products`, {
+          cache: 'no-store',
+          params: { _t: Date.now() },
+        });
         setProducts(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Failed to fetch seller products:', err);
+      } finally {
+        if (!silent) {
+          setIsLoadingProducts(false);
+        }
       }
-    } catch (err) {
-      console.error('Failed to fetch seller products:', err);
-    } finally {
-      setIsLoadingProducts(false);
-    }
-  }, [sellerId]);
+    },
+    [sellerId],
+  );
 
+  // Initial fetch on mount or seller change
   useEffect(() => {
     if (sellerId) {
       void fetchOrders();
@@ -59,6 +74,49 @@ export function useSellerDetails(sellerId?: string | null) {
       setProducts([]);
     }
   }, [sellerId, fetchOrders, fetchProducts]);
+
+  // Reactive updates when orders are updated, window focused, or cross-tab mutation happens
+  useEffect(() => {
+    if (!sellerId) {
+      return;
+    }
+
+    const handleSync = () => {
+      void fetchOrders(true);
+    };
+
+    window.addEventListener('ff-orders-updated', handleSync);
+    window.addEventListener('focus', handleSync);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        handleSync();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'ff_order_mutation_ts') {
+        handleSync();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    // Light periodic polling every 10 seconds while tab is active to guarantee realtime sync
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void fetchOrders(true);
+      }
+    }, 10000);
+
+    return () => {
+      window.removeEventListener('ff-orders-updated', handleSync);
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('storage', handleStorage);
+      clearInterval(interval);
+    };
+  }, [sellerId, fetchOrders]);
 
   return {
     orders,
