@@ -12,9 +12,15 @@ interface SellerOrdersListProps {
   orders: SellerOrder[];
   isLoading: boolean;
   sellerStoreName: string;
+  onRefresh?: () => void;
 }
 
-export function SellerOrdersList({ orders, isLoading, sellerStoreName }: SellerOrdersListProps) {
+export function SellerOrdersList({
+  orders,
+  isLoading,
+  sellerStoreName,
+  onRefresh,
+}: SellerOrdersListProps) {
   const [filterStatus, setFilterStatus] = useState<string>('ALL');
 
   if (isLoading) {
@@ -100,9 +106,35 @@ export function SellerOrdersList({ orders, isLoading, sellerStoreName }: SellerO
             </button>
           ))}
         </div>
-        <span className="text-xs text-black/50 dark:text-white/50">
-          Showing {filteredOrders.length} of {orders.length} orders
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-black/50 dark:text-white/50">
+            Showing {filteredOrders.length} of {orders.length} orders
+          </span>
+          {onRefresh && (
+            <button
+              type="button"
+              onClick={onRefresh}
+              disabled={isLoading}
+              title="Refresh seller orders"
+              aria-label="Refresh seller orders"
+              className="flex h-7 w-7 items-center justify-center rounded-lg border border-black/10 bg-white text-black/70 transition-all hover:bg-black/5 active:scale-95 disabled:opacity-50 dark:border-white/10 dark:bg-[#1f1f1f] dark:text-white/70 dark:hover:bg-white/5"
+            >
+              <svg
+                className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Orders List */}
@@ -126,9 +158,15 @@ export function SellerOrdersList({ orders, isLoading, sellerStoreName }: SellerO
               {/* Top Order Row */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/5 pb-3 dark:border-white/5">
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-sm font-bold text-black dark:text-white">
+                  <a
+                    href={`/orders/${order.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono text-sm font-bold text-black hover:underline dark:text-white"
+                    title="Open order in admin"
+                  >
                     {order.orderNumber}
-                  </span>
+                  </a>
                   <span
                     className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase ${getOrderStatusBadge(
                       order.status,
