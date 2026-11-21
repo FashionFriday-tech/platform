@@ -112,11 +112,20 @@ export class SellersRepository {
   }
 
   async getSellerOrders(sellerId: string) {
-    // Find all orders that contain items belonging to this seller
+    // Find all confirmed orders that contain items belonging to this seller (by item sellerId or product sellerId)
     const orders = await this.prisma.db.order.findMany({
       where: {
         items: {
-          some: { sellerId },
+          some: {
+            OR: [
+              { sellerId },
+              { product: { sellerId } },
+            ],
+          },
+        },
+        NOT: {
+          status: 'PENDING',
+          paymentStatus: 'PENDING',
         },
       },
       include: {
@@ -129,7 +138,12 @@ export class SellersRepository {
           },
         },
         items: {
-          where: { sellerId },
+          where: {
+            OR: [
+              { sellerId },
+              { product: { sellerId } },
+            ],
+          },
           select: {
             id: true,
             productId: true,
@@ -139,6 +153,7 @@ export class SellersRepository {
             color: true,
             price: true,
             quantity: true,
+            sellerId: true,
           },
         },
       },
