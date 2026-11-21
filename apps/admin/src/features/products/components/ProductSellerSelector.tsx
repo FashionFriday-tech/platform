@@ -4,9 +4,9 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { PlusIcon, SearchIcon, StoreIcon } from '@ff/ui';
 
-import { LabelWithTick } from './LabelWithTick';
+import { api } from '@/lib/api-client';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:3002';
+import { LabelWithTick } from './LabelWithTick';
 
 export interface SellerOption {
   id: string;
@@ -61,34 +61,32 @@ export function ProductSellerSelector({
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
-    fetch(`${API_BASE_URL}/admin/sellers`)
-      .then((res) => (res.ok ? res.json() : []))
-      .then(
-        (
-          data: {
-            id: string;
-            name: string;
-            storeName: string;
-            phone?: string;
-            categories?: { id: string; name: string; slug: string }[];
-          }[],
-        ) => {
-          if (isMounted) {
-            setAllSellers(
-              Array.isArray(data)
-                ? data.map((s) => ({
-                    id: s.id,
-                    name: s.name,
-                    storeName: s.storeName,
-                    phone: s.phone,
-                    categories: s.categories ?? [],
-                  }))
-                : [],
-            );
-            setIsLoading(false);
-          }
-        },
-      )
+    api
+      .get<
+        {
+          id: string;
+          name: string;
+          storeName: string;
+          phone?: string;
+          categories?: { id: string; name: string; slug: string }[];
+        }[]
+      >('/admin/sellers', { cache: 'no-store' })
+      .then((data) => {
+        if (isMounted) {
+          setAllSellers(
+            Array.isArray(data)
+              ? data.map((s) => ({
+                  id: s.id,
+                  name: s.name,
+                  storeName: s.storeName,
+                  phone: s.phone,
+                  categories: s.categories ?? [],
+                }))
+              : [],
+          );
+          setIsLoading(false);
+        }
+      })
       .catch((err: unknown) => {
         console.error('Failed to load sellers:', err);
         if (isMounted) {
