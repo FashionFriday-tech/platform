@@ -149,6 +149,37 @@ export function useSellers() {
     void fetchCategories();
   }, [fetchSellers, fetchCategories]);
 
+  // Reactive updates when orders are updated, window focused, or cross-tab mutation happens
+  useEffect(() => {
+    const handleSync = () => {
+      void fetchSellers();
+    };
+
+    window.addEventListener('ff-orders-updated', handleSync);
+    window.addEventListener('focus', handleSync);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        handleSync();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'ff_order_mutation_ts') {
+        handleSync();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener('ff-orders-updated', handleSync);
+      window.removeEventListener('focus', handleSync);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [fetchSellers]);
+
   const filteredSellers = useMemo(() => {
     return sellers.filter((seller) => {
       // Search filter
