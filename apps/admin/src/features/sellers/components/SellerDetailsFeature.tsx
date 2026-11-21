@@ -40,7 +40,8 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders'>('overview');
-  const { orders, products, isLoadingOrders, isLoadingProducts } = useSellerDetails(sellerId);
+  const { orders, products, isLoadingOrders, isLoadingProducts, refetchOrders } =
+    useSellerDetails(sellerId);
 
   const fetchSeller = useCallback(async () => {
     try {
@@ -70,6 +71,26 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
     void fetchSeller();
     void fetchCategories();
   }, [fetchSeller, fetchCategories]);
+
+  // Sync orders and seller profile when orders are updated
+  useEffect(() => {
+    const handleSync = () => {
+      void fetchSeller();
+      void refetchOrders();
+    };
+
+    window.addEventListener('ff-orders-updated', handleSync);
+    return () => {
+      window.removeEventListener('ff-orders-updated', handleSync);
+    };
+  }, [fetchSeller, refetchOrders]);
+
+  // Refetch orders when switching to the orders tab
+  useEffect(() => {
+    if (activeTab === 'orders') {
+      void refetchOrders();
+    }
+  }, [activeTab, refetchOrders]);
 
   const handleToggleStatus = async (newStatus: SellerStatus) => {
     if (!seller) {
@@ -729,6 +750,7 @@ export function SellerDetailsFeature({ sellerId }: SellerDetailsFeatureProps) {
               orders={orders}
               isLoading={isLoadingOrders}
               sellerStoreName={seller.storeName}
+              onRefresh={refetchOrders}
             />
           </div>
         )}
