@@ -112,16 +112,25 @@ export class SellersRepository {
   }
 
   async getSellerOrders(sellerId: string) {
-    // Find all confirmed orders that contain items belonging to this seller (by item sellerId or product sellerId)
+    // 1. Fetch all product IDs that belong to this seller
+    const sellerProducts = await this.prisma.db.product.findMany({
+      where: { sellerId },
+      select: { id: true },
+    });
+    const sellerProductIds = sellerProducts.map((p) => p.id);
+
+    const itemSellerFilter: Prisma.OrderItemWhereInput =
+      sellerProductIds.length > 0
+        ? {
+            OR: [{ sellerId }, { productId: { in: sellerProductIds } }],
+          }
+        : { sellerId };
+
+    // 2. Find all confirmed orders that contain items belonging to this seller
     const orders = await this.prisma.db.order.findMany({
       where: {
         items: {
-          some: {
-            OR: [
-              { sellerId },
-              { product: { sellerId } },
-            ],
-          },
+          some: itemSellerFilter,
         },
         NOT: {
           status: 'PENDING',
@@ -138,12 +147,7 @@ export class SellersRepository {
           },
         },
         items: {
-          where: {
-            OR: [
-              { sellerId },
-              { product: { sellerId } },
-            ],
-          },
+          where: itemSellerFilter,
           select: {
             id: true,
             productId: true,
@@ -162,10 +166,13 @@ export class SellersRepository {
 
     return orders.map((order) => {
       const sellerSubtotal = order.items.reduce(
-        (sum, item) => sum + Number(item.price) * item.quantity,
+        (sum: number, item) => sum + Number(item.price) * item.quantity,
         0,
       );
-      const totalItemsCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalItemsCount = order.items.reduce(
+        (sum: number, item) => sum + item.quantity,
+        0,
+      );
 
       return {
         id: order.id,
