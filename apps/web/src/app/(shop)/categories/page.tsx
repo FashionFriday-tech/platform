@@ -2,8 +2,8 @@ import React from 'react';
 
 import { CategoriesLanding } from '@/features/categories';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Production standard: 24h ISR cache, invalidated on-demand when categories/campaigns change
+export const revalidate = 86400;
 
 export default async function StoreLandingPage() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3002';
@@ -14,12 +14,10 @@ export default async function StoreLandingPage() {
   try {
     const [categoriesRes, campaignsRes] = await Promise.all([
       fetch(`${API_URL}/categories`, {
-        cache: 'no-store',
-        next: { tags: ['home-categories'], revalidate: 0 },
+        next: { tags: ['home-categories'], revalidate: 86400 },
       }),
       fetch(`${API_URL}/campaigns`, {
-        cache: 'no-store',
-        next: { tags: ['home-campaigns'], revalidate: 0 },
+        next: { tags: ['home-campaigns'], revalidate: 3600 },
       }),
     ]);
 
