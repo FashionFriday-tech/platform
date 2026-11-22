@@ -105,7 +105,7 @@ const SOCIAL_LINKS = [
   },
   {
     icon: WhatsAppIcon,
-    href: 'https://wa.me/919995551234',
+    href: 'https://wa.me/917558969093',
     label: 'WhatsApp',
     colorClass:
       'text-[#25D366] border-[#25D366]/40 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] hover:shadow-[0_0_15px_rgba(37,211,102,0.4)]',
