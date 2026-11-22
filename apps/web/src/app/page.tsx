@@ -17,8 +17,8 @@ import {
   getHomeReviews,
 } from '@/features/home/services/queries';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Production standard: 1h ISR cache, invalidated instantly on-demand when campaigns/collections update
+export const revalidate = 3600;
 
 export default async function HomePage() {
   // Fetch all homepage data in parallel
