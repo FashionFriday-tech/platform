@@ -165,12 +165,29 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
 
     void checkMaintenance();
 
-    // Re-check periodically every 20 seconds
-    const interval = setInterval(() => {
-      void checkMaintenance();
-    }, 20000);
+    // Industry-standard re-validation: Only re-check when the user returns/focuses the tab or window
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void checkMaintenance();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+
+    // Passive low-frequency fallback check every 15 minutes (instead of aggressive 20s polling)
+    const interval = setInterval(
+      () => {
+        if (document.visibilityState === 'visible') {
+          void checkMaintenance();
+        }
+      },
+      15 * 60 * 1000,
+    );
 
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
       clearInterval(interval);
     };
   }, []);
