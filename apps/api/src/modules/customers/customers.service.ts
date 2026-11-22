@@ -110,6 +110,7 @@ export class CustomersService {
             select: {
               id: true,
               name: true,
+              slug: true,
               mainImage: true,
               promoImage: true,
               liveImages: true,
@@ -152,12 +153,14 @@ export class CustomersService {
 
           return {
             id: item.id,
+            productId: item.productId,
             name: item.name,
             price: Number(item.price),
             quantity: item.quantity,
             size: item.size,
             color: item.color,
             image: resolvedImage,
+            slug: prod?.slug || null,
           };
         }),
       })),
@@ -412,6 +415,7 @@ export class CustomersService {
       id: item.id,
       productId: item.productId,
       name: item.product?.name || 'Unknown Product',
+      slug: item.product?.slug || null,
       image: item.product?.mainImage || '',
       price: Number(item.product?.sellingPrice || 0),
       quantity: item.quantity,
@@ -442,6 +446,7 @@ export class CustomersService {
       id: item.id,
       productId: item.productId,
       name: item.product?.name || 'Unknown Product',
+      slug: item.product?.slug || null,
       image: item.product?.mainImage || '',
       price: Number(item.product?.sellingPrice || 0),
       addedAt: item.createdAt.toISOString(),
