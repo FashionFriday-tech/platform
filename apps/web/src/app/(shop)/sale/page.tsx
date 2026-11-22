@@ -4,7 +4,8 @@ import type { Metadata } from 'next';
 import { getNewArrivalsProducts } from '@/data/filter-engine';
 import { CatalogueClient } from '@/features/catalogue';
 
-export const revalidate = 30;
+// Production standard: 1h ISR cache, updated instantly via on-demand tag revalidation
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Sale & Special Offers | Fashion Friday',
