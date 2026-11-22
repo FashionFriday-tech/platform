@@ -72,7 +72,7 @@ export function POST(request: NextRequest) {
       );
     }
 
-    // 2. Perform cache revalidation across tags and routes
+    // 2. Perform targeted cache revalidation across tags and routes
     if (tag) {
       revalidateTag(tag, 'max');
 
@@ -84,12 +84,10 @@ export function POST(request: NextRequest) {
 
       if (tag === 'home-campaigns' || tag.startsWith('home-')) {
         revalidatePath('/', 'page');
-        revalidatePath('/', 'layout');
       }
 
       if (tag === 'catalogue-campaigns' || tag.startsWith('catalogue-')) {
         revalidatePath('/products', 'page');
-        revalidatePath('/products', 'layout');
         revalidatePath('/new-arrivals', 'page');
         revalidatePath('/sale', 'page');
         revalidatePath('/snkrs', 'page');
@@ -97,23 +95,11 @@ export function POST(request: NextRequest) {
     }
 
     if (path) {
+      // Revalidate specifically the updated page route without destroying global layout caches
       revalidatePath(path, 'page');
-      revalidatePath(path, 'layout');
-      revalidatePath(path);
-
-      if (path.startsWith('/product/')) {
-        revalidatePath('/product/[slug]', 'page');
-      }
-      if (path.startsWith('/category/')) {
-        revalidatePath('/category/[gender]/[category]', 'page');
-        revalidatePath('/category/[gender]', 'page');
-      }
-      if (path.startsWith('/brands/')) {
-        revalidatePath('/brands/[brand]', 'page');
-      }
     }
 
-    // 3. Fire-and-forget cache warming
+    // 3. Fire-and-forget cache warming (allowing edge CDN to populate cache)
     const appUrl =
       process.env.NEXT_PUBLIC_APP_URL ??
       (process.env.NODE_ENV === 'production'
@@ -123,9 +109,8 @@ export function POST(request: NextRequest) {
 
     void fetch(targetUrl, {
       method: 'GET',
-      headers: { 'Cache-Control': 'no-cache, no-store' },
     }).catch((err: unknown) => {
-      console.error('Cache warming fetch failed:', err);
+      console.warn('Cache warming fetch error:', err);
     });
 
     return NextResponse.json(
