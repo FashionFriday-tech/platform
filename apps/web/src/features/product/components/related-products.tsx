@@ -85,7 +85,7 @@ export default function RelatedProducts({ products, initialBrands }: RelatedProd
                 exit={{ opacity: 0 }}
                 className="group w-full cursor-pointer"
               >
-                <Link href={`/product/${product.slug}`} className="block w-full">
+                <Link href={`/product/${product.slug}`} prefetch={false} className="block w-full">
                   <div className="bg-foreground/5 relative aspect-4/5 w-full overflow-hidden rounded-[2.5rem]">
                     <Image
                       src={product.media.mainImage || '/images/placeholder.png'}
