@@ -157,7 +157,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     height: '96',
                   },
                   image: 'https://www.fashionfriday.in/images/logos/ff-app-icon.png',
-                  sameAs: ['https://instagram.com/fashionfriday.in', 'https://wa.me/919995551234'],
+                  sameAs: ['https://instagram.com/fashionfriday.in', 'https://wa.me/917558969093'],
                 },
                 {
                   '@type': 'WebSite',
