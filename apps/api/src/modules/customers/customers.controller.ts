@@ -52,6 +52,11 @@ export class CustomersController {
     return this.service.getCustomerAddresses(id);
   }
 
+  @Get(':id/searches')
+  async getCustomerSearches(@Param('id') id: string) {
+    return this.service.getCustomerSearches(id);
+  }
+
   @Post(':id/addresses')
   async createCustomerAddress(@Param('id') id: string, @Body() dto: any) {
     return this.service.createCustomerAddress(id, dto);
