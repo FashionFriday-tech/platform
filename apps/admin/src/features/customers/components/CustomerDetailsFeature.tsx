@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import {
+  CheckIcon,
   CloseIcon,
   HeartIcon,
   MailIcon,
@@ -23,6 +24,12 @@ import { fetcher } from '@/lib/api-client';
 import { formatColorLabel, resolveItemColorAndQuality } from '@/lib/format-color';
 
 import { CreateCustomerOrderModal } from './CreateCustomerOrderModal';
+import {
+  getProductUrl,
+  WhatsAppMessageModal,
+  type WhatsAppOrderContext,
+  type WhatsAppProductContext,
+} from './WhatsAppMessageModal';
 
 const CreditCardIcon = ({ className }: { className?: string }) => (
   <svg
@@ -116,6 +123,8 @@ interface OrderItem {
   size: string;
   color: string;
   image: string;
+  slug?: string | null;
+  productId?: string;
 }
 
 interface Order {
@@ -137,6 +146,8 @@ interface CartItem {
   size: string;
   color: string;
   image: string;
+  slug?: string | null;
+  productId?: string;
 }
 
 interface WishlistItem {
@@ -145,6 +156,8 @@ interface WishlistItem {
   price: number;
   addedAt: string;
   image: string;
+  slug?: string | null;
+  productId?: string;
 }
 
 interface Address {
@@ -226,6 +239,62 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   const [addrIsDefault, setAddrIsDefault] = useState(false);
   const [addrErrors, setAddrErrors] = useState<Record<string, string>>({});
   const [isSubmittingAddress, setIsSubmittingAddress] = useState(false);
+
+  // Copy Link feedback & WhatsApp Template Modal state
+  const [copiedItemId, setCopiedItemId] = useState<string | null>(null);
+  const [whatsAppModalData, setWhatsAppModalData] = useState<{
+    isOpen: boolean;
+    section: 'cart' | 'favorites' | 'orders';
+    product?: WhatsAppProductContext;
+    order?: WhatsAppOrderContext;
+  }>({
+    isOpen: false,
+    section: 'cart',
+  });
+
+  const availablePhones = React.useMemo(() => {
+    const list: { label: string; phone: string }[] = [];
+    if (customer?.phone) {
+      list.push({ label: 'Profile', phone: customer.phone });
+    }
+    if (addresses) {
+      addresses.forEach((addr) => {
+        if (addr.phoneNumber && !list.some((p) => p.phone === addr.phoneNumber)) {
+          list.push({
+            label: `${addr.label || 'Address'} (${addr.city})`,
+            phone: addr.phoneNumber,
+          });
+        }
+        if (addr.altPhoneNumber && !list.some((p) => p.phone === addr.altPhoneNumber)) {
+          list.push({
+            label: `${addr.label || 'Address'} Alt (${addr.city})`,
+            phone: addr.altPhoneNumber,
+          });
+        }
+      });
+    }
+    return list;
+  }, [customer?.phone, addresses]);
+
+  const handleCopyProductLink = async (
+    item: { id: string; name: string; slug?: string | null; productId?: string },
+    e?: React.MouseEvent,
+  ) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    const url = getProductUrl(item.slug, item.productId);
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedItemId(item.id);
+      toast.success(`Copied product link: ${item.name}`);
+      setTimeout(() => {
+        setCopiedItemId((curr) => (curr === item.id ? null : curr));
+      }, 2000);
+    } catch {
+      toast.error('Failed to copy product link');
+    }
+  };
 
   const fetchCustomerDetails = async (silent = false) => {
     try {
@@ -1019,10 +1088,90 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                           </div>
                         </div>
 
+                        {/* Copy Link & WhatsApp Actions */}
+                        <div className="mt-3 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (firstItem) {
+                                void handleCopyProductLink(
+                                  {
+                                    id: `order-${order.id}-${firstItem.id}`,
+                                    name: firstItem.name,
+                                    slug: firstItem.slug,
+                                    productId: firstItem.productId,
+                                  },
+                                  e,
+                                );
+                              }
+                            }}
+                            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 py-1.5 px-2.5 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                            title="Copy storefront product link"
+                          >
+                            {copiedItemId === `order-${order.id}-${firstItem?.id}` ? (
+                              <>
+                                <CheckIcon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
+                              </>
+                            ) : (
+                              <>
+                                <CopyIcon className="h-3.5 w-3.5" />
+                                <span>Copy Link</span>
+                              </>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setWhatsAppModalData({
+                                isOpen: true,
+                                section: 'orders',
+                                order: {
+                                  orderNumber: order.orderNumber,
+                                  status: order.status,
+                                  total: order.total,
+                                  createdAt: order.createdAt,
+                                  items: order.items?.map((it) => ({
+                                    id: it.id,
+                                    name: it.name,
+                                    price: it.price,
+                                    quantity: it.quantity,
+                                    size: it.size,
+                                    color: it.color,
+                                    image: it.image,
+                                    slug: it.slug,
+                                    productId: it.productId,
+                                  })),
+                                },
+                                product: firstItem
+                                  ? {
+                                      id: firstItem.id,
+                                      name: firstItem.name,
+                                      price: firstItem.price,
+                                      quantity: firstItem.quantity,
+                                      size: firstItem.size,
+                                      color: firstItem.color,
+                                      image: itemImage || firstItem.image,
+                                      slug: firstItem.slug,
+                                      productId: firstItem.productId,
+                                    }
+                                  : undefined,
+                              });
+                            }}
+                            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-1.5 px-2.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                            title="Send WhatsApp message regarding this order"
+                          >
+                            <WhatsAppIcon className="h-3.5 w-3.5" />
+                            <span>WhatsApp</span>
+                          </button>
+                        </div>
+
                         {/* Action Button styled like Create Order product card */}
                         <button
                           type="button"
-                          className="mt-3.5 w-full rounded-xl bg-black/5 py-2 text-center text-xs font-bold text-black transition-colors group-hover:bg-black group-hover:text-white dark:bg-white/10 dark:text-white dark:group-hover:bg-white dark:group-hover:text-black"
+                          className="mt-2 w-full rounded-xl bg-black/5 py-2 text-center text-xs font-bold text-black transition-colors group-hover:bg-black group-hover:text-white dark:bg-white/10 dark:text-white dark:group-hover:bg-white dark:group-hover:text-black"
                         >
                           View Order Details →
                         </button>
@@ -1057,25 +1206,67 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 wishlistItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111111]"
+                    className="flex flex-col justify-between gap-3 rounded-3xl border border-black/5 bg-white p-4 shadow-sm transition-all hover:border-black/20 hover:shadow-md dark:border-white/5 dark:bg-[#111111] dark:hover:border-white/20"
                   >
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-black/5 dark:border-white/5">
-                      {item.image ? (
-                        <Image src={item.image} alt={item.name} fill className="object-cover" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-black/5 dark:bg-white/5">
-                          <ShoppingBagIcon className="h-6 w-6 text-black/20 dark:text-white/20" />
-                        </div>
-                      )}
+                    <div className="flex items-center gap-4">
+                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/5">
+                        {item.image ? (
+                          <Image src={item.image} alt={item.name} fill className="object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center">
+                            <ShoppingBagIcon className="h-6 w-6 text-black/20 dark:text-white/20" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-1 flex-col overflow-hidden">
+                        <span className="line-clamp-1 font-bold text-black dark:text-white" title={item.name}>
+                          {item.name}
+                        </span>
+                        <span className="mt-1 text-sm font-semibold text-black/80 dark:text-white/80">
+                          ₹{item.price.toLocaleString('en-IN')}
+                        </span>
+                        <span className="mt-1.5 text-xs text-black/40 dark:text-white/40">
+                          Added on {new Date(item.addedAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-black dark:text-white">{item.name}</span>
-                      <span className="mt-1 text-sm font-semibold text-black/60 dark:text-white/60">
-                        ₹{item.price.toLocaleString('en-IN')}
-                      </span>
-                      <span className="mt-2 text-xs text-black/40 dark:text-white/40">
-                        Added on {new Date(item.addedAt).toLocaleDateString()}
-                      </span>
+
+                    {/* Copy Link & WhatsApp Actions */}
+                    <div className="flex items-center gap-2 border-t border-black/5 pt-2.5 dark:border-white/5">
+                      <button
+                        type="button"
+                        onClick={(e) => void handleCopyProductLink(item, e)}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 py-1.5 px-3 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                        title="Copy storefront product link"
+                      >
+                        {copiedItemId === item.id ? (
+                          <>
+                            <CheckIcon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <CopyIcon className="h-3.5 w-3.5" />
+                            <span>Copy Link</span>
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setWhatsAppModalData({
+                            isOpen: true,
+                            section: 'favorites',
+                            product: item,
+                          });
+                        }}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-1.5 px-3 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                        title="Send WhatsApp message regarding this favorite item"
+                      >
+                        <WhatsAppIcon className="h-3.5 w-3.5" />
+                        <span>WhatsApp</span>
+                      </button>
                     </div>
                   </div>
                 ))
@@ -1096,53 +1287,95 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111111]"
+                    className="flex flex-col justify-between gap-3 rounded-3xl border border-black/5 bg-white p-4 shadow-sm transition-all hover:border-black/20 hover:shadow-md dark:border-white/5 dark:bg-[#111111] dark:hover:border-white/20"
                   >
-                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-black/5 dark:border-white/5">
-                      {item.image ? (
-                        <Image src={item.image} alt={item.name} fill className="object-cover" />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-black/5 dark:bg-white/5">
-                          <ShoppingBagIcon className="h-6 w-6 text-black/20 dark:text-white/20" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex flex-1 flex-col justify-between py-1">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-black dark:text-white">{item.name}</span>
-                        <span className="mt-1 text-xs text-black/60 dark:text-white/60">
-                          Size: {item.size} • Color: {formatColorLabel(item.color) || item.color}
-                        </span>
+                    <div className="flex items-center gap-4">
+                      <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-black/5 bg-black/5 dark:border-white/5 dark:bg-white/5">
+                        {item.image ? (
+                          <Image src={item.image} alt={item.name} fill className="object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center">
+                            <ShoppingBagIcon className="h-6 w-6 text-black/20 dark:text-white/20" />
+                          </div>
+                        )}
                       </div>
-                      <div className="mt-3 flex items-center justify-between">
-                        <span className="text-sm font-semibold text-black dark:text-white">
-                          ₹{(item.price * item.quantity).toLocaleString('en-IN')}
-                        </span>
-
-                        <div className="flex items-center gap-2 rounded-full border border-black/10 bg-black/5 p-1 dark:border-white/10 dark:bg-white/5">
-                          <button
-                            onClick={() => {
-                              handleUpdateCartQuantity(item.id, item.quantity - 1);
-                            }}
-                            disabled={updatingCartItem === item.id}
-                            className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black shadow-sm transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 dark:bg-[#222] dark:text-white"
-                          >
-                            -
-                          </button>
-                          <span className="w-5 text-center text-xs font-bold text-black dark:text-white">
-                            {updatingCartItem === item.id ? '...' : item.quantity}
+                      <div className="flex flex-1 flex-col justify-between py-1">
+                        <div className="flex flex-col">
+                          <span className="line-clamp-1 font-bold text-black dark:text-white" title={item.name}>
+                            {item.name}
                           </span>
-                          <button
-                            onClick={() => {
-                              handleUpdateCartQuantity(item.id, item.quantity + 1);
-                            }}
-                            disabled={updatingCartItem === item.id}
-                            className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white shadow-sm transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black"
-                          >
-                            +
-                          </button>
+                          <span className="mt-1 text-xs text-black/60 dark:text-white/60">
+                            Size: {item.size} • Color: {formatColorLabel(item.color) || item.color}
+                          </span>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="text-sm font-semibold text-black dark:text-white">
+                            ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                          </span>
+
+                          <div className="flex items-center gap-2 rounded-full border border-black/10 bg-black/5 p-1 dark:border-white/10 dark:bg-white/5">
+                            <button
+                              onClick={() => {
+                                handleUpdateCartQuantity(item.id, item.quantity - 1);
+                              }}
+                              disabled={updatingCartItem === item.id}
+                              className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black shadow-sm transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 dark:bg-[#222] dark:text-white"
+                            >
+                              -
+                            </button>
+                            <span className="w-5 text-center text-xs font-bold text-black dark:text-white">
+                              {updatingCartItem === item.id ? '...' : item.quantity}
+                            </span>
+                            <button
+                              onClick={() => {
+                                handleUpdateCartQuantity(item.id, item.quantity + 1);
+                              }}
+                              disabled={updatingCartItem === item.id}
+                              className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white shadow-sm transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-black"
+                            >
+                              +
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Copy Link & WhatsApp Actions */}
+                    <div className="flex items-center gap-2 border-t border-black/5 pt-2.5 dark:border-white/5">
+                      <button
+                        type="button"
+                        onClick={(e) => void handleCopyProductLink(item, e)}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 py-1.5 px-3 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                        title="Copy storefront product link"
+                      >
+                        {copiedItemId === item.id ? (
+                          <>
+                            <CheckIcon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <CopyIcon className="h-3.5 w-3.5" />
+                            <span>Copy Link</span>
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setWhatsAppModalData({
+                            isOpen: true,
+                            section: 'cart',
+                            product: item,
+                          });
+                        }}
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-1.5 px-3 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                        title="Send WhatsApp message regarding this cart item"
+                      >
+                        <WhatsAppIcon className="h-3.5 w-3.5" />
+                        <span>WhatsApp</span>
+                      </button>
                     </div>
                   </div>
                 ))
@@ -1426,6 +1659,19 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
           void fetchCustomerDetails(true);
         }}
       />
+
+      {/* WhatsApp Message Template Modal */}
+      {customer && (
+        <WhatsAppMessageModal
+          isOpen={whatsAppModalData.isOpen}
+          onClose={() => setWhatsAppModalData((prev) => ({ ...prev, isOpen: false }))}
+          customer={customer}
+          section={whatsAppModalData.section}
+          product={whatsAppModalData.product}
+          order={whatsAppModalData.order}
+          availablePhoneNumbers={availablePhones}
+        />
+      )}
 
       {/* Edit Profile Modal */}
       <AnimatePresence>
