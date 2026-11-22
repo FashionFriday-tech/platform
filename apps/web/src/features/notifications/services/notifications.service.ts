@@ -117,7 +117,7 @@ async function fetchPromoNotifications(): Promise<Notification[]> {
   try {
     const res = await fetch(`${API_URL}/campaigns`, {
       method: 'GET',
-      next: { revalidate: 60 },
+      next: { revalidate: 3600, tags: ['campaigns'] },
     }).catch(() => null);
 
     if (res?.ok) {
