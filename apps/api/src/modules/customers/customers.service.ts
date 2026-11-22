@@ -78,6 +78,7 @@ export class CustomersService {
             wishlistItems: true,
             cartItems: true,
             addresses: true,
+            searchLogs: true,
           },
         },
       },
@@ -133,6 +134,7 @@ export class CustomersService {
       wishlistCount: user._count.wishlistItems,
       cartCount: user._count.cartItems,
       addressCount: user._count.addresses,
+      searchesCount: user._count.searchLogs,
       joinDate: user.createdAt.toISOString(),
       orders: orders.map((order) => ({
         id: order.id,
@@ -467,6 +469,25 @@ export class CustomersService {
     });
 
     return addresses;
+  }
+
+  async getCustomerSearches(id: string) {
+    const user = await this.prisma.db.user.findUnique({
+      where: { id },
+      select: { id: true, role: true },
+    });
+
+    if (user?.role !== UserRole.CUSTOMER) {
+      throw new NotFoundException('Customer not found');
+    }
+
+    const searches = await this.prisma.db.searchLog.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    });
+
+    return searches;
   }
 
   async createCustomerAddress(id: string, dto: any) {
