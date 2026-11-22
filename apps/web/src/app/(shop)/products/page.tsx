@@ -7,7 +7,8 @@ import { CatalogueClient, getCatalogueCampaigns } from '@/features/catalogue';
 
 import { ProductsSearchHeader } from './products-search-header';
 
-export const revalidate = 30;
+// Production standard: 1h ISR cache, updated instantly via on-demand tag revalidation
+export const revalidate = 3600;
 
 interface ProductsPageProps {
   searchParams: Promise<{
