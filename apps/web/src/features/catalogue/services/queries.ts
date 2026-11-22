@@ -55,8 +55,7 @@ export async function getColors(): Promise<ColorItem[]> {
 export async function getCatalogueCampaigns(): Promise<CatalogueCampaignBanner[]> {
   try {
     const data = await fetcher<CatalogueCampaignBanner[]>('/campaigns', {
-      cache: 'no-store',
-      next: { tags: ['catalogue-campaigns', 'home-campaigns'], revalidate: 0 },
+      next: { tags: ['catalogue-campaigns', 'home-campaigns'], revalidate: 3600 },
     });
     if (!Array.isArray(data)) {
       return [];
