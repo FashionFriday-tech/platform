@@ -30,8 +30,7 @@ export interface WhatsappReview {
 export async function getHomeCampaigns(): Promise<CampaignBanner[]> {
   try {
     const data = await fetcher<CampaignBanner[]>('/campaigns', {
-      cache: 'no-store',
-      next: { tags: ['home-campaigns'], revalidate: 0 },
+      next: { tags: ['home-campaigns'], revalidate: 3600 },
     });
     return data || [];
   } catch (error) {
@@ -43,7 +42,7 @@ export async function getHomeCampaigns(): Promise<CampaignBanner[]> {
 export async function getHomeCollections(): Promise<Collection[]> {
   try {
     const data = await fetcher<Collection[]>('/collections', {
-      next: { tags: ['home-collections'] },
+      next: { tags: ['home-collections'], revalidate: 86400 },
     });
     return data || [];
   } catch (error) {
@@ -55,7 +54,7 @@ export async function getHomeCollections(): Promise<Collection[]> {
 export async function getHomeBrands(): Promise<Brand[]> {
   try {
     const data = await fetcher<Brand[]>('/brands', {
-      next: { tags: ['home-brands'] },
+      next: { tags: ['home-brands'], revalidate: 86400 },
     });
     return data || [];
   } catch (error) {
@@ -67,7 +66,7 @@ export async function getHomeBrands(): Promise<Brand[]> {
 export async function getHomeReviews(): Promise<WhatsappReview[]> {
   try {
     const data = await fetcher<WhatsappReview[]>('/whatsapp-reviews?limit=20', {
-      next: { tags: ['home-reviews'] },
+      next: { tags: ['home-reviews'], revalidate: 86400 },
     });
     return (data || []).slice(0, 20);
   } catch (error) {
