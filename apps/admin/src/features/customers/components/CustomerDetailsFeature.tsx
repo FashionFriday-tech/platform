@@ -5,13 +5,17 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import {
+  AlertCircleIcon,
+  CheckCircleIcon,
   CheckIcon,
   CloseIcon,
+  ExternalLinkIcon,
   HeartIcon,
   MailIcon,
   MapPinIcon,
   PhoneIcon,
   PlusIcon,
+  SearchIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
   UserIcon,
@@ -176,6 +180,15 @@ interface Address {
   isDefault: boolean;
 }
 
+interface CustomerSearchLog {
+  id: string;
+  query: string;
+  userId: string | null;
+  hasResults?: boolean;
+  resultsCount?: number;
+  createdAt: string;
+}
+
 interface CustomerDetails {
   id: string;
   name: string;
@@ -187,10 +200,12 @@ interface CustomerDetails {
   totalSpent: number;
   joinDate: string;
   orders: Order[];
+  searchesCount?: number;
   _count?: {
     wishlist: number;
     cart: number;
     addresses: number;
+    searches?: number;
   };
 }
 
@@ -201,12 +216,13 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
 
   // Tab states
   const [activeTab, setActiveTab] = useState<
-    'orders' | 'favorites' | 'cart' | 'addresses' | 'payments'
+    'orders' | 'favorites' | 'cart' | 'addresses' | 'payments' | 'searches'
   >('orders');
   const [isFetchingTab, setIsFetchingTab] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[] | null>(null);
   const [addresses, setAddresses] = useState<Address[] | null>(null);
+  const [customerSearches, setCustomerSearches] = useState<CustomerSearchLog[] | null>(null);
 
   // Edit Profile form states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -274,7 +290,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
       });
     }
     return list;
-  }, [customer?.phone, addresses]);
+  }, [customer, addresses]);
 
   const handleCopyProductLink = async (
     item: { id: string; name: string; slug?: string | null; productId?: string },
@@ -314,7 +330,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
   };
 
   const fetchTabContent = async (
-    tab: 'orders' | 'favorites' | 'cart' | 'addresses' | 'payments',
+    tab: 'orders' | 'favorites' | 'cart' | 'addresses' | 'payments' | 'searches',
   ) => {
     setActiveTab(tab);
     if (tab === 'cart' && cartItems === null) {
@@ -344,6 +360,16 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
         setAddresses(data);
       } catch {
         toast.error('Failed to load addresses');
+      } finally {
+        setIsFetchingTab(false);
+      }
+    } else if (tab === 'searches' && customerSearches === null) {
+      setIsFetchingTab(true);
+      try {
+        const data = await fetcher<CustomerSearchLog[]>(`/admin/customers/${customerId}/searches`);
+        setCustomerSearches(data);
+      } catch {
+        toast.error('Failed to load customer search history');
       } finally {
         setIsFetchingTab(false);
       }
@@ -720,8 +746,11 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                 </div>
               </div>
 
-              <div className="scrollbar-hide mt-6 flex gap-3 overflow-x-auto pb-1 sm:mt-8 sm:gap-4 md:grid md:grid-cols-5 md:overflow-visible md:pb-0">
-                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+              <div className="scrollbar-hide mt-6 flex gap-3 overflow-x-auto pb-1 sm:mt-8 sm:gap-4 md:grid md:grid-cols-6 md:overflow-visible md:pb-0">
+                <div
+                  onClick={() => fetchTabContent('orders')}
+                  className="flex min-w-[140px] shrink-0 cursor-pointer flex-col rounded-2xl bg-[#f8f9fa] p-4 transition-transform hover:scale-[1.02] sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]"
+                >
                   <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Total Orders
                   </span>
@@ -737,7 +766,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     ₹{customer.totalSpent.toLocaleString('en-IN')}
                   </span>
                 </div>
-                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+                <div
+                  onClick={() => fetchTabContent('favorites')}
+                  className="flex min-w-[140px] shrink-0 cursor-pointer flex-col rounded-2xl bg-[#f8f9fa] p-4 transition-transform hover:scale-[1.02] sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]"
+                >
                   <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Favorites
                   </span>
@@ -745,7 +777,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     {customer._count?.wishlist || 0}
                   </span>
                 </div>
-                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+                <div
+                  onClick={() => fetchTabContent('cart')}
+                  className="flex min-w-[140px] shrink-0 cursor-pointer flex-col rounded-2xl bg-[#f8f9fa] p-4 transition-transform hover:scale-[1.02] sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]"
+                >
                   <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Cart Items
                   </span>
@@ -753,12 +788,26 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                     {customer._count?.cart || 0}
                   </span>
                 </div>
-                <div className="flex min-w-[140px] shrink-0 flex-col rounded-2xl bg-[#f8f9fa] p-4 sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]">
+                <div
+                  onClick={() => fetchTabContent('addresses')}
+                  className="flex min-w-[140px] shrink-0 cursor-pointer flex-col rounded-2xl bg-[#f8f9fa] p-4 transition-transform hover:scale-[1.02] sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]"
+                >
                   <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
                     Addresses
                   </span>
                   <span className="mt-1.5 text-2xl font-black text-black sm:mt-2 sm:text-3xl dark:text-white">
                     {customer._count?.addresses || 0}
+                  </span>
+                </div>
+                <div
+                  onClick={() => fetchTabContent('searches')}
+                  className="flex min-w-[140px] shrink-0 cursor-pointer flex-col rounded-2xl bg-[#f8f9fa] p-4 transition-transform hover:scale-[1.02] sm:min-w-[170px] sm:p-5 md:min-w-0 md:shrink dark:bg-[#1a1a1a]"
+                >
+                  <span className="text-[11px] font-bold tracking-wider text-black/40 uppercase sm:text-xs dark:text-white/40">
+                    Searches
+                  </span>
+                  <span className="mt-1.5 text-2xl font-black text-black sm:mt-2 sm:text-3xl dark:text-white">
+                    {customer.searchesCount ?? customer._count?.searches ?? 0}
                   </span>
                 </div>
               </div>
@@ -869,6 +918,22 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
               >
                 <CreditCardIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Payments
+              </button>
+              <button
+                onClick={() => fetchTabContent('searches')}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2 sm:text-sm ${
+                  activeTab === 'searches'
+                    ? 'bg-white text-black shadow-sm dark:bg-[#222] dark:text-white'
+                    : 'text-black/60 hover:text-black dark:text-white/60 dark:hover:text-white'
+                }`}
+              >
+                <SearchIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                Searches
+                {typeof (customer.searchesCount ?? customer._count?.searches) === 'number' && (
+                  <span className="ml-0.5 rounded-full bg-black/10 px-1.5 py-0.5 text-[10px] font-bold text-black/70 dark:bg-white/15 dark:text-white/80">
+                    {customer.searchesCount ?? customer._count?.searches}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -1106,13 +1171,15 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                                 );
                               }
                             }}
-                            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 py-1.5 px-2.5 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 px-2.5 py-1.5 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                             title="Copy storefront product link"
                           >
                             {copiedItemId === `order-${order.id}-${firstItem?.id}` ? (
                               <>
                                 <CheckIcon className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                                <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
+                                <span className="text-emerald-600 dark:text-emerald-400">
+                                  Copied
+                                </span>
                               </>
                             ) : (
                               <>
@@ -1160,7 +1227,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                                   : undefined,
                               });
                             }}
-                            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-1.5 px-2.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                            className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
                             title="Send WhatsApp message regarding this order"
                           >
                             <WhatsAppIcon className="h-3.5 w-3.5" />
@@ -1219,7 +1286,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                         )}
                       </div>
                       <div className="flex flex-1 flex-col overflow-hidden">
-                        <span className="line-clamp-1 font-bold text-black dark:text-white" title={item.name}>
+                        <span
+                          className="line-clamp-1 font-bold text-black dark:text-white"
+                          title={item.name}
+                        >
                           {item.name}
                         </span>
                         <span className="mt-1 text-sm font-semibold text-black/80 dark:text-white/80">
@@ -1236,7 +1306,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       <button
                         type="button"
                         onClick={(e) => void handleCopyProductLink(item, e)}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 py-1.5 px-3 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                         title="Copy storefront product link"
                       >
                         {copiedItemId === item.id ? (
@@ -1261,7 +1331,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                             product: item,
                           });
                         }}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-1.5 px-3 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
                         title="Send WhatsApp message regarding this favorite item"
                       >
                         <WhatsAppIcon className="h-3.5 w-3.5" />
@@ -1301,7 +1371,10 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       </div>
                       <div className="flex flex-1 flex-col justify-between py-1">
                         <div className="flex flex-col">
-                          <span className="line-clamp-1 font-bold text-black dark:text-white" title={item.name}>
+                          <span
+                            className="line-clamp-1 font-bold text-black dark:text-white"
+                            title={item.name}
+                          >
                             {item.name}
                           </span>
                           <span className="mt-1 text-xs text-black/60 dark:text-white/60">
@@ -1345,7 +1418,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                       <button
                         type="button"
                         onClick={(e) => void handleCopyProductLink(item, e)}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 py-1.5 px-3 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-semibold text-black transition-all hover:bg-black/10 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                         title="Copy storefront product link"
                       >
                         {copiedItemId === item.id ? (
@@ -1370,7 +1443,7 @@ export function CustomerDetailsFeature({ customerId }: CustomerDetailsFeaturePro
                             product: item,
                           });
                         }}
-                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-1.5 px-3 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
+                        className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:hover:bg-emerald-600"
                         title="Send WhatsApp message regarding this cart item"
                       >
                         <WhatsAppIcon className="h-3.5 w-3.5" />
@@ -1625,6 +1698,192 @@ ${address.altPhoneNumber ? `Alt Number : ${address.altPhoneNumber}` : ''}`.trim(
                   <CreditCardIcon className="mb-4 h-8 w-8 text-black/20 dark:text-white/20" />
                   <p className="font-semibold text-black/50 dark:text-white/50">
                     No payment history found.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'searches' && (
+            <div className="flex flex-col gap-6">
+              {/* Customer Interest KPI Cards */}
+              {customerSearches && customerSearches.length > 0 && (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <div className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-5 shadow-xs dark:border-white/5 dark:bg-[#111111]">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+                      <SearchIcon className="h-5 w-5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-semibold text-black/50 dark:text-white/50">
+                        Total Inquiries
+                      </span>
+                      <span className="text-2xl font-black text-black dark:text-white">
+                        {customerSearches.length}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-5 shadow-xs dark:border-white/5 dark:bg-[#111111]">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                      <CheckCircleIcon className="h-5 w-5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-semibold text-black/50 dark:text-white/50">
+                        Found Catalog Items
+                      </span>
+                      <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                        {
+                          customerSearches.filter(
+                            (s) => s.hasResults !== false && (s.resultsCount ?? 1) > 0,
+                          ).length
+                        }
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 rounded-3xl border border-black/5 bg-white p-5 shadow-xs dark:border-white/5 dark:bg-[#111111]">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400">
+                      <AlertCircleIcon className="h-5 w-5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-semibold text-black/50 dark:text-white/50">
+                        Zero Results (Unmet Demand)
+                      </span>
+                      <span className="text-2xl font-black text-rose-600 dark:text-rose-400">
+                        {
+                          customerSearches.filter(
+                            (s) => s.hasResults === false || s.resultsCount === 0,
+                          ).length
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Search Logs List / Table */}
+              {isFetchingTab ? (
+                <div className="flex h-64 items-center justify-center rounded-[32px] border border-black/5 bg-white p-12 shadow-xs dark:border-white/5 dark:bg-[#111111]">
+                  <div className="flex flex-col items-center gap-3 text-black/40 dark:text-white/40">
+                    <div className="h-7 w-7 animate-spin rounded-full border-2 border-black/10 border-t-black dark:border-white/10 dark:border-t-white" />
+                    <span className="text-sm font-medium">Loading search history...</span>
+                  </div>
+                </div>
+              ) : customerSearches && customerSearches.length > 0 ? (
+                <div className="flex flex-col overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-xs dark:border-white/5 dark:bg-[#111111]">
+                  {/* Table Header */}
+                  <div className="grid grid-cols-[minmax(180px,2fr)_minmax(140px,1.2fr)_minmax(140px,1.2fr)_minmax(180px,1.2fr)] items-center border-b border-black/5 bg-black/[0.02] px-6 py-4 text-xs font-bold tracking-wider text-black/60 uppercase dark:border-white/5 dark:bg-white/[0.02] dark:text-white/60">
+                    <div>Search Query</div>
+                    <div>Availability / Results</div>
+                    <div>Searched On</div>
+                    <div className="text-right">Outreach &amp; Action</div>
+                  </div>
+
+                  {/* Rows */}
+                  <div className="divide-y divide-black/5 dark:divide-white/5">
+                    {customerSearches.map((log) => {
+                      const hasResults = log.hasResults !== false && (log.resultsCount ?? 1) > 0;
+                      const storefrontUrl =
+                        process.env.NEXT_PUBLIC_STOREFRONT_URL || 'https://fashionfriday.in';
+                      const storeSearchUrl = `${storefrontUrl}/products?q=${encodeURIComponent(log.query)}`;
+
+                      // WhatsApp contextual reach-out link
+                      const digits = customer.phone ? customer.phone.replace(/\D/g, '') : '';
+                      const fullPhone = digits.length === 10 ? `91${digits}` : digits;
+                      const waQueryText = encodeURIComponent(
+                        `Hi ${customer.name}, we noticed you were looking for "${log.query}" on Fashion Friday! Are you looking for a specific size or style? We would love to help you find the best options in stock.`,
+                      );
+                      const waLink = fullPhone
+                        ? `https://wa.me/${fullPhone}?text=${waQueryText}`
+                        : null;
+
+                      return (
+                        <div
+                          key={log.id}
+                          className="group grid grid-cols-[minmax(180px,2fr)_minmax(140px,1.2fr)_minmax(140px,1.2fr)_minmax(180px,1.2fr)] items-center px-6 py-4.5 transition-colors hover:bg-black/[0.015] dark:hover:bg-white/[0.015]"
+                        >
+                          {/* Search Query */}
+                          <div className="flex items-center gap-3 pr-4">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:bg-violet-500/20 dark:text-violet-400">
+                              <SearchIcon className="h-4 w-4" />
+                            </div>
+                            <div className="flex min-w-0 flex-col">
+                              <span className="truncate text-sm font-bold text-black dark:text-white">
+                                {log.query}
+                              </span>
+                              <span className="text-[11px] text-black/40 dark:text-white/40">
+                                Product inquiry
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Results Status */}
+                          <div className="flex items-center">
+                            {hasResults ? (
+                              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400">
+                                <CheckCircleIcon className="h-3.5 w-3.5 shrink-0" />
+                                <span>{log.resultsCount ?? '1+'} products found</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/20 bg-rose-500/10 px-3 py-1 text-xs font-semibold text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-400">
+                                <AlertCircleIcon className="h-3.5 w-3.5 shrink-0" />
+                                <span>0 results (out of stock)</span>
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Date & Time */}
+                          <div className="flex items-center text-xs font-medium text-black/60 dark:text-white/60">
+                            {new Date(log.createdAt).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex items-center justify-end gap-2">
+                            <a
+                              href={storeSearchUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 rounded-xl border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-semibold text-black transition-all hover:bg-black hover:text-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white dark:hover:text-black"
+                              title="View search on storefront"
+                            >
+                              <span>View Store</span>
+                              <ExternalLinkIcon className="h-3.5 w-3.5" />
+                            </a>
+
+                            {waLink && (
+                              <a
+                                href={waLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white dark:border-emerald-500/30 dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white"
+                                title="Contact customer on WhatsApp regarding this search"
+                              >
+                                <WhatsAppIcon className="h-3.5 w-3.5" />
+                                <span className="hidden sm:inline">WhatsApp</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center rounded-[32px] border border-dashed border-black/10 p-12 text-center dark:border-white/10">
+                  <SearchIcon className="mb-4 h-8 w-8 text-black/20 dark:text-white/20" />
+                  <p className="font-semibold text-black/70 dark:text-white/70">
+                    No search history found
+                  </p>
+                  <p className="mt-1 max-w-md text-xs text-black/40 dark:text-white/40">
+                    When this customer searches for sneakers, apparel, or accessories on the
+                    storefront while logged in, their queries and product interests will appear here
+                    automatically.
                   </p>
                 </div>
               )}
