@@ -71,6 +71,7 @@ export function CatalogueProductCard({ product, onProductClick }: StoreProductCa
     <div className="group relative cursor-pointer">
       <Link
         href={`/product/${product.slug}`}
+        prefetch={false}
         onClick={handleCardClick}
         className="block cursor-pointer"
       >
