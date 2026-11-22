@@ -117,7 +117,7 @@ const CART_TEMPLATES: TemplateOption[] = [
     title: 'Need Assistance',
     subtitle: 'Offer checkout & sizing support',
     getText: ({ customerName, productName, priceStr, productLink }) =>
-      `Hi ${customerName}, greetings from Fashion Friday! 👋\n\nWe saw you were looking at *${productName}* (₹${priceStr}).\n\nWere you facing any difficulty during checkout, or do you have any questions about the fabric, sizing, or delivery?\nProduct details: ${productLink}\n\nWe're right here to help you!`,
+      `Hi ${customerName}, greetings from Fashion Friday! 👋\n\nWe saw you were looking at *${productName}* (₹${priceStr}).\n\nWere you facing any difficulty during checkout, or do you have any questions about the product, or delivery?\nProduct details: ${productLink}\n\nWe're right here to help you!`,
   },
 ];
 
@@ -499,11 +499,10 @@ export function WhatsAppMessageModal({
                         setSelectedOrderItemIndex(idx);
                         setHasCustomEdits(false);
                       }}
-                      className={`rounded-lg px-2 py-1 text-[11px] font-medium transition-all ${
-                        selectedOrderItemIndex === idx
+                      className={`rounded-lg px-2 py-1 text-[11px] font-medium transition-all ${selectedOrderItemIndex === idx
                           ? 'bg-black text-white dark:bg-white dark:text-black'
                           : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/70 dark:hover:bg-white/15'
-                      }`}
+                        }`}
                     >
                       {idx + 1}. {it.name.slice(0, 18)}...
                     </button>
@@ -514,11 +513,10 @@ export function WhatsAppMessageModal({
                       setSelectedOrderItemIndex('all');
                       setHasCustomEdits(false);
                     }}
-                    className={`rounded-lg px-2 py-1 text-[11px] font-medium transition-all ${
-                      selectedOrderItemIndex === 'all'
+                    className={`rounded-lg px-2 py-1 text-[11px] font-medium transition-all ${selectedOrderItemIndex === 'all'
                         ? 'bg-black text-white dark:bg-white dark:text-black'
                         : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/70 dark:hover:bg-white/15'
-                    }`}
+                      }`}
                   >
                     All {order.items.length} Items
                   </button>
@@ -550,11 +548,10 @@ export function WhatsAppMessageModal({
                     key={idx}
                     type="button"
                     onClick={() => setPhone(p.phone)}
-                    className={`rounded-md px-2 py-0.5 text-[10px] font-semibold transition-all ${
-                      formatWhatsAppPhone(phone) === formatWhatsAppPhone(p.phone)
+                    className={`rounded-md px-2 py-0.5 text-[10px] font-semibold transition-all ${formatWhatsAppPhone(phone) === formatWhatsAppPhone(p.phone)
                         ? 'bg-emerald-600 text-white'
                         : 'bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/70'
-                    }`}
+                      }`}
                   >
                     {p.label}: {p.phone}
                   </button>
@@ -588,21 +585,19 @@ export function WhatsAppMessageModal({
                     key={tpl.id}
                     type="button"
                     onClick={() => handleSelectTemplate(tpl.id)}
-                    className={`flex items-start gap-2.5 rounded-xl border p-2.5 text-left transition-all ${
-                      isSelected
+                    className={`flex items-start gap-2.5 rounded-xl border p-2.5 text-left transition-all ${isSelected
                         ? 'border-emerald-500 bg-emerald-50/50 shadow-xs dark:border-emerald-500 dark:bg-emerald-950/20'
                         : 'border-black/5 bg-black/[0.02] hover:border-black/20 hover:bg-black/[0.04] dark:border-white/5 dark:bg-white/[0.02] dark:hover:border-white/20'
-                    }`}
+                      }`}
                   >
                     <span className="text-base">{tpl.emoji}</span>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between">
                         <span
-                          className={`text-xs font-bold ${
-                            isSelected
+                          className={`text-xs font-bold ${isSelected
                               ? 'text-emerald-950 dark:text-emerald-300'
                               : 'text-black dark:text-white'
-                          }`}
+                            }`}
                         >
                           {tpl.title}
                         </span>
