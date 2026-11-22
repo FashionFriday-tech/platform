@@ -31,7 +31,7 @@ export async function GET(request: Request) {
     }
 
     const res = await fetch(url, {
-      next: { revalidate: 30 },
+      next: { revalidate: 3600, tags: ['products'] },
       headers: { 'Content-Type': 'application/json' },
     });
 
