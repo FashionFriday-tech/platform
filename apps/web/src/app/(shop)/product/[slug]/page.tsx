@@ -12,7 +12,8 @@ interface Props {
 }
 
 export const dynamicParams = true;
-export const revalidate = 60;
+// Production standard: Cache for 24h, revalidated on-demand via tag product-[slug] when admin updates
+export const revalidate = 86400;
 
 export async function generateStaticParams() {
   try {
