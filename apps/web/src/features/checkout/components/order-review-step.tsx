@@ -19,6 +19,7 @@ import { formatColorLabel } from '@/features/cart';
 import { useCheckoutReview } from '../hooks/use-checkout-review';
 import { AddressFormDrawer } from './address-form-drawer';
 import { CheckoutProgress } from './checkout-progress';
+import { CheckoutWhatsAppHelp } from './checkout-whatsapp-help';
 import { OTPModal } from './otp-modal';
 
 export function OrderReviewStep() {
@@ -175,6 +176,8 @@ export function OrderReviewStep() {
                 )}
               </div>
             </section>
+
+            <CheckoutWhatsAppHelp step="review" items={cartItems} totalAmount={pricing.total} />
           </div>
 
           <aside className="sticky top-48 hidden w-96 shrink-0 space-y-4 self-start lg:block">
@@ -216,8 +219,8 @@ export function OrderReviewStep() {
                 <ChevronRightIcon size={18} />
               </button>
             </div>
-            <p className="text-foreground-subtle text-center text-[8px] font-bold tracking-widest uppercase opacity-50">
-              Secure Payment powered by Stripe & Razorpay
+            <p className="text-foreground-subtle text-center text-[9px] font-bold tracking-widest uppercase opacity-60">
+              100% Secure Payment • Powered by Razorpay
             </p>
           </aside>
         </div>
