@@ -1,16 +1,24 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import {
+  AlertCircleIcon,
+  CheckCircleIcon,
   ChevronRightIcon,
   ChevronUpIcon,
   CloseIcon,
   CreditCardIcon,
   InfoIcon,
+  LockIcon,
+  MapPinIcon,
+  PackageIcon,
+  RefreshCcwIcon,
   ShieldCheckIcon,
   TruckIcon,
+  VerifiedIcon,
   ZapIcon,
 } from '@ff/ui';
 import { AnimatePresence, motion } from 'motion/react';
@@ -28,6 +36,7 @@ import { useCartStore } from '@/store/cart-store';
 
 import { useCheckoutPayment } from '../hooks/use-checkout-payment';
 import { CheckoutProgress } from './checkout-progress';
+import { CheckoutWhatsAppHelp } from './checkout-whatsapp-help';
 
 export function PaymentStep() {
   const {
@@ -49,6 +58,7 @@ export function PaymentStep() {
   } = useCheckoutPayment();
   const router = useRouter();
   const [isPlacing, setIsPlacing] = React.useState(false);
+  const [paymentError, setPaymentError] = React.useState<string | null>(null);
 
   const clearCart = useCartStore((state) => state.clearCart);
   const removeItemByProduct = useCartStore((state) => state.removeItemByProduct);
@@ -101,6 +111,7 @@ export function PaymentStep() {
     }
 
     try {
+      setPaymentError(null);
       setIsPlacing(true);
 
       const recipientName = (
@@ -253,6 +264,9 @@ export function PaymentStep() {
         modal: {
           ondismiss: async () => {
             setIsPlacing(false);
+            setPaymentError(
+              'Payment window was closed before completion. Your items are still saved—you can retry or chat with us on WhatsApp.',
+            );
             toast.info(
               'Payment was cancelled. Your order has not been placed and your items remain in your cart.',
             );
@@ -323,9 +337,9 @@ export function PaymentStep() {
             router.push('/account/orders');
           } catch (verifyErr: any) {
             console.error('[PaymentStep] Payment verification error:', verifyErr);
-            toast.error(
-              verifyErr.message || 'Payment verification failed. Please contact support.',
-            );
+            const msg = verifyErr.message || 'Payment verification failed. Please contact support.';
+            setPaymentError(msg);
+            toast.error(msg);
           } finally {
             setIsPlacing(false);
           }
@@ -335,7 +349,9 @@ export function PaymentStep() {
       const rzp = new (window as any).Razorpay(options);
       rzp.on('payment.failed', async (resp: any) => {
         console.error('[PaymentStep] Payment failed:', resp.error);
-        toast.error(resp.error?.description || 'Payment was unsuccessful. Please try again.');
+        const errMsg = resp.error?.description || 'Payment was unsuccessful. Please try again.';
+        setPaymentError(errMsg);
+        toast.error(errMsg);
         setIsPlacing(false);
         try {
           const activeToken =
@@ -349,7 +365,9 @@ export function PaymentStep() {
       rzp.open();
     } catch (err: any) {
       console.error('[PaymentStep] ERROR: Order placement failed:', err);
-      toast.error(err.message || 'Failed to place order. Please try again.');
+      const errMsg = err.message || 'Failed to place order. Please try again.';
+      setPaymentError(errMsg);
+      toast.error(errMsg);
       setIsPlacing(false);
     } finally {
       console.log('[PaymentStep] ---------------- ORDER PROCESS FINISHED ----------------');
@@ -357,25 +375,109 @@ export function PaymentStep() {
   };
 
   return (
-    <div className="bg-background text-foreground min-h-screen px-4 pt-[108px] pb-20 transition-colors duration-300 sm:pt-[116px] md:px-6 lg:pt-[170px] lg:pb-8">
+    <div className="bg-background text-foreground min-h-screen px-4 pt-[108px] pb-36 transition-colors duration-300 sm:pt-[116px] md:px-6 lg:pt-[170px] lg:pb-32">
       <CheckoutProgress currentStage={3} />
 
       <main className="mx-auto max-w-4xl pt-0 sm:pt-1">
-        <div className="space-y-10">
+        <div className="space-y-6">
           {/* Header Section */}
           <div className="flex items-center justify-between px-2">
-            <h2 className="text-foreground-subtle text-[9px] font-black tracking-[0.3em] uppercase">
+            <h2 className="text-foreground-subtle text-[10px] font-black tracking-[0.25em] uppercase">
               Payment Selection
             </h2>
             <button
               onClick={() => {
                 setShowInfo(true);
               }}
-              className="hover:text-foreground-subtle flex items-center gap-2 text-[9px] font-black tracking-widest uppercase transition-colors"
+              className="hover:text-foreground-subtle flex items-center gap-2 text-[10px] font-black tracking-widest uppercase transition-colors"
             >
               Payment Policy <InfoIcon size={14} />
             </button>
           </div>
+
+          {/* Compact Order & Delivery Context */}
+          {(cartItems.length > 0 || shippingAddress) && (
+            <div className="border-border bg-background-muted/30 grid grid-cols-1 gap-3 rounded-2xl border p-4 sm:grid-cols-2">
+              {cartItems.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <div className="bg-background-muted text-foreground flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+                    <PackageIcon size={17} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-foreground-muted text-[10px] font-bold tracking-wider uppercase">
+                      Order Summary ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
+                    </p>
+                    <p className="text-foreground truncate text-xs font-bold">
+                      {cartItems[0]?.product?.name || 'Selected Item'}
+                      {cartItems.length > 1 ? ` +${cartItems.length - 1} more` : ''} • ₹
+                      {baseTotal.toLocaleString('en-IN')}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {shippingAddress && (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="bg-background-muted text-foreground flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+                      <MapPinIcon size={17} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-foreground-muted text-[10px] font-bold tracking-wider uppercase">
+                        Delivering To
+                      </p>
+                      <p className="text-foreground truncate text-xs font-bold">
+                        {shippingAddress.recipientName || 'Customer'}
+                        {shippingAddress.city ? `, ${shippingAddress.city}` : ''}
+                        {shippingAddress.pincode ? ` - ${shippingAddress.pincode}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href={isBuyNowMode ? '/checkout/review?mode=buy_now' : '/checkout/review'}
+                    className="text-foreground-muted hover:text-foreground shrink-0 text-[11px] font-bold underline underline-offset-2"
+                  >
+                    Edit
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Payment Error / Dismiss Recovery Banner */}
+          {paymentError && (
+            <div className="space-y-3 rounded-2xl border border-red-500/30 bg-red-500/5 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <AlertCircleIcon size={18} className="mt-0.5 shrink-0 text-red-500" />
+                  <div>
+                    <p className="text-xs font-bold text-red-600 dark:text-red-400">
+                      Payment could not be completed
+                    </p>
+                    <p className="text-foreground-muted mt-0.5 text-xs leading-relaxed">
+                      {paymentError}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={isPlacing}
+                  onClick={handlePlaceOrder}
+                  className="bg-foreground text-background shrink-0 cursor-pointer rounded-full px-3.5 py-1.5 text-[11px] font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
+                >
+                  Retry
+                </button>
+              </div>
+              <CheckoutWhatsAppHelp
+                step="payment"
+                items={cartItems}
+                totalAmount={payableAmount}
+                paymentMethod={paymentMethod}
+                errorMessage={paymentError}
+                variant="error"
+              />
+            </div>
+          )}
 
           {/* Payment Options Grid */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -490,14 +592,20 @@ export function PaymentStep() {
                   <ShieldCheckIcon size={20} />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black tracking-widest text-orange-600 uppercase">
-                    COD Policy: ₹200 Advance Deposit Required
+                  <p className="text-xs font-bold tracking-wide text-orange-600 uppercase">
+                    COD Policy: ₹{payableAmount} Advance (Deducted from Total)
                   </p>
-                  <p className="text-[10px] leading-relaxed font-bold tracking-widest text-orange-800/60 uppercase">
-                    A <span className="font-black text-orange-600">₹{payableAmount} deposit</span>{' '}
-                    is collected online via UPI/Card to confirm your COD order. The balance of{' '}
-                    <span className="font-black text-orange-600">₹{balanceDue}</span> is collected
-                    in cash upon doorstep delivery.
+                  <p className="text-xs leading-relaxed text-orange-900/80 dark:text-orange-200/80">
+                    Why ₹{payableAmount} advance? It confirms genuine orders and prevents fake COD
+                    bookings.{' '}
+                    <span className="font-bold text-orange-600 dark:text-orange-400">
+                      ₹{payableAmount} is deducted from your bill
+                    </span>
+                    —you pay only{' '}
+                    <span className="font-bold text-orange-600 dark:text-orange-400">
+                      ₹{balanceDue}
+                    </span>{' '}
+                    in cash on delivery.
                   </p>
                 </div>
                 <span className="text-background absolute -top-4 left-5 rounded-t-4xl bg-orange-500 px-8 text-xs font-semibold tracking-wider uppercase">
@@ -533,6 +641,77 @@ export function PaymentStep() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Secured by Razorpay & Trust Badges */}
+          <div className="border-border bg-background-muted/20 rounded-3xl border p-5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <LockIcon size={15} className="text-emerald-600 dark:text-emerald-400" />
+                <span className="text-foreground text-xs font-bold">
+                  100% Secure Checkout • Powered by Razorpay
+                </span>
+              </div>
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                256-Bit SSL Encrypted
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="border-border/60 bg-background flex items-start gap-3 rounded-2xl border p-3.5">
+                <VerifiedIcon
+                  size={18}
+                  className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+                />
+                <div>
+                  <p className="text-foreground text-xs font-bold">100% Authentic</p>
+                  <p className="text-foreground-muted mt-0.5 text-[11px] leading-snug">
+                    Quality checked before dispatch with instant order confirmation.
+                  </p>
+                </div>
+              </div>
+
+              <div className="border-border/60 bg-background flex items-start gap-3 rounded-2xl border p-3.5">
+                <RefreshCcwIcon
+                  size={17}
+                  className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+                />
+                <div>
+                  <p className="text-foreground text-xs font-bold">Easy Returns & Exchange</p>
+                  <p className="text-foreground-muted mt-0.5 text-[11px] leading-snug">
+                    Hassle-free size exchange and return support on eligible orders.
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                href="/whatsapp-reviews"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border-border/60 bg-background hover:border-foreground/30 flex items-start gap-3 rounded-2xl border p-3.5 transition-colors"
+              >
+                <CheckCircleIcon
+                  size={18}
+                  className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+                />
+                <div>
+                  <p className="text-foreground text-xs font-bold">Verified Customer Reviews</p>
+                  <p className="text-foreground-muted mt-0.5 text-[11px] leading-snug">
+                    View real customer feedback & delivery screenshots →
+                  </p>
+                </div>
+              </Link>
+            </div>
+          </div>
+
+          {/* WhatsApp Assistance (Inline, non-blocking) */}
+          {!paymentError && (
+            <CheckoutWhatsAppHelp
+              step="payment"
+              items={cartItems}
+              totalAmount={payableAmount}
+              paymentMethod={paymentMethod}
+            />
+          )}
         </div>
       </main>
 
