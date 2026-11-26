@@ -8,9 +8,10 @@ import { ShoppingBagIcon } from '@ff/ui';
 import { CartItemsCard, OrderSummary, useCart } from '@/features/cart';
 
 import { CheckoutProgress } from './checkout-progress';
+import { CheckoutWhatsAppHelp } from './checkout-whatsapp-help';
 
 export function CartStep() {
-  const { cartItems, hasItems, isMounted } = useCart();
+  const { cartItems, totals, hasItems, isMounted } = useCart();
 
   return (
     <div className="bg-background text-foreground min-h-screen pt-[108px] pb-16 transition-colors duration-300 sm:pt-[116px] lg:pt-[170px] lg:pb-6">
@@ -58,8 +59,11 @@ export function CartStep() {
             </div>
 
             {/* Right Column: Sticky Summary */}
-            <aside className="w-full self-start lg:sticky lg:top-48 lg:w-[420px] lg:shrink-0">
+            <aside className="w-full space-y-4 self-start lg:sticky lg:top-48 lg:w-[420px] lg:shrink-0">
               <OrderSummary />
+              {hasItems && (
+                <CheckoutWhatsAppHelp step="cart" items={cartItems} totalAmount={totals.total} />
+              )}
             </aside>
           </div>
         </div>
